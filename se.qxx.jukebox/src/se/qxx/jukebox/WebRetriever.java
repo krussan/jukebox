@@ -16,6 +16,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.Log.LogType;
 
@@ -89,12 +93,19 @@ public class WebRetriever {
 		}
 	
 		String contentDisposition = httpcon.getHeaderField("content-disposition");
-		if (contentDisposition == null || contentDisposition == "") {
-			contentDisposition = url.getPath().substring(url.getPath().lastIndexOf("/") + 1, url.getPath().length());
-		}
-		String filename = savePath + "/" + contentDisposition;
+		String filename = url.getPath().substring(url.getPath().lastIndexOf("/") + 1, url.getPath().length());
 		
-		File f = new File(filename);
+		if (!StringUtils.isEmpty(contentDisposition)) {
+			//attachment; filename="Catch..44.2011.BRRip.XviD.AC3-FTW._www.ENGSUB.NET.zip"
+			Pattern p = Pattern.compile("filename=\"([^\"]*)\"");
+			Matcher m = p.matcher(contentDisposition);
+			
+			if (m.find()) 
+				filename = m.group(1);
+		}
+		String filenameAndPath = String.format("%s/%s", savePath, filename);
+		
+		File f = new File(filenameAndPath);
 		InputStream is = httpcon.getInputStream();
 		FileOutputStream os = new FileOutputStream(f);
 		

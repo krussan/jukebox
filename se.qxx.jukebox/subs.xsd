@@ -11,6 +11,7 @@
     					<xs:sequence>
     						<xs:element name="sub" maxOccurs="unbounded" minOccurs="0">
     							<xs:complexType>
+    								<xs:sequence></xs:sequence>
     								<xs:attribute name="filename"
     									type="xs:string" use="required">
     								</xs:attribute>
@@ -18,7 +19,10 @@
     									type="xs:string" use="required">
     								</xs:attribute>
     								<xs:attribute name="rating"
-    									type="xs:string" use="required"	>
+    									type="xs:string" use="required">
+    								</xs:attribute>
+    								<xs:attribute name="language"
+    									type="xs:string">
     								</xs:attribute>
     							</xs:complexType>
     						</xs:element>

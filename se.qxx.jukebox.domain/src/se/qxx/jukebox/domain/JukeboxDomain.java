@@ -2357,6 +2357,10 @@ public final class JukeboxDomain {
     // required int32 mediaIndex = 4;
     boolean hasMediaIndex();
     int getMediaIndex();
+    
+    // required string language = 5;
+    boolean hasLanguage();
+    String getLanguage();
   }
   public static final class Subtitle extends
       com.google.protobuf.GeneratedMessage
@@ -2493,11 +2497,44 @@ public final class JukeboxDomain {
       return mediaIndex_;
     }
     
+    // required string language = 5;
+    public static final int LANGUAGE_FIELD_NUMBER = 5;
+    private java.lang.Object language_;
+    public boolean hasLanguage() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    public String getLanguage() {
+      java.lang.Object ref = language_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          language_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getLanguageBytes() {
+      java.lang.Object ref = language_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        language_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
     private void initFields() {
       filename_ = "";
       description_ = "";
       rating_ = "";
       mediaIndex_ = 0;
+      language_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -2520,6 +2557,10 @@ public final class JukeboxDomain {
         memoizedIsInitialized = 0;
         return false;
       }
+      if (!hasLanguage()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -2538,6 +2579,9 @@ public final class JukeboxDomain {
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeInt32(4, mediaIndex_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeBytes(5, getLanguageBytes());
       }
       getUnknownFields().writeTo(output);
     }
@@ -2563,6 +2607,10 @@ public final class JukeboxDomain {
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(4, mediaIndex_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(5, getLanguageBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -2696,6 +2744,8 @@ public final class JukeboxDomain {
         bitField0_ = (bitField0_ & ~0x00000004);
         mediaIndex_ = 0;
         bitField0_ = (bitField0_ & ~0x00000008);
+        language_ = "";
+        bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
       
@@ -2750,6 +2800,10 @@ public final class JukeboxDomain {
           to_bitField0_ |= 0x00000008;
         }
         result.mediaIndex_ = mediaIndex_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.language_ = language_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -2778,6 +2832,9 @@ public final class JukeboxDomain {
         if (other.hasMediaIndex()) {
           setMediaIndex(other.getMediaIndex());
         }
+        if (other.hasLanguage()) {
+          setLanguage(other.getLanguage());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -2796,6 +2853,10 @@ public final class JukeboxDomain {
           return false;
         }
         if (!hasMediaIndex()) {
+          
+          return false;
+        }
+        if (!hasLanguage()) {
           
           return false;
         }
@@ -2843,6 +2904,11 @@ public final class JukeboxDomain {
             case 32: {
               bitField0_ |= 0x00000008;
               mediaIndex_ = input.readInt32();
+              break;
+            }
+            case 42: {
+              bitField0_ |= 0x00000010;
+              language_ = input.readBytes();
               break;
             }
           }
@@ -2978,6 +3044,42 @@ public final class JukeboxDomain {
         mediaIndex_ = 0;
         onChanged();
         return this;
+      }
+      
+      // required string language = 5;
+      private java.lang.Object language_ = "";
+      public boolean hasLanguage() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      public String getLanguage() {
+        java.lang.Object ref = language_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          language_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setLanguage(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
+        language_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearLanguage() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        language_ = getDefaultInstance().getLanguage();
+        onChanged();
+        return this;
+      }
+      void setLanguage(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000010;
+        language_ = value;
+        onChanged();
       }
       
       // @@protoc_insertion_point(builder_scope:se.qxx.jukebox.domain.Subtitle)
@@ -16122,65 +16224,65 @@ public final class JukeboxDomain {
       "\022\r\n\005image\030\020 \001(\014\022\r\n\005genre\030\021 \003(\t\0225\n\nidenti" +
       "fier\030\022 \001(\0162!.se.qxx.jukebox.domain.Ident",
       "ifier\022\030\n\020identifierRating\030\023 \001(\005\022\017\n\007watch" +
-      "ed\030\024 \001(\010\"U\n\010Subtitle\022\020\n\010filename\030\001 \002(\t\022\023" +
+      "ed\030\024 \001(\010\"g\n\010Subtitle\022\020\n\010filename\030\001 \002(\t\022\023" +
       "\n\013description\030\002 \002(\t\022\016\n\006rating\030\003 \002(\t\022\022\n\nm" +
-      "ediaIndex\030\004 \002(\005\"\242\001\n\005Media\022\n\n\002ID\030\001 \002(\005\022\r\n" +
-      "\005index\030\002 \002(\005\022\020\n\010filename\030\003 \002(\t\022\020\n\010filepa" +
-      "th\030\004 \002(\t\022\024\n\014metaDuration\030\005 \001(\005\022\025\n\rmetaFr" +
-      "amerate\030\006 \001(\t\022-\n\004subs\030\007 \003(\0132\037.se.qxx.juk" +
-      "ebox.domain.Subtitle\"\\\n\016JukeboxRequest\0227" +
-      "\n\004type\030\001 \002(\0162).se.qxx.jukebox.domain.Juk" +
-      "eboxRequestType\022\021\n\targuments\030\002 \001(\014\"0\n\030Ju",
-      "keboxRequestListMovies\022\024\n\014searchString\030\002" +
-      " \001(\t\"\033\n\031JukeboxRequestListPlayers\"J\n#Juk" +
-      "eboxRequestStartSubtitleIdentify\022\017\n\007movi" +
-      "eId\030\001 \001(\005\022\022\n\nmovieTitle\030\002 \001(\t\"?\n\030Jukebox" +
-      "RequestStartMovie\022\017\n\007movieId\030\001 \002(\005\022\022\n\npl" +
-      "ayerName\030\002 \001(\t\"-\n\027JukeboxRequestStopMovi" +
-      "e\022\022\n\nplayerName\030\001 \001(\t\".\n\030JukeboxRequestP" +
-      "auseMovie\022\022\n\nplayerName\030\001 \001(\t\"U\n\032Jukebox" +
-      "RequestMarkSubtitle\022\017\n\007movieId\030\001 \002(\005\022\030\n\020" +
-      "subtitleFileName\030\002 \002(\t\022\014\n\004isOk\030\003 \002(\010\"\033\n\031",
-      "JukeboxRequestSkipForward\"\035\n\033JukeboxRequ" +
-      "estSkipBackwards\"*\n\024JukeboxRequestWakeup" +
-      "\022\022\n\nplayerName\030\001 \002(\t\"4\n\036JukeboxRequestTo" +
-      "ggleFullscreen\022\022\n\nplayerName\030\001 \002(\t\"+\n\025Ju" +
-      "keboxRequestSuspend\022\022\n\nplayerName\030\001 \002(\t\"" +
-      "9\n\022JukeboxRequestSeek\022\022\n\nplayerName\030\001 \002(" +
-      "\t\022\017\n\007seconds\030\002 \002(\005\".\n\033JukeboxRequestList" +
-      "Subtitles\022\017\n\007movieId\030\001 \002(\005\"C\n\031JukeboxReq" +
-      "uestSetSubtitle\022\022\n\nplayerName\030\001 \002(\t\022\022\n\ns" +
-      "ubtitleID\030\002 \002(\005\"*\n\024JukeboxRequestVRatio\022",
-      "\022\n\nplayerName\030\001 \002(\t\"(\n\022JukeboxRequestTim" +
-      "e\022\022\n\nplayerName\030\001 \002(\t\"-\n\027JukeboxRequestI" +
-      "sPlaying\022\022\n\nplayerName\030\001 \002(\t\",\n\026JukeboxR" +
-      "equestGetTitle\022\022\n\nplayerName\030\001 \002(\t\"\023\n\021Ju" +
-      "keboxResponseOK\",\n\024JukeboxResponseError\022" +
-      "\024\n\014errorMessage\030\001 \001(\t\"]\n\017JukeboxResponse" +
-      "\0227\n\004type\030\001 \002(\0162).se.qxx.jukebox.domain.J" +
-      "ukeboxRequestType\022\021\n\targuments\030\002 \001(\014\"I\n\031" +
-      "JukeboxResponseListMovies\022,\n\006movies\030\001 \003(" +
-      "\0132\034.se.qxx.jukebox.domain.Movie\".\n\032Jukeb",
-      "oxResponseListPlayers\022\020\n\010hostname\030\001 \003(\t\"" +
-      "Q\n\034JukeboxResponseListSubtitles\0221\n\010subti" +
-      "tle\030\001 \003(\0132\037.se.qxx.jukebox.domain.Subtit" +
-      "le\"N\n\031JukeboxResponseStartMovie\0221\n\010subti" +
-      "tle\030\001 \003(\0132\037.se.qxx.jukebox.domain.Subtit" +
-      "le\"&\n\023JukeboxResponseTime\022\017\n\007seconds\030\001 \002" +
-      "(\005\"-\n\030JukeboxResponseIsPlaying\022\021\n\tisPlay" +
-      "ing\030\001 \002(\010\"(\n\027JukeboxResponseGetTitle\022\r\n\005" +
-      "title\030\001 \002(\t*\342\002\n\022JukeboxRequestType\022\016\n\nLi" +
-      "stMovies\020\001\022\031\n\025StartSubtitleIdentity\020\002\022\016\n",
-      "\nStartMovie\020\003\022\r\n\tStopMovie\020\004\022\020\n\014MarkSubt" +
-      "itle\020\005\022\017\n\013SkipForward\020\006\022\021\n\rSkipBackwards" +
-      "\020\007\022\017\n\013ListPlayers\020\010\022\t\n\005Error\020\t\022\006\n\002OK\020\n\022\016" +
-      "\n\nPauseMovie\020\013\022\n\n\006Wakeup\020\014\022\024\n\020ToggleFull" +
-      "screen\020\r\022\013\n\007Suspend\020\016\022\010\n\004Seek\020\017\022\021\n\rListS" +
-      "ubtitles\020\020\022\017\n\013SetSubtitle\020\021\022\n\n\006VRatio\020\022\022" +
-      "\010\n\004Info\020\023\022\010\n\004Time\020\024\022\r\n\tIsPlaying\020\025\022\014\n\010Ge" +
-      "tTitle\020\026*8\n\nIdentifier\022\014\n\010Filename\020\001\022\023\n\017" +
-      "ParentDirectory\020\002\022\007\n\003NFO\020\003B\027\n\025se.qxx.juk" +
-      "ebox.domain"
+      "ediaIndex\030\004 \002(\005\022\020\n\010language\030\005 \002(\t\"\242\001\n\005Me" +
+      "dia\022\n\n\002ID\030\001 \002(\005\022\r\n\005index\030\002 \002(\005\022\020\n\010filena" +
+      "me\030\003 \002(\t\022\020\n\010filepath\030\004 \002(\t\022\024\n\014metaDurati" +
+      "on\030\005 \001(\005\022\025\n\rmetaFramerate\030\006 \001(\t\022-\n\004subs\030" +
+      "\007 \003(\0132\037.se.qxx.jukebox.domain.Subtitle\"\\" +
+      "\n\016JukeboxRequest\0227\n\004type\030\001 \002(\0162).se.qxx." +
+      "jukebox.domain.JukeboxRequestType\022\021\n\targ",
+      "uments\030\002 \001(\014\"0\n\030JukeboxRequestListMovies" +
+      "\022\024\n\014searchString\030\002 \001(\t\"\033\n\031JukeboxRequest" +
+      "ListPlayers\"J\n#JukeboxRequestStartSubtit" +
+      "leIdentify\022\017\n\007movieId\030\001 \001(\005\022\022\n\nmovieTitl" +
+      "e\030\002 \001(\t\"?\n\030JukeboxRequestStartMovie\022\017\n\007m" +
+      "ovieId\030\001 \002(\005\022\022\n\nplayerName\030\002 \001(\t\"-\n\027Juke" +
+      "boxRequestStopMovie\022\022\n\nplayerName\030\001 \001(\t\"" +
+      ".\n\030JukeboxRequestPauseMovie\022\022\n\nplayerNam" +
+      "e\030\001 \001(\t\"U\n\032JukeboxRequestMarkSubtitle\022\017\n" +
+      "\007movieId\030\001 \002(\005\022\030\n\020subtitleFileName\030\002 \002(\t",
+      "\022\014\n\004isOk\030\003 \002(\010\"\033\n\031JukeboxRequestSkipForw" +
+      "ard\"\035\n\033JukeboxRequestSkipBackwards\"*\n\024Ju" +
+      "keboxRequestWakeup\022\022\n\nplayerName\030\001 \002(\t\"4" +
+      "\n\036JukeboxRequestToggleFullscreen\022\022\n\nplay" +
+      "erName\030\001 \002(\t\"+\n\025JukeboxRequestSuspend\022\022\n" +
+      "\nplayerName\030\001 \002(\t\"9\n\022JukeboxRequestSeek\022" +
+      "\022\n\nplayerName\030\001 \002(\t\022\017\n\007seconds\030\002 \002(\005\".\n\033" +
+      "JukeboxRequestListSubtitles\022\017\n\007movieId\030\001" +
+      " \002(\005\"C\n\031JukeboxRequestSetSubtitle\022\022\n\npla" +
+      "yerName\030\001 \002(\t\022\022\n\nsubtitleID\030\002 \002(\005\"*\n\024Juk",
+      "eboxRequestVRatio\022\022\n\nplayerName\030\001 \002(\t\"(\n" +
+      "\022JukeboxRequestTime\022\022\n\nplayerName\030\001 \002(\t\"" +
+      "-\n\027JukeboxRequestIsPlaying\022\022\n\nplayerName" +
+      "\030\001 \002(\t\",\n\026JukeboxRequestGetTitle\022\022\n\nplay" +
+      "erName\030\001 \002(\t\"\023\n\021JukeboxResponseOK\",\n\024Juk" +
+      "eboxResponseError\022\024\n\014errorMessage\030\001 \001(\t\"" +
+      "]\n\017JukeboxResponse\0227\n\004type\030\001 \002(\0162).se.qx" +
+      "x.jukebox.domain.JukeboxRequestType\022\021\n\ta" +
+      "rguments\030\002 \001(\014\"I\n\031JukeboxResponseListMov" +
+      "ies\022,\n\006movies\030\001 \003(\0132\034.se.qxx.jukebox.dom",
+      "ain.Movie\".\n\032JukeboxResponseListPlayers\022" +
+      "\020\n\010hostname\030\001 \003(\t\"Q\n\034JukeboxResponseList" +
+      "Subtitles\0221\n\010subtitle\030\001 \003(\0132\037.se.qxx.juk" +
+      "ebox.domain.Subtitle\"N\n\031JukeboxResponseS" +
+      "tartMovie\0221\n\010subtitle\030\001 \003(\0132\037.se.qxx.juk" +
+      "ebox.domain.Subtitle\"&\n\023JukeboxResponseT" +
+      "ime\022\017\n\007seconds\030\001 \002(\005\"-\n\030JukeboxResponseI" +
+      "sPlaying\022\021\n\tisPlaying\030\001 \002(\010\"(\n\027JukeboxRe" +
+      "sponseGetTitle\022\r\n\005title\030\001 \002(\t*\342\002\n\022Jukebo" +
+      "xRequestType\022\016\n\nListMovies\020\001\022\031\n\025StartSub",
+      "titleIdentity\020\002\022\016\n\nStartMovie\020\003\022\r\n\tStopM" +
+      "ovie\020\004\022\020\n\014MarkSubtitle\020\005\022\017\n\013SkipForward\020" +
+      "\006\022\021\n\rSkipBackwards\020\007\022\017\n\013ListPlayers\020\010\022\t\n" +
+      "\005Error\020\t\022\006\n\002OK\020\n\022\016\n\nPauseMovie\020\013\022\n\n\006Wake" +
+      "up\020\014\022\024\n\020ToggleFullscreen\020\r\022\013\n\007Suspend\020\016\022" +
+      "\010\n\004Seek\020\017\022\021\n\rListSubtitles\020\020\022\017\n\013SetSubti" +
+      "tle\020\021\022\n\n\006VRatio\020\022\022\010\n\004Info\020\023\022\010\n\004Time\020\024\022\r\n" +
+      "\tIsPlaying\020\025\022\014\n\010GetTitle\020\026*8\n\nIdentifier" +
+      "\022\014\n\010Filename\020\001\022\023\n\017ParentDirectory\020\002\022\007\n\003N" +
+      "FO\020\003B\027\n\025se.qxx.jukebox.domain"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -16200,7 +16302,7 @@ public final class JukeboxDomain {
           internal_static_se_qxx_jukebox_domain_Subtitle_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_se_qxx_jukebox_domain_Subtitle_descriptor,
-              new java.lang.String[] { "Filename", "Description", "Rating", "MediaIndex", },
+              new java.lang.String[] { "Filename", "Description", "Rating", "MediaIndex", "Language", },
               se.qxx.jukebox.domain.JukeboxDomain.Subtitle.class,
               se.qxx.jukebox.domain.JukeboxDomain.Subtitle.Builder.class);
           internal_static_se_qxx_jukebox_domain_Media_descriptor =

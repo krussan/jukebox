@@ -69,6 +69,7 @@ message Subtitle {
 	required string description = 2;
 	required string rating = 3;
 	required int32 mediaIndex = 4;
+	required string language = 5;
 }
 
 message Media {

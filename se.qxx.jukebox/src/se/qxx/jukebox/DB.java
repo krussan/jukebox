@@ -438,6 +438,30 @@ public class DB {
 		return md;
 	}
 
+	//---------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------ Languages
+	//---------------------------------------------------------------------------------------
+	private static int getLanguageID(String language, Connection conn) throws ClassNotFoundException, SQLException {
+		String statement =
+				" SELECT ID FROM language " +
+				" WHERE language = ?";		
+		
+		conn = DB.initialize();
+		
+		PreparedStatement prep = conn.prepareStatement(statement);
+		
+		prep.setString(1, language);
+
+		ResultSet rs = prep.executeQuery();
+		if (rs.next()) {
+			return rs.getInt("ID");
+		}
+		else {
+			return -1;
+		}
+		
+		
+	}
 
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Subtitles
@@ -480,24 +504,26 @@ public class DB {
 		// if error occured then set to true to avoid downloading subtitles
 		return true;
 	}
-	public synchronized static void addSubtitle(Media md, String filename, String description, Rating rating) {
+	public synchronized static void addSubtitle(Media md, String filename, String description, Rating rating, String language) {
 		Connection conn = null;
 		String statement = 
 				"insert into subtitles " +
-				"(_media_ID, filename, description, rating)" +
+				"(_media_ID, filename, description, rating, _subtitleLanguage_ID)" +
 				"values" +
-				"(?, ?, ?, ?)";
+				"(?, ?, ?, ?, ?)";
 		
 		try {
 			conn = DB.initialize();
+			int subLanguageID = getLanguageID(language, conn);
 			
-			if (!subFileExist(md, filename, conn)) {
+			if (!subFileExist(md, filename, language, conn) && subLanguageID > 0) {
 				PreparedStatement prep = conn.prepareStatement(statement);
 				
 				prep.setInt(1, md.getID());
 				prep.setString(2, filename);
 				prep.setString(3, description);
 				prep.setString(4, rating.toString());
+				prep.setInt(5, subLanguageID);
 				prep.execute();				
 			}			
 						
@@ -511,11 +537,15 @@ public class DB {
 		}
 	}
 	
-	private synchronized static boolean subFileExist(Media md, String filename, Connection conn) throws SQLException {
+	private synchronized static boolean subFileExist(Media md, String filename, String language, Connection conn) throws SQLException {
 		PreparedStatement prep = conn.prepareStatement(
-				"SELECT 1 FROM subtitles WHERE _media_ID = ? AND filename = ?");
+				"SELECT 1 FROM subtitles S " +
+				"INNER JOIN Language L ON S._subtitleLanguage_ID = L.ID " +
+				"WHERE _media_ID = ? AND filename = ? AND L.language = ?");
+		
 		prep.setInt(1, md.getID());
 		prep.setString(2, filename);
+		prep.setString(3, language);
 
 		ResultSet rs = prep.executeQuery();
 		if (rs.next())
@@ -637,9 +667,10 @@ public class DB {
 	private synchronized static ArrayList<Subtitle> getSubtitles(int mediaid, Connection conn) throws SQLException {
 
 		String statement =
-				" SELECT S._media_ID, S.filename, S.description, S.rating, MD.idx " +
+				" SELECT S._media_ID, S.filename, S.description, S.rating, MD.idx, L.language " +
 				" FROM subtitles S" +
 				" INNER JOIN Media MD ON S._media_ID = MD.ID" +
+				" INNER JOIN Language L ON S._subtitleLanguage_ID = L.ID" +
 				" WHERE _media_ID = ?";
 
 		PreparedStatement prep = conn.prepareStatement(statement);
@@ -769,6 +800,7 @@ public class DB {
 				.setDescription(rs.getString("description"))
 				.setRating(rs.getString("rating"))
 				.setMediaIndex(rs.getInt("idx"))
+				.setLanguage(rs.getString("language"))
 				.build();				
 	}
 

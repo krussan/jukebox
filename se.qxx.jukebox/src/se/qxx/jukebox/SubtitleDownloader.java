@@ -173,7 +173,7 @@ public class SubtitleDownloader implements Runnable {
 						if (!DB.subFileExistsInDB(subsFilename)) {
 							Rating r = Rating.valueOf(sub.getRating());
 							Log.Debug(String.format("INITSUBS_XML :: Adding to subs database :: %s", sub.getFilename()), LogType.SUBS);
-							DB.addSubtitle(md, subsFilename, sub.getDescription(), r);
+							DB.addSubtitle(md, subsFilename, sub.getDescription(), r, sub.getLanguage());
 						}
 						else {
 							Log.Debug(String.format("INITSUBS_XML :: Sub exists in DB :: %s", sub.getFilename()), LogType.SUBS);							
@@ -247,7 +247,7 @@ public class SubtitleDownloader implements Runnable {
 				if (!DB.subFileExistsInDB(subFilename)) {
 					Log.Debug(String.format("INITSUBS :: Sub not found ... Adding %s", subFilename), LogType.SUBS);
 					
-					DB.addSubtitle(md, subFilename, StringUtils.EMPTY, Rating.NotMatched);
+					DB.addSubtitle(md, subFilename, StringUtils.EMPTY, Rating.NotMatched, Language.Unknown.toString());
 				}
 			}
 		}
@@ -527,7 +527,7 @@ public class SubtitleDownloader implements Runnable {
 							c++;
 			
 							// store filename of sub in database
-							DB.addSubtitle(md, filename, subfile.getDescription(), subfile.getRating());
+							DB.addSubtitle(md, filename, subfile.getDescription(), subfile.getRating(), subfile.getLanguage().toString());
 							
 						}
 						else {

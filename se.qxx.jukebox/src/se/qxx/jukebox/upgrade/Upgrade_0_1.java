@@ -1,8 +1,5 @@
 package se.qxx.jukebox.upgrade;
 
-import java.sql.PreparedStatement;
-
-import se.qxx.jukebox.DB;
 import se.qxx.jukebox.Version;
 
 public class Upgrade_0_1 implements IIncrimentalUpgrade {

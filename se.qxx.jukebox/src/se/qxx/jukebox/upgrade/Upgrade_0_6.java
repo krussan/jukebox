@@ -1,12 +1,6 @@
 package se.qxx.jukebox.upgrade;
 
-import java.io.IOException;
-import java.util.List;
-
-import se.qxx.jukebox.DB;
-import se.qxx.jukebox.IMDBFinder;
 import se.qxx.jukebox.Version;
-import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 
 public class Upgrade_0_6 implements IIncrimentalUpgrade {
 

@@ -2,6 +2,7 @@ package se.qxx.jukebox.subtitles;
 
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.Language;
 import se.qxx.jukebox.Util;
 import se.qxx.jukebox.WebRetriever;
 
@@ -23,12 +24,39 @@ import se.qxx.jukebox.subtitles.SubFile.Rating;
 
 public class UndertexterSe extends SubFinderBase {
 	
+	private String className;
+	private Language language;
+	
 	public UndertexterSe(SubFinderSettings subFinderSettings) {
 		super(subFinderSettings);
+		this.setClassName("UndertexterSe");
+		this.setLanguage(Language.Swedish);
 	}
+	
+	public UndertexterSe(String className, Language language, SubFinderSettings subFinderSettings) {
+		super(subFinderSettings);
+		this.setClassName(className);
+		this.setLanguage(language);
+	}	
 
 	private final String SETTING_URL = "url";
 	private final String SETTING_PATTERN = "regex";
+	
+	public String getClassName() {
+		return className;
+	}
+
+	public void setClassName(String className) {
+		this.className = className;
+	}
+	
+	public Language getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(Language language) {
+		this.language = language;
+	}
 	
 	@Override
 	public List<SubFile> findSubtitles(
@@ -40,7 +68,7 @@ public class UndertexterSe extends SubFinderBase {
 		if (!StringUtils.isEmpty(searchString)) {
 			String url = this.getSetting(SETTING_URL).replaceAll("__searchString__", searchString);
 			
-			Log.Debug(String.format("UndertexterSe :: searchUrl :: %s", url), LogType.SUBS);
+			Log.Debug(String.format("%s :: searchUrl :: %s", this.getClassName(), url), LogType.SUBS);
 			String webResult = performSearch(url);
 					
 			if (!StringUtils.isEmpty(webResult)) {
@@ -73,16 +101,16 @@ public class UndertexterSe extends SubFinderBase {
 					
 					files.add(sf);
 		
-					Log.Debug(String.format("File downloaded: %s", sf.getFile().getName()), Log.LogType.SUBS);
+					Log.Debug(String.format("%s :: File downloaded: %s", this.getClassName(), sf.getFile().getName()), Log.LogType.SUBS);
 		
 					if (sf.getRating() == Rating.ExactMatch || sf.getRating() == Rating.PositiveMatch)  {
-						Log.Debug("Exact or positive match found. exiting...", Log.LogType.SUBS);
+						Log.Debug(String.format("%s :: Exact or positive match found. exiting...", this.getClassName()), Log.LogType.SUBS);
 						break;
 					}
 				}
 			}
 			catch (IOException e) {
-				Log.Debug(String.format("Error when downloading subtitle :: %s", sf.getFile().getName()), LogType.SUBS);
+				Log.Debug(String.format("%s :: Error when downloading subtitle :: %s", this.getClassName(), sf.getFile().getName()), LogType.SUBS);
 			}
 			
 			try {
@@ -92,7 +120,7 @@ public class UndertexterSe extends SubFinderBase {
 				// sleep randomly to avoid detection (from 10 sec to 30 sec)
 				Thread.sleep(n);
 			} catch (InterruptedException e) {
-				Log.Error("Subtitle downloader interrupted", Log.LogType.SUBS, e);
+				Log.Error(String.format("Subtitle downloader interrupted", this.getClassName()), Log.LogType.SUBS, e);
 			}
 			
 		}
@@ -114,7 +142,7 @@ public class UndertexterSe extends SubFinderBase {
 		
 		List<SubFile> listSubs = new ArrayList<SubFile>();
 		
-		Log.Debug(String.format("UndertexterSe :: Finding subtitles for %s", m.getMedia(0).getFilename()), Log.LogType.SUBS);
+		Log.Debug(String.format("%s :: Finding subtitles for %s", this.getClassName(), m.getMedia(0).getFilename()), Log.LogType.SUBS);
 		
 		while (matcher.find()) {
 			String urlString = matcher.group(intUrlGroup);
@@ -127,16 +155,16 @@ public class UndertexterSe extends SubFinderBase {
 			//TODO:: is it safe to do this? Could it be that one of the media has not yet been identified?
 			// if (nrOfParts == m.getMediaCount())
 				
-			SubFile sf = new SubFile(urlString, description);
+			SubFile sf = new SubFile(urlString, description, this.getLanguage());
 			Rating r = this.rateSub(m, description);
 			sf.setRating(r);
-			Log.Debug(String.format("UndertexterSe :: Sub with description %s rated as %s", description, r.toString()), Log.LogType.SUBS);
+			Log.Debug(String.format("%s :: Sub with description %s rated as %s", this.getClassName(), description, r.toString()), Log.LogType.SUBS);
 			
 			listSubs.add(sf);
 		}
 		
 		if (listSubs.size()==0)
-			Log.Debug("UndertexterSe :: No subs found", Log.LogType.SUBS);
+			Log.Debug(String.format("%s :: No subs found", this.getClassName()), Log.LogType.SUBS);
 					
 		return listSubs;
 	}
@@ -178,5 +206,7 @@ public class UndertexterSe extends SubFinderBase {
 		}
 		return searchString;
 	}
+
+
 
 }

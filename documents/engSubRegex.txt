@@ -1,0 +1,1 @@
+<tr>.*?<td[^>]*>.*?<a[^>]*href="([^"]*)"[^>]*>\s*<img\s*src="http://engsub.net/bilder/ladda_codec_mini.gif"[^>]*>\s*</a>.*?Downloads:\s*\d*\s*<br>\s*<img[^>]*>\s*<br>\s*(.*?)</td>

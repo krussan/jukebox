@@ -2,6 +2,8 @@ package se.qxx.jukebox.subtitles;
 
 import java.io.File;
 
+import se.qxx.jukebox.Language;
+
 public class SubFile implements Comparable<SubFile> {
 
 	public enum Rating {
@@ -16,14 +18,22 @@ public class SubFile implements Comparable<SubFile> {
 	private Rating _rating = Rating.NotMatched;
 	private String _description;
 	private int index;
+	private Language language;
 	
-	public SubFile(String url, String description) {
-		this._url = url;
-		this._description = description;
-	}
+//	public SubFile(String url, String description) {
+//		this.setUrl(url);
+//		this.setDescription(description);
+//		this.setLanguage(Language.Swedish);
+//	}
+	
+	public SubFile(String url, String description, Language language) {
+		this.setUrl(url);
+		this.setDescription(description);
+		this.setLanguage(language);
+	}	
 	
 	public SubFile(File f) {
-		this._file = f;
+		this.setFile(f);
 	}
 	
 	public void setRating(Rating rating) {
@@ -79,6 +89,14 @@ public class SubFile implements Comparable<SubFile> {
 	@Override
 	public int compareTo(SubFile that) {
 		return this.getRatingIndex() - that.getRatingIndex();
+	}
+
+	public Language getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(Language language) {
+		this.language = language;
 	}
 
 }
