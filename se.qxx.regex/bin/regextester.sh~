@@ -1,0 +1,2 @@
+#!/bin/sh
+java -cp ".:/home/chris/classpath/named-regex.jar" RegexTester $1 $2 $3

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<JukeboxListenerSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="JukeboxSettings.xsd">
+  <catalogs>
+    <catalog includeSubdirectories="true" path="/home/chris/jukebox" vlcPath="Y:/Jukebox">
+      <extensions>
+        <extension value="avi"/>
+      </extensions>
+    </catalog>
+  </catalogs>
+  <subFinders subsPath="/home/chris/subs">
+    <subFinder class="se.qxx.jukebox.subtitles.UndertexterSe">
+    	<subFinderSettings>
+    		<setting>
+    			<key>regex</key>
+    			<value><![CDATA[<tr[^>]*?>.*?<td[^>]*?>.*?<a[^>]*?alt\s*=\s*"Ladda\sner\sundertext[^"]*?".*?href\s*=\s*\"(?<url>[^\"]*?)\"[^>]*?>.*?Nedladdningar.*?<br>\s*(?<name>[^<]*?)</td[^>]*?>.*?</tr[^>]*?>]]></value>    			   		
+			</setting>
+    		<setting>
+    			<key>url</key>
+    			<value><![CDATA[http://www.undertexter.se/?p=soek&add=arkiv&str=__searchString__]]></value>
+    		</setting>
+    	</subFinderSettings>
+    </subFinder>
+  </subFinders>
+  <stringSplitters>
+  	<splitter>
+  		<regex>
+  			<![CDATA[(?<title>(?<g1>\w[.|_|\s-]?)*)(\[?(?<year>[0-9]{4})\]?)+[.|_|\s-]?(?<g2>\[?(?<type>DVDScr|DVDRip|BRRip)\]?)?[.|_|\s-]?(?<g3>\[?(?<format>XvID|x264)\]?)?[.|_|\s-]?(?<g4>\[?(?<sound>AC3\s5\.1|AC3)\]?)?[.|_|\s-]?(?<g5>\[(?<language>ENG|SWE)\])?[.|_|\s-]?(?<group>.*)]]>
+  		</regex>
+  	</splitter>
+  	<splitter>
+  		<regex>
+  			<![CDATA[(?<title>(?<g1>\w[.|_|\s-]?)*)\[?(?<type>DVDScr|DVDRip|BRRip)\]?[.|_|\s-]?(?<g2>\[?(?<format>XvID|x264)\]?)?[.|_|\s-]?(?<g3>\[?(?<sound>AC3\s5\.1|AC3)\]?)?[.|_|\s-]?(?<g4>\[(?<language>ENG|SWE)\])?[.|_|\s-]?(?<group>.*)]]>
+  		</regex>
+  	</splitter>
+    <splitter>
+    	<regex>
+    		<![CDATA[(?<title>.*)]]>
+    	</regex>
+    </splitter>
+  </stringSplitters>
+  <tcpListener>
+    <port value="0"/>
+  </tcpListener>
+  <vlc>
+  	<server 
+  		host="192.168.1.106" 
+  		port="2150"
+  		subsPath="Y:/Subs"
+ 	/>	
+  </vlc>
+  <logs>
+  	<log type="file" filename="/home/chris/jukebox/jukebox.log" level="DEBUG" />
+  </logs>  
+</JukeboxListenerSettings>

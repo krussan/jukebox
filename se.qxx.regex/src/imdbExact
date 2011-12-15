@@ -1,0 +1,1 @@
+Titles\s\(?<exact>Exact\sMatches\).*?\<a\s*href\s*=\s*[\"|'](?<url>.*?)[\"|']"

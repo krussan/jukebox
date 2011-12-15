@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, JukeboxActivity!</string>
+    <string name="app_name">Jukebox</string>
+    <color name="myColor">#3399CC</color>
+    <string name="myClickHandler">myClickHandler</string>
+    <string name="onConnectClickHandler">onConnectClickHandler</string>
+    <string name="celsius">To Celsius</string>
+    <string name="fahrenheit">To Fahrenheit</string>
+    <string name="calc">Calculate</string>
+</resources>

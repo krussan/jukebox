@@ -1,0 +1,10 @@
+(?<title>(?<g1>\w[.|_|\s-]?)*)
+\[?(?<type>DVDScr|DVDRip|BRRip)\]?
+[.|_|\s-]?
+(?<g2>\[?(?<format>XvID|x264)\]?)?
+[.|_|\s-]?
+(?<g3>\[?(?<sound>AC3\s5\.1|AC3)\]?)?
+[.|_|\s-]?
+(?<g4>\[(?<language>ENG|SWE)\])?
+[.|_|\s-]?
+(?<group>.*)

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<JukeboxListenerSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="JukeboxSettings.xsd">
+  <catalogs>
+    <catalog includeSubdirectories="true" path="">
+      <extensions>
+        <extension value=""/>
+      </extensions>
+    </catalog>
+  </catalogs>
+  <subFinders>
+    <subFinder assembly="" type=""/>
+  </subFinders>
+  <stringSplitters>
+    <splitter regex=""/>
+  </stringSplitters>
+  <tcpListener>
+    <port value="0"/>
+  </tcpListener>
+  <logs>
+  	<log type="file" filename="/var/log/jukebox.log" leve="DEBUG" />
+  </logs>
+</JukeboxListenerSettings>
