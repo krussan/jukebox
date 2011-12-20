@@ -12,8 +12,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ibex.nestedvm.JavaSourceCompiler;
-
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Util;
 import se.qxx.jukebox.settings.JukeboxListenerSettings;
