@@ -23,6 +23,6 @@ public class ProgressDialogHandler extends Handler {
 		String message = msg.getData().getString("message");
 		
 		if (!success)
-			Toast.makeText(this._context.getApplicationContext(), message, Toast.LENGTH_LONG);
+			Toast.makeText(this._context.getApplicationContext(), message, Toast.LENGTH_LONG).show();
 	}
 }

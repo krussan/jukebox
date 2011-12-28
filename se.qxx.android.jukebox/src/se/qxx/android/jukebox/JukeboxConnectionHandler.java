@@ -7,10 +7,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
-import se.qxx.android.jukebox.MovieProto.JukeboxRequest;
-import se.qxx.android.jukebox.MovieProto.JukeboxRequestListMovies;
-import se.qxx.android.jukebox.MovieProto.JukeboxRequestType;
-import se.qxx.android.jukebox.MovieProto.JukeboxResponseListMovies;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequest;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
+
 import se.qxx.android.tools.Logger;
 
 public class JukeboxConnectionHandler implements Runnable {
@@ -21,7 +22,7 @@ public class JukeboxConnectionHandler implements Runnable {
 	private JukeboxRequestType _type;
 	private Handler _handler;
 	
-	public JukeboxConnectionHandler(Handler h, MovieProto.JukeboxRequestType t) {
+	public JukeboxConnectionHandler(Handler h, JukeboxRequestType t) {
 		this._type = t;
 		this._handler = h;
 	}
@@ -51,7 +52,10 @@ public class JukeboxConnectionHandler implements Runnable {
  
     	
     	try {
-	    	s.connect(new InetSocketAddress("192.168.0.181", 45444), 5000);
+	    	s.connect(new InetSocketAddress(
+	    			JukeboxSettings.get().get_serverIpAddress(), 
+	    			JukeboxSettings.get().get_serverPort()), 
+	    			5000);
 	    	
 	    	Logger.Log().i("socket opened");
 	    	Logger.Log().i("sending test message");

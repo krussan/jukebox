@@ -1,14 +1,17 @@
 package se.qxx.android.jukebox;
 
+import se.qxx.android.tools.Logger;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Toast;
-import se.qxx.android.tools.Logger;
-import se.qxx.android.jukebox.MovieProto.JukeboxRequestType;
 
 
 public class JukeboxActivity extends Activity {
@@ -18,12 +21,35 @@ public class JukeboxActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        JukeboxSettings.init(this);
         
         text = (EditText)findViewById(R.id.editText1);
         
     }
 
-
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+    	// TODO Auto-generated method stub
+    	//super.onCreateOptionsMenu(menu);
+    	MenuInflater inflater = getMenuInflater();
+    	inflater.inflate(R.menu.mainmenu, menu);
+    	
+    	return true;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(android.view.MenuItem item) {
+    	switch (item.getItemId()) {
+    	case R.id.preferences:
+    		//Toast.makeText(this, "You selected the preferences option", Toast.LENGTH_LONG).show();
+    		Intent i = new Intent(this, JukeboxPreferenceActivity.class);
+    		startActivity(i);
+			break;
+    	}
+    	
+    	return true;
+    };
+    
     public void onConnectClickHandler(View view) throws InterruptedException {
     	Logger.Log().i("onConnectClicked");
     	

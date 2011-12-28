@@ -1,4 +1,4 @@
-package se.qxx.android.jukebox.domain;
+package se.qxx.jukebox.domain;
 
 option java_package = "se.qxx.jukebox.domain";
 
