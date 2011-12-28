@@ -9,6 +9,7 @@ import se.qxx.jukebox.settings.Settings;
 public class Main implements Runnable, INotifyClient
 {
 	private Boolean isRunning = false;
+	private TcpListener _listener;
 	ArrayList<FileSystemWatcher> watchers = new ArrayList<FileSystemWatcher>();
 	
 	public Main() {
@@ -20,6 +21,8 @@ public class Main implements Runnable, INotifyClient
 	public void run() {
 		
 		try {
+			setupListening();
+			
 			isRunning = true;
 			
 			ExtensionFileFilter filter = new ExtensionFileFilter();
@@ -48,6 +51,7 @@ public class Main implements Runnable, INotifyClient
 	public void stop() {
 		isRunning = false;
 		s.release();
+		stopListening();
 	}
 	
 	public void fileModified(FileRepresentation f) {
@@ -83,4 +87,24 @@ public class Main implements Runnable, INotifyClient
 			}
 		}
 	}
+	
+	private void setupListening() {
+		try {
+			_listener = new TcpListener();
+			Thread t = new Thread(_listener);
+			t.start();
+		}
+		catch (Exception e) {
+			
+		}
+	}
+	
+	private void stopListening() {
+		try {
+			
+		}
+		catch (Exception e) {
+			
+		}
+	}	
 }

@@ -5,13 +5,8 @@ public class Jukebox {
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) {
-		setupListening();
-		
-		startMainThread();
-		
-		stopListening();
-		
+	public static void main(String[] args) {	
+		startMainThread();		
 	}
 	
 	private static void startMainThread()  {
@@ -26,12 +21,6 @@ public class Jukebox {
 		}
 	}
 	
-	private static void setupListening() {
-		
-	}
-	
-	private static void stopListening() {
-		
-	}
+
 
 }

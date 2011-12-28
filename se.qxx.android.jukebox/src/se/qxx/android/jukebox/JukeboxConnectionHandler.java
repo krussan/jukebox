@@ -1,7 +1,10 @@
 package se.qxx.android.jukebox;
 
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.net.InetSocketAddress;
+
+import com.google.protobuf.CodedOutputStream;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -62,6 +65,7 @@ public class JukeboxConnectionHandler implements Runnable {
 	    	
 	    	JukeboxRequestListMovies lm = JukeboxRequestListMovies.newBuilder().setSearchString("").build();
 	    	java.io.ByteArrayOutputStream os = new ByteArrayOutputStream();
+
 	    	lm.writeTo(os);
 	    
 	    	JukeboxRequest req = JukeboxRequest.newBuilder().setType(JukeboxRequestType.ListMovies)
@@ -69,7 +73,15 @@ public class JukeboxConnectionHandler implements Runnable {
 	    			.setArguments(lm.toByteString())
 	    			.build();
 	    	
-	    	req.writeTo(s.getOutputStream());
+	    	int lengthOfMessage = req.getSerializedSize();
+	    	
+	    	DataOutputStream dos = new DataOutputStream(s.getOutputStream());
+	    	
+	    	// write length of message
+	    	dos.writeInt(lengthOfMessage);
+	    	// write message
+	    	req.writeTo(dos);
+	    	
 	    	s.shutdownOutput();
 	    	
 	    	Logger.Log().i("waiting for response...");

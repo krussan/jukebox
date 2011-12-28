@@ -39,7 +39,7 @@
     </splitter>
   </stringSplitters>
   <tcpListener>
-    <port value="0"/>
+    <port value="2152"/>
   </tcpListener>
   <vlc>
   	<server 
@@ -49,6 +49,6 @@
  	/>	
   </vlc>
   <logs>
-  	<log type="file" filename="/home/chris/jukebox/jukebox.log" level="DEBUG" />
+  	<log type="file" filename="D:/Dev/logs/jukebox/jukebox.log" level="DEBUG" />
   </logs>  
 </JukeboxListenerSettings>

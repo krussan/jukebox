@@ -1,6 +1,7 @@
 package se.qxx.jukebox;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.subtitles.SubFile.Rating;
@@ -66,6 +67,41 @@ public class DB {
 		DB.disconnect(conn);
 	}
 	
+	public static ArrayList<Movie> searchMovies(String searchString) throws ClassNotFoundException, SQLException {
+		Connection conn = DB.initialize();
+		PreparedStatement prep = conn.prepareStatement(
+				"SELECT ID, filename, title, year, type, format, sound, language, groupName, imdburl" +
+				"FROM movie" +
+				"WHERE title LIKE %?%"
+				);
+		prep.setString(1, searchString);
+		
+		ResultSet rs = prep.executeQuery();
+		ArrayList<Movie> result = new ArrayList<Movie>();
+		while (rs.next()) {
+			Movie m = Movie.newBuilder()
+				.setID(rs.getInt("ID"))
+				.setFilename(rs.getString("filename"))
+				.setTitle(rs.getString("title"))
+				.setYear(rs.getInt("year"))
+				.setType(rs.getString("type"))
+				.setFormat(rs.getString("format"))
+				.setSound(rs.getString("sound"))
+				.setLanguage(rs.getString("language"))
+				.setGroup(rs.getString("groupName"))
+				.setImdbUrl(rs.getString("imdburl"))
+				.build();
+			
+			result.add(m);
+		}
+		
+		DB.disconnect(conn);
+		
+		return result;
+		
+		
+				
+	}
 	private static Connection initialize() throws ClassNotFoundException, SQLException {
 		Class.forName("org.sqlite.JDBC");
 	    return DriverManager.getConnection("jdbc:sqlite:jukebox.db");				
