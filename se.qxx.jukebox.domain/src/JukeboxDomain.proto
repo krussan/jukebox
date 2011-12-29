@@ -62,3 +62,7 @@ message JukeboxResponseListMovies {
 	repeated Movie movies = 1;
 }
 
+message JukeboxResponse {
+	required JukeboxRequestType type = 1;
+	optional bytes arguments = 2;
+}

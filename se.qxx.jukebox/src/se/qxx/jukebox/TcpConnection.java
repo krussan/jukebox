@@ -1,5 +1,6 @@
 package se.qxx.jukebox;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -16,6 +17,8 @@ import com.google.protobuf.InvalidProtocolBufferException;
 
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequest;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponse;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 
@@ -44,19 +47,26 @@ public class TcpConnection implements Runnable {
 			CodedInputStream cis = CodedInputStream.newInstance(data);
 			JukeboxRequest req = JukeboxRequest.parseFrom(cis);
 			
-			handleRequest(req, this._client.getOutputStream());
+			JukeboxResponse resp = handleRequest(req);
+			
+			if (resp != null) {
+				OutputStream os = this._client.getOutputStream();
+				DataOutputStream dos = new DataOutputStream(os);
+				dos.writeInt(resp.getSerializedSize());
+				
+				resp.writeTo(os);
+			}
 
 		} catch (IOException e) {
 			Log.Error("Error while reading request from client", e);
 		}
 	}
 
-	private void handleRequest(JukeboxRequest req, OutputStream os) throws InvalidProtocolBufferException {
+	private JukeboxResponse handleRequest(JukeboxRequest req) throws InvalidProtocolBufferException {
 		try {
 			switch (req.getType()) {			
 			case ListMovies:
-				listMovies(req, os);
-				break;
+				return listMovies(req);
 			default:
 				break;
 			}
@@ -65,27 +75,34 @@ public class TcpConnection implements Runnable {
 			Log.Error("Error while sending response", e);
 		}
 		
+		return null;
 	}
 
-	private void listMovies(JukeboxRequest req, OutputStream os) throws IOException {
+	private JukeboxResponse listMovies(JukeboxRequest req) throws IOException {
 		ByteString data = req.getArguments();
 		JukeboxRequestListMovies args = JukeboxRequestListMovies.parseFrom(data);
 		
 		String searchString = args.getSearchString();
 		try {
 			List<Movie> list = DB.searchMovies(searchString);
-			
-			JukeboxResponseListMovies resp = JukeboxResponseListMovies.newBuilder().addAllMovies(list).build();
-			
-			DataOutputStream dos = new DataOutputStream(os);
-			dos.writeInt(resp.getSerializedSize());
-			
-			resp.writeTo(os);
+
+			JukeboxResponseListMovies lm = JukeboxResponseListMovies.newBuilder().addAllMovies(list).build();
+	    	java.io.ByteArrayOutputStream bos = new ByteArrayOutputStream();
+	    	lm.writeTo(bos);
+	    	
+			JukeboxResponse resp = JukeboxResponse.newBuilder()
+					.setType(JukeboxRequestType.ListMovies)
+					.setArguments(lm.toByteString())
+					.build();
+					
+			return resp;
 			
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		
+		return null;
 	}
 }

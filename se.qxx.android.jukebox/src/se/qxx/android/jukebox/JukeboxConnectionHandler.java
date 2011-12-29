@@ -18,6 +18,7 @@ import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequest;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponse;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
 
 import se.qxx.android.tools.Logger;
@@ -89,7 +90,7 @@ public class JukeboxConnectionHandler implements Runnable {
 	    	
 	    	Logger.Log().i("waiting for response...");
 	    	
-	    	byte[] data = readResponse(s.getInputStream());
+	    	JukeboxResponse resp = readResponse(s.getInputStream());
 	    	JukeboxResponseListMovies resp = JukeboxResponseListMovies.parseFrom(data);
 	    	
 	    	Logger.Log().i("response read");
@@ -111,7 +112,7 @@ public class JukeboxConnectionHandler implements Runnable {
     	
 	}
 	
-	private byte[] readResponse(InputStream is) {
+	private JukeboxResponse readResponse(InputStream is) {
 		try {		
 			DataInputStream ds = new DataInputStream(is);
 			int lengthOfMessage;
@@ -125,9 +126,8 @@ public class JukeboxConnectionHandler implements Runnable {
 				offset += numRead;
 			}
 			
-			CodedInputStream cis = CodedInputStream.newInstance(data);
+			return JukeboxResponse.parseFrom(data);
 			
-			return data;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
