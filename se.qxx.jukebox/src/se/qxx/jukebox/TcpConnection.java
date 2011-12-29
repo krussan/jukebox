@@ -1,6 +1,7 @@
 package se.qxx.jukebox;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -10,6 +11,7 @@ import java.util.List;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.CodedInputStream;
+import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequest;
@@ -42,24 +44,30 @@ public class TcpConnection implements Runnable {
 			CodedInputStream cis = CodedInputStream.newInstance(data);
 			JukeboxRequest req = JukeboxRequest.parseFrom(cis);
 			
-			handleRequest(req);
+			handleRequest(req, this._client.getOutputStream());
 
 		} catch (IOException e) {
 			Log.Error("Error while reading request from client", e);
 		}
 	}
 
-	private void handleRequest(JukeboxRequest req) throws InvalidProtocolBufferException {
-		switch (req.getType()) {
-		case ListMovies:
-			listMovies(req);
-			break;
-		default:
-			break;
+	private void handleRequest(JukeboxRequest req, OutputStream os) throws InvalidProtocolBufferException {
+		try {
+			switch (req.getType()) {			
+			case ListMovies:
+				listMovies(req, os);
+				break;
+			default:
+				break;
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			Log.Error("Error while sending response", e);
 		}
+		
 	}
 
-	private void listMovies(JukeboxRequest req, OutputStream os) throws InvalidProtocolBufferException {
+	private void listMovies(JukeboxRequest req, OutputStream os) throws IOException {
 		ByteString data = req.getArguments();
 		JukeboxRequestListMovies args = JukeboxRequestListMovies.parseFrom(data);
 		
@@ -67,6 +75,12 @@ public class TcpConnection implements Runnable {
 		try {
 			List<Movie> list = DB.searchMovies(searchString);
 			
+			JukeboxResponseListMovies resp = JukeboxResponseListMovies.newBuilder().addAllMovies(list).build();
+			
+			DataOutputStream dos = new DataOutputStream(os);
+			dos.writeInt(resp.getSerializedSize());
+			
+			resp.writeTo(os);
 			
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();

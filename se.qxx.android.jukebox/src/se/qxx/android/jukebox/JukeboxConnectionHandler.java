@@ -1,15 +1,20 @@
 package se.qxx.android.jukebox;
 
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
 
+import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
 
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
+import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequest;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
@@ -82,11 +87,10 @@ public class JukeboxConnectionHandler implements Runnable {
 	    	// write message
 	    	req.writeTo(dos);
 	    	
-	    	s.shutdownOutput();
-	    	
 	    	Logger.Log().i("waiting for response...");
 	    	
-	    	JukeboxResponseListMovies resp = JukeboxResponseListMovies.parseFrom(s.getInputStream());
+	    	byte[] data = readResponse(s.getInputStream());
+	    	JukeboxResponseListMovies resp = JukeboxResponseListMovies.parseFrom(data);
 	    	
 	    	Logger.Log().i("response read");
 	    	
@@ -105,6 +109,31 @@ public class JukeboxConnectionHandler implements Runnable {
     		return setResponse(false, "Application was unable to connect to server. Check server settings.");    		
     	}	
     	
+	}
+	
+	private byte[] readResponse(InputStream is) {
+		try {		
+			DataInputStream ds = new DataInputStream(is);
+			int lengthOfMessage;
+			lengthOfMessage = ds.readInt();
+	
+			byte[] data = new byte[lengthOfMessage];
+	
+			int offset = 0;
+			int numRead = 0;
+			while (offset < lengthOfMessage && (numRead = is.read(data, offset, lengthOfMessage - offset)) >= 0) {
+				offset += numRead;
+			}
+			
+			CodedInputStream cis = CodedInputStream.newInstance(data);
+			
+			return data;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 	
 	private Bundle setResponse(Boolean success) {

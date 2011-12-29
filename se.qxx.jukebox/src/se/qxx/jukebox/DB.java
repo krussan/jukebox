@@ -69,12 +69,13 @@ public class DB {
 	
 	public static ArrayList<Movie> searchMovies(String searchString) throws ClassNotFoundException, SQLException {
 		Connection conn = DB.initialize();
+
 		PreparedStatement prep = conn.prepareStatement(
-				"SELECT ID, filename, title, year, type, format, sound, language, groupName, imdburl" +
-				"FROM movie" +
-				"WHERE title LIKE %?%"
+				" SELECT ID, filename, title, year, type, format, sound, language, groupName, imdburl " +
+				" FROM movie" +
+				" WHERE title LIKE '%" + searchString + "%'"
 				);
-		prep.setString(1, searchString);
+		//prep.setString(1, searchString);
 		
 		ResultSet rs = prep.executeQuery();
 		ArrayList<Movie> result = new ArrayList<Movie>();
