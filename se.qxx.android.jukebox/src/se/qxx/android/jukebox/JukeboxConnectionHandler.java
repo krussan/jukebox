@@ -1,20 +1,18 @@
 package se.qxx.android.jukebox;
 
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 
-import com.google.protobuf.CodedInputStream;
-import com.google.protobuf.CodedOutputStream;
+import com.google.protobuf.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
-import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequest;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
@@ -53,12 +51,18 @@ public class JukeboxConnectionHandler implements Runnable {
 	}
 	
 	public Bundle listMovies() {
+		JukeboxRequestListMovies lm = JukeboxRequestListMovies.newBuilder()
+				.setSearchString("")
+				.build();
+		
+		return sendAndRetreive(JukeboxRequestType.ListMovies, lm);    	
+	}
+	
+	private Bundle sendAndRetreive(JukeboxRequestType type, com.google.protobuf.GeneratedMessage message) {
     	Logger.Log().i("opening socket");
     	
     	//TODO: configure server address or display a list of possible servers
     	java.net.Socket s = new java.net.Socket();
-    	
- 
     	
     	try {
 	    	s.connect(new InetSocketAddress(
@@ -69,16 +73,7 @@ public class JukeboxConnectionHandler implements Runnable {
 	    	Logger.Log().i("socket opened");
 	    	Logger.Log().i("sending test message");
 	    	
-	    	JukeboxRequestListMovies lm = JukeboxRequestListMovies.newBuilder().setSearchString("").build();
-	    	java.io.ByteArrayOutputStream os = new ByteArrayOutputStream();
-
-	    	lm.writeTo(os);
-	    
-	    	JukeboxRequest req = JukeboxRequest.newBuilder().setType(JukeboxRequestType.ListMovies)
-	    			//.setArguments(ByteString.copyFrom(os.toByteArray()))
-	    			.setArguments(lm.toByteString())
-	    			.build();
-	    	
+	    	JukeboxRequest req = getRequest(type, message);
 	    	int lengthOfMessage = req.getSerializedSize();
 	    	
 	    	DataOutputStream dos = new DataOutputStream(s.getOutputStream());
@@ -91,16 +86,22 @@ public class JukeboxConnectionHandler implements Runnable {
 	    	Logger.Log().i("waiting for response...");
 	    	
 	    	JukeboxResponse resp = readResponse(s.getInputStream());
-	    	JukeboxResponseListMovies resp = JukeboxResponseListMovies.parseFrom(data);
-	    	
-	    	Logger.Log().i("response read");
-	    	
-	    	if (resp == null)
+	    	if (resp == null) {
 	    		Logger.Log().i("...but response is null...");
-	    	
-	    	s.close();
-	    	
-	    	return setResponse(true);
+	    		return setResponse(false, "Response is null");
+	    	}
+	    	else {
+		    	ByteString data = resp.getArguments();    	
+		    	handleResponse(resp.getType(), data);
+		    	
+		    	Logger.Log().i("response read");
+		    	
+
+		    	
+		    	s.close();
+		    	
+		    	return setResponse(true);	    		
+	    	}	    	
     	}
     	catch (java.net.SocketTimeoutException ex) {
     		return setResponse(false, "Application was unable to connect to server. Check server settings.");    		    	
@@ -109,7 +110,40 @@ public class JukeboxConnectionHandler implements Runnable {
     	{
     		return setResponse(false, "Application was unable to connect to server. Check server settings.");    		
     	}	
-    	
+	}
+	
+	private void handleResponse(JukeboxRequestType type, ByteString data) {
+    	try {
+    		switch (type) {
+    		case ListMovies:
+    			JukeboxResponseListMovies resp = JukeboxResponseListMovies.parseFrom(data);
+    			Model.get().addAllMovies(resp.getMoviesList());
+    			break;
+    		case MarkSubtitle:
+    			break;
+    		case SkipBackwards:
+    			break;
+    		case SkipForward:
+    			break;
+    		case StartMovie:
+    			break;
+    		case StartSubtitleIdentity:
+    			break;
+    		case StopMovie:
+    			break;
+    		}
+			
+		} catch (InvalidProtocolBufferException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	private JukeboxRequest getRequest(JukeboxRequestType type, com.google.protobuf.GeneratedMessage message) {
+		return JukeboxRequest.newBuilder()
+			.setType(JukeboxRequestType.ListMovies)
+			.setArguments(message.toByteString())
+			.build();	
 	}
 	
 	private JukeboxResponse readResponse(InputStream is) {

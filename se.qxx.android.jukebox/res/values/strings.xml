@@ -9,4 +9,5 @@
     <string name="fahrenheit">To Fahrenheit</string>
     <string name="calc">Calculate</string>
     <string name="defaultServerIpAddress">192.168.1.100</string>
+    <string name="movieIconDescription">Movie icon</string>
 </resources>
