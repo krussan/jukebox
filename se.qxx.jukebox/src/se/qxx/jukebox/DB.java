@@ -16,19 +16,20 @@ public class DB {
 		Connection conn = DB.initialize();
 		PreparedStatement prep = conn.prepareStatement(
 				"insert into movie " +
-				"(filename, title, year, type, format, sound, language, groupName, imdburl)" +
+				"(filename, filepath, title, year, type, format, sound, language, groupName, imdburl)" +
 				"values" +
-				"(?, ?, ?, ?, ?, ?, ?, ?, ?)");
+				"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		
 		prep.setString(1, m.getFilename());
-		prep.setString(2, m.getTitle());
-		prep.setInt(3, m.getYear());
-		prep.setString(4, m.getType());
-		prep.setString(5, m.getFormat());
-		prep.setString(6, m.getSound());
-		prep.setString(7, m.getLanguage());
-		prep.setString(8, m.getGroup());
-		prep.setString(9, m.getImdbUrl());
+		prep.setString(2, m.getFilepath());
+		prep.setString(3, m.getTitle());
+		prep.setInt(4, m.getYear());
+		prep.setString(5, m.getType());
+		prep.setString(6, m.getFormat());
+		prep.setString(7, m.getSound());
+		prep.setString(8, m.getLanguage());
+		prep.setString(9, m.getGroup());
+		prep.setString(10, m.getImdbUrl());
 		
 		prep.execute();
 

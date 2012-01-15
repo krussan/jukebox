@@ -15,7 +15,7 @@ import com.google.code.regexp.NamedMatcher;
 import com.google.code.regexp.NamedPattern;
 
 public class Util {
-	public static Movie extractMovie(String fileName) {
+	public static Movie extractMovie(String filePath, String fileName) {
 		int maxGroupMatch = 0;
 		ArrayList<String> groupsToCheck = new ArrayList<String>();
 		groupsToCheck.add("title");
@@ -78,6 +78,7 @@ public class Util {
 			Movie movie = Movie.newBuilder()
 				.setID(-1)
 				.setFilename(fileName)
+				.setFilepath(filePath)
 				.setTitle(title)
 				.setYear(year)
 				.setType(type)
@@ -97,9 +98,9 @@ public class Util {
 	}
 
 	public static Rating rateSub(Movie m, String subFilename) {
-		Movie subMovie = Util.extractMovie(subFilename);
+		Movie subMovie = Util.extractMovie("", subFilename);
 		
-		//TODO: Add compare of filenames to get an exakt match
+		//TODO: Add compare of filenames to get an exact match
 		Rating r = Rating.NotMatched;
 		if (subMovie.getGroup().equals(m.getGroup())) {
 			if (subMovie.getFormat().equals(m.getFormat()))

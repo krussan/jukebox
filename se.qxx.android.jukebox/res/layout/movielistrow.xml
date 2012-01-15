@@ -2,36 +2,35 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="?android:attr/listPreferredItemHeight"
-    android:orientation="vertical" 
+    android:orientation="horizontal" 
     android:padding="6dip">
-    
+
     <ImageView
-        android:id="@+id/icon"
+        android:id="@+id/imageView1"
         android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:layout_marginRight="6dip"
-        android:src="@drawable/icon"
-        android:contentDescription="@string/movieIconDescription" 
-        />
-    
-	<LinearLayout
-        android:orientation="vertical"
-        android:layout_width="0dip"
-        android:layout_weight="1"
-        android:layout_height="0dip">
+        android:layout_height="wrap_content"
+        android:src="@drawable/icon" />    
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
         <TextView
             android:id="@+id/toptext"
-            android:layout_width="fill_parent"
-            android:layout_height="0dip"
-            android:gravity="center_vertical"
-        />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:textAppearance="?android:attr/textAppearanceLarge" /> 
+            />
+        
         <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="0dip"
             android:id="@+id/bottomtext"
-            android:singleLine="true"
-            android:ellipsize="marquee"
-        />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView" />
+        
+
     </LinearLayout>
-    
+   
 </LinearLayout>

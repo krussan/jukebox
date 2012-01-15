@@ -29,32 +29,43 @@ public class JukeboxActivity extends Activity implements ModelUpdatedEventListen
 	private EditText text;
 	private JukeboxMovieLayoutAdapter _jukeboxMovieLayoutAdapter;
 	
-	private class JukeboxMovieLayoutAdapter extends ArrayAdapter<Movie> {
-		
-		public JukeboxMovieLayoutAdapter(Context context, int textViewResourceId, List<Movie> items) {
-			super(context, textViewResourceId, items);
-		}
+    private Runnable modelResultUpdatedRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            _jukeboxMovieLayoutAdapter.notifyDataSetChanged();
+        }
+    };
+    
+	private class JukeboxMovieLayoutAdapter extends ModelAdapter {
 		
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			// TODO Auto-generated method stub
 			View v = convertView;
-            if (v == null) {
-                LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                v = vi.inflate(R.layout.movielistrow, null);
-            }
-            Movie m = Model.get().getMovie(position);
-            if (m != null) {
-            	TextView tt = (TextView) v.findViewById(R.id.toptext);
-            	TextView bt = (TextView) v.findViewById(R.id.bottomtext);
-            	
-            	if (tt != null) {
-                    tt.setText(m.getTitle());                            }
-            	if(bt != null){
-                    bt.setText(m.getYear());
-              }
-            }
-            
+			
+			try {
+				// TODO Auto-generated method stub
+				
+	            if (v == null) {
+	                LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	                v = vi.inflate(R.layout.movielistrow, null);
+	            }
+	            Movie m = (Movie)this.getItem(position);
+	            if (m != null) {
+	            	TextView tt = (TextView) v.findViewById(R.id.toptext);
+	            	TextView bt = (TextView) v.findViewById(R.id.bottomtext);
+	            	
+	            	if (tt != null) {
+	                    tt.setText(m.getTitle());                            }
+	            	if(bt != null){
+	                    bt.setText(String.valueOf(m.getYear()));
+	              }
+	            }
+			}
+			catch (Exception e) {
+				Logger.Log().e("Error occured while populating list", e);
+			}
+			
             return v;
 		}
 	}
@@ -70,7 +81,7 @@ public class JukeboxActivity extends Activity implements ModelUpdatedEventListen
         
 		ListView v = (ListView)findViewById(R.id.listView1);
 		
-		_jukeboxMovieLayoutAdapter = new JukeboxMovieLayoutAdapter(this, R.layout.movielistrow, Model.get().getMovies()); 
+		_jukeboxMovieLayoutAdapter = new JukeboxMovieLayoutAdapter(); 
 		v.setAdapter(_jukeboxMovieLayoutAdapter);
 		
 		Model.get().addEventListener(this);
@@ -153,7 +164,7 @@ public class JukeboxActivity extends Activity implements ModelUpdatedEventListen
 	@Override
 	public void handleModelUpdatedEventListener(EventObject e) {
 		//TODO: run this on UI thread
-		_jukeboxMovieLayoutAdapter.notifyDataSetChanged();
+		runOnUiThread(modelResultUpdatedRunnable);
 	}
 
 }

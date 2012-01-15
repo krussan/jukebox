@@ -2,6 +2,7 @@ package se.qxx.jukebox;
 
 public class FileRepresentation {
 
+	private String _path;
 	private String _name;
 	private long _lastModified;
 	
@@ -13,6 +14,10 @@ public class FileRepresentation {
 		return this._name;
 	}
 	
+	public String getPath() {
+		return this._path;
+	}
+	
 	public void setLastModified(long lastModified){
 		this._lastModified = lastModified;
 	}
@@ -21,7 +26,7 @@ public class FileRepresentation {
 		return this._lastModified;
 	}
 	
-	public FileRepresentation(String name, long l) {	
+	public FileRepresentation(String path, String name, long l) {	
 		this._name = name;
 		this._lastModified = l;
 	}

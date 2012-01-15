@@ -55,7 +55,8 @@ message Movie {
 	optional string language = 8;
 	optional string group = 9;
 	optional string imdb_url = 10;
-	optional string imdb_id = 11;	
+	optional string imdb_id = 11;
+	optional string filepath = 12;	
 }
 
 message JukeboxResponseListMovies {

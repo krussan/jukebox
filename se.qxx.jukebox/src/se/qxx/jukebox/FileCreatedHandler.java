@@ -38,7 +38,7 @@ public class FileCreatedHandler implements INotifyClient {
 	@Override
 	public void fileCreated(FileRepresentation f)  {
 		Log.Debug(String.format("New file found :: %s", f.getName()));
-		Movie m = Util.extractMovie(f.getName());
+		Movie m = Util.extractMovie(f.getPath(), f.getName());
 		
 		m = getImdbInformation(m);
 		m = addMovieToDB(m);

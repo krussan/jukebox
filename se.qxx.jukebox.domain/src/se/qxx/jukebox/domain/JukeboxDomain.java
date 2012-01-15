@@ -3203,6 +3203,10 @@ public final class JukeboxDomain {
     // optional string imdb_id = 11;
     boolean hasImdbId();
     String getImdbId();
+    
+    // optional string filepath = 12;
+    boolean hasFilepath();
+    String getFilepath();
   }
   public static final class Movie extends
       com.google.protobuf.GeneratedMessage
@@ -3541,6 +3545,38 @@ public final class JukeboxDomain {
       }
     }
     
+    // optional string filepath = 12;
+    public static final int FILEPATH_FIELD_NUMBER = 12;
+    private java.lang.Object filepath_;
+    public boolean hasFilepath() {
+      return ((bitField0_ & 0x00000800) == 0x00000800);
+    }
+    public String getFilepath() {
+      java.lang.Object ref = filepath_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          filepath_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getFilepathBytes() {
+      java.lang.Object ref = filepath_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        filepath_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
     private void initFields() {
       iD_ = 0;
       filename_ = "";
@@ -3553,6 +3589,7 @@ public final class JukeboxDomain {
       group_ = "";
       imdbUrl_ = "";
       imdbId_ = "";
+      filepath_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -3607,6 +3644,9 @@ public final class JukeboxDomain {
       if (((bitField0_ & 0x00000400) == 0x00000400)) {
         output.writeBytes(11, getImdbIdBytes());
       }
+      if (((bitField0_ & 0x00000800) == 0x00000800)) {
+        output.writeBytes(12, getFilepathBytes());
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -3659,6 +3699,10 @@ public final class JukeboxDomain {
       if (((bitField0_ & 0x00000400) == 0x00000400)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(11, getImdbIdBytes());
+      }
+      if (((bitField0_ & 0x00000800) == 0x00000800)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(12, getFilepathBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -3806,6 +3850,8 @@ public final class JukeboxDomain {
         bitField0_ = (bitField0_ & ~0x00000200);
         imdbId_ = "";
         bitField0_ = (bitField0_ & ~0x00000400);
+        filepath_ = "";
+        bitField0_ = (bitField0_ & ~0x00000800);
         return this;
       }
       
@@ -3888,6 +3934,10 @@ public final class JukeboxDomain {
           to_bitField0_ |= 0x00000400;
         }
         result.imdbId_ = imdbId_;
+        if (((from_bitField0_ & 0x00000800) == 0x00000800)) {
+          to_bitField0_ |= 0x00000800;
+        }
+        result.filepath_ = filepath_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -3936,6 +3986,9 @@ public final class JukeboxDomain {
         }
         if (other.hasImdbId()) {
           setImdbId(other.getImdbId());
+        }
+        if (other.hasFilepath()) {
+          setFilepath(other.getFilepath());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -4029,6 +4082,11 @@ public final class JukeboxDomain {
             case 90: {
               bitField0_ |= 0x00000400;
               imdbId_ = input.readBytes();
+              break;
+            }
+            case 98: {
+              bitField0_ |= 0x00000800;
+              filepath_ = input.readBytes();
               break;
             }
           }
@@ -4400,6 +4458,42 @@ public final class JukeboxDomain {
       void setImdbId(com.google.protobuf.ByteString value) {
         bitField0_ |= 0x00000400;
         imdbId_ = value;
+        onChanged();
+      }
+      
+      // optional string filepath = 12;
+      private java.lang.Object filepath_ = "";
+      public boolean hasFilepath() {
+        return ((bitField0_ & 0x00000800) == 0x00000800);
+      }
+      public String getFilepath() {
+        java.lang.Object ref = filepath_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          filepath_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setFilepath(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000800;
+        filepath_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearFilepath() {
+        bitField0_ = (bitField0_ & ~0x00000800);
+        filepath_ = getDefaultInstance().getFilepath();
+        onChanged();
+        return this;
+      }
+      void setFilepath(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000800;
+        filepath_ = value;
         onChanged();
       }
       
@@ -5469,20 +5563,20 @@ public final class JukeboxDomain {
       "\001(\005\022\022\n\nmovieTitle\030\002 \001(\t\022\023\n\013subtitileId\030\003" +
       " \001(\005\022\030\n\020subtitleFileName\030\004 \001(\t\"\033\n\031Jukebo" +
       "xRequestSkipForward\"\035\n\033JukeboxRequestSki" +
-      "pBackwards\"\263\001\n\005Movie\022\n\n\002ID\030\001 \002(\005\022\020\n\010file" +
+      "pBackwards\"\305\001\n\005Movie\022\n\n\002ID\030\001 \002(\005\022\020\n\010file" +
       "name\030\002 \002(\t\022\r\n\005title\030\003 \001(\t\022\014\n\004year\030\004 \001(\005\022" +
       "\014\n\004type\030\005 \001(\t\022\016\n\006format\030\006 \001(\t\022\r\n\005sound\030\007" +
       " \001(\t\022\020\n\010language\030\010 \001(\t\022\r\n\005group\030\t \001(\t\022\020\n" +
-      "\010imdb_url\030\n \001(\t\022\017\n\007imdb_id\030\013 \001(\t\"I\n\031Juke" +
-      "boxResponseListMovies\022,\n\006movies\030\001 \003(\0132\034." +
-      "se.qxx.jukebox.domain.Movie\"]\n\017JukeboxRe",
-      "sponse\0227\n\004type\030\001 \002(\0162).se.qxx.jukebox.do" +
-      "main.JukeboxRequestType\022\021\n\targuments\030\002 \001" +
-      "(\014*\224\001\n\022JukeboxRequestType\022\016\n\nListMovies\020" +
-      "\001\022\031\n\025StartSubtitleIdentity\020\002\022\016\n\nStartMov" +
-      "ie\020\003\022\r\n\tStopMovie\020\004\022\020\n\014MarkSubtitle\020\005\022\017\n" +
-      "\013SkipForward\020\006\022\021\n\rSkipBackwards\020\007B\027\n\025se." +
-      "qxx.jukebox.domain"
+      "\010imdb_url\030\n \001(\t\022\017\n\007imdb_id\030\013 \001(\t\022\020\n\010file" +
+      "path\030\014 \001(\t\"I\n\031JukeboxResponseListMovies\022" +
+      ",\n\006movies\030\001 \003(\0132\034.se.qxx.jukebox.domain.",
+      "Movie\"]\n\017JukeboxResponse\0227\n\004type\030\001 \002(\0162)" +
+      ".se.qxx.jukebox.domain.JukeboxRequestTyp" +
+      "e\022\021\n\targuments\030\002 \001(\014*\224\001\n\022JukeboxRequestT" +
+      "ype\022\016\n\nListMovies\020\001\022\031\n\025StartSubtitleIden" +
+      "tity\020\002\022\016\n\nStartMovie\020\003\022\r\n\tStopMovie\020\004\022\020\n" +
+      "\014MarkSubtitle\020\005\022\017\n\013SkipForward\020\006\022\021\n\rSkip" +
+      "Backwards\020\007B\027\n\025se.qxx.jukebox.domain"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -5558,7 +5652,7 @@ public final class JukeboxDomain {
           internal_static_se_qxx_jukebox_domain_Movie_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_se_qxx_jukebox_domain_Movie_descriptor,
-              new java.lang.String[] { "ID", "Filename", "Title", "Year", "Type", "Format", "Sound", "Language", "Group", "ImdbUrl", "ImdbId", },
+              new java.lang.String[] { "ID", "Filename", "Title", "Year", "Type", "Format", "Sound", "Language", "Group", "ImdbUrl", "ImdbId", "Filepath", },
               se.qxx.jukebox.domain.JukeboxDomain.Movie.class,
               se.qxx.jukebox.domain.JukeboxDomain.Movie.Builder.class);
           internal_static_se_qxx_jukebox_domain_JukeboxResponseListMovies_descriptor =

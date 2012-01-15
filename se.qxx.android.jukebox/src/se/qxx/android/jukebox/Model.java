@@ -85,4 +85,8 @@ public class Model {
 	public List<Movie> getMovies() {
 		return _movies;
 	}
+	
+	public int countMovies() {
+		return _movies.size();
+	}
 }
