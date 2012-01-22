@@ -100,6 +100,7 @@ public class Util {
 	public static Rating rateSub(Movie m, String subFilename) {
 		Movie subMovie = Util.extractMovie("", subFilename);
 		
+		//TODO: REmove compare on empty string
 		//TODO: Add compare of filenames to get an exact match
 		Rating r = Rating.NotMatched;
 		if (subMovie.getGroup().equals(m.getGroup())) {
