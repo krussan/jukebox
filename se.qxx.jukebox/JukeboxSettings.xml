@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <JukeboxListenerSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="JukeboxSettings.xsd">
   <catalogs>
-    <catalog includeSubdirectories="true" path="/home/chris/jukebox" vlcPath="Y:/Jukebox">
+    <catalog includeSubdirectories="true" path="D:/Dev/jukeboxTest" vlcPath="Y:/Jukebox">
       <extensions>
         <extension value="avi"/>
       </extensions>

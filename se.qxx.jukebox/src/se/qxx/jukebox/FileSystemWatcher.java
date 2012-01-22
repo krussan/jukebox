@@ -58,7 +58,7 @@ public class FileSystemWatcher implements Runnable {
 		  TreeSet<FileRepresentation> rep = new TreeSet<FileRepresentation>(comparator);
 		  
 		  for (File f : directory.listFiles(_filter)) {
-			  rep.add(new FileRepresentation(f.getPath(), f.getName(), f.lastModified()));
+			  rep.add(new FileRepresentation(f.getParent(), f.getName(), f.lastModified()));
 		  }
 		  
   		return rep;		

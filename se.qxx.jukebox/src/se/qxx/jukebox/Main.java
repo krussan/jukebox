@@ -34,6 +34,9 @@ public class Main implements Runnable, INotifyClient
 			Thread t = new Thread(scanExisting);
 			t.start();
 			
+			Thread subtitleDownloaderThread = new Thread(SubtitleDownloader.get());
+			subtitleDownloaderThread.start();
+			
 			isRunning = true;
 			
 			ExtensionFileFilter filter = new ExtensionFileFilter();

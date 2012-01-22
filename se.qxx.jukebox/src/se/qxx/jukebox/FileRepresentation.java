@@ -27,6 +27,7 @@ public class FileRepresentation {
 	}
 	
 	public FileRepresentation(String path, String name, long l) {	
+		this._path = path;
 		this._name = name;
 		this._lastModified = l;
 	}
