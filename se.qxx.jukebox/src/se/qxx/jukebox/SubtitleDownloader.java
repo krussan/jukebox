@@ -94,36 +94,45 @@ public class SubtitleDownloader implements Runnable {
 		// get files
 		List<SubFile> files = callSubtitleDownloaders(m);
 		
-		// exract files from rar/zip
+		// Extract files from rar/zip
 		extractSubs(m, files);
 	}
 
 	private void extractSubs(Movie m, List<SubFile> files) {
 		int c = 0;
 		for (SubFile subfile : files) {
-			File f = subfile.getFile();
-			File unpackedFile = Unpacker.unpackFile(f);
+			try {
+				File f = subfile.getFile();
+				File unpackedFile = Unpacker.unpackFile(f);
+				
+				String filename = m.getFilename();
+				filename = filename.substring(0, filename.lastIndexOf("."));
+				
+				String extension = unpackedFile.getName();
+				extension = extension.substring(extension.lastIndexOf(".") + 1, extension.length());
 			
-			String filename = m.getFilename();
-			filename = filename.substring(0, filename.lastIndexOf("."));
+				// rename file to filename_of_movie.iterator.srt/sub
+				String path = f.getAbsolutePath();
+				
+				// replace backward slash with forward slash
+				path = path.replace("\\", "/");
 			
-			String extension = unpackedFile.getName();
-			extension = extension.substring(extension.lastIndexOf(".") + 1, extension.length());
-		
-			// rename file to filename_of_movie.iterator.srt/sub
-			String path = f.getAbsolutePath();
-			path = path.substring(0, path.lastIndexOf("/"));
-			filename = String.format("%s/%s.%s.%s", path, filename, c, extension);
-			File newFile = new File(filename);
-			unpackedFile.renameTo(newFile);
-		
-			c++;
-
-			// rate sub
-			subfile.setRating(Util.rateSub(m, subfile.getDescription()));
+				path = path.substring(0, path.lastIndexOf("/"));
+				filename = String.format("%s/%s.%s.%s", path, filename, c, extension);
+				File newFile = new File(filename);
+				unpackedFile.renameTo(newFile);
 			
-			// store filename of sub in database
-			storeSubToDB(m, filename, subfile.getDescription(), subfile.getRating());			
+				c++;
+	
+				// rate sub
+				subfile.setRating(Util.rateSub(m, subfile.getDescription()));
+				
+				// store filename of sub in database
+				storeSubToDB(m, filename, subfile.getDescription(), subfile.getRating());
+			}
+			catch (Exception e) {
+				Log.Error("Error when downloading subtitles... Continuing with next one", e);
+			}
 		}
 	}
 	
