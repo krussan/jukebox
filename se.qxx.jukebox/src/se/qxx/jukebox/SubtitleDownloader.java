@@ -48,40 +48,44 @@ public class SubtitleDownloader implements Runnable {
 	@Override
 	public void run() {
 		this._isRunning = true;
-		
-		synchronized(this) {
-			while (this._isRunning = true) {
-				try {
-					this.wait(10000);
-					
-					for(Movie m : _listToDownload) {
-						_listToDownload.remove(m);
-						_listProcessing.add(m);
-
-						try {
-							getSubtitles(m);
-							
-							_listProcessing.remove(m);
-							_listDone.add(m);
-						}
-						catch (Exception e) {
-							Log.Error("Error when downloading subtitles", e);
-						}
-					}
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				
+		while (this._isRunning = true) {
+			try {
+				synchronized(_listToDownload) {
+					_listToDownload.wait();
+					_listProcessing.addAll(_listToDownload);
+					_listToDownload.clear();
 				}
 				
+				for(Movie m : _listProcessing) {
+					try {
+						getSubtitles(m);
+						
+						_listDone.add(m);
+					}
+					catch (Exception e) {
+						Log.Error("Error when downloading subtitles", e);
+					}
+					finally {
+						//TODO: Adding movie to done to remove it from the list.
+						// should actually add this to an error list and let the user
+						// decide if to continue
+						_listDone.add(m);
+						_listProcessing.removeAll(_listDone);
+					}
+				}
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 		//this.wait();
 	}
 	
 	public void addMovie(Movie m) {
-		synchronized(this) {
+		synchronized(_listToDownload) {
 			_listToDownload.add(m);
-			this.notify();
+			_listToDownload.notify();
 		}
 	}
 	
