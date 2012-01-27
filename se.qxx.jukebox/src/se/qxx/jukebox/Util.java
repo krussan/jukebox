@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.settings.Settings;
@@ -35,9 +36,9 @@ public class Util {
 		int year = 0;
 		
 		for (Splitter splitter : Settings.get().getStringSplitters().getSplitter()) {
-			NamedPattern p = NamedPattern.compile(splitter.getRegex().trim());
+			NamedPattern p = NamedPattern.compile(splitter.getRegex().trim(), Pattern.CASE_INSENSITIVE);
 			NamedMatcher m = p.matcher(fileName);
-			
+
 			int matches = 0;
 			for (String s : groupsToCheck) {
 				if (m.matches() && p.groupNames().contains(s))
@@ -45,6 +46,7 @@ public class Util {
 						if (m.group(s).length() > 0) 
 							matches++;
 			}
+			
 			
 			if (matches > maxGroupMatch) {
 				maxGroupMatch = matches;
