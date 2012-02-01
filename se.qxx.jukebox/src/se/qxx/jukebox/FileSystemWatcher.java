@@ -2,6 +2,7 @@ package se.qxx.jukebox;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.TreeSet;
@@ -57,12 +58,15 @@ public class FileSystemWatcher implements Runnable {
 	  public java.util.TreeSet<FileRepresentation> getCurrentRepresentation() {
 		  TreeSet<FileRepresentation> rep = new TreeSet<FileRepresentation>(comparator);
 		  
-		  for (File f : directory.listFiles(_filter)) {
+		  List<File> list = Util.getFileListing(directory, _filter);
+		  for (File f : list) {
 			  rep.add(new FileRepresentation(f.getParent(), f.getName(), f.lastModified()));
 		  }
 		  
-  		return rep;		
+		  return rep;		
 	  }
+	  
+
 
 	  private class FileChangedThread implements Runnable {
 
@@ -105,8 +109,14 @@ public class FileSystemWatcher implements Runnable {
   
 	  public void run() {
 		  isRunning = true;
+		  TreeSet<FileRepresentation> currentRepresentation = getCurrentRepresentation();
+		  
+		 for (FileRepresentation f : currentRepresentation) {
+			 notifyCreated(f);
+		 }	
+		  
 	    while (isRunning) {
-	      TreeSet<FileRepresentation> currentRepresentation = getCurrentRepresentation();
+	      currentRepresentation = getCurrentRepresentation();
 	      
 	      for (FileRepresentation f : currentRepresentation) {
 	    	  if (!files.contains(f) && this.watchCreated)

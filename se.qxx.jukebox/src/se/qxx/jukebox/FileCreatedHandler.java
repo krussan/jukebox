@@ -1,6 +1,8 @@
 package se.qxx.jukebox;
 
 import java.io.IOException;
+import java.util.List;
+
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 
 public class FileCreatedHandler implements INotifyClient {
@@ -16,13 +18,32 @@ public class FileCreatedHandler implements INotifyClient {
 		Log.Debug(String.format("New file found :: %s", f.getName()));
 		Movie m = Util.extractMovie(f.getPath(), f.getName());
 		
-		m = getImdbInformation(m);
-		m = addMovieToDB(m);
-		
-		SubtitleDownloader.get().addMovie(m);
+		// Check if movie exists in db
+		if (!movieExistsInDB(m)) {
+			
+			// If it does but in a different path update the path
+			// If it does but in same path exit
+			// If not get information and subtitles
+			
+			m = getImdbInformation(m);
+			m = addMovieToDB(m);
+			
+			SubtitleDownloader.get().addMovie(m);
+		}
 	}
 	
 
+	private boolean movieExistsInDB(Movie m) {
+		try {
+			return DB.movieExists(m);
+		}
+		catch (Exception e) {
+			Log.Error("failed to get information from database", e);
+			
+			// return true on error to avoid triggering download of subtitles and storing a new record to DB
+			return true;
+		}
+	}
 
 	
 	private Movie addMovieToDB(Movie m) {
@@ -49,9 +70,4 @@ public class FileCreatedHandler implements INotifyClient {
 		
 		return m;
 	}
-	
-
-	
-
-
 }

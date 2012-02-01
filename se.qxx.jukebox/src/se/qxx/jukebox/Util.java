@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
@@ -102,11 +104,10 @@ public class Util {
 	public static Rating rateSub(Movie m, String subFilename) {
 		Movie subMovie = Util.extractMovie("", subFilename);
 		
-		//TODO: REmove compare on empty string
 		//TODO: Add compare of filenames to get an exact match
 		Rating r = Rating.NotMatched;
-		if (subMovie.getGroup().equals(m.getGroup())) {
-			if (subMovie.getFormat().equals(m.getFormat()))
+		if (subMovie.getGroup().equals(m.getGroup()) && subMovie.getGroup() != "") {
+			if (subMovie.getFormat().equals(m.getFormat()) && subMovie.getFormat() != "")
 				r = Rating.PositiveMatch;
 			else
 				r = Rating.ProbableMatch;
@@ -149,5 +150,20 @@ public class Util {
 		return new String(bos.toByteArray(), "ISO-8859-1");
 
 	}
+	
+	public static List<File> getFileListing(File directory, ExtensionFileFilter filter)
+	{
+		List<File> result = new ArrayList<File>();
+		List<File> filesAndDirs = Arrays.asList(directory.listFiles(filter));
+
+		for(File file : filesAndDirs) {
+			result.add(file); //always add, even if directory
+			if ( ! file.isFile() ) {
+				result.addAll(Util.getFileListing(file, filter));
+			}
+		}
+		
+		return result;
+	}	
 
 }

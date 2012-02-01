@@ -22,11 +22,7 @@ public class SubtitleDownloader implements Runnable {
 
 	//TODO: add event listeners that listens for that subtitles for a specific movie
 	// has been downloaded
-	
-	//TODO: implement run method
-	
-	//TODO: somehow block thread until there are members in _listToDownload
-	
+		
 	private LinkedList<Movie> _listToDownload = new LinkedList<Movie>();
 	private List<Movie> _listProcessing = new ArrayList<Movie>();
 	private List<Movie> _listDone = new ArrayList<Movie>();

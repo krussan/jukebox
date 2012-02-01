@@ -11,6 +11,21 @@ public class DB {
 	private DB() {
 		
 	}
+	
+	public static boolean movieExists(Movie m) throws SQLException, ClassNotFoundException {
+		Connection conn = DB.initialize();
+		
+		PreparedStatement prep = conn.prepareStatement(
+			"select id from movie where title = ?"
+		);
+		prep.setString(1, m.getTitle());
+		
+		ResultSet rs = prep.executeQuery();
+		if (rs.next())
+			return true;
+		else
+			return false;
+	}
 
 	public static Movie addMovie(Movie m) throws SQLException, ClassNotFoundException {
 		Connection conn = DB.initialize();

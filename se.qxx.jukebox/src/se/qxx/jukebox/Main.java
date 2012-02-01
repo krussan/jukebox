@@ -11,15 +11,7 @@ public class Main implements Runnable, INotifyClient
 	private Boolean isRunning = false;
 	private TcpListener _listener;
 	ArrayList<FileSystemWatcher> watchers = new ArrayList<FileSystemWatcher>();
-	
-    private Runnable scanExisting = new Runnable() {
-
-        @Override
-        public void run() {
-            scanExisting();
-        }
-    };
-    
+	    
 	public Main() {
 		
 	}
@@ -30,9 +22,6 @@ public class Main implements Runnable, INotifyClient
 		
 		try {
 			setupListening();
-
-			Thread t = new Thread(scanExisting);
-			t.start();
 			
 			Thread subtitleDownloaderThread = new Thread(SubtitleDownloader.get());
 			subtitleDownloaderThread.start();
@@ -121,12 +110,4 @@ public class Main implements Runnable, INotifyClient
 			
 		}
 	}	
-
-	private void scanExisting() {
-		//scan all folders (and subfolders)
-		//if a movie is found and the movie exists in DB with another path then update file path
-		//if a movie is found with the same path ignore it
-		//if a new movie is found add it to the database and initiate subtitle download
-		
-	}
 }
