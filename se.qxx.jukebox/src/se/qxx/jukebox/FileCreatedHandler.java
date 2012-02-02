@@ -19,45 +19,25 @@ public class FileCreatedHandler implements INotifyClient {
 		Movie m = Util.extractMovie(f.getPath(), f.getName());
 		
 		// Check if movie exists in db
-		if (!movieExistsInDB(m)) {
-			
+		Movie dbMovie = DB.getMovie(m.getTitle());
+		if (dbMovie != null) {
 			// If it does but in a different path update the path
+			if (!m.getFilepath().equals(dbMovie.getFilepath())) {
+				Movie store = Movie.newBuilder(dbMovie).setFilepath(m.getFilepath()).build();
+				DB.updateMovie(store);
+			}
 			// If it does but in same path exit
+		}
+		else {
 			// If not get information and subtitles
 			
 			m = getImdbInformation(m);
-			m = addMovieToDB(m);
-			
-			SubtitleDownloader.get().addMovie(m);
-		}
-	}
-	
-
-	private boolean movieExistsInDB(Movie m) {
-		try {
-			return DB.movieExists(m);
-		}
-		catch (Exception e) {
-			Log.Error("failed to get information from database", e);
-			
-			// return true on error to avoid triggering download of subtitles and storing a new record to DB
-			return true;
-		}
-	}
-
-	
-	private Movie addMovieToDB(Movie m) {
-		try {
 			m = DB.addMovie(m);
-			Log.Info("Movie added to database");
+			
+			SubtitleDownloader.get().addMovie(m);			
 		}
-		catch (Exception e) {
-			Log.Error("failed to store to database", e);
-		}
-		
-		return m;
 	}
-
+	
 	private Movie getImdbInformation(Movie m) {
 		//find imdb link
 		try {

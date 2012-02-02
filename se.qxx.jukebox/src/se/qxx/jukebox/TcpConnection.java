@@ -83,26 +83,19 @@ public class TcpConnection implements Runnable {
 		JukeboxRequestListMovies args = JukeboxRequestListMovies.parseFrom(data);
 		
 		String searchString = args.getSearchString();
-		try {
-			List<Movie> list = DB.searchMovies(searchString);
-
-			JukeboxResponseListMovies lm = JukeboxResponseListMovies.newBuilder().addAllMovies(list).build();
-	    	java.io.ByteArrayOutputStream bos = new ByteArrayOutputStream();
-	    	lm.writeTo(bos);
-	    	
-			JukeboxResponse resp = JukeboxResponse.newBuilder()
-					.setType(JukeboxRequestType.ListMovies)
-					.setArguments(lm.toByteString())
-					.build();
-					
-			return resp;
-			
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
 		
-		return null;
+		List<Movie> list = DB.searchMovies(searchString);
+
+		JukeboxResponseListMovies lm = JukeboxResponseListMovies.newBuilder().addAllMovies(list).build();
+    	java.io.ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    	lm.writeTo(bos);
+    	
+		JukeboxResponse resp = JukeboxResponse.newBuilder()
+				.setType(JukeboxRequestType.ListMovies)
+				.setArguments(lm.toByteString())
+				.build();
+				
+		return resp;
+		
 	}
 }

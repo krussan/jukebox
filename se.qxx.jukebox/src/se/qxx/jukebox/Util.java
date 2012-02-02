@@ -101,10 +101,22 @@ public class Util {
 
 	}
 
+	/**
+	 * Rates a sub file (or a string) depending on the all categories in the Movie
+	 * class
+	 * 
+	 * @param m 				- The movie to compare against
+	 * @param subFilename		- the filename or string of the subfile
+	 * @return Rating			- A rating based on the Rating enumeration				
+	 */
 	public static Rating rateSub(Movie m, String subFilename) {
 		Movie subMovie = Util.extractMovie("", subFilename);
 		
-		//TODO: Add compare of filenames to get an exact match
+		//Check if filenames match exactly
+		String filenameWithoutExtension = m.getFilename().substring(0,  m.getFilename().lastIndexOf('.') - 1);
+		if (filenameWithoutExtension.equals(subFilename))
+			return Rating.ExactMatch;
+		
 		Rating r = Rating.NotMatched;
 		if (subMovie.getGroup().equals(m.getGroup()) && subMovie.getGroup() != "") {
 			if (subMovie.getFormat().equals(m.getFormat()) && subMovie.getFormat() != "")

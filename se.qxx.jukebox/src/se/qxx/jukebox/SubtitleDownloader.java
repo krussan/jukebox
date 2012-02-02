@@ -125,10 +125,11 @@ public class SubtitleDownloader implements Runnable {
 				c++;
 	
 				// rate sub
-				subfile.setRating(Util.rateSub(m, subfile.getDescription()));
+				// subfile.setRating(Util.rateSub(m, subfile.getDescription()));
 				
 				// store filename of sub in database
-				storeSubToDB(m, filename, subfile.getDescription(), subfile.getRating());
+				DB.addSubtitle(m, filename, subfile.getDescription(), subfile.getRating());
+				
 			}
 			catch (Exception e) {
 				Log.Error("Error when downloading subtitles... Continuing with next one", e);
@@ -201,13 +202,4 @@ public class SubtitleDownloader implements Runnable {
 		return subtitleFiles;
 	}
 	
-	private void storeSubToDB(Movie m, String filename, String description, Rating r) {
-		try {
-			DB.addSubtitle(m, filename, description, r);
-		} catch (SQLException e) {
-			Log.Error("Failed to store subtitle file to database", e);
-		} catch (ClassNotFoundException e) {
-			Log.Error("Failed to store subtitle file to database", e);
-		}
-	}	
 }

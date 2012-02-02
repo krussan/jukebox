@@ -7,7 +7,10 @@ import se.qxx.jukebox.WebRetriever;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 import java.util.regex.Pattern;
 
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
@@ -32,7 +35,6 @@ public class UndertexterSe implements ISubtitleFinder {
 			if (key.equals("url")) url = setting.getValue().trim();
 		}
 		
-		// TODO Auto-generated method stub
 		String searchString;
 		String imdbId = m.getImdbId();
 		
@@ -58,33 +60,64 @@ public class UndertexterSe implements ISubtitleFinder {
 		
 		List<SubFile> files = new ArrayList<SubFile>();
 		
+		// create sub store for this movie
+		String filename = createSubsPath(m, subsPath);
+		
+		//TODO: rate subs first and extract all information
+		//TODO: if we found an exact match get that one
+		//      if we found a postive match get that one
+		//      otherwise get all
+		List<SubFile> listSubs = new ArrayList<SubFile>();
+		
 		while (matcher.find()) {
 			String urlString = matcher.group("url");
-			String filename = subsPath + "/" + m.getFilename();
-			filename = filename.substring(0, filename.lastIndexOf("."));
-			File f = new File(filename);
-			
-			if (!f.exists())
-				f.mkdirs();
-			
 			String description = matcher.group("name");
+			
+			SubFile sf = new SubFile(urlString, description);
+			Rating r = Util.rateSub(m, description);
+			sf.setRating(r);
+			
+			listSubs.add(sf);
+		}
 		
-			File file = WebRetriever.getWebFile(urlString, filename);
+		Collections.sort(listSubs);
+		for (SubFile sf : listSubs) {
+			File file = WebRetriever.getWebFile(sf.getUrl(), filename);
+			sf.setFile(file);
 			
-			SubFile subFile = new SubFile(file);			
-			subFile.setDescription(description);
+			files.add(sf);
+
+			Log.Debug(String.format("File downloaded: %s", sf.getFile().getName()));
+
+			if (sf.getRating() == Rating.ExactMatch || sf.getRating() == Rating.PositiveMatch)  {
+				Log.Debug("Exact or positive match found. exiting...");
+				break;
+			}
 			
-			files.add(subFile);
-			
-			Log.Debug(String.format("File downloaded: %s", subFile.getFile().getName()));
 			try {
-				Thread.sleep(10000);
+				Random r = new Random();
+				int n = r.nextInt(20000) + 10000;
+				
+				// sleep randomly to avoid detection (from 10 sec to 30 sec)
+				Thread.sleep(n);
 			} catch (InterruptedException e) {
 				Log.Error("Subtitle downloader interrupted", e);
 				return files;
 			}
+			
+		}
+		while (matcher.find()) {			
 		}
 
 		return files;
+	}
+
+	private String createSubsPath(Movie m, String subsPath) {
+		String filename = subsPath + "/" + m.getFilename();
+		filename = filename.substring(0, filename.lastIndexOf("."));
+		File f = new File(filename);
+		if (!f.exists())
+			f.mkdirs();
+		return filename;
 	}
 }

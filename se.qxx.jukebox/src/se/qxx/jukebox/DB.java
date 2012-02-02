@@ -12,29 +12,83 @@ public class DB {
 		
 	}
 	
-	public static boolean movieExists(Movie m) throws SQLException, ClassNotFoundException {
-		Connection conn = DB.initialize();
-		
-		PreparedStatement prep = conn.prepareStatement(
-			"select id from movie where title = ?"
-		);
-		prep.setString(1, m.getTitle());
-		
-		ResultSet rs = prep.executeQuery();
-		if (rs.next())
-			return true;
-		else
-			return false;
+	public static Movie getMovie(String title) {
+		Connection conn;
+		try {
+			conn = DB.initialize();
+
+			PreparedStatement prep = conn.prepareStatement(
+			" select filename, filepath, title, year, type, format, sound, language, groupName, imdburl" +
+			" from movie where title = ?");
+					
+			prep.setString(1, title);
+				
+			ResultSet rs = prep.executeQuery();
+			if (rs.next())
+				return getMovie(rs);
+			else
+				return null;
+
+		} catch (Exception e) {
+			Log.Error("failed to get information from database", e);
+			
+			return null;
+		}
+	}
+	
+	public static void updateMovie(Movie m) {
+		try {
+			Connection conn = DB.initialize();
+			PreparedStatement prep = conn.prepareStatement(
+				"update movie" +
+				"  set filename = ?" +
+				"    , filepath = ?" + 
+				"    , title = ?" + 
+				"    , year = ?" +
+				"    , format = ?" +
+				"    , sound = ?" +
+				"    , language = ?" +
+				"    , groupName = ?" +
+				"    , imdburl = ?" +
+				" WHERE ID = ?"
+			);
+			
+			addArguments(prep, m);
+			prep.setInt(11, m.getID());
+			
+			prep.execute();
+		}
+		catch (Exception e) {
+			Log.Error("Failed to update movie in DB", e);
+		}
 	}
 
-	public static Movie addMovie(Movie m) throws SQLException, ClassNotFoundException {
-		Connection conn = DB.initialize();
-		PreparedStatement prep = conn.prepareStatement(
-				"insert into movie " +
-				"(filename, filepath, title, year, type, format, sound, language, groupName, imdburl)" +
-				"values" +
-				"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-		
+	public static Movie addMovie(Movie m) {
+		try {
+			Connection conn = DB.initialize();
+			PreparedStatement prep = conn.prepareStatement(
+					"insert into movie " +
+					"(filename, filepath, title, year, type, format, sound, language, groupName, imdburl)" +
+					"values" +
+					"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			
+			addArguments(prep, m);
+			prep.execute();
+	
+			int i = getIdentity(conn);
+			Movie mm = Movie.newBuilder().mergeFrom(m).setID(i).build();
+			
+			DB.disconnect(conn);
+			
+			return mm;
+		}
+		catch (Exception e) {
+			Log.Error("Failed to store movie to DB", e);
+			return null;
+		}
+	}
+
+	private static void addArguments(PreparedStatement prep, Movie m) throws SQLException {
 		prep.setString(1, m.getFilename());
 		prep.setString(2, m.getFilepath());
 		prep.setString(3, m.getTitle());
@@ -45,15 +99,6 @@ public class DB {
 		prep.setString(8, m.getLanguage());
 		prep.setString(9, m.getGroup());
 		prep.setString(10, m.getImdbUrl());
-		
-		prep.execute();
-
-		int i = getIdentity(conn);
-		Movie mm = Movie.newBuilder().mergeFrom(m).setID(i).build();
-		
-		DB.disconnect(conn);
-		
-		return mm;
 	}
 	
 	private static int getIdentity(Connection conn) throws SQLException {
@@ -64,39 +109,60 @@ public class DB {
 		return rs.getInt(0);
 	}
 	
-	public static void addSubtitle(Movie m, String filename, String description, Rating rating) throws SQLException, ClassNotFoundException {
-		Connection conn = DB.initialize();
-		
-		PreparedStatement prep = conn.prepareStatement(
-				"insert into subtitles " +
-				"(_movie_ID, filename, description, rating)" +
-				"values" +
-				"(?, ?, ?, ?)");
-		
-		prep.setInt(1, m.getID());
-		prep.setString(2, filename);
-		prep.setString(4, description);
-		prep.setString(4, rating.toString());
-		prep.execute();
-		
-		
-		DB.disconnect(conn);
+	public static void addSubtitle(Movie m, String filename, String description, Rating rating) {
+		try {
+			Connection conn = DB.initialize();
+			
+			PreparedStatement prep = conn.prepareStatement(
+					"insert into subtitles " +
+					"(_movie_ID, filename, description, rating)" +
+					"values" +
+					"(?, ?, ?, ?)");
+			
+			prep.setInt(1, m.getID());
+			prep.setString(2, filename);
+			prep.setString(4, description);
+			prep.setString(4, rating.toString());
+			prep.execute();
+						
+			DB.disconnect(conn);
+		}
+		catch (Exception e) {
+			Log.Error("Failed to add subtitles to DB", e);
+			
+		}
 	}
 	
-	public static ArrayList<Movie> searchMovies(String searchString) throws ClassNotFoundException, SQLException {
-		Connection conn = DB.initialize();
-
-		PreparedStatement prep = conn.prepareStatement(
-				" SELECT ID, filename, title, year, type, format, sound, language, groupName, imdburl " +
-				" FROM movie" +
-				" WHERE title LIKE '%" + searchString + "%'"
-				);
-		//prep.setString(1, searchString);
-		
-		ResultSet rs = prep.executeQuery();
-		ArrayList<Movie> result = new ArrayList<Movie>();
-		while (rs.next()) {
-			Movie m = Movie.newBuilder()
+	public static ArrayList<Movie> searchMovies(String searchString) {
+		try {
+			Connection conn = DB.initialize();
+	
+			PreparedStatement prep = conn.prepareStatement(
+					" SELECT ID, filename, title, year, type, format, sound, language, groupName, imdburl " +
+					" FROM movie" +
+					" WHERE title LIKE '%" + searchString + "%'"
+					);
+			//prep.setString(1, searchString);
+			
+			ResultSet rs = prep.executeQuery();
+			ArrayList<Movie> result = new ArrayList<Movie>();
+			while (rs.next()) {
+				result.add(getMovie(rs));
+			}
+			
+			DB.disconnect(conn);
+			
+			return result;
+		}
+		catch (Exception e) {
+			Log.Error("Failed to retrieve movie listing from DB", e);
+			
+			return new ArrayList<Movie>();
+		}
+	}
+	
+	private static Movie getMovie(ResultSet rs) throws SQLException {
+		Movie m = Movie.newBuilder()
 				.setID(rs.getInt("ID"))
 				.setFilename(rs.getString("filename"))
 				.setTitle(rs.getString("title"))
@@ -108,17 +174,10 @@ public class DB {
 				.setGroup(rs.getString("groupName"))
 				.setImdbUrl(rs.getString("imdburl"))
 				.build();
-			
-			result.add(m);
-		}
-		
-		DB.disconnect(conn);
-		
-		return result;
-		
-		
-				
+
+		return m;
 	}
+	
 	private static Connection initialize() throws ClassNotFoundException, SQLException {
 		Class.forName("org.sqlite.JDBC");
 	    return DriverManager.getConnection("jdbc:sqlite:jukebox.db");				
