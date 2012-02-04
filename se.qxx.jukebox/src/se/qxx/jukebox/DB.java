@@ -18,14 +18,14 @@ public class DB {
 			conn = DB.initialize();
 
 			PreparedStatement prep = conn.prepareStatement(
-			" select filename, filepath, title, year, type, format, sound, language, groupName, imdburl" +
+			" select ID, filename, filepath, title, year, type, format, sound, language, groupName, imdburl" +
 			" from movie where title = ?");
 					
 			prep.setString(1, title);
 				
 			ResultSet rs = prep.executeQuery();
 			if (rs.next())
-				return getMovie(rs);
+				return extractMovie(rs);
 			else
 				return null;
 
@@ -103,10 +103,12 @@ public class DB {
 	
 	private static int getIdentity(Connection conn) throws SQLException {
 		PreparedStatement prep = conn.prepareStatement("SELECT last_insert_rowid()");
-		ResultSet rs = prep.getResultSet();
+		ResultSet rs = prep.executeQuery();
 		
-		rs.next();
-		return rs.getInt(0);
+		if (rs.next())
+			return rs.getInt(1);
+		else
+			return -1;
 	}
 	
 	public static void addSubtitle(Movie m, String filename, String description, Rating rating) {
@@ -138,7 +140,7 @@ public class DB {
 			Connection conn = DB.initialize();
 	
 			PreparedStatement prep = conn.prepareStatement(
-					" SELECT ID, filename, title, year, type, format, sound, language, groupName, imdburl " +
+					" SELECT ID, filename, filepath, title, year, type, format, sound, language, groupName, imdburl " +
 					" FROM movie" +
 					" WHERE title LIKE '%" + searchString + "%'"
 					);
@@ -147,7 +149,7 @@ public class DB {
 			ResultSet rs = prep.executeQuery();
 			ArrayList<Movie> result = new ArrayList<Movie>();
 			while (rs.next()) {
-				result.add(getMovie(rs));
+				result.add(extractMovie(rs));
 			}
 			
 			DB.disconnect(conn);
@@ -161,10 +163,11 @@ public class DB {
 		}
 	}
 	
-	private static Movie getMovie(ResultSet rs) throws SQLException {
+	private static Movie extractMovie(ResultSet rs) throws SQLException {
 		Movie m = Movie.newBuilder()
 				.setID(rs.getInt("ID"))
 				.setFilename(rs.getString("filename"))
+				.setFilepath(rs.getString("filepath"))
 				.setTitle(rs.getString("title"))
 				.setYear(rs.getInt("year"))
 				.setType(rs.getString("type"))

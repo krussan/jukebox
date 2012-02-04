@@ -106,8 +106,6 @@ public class UndertexterSe implements ISubtitleFinder {
 			}
 			
 		}
-		while (matcher.find()) {			
-		}
 
 		return files;
 	}

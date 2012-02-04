@@ -55,9 +55,11 @@ public class SubtitleDownloader implements Runnable {
 				
 				for(Movie m : _listProcessing) {
 					try {
-						getSubtitles(m);
+						if (m != null) {
+							getSubtitles(m);
 						
-						_listDone.add(m);
+							_listDone.add(m);
+						}
 					}
 					catch (Exception e) {
 						Log.Error("Error when downloading subtitles", e);
@@ -83,6 +85,7 @@ public class SubtitleDownloader implements Runnable {
 			_listToDownload.add(m);
 			_listToDownload.notify();
 		}
+		
 	}
 	
 	public void stop() {
