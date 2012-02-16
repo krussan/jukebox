@@ -16,6 +16,7 @@ import se.qxx.jukebox.subtitles.SubFile.Rating;
 
 import com.google.code.regexp.NamedMatcher;
 import com.google.code.regexp.NamedPattern;
+import com.sun.xml.internal.ws.util.StringUtils;
 
 public class Util {
 	public static Movie extractMovie(String filePath, String fileName) {
@@ -54,25 +55,28 @@ public class Util {
 				maxGroupMatch = matches;
 
 				if (m.group("title") != null && p.groupNames().contains("title")) 
-					title = m.group("title").replace(".", " ").replace("_", " ").replace("-", " ");
+					title = Util.parseAwaySpace(m.group("title"));
 				
-				if (m.group("year") != null && p.groupNames().contains("year")) 
-					year = Integer.valueOf(m.group("year").replace(".", " ").replace("_", " ").replace("-", " "));
+				if (m.group("year") != null && p.groupNames().contains("year")) {
+					String yearString = m.group("year");
+					if (Util.tryParseInt(yearString))
+						year = Integer.parseInt(yearString);
+				}
 				
 				if (m.group("type") != null && p.groupNames().contains("type")) 
-					type = m.group("type").replace(".", " ").replace("_", " ").replace("-", " ");
+					type = Util.parseAwaySpace(m.group("type"));
 				
 				if (m.group("format") != null && p.groupNames().contains("format")) 
-					format = m.group("format").replace(".", " ").replace("_", " ").replace("-", " ");
+					format = Util.parseAwaySpace(m.group("format"));
 				
 				if (m.group("sound") != null && p.groupNames().contains("sound")) 
-					sound = m.group("sound").replace(".", " ").replace("_", " ").replace("-", " ");
+					sound = Util.parseAwaySpace(m.group("sound"));
 				
 				if (m.group("language") != null && p.groupNames().contains("language")) 
-					language = m.group("language").replace(".", " ").replace("_", " ").replace("-", " ");
+					language = Util.parseAwaySpace(m.group("language"));
 				
 				if (m.group("group") != null && p.groupNames().contains("group")) 
-					group = m.group("group").replace(".", " ").replace("_", " ").replace("-", " ");
+					group = Util.parseAwaySpace(m.group("group"));
 				
 			}
 			
@@ -100,6 +104,10 @@ public class Util {
 		}
 
 	}
+	
+	private static String parseAwaySpace(String inputString) {
+		return inputString.replace(".", " ").replace("_", " ").replace("-", " ");
+	}
 
 	/**
 	 * Rates a sub file (or a string) depending on the all categories in the Movie
@@ -113,7 +121,7 @@ public class Util {
 		Movie subMovie = Util.extractMovie("", subFilename);
 		
 		//Check if filenames match exactly
-		String filenameWithoutExtension = m.getFilename().substring(0,  m.getFilename().lastIndexOf('.') - 1);
+		String filenameWithoutExtension = m.getFilename().substring(0,  m.getFilename().lastIndexOf('.'));
 		if (filenameWithoutExtension.equals(subFilename))
 			return Rating.ExactMatch;
 		
@@ -149,13 +157,13 @@ public class Util {
         byte[] buffer = new byte[4096];
         
         while (-1 != (len = is.read(buffer))) {
-        	Log.Debug(String.format("Read %s bytes from inputstream", len));
+        	//Log.Debug(String.format("Read %s bytes from inputstream", len));
         	bos.write(buffer, 0, len);
         	
-        	Log.Debug(new String(bos.toByteArray(), "ISO-8859-1"));
+        	//Log.Debug(new String(bos.toByteArray(), "ISO-8859-1"));
         }
         
-        Log.Debug("end-of-file reached in inputstream");
+        //Log.Debug("end-of-file reached in inputstream");
         bos.flush();
         bos.close();
         
@@ -178,4 +186,14 @@ public class Util {
 		return result;
 	}	
 
+	public static boolean tryParseInt(String string) {
+		int ret;
+		try {
+			ret = Integer.parseInt(string);
+			return true;
+		}
+		catch (Exception e) {
+			return false;
+		}
+	}
 }

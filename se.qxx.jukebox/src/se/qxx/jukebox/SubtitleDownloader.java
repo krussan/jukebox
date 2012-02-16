@@ -57,8 +57,6 @@ public class SubtitleDownloader implements Runnable {
 					try {
 						if (m != null) {
 							getSubtitles(m);
-						
-							_listDone.add(m);
 						}
 					}
 					catch (Exception e) {
@@ -68,9 +66,14 @@ public class SubtitleDownloader implements Runnable {
 						//TODO: Adding movie to done to remove it from the list.
 						// should actually add this to an error list and let the user
 						// decide if to continue
-						_listDone.add(m);
-						_listProcessing.removeAll(_listDone);
+						synchronized(_listToDownload) {
+							_listDone.add(m);
+						}
 					}
+				}
+				
+				synchronized(_listToDownload) {
+					_listProcessing.remove(_listDone);
 				}
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block

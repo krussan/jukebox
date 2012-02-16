@@ -69,6 +69,8 @@ public class UndertexterSe implements ISubtitleFinder {
 		//      otherwise get all
 		List<SubFile> listSubs = new ArrayList<SubFile>();
 		
+		Log.Debug(String.format("UndertexterSe :: Finding subtitles for %s", m.getFilename()));
+		
 		while (matcher.find()) {
 			String urlString = matcher.group("url");
 			String description = matcher.group("name");
@@ -76,6 +78,7 @@ public class UndertexterSe implements ISubtitleFinder {
 			SubFile sf = new SubFile(urlString, description);
 			Rating r = Util.rateSub(m, description);
 			sf.setRating(r);
+			Log.Debug(String.format("UndertexterSe :: Sub with description %s rated as %s", description, r.toString()));
 			
 			listSubs.add(sf);
 		}
