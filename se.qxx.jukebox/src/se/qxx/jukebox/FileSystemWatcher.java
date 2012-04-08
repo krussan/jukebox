@@ -32,13 +32,14 @@ public class FileSystemWatcher implements Runnable {
   	  
 	  public FileSystemWatcher(String directoryName, ExtensionFileFilter filter, boolean watchCreated, boolean watchModified) {
 	    File directoryToWatch = new File(directoryName);
-	    if (!directoryToWatch.isDirectory()) {
+	    /*if (!directoryToWatch.isDirectory()) {
 	      throw new RuntimeException("It needs to be a directory");
-	    }
+	    }*/
 	    directory = directoryToWatch;
+	    _filter = filter;
 	    files = getCurrentRepresentation();
 	    clients = new ArrayList<INotifyClient>();
-	    _filter = filter;
+	    
 	    this.watchCreated = watchCreated;
 	    this.watchModified = watchModified;
 	  }
@@ -59,6 +60,8 @@ public class FileSystemWatcher implements Runnable {
 		  TreeSet<FileRepresentation> rep = new TreeSet<FileRepresentation>(comparator);
 		  
 		  List<File> list = Util.getFileListing(directory, _filter);
+		  //List<File> list = Util.getFileListingWorkAround(directory, _filter);
+		  
 		  for (File f : list) {
 			  rep.add(new FileRepresentation(f.getParent(), f.getName(), f.lastModified()));
 		  }

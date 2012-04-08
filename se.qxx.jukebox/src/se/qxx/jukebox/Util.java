@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import javax.swing.filechooser.FileSystemView;
+
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.StringSplitters.Splitter;
@@ -177,8 +179,14 @@ public class Util {
 	
 	public static List<File> getFileListing(File directory, ExtensionFileFilter filter)
 	{
+		List<File> result = checkExtension(directory.listFiles(filter), filter);
+		
+		return result;
+	}
+
+	  //TODO: getFileListing does not work for UNC paths
+	private static List<File> checkExtension(File[] filesAndDirs, ExtensionFileFilter filter) {
 		List<File> result = new ArrayList<File>();
-		List<File> filesAndDirs = Arrays.asList(directory.listFiles(filter));
 
 		for(File file : filesAndDirs) {
 			result.add(file); //always add, even if directory
@@ -189,6 +197,18 @@ public class Util {
 		
 		return result;
 	}	
+	
+	public static List<File> getFileListingWorkAround(File directory, ExtensionFileFilter filter) {
+		// Workaround
+		FileSystemView fsv = FileSystemView.getFileSystemView();
+//		System.out.println("Listing shares using UNC path via File.listFiles() with File object returned from\n" +
+//			"FileSystemView.getParentDirectory(new File(dir,knownSubdir))\n" +
+//			"ultimately still uses File.listFiles(), but this time it works.");
+		File dirF = fsv.getParentDirectory(new File(directory.getName(), "C$"));
+//		System.out.println("List.listFiles() of "+dirF+" (note missing \\\\ that normally begins a UNC path).");
+//		System.out.println("List.toURI() = "+dirF.toURI());
+		return checkExtension(dirF.listFiles(), filter);
+	}
 
 	public static boolean tryParseInt(String string) {
 		int ret;

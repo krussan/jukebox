@@ -121,21 +121,25 @@ public class SubtitleDownloader implements Runnable {
 		List<SubFile> list = new ArrayList<SubFile>();
 		File dir = new File(m.getFilepath());
 		String movieFilenameWithoutExt = Util.getFilenameWithoutExtension(m.getFilename());
-		list.addAll(checkDirForSubs(movieFilenameWithoutExt, dir));
+		
+		list.addAll(checkDirForSubs(movieFilenameWithoutExt, new File(String.format("%s\\%s", Settings.get().getSubFinders().getSubsPath(), movieFilenameWithoutExt))));
 
-		String[] dirs = dir.list(new FilenameFilter() {
+		// if subs exist in subs directory don't check the rest
+		if (list.size() == 0) {
+			list.addAll(checkDirForSubs(movieFilenameWithoutExt, dir));
+	
+			String[] dirs = dir.list(new FilenameFilter() {
+				
+				@Override
+				public boolean accept(File dir, String name) {
+					return name.equals("Subs") || name.equals("SubFiles");
+				}
+			});
 			
-			@Override
-			public boolean accept(File dir, String name) {
-				return name.equals("Subs") || name.equals("SubFiles");
+			for (String newDir : dirs) {
+				list.addAll(checkDirForSubs(movieFilenameWithoutExt, new File(newDir)));
 			}
-		});
-		
-		for (String newDir : dirs) {
-			list.addAll(checkDirForSubs(movieFilenameWithoutExt, new File(newDir)));
 		}
-		
-		list.addAll(checkDirForSubs(movieFilenameWithoutExt, new File(Settings.get().getSubFinders().getSubsPath())));
 
 		return list;
 	}
