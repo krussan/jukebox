@@ -125,20 +125,29 @@ public class Util {
 	 */
 	public static Rating rateSub(Movie m, String subFilename) {
 		Movie subMovie = Util.extractMovie("", subFilename);
-		
-		//Check if filenames match exactly
-		String filenameWithoutExtension = getFilenameWithoutExtension(m.getFilename());
-		if (filenameWithoutExtension.equals(subFilename))
-			return Rating.ExactMatch;
-		
 		Rating r = Rating.NotMatched;
-		if (subMovie.getGroup().equals(m.getGroup()) && subMovie.getGroup() != "") {
-			if (subMovie.getFormat().equals(m.getFormat()) && subMovie.getFormat() != "")
-				r = Rating.PositiveMatch;
-			else
-				r = Rating.ProbableMatch;
+		
+		if (subMovie != null) {
+			//Check if filenames match exactly
+			String filenameWithoutExtension = getFilenameWithoutExtension(m.getFilename());
+			if (filenameWithoutExtension.equals(subFilename))
+				return Rating.ExactMatch;
+			
+			
+			String group = m.getGroup();
+			String subGroup = subMovie.getGroup();
+			
+			if (subGroup != null) {
+				if (subGroup.equals(group) && subGroup != "") {
+					if (subMovie.getFormat().equals(m.getFormat()) && subMovie.getFormat() != "")
+						r = Rating.PositiveMatch;
+					else
+						r = Rating.ProbableMatch;
+				}
+			}
 		}
 		return r;
+		
 	}
 	
 	public static String getFilenameWithoutExtension(String filename) {

@@ -26,9 +26,6 @@ public class SubtitleDownloader implements Runnable {
 	// movie
 	// has been downloaded
 
-	private LinkedList<Movie> _listToDownload = new LinkedList<Movie>();
-	private List<Movie> _listProcessing = new ArrayList<Movie>();
-	private List<Movie> _listDone = new ArrayList<Movie>();
 
 	private static SubtitleDownloader _instance;
 	private boolean _isRunning;
@@ -46,50 +43,58 @@ public class SubtitleDownloader implements Runnable {
 
 	@Override
 	public void run() {
+		List<Movie> _listProcessing =  DB.getSubtitleQueue();
 		this._isRunning = true;
-
-		while (this._isRunning = true) {
+		
+		while (Settings.get() == null) {
+			Log.Info("Settings has not been initialized. Sleeping for 10 seconds");
 			try {
-				synchronized (_listToDownload) {
-					_listToDownload.wait();
-					_listProcessing.addAll(_listToDownload);
-					_listToDownload.clear();
-				}
-
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+			}
+		}
+		
+		while (this._isRunning = true) {
+			int result = 0;
+			try {
 				for (Movie m : _listProcessing) {
 					try {
 						if (m != null) {
 							getSubtitles(m);
+							result = 1;
 						}
 					} catch (Exception e) {
 						Log.Error("Error when downloading subtitles", e);
+						result = -1;
 					} finally {
 						// TODO: Adding movie to done to remove it from the
 						// list.
 						// should actually add this to an error list and let the
 						// user
 						// decide if to continue
-						synchronized (_listToDownload) {
-							_listDone.add(m);
-						}
+						DB.setSubtitleDownloaded(m, result);
 					}
 				}
 
-				synchronized (_listToDownload) {
-					_listProcessing.remove(_listDone);
+				
+				// wait for trigger
+				synchronized (_instance) {
+					_instance.wait(15000);
+					_listProcessing = DB.getSubtitleQueue();					
 				}
+				
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			}			
 		}
 		// this.wait();
 	}
 
 	public void addMovie(Movie m) {
-		synchronized (_listToDownload) {
-			_listToDownload.add(m);
-			_listToDownload.notify();
+		synchronized (_instance) {
+			DB.addMovieToSubtitleQueue(m);
+			_instance.notify();
 		}
 
 	}

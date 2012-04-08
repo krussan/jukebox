@@ -143,6 +143,57 @@ public class DB {
 		}
 	}
 	
+	public synchronized static void addMovieToSubtitleQueue(Movie m) {
+		Connection conn = null;
+		try {
+			conn = DB.initialize();
+			PreparedStatement prep = conn.prepareStatement(
+					"insert into subtitleQueue " +
+					"(queuedAt, _movie_ID, result)" +
+					"values" +
+					"(datetime(), ?, 0)");
+			
+			prep.setInt(1, m.getID());
+			prep.execute();
+	
+			int i = getIdentity(conn);
+		}
+		catch (Exception e) {
+			Log.Error("Failed to store movie to DB", e);
+		}finally {
+			DB.disconnect(conn);
+		}
+	}
+
+	public synchronized static void setSubtitleDownloaded(Movie m, int result) {
+		Connection conn = null;
+		try {
+			conn = DB.initialize();
+			PreparedStatement prep;
+			if (result >= 0) {
+				prep = conn.prepareStatement(
+					"update subtitleQueue " +
+					" set retreivedAt = datetime() " +
+					"  , result = ?" +
+					"where _movie_ID = ?");
+			} else
+			{
+				prep = conn.prepareStatement(
+					"update subtitleQueue " +
+					" set result = ?" +
+					"where _movie_ID = ?");
+			}
+			prep.setInt(1, result);
+			prep.setInt(2, m.getID());
+			prep.execute();
+	
+		}
+		catch (Exception e) {
+			Log.Error("Failed to store movie to DB", e);
+		}finally {
+			DB.disconnect(conn);
+		}
+	}
 	public synchronized static ArrayList<Movie> searchMovies(String searchString) {
 		Connection conn = null;
 		try {
@@ -152,6 +203,36 @@ public class DB {
 					" SELECT ID, filename, filepath, title, year, type, format, sound, language, groupName, imdburl " +
 					" FROM movie" +
 					" WHERE title LIKE '%" + searchString + "%'"
+					);
+			//prep.setString(1, searchString);
+			
+			ResultSet rs = prep.executeQuery();
+			ArrayList<Movie> result = new ArrayList<Movie>();
+			while (rs.next()) {
+				result.add(extractMovie(rs));
+			}
+					
+			return result;
+		}
+		catch (Exception e) {
+			Log.Error("Failed to retrieve movie listing from DB", e);
+			
+			return new ArrayList<Movie>();
+		}finally {
+			DB.disconnect(conn);
+		}
+	}
+	
+	public synchronized static ArrayList<Movie> getSubtitleQueue() {
+		Connection conn = null;
+		try {
+			conn = DB.initialize();
+	
+			PreparedStatement prep = conn.prepareStatement(
+					" SELECT M.ID, M.filename, M.filepath, M.title, M.year, M.type, M.format, M.sound, M.language, M.groupName, M.imdburl " +
+					" FROM movie AS M" +
+					" INNER JOIN subtitleQueue SQ ON SQ._movie_ID = M.ID" +
+					" WHERE retreivedAt IS NULL AND result = 0"
 					);
 			//prep.setString(1, searchString);
 			
