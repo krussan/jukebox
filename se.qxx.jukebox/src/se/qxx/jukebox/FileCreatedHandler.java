@@ -16,23 +16,28 @@ public class FileCreatedHandler implements INotifyClient {
 		Log.Debug(String.format("New file found :: %s", f.getName()));
 		Movie m = Util.extractMovie(f.getPath(), f.getName());
 		
-		// Check if movie exists in db
-		Movie dbMovie = DB.getMovie(m.getTitle());
-		if (dbMovie != null) {
-			// If it does but in a different path update the path
-			if (!m.getFilepath().equals(dbMovie.getFilepath())) {
-				Movie store = Movie.newBuilder(dbMovie).setFilepath(m.getFilepath()).build();
-				DB.updateMovie(store);
+		if (m != null) {
+			// Check if movie exists in db
+			Movie dbMovie = DB.getMovie(m.getTitle());
+			if (dbMovie != null) {
+				// If it does but in a different path update the path
+				if (!m.getFilepath().equals(dbMovie.getFilepath())) {
+					Movie store = Movie.newBuilder(dbMovie).setFilepath(m.getFilepath()).build();
+					DB.updateMovie(store);
+				}
+				// If it does but in same path exit
 			}
-			// If it does but in same path exit
+			else {
+				// If not get information and subtitles
+				
+				m = getImdbInformation(m);
+				m = DB.addMovie(m);
+				
+				SubtitleDownloader.get().addMovie(m);			
+			}
 		}
 		else {
-			// If not get information and subtitles
-			
-			m = getImdbInformation(m);
-			m = DB.addMovie(m);
-			
-			SubtitleDownloader.get().addMovie(m);			
+			Log.Info(String.format("Failed to identity movie with filename :: %s", f.getName()));
 		}
 	}
 	

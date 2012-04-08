@@ -15,6 +15,7 @@ import java.util.Queue;
 
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.settings.Settings;
+import se.qxx.jukebox.settings.JukeboxListenerSettings.Logs;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder;
 import se.qxx.jukebox.subtitles.SubFile;
 import se.qxx.jukebox.subtitles.SubFile.Rating;
@@ -122,8 +123,13 @@ public class SubtitleDownloader implements Runnable {
 		File dir = new File(m.getFilepath());
 		String movieFilenameWithoutExt = Util.getFilenameWithoutExtension(m.getFilename());
 		
-		list.addAll(checkDirForSubs(movieFilenameWithoutExt, new File(String.format("%s\\%s", Settings.get().getSubFinders().getSubsPath(), movieFilenameWithoutExt))));
+		String subsPath =  Settings.get().getSubFinders().getSubsPath();
+		File subsPathDir =  new File(String.format("%s/%s", subsPath, movieFilenameWithoutExt));
+		
+		list.addAll(checkDirForSubs(movieFilenameWithoutExt,subsPathDir));
 
+		Log.Debug(String.format("Found %s subs for movie %s in subs folder", list.size(), movieFilenameWithoutExt));
+		
 		// if subs exist in subs directory don't check the rest
 		if (list.size() == 0) {
 			list.addAll(checkDirForSubs(movieFilenameWithoutExt, dir));
@@ -146,17 +152,21 @@ public class SubtitleDownloader implements Runnable {
 
 	private List<SubFile> checkDirForSubs(String movieFilenameWithoutExt, File dir) {
 		List<SubFile> list = new ArrayList<SubFile>();
-		String[] subs = dir.list(new FilenameFilter() {
-			
-			@Override
-			public boolean accept(File f, String name) {
-				return name.endsWith("srt") || name.endsWith("idx") || name.endsWith("sub"); 
+		if (dir != null) {
+			String[] subs = dir.list(new FilenameFilter() {
+				
+				@Override
+				public boolean accept(File f, String name) {
+					return name.endsWith("srt") || name.endsWith("idx") || name.endsWith("sub"); 
+				}
+			});
+		
+			if (subs != null) {
+				for (String subFile : subs) {
+					if (subFile.startsWith(movieFilenameWithoutExt))
+						list.add(new SubFile(new File(subFile)));
+				}
 			}
-		});
-	
-		for (String subFile : subs) {
-			if (subFile.startsWith(movieFilenameWithoutExt))
-				list.add(new SubFile(new File(subFile)));
 		}
 		
 		return list;

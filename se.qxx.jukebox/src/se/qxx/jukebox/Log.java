@@ -54,6 +54,13 @@ public class Log {
 	private static void log(String msg, Exception e, String level) {
 		log(msg, level);
 		log(e.toString(), level);
+		printStackTrace(e, level);
+	}
+	
+	private static void printStackTrace(Exception e, String level) {
+		for (StackTraceElement ste : e.getStackTrace()) {
+			log(String.format("%s\n", ste), level);
+		}
 	}
 	
 	private static void logToFile(String filename, String msg) {
@@ -95,7 +102,7 @@ public class Log {
 	}
 	
 	private static String getLogString(String msg, String level) {
-		return String.format("%s - %s - %s", getDateString(), level, msg);
+		return String.format("%s - [%s] - %s - %s", getDateString(), Thread.currentThread().getId(), level, msg);
 	}
 	public static String getDateString() {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

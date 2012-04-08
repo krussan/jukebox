@@ -84,6 +84,10 @@ public class Util {
 			
 		}
 
+		//if movie ends with extension then something is wrong
+		if (title.endsWith(fileName.substring(fileName.length() - 3)))
+			return null;
+		
 		if (maxGroupMatch > 0) {
 			Movie movie = Movie.newBuilder()
 				.setID(-1)
@@ -189,8 +193,11 @@ public class Util {
 		List<File> result = new ArrayList<File>();
 
 		for(File file : filesAndDirs) {
-			result.add(file); //always add, even if directory
-			if ( ! file.isFile() ) {
+			
+			if (file.isFile() ) {
+				result.add(file);
+			} else 
+			{
 				result.addAll(Util.getFileListing(file, filter));
 			}
 		}

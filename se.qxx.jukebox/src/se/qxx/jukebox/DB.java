@@ -12,8 +12,8 @@ public class DB {
 		
 	}
 	
-	public static Movie getMovie(String title) {
-		Connection conn;
+	public synchronized static Movie getMovie(String title) {
+		Connection conn = null;
 		try {
 			conn = DB.initialize();
 
@@ -33,12 +33,15 @@ public class DB {
 			Log.Error("failed to get information from database", e);
 			
 			return null;
+		}finally {
+			DB.disconnect(conn);
 		}
 	}
 	
-	public static void updateMovie(Movie m) {
+	public synchronized static void updateMovie(Movie m) {
+		Connection conn = null;
 		try {
-			Connection conn = DB.initialize();
+			conn = DB.initialize();
 			PreparedStatement prep = conn.prepareStatement(
 				"update movie" +
 				"  set filename = ?" +
@@ -60,12 +63,15 @@ public class DB {
 		}
 		catch (Exception e) {
 			Log.Error("Failed to update movie in DB", e);
+		}finally {
+			DB.disconnect(conn);
 		}
 	}
 
-	public static Movie addMovie(Movie m) {
+	public synchronized static Movie addMovie(Movie m) {
+		Connection conn = null;
 		try {
-			Connection conn = DB.initialize();
+			conn = DB.initialize();
 			PreparedStatement prep = conn.prepareStatement(
 					"insert into movie " +
 					"(filename, filepath, title, year, type, format, sound, language, groupName, imdburl)" +
@@ -77,14 +83,14 @@ public class DB {
 	
 			int i = getIdentity(conn);
 			Movie mm = Movie.newBuilder().mergeFrom(m).setID(i).build();
-			
-			DB.disconnect(conn);
-			
+					
 			return mm;
 		}
 		catch (Exception e) {
 			Log.Error("Failed to store movie to DB", e);
 			return null;
+		}finally {
+			DB.disconnect(conn);
 		}
 	}
 
@@ -111,9 +117,10 @@ public class DB {
 			return -1;
 	}
 	
-	public static void addSubtitle(Movie m, String filename, String description, Rating rating) {
+	public synchronized static void addSubtitle(Movie m, String filename, String description, Rating rating) {
+		Connection conn = null;
 		try {
-			Connection conn = DB.initialize();
+			conn = DB.initialize();
 			
 			PreparedStatement prep = conn.prepareStatement(
 					"insert into subtitles " +
@@ -127,17 +134,19 @@ public class DB {
 			prep.setString(4, rating.toString());
 			prep.execute();
 						
-			DB.disconnect(conn);
 		}
 		catch (Exception e) {
 			Log.Error("Failed to add subtitles to DB", e);
 			
+		}finally {
+			DB.disconnect(conn);
 		}
 	}
 	
-	public static ArrayList<Movie> searchMovies(String searchString) {
+	public synchronized static ArrayList<Movie> searchMovies(String searchString) {
+		Connection conn = null;
 		try {
-			Connection conn = DB.initialize();
+			conn = DB.initialize();
 	
 			PreparedStatement prep = conn.prepareStatement(
 					" SELECT ID, filename, filepath, title, year, type, format, sound, language, groupName, imdburl " +
@@ -151,15 +160,15 @@ public class DB {
 			while (rs.next()) {
 				result.add(extractMovie(rs));
 			}
-			
-			DB.disconnect(conn);
-			
+					
 			return result;
 		}
 		catch (Exception e) {
 			Log.Error("Failed to retrieve movie listing from DB", e);
 			
 			return new ArrayList<Movie>();
+		}finally {
+			DB.disconnect(conn);
 		}
 	}
 	
@@ -186,7 +195,11 @@ public class DB {
 	    return DriverManager.getConnection("jdbc:sqlite:jukebox.db");				
 	}
 	
-	private static void disconnect(Connection conn) throws SQLException {
-		conn.close();
+	private static void disconnect(Connection conn) {
+		try {
+			if (conn != null)
+				conn.close();
+		} catch (SQLException e) {
+		}
 	}
 }
