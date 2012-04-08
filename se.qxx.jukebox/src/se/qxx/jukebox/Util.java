@@ -121,7 +121,7 @@ public class Util {
 		Movie subMovie = Util.extractMovie("", subFilename);
 		
 		//Check if filenames match exactly
-		String filenameWithoutExtension = m.getFilename().substring(0,  m.getFilename().lastIndexOf('.'));
+		String filenameWithoutExtension = getFilenameWithoutExtension(m.getFilename());
 		if (filenameWithoutExtension.equals(subFilename))
 			return Rating.ExactMatch;
 		
@@ -133,6 +133,10 @@ public class Util {
 				r = Rating.ProbableMatch;
 		}
 		return r;
+	}
+	
+	public static String getFilenameWithoutExtension(String filename) {
+		return filename.substring(0,  filename.lastIndexOf('.'));
 	}
 	
 	public static String getTempSubsName(String filename) {

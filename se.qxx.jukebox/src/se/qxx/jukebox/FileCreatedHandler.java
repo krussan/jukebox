@@ -1,8 +1,6 @@
 package se.qxx.jukebox;
 
 import java.io.IOException;
-import java.util.List;
-
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 
 public class FileCreatedHandler implements INotifyClient {
