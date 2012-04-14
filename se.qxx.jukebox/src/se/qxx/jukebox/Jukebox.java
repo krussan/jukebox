@@ -5,13 +5,15 @@ public class Jukebox {
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) {	
-		startMainThread();		
+	public static void main(String[] args) {
+		Arguments a = Arguments.parse(args);
+		startMainThread(a);		
 	}
 	
-	private static void startMainThread()  {
+	private static void startMainThread(Arguments args)  {
 		try {
-			Thread t = new Thread(new Main());
+			
+			Thread t = new Thread(new Main(args));
 			t.start();
 			
 			t.join();
