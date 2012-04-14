@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project>
+	<property name="solution.dir" value="D:/Dev/svn/jukebox/trunk" />
+	<property name="src.dir" value="${solution.dir}/se.qxx.jukebox/src" />
+	<property name="domain.dir" value="${solution.dir}/se.qxx.jukebox.domain/src" />
+	<property name="build.dir" value="build" />
+	<property name="classes.dir" value="${build.dir}/classes" />
+	<property name="jar.dir" value="${build.dir}/jar" />
+	<property name="deploy.dir" value="Z:/Dev/src/jukebox" />
+	<property name="lib.dir" value="lib" />
+	
+	<property name="main-class" value="se.qxx.jukebox.Jukebox" />
+	
+	<path id="classpath">
+        <fileset dir="${lib.dir}" includes="**/*.jar"/>
+    </path>
+    
+	<target name="clean">
+		
+	</target>
+	
+	<target name="compile">
+		<mkdir dir="${classes.dir}" />
+		<javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath" />
+	</target>
+	
+	<target name="jar">
+	
+	</target>
+	
+	<target name="deployDB">
+	</target>
+	
+	<target name="deploy">
+	</target>
+	
+	<target name="build" depends="compile">
+	</target>
+</project>
