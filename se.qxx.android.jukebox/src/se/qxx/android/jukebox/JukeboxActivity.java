@@ -77,8 +77,6 @@ public class JukeboxActivity extends Activity implements ModelUpdatedEventListen
         setContentView(R.layout.main);
         JukeboxSettings.init(this);
         
-        text = (EditText)findViewById(R.id.editText1);
-        
 		ListView v = (ListView)findViewById(R.id.listView1);
 		
 		_jukeboxMovieLayoutAdapter = new JukeboxMovieLayoutAdapter(); 
@@ -125,41 +123,10 @@ public class JukeboxActivity extends Activity implements ModelUpdatedEventListen
  	// "On Click property" of the button
  	public void myClickHandler(View view) {
  		switch (view.getId()) {
- 		case R.id.button1:
- 			RadioButton celsiusButton = (RadioButton) findViewById(R.id.radio0);
- 			RadioButton fahrenheitButton = (RadioButton) findViewById(R.id.radio1);
- 			if (text.getText().length() == 0) {
- 				Toast.makeText(this, "Please enter a valid number", Toast.LENGTH_LONG).show();
- 				return;
- 			}
- 			
- 			float inputValue = Float.parseFloat(text.getText().toString());
- 			if (celsiusButton.isChecked()) {
- 				text.setText(String.valueOf(convertFahrenheitToCelsius(inputValue)));
- 				celsiusButton.setChecked(false);
- 				fahrenheitButton.setChecked(true);
- 			}
- 			else {
- 				text.setText(String.valueOf(convertCelsiusToFahrenheit(inputValue)));
- 				celsiusButton.setChecked(true);
- 				fahrenheitButton.setChecked(false);
- 			}
+
  		}
  	}
  	
- 	public void fahrenheitClickHandler(View view) {
- 		Toast.makeText(this, "Please enter a valid number", Toast.LENGTH_LONG).show();
- 		
- 	}
- 	
-	private float convertFahrenheitToCelsius(float fahrenheit) {
-		return ((fahrenheit - 32) * 5 / 9);
-	}
-
-	// Converts to fahrenheit
-	private float convertCelsiusToFahrenheit(float celsius) {
-		return ((celsius * 9) / 5) + 32;
-	}
 
 	@Override
 	public void handleModelUpdatedEventListener(EventObject e) {
