@@ -22,6 +22,11 @@
     </subFinder>
   </subFinders>
   <stringSplitters>
+    <exclude>
+    	<regex>
+    		<![CDATA[]]>
+    	</regex>
+    </exclude>
   	<splitter>
   		<regex>
   			<![CDATA[(?<title>(?<g1>\w[.|_|\s-]?)*)(\[?(?<year>[0-9]{4})\]?)+[.|_|\s-]?(?<g2>\[?(?<type>DVDScr|DVDRip|BRRip)\]?)?[.|_|\s-]?(?<g3>\[?(?<format>XvID|XVID|x264)\]?)?[.|_|\s-]?(?<g4>\[?(?<sound>AC3\s5\.1|AC3)\]?)?[.|_|\s-]?(?<g5>\[(?<language>ENG|SWE)\])?[.|_|\s-]?(?<group>.*)]]>

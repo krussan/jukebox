@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <project>
-	<property name="solution.dir" value="D:/Dev/svn/jukebox/trunk" />
-	<property name="src.dir" value="${solution.dir}/se.qxx.jukebox/src" />
-	<property name="domain.dir" value="${solution.dir}/se.qxx.jukebox.domain/src" />
-	<property name="build.dir" value="build" />
+	<buildnumber file="build.num" />
+	<property name="version.num" value="0.0.${build.number}" />
+			
+	<property name="jdk.dir" value="C:/Program Files/Java/jdk1.6.0_30" />
+	<property name="root.dir" value="D:/Dev/svn/jukebox" />
+	<property name="lib.dir" value="${root.dir}/lib" />	
+	<property name="solution.dir" value="${root.dir}/trunk" />
+	
+	<property name="main.dir" value="${solution.dir}/se.qxx.jukebox" />
+	<property name="main.src.dir" value="${main.dir}/src" />
+	<property name="domain.src.dir" value="${solution.dir}/se.qxx.jukebox.domain/src" />
+	
+	<property name="build.dir" value="${main.dir}/build" />
 	<property name="classes.dir" value="${build.dir}/classes" />
-	<property name="jar.dir" value="${build.dir}/jar" />
-	<property name="deploy.dir" value="Z:/Dev/src/jukebox" />
-	<property name="lib.dir" value="lib" />
+
+	<property name="jar.file" value="jukebox-${version.num}.jar" />
+	
+	<property name="deploy.path" value="chris@ULTRA:/c/media/Dev/src/jukebox" />
+	<property name="key.file" value="D:/util/keys/BLACK_HELL_openSSH.ppk" />
 	
 	<property name="main-class" value="se.qxx.jukebox.Jukebox" />
 	
@@ -15,25 +26,81 @@
         <fileset dir="${lib.dir}" includes="**/*.jar"/>
     </path>
     
-	<target name="clean">
+	<target name="jaxb">
+	    <exec executable="${jdk.dir}/bin/xjc.exe">
+	        <arg value="-d"/>
+	        <arg value="${main.src.dir}"/>
+	        <arg value="-p"/>
+	        <arg value="se.qxx.jukebox.settings"/>
+	        <arg value="${solution.dir}/se.qxx.jukebox/JukeboxSettings.xsd"/>
+	    </exec>
 		
+	</target>
+	
+	<target name="clean">
+		<delete dir="${build.dir}" includeemptydirs="true" />
 	</target>
 	
 	<target name="compile">
 		<mkdir dir="${classes.dir}" />
-		<javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath" />
+		<javac srcdir="${domain.src.dir}" destdir="${classes.dir}" classpathref="classpath" includeantruntime="true" />
+		<javac srcdir="${main.src.dir}" destdir="${classes.dir}" classpathref="classpath" includeantruntime="true"/>
 	</target>
 	
 	<target name="jar">
-	
+		<jar destfile="${build.dir}/${jar.file}"
+			basedir="${classes.dir}">
+			<manifest>
+				<attribute name="Main-Class" value="${main-class}" />		
+    			<attribute name="Built-By" value="${user.name}"/>
+        		<attribute name="Implementation-Version" value="${version.num}"/> 		
+			</manifest>
+		</jar>
 	</target>
 	
-	<target name="deployDB">
+	<target name="createrunscript">
+		<echo file="${build.dir}/run.sh" message="#!/bin/sh" />
+		<echo file="${build.dir}/run.sh" message="java -cp '${jar.file}:named-regexp.jar:protobuf-2.4.1.jar:sqlite-jdbc-3.7.2.jar' ${main-class}" /> 
+	</target> 
+	
+	<target name="cleanDB">
+		
+	</target>
+	
+	<target name="deployDB">  
+		<scp 
+			file="${main.dir}/jukebox.db" 
+			todir="${deploy.path}" 
+			trust="true" 
+			keyfile="${key.file}"			
+		/>		
 	</target>
 	
 	<target name="deploy">
+		<scp 
+			todir="${deploy.path}" 
+			trust="true"
+			keyfile="${key.file}"
+		>
+			<fileset dir="${build.dir}">
+				<include name="*" />
+			</fileset>
+		</scp>
+		
+		<!-- TODO: copy settings and apply release settings //-->
+		<scp 
+			file="${build.dir}/${jar.file}" 
+			todir="${deploy.path}" 
+			trust="true"
+			keyfile="${key.file}"
+		>
+			<fileset dir="${lib.dir}">
+				<include name="*.jar"/>
+			</fileset>
+		</scp>
+				
 	</target>
 	
-	<target name="build" depends="compile">
+	<target name="build" depends="clean,jaxb,compile,jar,createrunscript,deployDB,deploy">
 	</target>
 </project>

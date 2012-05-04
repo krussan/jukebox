@@ -87,6 +87,7 @@
       						</xs:sequence>
       					</xs:complexType>
       				</xs:element>
+      				<xs:element name="exclude" type="excludeType"></xs:element>
       			</xs:sequence>
       		</xs:complexType>
       	</xs:element>
@@ -142,4 +143,10 @@
 
 
 
+
+  <xs:complexType name="excludeType">
+  	<xs:sequence>
+  		<xs:element name="regex" type="xs:string"></xs:element>
+  	</xs:sequence>
+  </xs:complexType>
 </xs:schema>
