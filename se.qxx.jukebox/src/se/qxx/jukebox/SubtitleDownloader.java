@@ -47,7 +47,7 @@ public class SubtitleDownloader implements Runnable {
 		this._isRunning = true;
 		
 		while (Settings.get() == null) {
-			Log.Info("Settings has not been initialized. Sleeping for 10 seconds");
+			Log.Info("Settings has not been initialized. Sleeping for 10 seconds", Log.LogType.MAIN);
 			try {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {
@@ -64,7 +64,7 @@ public class SubtitleDownloader implements Runnable {
 							result = 1;
 						}
 					} catch (Exception e) {
-						Log.Error("Error when downloading subtitles", e);
+						Log.Error("Error when downloading subtitles", Log.LogType.SUBS, e);
 						result = -1;
 					} finally {
 						// TODO: Adding movie to done to remove it from the
@@ -133,7 +133,7 @@ public class SubtitleDownloader implements Runnable {
 		
 		list.addAll(checkDirForSubs(movieFilenameWithoutExt,subsPathDir));
 
-		Log.Debug(String.format("Found %s subs for movie %s in subs folder", list.size(), movieFilenameWithoutExt));
+		Log.Debug(String.format("Found %s subs for movie %s in subs folder", list.size(), movieFilenameWithoutExt), Log.LogType.SUBS);
 		
 		// if subs exist in subs directory don't check the rest
 		if (list.size() == 0) {
@@ -214,8 +214,7 @@ public class SubtitleDownloader implements Runnable {
 
 			} catch (Exception e) {
 				Log.Error(
-						"Error when downloading subtitles... Continuing with next one",
-						e);
+						"Error when downloading subtitles... Continuing with next one", Log.LogType.SUBS, e);
 			}
 		}
 	}
@@ -232,7 +231,7 @@ public class SubtitleDownloader implements Runnable {
 					if (i.getName().equals(
 							"se.qxx.jukebox.subtitles.ISubtitleFinder")) {
 						Log.Debug(String.format(
-								"%s implements ISubtitleFinder", className));
+								"%s implements ISubtitleFinder", className), Log.LogType.FIND);
 
 						Class<?>[] parTypes = new Class<?>[] {};
 						Object[] args = new Object[] {};
@@ -258,35 +257,35 @@ public class SubtitleDownloader implements Runnable {
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				Log.Error(String.format("Error when loading subfinder :: %s",
-						className), e);
+						className), Log.LogType.SUBS, e);
 			} catch (IllegalArgumentException e) {
 				// TODO Auto-generated catch block
 				Log.Error(String.format("Error when loading subfinder :: %s",
-						className), e);
+						className), Log.LogType.SUBS, e);
 			} catch (InstantiationException e) {
 				// TODO Auto-generated catch block
 				Log.Error(String.format("Error when loading subfinder :: %s",
-						className), e);
+						className), Log.LogType.SUBS, e);
 			} catch (IllegalAccessException e) {
 				// TODO Auto-generated catch block
 				Log.Error(String.format("Error when loading subfinder :: %s",
-						className), e);
+						className), Log.LogType.SUBS, e);
 			} catch (InvocationTargetException e) {
 				// TODO Auto-generated catch block
 				Log.Error(String.format("Error when loading subfinder :: %s",
-						className), e);
+						className), Log.LogType.SUBS, e);
 			} catch (SecurityException e) {
 				// TODO Auto-generated catch block
 				Log.Error(String.format("Error when loading subfinder :: %s",
-						className), e);
+						className), Log.LogType.SUBS, e);
 			} catch (NoSuchMethodException e) {
 				// TODO Auto-generated catch block
 				Log.Error(String.format("Error when loading subfinder :: %s",
-						className), e);
+						className), Log.LogType.SUBS, e);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				Log.Error(String.format("Error when loading subfinder :: %s",
-						className), e);
+						className), Log.LogType.SUBS, e);
 			}
 		}
 

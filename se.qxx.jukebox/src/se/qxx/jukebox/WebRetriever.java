@@ -47,7 +47,7 @@ public class WebRetriever {
 		
 		while (!found) {
 			code = httpcon.getResponseCode();
-			Log.Debug(httpcon.getResponseMessage());
+			Log.Debug(httpcon.getResponseMessage(), Log.LogType.MAIN);
 			
 			if (code == 302) {
 				newUrl = httpcon.getHeaderField("Location");
@@ -62,13 +62,13 @@ public class WebRetriever {
 						URI uri = new URI(m.group(1), m.group(2), m.group(3), "");
 						
 						//newUrl = m.group(1) + "://" + m.group(2) + URLEncoder.encode(m.group(3), "iso-8859-1");
-						Log.Debug(m.group(2));
+						//Log.Debug(m.group(2));
 
 						url = uri.toURL();
 
 					} catch (URISyntaxException e) {
 						// TODO Auto-generated catch block
-						Log.Error("Error when parsing redirect url", e);
+						Log.Error("Error when parsing redirect url", Log.LogType.MAIN, e);
 					}
 				}
 				

@@ -47,15 +47,15 @@ public class VLCConnection {
 	
 	private void connect() {
 		try {
-			Log.Debug(String.format("Connecting to %s port %s", this._host, this._port));
+			Log.Debug(String.format("Connecting to %s port %s", this._host, this._port), Log.LogType.ALL);
 			_sock = new Socket(this._host, this._port);
-			Log.Debug("Connected...");
+			Log.Debug("Connected...", Log.LogType.COMM);
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
-			Log.Error(String.format("Unable to connect to VLC host :: %s port :: %s", this._host, this._port), e);
+			Log.Error(String.format("Unable to connect to VLC host :: %s port :: %s", this._host, this._port), Log.LogType.COMM, e);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			Log.Error(String.format("Unable to connect to VLC host :: %s port :: %s", this._host, this._port), e);
+			Log.Error(String.format("Unable to connect to VLC host :: %s port :: %s", this._host, this._port), Log.LogType.COMM, e);
 		}
 
 	}
@@ -65,7 +65,7 @@ public class VLCConnection {
 			_sock.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			Log.Error(String.format("Disconnect failed on host :: %s port :: %s", this._host, this._port), e);
+			Log.Error(String.format("Disconnect failed on host :: %s port :: %s", this._host, this._port), Log.LogType.COMM, e);
 		}
 	}
 	
@@ -112,7 +112,7 @@ public class VLCConnection {
 			this.sendCommand("fullscreen\n");
 		}
 		catch (Exception e) {
-			Log.Error("Error while setting fullscreen mode.", e);
+			Log.Error("Error while setting fullscreen mode.", Log.LogType.COMM, e);
 		}
 	}
 	
@@ -127,7 +127,7 @@ public class VLCConnection {
 		try {
 			this.sendCommand(output);
 		} catch (Exception e) {
-			Log.Error("Error while adding file to playlist", e);
+			Log.Error("Error while adding file to playlist", Log.LogType.COMM, e);
 		}
 	}
 

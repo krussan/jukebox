@@ -86,7 +86,7 @@ public class Main implements Runnable, INotifyClient
 				ff.addExtension(e.getValue());
 				FileSystemWatcher f = new FileSystemWatcher(c.getPath(), ff, true, false);
 				
-				Log.Debug(String.format("Starting listening on :: %s", c.getPath()));
+				Log.Debug(String.format("Starting listening on :: %s", c.getPath()), Log.LogType.FIND);
 				
 				f.registerClient(h);
 				f.setSleepTime(500);

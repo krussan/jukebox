@@ -13,53 +13,65 @@ public class Log {
 	static final int ERROR = 2;
 	static final int CRITICAL = 1;
 	
-	public static void Critical(String msg) {
-		log(msg, "CRITICAL");
+	public enum LogType {
+		ALL,
+		MAIN,
+		SUBS,
+		FIND,
+		COMM
 	}
 	
-	public static void Critical(String msg, Exception e) {
-		log(msg, e, "CRITICAL");
+	public static void Critical(String msg, LogType type) {
+		log(msg, type, "CRITICAL");
 	}
 	
-	public static void Error(String msg, Exception e) {
-		log(msg, e, "ERROR");
+	public static void Critical(String msg, LogType type, Exception e) {
+		log(msg, type, e, "CRITICAL");
 	}
 	
-	public static void Debug(String msg) {
-		log(msg, "DEBUG");
+	public static void Error(String msg, LogType type, Exception e) {
+		log(msg, type, e, "ERROR");
 	}
 	
-	public static void Info(String msg) {
-		log(msg, "INFO");
+	public static void Debug(String msg, LogType type) {
+		log(msg, type, "DEBUG");
 	}
 	
-	private static void log(String msg, String level) {
+	public static void Info(String msg, LogType type) {
+		log(msg, type, "INFO");
+	}
+	
+	private static void log(String msg, LogType type, String level) {
 		int msgLevel = getLevel(level);
 		String logMessage = getLogString(msg, level);
 		try {
 			for(JukeboxListenerSettings.Logs.Log l : Settings.get().getLogs().getLog()) {
-				int logLevel = getLevel(l);
-				if (logLevel >= msgLevel) {
-					if (l.getType().toLowerCase().equals("file"))
-						logToFile(l.getFilename(), logMessage);
-					else if (l.getType().toLowerCase().equals("console"))
-						logToConsole(logMessage);
+				LogType logType = LogType.valueOf(l.getLogs());
+				
+				if (logType == LogType.ALL || logType == type) {
+					int logLevel = getLevel(l);
+					if (logLevel >= msgLevel) {
+						if (l.getType().toLowerCase().equals("file"))
+							logToFile(l.getFilename(), logMessage);
+						else if (l.getType().toLowerCase().equals("console"))
+							logToConsole(logMessage);
+					}
 				}
 			}
 		} catch (Exception e) {
-			logToConsole(logMessage);
+			logToConsole(logMessage, e);
 		}
 	}
 	
-	private static void log(String msg, Exception e, String level) {
-		log(msg, level);
-		log(e.toString(), level);
-		printStackTrace(e, level);
+	private static void log(String msg, LogType type, Exception e, String level) {
+		log(msg, type, level);
+		log(e.toString(), type, level);
+		printStackTrace(e, type, level);
 	}
 	
-	private static void printStackTrace(Exception e, String level) {
+	private static void printStackTrace(Exception e, LogType type, String level) {
 		for (StackTraceElement ste : e.getStackTrace()) {
-			log(String.format("%s\n", ste), level);
+			log(String.format("%s\n", ste), type, level);
 		}
 	}
 	

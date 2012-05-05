@@ -54,7 +54,7 @@ public class UndertexterSe implements ISubtitleFinder {
 		//pattern = "<tr[^>]*?>.*?<td[^>]*?>.*?<a[^>]*?alt\s*=\s*"Ladda\sner\sundertext[^"]*?".*?href\s*=\s*\"(?<url>[^"]*?)"[^>]*?>.*?Nedladdningar.*?<br>\s*(?<name>[^<]*?)</td[^>]*?>.*?</tr[^>]*?>"
 		//pattern = "<tr[^>]*?>.*?<td[^>]*?>.*?<a[^>]*?alt\\s*=\\s*\"Ladda\\sner\\sundertext[^\"]*?\".*?href\\s*=\\s*\\\"(?<url>[^\\\"]*?)\\\"[^>]*?>.*?Nedladdningar.*?<br>\\s*(?<name>[^<]*?)</td[^>]*?>.*?</tr[^>]*?>";
 		
-		Log.Debug(String.format("Pattern :: %s", pattern));
+		Log.Debug(String.format("Pattern :: %s", pattern), Log.LogType.SUBS);
 		NamedPattern p = NamedPattern.compile(pattern, Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.UNICODE_CASE | Pattern.UNIX_LINES);
 		NamedMatcher matcher = p.matcher(webResult);
 		
@@ -69,7 +69,7 @@ public class UndertexterSe implements ISubtitleFinder {
 		//      otherwise get all
 		List<SubFile> listSubs = new ArrayList<SubFile>();
 		
-		Log.Debug(String.format("UndertexterSe :: Finding subtitles for %s", m.getFilename()));
+		Log.Debug(String.format("UndertexterSe :: Finding subtitles for %s", m.getFilename()), Log.LogType.SUBS);
 		
 		while (matcher.find()) {
 			String urlString = matcher.group("url");
@@ -78,7 +78,7 @@ public class UndertexterSe implements ISubtitleFinder {
 			SubFile sf = new SubFile(urlString, description);
 			Rating r = Util.rateSub(m, description);
 			sf.setRating(r);
-			Log.Debug(String.format("UndertexterSe :: Sub with description %s rated as %s", description, r.toString()));
+			Log.Debug(String.format("UndertexterSe :: Sub with description %s rated as %s", description, r.toString()), Log.LogType.SUBS);
 			
 			listSubs.add(sf);
 		}
@@ -90,10 +90,10 @@ public class UndertexterSe implements ISubtitleFinder {
 			
 			files.add(sf);
 
-			Log.Debug(String.format("File downloaded: %s", sf.getFile().getName()));
+			Log.Debug(String.format("File downloaded: %s", sf.getFile().getName()), Log.LogType.SUBS);
 
 			if (sf.getRating() == Rating.ExactMatch || sf.getRating() == Rating.PositiveMatch)  {
-				Log.Debug("Exact or positive match found. exiting...");
+				Log.Debug("Exact or positive match found. exiting...", Log.LogType.SUBS);
 				break;
 			}
 			
@@ -104,7 +104,7 @@ public class UndertexterSe implements ISubtitleFinder {
 				// sleep randomly to avoid detection (from 10 sec to 30 sec)
 				Thread.sleep(n);
 			} catch (InterruptedException e) {
-				Log.Error("Subtitle downloader interrupted", e);
+				Log.Error("Subtitle downloader interrupted", Log.LogType.SUBS, e);
 				return files;
 			}
 			

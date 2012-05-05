@@ -60,7 +60,9 @@
 	
 	<target name="createrunscript">
 		<echo file="${build.dir}/run.sh" message="#!/bin/sh" />
-		<echo file="${build.dir}/run.sh" message="java -cp '${jar.file}:named-regexp.jar:protobuf-2.4.1.jar:sqlite-jdbc-3.7.2.jar' ${main-class}" /> 
+		<echo file="${build.dir}/run.sh" message="java -cp '${jar.file}:named-regexp.jar:protobuf-2.4.1.jar:sqlite-jdbc-3.7.2.jar' ${main-class} $*" /> 
+		
+		<copy file="${main.dir}/JukeboxSettings.xml" todir="${build.dir}" />
 	</target> 
 	
 	<target name="cleanDB">
@@ -98,7 +100,7 @@
 				<include name="*.jar"/>
 			</fileset>
 		</scp>
-				
+						
 	</target>
 	
 	<target name="build" depends="clean,jaxb,compile,jar,createrunscript,deployDB,deploy">

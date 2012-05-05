@@ -13,7 +13,7 @@ public class FileCreatedHandler implements INotifyClient {
 
 	@Override
 	public void fileCreated(FileRepresentation f)  {
-		Log.Debug(String.format("New file found :: %s", f.getName()));
+		Log.Debug(String.format("New file found :: %s", f.getName()), Log.LogType.FIND);
 		Movie m = Util.extractMovie(f.getPath(), f.getName());
 		
 		if (m != null) {
@@ -37,7 +37,7 @@ public class FileCreatedHandler implements INotifyClient {
 			}
 		}
 		else {
-			Log.Info(String.format("Failed to identity movie with filename :: %s", f.getName()));
+			Log.Info(String.format("Failed to identity movie with filename :: %s", f.getName()), Log.LogType.FIND);
 		}
 	}
 	
@@ -45,10 +45,10 @@ public class FileCreatedHandler implements INotifyClient {
 		//find imdb link
 		try {
 			m = IMDBFinder.Search(m);
-			Log.Info(String.format("Movie identified as :: %s", m.getTitle()));
+			Log.Info(String.format("Movie identified as :: %s", m.getTitle()), Log.LogType.FIND);
 		}
 		catch (IOException e) {
-			Log.Error("Error occured when finding IMDB link", e);
+			Log.Error("Error occured when finding IMDB link", Log.LogType.FIND, e);
 		}
 		
 		return m;

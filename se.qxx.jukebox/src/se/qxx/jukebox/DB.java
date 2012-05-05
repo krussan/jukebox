@@ -30,7 +30,7 @@ public class DB {
 				return null;
 
 		} catch (Exception e) {
-			Log.Error("failed to get information from database", e);
+			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
 			
 			return null;
 		}finally {
@@ -62,7 +62,7 @@ public class DB {
 			prep.execute();
 		}
 		catch (Exception e) {
-			Log.Error("Failed to update movie in DB", e);
+			Log.Error("Failed to update movie in DB", Log.LogType.MAIN, e);
 		}finally {
 			DB.disconnect(conn);
 		}
@@ -87,7 +87,7 @@ public class DB {
 			return mm;
 		}
 		catch (Exception e) {
-			Log.Error("Failed to store movie to DB", e);
+			Log.Error("Failed to store movie to DB", Log.LogType.MAIN, e);
 			return null;
 		}finally {
 			DB.disconnect(conn);
@@ -136,7 +136,7 @@ public class DB {
 						
 		}
 		catch (Exception e) {
-			Log.Error("Failed to add subtitles to DB", e);
+			Log.Error("Failed to add subtitles to DB", Log.LogType.MAIN, e);
 			
 		}finally {
 			DB.disconnect(conn);
@@ -159,7 +159,7 @@ public class DB {
 			int i = getIdentity(conn);
 		}
 		catch (Exception e) {
-			Log.Error("Failed to store movie to DB", e);
+			Log.Error("Failed to store movie to DB", Log.LogType.MAIN, e);
 		}finally {
 			DB.disconnect(conn);
 		}
@@ -189,7 +189,7 @@ public class DB {
 	
 		}
 		catch (Exception e) {
-			Log.Error("Failed to store movie to DB", e);
+			Log.Error("Failed to store movie to DB", Log.LogType.MAIN, e);
 		}finally {
 			DB.disconnect(conn);
 		}
@@ -215,7 +215,7 @@ public class DB {
 			return result;
 		}
 		catch (Exception e) {
-			Log.Error("Failed to retrieve movie listing from DB", e);
+			Log.Error("Failed to retrieve movie listing from DB", Log.LogType.MAIN, e);
 			
 			return new ArrayList<Movie>();
 		}finally {
@@ -245,7 +245,7 @@ public class DB {
 			return result;
 		}
 		catch (Exception e) {
-			Log.Error("Failed to retrieve movie listing from DB", e);
+			Log.Error("Failed to retrieve movie listing from DB", Log.LogType.MAIN, e);
 			
 			return new ArrayList<Movie>();
 		}finally {

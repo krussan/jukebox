@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <JukeboxListenerSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="JukeboxSettings.xsd">
   <catalogs>
-    <catalog includeSubdirectories="true" path="Z:/BitTorrent" vlcPath="Y:/Jukebox">
+    <catalog includeSubdirectories="true" path="/c/media/BitTorrent">
+      <vlcpath player="vlc_main" path="Y:/Jukebox" />
       <extensions>
         <extension value="avi"/>
       </extensions>
     </catalog>
   </catalogs>
-  <subFinders subsPath="/home/chris/subs">
+  <subFinders subsPath="/c/media/Subs">
     <subFinder class="se.qxx.jukebox.subtitles.UndertexterSe">
     	<subFinderSettings>
     		<setting>
@@ -29,12 +30,13 @@
     </exclude>
   	<splitter>
   		<regex>
-  			<![CDATA[(?<title>(?<g1>\w[.|_|\s-]?)*)(\[?(?<year>[0-9]{4})\]?)+[.|_|\s-]?(?<g2>\[?(?<type>DVDScr|DVDRip|BRRip)\]?)?[.|_|\s-]?(?<g3>\[?(?<format>XvID|XVID|x264)\]?)?[.|_|\s-]?(?<g4>\[?(?<sound>AC3\s5\.1|AC3)\]?)?[.|_|\s-]?(?<g5>\[(?<language>ENG|SWE)\])?[.|_|\s-]?(?<group>.*)]]>
+  		    <!-- Matches Batman.Under.The.Red.Hood.2010.720p.XviD.AC3-ViSiON.avi -->
+  			<![CDATA[(?<title>(?<g1>\w[.|_|\s-]?)*)(?<g8>\[?(?<year>[0-9]{4})\]?)+[.|_|\s-]?(?<other1>LIMITED|SWESUB)?[.|_|\s-]?(?<g2>\[?(?<type>1080p|720p|DVDScr|DVDRip|BRRip)\]?)?[.|_|\s-]?(?<g3>\[?(?<format>XvID|XVID|x264)\]?)?[.|_|\s-]?(?<g4>\[?(?<sound>AC3\s5\.1|AC3)\]?)?[.|_|\s-]?(?<g5>\[(?<language>ENG|SWE)\])?[.|_|\s-]?(?<group>.*)]]>
   		</regex>
   	</splitter>
   	<splitter>
   		<regex>
-  			<![CDATA[(?<title>(?<g1>\w[.|_|\s-]?)*)\[?(?<type>DVDScr|DVDRip|BRRip)\]?[.|_|\s-]?(?<g2>\[?(?<format>XvID|x264)\]?)?[.|_|\s-]?(?<g3>\[?(?<sound>AC3\s5\.1|AC3)\]?)?[.|_|\s-]?(?<g4>\[(?<language>ENG|SWE)\])?[.|_|\s-]?(?<group>.*)]]>
+  			<![CDATA[(?<title>(?<g1>\w[.|_|\s-]?)*)\[?(?<type>1080p|720p|DVDScr|DVDRip|BRRip)\]?[.|_|\s-]?(?<g2>\[?(?<format>XvID|XVID|x264)\]?)?[.|_|\s-]?(?<g3>\[?(?<sound>AC3\s5\.1|AC3)\]?)?[.|_|\s-]?(?<g4>\[(?<language>ENG|SWE)\])?[.|_|\s-]?(?<group>.*)]]>
   		</regex>
   	</splitter>
     <splitter>
@@ -48,12 +50,16 @@
   </tcpListener>
   <vlc>
   	<server 
+  	    name="vlc_main"
   		host="192.168.1.106" 
   		port="2150"
   		subsPath="Y:/Subs"
  	/>	
   </vlc>
   <logs>
-  	<log type="file" filename="D:/Dev/logs/jukebox/jukebox.log" level="DEBUG" />
+  	<log type="file" filename="/c/media/Dev/src/jukebox/jukebox.log" level="DEBUG" logs="MAIN" />
+  	<log type="file" filename="/c/media/Dev/src/jukebox/subtitle.log" level="DEBUG" logs="SUBS" />
+  	<log type="file" filename="/c/media/Dev/src/jukebox/watcher.log" level="DEBUG" logs="FIND" />
+  	<log type="file" filename="/c/media/Dev/src/jukebox/comm.log" level="DEBUG" logs="COMM" />
   </logs>  
 </JukeboxListenerSettings>

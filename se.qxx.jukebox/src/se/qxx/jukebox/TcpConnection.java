@@ -58,7 +58,7 @@ public class TcpConnection implements Runnable {
 			}
 
 		} catch (IOException e) {
-			Log.Error("Error while reading request from client", e);
+			Log.Error("Error while reading request from client", Log.LogType.COMM, e);
 		}
 	}
 
@@ -72,7 +72,7 @@ public class TcpConnection implements Runnable {
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			Log.Error("Error while sending response", e);
+			Log.Error("Error while sending response", Log.LogType.COMM, e);
 		}
 		
 		return null;

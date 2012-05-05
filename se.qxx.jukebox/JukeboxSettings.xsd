@@ -23,14 +23,23 @@
       									</xs:sequence>
       								</xs:complexType>
       							</xs:element>
-      						</xs:sequence>
+                                        <xs:element name="vlcPath">
+                                            <xs:complexType>
+                                            	<xs:attribute
+                                            		name="player"
+                                            		type="xs:string">
+                                            	</xs:attribute>
+                                            	<xs:attribute
+                                            		name="path"
+                                            		type="xs:string">
+                                            	</xs:attribute>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
       						<xs:attribute name="path" type="xs:string"
       							use="required" />
       						<xs:attribute name="includeSubdirectories"
       							type="xs:boolean" use="required" />
-      						<xs:attribute name="vlcPath"
-      							type="xs:string">
-      						</xs:attribute>
       					</xs:complexType>
       				</xs:element>
       			</xs:sequence>
@@ -117,6 +126,9 @@
       						<xs:attribute name="subsPath"
       							type="xs:string">
       						</xs:attribute>
+      						<xs:attribute name="name"
+      							type="xs:string">
+      						</xs:attribute>
       					</xs:complexType></xs:element>
       			</xs:sequence>
       		</xs:complexType></xs:element>
@@ -132,6 +144,9 @@
       							type="xs:string" use="optional" />
       						<xs:attribute name="level"
       							type="xs:string" use="required" />
+      						<xs:attribute name="logs"
+      							type="xs:string">
+      						</xs:attribute>
       					</xs:complexType>
       				</xs:element>
       			</xs:sequence>
@@ -149,4 +164,5 @@
   		<xs:element name="regex" type="xs:string"></xs:element>
   	</xs:sequence>
   </xs:complexType>
+
 </xs:schema>
