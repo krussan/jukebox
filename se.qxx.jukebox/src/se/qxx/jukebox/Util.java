@@ -7,10 +7,12 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.filechooser.FileSystemView;
 
+import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.StringSplitters.Splitter;
@@ -40,9 +42,22 @@ public class Util {
 				group = "";
 		int year = 0;
 		
+		String fileNameToMatch = Util.getFilenameWithoutExtension(fileName);
 		for (Splitter splitter : Settings.get().getStringSplitters().getSplitter()) {
-			NamedPattern p = NamedPattern.compile(splitter.getRegex().trim(), Pattern.CASE_INSENSITIVE);
-			NamedMatcher m = p.matcher(fileName);
+			//ignoring some keywords specified in xml
+			String strIgnorePattern = splitter.getIgnore().trim();
+			if (strIgnorePattern.trim().length() > 0) {
+				Pattern ignorePattern = Pattern.compile(strIgnorePattern, Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
+				Matcher ignoreMatcher = ignorePattern.matcher(fileNameToMatch);
+				//fileNameToMatch = fileNameToMatch.replaceAll(strIgnorePattern, "");
+				fileNameToMatch = ignoreMatcher.replaceAll("");
+				
+				Log.Debug(String.format("ignore pattern :: %s", strIgnorePattern), Log.LogType.FIND);
+				Log.Debug(String.format("filename after parsing away some keywords: %s", fileNameToMatch), Log.LogType.FIND);
+			}
+			
+			NamedPattern p = NamedPattern.compile(splitter.getRegex().trim(), Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
+			NamedMatcher m = p.matcher(fileNameToMatch);
 
 			int matches = 0;
 			for (String s : groupsToCheck) {

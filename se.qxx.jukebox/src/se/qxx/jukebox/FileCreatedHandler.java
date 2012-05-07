@@ -30,7 +30,9 @@ public class FileCreatedHandler implements INotifyClient {
 			else {
 				// If not get information and subtitles
 				
-				m = getImdbInformation(m);
+				if (Arguments.get().isImdbIdentifierEnabled())
+					m = getImdbInformation(m);
+				
 				m = DB.addMovie(m);
 				
 				SubtitleDownloader.get().addMovie(m);			

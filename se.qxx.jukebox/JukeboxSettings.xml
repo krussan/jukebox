@@ -31,18 +31,23 @@
   	<splitter>
   		<regex>
   		    <!-- Matches Batman.Under.The.Red.Hood.2010.720p.XviD.AC3-ViSiON.avi -->
-  			<![CDATA[(?<title>(?<g1>\w[.|_|\s-]?)*)(?<g8>\[?(?<year>[0-9]{4})\]?)+[.|_|\s-]?(?<other1>LIMITED|SWESUB)?[.|_|\s-]?(?<g2>\[?(?<type>1080p|720p|DVDScr|DVDRip|BRRip)\]?)?[.|_|\s-]?(?<g3>\[?(?<format>XvID|XVID|x264)\]?)?[.|_|\s-]?(?<g4>\[?(?<sound>AC3\s5\.1|AC3)\]?)?[.|_|\s-]?(?<g5>\[(?<language>ENG|SWE)\])?[.|_|\s-]?(?<group>.*)]]>
+  			<![CDATA[(?<title>(?<g1>\w[.|_|\s-]*)*)(?<g8>[\[|(]?(?<year>[0-9]{4})[\]|)]?)+[.|_|\s-]*(?<g2>\[?(?<type>1080p|720p|DVDScr|DVDSCR|DvDRip|DVDRip|BRRip|PPVRIP|PPV|TELESYNC|TS|HDRip|R5\s*LINE|R5\s*LiNE|R5\s*Line|CAM)\]?)?[.|_|\s-]*(?<g3>\[?(?<format>Xvid|XviD|XViD|XvID|XVID|x264|IFLIX)\]?)?[.|_|\s-]*(?<g4>\[?(?<sound>AC3\s5\.1|AC3)\]?)?[.|_|\s-]*(?<g5>\[(?<language>ENG|SWE)\])?[.|_|\s-]*(?<group>.*)[.|_|\s-]*(?<cd>Part[.|_|\s-]*1|Part[.|_|\s-]*2)?(?<cd>CD[.|_|\s-]*1|CD[.|_|\s-]*2)?]]>
   		</regex>
+  		<ignore>
+  		    <![CDATA[READNFO|CAM|LIMITED|SWESUB|UNRATED|REPACK|\d{2}K|UNRATED|V3|\d{0,3}MB|HDtv]]>
+  		</ignore>
   	</splitter>
   	<splitter>
   		<regex>
-  			<![CDATA[(?<title>(?<g1>\w[.|_|\s-]?)*)\[?(?<type>1080p|720p|DVDScr|DVDRip|BRRip)\]?[.|_|\s-]?(?<g2>\[?(?<format>XvID|XVID|x264)\]?)?[.|_|\s-]?(?<g3>\[?(?<sound>AC3\s5\.1|AC3)\]?)?[.|_|\s-]?(?<g4>\[(?<language>ENG|SWE)\])?[.|_|\s-]?(?<group>.*)]]>
+  			<![CDATA[(?<title>(?<g1>\w[.|_|\s-]*)*)\[?(?<type>1080p|720p|DVDScr|DVDRip|BRRip)\]?[.|_|\s-]*(?<g2>\[?(?<format>XvID|XVID|x264)\]?)?[.|_|\s-]*(?<g3>\[?(?<sound>AC3\s5\.1|AC3)\]?)?[.|_|\s-]*(?<g4>\[(?<language>ENG|SWE)\])?[.|_|\s-]*(?<group>.*)]]>
   		</regex>
+  		<ignore></ignore>
   	</splitter>
     <splitter>
     	<regex>
     		<![CDATA[(?<title>.*)]]>
     	</regex>
+    	<ignore></ignore>
     </splitter>
   </stringSplitters>
   <tcpListener>

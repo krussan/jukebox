@@ -7,10 +7,20 @@ public class Arguments {
 
 	private boolean subtitleDownloaderEnabled = true;
 	private boolean tcpListenerEnabled = true;
+	private boolean imdbIdentitifierEnabled = true;
+	private static Arguments _instance;
 	
 	public boolean isSubtitleDownloaderEnabled() {
 		return subtitleDownloaderEnabled;
 	}
+
+	public void setImdbIdentifierEnabled(boolean imdbIdentitifierEnabled) {
+		this.imdbIdentitifierEnabled = imdbIdentitifierEnabled;
+	}
+	
+	public boolean isImdbIdentifierEnabled() {
+		return this.imdbIdentitifierEnabled;
+	}	
 
 	public void setSubtitleDownloaderEnabled(boolean subtitleDownloaderEnabled) {
 		this.subtitleDownloaderEnabled = subtitleDownloaderEnabled;
@@ -24,21 +34,29 @@ public class Arguments {
 		this.tcpListenerEnabled = tcpListenerEnabled;
 	}
 
-	public Arguments() {
+	private Arguments() {
 		
 	}
 	
-	public static Arguments parse(String[] args) {
-		Arguments a = new Arguments();
+	public static void initialize(String[] args) {
+		_instance = new Arguments();
 		
 		List<String> arguments = Arrays.asList(args);
 	
 		if (arguments.contains("-dt"))
-			a.setTcpListenerEnabled(false);
+			_instance.setTcpListenerEnabled(false);
 		
 		if (arguments.contains("-ds"))
-			a.setSubtitleDownloaderEnabled(false);
-
-		return a;
+			_instance.setSubtitleDownloaderEnabled(false);
+		
+		if (arguments.contains("-di"))
+			_instance.setImdbIdentifierEnabled(false);
+	}
+	
+	public static Arguments get() {
+		if (_instance == null)
+			_instance = new Arguments();
+		
+		return _instance;
 	}
 }

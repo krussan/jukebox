@@ -73,7 +73,7 @@ public class UndertexterSe implements ISubtitleFinder {
 		
 		while (matcher.find()) {
 			String urlString = matcher.group("url");
-			String description = matcher.group("name");
+			String description = matcher.group("name"); 
 			
 			SubFile sf = new SubFile(urlString, description);
 			Rating r = Util.rateSub(m, description);

@@ -93,6 +93,9 @@
       							<xs:element name="regex"
       								type="xs:string">
       							</xs:element>
+      							<xs:element name="ignore"
+      								type="xs:string">
+      							</xs:element>
       						</xs:sequence>
       					</xs:complexType>
       				</xs:element>

@@ -6,14 +6,14 @@ public class Jukebox {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Arguments a = Arguments.parse(args);
-		startMainThread(a);		
+		Arguments.initialize(args);
+		startMainThread();		
 	}
 	
-	private static void startMainThread(Arguments args)  {
+	private static void startMainThread()  {
 		try {
 			
-			Thread t = new Thread(new Main(args));
+			Thread t = new Thread(new Main());
 			t.start();
 			
 			t.join();

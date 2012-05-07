@@ -10,13 +10,10 @@ public class Main implements Runnable, INotifyClient
 {
 	private Boolean isRunning = false;
 	private TcpListener _listener;
-
-	private Arguments args;
 	
 	ArrayList<FileSystemWatcher> watchers = new ArrayList<FileSystemWatcher>();
 	    
-	public Main(Arguments args) {
-		this.args = args;
+	public Main() {
 	}
 	
 	java.util.concurrent.Semaphore s = new java.util.concurrent.Semaphore(1);	
@@ -24,10 +21,10 @@ public class Main implements Runnable, INotifyClient
 	public void run() {
 		
 		try {
-			if (this.args.isTcpListenerEnabled())
+			if (Arguments.get().isTcpListenerEnabled())
 				setupListening();
 			
-			if (this.args.isSubtitleDownloaderEnabled()) {
+			if (Arguments.get().isSubtitleDownloaderEnabled()) {
 				Thread subtitleDownloaderThread = new Thread(SubtitleDownloader.get());
 				subtitleDownloaderThread.start();
 			}
