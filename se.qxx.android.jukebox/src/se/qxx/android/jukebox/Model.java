@@ -8,6 +8,8 @@ import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 
 public class Model {
 	
+	private Movie currentMovie;
+	
 	public class ModelUpdatedEvent extends java.util.EventObject {
 		/**
 		 * 
@@ -89,4 +91,14 @@ public class Model {
 	public int countMovies() {
 		return _movies.size();
 	}
+
+	public Movie getCurrentMovie() {
+		return currentMovie;
+	}
+
+	public void setCurrentMovie(Movie currentMovie) {
+		this.currentMovie = currentMovie;
+	}
+
+	
 }

@@ -10,6 +10,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,6 +18,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -25,7 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-public class JukeboxActivity extends Activity implements ModelUpdatedEventListener {
+public class JukeboxActivity extends Activity implements ModelUpdatedEventListener, OnItemClickListener {
 	private EditText text;
 	private JukeboxMovieLayoutAdapter _jukeboxMovieLayoutAdapter;
 	
@@ -78,6 +81,7 @@ public class JukeboxActivity extends Activity implements ModelUpdatedEventListen
         JukeboxSettings.init(this);
         
 		ListView v = (ListView)findViewById(R.id.listView1);
+		v.setOnItemClickListener(this);
 		
 		_jukeboxMovieLayoutAdapter = new JukeboxMovieLayoutAdapter(); 
 		v.setAdapter(_jukeboxMovieLayoutAdapter);
@@ -132,6 +136,14 @@ public class JukeboxActivity extends Activity implements ModelUpdatedEventListen
 	public void handleModelUpdatedEventListener(EventObject e) {
 		//TODO: run this on UI thread
 		runOnUiThread(modelResultUpdatedRunnable);
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
+		// TODO Auto-generated method stub
+		Movie m = (Movie)arg0.getItemAtPosition(pos);
+		Model.get().setCurrentMovie(m);
+		Toast.makeText(this, m.getTitle(), Toast.LENGTH_LONG);
 	}
 
 }
