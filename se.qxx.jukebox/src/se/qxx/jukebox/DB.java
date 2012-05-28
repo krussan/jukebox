@@ -38,6 +38,32 @@ public class DB {
 		}
 	}
 	
+	public synchronized static Movie getMovie(int id) {
+		Connection conn = null;
+		try {
+			conn = DB.initialize();
+
+			PreparedStatement prep = conn.prepareStatement(
+			" select ID, filename, filepath, title, year, type, format, sound, language, groupName, imdburl" +
+			" from movie where ID = ?");
+					
+			prep.setInt(1, id);
+				
+			ResultSet rs = prep.executeQuery();
+			if (rs.next())
+				return extractMovie(rs);
+			else
+				return null;
+
+		} catch (Exception e) {
+			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
+			
+			return null;
+		}finally {
+			DB.disconnect(conn);
+		}
+	}
+	
 	public synchronized static void updateMovie(Movie m) {
 		Connection conn = null;
 		try {

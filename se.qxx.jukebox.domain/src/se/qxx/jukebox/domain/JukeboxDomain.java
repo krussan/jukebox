@@ -1596,13 +1596,13 @@ public final class JukeboxDomain {
   public interface JukeboxRequestStartMovieOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // optional int32 movieId = 1;
+    // required int32 movieId = 1;
     boolean hasMovieId();
     int getMovieId();
     
-    // optional string movieTitle = 2;
-    boolean hasMovieTitle();
-    String getMovieTitle();
+    // optional string playerName = 2;
+    boolean hasPlayerName();
+    String getPlayerName();
   }
   public static final class JukeboxRequestStartMovie extends
       com.google.protobuf.GeneratedMessage
@@ -1633,7 +1633,7 @@ public final class JukeboxDomain {
     }
     
     private int bitField0_;
-    // optional int32 movieId = 1;
+    // required int32 movieId = 1;
     public static final int MOVIEID_FIELD_NUMBER = 1;
     private int movieId_;
     public boolean hasMovieId() {
@@ -1643,14 +1643,14 @@ public final class JukeboxDomain {
       return movieId_;
     }
     
-    // optional string movieTitle = 2;
-    public static final int MOVIETITLE_FIELD_NUMBER = 2;
-    private java.lang.Object movieTitle_;
-    public boolean hasMovieTitle() {
+    // optional string playerName = 2;
+    public static final int PLAYERNAME_FIELD_NUMBER = 2;
+    private java.lang.Object playerName_;
+    public boolean hasPlayerName() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
-    public String getMovieTitle() {
-      java.lang.Object ref = movieTitle_;
+    public String getPlayerName() {
+      java.lang.Object ref = playerName_;
       if (ref instanceof String) {
         return (String) ref;
       } else {
@@ -1658,17 +1658,17 @@ public final class JukeboxDomain {
             (com.google.protobuf.ByteString) ref;
         String s = bs.toStringUtf8();
         if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          movieTitle_ = s;
+          playerName_ = s;
         }
         return s;
       }
     }
-    private com.google.protobuf.ByteString getMovieTitleBytes() {
-      java.lang.Object ref = movieTitle_;
+    private com.google.protobuf.ByteString getPlayerNameBytes() {
+      java.lang.Object ref = playerName_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        movieTitle_ = b;
+        playerName_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
@@ -1677,13 +1677,17 @@ public final class JukeboxDomain {
     
     private void initFields() {
       movieId_ = 0;
-      movieTitle_ = "";
+      playerName_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
       
+      if (!hasMovieId()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -1695,7 +1699,7 @@ public final class JukeboxDomain {
         output.writeInt32(1, movieId_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeBytes(2, getMovieTitleBytes());
+        output.writeBytes(2, getPlayerNameBytes());
       }
       getUnknownFields().writeTo(output);
     }
@@ -1712,7 +1716,7 @@ public final class JukeboxDomain {
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(2, getMovieTitleBytes());
+          .computeBytesSize(2, getPlayerNameBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -1840,7 +1844,7 @@ public final class JukeboxDomain {
         super.clear();
         movieId_ = 0;
         bitField0_ = (bitField0_ & ~0x00000001);
-        movieTitle_ = "";
+        playerName_ = "";
         bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
@@ -1887,7 +1891,7 @@ public final class JukeboxDomain {
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
         }
-        result.movieTitle_ = movieTitle_;
+        result.playerName_ = playerName_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -1907,14 +1911,18 @@ public final class JukeboxDomain {
         if (other.hasMovieId()) {
           setMovieId(other.getMovieId());
         }
-        if (other.hasMovieTitle()) {
-          setMovieTitle(other.getMovieTitle());
+        if (other.hasPlayerName()) {
+          setPlayerName(other.getPlayerName());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
       
       public final boolean isInitialized() {
+        if (!hasMovieId()) {
+          
+          return false;
+        }
         return true;
       }
       
@@ -1948,7 +1956,7 @@ public final class JukeboxDomain {
             }
             case 18: {
               bitField0_ |= 0x00000002;
-              movieTitle_ = input.readBytes();
+              playerName_ = input.readBytes();
               break;
             }
           }
@@ -1957,7 +1965,7 @@ public final class JukeboxDomain {
       
       private int bitField0_;
       
-      // optional int32 movieId = 1;
+      // required int32 movieId = 1;
       private int movieId_ ;
       public boolean hasMovieId() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
@@ -1978,39 +1986,39 @@ public final class JukeboxDomain {
         return this;
       }
       
-      // optional string movieTitle = 2;
-      private java.lang.Object movieTitle_ = "";
-      public boolean hasMovieTitle() {
+      // optional string playerName = 2;
+      private java.lang.Object playerName_ = "";
+      public boolean hasPlayerName() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
-      public String getMovieTitle() {
-        java.lang.Object ref = movieTitle_;
+      public String getPlayerName() {
+        java.lang.Object ref = playerName_;
         if (!(ref instanceof String)) {
           String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          movieTitle_ = s;
+          playerName_ = s;
           return s;
         } else {
           return (String) ref;
         }
       }
-      public Builder setMovieTitle(String value) {
+      public Builder setPlayerName(String value) {
         if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000002;
-        movieTitle_ = value;
+        playerName_ = value;
         onChanged();
         return this;
       }
-      public Builder clearMovieTitle() {
+      public Builder clearPlayerName() {
         bitField0_ = (bitField0_ & ~0x00000002);
-        movieTitle_ = getDefaultInstance().getMovieTitle();
+        playerName_ = getDefaultInstance().getPlayerName();
         onChanged();
         return this;
       }
-      void setMovieTitle(com.google.protobuf.ByteString value) {
+      void setPlayerName(com.google.protobuf.ByteString value) {
         bitField0_ |= 0x00000002;
-        movieTitle_ = value;
+        playerName_ = value;
         onChanged();
       }
       
@@ -6236,7 +6244,7 @@ public final class JukeboxDomain {
       "equestListPlayers\"J\n#JukeboxRequestStart" +
       "SubtitleIdentify\022\017\n\007movieId\030\001 \001(\005\022\022\n\nmov" +
       "ieTitle\030\002 \001(\t\"?\n\030JukeboxRequestStartMovi" +
-      "e\022\017\n\007movieId\030\001 \001(\005\022\022\n\nmovieTitle\030\002 \001(\t\"\031" +
+      "e\022\017\n\007movieId\030\001 \002(\005\022\022\n\nplayerName\030\002 \001(\t\"\031" +
       "\n\027JukeboxRequestStopMovie\"p\n\032JukeboxRequ",
       "estMarkSubtitle\022\017\n\007movieId\030\001 \001(\005\022\022\n\nmovi" +
       "eTitle\030\002 \001(\t\022\023\n\013subtitileId\030\003 \001(\005\022\030\n\020sub" +
@@ -6301,7 +6309,7 @@ public final class JukeboxDomain {
           internal_static_se_qxx_jukebox_domain_JukeboxRequestStartMovie_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_se_qxx_jukebox_domain_JukeboxRequestStartMovie_descriptor,
-              new java.lang.String[] { "MovieId", "MovieTitle", },
+              new java.lang.String[] { "MovieId", "PlayerName", },
               se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStartMovie.class,
               se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStartMovie.Builder.class);
           internal_static_se_qxx_jukebox_domain_JukeboxRequestStopMovie_descriptor =

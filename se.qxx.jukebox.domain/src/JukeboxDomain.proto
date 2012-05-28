@@ -31,8 +31,8 @@ message JukeboxRequestStartSubtitleIdentify {
 }
 
 message JukeboxRequestStartMovie {
-	optional int32 movieId = 1;
-	optional string movieTitle = 2;
+	required int32 movieId = 1;
+	optional string playerName = 2;
 }
 
 message JukeboxRequestStopMovie {}

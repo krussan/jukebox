@@ -23,7 +23,7 @@ public class TestVLCConnection {
 			conn.enqueue("file://Y:/Videos/Kick.Ass[2010]DVD.ENG.X264.mp4", subFiles);
 			conn.toggleFullscreen();
 		}
-		
+		 
 	}
 	
 	private static void printHelp() {

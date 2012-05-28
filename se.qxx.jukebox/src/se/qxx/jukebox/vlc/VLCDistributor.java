@@ -36,7 +36,7 @@ public class VLCDistributor {
 		return list;
 	}
 	
-	public boolean startMovie(String hostName, String title) throws VLCConnectionNotFoundException {
+	public boolean startMovie(String hostName, int id) throws VLCConnectionNotFoundException {
 		if (!assertLiveConnection(hostName))
 			return false;
 		
