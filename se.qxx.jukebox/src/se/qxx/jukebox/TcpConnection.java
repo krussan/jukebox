@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.*;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.google.protobuf.ByteString;
@@ -17,10 +19,15 @@ import com.google.protobuf.InvalidProtocolBufferException;
 
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequest;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStartMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponse;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.settings.Settings;
+import se.qxx.jukebox.settings.JukeboxListenerSettings.Vlc.Server;
+import se.qxx.jukebox.vlc.VLCDistributor;
 
 public class TcpConnection implements Runnable {
 	private Socket _client;
@@ -67,6 +74,10 @@ public class TcpConnection implements Runnable {
 			switch (req.getType()) {			
 			case ListMovies:
 				return listMovies(req);
+			case StartMovie:
+				return startMovie(req);
+			case ListPlayers:
+				return listPlayers();
 			default:
 				break;
 			}
@@ -87,8 +98,6 @@ public class TcpConnection implements Runnable {
 		List<Movie> list = DB.searchMovies(searchString);
 
 		JukeboxResponseListMovies lm = JukeboxResponseListMovies.newBuilder().addAllMovies(list).build();
-    	java.io.ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    	lm.writeTo(bos);
     	
 		JukeboxResponse resp = JukeboxResponse.newBuilder()
 				.setType(JukeboxRequestType.ListMovies)
@@ -97,5 +106,31 @@ public class TcpConnection implements Runnable {
 				
 		return resp;
 		
+	}
+	
+	private JukeboxResponse startMovie(JukeboxRequest req) throws IOException {
+		ByteString data = req.getArguments();
+		JukeboxRequestStartMovie args = JukeboxRequestStartMovie.parseFrom(data);
+		
+		
+		JukeboxResponse resp = JukeboxResponse.newBuilder().build();
+		
+		return resp;
+		//args.getMovieId()
+	}
+	
+	private JukeboxResponse listPlayers() {
+		Collection<String> hostnames = new ArrayList<String>();
+		for (Server s : Settings.get().getVlc().getServer()) {
+			hostnames.add(s.getName());
+		}
+		
+		JukeboxResponseListPlayers lp = JukeboxResponseListPlayers.newBuilder().addAllHostname(hostnames).build();
+
+    	
+    	return JukeboxResponse.newBuilder()
+    			.setType(JukeboxRequestType.ListPlayers)
+    			.setArguments(lp.toByteString())
+    			.build();
 	}
 }

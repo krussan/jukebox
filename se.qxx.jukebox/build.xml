@@ -4,6 +4,7 @@
 	<property name="version.num" value="0.0.${build.number}" />
 			
 	<property name="jdk.dir" value="C:/Program Files/Java/jdk1.6.0_30" />
+	<property name="protoc.dir" value="D:/util" />
 	<property name="root.dir" value="D:/Dev/svn/jukebox" />
 	<property name="lib.dir" value="${root.dir}/lib" />	
 	<property name="solution.dir" value="${root.dir}/trunk" />
@@ -35,6 +36,13 @@
 	        <arg value="${solution.dir}/se.qxx.jukebox/JukeboxSettings.xsd"/>
 	    </exec>
 		
+	</target>
+	
+	<target name="protoc">
+	    <exec executable="${protoc.dir}/protoc.exe" dir="${domain.src.dir}">
+	        <arg value="--java_out=." />
+	        <arg value="JukeboxDomain.proto" />
+	    </exec>
 	</target>
 	
 	<target name="clean">
@@ -103,6 +111,6 @@
 						
 	</target>
 	
-	<target name="build" depends="clean,jaxb,compile,jar,createrunscript,deployDB,deploy">
+	<target name="build" depends="clean,jaxb,protoc,compile,jar,createrunscript,deployDB,deploy">
 	</target>
 </project>

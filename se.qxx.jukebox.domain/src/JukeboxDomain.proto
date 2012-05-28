@@ -10,6 +10,7 @@ enum JukeboxRequestType {
 	MarkSubtitle = 5;
 	SkipForward = 6;
 	SkipBackwards = 7;
+	ListPlayers = 8;
 }
 
 message JukeboxRequest {
@@ -19,6 +20,9 @@ message JukeboxRequest {
 
 message JukeboxRequestListMovies {
 	optional string searchString = 2;
+}
+
+message JukeboxRequestListPlayers {
 }
 
 message JukeboxRequestStartSubtitleIdentify {
@@ -61,6 +65,10 @@ message Movie {
 
 message JukeboxResponseListMovies {
 	repeated Movie movies = 1;
+}
+
+message JukeboxResponseListPlayers {
+	repeated string hostname = 1;
 }
 
 message JukeboxResponse {

@@ -17,6 +17,7 @@ public final class JukeboxDomain {
     MarkSubtitle(4, 5),
     SkipForward(5, 6),
     SkipBackwards(6, 7),
+    ListPlayers(7, 8),
     ;
     
     public static final int ListMovies_VALUE = 1;
@@ -26,6 +27,7 @@ public final class JukeboxDomain {
     public static final int MarkSubtitle_VALUE = 5;
     public static final int SkipForward_VALUE = 6;
     public static final int SkipBackwards_VALUE = 7;
+    public static final int ListPlayers_VALUE = 8;
     
     
     public final int getNumber() { return value; }
@@ -39,6 +41,7 @@ public final class JukeboxDomain {
         case 5: return MarkSubtitle;
         case 6: return SkipForward;
         case 7: return SkipBackwards;
+        case 8: return ListPlayers;
         default: return null;
       }
     }
@@ -69,7 +72,7 @@ public final class JukeboxDomain {
     }
     
     private static final JukeboxRequestType[] VALUES = {
-      ListMovies, StartSubtitleIdentity, StartMovie, StopMovie, MarkSubtitle, SkipForward, SkipBackwards, 
+      ListMovies, StartSubtitleIdentity, StartMovie, StopMovie, MarkSubtitle, SkipForward, SkipBackwards, ListPlayers, 
     };
     
     public static JukeboxRequestType valueOf(
@@ -880,6 +883,282 @@ public final class JukeboxDomain {
     }
     
     // @@protoc_insertion_point(class_scope:se.qxx.jukebox.domain.JukeboxRequestListMovies)
+  }
+  
+  public interface JukeboxRequestListPlayersOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+  }
+  public static final class JukeboxRequestListPlayers extends
+      com.google.protobuf.GeneratedMessage
+      implements JukeboxRequestListPlayersOrBuilder {
+    // Use JukeboxRequestListPlayers.newBuilder() to construct.
+    private JukeboxRequestListPlayers(Builder builder) {
+      super(builder);
+    }
+    private JukeboxRequestListPlayers(boolean noInit) {}
+    
+    private static final JukeboxRequestListPlayers defaultInstance;
+    public static JukeboxRequestListPlayers getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public JukeboxRequestListPlayers getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return se.qxx.jukebox.domain.JukeboxDomain.internal_static_se_qxx_jukebox_domain_JukeboxRequestListPlayers_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return se.qxx.jukebox.domain.JukeboxDomain.internal_static_se_qxx_jukebox_domain_JukeboxRequestListPlayers_fieldAccessorTable;
+    }
+    
+    private void initFields() {
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayersOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return se.qxx.jukebox.domain.JukeboxDomain.internal_static_se_qxx_jukebox_domain_JukeboxRequestListPlayers_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return se.qxx.jukebox.domain.JukeboxDomain.internal_static_se_qxx_jukebox_domain_JukeboxRequestListPlayers_fieldAccessorTable;
+      }
+      
+      // Construct using se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers.getDescriptor();
+      }
+      
+      public se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers getDefaultInstanceForType() {
+        return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers.getDefaultInstance();
+      }
+      
+      public se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers build() {
+        se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers buildPartial() {
+        se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers result = new se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers(this);
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers) {
+          return mergeFrom((se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers other) {
+        if (other == se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers.getDefaultInstance()) return this;
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+          }
+        }
+      }
+      
+      
+      // @@protoc_insertion_point(builder_scope:se.qxx.jukebox.domain.JukeboxRequestListPlayers)
+    }
+    
+    static {
+      defaultInstance = new JukeboxRequestListPlayers(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:se.qxx.jukebox.domain.JukeboxRequestListPlayers)
   }
   
   public interface JukeboxRequestStartSubtitleIdentifyOrBuilder
@@ -5071,6 +5350,395 @@ public final class JukeboxDomain {
     // @@protoc_insertion_point(class_scope:se.qxx.jukebox.domain.JukeboxResponseListMovies)
   }
   
+  public interface JukeboxResponseListPlayersOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // repeated string hostname = 1;
+    java.util.List<String> getHostnameList();
+    int getHostnameCount();
+    String getHostname(int index);
+  }
+  public static final class JukeboxResponseListPlayers extends
+      com.google.protobuf.GeneratedMessage
+      implements JukeboxResponseListPlayersOrBuilder {
+    // Use JukeboxResponseListPlayers.newBuilder() to construct.
+    private JukeboxResponseListPlayers(Builder builder) {
+      super(builder);
+    }
+    private JukeboxResponseListPlayers(boolean noInit) {}
+    
+    private static final JukeboxResponseListPlayers defaultInstance;
+    public static JukeboxResponseListPlayers getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public JukeboxResponseListPlayers getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return se.qxx.jukebox.domain.JukeboxDomain.internal_static_se_qxx_jukebox_domain_JukeboxResponseListPlayers_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return se.qxx.jukebox.domain.JukeboxDomain.internal_static_se_qxx_jukebox_domain_JukeboxResponseListPlayers_fieldAccessorTable;
+    }
+    
+    // repeated string hostname = 1;
+    public static final int HOSTNAME_FIELD_NUMBER = 1;
+    private com.google.protobuf.LazyStringList hostname_;
+    public java.util.List<String>
+        getHostnameList() {
+      return hostname_;
+    }
+    public int getHostnameCount() {
+      return hostname_.size();
+    }
+    public String getHostname(int index) {
+      return hostname_.get(index);
+    }
+    
+    private void initFields() {
+      hostname_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      for (int i = 0; i < hostname_.size(); i++) {
+        output.writeBytes(1, hostname_.getByteString(i));
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      {
+        int dataSize = 0;
+        for (int i = 0; i < hostname_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeBytesSizeNoTag(hostname_.getByteString(i));
+        }
+        size += dataSize;
+        size += 1 * getHostnameList().size();
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayersOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return se.qxx.jukebox.domain.JukeboxDomain.internal_static_se_qxx_jukebox_domain_JukeboxResponseListPlayers_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return se.qxx.jukebox.domain.JukeboxDomain.internal_static_se_qxx_jukebox_domain_JukeboxResponseListPlayers_fieldAccessorTable;
+      }
+      
+      // Construct using se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        hostname_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers.getDescriptor();
+      }
+      
+      public se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers getDefaultInstanceForType() {
+        return se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers.getDefaultInstance();
+      }
+      
+      public se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers build() {
+        se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers buildPartial() {
+        se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers result = new se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers(this);
+        int from_bitField0_ = bitField0_;
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          hostname_ = new com.google.protobuf.UnmodifiableLazyStringList(
+              hostname_);
+          bitField0_ = (bitField0_ & ~0x00000001);
+        }
+        result.hostname_ = hostname_;
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers) {
+          return mergeFrom((se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers other) {
+        if (other == se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers.getDefaultInstance()) return this;
+        if (!other.hostname_.isEmpty()) {
+          if (hostname_.isEmpty()) {
+            hostname_ = other.hostname_;
+            bitField0_ = (bitField0_ & ~0x00000001);
+          } else {
+            ensureHostnameIsMutable();
+            hostname_.addAll(other.hostname_);
+          }
+          onChanged();
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+            case 10: {
+              ensureHostnameIsMutable();
+              hostname_.add(input.readBytes());
+              break;
+            }
+          }
+        }
+      }
+      
+      private int bitField0_;
+      
+      // repeated string hostname = 1;
+      private com.google.protobuf.LazyStringList hostname_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private void ensureHostnameIsMutable() {
+        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+          hostname_ = new com.google.protobuf.LazyStringArrayList(hostname_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+      public java.util.List<String>
+          getHostnameList() {
+        return java.util.Collections.unmodifiableList(hostname_);
+      }
+      public int getHostnameCount() {
+        return hostname_.size();
+      }
+      public String getHostname(int index) {
+        return hostname_.get(index);
+      }
+      public Builder setHostname(
+          int index, String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureHostnameIsMutable();
+        hostname_.set(index, value);
+        onChanged();
+        return this;
+      }
+      public Builder addHostname(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureHostnameIsMutable();
+        hostname_.add(value);
+        onChanged();
+        return this;
+      }
+      public Builder addAllHostname(
+          java.lang.Iterable<String> values) {
+        ensureHostnameIsMutable();
+        super.addAll(values, hostname_);
+        onChanged();
+        return this;
+      }
+      public Builder clearHostname() {
+        hostname_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        onChanged();
+        return this;
+      }
+      void addHostname(com.google.protobuf.ByteString value) {
+        ensureHostnameIsMutable();
+        hostname_.add(value);
+        onChanged();
+      }
+      
+      // @@protoc_insertion_point(builder_scope:se.qxx.jukebox.domain.JukeboxResponseListPlayers)
+    }
+    
+    static {
+      defaultInstance = new JukeboxResponseListPlayers(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:se.qxx.jukebox.domain.JukeboxResponseListPlayers)
+  }
+  
   public interface JukeboxResponseOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
@@ -5497,6 +6165,11 @@ public final class JukeboxDomain {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_se_qxx_jukebox_domain_JukeboxRequestListMovies_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_se_qxx_jukebox_domain_JukeboxRequestListPlayers_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_se_qxx_jukebox_domain_JukeboxRequestListPlayers_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_se_qxx_jukebox_domain_JukeboxRequestStartSubtitleIdentify_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -5537,6 +6210,11 @@ public final class JukeboxDomain {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_se_qxx_jukebox_domain_JukeboxResponseListMovies_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_se_qxx_jukebox_domain_JukeboxResponseListPlayers_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_se_qxx_jukebox_domain_JukeboxResponseListPlayers_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_se_qxx_jukebox_domain_JukeboxResponse_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -5554,29 +6232,32 @@ public final class JukeboxDomain {
       "main\"\\\n\016JukeboxRequest\0227\n\004type\030\001 \002(\0162).s" +
       "e.qxx.jukebox.domain.JukeboxRequestType\022" +
       "\021\n\targuments\030\002 \001(\014\"0\n\030JukeboxRequestList" +
-      "Movies\022\024\n\014searchString\030\002 \001(\t\"J\n#JukeboxR" +
-      "equestStartSubtitleIdentify\022\017\n\007movieId\030\001" +
-      " \001(\005\022\022\n\nmovieTitle\030\002 \001(\t\"?\n\030JukeboxReque" +
-      "stStartMovie\022\017\n\007movieId\030\001 \001(\005\022\022\n\nmovieTi" +
-      "tle\030\002 \001(\t\"\031\n\027JukeboxRequestStopMovie\"p\n\032" +
-      "JukeboxRequestMarkSubtitle\022\017\n\007movieId\030\001 ",
-      "\001(\005\022\022\n\nmovieTitle\030\002 \001(\t\022\023\n\013subtitileId\030\003" +
-      " \001(\005\022\030\n\020subtitleFileName\030\004 \001(\t\"\033\n\031Jukebo" +
-      "xRequestSkipForward\"\035\n\033JukeboxRequestSki" +
-      "pBackwards\"\305\001\n\005Movie\022\n\n\002ID\030\001 \002(\005\022\020\n\010file" +
-      "name\030\002 \002(\t\022\r\n\005title\030\003 \001(\t\022\014\n\004year\030\004 \001(\005\022" +
-      "\014\n\004type\030\005 \001(\t\022\016\n\006format\030\006 \001(\t\022\r\n\005sound\030\007" +
-      " \001(\t\022\020\n\010language\030\010 \001(\t\022\r\n\005group\030\t \001(\t\022\020\n" +
-      "\010imdb_url\030\n \001(\t\022\017\n\007imdb_id\030\013 \001(\t\022\020\n\010file" +
-      "path\030\014 \001(\t\"I\n\031JukeboxResponseListMovies\022" +
-      ",\n\006movies\030\001 \003(\0132\034.se.qxx.jukebox.domain.",
-      "Movie\"]\n\017JukeboxResponse\0227\n\004type\030\001 \002(\0162)" +
-      ".se.qxx.jukebox.domain.JukeboxRequestTyp" +
-      "e\022\021\n\targuments\030\002 \001(\014*\224\001\n\022JukeboxRequestT" +
-      "ype\022\016\n\nListMovies\020\001\022\031\n\025StartSubtitleIden" +
-      "tity\020\002\022\016\n\nStartMovie\020\003\022\r\n\tStopMovie\020\004\022\020\n" +
-      "\014MarkSubtitle\020\005\022\017\n\013SkipForward\020\006\022\021\n\rSkip" +
-      "Backwards\020\007B\027\n\025se.qxx.jukebox.domain"
+      "Movies\022\024\n\014searchString\030\002 \001(\t\"\033\n\031JukeboxR" +
+      "equestListPlayers\"J\n#JukeboxRequestStart" +
+      "SubtitleIdentify\022\017\n\007movieId\030\001 \001(\005\022\022\n\nmov" +
+      "ieTitle\030\002 \001(\t\"?\n\030JukeboxRequestStartMovi" +
+      "e\022\017\n\007movieId\030\001 \001(\005\022\022\n\nmovieTitle\030\002 \001(\t\"\031" +
+      "\n\027JukeboxRequestStopMovie\"p\n\032JukeboxRequ",
+      "estMarkSubtitle\022\017\n\007movieId\030\001 \001(\005\022\022\n\nmovi" +
+      "eTitle\030\002 \001(\t\022\023\n\013subtitileId\030\003 \001(\005\022\030\n\020sub" +
+      "titleFileName\030\004 \001(\t\"\033\n\031JukeboxRequestSki" +
+      "pForward\"\035\n\033JukeboxRequestSkipBackwards\"" +
+      "\305\001\n\005Movie\022\n\n\002ID\030\001 \002(\005\022\020\n\010filename\030\002 \002(\t\022" +
+      "\r\n\005title\030\003 \001(\t\022\014\n\004year\030\004 \001(\005\022\014\n\004type\030\005 \001" +
+      "(\t\022\016\n\006format\030\006 \001(\t\022\r\n\005sound\030\007 \001(\t\022\020\n\010lan" +
+      "guage\030\010 \001(\t\022\r\n\005group\030\t \001(\t\022\020\n\010imdb_url\030\n" +
+      " \001(\t\022\017\n\007imdb_id\030\013 \001(\t\022\020\n\010filepath\030\014 \001(\t\"" +
+      "I\n\031JukeboxResponseListMovies\022,\n\006movies\030\001",
+      " \003(\0132\034.se.qxx.jukebox.domain.Movie\".\n\032Ju" +
+      "keboxResponseListPlayers\022\020\n\010hostname\030\001 \003" +
+      "(\t\"]\n\017JukeboxResponse\0227\n\004type\030\001 \002(\0162).se" +
+      ".qxx.jukebox.domain.JukeboxRequestType\022\021" +
+      "\n\targuments\030\002 \001(\014*\245\001\n\022JukeboxRequestType" +
+      "\022\016\n\nListMovies\020\001\022\031\n\025StartSubtitleIdentit" +
+      "y\020\002\022\016\n\nStartMovie\020\003\022\r\n\tStopMovie\020\004\022\020\n\014Ma" +
+      "rkSubtitle\020\005\022\017\n\013SkipForward\020\006\022\021\n\rSkipBac" +
+      "kwards\020\007\022\017\n\013ListPlayers\020\010B\027\n\025se.qxx.juke" +
+      "box.domain"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -5599,8 +6280,16 @@ public final class JukeboxDomain {
               new java.lang.String[] { "SearchString", },
               se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies.class,
               se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies.Builder.class);
-          internal_static_se_qxx_jukebox_domain_JukeboxRequestStartSubtitleIdentify_descriptor =
+          internal_static_se_qxx_jukebox_domain_JukeboxRequestListPlayers_descriptor =
             getDescriptor().getMessageTypes().get(2);
+          internal_static_se_qxx_jukebox_domain_JukeboxRequestListPlayers_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_se_qxx_jukebox_domain_JukeboxRequestListPlayers_descriptor,
+              new java.lang.String[] { },
+              se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers.class,
+              se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers.Builder.class);
+          internal_static_se_qxx_jukebox_domain_JukeboxRequestStartSubtitleIdentify_descriptor =
+            getDescriptor().getMessageTypes().get(3);
           internal_static_se_qxx_jukebox_domain_JukeboxRequestStartSubtitleIdentify_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_se_qxx_jukebox_domain_JukeboxRequestStartSubtitleIdentify_descriptor,
@@ -5608,7 +6297,7 @@ public final class JukeboxDomain {
               se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStartSubtitleIdentify.class,
               se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStartSubtitleIdentify.Builder.class);
           internal_static_se_qxx_jukebox_domain_JukeboxRequestStartMovie_descriptor =
-            getDescriptor().getMessageTypes().get(3);
+            getDescriptor().getMessageTypes().get(4);
           internal_static_se_qxx_jukebox_domain_JukeboxRequestStartMovie_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_se_qxx_jukebox_domain_JukeboxRequestStartMovie_descriptor,
@@ -5616,7 +6305,7 @@ public final class JukeboxDomain {
               se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStartMovie.class,
               se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStartMovie.Builder.class);
           internal_static_se_qxx_jukebox_domain_JukeboxRequestStopMovie_descriptor =
-            getDescriptor().getMessageTypes().get(4);
+            getDescriptor().getMessageTypes().get(5);
           internal_static_se_qxx_jukebox_domain_JukeboxRequestStopMovie_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_se_qxx_jukebox_domain_JukeboxRequestStopMovie_descriptor,
@@ -5624,7 +6313,7 @@ public final class JukeboxDomain {
               se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStopMovie.class,
               se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStopMovie.Builder.class);
           internal_static_se_qxx_jukebox_domain_JukeboxRequestMarkSubtitle_descriptor =
-            getDescriptor().getMessageTypes().get(5);
+            getDescriptor().getMessageTypes().get(6);
           internal_static_se_qxx_jukebox_domain_JukeboxRequestMarkSubtitle_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_se_qxx_jukebox_domain_JukeboxRequestMarkSubtitle_descriptor,
@@ -5632,7 +6321,7 @@ public final class JukeboxDomain {
               se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMarkSubtitle.class,
               se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMarkSubtitle.Builder.class);
           internal_static_se_qxx_jukebox_domain_JukeboxRequestSkipForward_descriptor =
-            getDescriptor().getMessageTypes().get(6);
+            getDescriptor().getMessageTypes().get(7);
           internal_static_se_qxx_jukebox_domain_JukeboxRequestSkipForward_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_se_qxx_jukebox_domain_JukeboxRequestSkipForward_descriptor,
@@ -5640,7 +6329,7 @@ public final class JukeboxDomain {
               se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSkipForward.class,
               se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSkipForward.Builder.class);
           internal_static_se_qxx_jukebox_domain_JukeboxRequestSkipBackwards_descriptor =
-            getDescriptor().getMessageTypes().get(7);
+            getDescriptor().getMessageTypes().get(8);
           internal_static_se_qxx_jukebox_domain_JukeboxRequestSkipBackwards_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_se_qxx_jukebox_domain_JukeboxRequestSkipBackwards_descriptor,
@@ -5648,7 +6337,7 @@ public final class JukeboxDomain {
               se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSkipBackwards.class,
               se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSkipBackwards.Builder.class);
           internal_static_se_qxx_jukebox_domain_Movie_descriptor =
-            getDescriptor().getMessageTypes().get(8);
+            getDescriptor().getMessageTypes().get(9);
           internal_static_se_qxx_jukebox_domain_Movie_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_se_qxx_jukebox_domain_Movie_descriptor,
@@ -5656,15 +6345,23 @@ public final class JukeboxDomain {
               se.qxx.jukebox.domain.JukeboxDomain.Movie.class,
               se.qxx.jukebox.domain.JukeboxDomain.Movie.Builder.class);
           internal_static_se_qxx_jukebox_domain_JukeboxResponseListMovies_descriptor =
-            getDescriptor().getMessageTypes().get(9);
+            getDescriptor().getMessageTypes().get(10);
           internal_static_se_qxx_jukebox_domain_JukeboxResponseListMovies_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_se_qxx_jukebox_domain_JukeboxResponseListMovies_descriptor,
               new java.lang.String[] { "Movies", },
               se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies.class,
               se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies.Builder.class);
+          internal_static_se_qxx_jukebox_domain_JukeboxResponseListPlayers_descriptor =
+            getDescriptor().getMessageTypes().get(11);
+          internal_static_se_qxx_jukebox_domain_JukeboxResponseListPlayers_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_se_qxx_jukebox_domain_JukeboxResponseListPlayers_descriptor,
+              new java.lang.String[] { "Hostname", },
+              se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers.class,
+              se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers.Builder.class);
           internal_static_se_qxx_jukebox_domain_JukeboxResponse_descriptor =
-            getDescriptor().getMessageTypes().get(10);
+            getDescriptor().getMessageTypes().get(12);
           internal_static_se_qxx_jukebox_domain_JukeboxResponse_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_se_qxx_jukebox_domain_JukeboxResponse_descriptor,

@@ -22,15 +22,7 @@ public class VLCConnection {
 	int _port;
 	
 	Socket _sock;
-	
-	public VLCConnection() 
-	{
-		this._host = Settings.get().getVlc().getServer().getHost();
-		this._port = Settings.get().getVlc().getServer().getPort();
 		
-		connect();
-	}
-	
 	public VLCConnection(String host, int port) {
 		this._host = host;
 		this._port = port;
@@ -58,6 +50,11 @@ public class VLCConnection {
 			Log.Error(String.format("Unable to connect to VLC host :: %s port :: %s", this._host, this._port), Log.LogType.COMM, e);
 		}
 
+	}
+	
+	public void reconnect() {
+		if (!this.isConnected())
+			this.connect();
 	}
 
 	public void disconnect() {
