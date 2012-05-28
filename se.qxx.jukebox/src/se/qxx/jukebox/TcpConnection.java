@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Logger;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.CodedInputStream;
@@ -22,11 +23,13 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStartMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponse;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseError;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Vlc.Server;
+import se.qxx.jukebox.vlc.VLCConnectionNotFoundException;
 import se.qxx.jukebox.vlc.VLCDistributor;
 
 public class TcpConnection implements Runnable {
@@ -39,6 +42,7 @@ public class TcpConnection implements Runnable {
 	@Override
 	public void run() {
 		try {
+			Log.Debug(String.format("Connection made from %s", this._client.getInetAddress().toString()), Log.LogType.COMM);
 			// read 4 bytes parsing the message length
 			InputStream is = this._client.getInputStream();
 			DataInputStream ds = new DataInputStream(is);
@@ -54,8 +58,9 @@ public class TcpConnection implements Runnable {
 			CodedInputStream cis = CodedInputStream.newInstance(data);
 			JukeboxRequest req = JukeboxRequest.parseFrom(cis);
 			
+			Log.Debug(String.format("Request was of type :: %s", req.getType().toString()), Log.LogType.COMM);
 			JukeboxResponse resp = handleRequest(req);
-			
+						
 			if (resp != null) {
 				OutputStream os = this._client.getOutputStream();
 				DataOutputStream dos = new DataOutputStream(os);
@@ -111,14 +116,32 @@ public class TcpConnection implements Runnable {
 	private JukeboxResponse startMovie(JukeboxRequest req) throws IOException {
 		ByteString data = req.getArguments();
 		JukeboxRequestStartMovie args = JukeboxRequestStartMovie.parseFrom(data);
+
+		Log.Debug(String.format("Starting movie with ID: %s on player %s", args.getMovieId(), args.getPlayerName()), Log.LogType.COMM);
 		
-		
-		JukeboxResponse resp = JukeboxResponse.newBuilder().build();
-		
-		return resp;
-		//args.getMovieId()
+		try {
+			if (VLCDistributor.get().startMovie(args.getPlayerName(), args.getMovieId()))
+				return JukeboxResponse.newBuilder().setType(JukeboxRequestType.OK).build();
+			else
+				return buildErrorMessage("Error occured when connecting to target media player"); 
+		} catch (VLCConnectionNotFoundException e) {
+			return buildErrorMessage("Error occured when connecting to target media player"); 
+			
+		}		
 	}
 	
+	private JukeboxResponse buildErrorMessage(String errorMessage) {
+		// TODO Auto-generated method stub
+		return JukeboxResponse.newBuilder().setType(JukeboxRequestType.Error)
+				.setArguments(
+						JukeboxResponseError
+							.newBuilder()
+							.setErrorMessage(errorMessage)
+							.build()
+							.toByteString())
+				.build();
+	}
+
 	private JukeboxResponse listPlayers() {
 		Collection<String> hostnames = new ArrayList<String>();
 		for (Server s : Settings.get().getVlc().getServer()) {

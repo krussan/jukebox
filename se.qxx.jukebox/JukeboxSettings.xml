@@ -2,7 +2,9 @@
 <JukeboxListenerSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="JukeboxSettings.xsd">
   <catalogs>
     <catalog includeSubdirectories="true" path="/c/media/BitTorrent">
-      <vlcpath player="vlc_main" path="Y:/Jukebox" />
+      <vlcpaths>
+      	<vlcpath player="vlc_main" path="file://Z:/BitTorrent" />
+      </vlcpaths>
       <extensions>
         <extension value="avi"/>
       </extensions>
@@ -56,7 +58,7 @@
   <vlc>
   	<server 
   	    name="vlc_main"
-  		host="192.168.1.106" 
+  		host="192.168.1.100" 
   		port="2150"
   		subsPath="Y:/Subs"
  	/>	

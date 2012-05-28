@@ -15,6 +15,7 @@
             </intent-filter>
         </activity>
         <activity android:name="JukeboxPreferenceActivity"></activity>
+        <activity android:name="MovieInfoActivity"></activity>
 
     </application>
 </manifest>

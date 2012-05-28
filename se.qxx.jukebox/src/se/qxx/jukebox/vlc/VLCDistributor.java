@@ -5,15 +5,17 @@ import java.util.Hashtable;
 import java.util.List;
 
 import se.qxx.jukebox.DB;
+import se.qxx.jukebox.Log;
+import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
-import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog.VlcPath;
+import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog.Vlcpaths.Vlcpath;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Vlc.Server;
 import se.qxx.jukebox.settings.Settings;
 
 public class VLCDistributor {
 
-	private VLCDistributor _instance;
+	private static VLCDistributor _instance;
 	private Hashtable<String, VLCConnection> connectors;
 	
 	private VLCDistributor() {
@@ -21,7 +23,7 @@ public class VLCDistributor {
 		
 	}
 	
-	public VLCDistributor get() {
+	public static VLCDistributor get() {
 		if (_instance == null)
 			_instance = new VLCDistributor();
 		
@@ -42,18 +44,29 @@ public class VLCDistributor {
 		
 		VLCConnection conn = findConnection(hostName);
 		Server s = findServerInSettings(hostName);
-		Movie m = DB.getMovie(title);
+		Movie m = DB.getMovie(id);
 		
-		String filepath = m.getFilepath();
-		for (Catalog c : Settings.get().getCatalogs().getCatalog()) {
-			if (filepath.startsWith(c.getPath())) {
-				VlcPath vlcPath = findVlcPath(c, hostName);
-				if (vlcPath != null) {
-					String filename = filepath.replace(c.getPath(), vlcPath.getPath()) + "/" + m.getFilename();
-					conn.enqueue(filename);
-					return true;
+		if (m != null) {
+			String filepath = m.getFilepath();
+			for (Catalog c : Settings.get().getCatalogs().getCatalog()) {
+				Log.Debug(String.format("Comparing %s with %s", c.getPath(), filepath), Log.LogType.COMM);
+				if (filepath.startsWith(c.getPath())) {
+					
+					Vlcpath vlcPath = findVlcPath(c, hostName);
+					if (vlcPath != null) {
+						String filename = filepath.replace(c.getPath(), vlcPath.getPath()) + "/" + m.getFilename();
+						conn.enqueue(filename);
+						return true;
+					}
+					else {
+						Log.Debug("Couldn't find vlc path in catalog", Log.LogType.COMM);
+					}
 				}
-			}
+			} 
+			Log.Debug("Couldn't find filepath in settings", Log.LogType.COMM);
+		}
+		else {
+			Log.Debug("Movie was not found in database", Log.LogType.COMM);
 		}
 		
 		//conn.enqueue(filename);
@@ -61,8 +74,11 @@ public class VLCDistributor {
 		return false;
 	}
 
-	private VlcPath findVlcPath(Catalog c, String hostName) {
-		for (VlcPath p : c.getVlcPath()){
+	private se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog.Vlcpaths.Vlcpath findVlcPath(Catalog c, String hostName) {
+		Log.Debug(String.format("Finding %s in %s", hostName, c.getPath()), Log.LogType.COMM);
+		Log.Debug(String.format("Number of vlc's :: %s", c.getVlcpaths().getVlcpath().size()), Log.LogType.COMM);
+		for (Vlcpath p : c.getVlcpaths().getVlcpath()){
+			Log.Debug(String.format("vlc player name :: %s", p.getPlayer()), Log.LogType.COMM);	
 			if (p.getPlayer().equals(hostName)) 
 				return p;
 		}

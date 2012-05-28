@@ -23,46 +23,48 @@
 
                                     <xs:sequence>
 
-                                        <xs:element name="extensions" >
+                                    	<xs:element name="extensions">
 
-                                            <xs:complexType>
+                                    		<xs:complexType>
 
-                                                <xs:sequence>
+                                    			<xs:sequence>
 
-                                                    <xs:element
-                                                        name="extension"
-                                                        maxOccurs="unbounded" >
+                                    				<xs:element
+                                    					name="extension"
+                                    					maxOccurs="unbounded">
 
-                                                        <xs:complexType>
+                                    					<xs:complexType>
 
-                                                            <xs:attribute
-                                                                name="value"
-                                                                type="xs:string"
-                                                                use="required" />
-                                                        </xs:complexType>
-                                                    </xs:element>
-                                                </xs:sequence>
-                                            </xs:complexType>
-                                        </xs:element>
+                                    						<xs:attribute
+                                    							name="value" type="xs:string"
+                                    							use="required" />
+                                    					</xs:complexType>
+                                    				</xs:element>
+                                    			</xs:sequence>
+                                    		</xs:complexType>
+                                    	</xs:element>
 
-                                        <xs:element
-                                            name="vlcPath"
-                                            maxOccurs="unbounded"
-                                            minOccurs="0" >
-
-                                            <xs:complexType>
-
-                                                <xs:attribute
-                                                    name="player"
-                                                    type="xs:string" >
-                                                </xs:attribute>
-
-                                                <xs:attribute
-                                                    name="path"
-                                                    type="xs:string" >
-                                                </xs:attribute>
-                                            </xs:complexType>
-                                        </xs:element>
+                                    	<xs:element name="vlcpaths">
+                                    		<xs:complexType>
+                                    			<xs:sequence>
+                                    				<xs:element
+                                    					name="vlcpath" maxOccurs="unbounded" minOccurs="0">
+                                    					<xs:complexType>
+                                    						<xs:sequence>
+                                    						</xs:sequence>
+                                    						<xs:attribute
+                                    							name="player"
+                                    							type="xs:string">
+                                    						</xs:attribute>
+                                    						<xs:attribute
+                                    							name="path"
+                                    							type="xs:string">
+                                    						</xs:attribute>
+                                    					</xs:complexType>
+                                    				</xs:element>
+                                    			</xs:sequence>
+                                    		</xs:complexType>
+                                    	</xs:element>
                                     </xs:sequence>
 
                                     <xs:attribute

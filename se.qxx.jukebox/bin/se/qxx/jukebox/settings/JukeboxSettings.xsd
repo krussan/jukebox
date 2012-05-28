@@ -9,17 +9,31 @@
               <xs:element maxOccurs="unbounded" name="catalog">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element name="extensions">
-                      <xs:complexType>
-                        <xs:sequence>
-                          <xs:element maxOccurs="unbounded" name="extension">
-                            <xs:complexType>
-                              <xs:attribute name="value" type="xs:string" use="required" />
-                            </xs:complexType>
-                          </xs:element>
-                        </xs:sequence>
-                      </xs:complexType>
-                    </xs:element>
+                  	<xs:element name="extensions">
+                  		<xs:complexType>
+                  			<xs:sequence>
+                  				<xs:element maxOccurs="unbounded"
+                  					name="extension">
+                  					<xs:complexType>
+                  						<xs:attribute name="value"
+                  							type="xs:string" use="required" />
+                  					</xs:complexType>
+                  				</xs:element>
+                  			</xs:sequence>
+                  		</xs:complexType>
+                  	</xs:element>
+                  	<xs:element name="vlcpath">
+                  		<xs:complexType>
+                  			<xs:sequence>
+                  			</xs:sequence>
+                  			<xs:attribute name="player"
+                  				type="xs:string">
+                  			</xs:attribute>
+                  			<xs:attribute name="path"
+                  				type="xs:string">
+                  			</xs:attribute>
+                  		</xs:complexType>
+                  	</xs:element>
                   </xs:sequence>
                   <xs:attribute name="path" type="xs:string" use="required" />
                   <xs:attribute name="includeSubdirectories" type="xs:boolean" use="required" />

@@ -11,6 +11,8 @@ enum JukeboxRequestType {
 	SkipForward = 6;
 	SkipBackwards = 7;
 	ListPlayers = 8;
+	Error = 9;
+	OK = 10;
 }
 
 message JukeboxRequest {
@@ -69,6 +71,13 @@ message JukeboxResponseListMovies {
 
 message JukeboxResponseListPlayers {
 	repeated string hostname = 1;
+}
+
+message JukeboxResponseOK {
+}
+
+message JukeboxResponseError {
+	optional string errorMessage = 1;
 }
 
 message JukeboxResponse {

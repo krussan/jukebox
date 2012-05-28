@@ -45,12 +45,16 @@ public class Model {
 		}
 	}
 
+	
+	
 		
 	private static Model _instance;
 	private List<Movie> _movies;
+	private List<String> players;
 	
 	private Model() {
 		_movies = new ArrayList<Movie>();
+		players = new ArrayList<String>();
 	}
 	
 	public static Model get() {
@@ -98,6 +102,10 @@ public class Model {
 
 	public void setCurrentMovie(Movie currentMovie) {
 		this.currentMovie = currentMovie;
+	}
+	
+	public void getPlayers() {
+		
 	}
 
 	

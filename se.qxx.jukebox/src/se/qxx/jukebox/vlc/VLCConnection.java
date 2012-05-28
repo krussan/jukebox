@@ -39,7 +39,7 @@ public class VLCConnection {
 	
 	private void connect() {
 		try {
-			Log.Debug(String.format("Connecting to %s port %s", this._host, this._port), Log.LogType.ALL);
+			Log.Debug(String.format("Connecting to %s port %s", this._host, this._port), Log.LogType.COMM);
 			_sock = new Socket(this._host, this._port);
 			Log.Debug("Connected...", Log.LogType.COMM);
 		} catch (UnknownHostException e) {

@@ -12,11 +12,14 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequest;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStartMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponse;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseError;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
 
 import se.qxx.android.tools.Logger;
@@ -41,6 +44,8 @@ public class JukeboxConnectionHandler implements Runnable {
 		case JukeboxRequestType.ListMovies_VALUE:
 			b = listMovies();
 			break;
+		case JukeboxRequestType.StartMovie_VALUE:
+			b = startMovie();
 		default:
 		}
 		
@@ -50,7 +55,16 @@ public class JukeboxConnectionHandler implements Runnable {
 		this._handler.sendMessage(m);
 	}
 	
-	public Bundle listMovies() {
+	private Bundle startMovie() {
+		JukeboxRequestStartMovie sm = JukeboxRequestStartMovie.newBuilder()
+				.setPlayerName("vlc_main")
+				.setMovieId(Model.get().getCurrentMovie().getID())
+				.build();
+		
+		return sendAndRetreive(JukeboxRequestType.StartMovie, sm);
+	}
+	
+	private Bundle listMovies() {
 		JukeboxRequestListMovies lm = JukeboxRequestListMovies.newBuilder()
 				.setSearchString("")
 				.build();
@@ -96,11 +110,12 @@ public class JukeboxConnectionHandler implements Runnable {
 		    	
 		    	Logger.Log().i("response read");
 		    	
-
-		    	
 		    	s.close();
 		    	
-		    	return setResponse(true);	    		
+	    		if (resp.getType() == JukeboxRequestType.Error)
+	    			return setResponse(false, JukeboxResponseError.parseFrom(data).getErrorMessage());
+	    		else
+	    			return setResponse(true);	    		
 	    	}	    	
     	}
     	catch (java.net.SocketTimeoutException ex) {
@@ -131,6 +146,10 @@ public class JukeboxConnectionHandler implements Runnable {
     			break;
     		case StopMovie:
     			break;
+    		case Error:
+    			JukeboxResponseError err = JukeboxResponseError.parseFrom(data);
+    			Log.e("Jukebox", "Error occured when communicating with jukebox server");
+    			Log.e("Jukebox", err.getErrorMessage());
     		}
 			
 		} catch (InvalidProtocolBufferException e) {
@@ -141,7 +160,7 @@ public class JukeboxConnectionHandler implements Runnable {
 	}
 	private JukeboxRequest getRequest(JukeboxRequestType type, com.google.protobuf.GeneratedMessage message) {
 		return JukeboxRequest.newBuilder()
-			.setType(JukeboxRequestType.ListMovies)
+			.setType(type)
 			.setArguments(message.toByteString())
 			.build();	
 	}
