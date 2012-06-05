@@ -44,7 +44,7 @@ public class JukeboxActivity extends Activity implements ModelUpdatedEventListen
 		
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			View v = convertView;
+			View v = convertView; 
 			
 			try {
 				// TODO Auto-generated method stub

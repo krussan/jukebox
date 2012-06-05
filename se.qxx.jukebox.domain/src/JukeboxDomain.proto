@@ -13,6 +13,8 @@ enum JukeboxRequestType {
 	ListPlayers = 8;
 	Error = 9;
 	OK = 10;
+	PauseMovie = 11;
+	Wakeup = 12;
 }
 
 message JukeboxRequest {
@@ -37,7 +39,13 @@ message JukeboxRequestStartMovie {
 	optional string playerName = 2;
 }
 
-message JukeboxRequestStopMovie {}
+message JukeboxRequestStopMovie {
+	optional string playerName = 1;
+}
+
+message JukeboxRequestPauseMovie {
+	optional string playerName = 1;
+}
 
 message JukeboxRequestMarkSubtitle {
 	optional int32 movieId = 1;
@@ -83,4 +91,8 @@ message JukeboxResponseError {
 message JukeboxResponse {
 	required JukeboxRequestType type = 1;
 	optional bytes arguments = 2;
+}
+
+message JukeboxRequestWakeup {
+	required string hostname = 1;
 }

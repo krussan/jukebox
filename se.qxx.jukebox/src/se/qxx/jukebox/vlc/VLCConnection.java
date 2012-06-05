@@ -70,6 +70,10 @@ public class VLCConnection {
 		enqueue(filename, new ArrayList<String>());
 	}
 	
+	public void stop() {
+		
+	}
+	
 	private void sendCommand(String command) throws IOException {
 		DataOutputStream out = new DataOutputStream(_sock.getOutputStream());
 
@@ -125,6 +129,30 @@ public class VLCConnection {
 			this.sendCommand(output);
 		} catch (Exception e) {
 			Log.Error("Error while adding file to playlist", Log.LogType.COMM, e);
+		}
+	}
+	
+	public void stopPlayback() {
+		try {
+			this.sendCommand("stop");
+		} catch (Exception e) {
+			Log.Error("Error while stopping movie", Log.LogType.COMM, e);
+		}
+	}
+	
+	public void pausePlayback() {
+		try {
+			this.sendCommand("pause");
+		} catch (Exception e) {
+			Log.Error("Error while pausing movie", Log.LogType.COMM, e);
+		}
+	}
+	
+	public void clearPlaylist() {
+		try {
+			this.sendCommand("clear");
+		} catch (Exception e) {
+			Log.Error("Error while clearing playlist", Log.LogType.COMM, e);
 		}
 	}
 

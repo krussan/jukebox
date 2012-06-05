@@ -16,8 +16,11 @@ import android.util.Log;
 
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequest;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestPauseMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStartMovie;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStopMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestWakeup;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponse;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseError;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
@@ -46,6 +49,12 @@ public class JukeboxConnectionHandler implements Runnable {
 			break;
 		case JukeboxRequestType.StartMovie_VALUE:
 			b = startMovie();
+		case JukeboxRequestType.StopMovie_VALUE:
+			b = stopMovie();
+		case JukeboxRequestType.PauseMovie_VALUE:
+			b = pauseMovie();
+		case JukeboxRequestType.Wakeup_VALUE:
+			b = wakeup();
 		default:
 		}
 		
@@ -64,12 +73,36 @@ public class JukeboxConnectionHandler implements Runnable {
 		return sendAndRetreive(JukeboxRequestType.StartMovie, sm);
 	}
 	
+	private Bundle stopMovie() {
+		JukeboxRequestStopMovie sm = JukeboxRequestStopMovie.newBuilder()
+				.setPlayerName("vlc_main")
+				.build();
+		
+		return sendAndRetreive(JukeboxRequestType.StopMovie, sm);
+	}
+	
+	private Bundle pauseMovie() {
+		JukeboxRequestPauseMovie sm = JukeboxRequestPauseMovie.newBuilder()
+				.setPlayerName("vlc_main")
+				.build();
+		
+		return sendAndRetreive(JukeboxRequestType.PauseMovie, sm);		
+	}
+	
 	private Bundle listMovies() {
 		JukeboxRequestListMovies lm = JukeboxRequestListMovies.newBuilder()
 				.setSearchString("")
 				.build();
 		
 		return sendAndRetreive(JukeboxRequestType.ListMovies, lm);    	
+	}
+	
+	private Bundle wakeup() {
+		JukeboxRequestWakeup sm = JukeboxRequestWakeup.newBuilder()
+				.setHostname("vlc_main")
+				.build();
+		
+		return sendAndRetreive(JukeboxRequestType.Wakeup, sm);		
 	}
 	
 	private Bundle sendAndRetreive(JukeboxRequestType type, com.google.protobuf.GeneratedMessage message) {
@@ -145,6 +178,8 @@ public class JukeboxConnectionHandler implements Runnable {
     		case StartSubtitleIdentity:
     			break;
     		case StopMovie:
+    			break;
+    		case Wakeup:
     			break;
     		case Error:
     			JukeboxResponseError err = JukeboxResponseError.parseFrom(data);

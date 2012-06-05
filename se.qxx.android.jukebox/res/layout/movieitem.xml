@@ -54,13 +54,27 @@
           android:text="@string/btnPlay"
           android:onClick="onPlayClicked" />
 
-        <Button
+       <Button
             android:id="@+id/button2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btnPause"
+            android:onClick="onPauseClicked" />
+       
+        <Button
+            android:id="@+id/button3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/btnStop"
             android:onClick="onStopClicked" />
 
+        <Button
+            android:id="@+id/btnWakeup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btnWakeup"
+            android:onClick="onWakeupClicked" />
+        
     </LinearLayout>
 
 </LinearLayout>

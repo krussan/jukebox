@@ -9,4 +9,6 @@
     <string name="movieIconDescription">Movie icon</string>
     <string name="btnPlay">Play</string>
     <string name="btnStop">Stop</string>
+    <string name="btnPause">Pause</string>
+    <string name="btnWakeup">Wakeup</string>
 </resources>

@@ -22,17 +22,27 @@ public class MovieInfoActivity extends Activity {
 	    tv.setText(m.getTitle());
 	}
 	
-	public void onPlayClicked(View v) {
-    	Logger.Log().i("onPlayClicked");
-    	
-       	ProgressDialog d = ProgressDialog.show(this, "Jukebox", "Starting movie...");
+	private void sendCommand(String message, JukeboxRequestType type) {
+       	ProgressDialog d = ProgressDialog.show(this, "Jukebox", message);
 
-       	JukeboxConnectionHandler h = new JukeboxConnectionHandler(new ProgressDialogHandler(this, d), JukeboxRequestType.StartMovie);
+       	JukeboxConnectionHandler h = new JukeboxConnectionHandler(new ProgressDialogHandler(this, d), type);
        	Thread t = new Thread(h);
-       	t.start();		
+       	t.start();				
+	}
+	
+	public void onPlayClicked(View v) {
+		sendCommand("Starting movie...", JukeboxRequestType.StartMovie);
 	}
 
 	public void onStopClicked(View v) {
-		
+		sendCommand("Stopping...", JukeboxRequestType.StopMovie);
+	}
+	
+	public void onPauseClicked(View v) {
+		sendCommand("Pausing...", JukeboxRequestType.PauseMovie);
+	}
+	
+	public void onWakeupClicked(View v) {
+		sendCommand("Waking up...", JukeboxRequestType.Wakeup);
 	}
 }

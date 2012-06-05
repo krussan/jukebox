@@ -3,7 +3,7 @@
   <catalogs>
     <catalog includeSubdirectories="true" path="/c/media/BitTorrent">
       <vlcpaths>
-      	<vlcpath player="vlc_main" path="file://Z:/BitTorrent" />
+      	<vlcpath player="vlc_main" path="file://Y:/BitTorrent" />
       </vlcpaths>
       <extensions>
         <extension value="avi"/>
@@ -58,9 +58,10 @@
   <vlc>
   	<server 
   	    name="vlc_main"
-  		host="192.168.1.100" 
+  		host="192.168.1.101" 
   		port="2150"
   		subsPath="Y:/Subs"
+  		macAddress="00-17-42-BE-FC-36"
  	/>	
   </vlc>
   <logs>

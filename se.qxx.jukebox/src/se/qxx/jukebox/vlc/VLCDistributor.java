@@ -1,4 +1,5 @@
 package se.qxx.jukebox.vlc;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -6,6 +7,7 @@ import java.util.List;
 
 import se.qxx.jukebox.DB;
 import se.qxx.jukebox.Log;
+import se.qxx.jukebox.WakeOnLan;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
@@ -15,6 +17,7 @@ import se.qxx.jukebox.settings.Settings;
 
 public class VLCDistributor {
 
+	private final int COMMAND_DELAY = 3000;
 	private static VLCDistributor _instance;
 	private Hashtable<String, VLCConnection> connectors;
 	
@@ -43,7 +46,6 @@ public class VLCDistributor {
 			return false;
 		
 		VLCConnection conn = findConnection(hostName);
-		Server s = findServerInSettings(hostName);
 		Movie m = DB.getMovie(id);
 		
 		if (m != null) {
@@ -56,6 +58,15 @@ public class VLCDistributor {
 					if (vlcPath != null) {
 						String filename = filepath.replace(c.getPath(), vlcPath.getPath()) + "/" + m.getFilename();
 						conn.enqueue(filename);
+						
+						try {
+							Thread.sleep(COMMAND_DELAY);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
+						conn.toggleFullscreen();
 						return true;
 					}
 					else {
@@ -70,6 +81,51 @@ public class VLCDistributor {
 		}
 		
 		//conn.enqueue(filename);
+		
+		return false;
+	}
+	
+	public boolean stopMovie(String hostName) throws VLCConnectionNotFoundException {
+		if (!assertLiveConnection(hostName))
+			return false;
+		
+		VLCConnection conn = findConnection(hostName);
+		conn.stopPlayback();
+		
+		try {
+			Thread.sleep(COMMAND_DELAY);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		conn.clearPlaylist();
+		return true;
+	}
+
+	public boolean pauseMovie(String hostName) throws VLCConnectionNotFoundException {
+		if (!assertLiveConnection(hostName))
+			return false;
+		
+		VLCConnection conn = findConnection(hostName);
+		conn.pausePlayback();
+		
+		return true; 
+	}
+	
+	public boolean wakeup(String hostName) throws VLCConnectionNotFoundException {
+		Server s = findServerInSettings(hostName);
+		
+		try {
+		if (s != null) {
+			WakeOnLan.sendPacket(s.getHost(), s.getMacAddress());
+			return true;
+		}
+		}
+		catch (IOException e) {
+			Log.Error("Error when sending wakeup packet", LogType.COMM, e);
+			return false;
+		}
 		
 		return false;
 	}

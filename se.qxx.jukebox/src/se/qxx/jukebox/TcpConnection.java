@@ -1,4 +1,4 @@
-package se.qxx.jukebox;
+package se.qxx.jukebox; 
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -20,8 +20,11 @@ import com.google.protobuf.InvalidProtocolBufferException;
 
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequest;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestPauseMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStartMovie;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStopMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestWakeup;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponse;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseError;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
@@ -83,6 +86,12 @@ public class TcpConnection implements Runnable {
 				return startMovie(req);
 			case ListPlayers:
 				return listPlayers();
+			case StopMovie:
+				return stopMovie(req);
+			case PauseMovie:
+				return pauseMovie(req);
+			case Wakeup:
+				return wakeup(req);
 			default:
 				break;
 			}
@@ -130,6 +139,40 @@ public class TcpConnection implements Runnable {
 		}		
 	}
 	
+	private JukeboxResponse stopMovie(JukeboxRequest req) throws IOException {
+		ByteString data = req.getArguments();
+		JukeboxRequestStopMovie args = JukeboxRequestStopMovie.parseFrom(data);
+
+		Log.Debug(String.format("Stopping movie on player %s", args.getPlayerName()), Log.LogType.COMM);
+		
+		try {
+			if (VLCDistributor.get().stopMovie(args.getPlayerName()))
+				return JukeboxResponse.newBuilder().setType(JukeboxRequestType.OK).build();
+			else
+				return buildErrorMessage("Error occured when connecting to target media player"); 
+		} catch (VLCConnectionNotFoundException e) {
+			return buildErrorMessage("Error occured when connecting to target media player"); 
+			
+		}		
+	}
+
+	private JukeboxResponse pauseMovie(JukeboxRequest req) throws IOException {
+		ByteString data = req.getArguments();
+		JukeboxRequestPauseMovie args = JukeboxRequestPauseMovie.parseFrom(data);
+
+		Log.Debug(String.format("Pausing movie on player %s", args.getPlayerName()), Log.LogType.COMM);
+		
+		try {
+			if (VLCDistributor.get().pauseMovie(args.getPlayerName()))
+				return JukeboxResponse.newBuilder().setType(JukeboxRequestType.OK).build();
+			else
+				return buildErrorMessage("Error occured when connecting to target media player"); 
+		} catch (VLCConnectionNotFoundException e) {
+			return buildErrorMessage("Error occured when connecting to target media player"); 
+			
+		}		
+	}
+	
 	private JukeboxResponse buildErrorMessage(String errorMessage) {
 		// TODO Auto-generated method stub
 		return JukeboxResponse.newBuilder().setType(JukeboxRequestType.Error)
@@ -155,5 +198,25 @@ public class TcpConnection implements Runnable {
     			.setType(JukeboxRequestType.ListPlayers)
     			.setArguments(lp.toByteString())
     			.build();
+	}
+	
+	private JukeboxResponse wakeup(JukeboxRequest req) throws IOException {
+		ByteString data = req.getArguments();
+		JukeboxRequestWakeup args = JukeboxRequestWakeup.parseFrom(data);
+
+		Log.Debug(String.format("Waking up player %s", args.getHostname()), Log.LogType.COMM);
+		
+		try {
+			if (VLCDistributor.get().wakeup(args.getHostname()))		
+				return JukeboxResponse.newBuilder()
+					.setType(JukeboxRequestType.OK)
+					.build();
+			else
+				return buildErrorMessage("Could not wake up computer. Error while connecting.");
+		} catch (VLCConnectionNotFoundException e) {
+			// TODO Auto-generated catch block
+			return buildErrorMessage("Error occured when connecting to target media player"); 
+		}
+				
 	}
 }
