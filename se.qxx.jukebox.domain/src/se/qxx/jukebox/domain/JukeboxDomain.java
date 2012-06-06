@@ -22,6 +22,7 @@ public final class JukeboxDomain {
     OK(9, 10),
     PauseMovie(10, 11),
     Wakeup(11, 12),
+    ToggleFullscreen(12, 13),
     ;
     
     public static final int ListMovies_VALUE = 1;
@@ -36,6 +37,7 @@ public final class JukeboxDomain {
     public static final int OK_VALUE = 10;
     public static final int PauseMovie_VALUE = 11;
     public static final int Wakeup_VALUE = 12;
+    public static final int ToggleFullscreen_VALUE = 13;
     
     
     public final int getNumber() { return value; }
@@ -54,6 +56,7 @@ public final class JukeboxDomain {
         case 10: return OK;
         case 11: return PauseMovie;
         case 12: return Wakeup;
+        case 13: return ToggleFullscreen;
         default: return null;
       }
     }
@@ -84,7 +87,7 @@ public final class JukeboxDomain {
     }
     
     private static final JukeboxRequestType[] VALUES = {
-      ListMovies, StartSubtitleIdentity, StartMovie, StopMovie, MarkSubtitle, SkipForward, SkipBackwards, ListPlayers, Error, OK, PauseMovie, Wakeup, 
+      ListMovies, StartSubtitleIdentity, StartMovie, StopMovie, MarkSubtitle, SkipForward, SkipBackwards, ListPlayers, Error, OK, PauseMovie, Wakeup, ToggleFullscreen, 
     };
     
     public static JukeboxRequestType valueOf(
@@ -7302,9 +7305,9 @@ public final class JukeboxDomain {
   public interface JukeboxRequestWakeupOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // required string hostname = 1;
-    boolean hasHostname();
-    String getHostname();
+    // required string playerName = 1;
+    boolean hasPlayerName();
+    String getPlayerName();
   }
   public static final class JukeboxRequestWakeup extends
       com.google.protobuf.GeneratedMessage
@@ -7335,14 +7338,14 @@ public final class JukeboxDomain {
     }
     
     private int bitField0_;
-    // required string hostname = 1;
-    public static final int HOSTNAME_FIELD_NUMBER = 1;
-    private java.lang.Object hostname_;
-    public boolean hasHostname() {
+    // required string playerName = 1;
+    public static final int PLAYERNAME_FIELD_NUMBER = 1;
+    private java.lang.Object playerName_;
+    public boolean hasPlayerName() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
-    public String getHostname() {
-      java.lang.Object ref = hostname_;
+    public String getPlayerName() {
+      java.lang.Object ref = playerName_;
       if (ref instanceof String) {
         return (String) ref;
       } else {
@@ -7350,17 +7353,17 @@ public final class JukeboxDomain {
             (com.google.protobuf.ByteString) ref;
         String s = bs.toStringUtf8();
         if (com.google.protobuf.Internal.isValidUtf8(bs)) {
-          hostname_ = s;
+          playerName_ = s;
         }
         return s;
       }
     }
-    private com.google.protobuf.ByteString getHostnameBytes() {
-      java.lang.Object ref = hostname_;
+    private com.google.protobuf.ByteString getPlayerNameBytes() {
+      java.lang.Object ref = playerName_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8((String) ref);
-        hostname_ = b;
+        playerName_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
@@ -7368,14 +7371,14 @@ public final class JukeboxDomain {
     }
     
     private void initFields() {
-      hostname_ = "";
+      playerName_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
       
-      if (!hasHostname()) {
+      if (!hasPlayerName()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -7387,7 +7390,7 @@ public final class JukeboxDomain {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, getHostnameBytes());
+        output.writeBytes(1, getPlayerNameBytes());
       }
       getUnknownFields().writeTo(output);
     }
@@ -7400,7 +7403,7 @@ public final class JukeboxDomain {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getHostnameBytes());
+          .computeBytesSize(1, getPlayerNameBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -7526,7 +7529,7 @@ public final class JukeboxDomain {
       
       public Builder clear() {
         super.clear();
-        hostname_ = "";
+        playerName_ = "";
         bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
@@ -7569,7 +7572,7 @@ public final class JukeboxDomain {
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
           to_bitField0_ |= 0x00000001;
         }
-        result.hostname_ = hostname_;
+        result.playerName_ = playerName_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -7586,15 +7589,15 @@ public final class JukeboxDomain {
       
       public Builder mergeFrom(se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestWakeup other) {
         if (other == se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestWakeup.getDefaultInstance()) return this;
-        if (other.hasHostname()) {
-          setHostname(other.getHostname());
+        if (other.hasPlayerName()) {
+          setPlayerName(other.getPlayerName());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
       
       public final boolean isInitialized() {
-        if (!hasHostname()) {
+        if (!hasPlayerName()) {
           
           return false;
         }
@@ -7626,7 +7629,7 @@ public final class JukeboxDomain {
             }
             case 10: {
               bitField0_ |= 0x00000001;
-              hostname_ = input.readBytes();
+              playerName_ = input.readBytes();
               break;
             }
           }
@@ -7635,39 +7638,39 @@ public final class JukeboxDomain {
       
       private int bitField0_;
       
-      // required string hostname = 1;
-      private java.lang.Object hostname_ = "";
-      public boolean hasHostname() {
+      // required string playerName = 1;
+      private java.lang.Object playerName_ = "";
+      public boolean hasPlayerName() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
-      public String getHostname() {
-        java.lang.Object ref = hostname_;
+      public String getPlayerName() {
+        java.lang.Object ref = playerName_;
         if (!(ref instanceof String)) {
           String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          hostname_ = s;
+          playerName_ = s;
           return s;
         } else {
           return (String) ref;
         }
       }
-      public Builder setHostname(String value) {
+      public Builder setPlayerName(String value) {
         if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000001;
-        hostname_ = value;
+        playerName_ = value;
         onChanged();
         return this;
       }
-      public Builder clearHostname() {
+      public Builder clearPlayerName() {
         bitField0_ = (bitField0_ & ~0x00000001);
-        hostname_ = getDefaultInstance().getHostname();
+        playerName_ = getDefaultInstance().getPlayerName();
         onChanged();
         return this;
       }
-      void setHostname(com.google.protobuf.ByteString value) {
+      void setPlayerName(com.google.protobuf.ByteString value) {
         bitField0_ |= 0x00000001;
-        hostname_ = value;
+        playerName_ = value;
         onChanged();
       }
       
@@ -7680,6 +7683,389 @@ public final class JukeboxDomain {
     }
     
     // @@protoc_insertion_point(class_scope:se.qxx.jukebox.domain.JukeboxRequestWakeup)
+  }
+  
+  public interface JukeboxRequestToggleFullscreenOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // required string playerName = 1;
+    boolean hasPlayerName();
+    String getPlayerName();
+  }
+  public static final class JukeboxRequestToggleFullscreen extends
+      com.google.protobuf.GeneratedMessage
+      implements JukeboxRequestToggleFullscreenOrBuilder {
+    // Use JukeboxRequestToggleFullscreen.newBuilder() to construct.
+    private JukeboxRequestToggleFullscreen(Builder builder) {
+      super(builder);
+    }
+    private JukeboxRequestToggleFullscreen(boolean noInit) {}
+    
+    private static final JukeboxRequestToggleFullscreen defaultInstance;
+    public static JukeboxRequestToggleFullscreen getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public JukeboxRequestToggleFullscreen getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return se.qxx.jukebox.domain.JukeboxDomain.internal_static_se_qxx_jukebox_domain_JukeboxRequestToggleFullscreen_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return se.qxx.jukebox.domain.JukeboxDomain.internal_static_se_qxx_jukebox_domain_JukeboxRequestToggleFullscreen_fieldAccessorTable;
+    }
+    
+    private int bitField0_;
+    // required string playerName = 1;
+    public static final int PLAYERNAME_FIELD_NUMBER = 1;
+    private java.lang.Object playerName_;
+    public boolean hasPlayerName() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public String getPlayerName() {
+      java.lang.Object ref = playerName_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          playerName_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getPlayerNameBytes() {
+      java.lang.Object ref = playerName_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        playerName_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
+    private void initFields() {
+      playerName_ = "";
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (!hasPlayerName()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getPlayerNameBytes());
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getPlayerNameBytes());
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreenOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return se.qxx.jukebox.domain.JukeboxDomain.internal_static_se_qxx_jukebox_domain_JukeboxRequestToggleFullscreen_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return se.qxx.jukebox.domain.JukeboxDomain.internal_static_se_qxx_jukebox_domain_JukeboxRequestToggleFullscreen_fieldAccessorTable;
+      }
+      
+      // Construct using se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        playerName_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen.getDescriptor();
+      }
+      
+      public se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen getDefaultInstanceForType() {
+        return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen.getDefaultInstance();
+      }
+      
+      public se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen build() {
+        se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen buildPartial() {
+        se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen result = new se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.playerName_ = playerName_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen) {
+          return mergeFrom((se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen other) {
+        if (other == se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen.getDefaultInstance()) return this;
+        if (other.hasPlayerName()) {
+          setPlayerName(other.getPlayerName());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        if (!hasPlayerName()) {
+          
+          return false;
+        }
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              playerName_ = input.readBytes();
+              break;
+            }
+          }
+        }
+      }
+      
+      private int bitField0_;
+      
+      // required string playerName = 1;
+      private java.lang.Object playerName_ = "";
+      public boolean hasPlayerName() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public String getPlayerName() {
+        java.lang.Object ref = playerName_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          playerName_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setPlayerName(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        playerName_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearPlayerName() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        playerName_ = getDefaultInstance().getPlayerName();
+        onChanged();
+        return this;
+      }
+      void setPlayerName(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000001;
+        playerName_ = value;
+        onChanged();
+      }
+      
+      // @@protoc_insertion_point(builder_scope:se.qxx.jukebox.domain.JukeboxRequestToggleFullscreen)
+    }
+    
+    static {
+      defaultInstance = new JukeboxRequestToggleFullscreen(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:se.qxx.jukebox.domain.JukeboxRequestToggleFullscreen)
   }
   
   private static com.google.protobuf.Descriptors.Descriptor
@@ -7767,6 +8153,11 @@ public final class JukeboxDomain {
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_se_qxx_jukebox_domain_JukeboxRequestWakeup_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_se_qxx_jukebox_domain_JukeboxRequestToggleFullscreen_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_se_qxx_jukebox_domain_JukeboxRequestToggleFullscreen_fieldAccessorTable;
   
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -7803,14 +8194,16 @@ public final class JukeboxDomain {
       "xResponseOK\",\n\024JukeboxResponseError\022\024\n\014e" +
       "rrorMessage\030\001 \001(\t\"]\n\017JukeboxResponse\0227\n\004" +
       "type\030\001 \002(\0162).se.qxx.jukebox.domain.Jukeb" +
-      "oxRequestType\022\021\n\targuments\030\002 \001(\014\"(\n\024Juke" +
-      "boxRequestWakeup\022\020\n\010hostname\030\001 \002(\t*\324\001\n\022J" +
-      "ukeboxRequestType\022\016\n\nListMovies\020\001\022\031\n\025Sta",
-      "rtSubtitleIdentity\020\002\022\016\n\nStartMovie\020\003\022\r\n\t" +
-      "StopMovie\020\004\022\020\n\014MarkSubtitle\020\005\022\017\n\013SkipFor" +
-      "ward\020\006\022\021\n\rSkipBackwards\020\007\022\017\n\013ListPlayers" +
-      "\020\010\022\t\n\005Error\020\t\022\006\n\002OK\020\n\022\016\n\nPauseMovie\020\013\022\n\n" +
-      "\006Wakeup\020\014B\027\n\025se.qxx.jukebox.domain"
+      "oxRequestType\022\021\n\targuments\030\002 \001(\014\"*\n\024Juke" +
+      "boxRequestWakeup\022\022\n\nplayerName\030\001 \002(\t\"4\n\036" +
+      "JukeboxRequestToggleFullscreen\022\022\n\nplayer",
+      "Name\030\001 \002(\t*\352\001\n\022JukeboxRequestType\022\016\n\nLis" +
+      "tMovies\020\001\022\031\n\025StartSubtitleIdentity\020\002\022\016\n\n" +
+      "StartMovie\020\003\022\r\n\tStopMovie\020\004\022\020\n\014MarkSubti" +
+      "tle\020\005\022\017\n\013SkipForward\020\006\022\021\n\rSkipBackwards\020" +
+      "\007\022\017\n\013ListPlayers\020\010\022\t\n\005Error\020\t\022\006\n\002OK\020\n\022\016\n" +
+      "\nPauseMovie\020\013\022\n\n\006Wakeup\020\014\022\024\n\020ToggleFulls" +
+      "creen\020\rB\027\n\025se.qxx.jukebox.domain"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -7950,9 +8343,17 @@ public final class JukeboxDomain {
           internal_static_se_qxx_jukebox_domain_JukeboxRequestWakeup_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_se_qxx_jukebox_domain_JukeboxRequestWakeup_descriptor,
-              new java.lang.String[] { "Hostname", },
+              new java.lang.String[] { "PlayerName", },
               se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestWakeup.class,
               se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestWakeup.Builder.class);
+          internal_static_se_qxx_jukebox_domain_JukeboxRequestToggleFullscreen_descriptor =
+            getDescriptor().getMessageTypes().get(17);
+          internal_static_se_qxx_jukebox_domain_JukeboxRequestToggleFullscreen_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_se_qxx_jukebox_domain_JukeboxRequestToggleFullscreen_descriptor,
+              new java.lang.String[] { "PlayerName", },
+              se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen.class,
+              se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen.Builder.class);
           return null;
         }
       };

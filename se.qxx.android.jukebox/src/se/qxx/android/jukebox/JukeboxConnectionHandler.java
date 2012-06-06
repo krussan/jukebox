@@ -19,6 +19,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestPauseMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStartMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStopMovie;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestWakeup;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponse;
@@ -49,12 +50,19 @@ public class JukeboxConnectionHandler implements Runnable {
 			break;
 		case JukeboxRequestType.StartMovie_VALUE:
 			b = startMovie();
+			break;
 		case JukeboxRequestType.StopMovie_VALUE:
 			b = stopMovie();
+			break;
 		case JukeboxRequestType.PauseMovie_VALUE:
 			b = pauseMovie();
+			break;
 		case JukeboxRequestType.Wakeup_VALUE:
 			b = wakeup();
+			break;
+		case JukeboxRequestType.ToggleFullscreen_VALUE:
+			b = toggleFullscreen();
+			break;
 		default:
 		}
 		
@@ -99,10 +107,18 @@ public class JukeboxConnectionHandler implements Runnable {
 	
 	private Bundle wakeup() {
 		JukeboxRequestWakeup sm = JukeboxRequestWakeup.newBuilder()
-				.setHostname("vlc_main")
+				.setPlayerName("vlc_main")
 				.build();
 		
 		return sendAndRetreive(JukeboxRequestType.Wakeup, sm);		
+	}
+	
+	private Bundle toggleFullscreen() {
+		JukeboxRequestToggleFullscreen sm = JukeboxRequestToggleFullscreen.newBuilder()
+				.setPlayerName("vlc_main")
+				.build();
+		
+		return sendAndRetreive(JukeboxRequestType.ToggleFullscreen, sm);		
 	}
 	
 	private Bundle sendAndRetreive(JukeboxRequestType type, com.google.protobuf.GeneratedMessage message) {
@@ -118,7 +134,7 @@ public class JukeboxConnectionHandler implements Runnable {
 	    			5000);
 	    	
 	    	Logger.Log().i("socket opened");
-	    	Logger.Log().i("sending test message");
+	    	Logger.Log().i(String.format("Sending message of type %s", type.toString()));
 	    	
 	    	JukeboxRequest req = getRequest(type, message);
 	    	int lengthOfMessage = req.getSerializedSize();

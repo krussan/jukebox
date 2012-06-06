@@ -23,6 +23,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestPauseMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStartMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStopMovie;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestWakeup;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponse;
@@ -92,6 +93,8 @@ public class TcpConnection implements Runnable {
 				return pauseMovie(req);
 			case Wakeup:
 				return wakeup(req);
+			case ToggleFullscreen:
+				return toggleFullscreen(req);
 			default:
 				break;
 			}
@@ -204,10 +207,10 @@ public class TcpConnection implements Runnable {
 		ByteString data = req.getArguments();
 		JukeboxRequestWakeup args = JukeboxRequestWakeup.parseFrom(data);
 
-		Log.Debug(String.format("Waking up player %s", args.getHostname()), Log.LogType.COMM);
+		Log.Debug(String.format("Waking up player %s", args.getPlayerName()), Log.LogType.COMM);
 		
 		try {
-			if (VLCDistributor.get().wakeup(args.getHostname()))		
+			if (VLCDistributor.get().wakeup(args.getPlayerName()))		
 				return JukeboxResponse.newBuilder()
 					.setType(JukeboxRequestType.OK)
 					.build();
@@ -219,4 +222,21 @@ public class TcpConnection implements Runnable {
 		}
 				
 	}
+
+	private JukeboxResponse toggleFullscreen(JukeboxRequest req) throws IOException {
+		ByteString data = req.getArguments();
+		JukeboxRequestToggleFullscreen args = JukeboxRequestToggleFullscreen.parseFrom(data);
+
+		Log.Debug(String.format("Toggling fullscreen...", args.getPlayerName()), Log.LogType.COMM);
+		
+		try {
+			if (VLCDistributor.get().toggleFullscreen(args.getPlayerName()))
+				return JukeboxResponse.newBuilder().setType(JukeboxRequestType.OK).build();
+			else
+				return buildErrorMessage("Error occured when connecting to target media player"); 
+		} catch (VLCConnectionNotFoundException e) {
+			return buildErrorMessage("Error occured when connecting to target media player"); 
+			
+		}		
+	}	
 }

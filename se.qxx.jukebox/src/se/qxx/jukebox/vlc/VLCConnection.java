@@ -134,7 +134,7 @@ public class VLCConnection {
 	
 	public void stopPlayback() {
 		try {
-			this.sendCommand("stop");
+			this.sendCommand("stop\n");
 		} catch (Exception e) {
 			Log.Error("Error while stopping movie", Log.LogType.COMM, e);
 		}
@@ -142,7 +142,7 @@ public class VLCConnection {
 	
 	public void pausePlayback() {
 		try {
-			this.sendCommand("pause");
+			this.sendCommand("pause\n");
 		} catch (Exception e) {
 			Log.Error("Error while pausing movie", Log.LogType.COMM, e);
 		}
@@ -150,7 +150,7 @@ public class VLCConnection {
 	
 	public void clearPlaylist() {
 		try {
-			this.sendCommand("clear");
+			this.sendCommand("clear\n");
 		} catch (Exception e) {
 			Log.Error("Error while clearing playlist", Log.LogType.COMM, e);
 		}

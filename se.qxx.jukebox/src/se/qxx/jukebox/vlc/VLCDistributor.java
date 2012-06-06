@@ -59,14 +59,6 @@ public class VLCDistributor {
 						String filename = filepath.replace(c.getPath(), vlcPath.getPath()) + "/" + m.getFilename();
 						conn.enqueue(filename);
 						
-						try {
-							Thread.sleep(COMMAND_DELAY);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-
-						conn.toggleFullscreen();
 						return true;
 					}
 					else {
@@ -109,6 +101,16 @@ public class VLCDistributor {
 		
 		VLCConnection conn = findConnection(hostName);
 		conn.pausePlayback();
+		
+		return true; 
+	}
+	
+	public boolean toggleFullscreen(String hostName) throws VLCConnectionNotFoundException {
+		if (!assertLiveConnection(hostName))
+			return false;
+		
+		VLCConnection conn = findConnection(hostName);
+		conn.toggleFullscreen();
 		
 		return true; 
 	}

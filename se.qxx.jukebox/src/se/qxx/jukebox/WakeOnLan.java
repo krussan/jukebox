@@ -5,6 +5,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
+import se.qxx.jukebox.Log.LogType;
+
 public class WakeOnLan {
 
 	public static final int PORT = 9;
@@ -25,7 +27,7 @@ public class WakeOnLan {
         socket.send(packet);
         socket.close();
         
-        System.out.println("Wake-on-LAN packet sent.");
+        Log.Info("Wake-on-LAN packet sent", LogType.COMM);
 	}
 		
    private static byte[] getMacBytes(String macStr) throws IllegalArgumentException {

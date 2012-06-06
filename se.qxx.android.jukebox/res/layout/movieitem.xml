@@ -48,33 +48,39 @@
 
 
        <Button
-          android:id="@+id/button1"
+          android:id="@+id/btnPlay"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:text="@string/btnPlay"
-          android:onClick="onPlayClicked" />
+          android:onClick="onButtonClicked" />
 
        <Button
-            android:id="@+id/button2"
+            android:id="@+id/btnPause"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/btnPause"
-            android:onClick="onPauseClicked" />
+            android:onClick="onButtonClicked" />
        
         <Button
-            android:id="@+id/button3"
+            android:id="@+id/btnStop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/btnStop"
-            android:onClick="onStopClicked" />
+            android:onClick="onButtonClicked" />
 
         <Button
             android:id="@+id/btnWakeup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/btnWakeup"
-            android:onClick="onWakeupClicked" />
-        
+            android:onClick="onButtonClicked" />
+
+        <Button
+            android:id="@+id/btnFullscreen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btnFullscreen"
+            android:onClick="onButtonClicked" />        
     </LinearLayout>
 
 </LinearLayout>

@@ -11,4 +11,5 @@
     <string name="btnStop">Stop</string>
     <string name="btnPause">Pause</string>
     <string name="btnWakeup">Wakeup</string>
+    <string name="btnFullscreen">Toggle fullscreen</string>
 </resources>

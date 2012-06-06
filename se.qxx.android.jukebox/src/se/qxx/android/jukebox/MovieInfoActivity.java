@@ -29,20 +29,25 @@ public class MovieInfoActivity extends Activity {
        	Thread t = new Thread(h);
        	t.start();				
 	}
-	
-	public void onPlayClicked(View v) {
-		sendCommand("Starting movie...", JukeboxRequestType.StartMovie);
-	}
-
-	public void onStopClicked(View v) {
-		sendCommand("Stopping...", JukeboxRequestType.StopMovie);
-	}
-	
-	public void onPauseClicked(View v) {
-		sendCommand("Pausing...", JukeboxRequestType.PauseMovie);
-	}
-	
-	public void onWakeupClicked(View v) {
-		sendCommand("Waking up...", JukeboxRequestType.Wakeup);
+		
+	public void onButtonClicked(View v) {
+		switch (v.getId()) {
+			case R.id.btnPlay:
+				sendCommand("Starting movie...", JukeboxRequestType.StartMovie);
+				break;
+			case R.id.btnFullscreen:
+				sendCommand("Toggling fullscreen...", JukeboxRequestType.ToggleFullscreen);
+				break;
+			case R.id.btnPause:
+				sendCommand("Pausing...", JukeboxRequestType.PauseMovie);
+				break;
+			case R.id.btnStop:
+				sendCommand("Stopping...", JukeboxRequestType.StopMovie);
+				break;
+			case R.id.btnWakeup:
+				sendCommand("Waking up...", JukeboxRequestType.Wakeup);
+			default:
+				break;
+		}
 	}
 }
