@@ -1,6 +1,8 @@
 package se.qxx.android.jukebox;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -76,6 +78,7 @@ public class Model {
 	
 	public void addAllMovies(List<Movie> movies) {
 		_movies.addAll(movies);
+		sortMovies(); 
 		fireModelUpdatedEvent();
 	}
 	
@@ -106,6 +109,17 @@ public class Model {
 	
 	public void getPlayers() {
 		
+	}
+	
+	public void sortMovies() {
+		Collections.sort(_movies, new Comparator<Movie>() {
+
+			@Override
+			public int compare(Movie lhs, Movie rhs) {
+				// TODO Auto-generated method stub
+				return lhs.getTitle().compareTo(rhs.getTitle());
+			}
+		});
 	}
 
 	

@@ -5,9 +5,12 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MovieInfoActivity extends Activity {
 
@@ -46,6 +49,15 @@ public class MovieInfoActivity extends Activity {
 				break;
 			case R.id.btnWakeup:
 				sendCommand("Waking up...", JukeboxRequestType.Wakeup);
+			case R.id.btnViewInfo:
+				String url = Model.get().getCurrentMovie().getImdbUrl();
+				if (url != null && url.length() > 0) {
+					Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+					startActivity(browserIntent);
+				}
+				else {
+					Toast.makeText(this, "No IMDB link available", Toast.LENGTH_LONG).show();
+				}
 			default:
 				break;
 		}

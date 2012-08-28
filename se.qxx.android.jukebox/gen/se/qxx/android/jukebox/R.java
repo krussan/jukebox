@@ -14,23 +14,43 @@ public final class R {
         public static final int myColor=0x7f060000;
     }
     public static final class drawable {
-        public static final int icon=0x7f020000;
+        public static final int backward=0x7f020000;
+        public static final int backward32=0x7f020001;
+        public static final int cd32=0x7f020002;
+        public static final int clock=0x7f020003;
+        public static final int clock32=0x7f020004;
+        public static final int console=0x7f020005;
+        public static final int console32=0x7f020006;
+        public static final int filesearch32=0x7f020007;
+        public static final int forward=0x7f020008;
+        public static final int forward32=0x7f020009;
+        public static final int icon=0x7f02000a;
+        public static final int infoabout=0x7f02000b;
+        public static final int infoabout32=0x7f02000c;
+        public static final int pause=0x7f02000d;
+        public static final int pause32=0x7f02000e;
+        public static final int pictures=0x7f02000f;
+        public static final int pictures32=0x7f020010;
+        public static final int play=0x7f020011;
+        public static final int play32=0x7f020012;
+        public static final int stop=0x7f020013;
+        public static final int stop32=0x7f020014;
     }
     public static final class id {
         public static final int bottomtext=0x7f08000d;
-        public static final int btnFullscreen=0x7f08000a;
-        public static final int btnPause=0x7f080007;
-        public static final int btnPlay=0x7f080006;
-        public static final int btnStop=0x7f080008;
-        public static final int btnWakeup=0x7f080009;
+        public static final int btnFullscreen=0x7f080007;
+        public static final int btnPause=0x7f080004;
+        public static final int btnPlay=0x7f080003;
+        public static final int btnSelectPlayer=0x7f080009;
+        public static final int btnStop=0x7f080005;
+        public static final int btnViewInfo=0x7f080008;
+        public static final int btnWakeup=0x7f080006;
         public static final int button2=0x7f080000;
-        public static final int imageView1=0x7f080002;
+        public static final int imageView1=0x7f08000a;
         public static final int linearLayout1=0x7f08000b;
         public static final int listView1=0x7f080001;
         public static final int preferences=0x7f08000e;
-        public static final int scrollView1=0x7f080004;
-        public static final int textView1=0x7f080003;
-        public static final int textView2=0x7f080005;
+        public static final int textView1=0x7f080002;
         public static final int toptext=0x7f08000c;
     }
     public static final class layout {
@@ -48,6 +68,7 @@ public final class R {
         public static final int btnPause=0x7f050008;
         public static final int btnPlay=0x7f050006;
         public static final int btnStop=0x7f050007;
+        public static final int btnViewInfo=0x7f05000b;
         public static final int btnWakeup=0x7f050009;
         public static final int defaultServerIpAddress=0x7f050004;
         public static final int hello=0x7f050000;

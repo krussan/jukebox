@@ -87,6 +87,8 @@ public class JukeboxActivity extends Activity implements ModelUpdatedEventListen
 		v.setAdapter(_jukeboxMovieLayoutAdapter);
 		
 		Model.get().addEventListener(this);
+		
+		connect();
     }
 
     @Override
@@ -114,13 +116,17 @@ public class JukeboxActivity extends Activity implements ModelUpdatedEventListen
     
     public void onConnectClickHandler(View view) throws InterruptedException {
     	Logger.Log().i("onConnectClicked");
-    	
+
+		connect();
+   		
+    }
+    
+    public void connect() {
        	ProgressDialog d = ProgressDialog.show(this, "Jukebox", "Getting list of movies");
 
        	JukeboxConnectionHandler h = new JukeboxConnectionHandler(new ProgressDialogHandler(this, d), JukeboxRequestType.ListMovies);
        	Thread t = new Thread(h);
-       	t.start();
-   		
+       	t.start();    	
     }
     
     // This method is called at button click because we assigned the name to the
