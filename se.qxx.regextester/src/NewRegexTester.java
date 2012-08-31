@@ -87,7 +87,7 @@ public class NewRegexTester implements ActionListener {
 		txtRegex.setPreferredSize(new Dimension(600, 400));
 		txtRegex.setFont(new Font("Courier new", Font.PLAIN, 12));
 		txtRegex.setLineWrap(true);
-		scrollPane.add(txtRegex);
+		//scrollPane.add(txtRegex);
 		panel_1.add(txtRegex);
 		
 		JPanel panel_2 = new JPanel();
@@ -120,7 +120,10 @@ public class NewRegexTester implements ActionListener {
 	
 	private void execute() {
 	
-		NamedPattern p = NamedPattern.compile(txtRegex.getText().trim(), Pattern.CASE_INSENSITIVE);
+		String pattern = txtRegex.getText().trim();
+		pattern = pattern.replace("\\\\", "\\");
+		
+		NamedPattern p = NamedPattern.compile(pattern, Pattern.CASE_INSENSITIVE);
 		NamedMatcher m = p.matcher(txtInput.getText());
 
 		Hashtable<String, String> ht = new Hashtable<String, String>();

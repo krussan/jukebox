@@ -1,10 +1,15 @@
 package se.qxx.jukebox;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.google.code.regexp.NamedMatcher;
 import com.google.code.regexp.NamedPattern;
 
+import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 
 public class IMDBFinder {
@@ -24,70 +29,88 @@ public class IMDBFinder {
 		String urlString = "http://www.imdb.com/find?s=all&q=" + urlParameters;
 
 		String webResult = WebRetriever.getWebResult(urlString);
-		
-		boolean found;
-		ImdbRecord result;
-		result = findImdbRecord("Titles\\s*\\(Exact\\s*Matches\\).*?\\<a\\s*href\\s*=\\s*[\"|'](?<url>.*?)[\"|'][^\\>]*\\>(?<title>.*?)\\<\\/a\\>\\s*(?<year>\\d{4})"
-				, webResult);
-		
-		found = testResult(m, result);
-		
-		if (!found) {
-			result = findImdbRecord("Popular\\s*Titles.*?\\<a\\s*href\\s*=\\s*[\"|'](?<url>.*?)[\"|'][^\\>]*\\>(?<title>.*?)\\<\\/a\\>\\s*(?<year>\\d{4})"
-					, webResult);
-			found = testResult(m, result);
+
+
+		IMDBRecord rec = findUrlByExactMatches(m, webResult);
+		if (rec == null) {
+			rec = findUrlByPopularTitles(m, webResult);
 		}
-		
-		if (found) {
-			String url = "http://www.imdb.com" + result.getUrl();
+
+		if (rec != null) {
+			String url = "http://www.imdb.com" + rec.getUrl();
 			return Movie.newBuilder().mergeFrom(m).setImdbUrl(url).build();
 		}
 		else
 			return m;
 	}
 	
-	private static boolean testResult(Movie m, ImdbRecord result) {
+	private static boolean testResult(Movie m, IMDBRecord result) {
+		if (m == null || result == null)
+			return false;
+		
 		return (m.getYear() == 0 || m.getYear() == result.getYear());
 	}
 
-	private static ImdbRecord findImdbRecord(String pattern, String input) {
-		NamedPattern p = NamedPattern.compile(pattern);
-		NamedMatcher matcher = p.matcher(input);
+	private static IMDBRecord findUrlByExactMatches(Movie movie, String text) {
+		return findUrl(
+			movie,
+			text,
+			"<p>(.*?)Titles\\s*\\(Exact\\s*Matches\\)(.*?)<table>(.*?)<\\/table>",
+			3,
+			"<a\\s*href=\"([^\"]*?)\"[^>]*>[^<]+?</a>\\s*\\((\\d{4})\\)",
+			1,
+			2);
+	}
+
+	private static IMDBRecord findUrlByPopularTitles(Movie movie, String text) {
+		return findUrl(
+			movie,
+			text,
+			"<p>(.*?)Popular\\s*Titles(.*?)<table>(.*?)<\\/table>",
+			3,
+			"<a\\s*href=\"([^\"]*?)\"[^>]*>[^<]+?</a>\\s*\\((\\d{4})\\)",
+			1,
+			2);
+	}
+
+	private static IMDBRecord findUrl(
+			Movie movie, 
+			String text, 
+			String patternForBlock, 
+			int patternGroupForBlock,
+			String patternForRecord,
+			int urlGroup,
+			int yearGroup) {
 		
-		ImdbRecord rec = null;
-		
-		if (matcher.find()) {
-			int year = Integer.parseInt(matcher.group("year"));
-			String url = matcher.group("url");
-			rec = new ImdbRecord(url, year);			
+		try {
+			Pattern p = Pattern.compile(patternForBlock);
+			Matcher m = p.matcher(text);
+			
+			if (m.find()) {
+				String blockMatch = m.group(patternGroupForBlock);
+				
+				Pattern pRec = Pattern.compile(patternForRecord);
+				Matcher mRec = pRec.matcher(blockMatch);
+				
+				while (mRec.find()) {
+					String url = mRec.group(urlGroup);
+					int year = Integer.parseInt(mRec.group(yearGroup));
+					
+					IMDBRecord rec = new IMDBRecord(url, year);
+					
+					if (testResult(movie, rec))
+						return rec;
+				}
+				
+			}
 		}
-		
-		return rec;
+		catch (Exception e) {
+			Log.Error(String.format("Error occured when trying to find %s in IMDB", movie.getTitle()), LogType.FIND, e);
+		}
+
+		return null;
 	}
 	
-	private static class ImdbRecord {
-		private String url;
-		private int year;
-		
-		public ImdbRecord (String url, int year) {
-			this.year = year;
-			this.url = url;
-		}
-		
-		public String getUrl() {
-			return url;
-		}
-		public void setUrl(String url) {
-			this.url = url;
-		}
-		public int getYear() {
-			return year;
-		}
-		public void setYear(int year) {
-			this.year = year;
-		}
-		
-	}
 }
 
 /*
