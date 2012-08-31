@@ -25,33 +25,68 @@ public class IMDBFinder {
 
 		String webResult = WebRetriever.getWebResult(urlString);
 		
-		String result;
-		result = findUrl("Titles\\s*\\(Exact\\s*Matches\\).*?\\<a\\s*href\\s*=\\s*[\"|'](?<url>.*?)[\"|']"
-				, webResult
-				, "url");
+		boolean found;
+		ImdbRecord result;
+		result = findImdbRecord("Titles\\s*\\(Exact\\s*Matches\\).*?\\<a\\s*href\\s*=\\s*[\"|'](?<url>.*?)[\"|'][^\\>]*\\>(?<title>.*?)\\<\\/a\\>\\s*(?<year>\\d{4})"
+				, webResult);
 		
-		if (result == null)
-			result = findUrl("Popular\\s*Titles.*?\\<a\\s*href\\s*=\\s*[\"|'](?<url>.*?)[\"|']"
-					, webResult
-					, "url");
-				
-		if (result != null) {
-			result = "http://www.imdb.com" + result;
-			return Movie.newBuilder().mergeFrom(m).setImdbUrl(result).build();
+		found = testResult(m, result);
+		
+		if (!found) {
+			result = findImdbRecord("Popular\\s*Titles.*?\\<a\\s*href\\s*=\\s*[\"|'](?<url>.*?)[\"|'][^\\>]*\\>(?<title>.*?)\\<\\/a\\>\\s*(?<year>\\d{4})"
+					, webResult);
+			found = testResult(m, result);
 		}
-			
+		
+		if (found) {
+			String url = "http://www.imdb.com" + result.getUrl();
+			return Movie.newBuilder().mergeFrom(m).setImdbUrl(url).build();
+		}
 		else
 			return m;
 	}
 	
-	private static String findUrl(String pattern, String input, String groupName) {
+	private static boolean testResult(Movie m, ImdbRecord result) {
+		return (m.getYear() == 0 || m.getYear() == result.getYear());
+	}
+
+	private static ImdbRecord findImdbRecord(String pattern, String input) {
 		NamedPattern p = NamedPattern.compile(pattern);
 		NamedMatcher matcher = p.matcher(input);
 		
-		if (matcher.find())
-			return matcher.group(groupName);
-		else
-			return null;
+		ImdbRecord rec = null;
+		
+		if (matcher.find()) {
+			int year = Integer.parseInt(matcher.group("year"));
+			String url = matcher.group("url");
+			rec = new ImdbRecord(url, year);			
+		}
+		
+		return rec;
+	}
+	
+	private static class ImdbRecord {
+		private String url;
+		private int year;
+		
+		public ImdbRecord (String url, int year) {
+			this.year = year;
+			this.url = url;
+		}
+		
+		public String getUrl() {
+			return url;
+		}
+		public void setUrl(String url) {
+			this.url = url;
+		}
+		public int getYear() {
+			return year;
+		}
+		public void setYear(int year) {
+			this.year = year;
+		}
+		
 	}
 }
 

@@ -51,7 +51,7 @@ public class Unpacker {
 				}
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
 			Log.Error(String.format("Error when unpacking sub with filename :: %s", f.getName()), Log.LogType.SUBS, e);
 		}
 		
@@ -72,7 +72,7 @@ public class Unpacker {
 			}
 			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
 			Log.Error(String.format("Error while executing command :: %s", command), Log.LogType.MAIN, e);
 		}	
 		return sb.toString();
@@ -114,7 +114,7 @@ public class Unpacker {
 
             zipinputstream.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
 			Log.Error(String.format("Error when unpacking sub with filename :: %s", f.getName()), Log.LogType.SUBS, e);
 		} 
 		return null;

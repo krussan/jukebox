@@ -204,7 +204,7 @@ public class JukeboxConnectionHandler implements Runnable {
     		}
 			
 		} catch (InvalidProtocolBufferException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 
@@ -233,7 +233,7 @@ public class JukeboxConnectionHandler implements Runnable {
 			return JukeboxResponse.parseFrom(data);
 			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		

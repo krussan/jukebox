@@ -99,7 +99,7 @@ public class TcpConnection implements Runnable {
 				break;
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			
 			Log.Error("Error while sending response", Log.LogType.COMM, e);
 		}
 		
@@ -217,7 +217,7 @@ public class TcpConnection implements Runnable {
 			else
 				return buildErrorMessage("Could not wake up computer. Error while connecting.");
 		} catch (VLCConnectionNotFoundException e) {
-			// TODO Auto-generated catch block
+			
 			return buildErrorMessage("Error occured when connecting to target media player"); 
 		}
 				

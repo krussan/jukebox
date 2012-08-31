@@ -149,7 +149,6 @@ public class JukeboxActivity extends Activity implements ModelUpdatedEventListen
 		// TODO Auto-generated method stub
 		Movie m = (Movie)arg0.getItemAtPosition(pos);
 		Model.get().setCurrentMovie(m);
-		Toast.makeText(this, m.getTitle(), Toast.LENGTH_LONG).show();
 		Intent i = new Intent(this, MovieInfoActivity.class);
 		startActivity(i);
 	}

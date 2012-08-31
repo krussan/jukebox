@@ -67,7 +67,7 @@ public class WebRetriever {
 						url = uri.toURL();
 
 					} catch (URISyntaxException e) {
-						// TODO Auto-generated catch block
+						
 						Log.Error("Error when parsing redirect url", Log.LogType.MAIN, e);
 					}
 				}

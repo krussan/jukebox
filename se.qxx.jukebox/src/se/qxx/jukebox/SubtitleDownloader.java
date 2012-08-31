@@ -84,7 +84,7 @@ public class SubtitleDownloader implements Runnable {
 				}
 				
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}			
 		}
@@ -255,35 +255,35 @@ public class SubtitleDownloader implements Runnable {
 				}
 
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
+				
 				Log.Error(String.format("Error when loading subfinder :: %s",
 						className), Log.LogType.SUBS, e);
 			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
+				
 				Log.Error(String.format("Error when loading subfinder :: %s",
 						className), Log.LogType.SUBS, e);
 			} catch (InstantiationException e) {
-				// TODO Auto-generated catch block
+				
 				Log.Error(String.format("Error when loading subfinder :: %s",
 						className), Log.LogType.SUBS, e);
 			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
+				
 				Log.Error(String.format("Error when loading subfinder :: %s",
 						className), Log.LogType.SUBS, e);
 			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
+				
 				Log.Error(String.format("Error when loading subfinder :: %s",
 						className), Log.LogType.SUBS, e);
 			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
+				
 				Log.Error(String.format("Error when loading subfinder :: %s",
 						className), Log.LogType.SUBS, e);
 			} catch (NoSuchMethodException e) {
-				// TODO Auto-generated catch block
+				
 				Log.Error(String.format("Error when loading subfinder :: %s",
 						className), Log.LogType.SUBS, e);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				
 				Log.Error(String.format("Error when loading subfinder :: %s",
 						className), Log.LogType.SUBS, e);
 			}

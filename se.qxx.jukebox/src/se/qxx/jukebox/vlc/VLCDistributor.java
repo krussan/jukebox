@@ -87,7 +87,7 @@ public class VLCDistributor {
 		try {
 			Thread.sleep(COMMAND_DELAY);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 

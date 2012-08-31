@@ -43,10 +43,10 @@ public class VLCConnection {
 			_sock = new Socket(this._host, this._port);
 			Log.Debug("Connected...", Log.LogType.COMM);
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
+			
 			Log.Error(String.format("Unable to connect to VLC host :: %s port :: %s", this._host, this._port), Log.LogType.COMM, e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
 			Log.Error(String.format("Unable to connect to VLC host :: %s port :: %s", this._host, this._port), Log.LogType.COMM, e);
 		}
 
@@ -61,7 +61,7 @@ public class VLCConnection {
 		try {
 			_sock.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
 			Log.Error(String.format("Disconnect failed on host :: %s port :: %s", this._host, this._port), Log.LogType.COMM, e);
 		}
 	}

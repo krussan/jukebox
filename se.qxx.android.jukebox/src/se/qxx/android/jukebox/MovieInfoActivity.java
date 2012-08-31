@@ -56,8 +56,9 @@ public class MovieInfoActivity extends Activity {
 					startActivity(browserIntent);
 				}
 				else {
-					Toast.makeText(this, "No IMDB link available", Toast.LENGTH_LONG).show();
+					Toast.makeText(this, "No IMDB link available", Toast.LENGTH_SHORT).show();
 				}
+				break;
 			default:
 				break;
 		}
