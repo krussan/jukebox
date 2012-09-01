@@ -44,6 +44,7 @@ public class Util {
 		int year = 0;
 		
 		String fileNameToMatch = Util.getFilenameWithoutExtension(fileName);
+		
 		for (Splitter splitter : Settings.get().getStringSplitters().getSplitter()) {
 			//ignoring some keywords specified in xml
 			String strIgnorePattern = splitter.getIgnore().trim();
@@ -252,4 +253,10 @@ public class Util {
 			return false;
 		}
 	}
+	
+	public static boolean stringContainsIgnoreCase(String text, String pattern) {
+		Pattern p = Pattern.compile(Pattern.quote(pattern), Pattern.CASE_INSENSITIVE);
+		Matcher m = p.matcher(text);
+		return m.find();
+	}	
 }

@@ -1,6 +1,10 @@
 package se.qxx.jukebox;
 
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 
 public class FileCreatedHandler implements INotifyClient {
@@ -8,38 +12,44 @@ public class FileCreatedHandler implements INotifyClient {
 	@Override
 	public void fileModified(FileRepresentation f) {
 		// TODO Auto-generated method stub
-
 	}
-
+	
 	@Override
 	public void fileCreated(FileRepresentation f)  {
 		Log.Debug(String.format("New file found :: %s", f.getName()), Log.LogType.FIND);
-		Movie m = Util.extractMovie(f.getPath(), f.getName());
 		
-		if (m != null) {
-			// Check if movie exists in db
-			Movie dbMovie = DB.getMovie(m.getTitle());
-			if (dbMovie != null) {
-				// If it does but in a different path update the path
-				if (!m.getFilepath().equals(dbMovie.getFilepath())) {
-					Movie store = Movie.newBuilder(dbMovie).setFilepath(m.getFilepath()).build();
-					DB.updateMovie(store);
-				}
-				// If it does but in same path exit
-			}
-			else {
-				// If not get information and subtitles
-				
-				if (Arguments.get().isImdbIdentifierEnabled())
-					m = getImdbInformation(m);
-				
-				m = DB.addMovie(m);
-				
-				SubtitleDownloader.get().addMovie(m);			
-			}
+		// Added ignore on all filename that contains the string sample
+		if (Util.stringContainsIgnoreCase(f.getName(), "sample")) {
+			Log.Info(String.format("Ignoring %s as this appears to be a sample", f.getName()), LogType.FIND);
 		}
 		else {
-			Log.Info(String.format("Failed to identity movie with filename :: %s", f.getName()), Log.LogType.FIND);
+			Movie m = Util.extractMovie(f.getPath(), f.getName());
+			
+			if (m != null) {
+				// Check if movie exists in db
+				Movie dbMovie = DB.getMovie(m.getTitle());
+				if (dbMovie != null) {
+					// If it does but in a different path update the path
+					if (!m.getFilepath().equals(dbMovie.getFilepath())) {
+						Movie store = Movie.newBuilder(dbMovie).setFilepath(m.getFilepath()).build();
+						DB.updateMovie(store);
+					}
+					// If it does but in same path exit
+				}
+				else {
+					// If not get information and subtitles
+					
+					if (Arguments.get().isImdbIdentifierEnabled())
+						m = getImdbInformation(m);
+					
+					m = DB.addMovie(m);
+					
+					SubtitleDownloader.get().addMovie(m);			
+				}
+			}
+			else {
+				Log.Info(String.format("Failed to identity movie with filename :: %s", f.getName()), Log.LogType.FIND);
+			}
 		}
 	}
 	
