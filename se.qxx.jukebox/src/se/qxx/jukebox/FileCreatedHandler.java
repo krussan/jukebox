@@ -11,7 +11,7 @@ public class FileCreatedHandler implements INotifyClient {
 
 	@Override
 	public void fileModified(FileRepresentation f) {
-		// TODO Auto-generated method stub
+		
 	}
 	
 	@Override
@@ -24,6 +24,9 @@ public class FileCreatedHandler implements INotifyClient {
 		}
 		else {
 			Movie m = Util.extractMovie(f.getPath(), f.getName());
+			
+			// TODO: Get info about movie from NFO if available
+			// TODO: Get info from parent directory if different from base directory...??
 			
 			if (m != null) {
 				// Check if movie exists in db

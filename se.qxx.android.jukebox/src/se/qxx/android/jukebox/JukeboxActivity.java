@@ -47,7 +47,7 @@ public class JukeboxActivity extends Activity implements ModelUpdatedEventListen
 			View v = convertView; 
 			
 			try {
-				// TODO Auto-generated method stub
+				
 				
 	            if (v == null) {
 	                LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -93,7 +93,7 @@ public class JukeboxActivity extends Activity implements ModelUpdatedEventListen
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-    	// TODO Auto-generated method stub
+    	
     	//super.onCreateOptionsMenu(menu);
     	MenuInflater inflater = getMenuInflater();
     	inflater.inflate(R.menu.mainmenu, menu);
@@ -140,13 +140,12 @@ public class JukeboxActivity extends Activity implements ModelUpdatedEventListen
 
 	@Override
 	public void handleModelUpdatedEventListener(EventObject e) {
-		//TODO: run this on UI thread
 		runOnUiThread(modelResultUpdatedRunnable);
 	}
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
-		// TODO Auto-generated method stub
+		
 		Movie m = (Movie)arg0.getItemAtPosition(pos);
 		Model.get().setCurrentMovie(m);
 		Intent i = new Intent(this, MovieInfoActivity.class);

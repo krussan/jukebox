@@ -4,16 +4,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.DatagramPacket;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.filechooser.FileSystemView;
 
-import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.StringSplitters.Splitter;
@@ -21,7 +18,6 @@ import se.qxx.jukebox.subtitles.SubFile.Rating;
 
 import com.google.code.regexp.NamedMatcher;
 import com.google.code.regexp.NamedPattern;
-import com.sun.xml.internal.ws.util.StringUtils;
 
 public class Util {
 	public static Movie extractMovie(String filePath, String fileName) {
@@ -244,9 +240,8 @@ public class Util {
 	}
 
 	public static boolean tryParseInt(String string) {
-		int ret;
 		try {
-			ret = Integer.parseInt(string);
+			Integer.parseInt(string);
 			return true;
 		}
 		catch (Exception e) {

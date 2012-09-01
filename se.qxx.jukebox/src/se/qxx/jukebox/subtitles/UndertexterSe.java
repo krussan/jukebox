@@ -63,10 +63,10 @@ public class UndertexterSe implements ISubtitleFinder {
 		// create sub store for this movie
 		String filename = createSubsPath(m, subsPath);
 		
-		//TODO: rate subs first and extract all information
-		//TODO: if we found an exact match get that one
-		//      if we found a postive match get that one
-		//      otherwise get all
+		// rate subs first and extract all information
+		// if we found an exact match get that one
+		// if we found a postive match get that one
+		// otherwise get all
 		List<SubFile> listSubs = new ArrayList<SubFile>();
 		
 		Log.Debug(String.format("UndertexterSe :: Finding subtitles for %s", m.getFilename()), Log.LogType.SUBS);

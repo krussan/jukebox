@@ -177,7 +177,7 @@ public class TcpConnection implements Runnable {
 	}
 	
 	private JukeboxResponse buildErrorMessage(String errorMessage) {
-		// TODO Auto-generated method stub
+		
 		return JukeboxResponse.newBuilder().setType(JukeboxRequestType.Error)
 				.setArguments(
 						JukeboxResponseError

@@ -116,7 +116,7 @@ public class Model {
 
 			@Override
 			public int compare(Movie lhs, Movie rhs) {
-				// TODO Auto-generated method stub
+				
 				return lhs.getTitle().compareTo(rhs.getTitle());
 			}
 		});

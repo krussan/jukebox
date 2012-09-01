@@ -109,7 +109,7 @@ public class NewRegexTester implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
+		
 		if (e.getID() == ActionEvent.ACTION_PERFORMED) {
 			if (e.getActionCommand() == "Exit")
 				System.exit(0);
@@ -169,19 +169,19 @@ public class NewRegexTester implements ActionListener {
 		}
 		@Override
 		public int getColumnCount() {
-			// TODO Auto-generated method stub
+			
 			return 2;
 		}
 
 		@Override
 		public int getRowCount() {
-			// TODO Auto-generated method stub
+			
 			return list.size();
 		}
 
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			// TODO Auto-generated method stub
+			
 			if (columnIndex==0)
 				return list.get(rowIndex).getKey();
 			else
