@@ -26,14 +26,14 @@ public class IMDBFinder {
         // Popular\sTitles.*?\<a\s*href\s*=\s*["|'](?<url>.*?)["|']
 		
 		String urlParameters = java.net.URLEncoder.encode(m.getTitle(), "ISO-8859-1");
-		String urlString = "http://www.imdb.com/find?s=all&q=" + urlParameters;
+		String urlString = "http://www.imdb.com/find?s=tt&q=" + urlParameters;
 
 		String webResult = WebRetriever.getWebResult(urlString);
 
 
-		IMDBRecord rec = findUrlByExactMatches(m, webResult);
+		IMDBRecord rec = findUrlByPopularTitles(m, webResult);
 		if (rec == null) {
-			rec = findUrlByPopularTitles(m, webResult);
+			rec = findUrlByExactMatches(m, webResult);
 		}
 
 		if (rec != null) {
@@ -82,6 +82,7 @@ public class IMDBFinder {
 			int urlGroup,
 			int yearGroup) {
 		
+		//TODO: Also match by length of movie
 		try {
 			Pattern p = Pattern.compile(patternForBlock);
 			Matcher m = p.matcher(text);
