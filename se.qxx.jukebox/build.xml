@@ -22,7 +22,9 @@
 	<property name="key.file" value="D:/util/keys/BLACK_HELL_openSSH.ppk" />
 	
 	<property name="main-class" value="se.qxx.jukebox.Jukebox" />
-	
+
+	<property name="target.platform" value="debian_x86_lenny" />
+		
 	<path id="classpath">
         <fileset dir="${lib.dir}" includes="**/*.jar"/>
     </path>
@@ -69,10 +71,15 @@
 	<target name="createrunscript">
 		<echo file="${build.dir}/run.sh">
 #!/bin/sh
-java -cp '${jar.file}:named-regexp.jar:protobuf-2.4.1.jar:sqlite-jdbc-3.7.2.jar' ${main-class} $* &amp;
+java -cp 'jna.jar:${jar.file}:named-regexp.jar:protobuf-2.4.1.jar:sqlite-jdbc-3.7.2.jar' ${main-class} $* &amp;
 echo $! > jukebox.pid
 		</echo>
 		<copy file="${main.dir}/JukeboxSettings.xml" todir="${build.dir}" />
+		<copy todir="${build.dir}">
+	    	<fileset dir="${main.dir}/native/${target.platform}">
+	    	    <include name="*" />
+	    	</fileset> 
+	    </copy>
 	</target> 
 	
 	<target name="cleanDB">
