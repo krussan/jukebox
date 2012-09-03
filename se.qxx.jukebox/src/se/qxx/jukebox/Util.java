@@ -254,4 +254,8 @@ public class Util {
 		Matcher m = p.matcher(text);
 		return m.find();
 	}	
+	
+	public static String getTempDirectory() {
+        return System.getProperty("java.io.tmpdir");
+	}
 }

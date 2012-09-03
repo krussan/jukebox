@@ -100,7 +100,17 @@ public class IMDBFinder {
 					IMDBRecord rec = new IMDBRecord(url, year);
 					
 					if (testResult(movie, rec))
+					{
+						// if year and title matches then continue to the URL and extract information about the movie.
+						rec = IMDBRecord.get(url);
+
+						// If the duration of the movie corresponds with the information retreived from MediaInfo then we're
+						// probably right. 
+
 						return rec;
+					}
+						
+					
 				}
 				
 			}
