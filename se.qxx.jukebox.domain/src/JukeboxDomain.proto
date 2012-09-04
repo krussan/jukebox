@@ -72,6 +72,8 @@ message Movie {
 	optional string imdb_url = 10;
 	optional string imdb_id = 11;
 	optional string filepath = 12;	
+	optional int32 duration = 13;
+	
 }
 
 message JukeboxResponseListMovies {

@@ -1,8 +1,11 @@
 package se.qxx.jukebox;
 
 import java.io.IOException;
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,7 +16,9 @@ import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 
 public class IMDBFinder {
-	public static Movie Search(Movie m) throws IOException {
+	private static long nextSearch = 0;
+	
+	public synchronized static Movie Search(Movie m) throws IOException {
         //http://www.imdb.com/find?s=all&q=the+decent
         // search for :
         // Titles (Exact Matches)
@@ -24,24 +29,40 @@ public class IMDBFinder {
 
         // Titles\s\(Exact\sMatches\).*?\<a\s*href\s*=\s*["|'](?<url>.*?)["|']
         // Popular\sTitles.*?\<a\s*href\s*=\s*["|'](?<url>.*?)["|']
-		
-		String urlParameters = java.net.URLEncoder.encode(m.getTitle(), "ISO-8859-1");
-		String urlString = "http://www.imdb.com/find?s=tt&q=" + urlParameters;
+	
+		long currentTimeStamp = Util.getCurrentTimestamp();
+		try {
+			if (currentTimeStamp < nextSearch)
+				Thread.sleep(nextSearch - currentTimeStamp);
+			
+			String urlParameters = java.net.URLEncoder.encode(m.getTitle(), "ISO-8859-1");
+			String urlString = "http://www.imdb.com/find?s=tt&q=" + urlParameters;
 
-		String webResult = WebRetriever.getWebResult(urlString);
+			String webResult = WebRetriever.getWebResult(urlString);
 
 
-		IMDBRecord rec = findUrlByPopularTitles(m, webResult);
-		if (rec == null) {
-			rec = findUrlByExactMatches(m, webResult);
-		}
+			IMDBRecord rec = findUrlByPopularTitles(m, webResult);
+			if (rec == null) {
+				rec = findUrlByExactMatches(m, webResult);
+			}
 
-		if (rec != null) {
-			String url = "http://www.imdb.com" + rec.getUrl();
-			return Movie.newBuilder().mergeFrom(m).setImdbUrl(url).build();
-		}
-		else
+			
+			//TODO: Probably add this to user settings
+			Random r = new Random();
+			int n = r.nextInt(20000) + 10000;
+			
+			// sleep randomly to avoid detection (from 10 sec to 30 sec)
+			nextSearch = Util.getCurrentTimestamp() + n;
+			
+			if (rec != null) {
+				String url = "http://www.imdb.com" + rec.getUrl();
+				return Movie.newBuilder().mergeFrom(m).setImdbUrl(url).build();
+			}
+			else
+				return m;
+		} catch (InterruptedException e) {
 			return m;
+		}
 	}
 	
 	private static boolean testResult(Movie m, IMDBRecord result) {

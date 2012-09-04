@@ -69,5 +69,6 @@
   	<log type="file" filename="/c/media/Dev/src/jukebox/subtitle.log" level="DEBUG" logs="SUBS" />
   	<log type="file" filename="/c/media/Dev/src/jukebox/watcher.log" level="DEBUG" logs="FIND" />
   	<log type="file" filename="/c/media/Dev/src/jukebox/comm.log" level="DEBUG" logs="COMM" />
+  	<log type="file" filename="/c/media/Dev/src/jukebox/upgrade.log" level="DEBUG" logs="UPGRADE" />
   </logs>  
 </JukeboxListenerSettings>

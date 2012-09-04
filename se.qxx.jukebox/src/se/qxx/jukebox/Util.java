@@ -258,4 +258,9 @@ public class Util {
 	public static String getTempDirectory() {
         return System.getProperty("java.io.tmpdir");
 	}
+	
+	public static long getCurrentTimestamp() {
+		java.util.Date date = new java.util.Date();
+		return date.getTime();
+	}
 }

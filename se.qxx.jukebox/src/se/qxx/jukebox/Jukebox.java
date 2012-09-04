@@ -1,5 +1,7 @@
 package se.qxx.jukebox;
 
+import se.qxx.jukebox.upgrade.Upgrader;
+
 public class Jukebox {
 
 	/**
@@ -13,13 +15,22 @@ public class Jukebox {
 	private static void startMainThread()  {
 		try {
 			
-			Thread t = new Thread(new Main());
-			t.start();
-			
-			t.join();
+			if (!Upgrader.upgradeRequired()) {
+				System.out.println("No upgrade required... continuing...");
+				Thread t = new Thread(new Main());
+				t.start();
+				
+				t.join();
+			}
+			else {
+				System.out.println("Upgrade required");
+				Upgrader.performUpgrade();
+			}
 		}
 		catch (Exception e) {
 			//log exception and exit
+			System.out.println("Error when starting up ::");
+			e.printStackTrace();
 		}
 	}
 	

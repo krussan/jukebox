@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 
 import se.qxx.jukebox.Log.LogType;
 
@@ -29,7 +30,8 @@ public class IMDBRecord {
 		//TODO: Extract all regex:es to config file in case IMDB decides to change layout
 		try {
 			String webResult = WebRetriever.getWebResult(url);	
-			
+
+			/*
 			// Poster
 			try {
 				p = Pattern.compile("<img\\s*src=\"([^\"]*)\"[^>]*?alt=\"[^\"]*Poster", Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
@@ -43,6 +45,7 @@ public class IMDBRecord {
 			}
 			catch (Exception e) {
 			}
+			*/
 			
 			// Story
 			try {
@@ -119,26 +122,33 @@ public class IMDBRecord {
 	}
 	
 	private byte[] readFile(File f) {
-		FileInputStream fs = new FileInputStream(f);
-		long length = f.length();
-		if (length > Integer.MAX_VALUE)
-			throw new ArrayIndexOutOfBoundsException();
-		
-		byte[] data = new byte[(int)length];
-		int offset = 0;
-		int numRead = 0;
-		while (offset < data.length && (numRead = is.read(data, offset, data.length - offset)) >= 0) {
-			offset += numRead;
+		try {
+			FileInputStream fs = new FileInputStream(f);
+			long length = f.length();
+			if (length > Integer.MAX_VALUE)
+				throw new ArrayIndexOutOfBoundsException();
+			
+			byte[] data = new byte[(int)length];
+			int offset = 0;
+			int numRead = 0;
+			while (offset < data.length && (numRead = fs.read(data, offset, data.length - offset)) >= 0) {
+				offset += numRead;
+			}
+			
+		    // Ensure all the bytes have been read in
+		    if (offset < data.length) {
+		        throw new IOException("Could not completely read file " + f.getName());
+		    }
+		    
+		    // Close the input stream and return bytes
+		    fs.close();
+		    return data;	
 		}
-		
-	    // Ensure all the bytes have been read in
-	    if (offset < data.length) {
-	        throw new IOException("Could not completely read file " + f.getName());
-	    }
-	    
-	    // Close the input stream and return bytes
-	    fs.close();
-	    return data;	    
+		catch (Exception e) {
+			Log.Error("Error when reading file", LogType.FIND, e);
+			return null;
+		}
+
     }
 	
 	public IMDBRecord (String url, int year) {
@@ -159,7 +169,14 @@ public class IMDBRecord {
 		this.year = year;
 	}
 	
-	public static IMDBRecord get(String url) {
+	public static IMDBRecord get(String url) throws MalformedURLException {
+		if (!url.startsWith("http://www.imdb.com") && url.startsWith("/")) {
+			url = "http://www.imdb.com" + url;
+		}
+		else {
+			throw new MalformedURLException("A IMDB url must start with http://www.imdb.com");
+		}
+		
 		IMDBRecord rec = new IMDBRecord(url);
 	
 		return rec;

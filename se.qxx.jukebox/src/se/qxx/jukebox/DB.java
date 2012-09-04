@@ -3,6 +3,7 @@ package se.qxx.jukebox;
 import java.sql.*;
 import java.util.ArrayList;
 
+import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.subtitles.SubFile.Rating;
 
@@ -279,6 +280,48 @@ public class DB {
 		}
 	}
 	
+	public synchronized static Version getVersion() throws ClassNotFoundException {
+		Connection conn = null;
+		int minor = 0;
+		int major = 0;
+		
+		try {
+			conn = DB.initialize();
+			
+			PreparedStatement prep = conn.prepareStatement("SELECT minor, major FROM dbVersion");
+			ResultSet rs = prep.executeQuery();
+			if (rs.next()) {
+				minor = rs.getInt("minor");
+				major = rs.getInt("major");
+			}
+		} catch (Exception e) {
+			minor = 0;
+			major = 0;
+		}
+		
+		finally {
+			DB.disconnect(conn);
+		}
+		
+		return new Version(major, minor);
+	}
+	
+	public synchronized static void setVersion(Version ver) throws ClassNotFoundException, SQLException {
+		Connection conn = null;
+		try {
+			conn = DB.initialize();
+			
+			PreparedStatement prep = conn.prepareStatement("UPDATE dbVersion SET major = ?, minor= ?");
+			prep.setInt(1, ver.getMajor());
+			prep.setInt(2, ver.getMinor());
+			
+			prep.execute();
+		}
+		finally {
+			DB.disconnect(conn);
+		}
+	}
+	
 	private static Movie extractMovie(ResultSet rs) throws SQLException {
 		Movie m = Movie.newBuilder()
 				.setID(rs.getInt("ID"))
@@ -297,12 +340,33 @@ public class DB {
 		return m;
 	}
 	
-	private static Connection initialize() throws ClassNotFoundException, SQLException {
+	public static boolean executeUpgradeStatement(String sql) {
+		Connection conn = null;
+		try {
+			conn = DB.initialize();
+		
+			PreparedStatement prep = conn.prepareStatement(sql);
+			
+			prep.execute();
+			
+			return true;
+		}
+		catch (Exception e) {
+			Log.Error("Upgrade failed", LogType.UPGRADE, e);
+			Log.Debug("Failing query was::", LogType.UPGRADE);
+			Log.Debug(sql, LogType.UPGRADE);
+			return false;
+		}
+		finally {
+			DB.disconnect(conn);
+		}
+	}
+	public static Connection initialize() throws ClassNotFoundException, SQLException {
 		Class.forName("org.sqlite.JDBC");
 	    return DriverManager.getConnection("jdbc:sqlite:jukebox.db");				
 	}
 	
-	private static void disconnect(Connection conn) {
+	public static void disconnect(Connection conn) {
 		try {
 			if (conn != null)
 				conn.close();

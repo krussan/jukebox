@@ -18,7 +18,8 @@ public class Log {
 		MAIN,
 		SUBS,
 		FIND,
-		COMM
+		COMM,
+		UPGRADE
 	}
 	
 	public static void Critical(String msg, LogType type) {
