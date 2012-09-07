@@ -11,7 +11,7 @@ import java.net.MalformedURLException;
 
 import se.qxx.jukebox.Log.LogType;
 
-public class IMDBRecord {
+public class IMDBRecord { 
 	private String url;
 	private int year;
 	private int durationMinutes;

@@ -73,7 +73,11 @@ message Movie {
 	optional string imdb_id = 11;
 	optional string filepath = 12;	
 	optional int32 duration = 13;
-	
+	optional string rating = 14;
+	optional string director = 15;
+	optional string story = 16;
+	optional bytes image = 17;
+	repeated string genre = 18;
 }
 
 message JukeboxResponseListMovies {

@@ -1,6 +1,11 @@
 package se.qxx.jukebox.upgrade;
 
+import java.util.List;
+
+import se.qxx.jukebox.DB;
+import se.qxx.jukebox.IMDBFinder;
 import se.qxx.jukebox.Version;
+import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 
 public class Upgrade_0_2 implements IIncrimentalUpgrade {
 
@@ -28,6 +33,16 @@ public class Upgrade_0_2 implements IIncrimentalUpgrade {
 		Upgrader.runDatabasescripts(DbScripts);
 
 		//TODO: perform upgrade for version 0.2
+		List<Movie> list = DB.searchMovies("");
+		
+		int nrOfMovies = list.size();
+		int iterator = 1;
+		for(Movie m : list) {
+			System.out.println(String.format("Searching IMDB for additional info [%s/%s]", iterator, nrOfMovies));
+			Movie newMovie = IMDBFinder.Search(m);
+			DB.updateMovie(newMovie);
+		}
+		
 		// get duration	
 		// update genres
 		// get rating

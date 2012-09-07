@@ -20,6 +20,7 @@ public class DB {
 
 			PreparedStatement prep = conn.prepareStatement(
 			" select ID, filename, filepath, title, year, type, format, sound, language, groupName, imdburl" +
+			"      , duration, rating, director, story" +
 			" from movie where title = ?");
 					
 			prep.setString(1, title);
@@ -45,8 +46,9 @@ public class DB {
 			conn = DB.initialize();
 
 			PreparedStatement prep = conn.prepareStatement(
-			" select ID, filename, filepath, title, year, type, format, sound, language, groupName, imdburl" +
-			" from movie where ID = ?");
+				" select ID, filename, filepath, title, year, type, format, sound, language, groupName, imdburl" +
+				"      , duration, rating, director, story" +
+				" from movie where ID = ?");
 					
 			prep.setInt(1, id);
 				
@@ -80,11 +82,15 @@ public class DB {
 				"    , language = ?" +
 				"    , groupName = ?" +
 				"    , imdburl = ?" +
+				"    , duration = ?" +
+				"    , rating = ?" +
+				"    , director = ?" +
+				"    , story = ?" +
 				" WHERE ID = ?"
 			);
 			
 			addArguments(prep, m);
-			prep.setInt(11, m.getID());
+			prep.setInt(15, m.getID());
 			
 			prep.execute();
 		}
@@ -101,9 +107,9 @@ public class DB {
 			conn = DB.initialize();
 			PreparedStatement prep = conn.prepareStatement(
 					"insert into movie " +
-					"(filename, filepath, title, year, type, format, sound, language, groupName, imdburl)" +
+					"(filename, filepath, title, year, type, format, sound, language, groupName, imdburl, duration, rating, director, story)" +
 					"values" +
-					"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+					"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			
 			addArguments(prep, m);
 			prep.execute();
@@ -132,6 +138,10 @@ public class DB {
 		prep.setString(8, m.getLanguage());
 		prep.setString(9, m.getGroup());
 		prep.setString(10, m.getImdbUrl());
+		prep.setInt(11, m.getDuration());
+		prep.setString(12, m.getRating());
+		prep.setString(13, m.getDirector());
+		prep.setString(14, m.getStory());
 	}
 	
 	private static int getIdentity(Connection conn) throws SQLException {
@@ -227,7 +237,8 @@ public class DB {
 			conn = DB.initialize();
 	
 			PreparedStatement prep = conn.prepareStatement(
-					" SELECT ID, filename, filepath, title, year, type, format, sound, language, groupName, imdburl " +
+					" select ID, filename, filepath, title, year, type, format, sound, language, groupName, imdburl" +
+					"      , duration, rating, director, story" +
 					" FROM movie" +
 					" WHERE title LIKE '%" + searchString + "%'"
 					);
@@ -257,6 +268,7 @@ public class DB {
 	
 			PreparedStatement prep = conn.prepareStatement(
 					" SELECT M.ID, M.filename, M.filepath, M.title, M.year, M.type, M.format, M.sound, M.language, M.groupName, M.imdburl " +
+					"      , M.duration, M.rating, M.director, M.story" +
 					" FROM movie AS M" +
 					" INNER JOIN subtitleQueue SQ ON SQ._movie_ID = M.ID" +
 					" WHERE retreivedAt IS NULL AND result = 0"
@@ -335,6 +347,11 @@ public class DB {
 				.setLanguage(rs.getString("language"))
 				.setGroup(rs.getString("groupName"))
 				.setImdbUrl(rs.getString("imdburl"))
+				//  M.duration, M.rating, M.director, M.story"
+				.setDuration(rs.getInt("duration"))
+				.setRating(rs.getString("rating"))
+				.setDirector(rs.getString("director"))
+				.setStory(rs.getString("story"))
 				.build();
 
 		return m;
@@ -361,12 +378,12 @@ public class DB {
 			DB.disconnect(conn);
 		}
 	}
-	public static Connection initialize() throws ClassNotFoundException, SQLException {
+	private static Connection initialize() throws ClassNotFoundException, SQLException {
 		Class.forName("org.sqlite.JDBC");
 	    return DriverManager.getConnection("jdbc:sqlite:jukebox.db");				
 	}
 	
-	public static void disconnect(Connection conn) {
+	private static void disconnect(Connection conn) {
 		try {
 			if (conn != null)
 				conn.close();
