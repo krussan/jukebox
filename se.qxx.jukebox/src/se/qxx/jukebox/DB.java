@@ -105,6 +105,8 @@ public class DB {
 		Connection conn = null;
 		try {
 			conn = DB.initialize();
+			conn.setAutoCommit(false);
+			
 			PreparedStatement prep = conn.prepareStatement(
 					"insert into movie " +
 					"(filename, filepath, title, year, type, format, sound, language, groupName, imdburl, duration, rating, director, story)" +
@@ -113,18 +115,59 @@ public class DB {
 			
 			addArguments(prep, m);
 			prep.execute();
-	
+			
 			int i = getIdentity(conn);
+	
+			for(String genre : m.getGenreList()) {
+				int genreID = getGenreID(genre, conn);
+				if (genreID == -1)
+					genreID = addGenre(genre, conn);
+			}
+			
+			
+			
 			Movie mm = Movie.newBuilder().mergeFrom(m).setID(i).build();
-					
+			
+			conn.commit();
+			
 			return mm;
 		}
 		catch (Exception e) {
 			Log.Error("Failed to store movie to DB", Log.LogType.MAIN, e);
+			try {
+				conn.rollback();
+			} catch (SQLException sqlEx) {}
 			return null;
 		}finally {
 			DB.disconnect(conn);
 		}
+	}
+	
+	private static int addGenre(String genre, Connection conn) throws SQLException {
+		PreparedStatement prep = conn.prepareStatement(
+				"INSERT INTO Genre (genreName) VALUES (?)");
+		
+		prep.setString(1, genre);
+		
+		prep.execute();
+		int i = getIdentity(conn);
+
+		return i;
+	}
+	
+	private static int getGenreID(String genre, Connection conn) throws SQLException {
+		PreparedStatement prep = conn.prepareStatement(
+				"SELECT ID, genreName FROM Genre WHERE genreName = ?");
+		
+		prep.setString(1, genre);
+		
+		ResultSet rs = prep.executeQuery();
+		
+		if (rs.next())
+			return rs.getInt("ID");
+		else
+			return -1;
+		
 	}
 
 	private static void addArguments(PreparedStatement prep, Movie m) throws SQLException {
