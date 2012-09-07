@@ -122,9 +122,14 @@ public class DB {
 				int genreID = getGenreID(genre, conn);
 				if (genreID == -1)
 					genreID = addGenre(genre, conn);
+				
+				prep = conn.prepareStatement(
+						"INSERT INTO MovieGenre (_movie_ID, _genre_ID) VALUES (?, ?)");
+				prep.setInt(1, i);
+				prep.setInt(2, genreID);
+				
+				prep.execute();
 			}
-			
-			
 			
 			Movie mm = Movie.newBuilder().mergeFrom(m).setID(i).build();
 			

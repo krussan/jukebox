@@ -55,8 +55,14 @@ public class IMDBFinder {
 			nextSearch = Util.getCurrentTimestamp() + n;
 			
 			if (rec != null) {
-				String url = "http://www.imdb.com" + rec.getUrl();
-				return Movie.newBuilder().mergeFrom(m).setImdbUrl(url).build();
+				return Movie.newBuilder().mergeFrom(m)
+						.setImdbUrl(rec.getUrl())
+						.setDirector(rec.getDirector())
+						.setDuration(rec.getDurationMinutes())
+						.setStory(rec.getStory())
+						.setRating(rec.getRating())
+						.addAllGenre(rec.getAllGenres())
+						.build();
 			}
 			else
 				return m;

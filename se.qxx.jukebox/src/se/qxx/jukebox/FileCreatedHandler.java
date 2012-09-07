@@ -18,40 +18,47 @@ public class FileCreatedHandler implements INotifyClient {
 	public void fileCreated(FileRepresentation f)  {
 		Log.Debug(String.format("New file found :: %s", f.getName()), Log.LogType.FIND);
 		
+		String filename = f.getName();
+		String path = f.getPath();
 		// Added ignore on all filename that contains the string sample
-		if (Util.stringContainsIgnoreCase(f.getName(), "sample")) {
-			Log.Info(String.format("Ignoring %s as this appears to be a sample", f.getName()), LogType.FIND);
+		if (Util.stringContainsIgnoreCase(filename, "sample")) {
+			Log.Info(String.format("Ignoring %s as this appears to be a sample", filename), LogType.FIND);
 		}
 		else {
-			Movie m = Util.extractMovie(f.getPath(), f.getName());
-			
-			// TODO: Get info about movie from NFO if available
-			// TODO: Get info from parent directory if different from base directory...??
-			
-			if (m != null) {
-				// Check if movie exists in db
-				Movie dbMovie = DB.getMovie(m.getTitle());
-				if (dbMovie != null) {
-					// If it does but in a different path update the path
-					if (!m.getFilepath().equals(dbMovie.getFilepath())) {
-						Movie store = Movie.newBuilder(dbMovie).setFilepath(m.getFilepath()).build();
-						DB.updateMovie(store);
-					}
-					// If it does but in same path exit
-				}
-				else {
-					// If not get information and subtitles
-					
-					if (Arguments.get().isImdbIdentifierEnabled())
-						m = getImdbInformation(m);
-					
-					m = DB.addMovie(m);
-					
-					SubtitleDownloader.get().addMovie(m);			
-				}
+			if (isTvEpisode(filename)) {
+				Log.Info(String.format("Ignoring %s as this appears to be a TV episode", filename), LogType.FIND);
 			}
 			else {
-				Log.Info(String.format("Failed to identity movie with filename :: %s", f.getName()), Log.LogType.FIND);
+				Movie m = Util.extractMovie(path, filename);
+				
+				// TODO: Get info about movie from NFO if available
+				// TODO: Get info from parent directory if different from base directory...??
+				
+				if (m != null) {
+					// Check if movie exists in db
+					Movie dbMovie = DB.getMovie(m.getTitle());
+					if (dbMovie != null) {
+						// If it does but in a different path update the path
+						if (!m.getFilepath().equals(dbMovie.getFilepath())) {
+							Movie store = Movie.newBuilder(dbMovie).setFilepath(m.getFilepath()).build();
+							DB.updateMovie(store);
+						}
+						// If it does but in same path exit
+					}
+					else {
+						// If not get information and subtitles
+						
+						if (Arguments.get().isImdbIdentifierEnabled())
+							m = getImdbInformation(m);
+						
+						m = DB.addMovie(m);
+						
+						SubtitleDownloader.get().addMovie(m);			
+					}
+				}
+				else {
+					Log.Info(String.format("Failed to identity movie with filename :: %s", f.getName()), Log.LogType.FIND);
+				}
 			}
 		}
 	}
@@ -67,5 +74,15 @@ public class FileCreatedHandler implements INotifyClient {
 		}
 		
 		return m;
+	}
+	
+	private boolean isTvEpisode(String filename) {
+		Pattern p1 = Pattern.compile("s\\d{1,2}e\\d{1,2}", Pattern.CASE_INSENSITIVE);
+		Matcher m1 = p1.matcher(filename);
+		
+		Pattern p2 = Pattern.compile("\\d{1,2}x\\d{1,2}", Pattern.CASE_INSENSITIVE);
+		Matcher m2 = p2.matcher(filename);
+		
+		return m1.find() || m2.find();
 	}
 }

@@ -49,13 +49,13 @@ public class IMDBRecord {
 			
 			// Story
 			try {
-				p = Pattern.compile("<p\\s*itemprop=\"description\">(.*?)</p>", Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+				p = Pattern.compile("<p\\s*itemprop=\"description\">(.*?)</p>", 
+						Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 				m = p.matcher(webResult);	
 				if (m.find())
-					this.setStory(m.group(1));
+					this.setStory(m.group(1).trim());
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Log.Error(String.format("IMDBFinder for url %s - unable to set story", url) , LogType.MAIN, e);
 			}
 		
 			try {
@@ -65,9 +65,9 @@ public class IMDBRecord {
 								| Pattern.CASE_INSENSITIVE);
 				m = p.matcher(webResult);
 				if (m.find())
-					this.year = Integer.parseInt(m.group(1));
+					this.year = Integer.parseInt(m.group(1).trim());
 			} catch (Exception e) {
-				// TODO: handle exception
+				Log.Error(String.format("IMDBFinder for url %s - unable to set year", url) , LogType.MAIN, e);
 			}
 			
 			
@@ -76,10 +76,9 @@ public class IMDBRecord {
 				p = Pattern.compile("<span\\s*itemprop=\"ratingValue\"\\s*>((\\d\\.\\d)|(\\d\\d)|(\\d\\d\\.\\d)|(\\d\\d\\.\\d\\d))</span>", Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 				m = p.matcher(webResult);	
 				if (m.find())
-					this.setRating(m.group(1));
+					this.setRating(m.group(1).trim());
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Log.Error(String.format("IMDBFinder for url %s - unable to set rating", url) , LogType.MAIN, e);
 			}
 			
 			// Genres
@@ -87,10 +86,9 @@ public class IMDBRecord {
 				p = Pattern.compile("href=\"/genre/[^\"]*\"\\s*>(.*?)</a>", Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 				m = p.matcher(webResult);	
 				while (m.find()) 
-					this.genres.add(m.group(1));
+					this.genres.add(m.group(1).trim());
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Log.Error(String.format("IMDBFinder for url %s - unable to set genres", url) , LogType.MAIN, e);
 			}
 			
 			// Duration
@@ -98,20 +96,19 @@ public class IMDBRecord {
 				p = Pattern.compile("<time\\s*itemprop=\"duration\".*?>(\\d{1,3})\\s*min</time>", Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 				m = p.matcher(webResult);	
 				if (m.find()) 
-					this.setDurationMinutes(Integer.parseInt(m.group(1)));
+					this.setDurationMinutes(Integer.parseInt(m.group(1).trim()));
 			} catch (NumberFormatException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Log.Error(String.format("IMDBFinder for url %s - unable to set duration", url) , LogType.MAIN, e);
 			}
 			
+			// Director
 			try {
 				p = Pattern.compile("itemprop=\"director\"\\s*>(.*?)</a>", Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 				m = p.matcher(webResult);	
 				if (m.find()) 
-					this.setDirector(m.group(1));
+					this.setDirector(m.group(1).trim());
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Log.Error(String.format("IMDBFinder for url %s - unable to set director", url) , LogType.MAIN, e);
 			}
 			
 		}
@@ -221,4 +218,9 @@ public class IMDBRecord {
 	private void setImage(byte[] image) {
 		this.image = image;
 	}
+	
+	public List<String> getAllGenres() {
+		return this.genres;
+	}
+	
 }
