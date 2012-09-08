@@ -21,101 +21,110 @@ public class IMDBRecord {
 	private String story;
 	private byte[] image;
 	
+	private IMDBRecord() {
+		
+	}
+	
 	private IMDBRecord(String url) {
 		this.url = url;
 		
-		Pattern p;
-		Matcher m;
 		
 		//TODO: Extract all regex:es to config file in case IMDB decides to change layout
 		try {
 			String webResult = WebRetriever.getWebResult(url);	
-
-			/*
-			// Poster
-			try {
-				p = Pattern.compile("<img\\s*src=\"([^\"]*)\"[^>]*?alt=\"[^\"]*Poster", Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
-				m = p.matcher(webResult);
 			
-				if (m.find()) {
-					String posterUrl = m.group(1);
-					File f = WebRetriever.getWebFile(posterUrl, Util.getTempDirectory());
-					this.setImage(readFile(f));
-				}
-			}
-			catch (Exception e) {
-			}
-			*/
-			
-			// Story
-			try {
-				p = Pattern.compile("<p\\s*itemprop=\"description\">(.*?)</p>", 
-						Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
-				m = p.matcher(webResult);	
-				if (m.find())
-					this.setStory(m.group(1).trim());
-			} catch (Exception e) {
-				Log.Error(String.format("IMDBFinder for url %s - unable to set story", url) , LogType.MAIN, e);
-			}
-		
-			try {
-				// Year
-				p = Pattern.compile("<a\\s*href=\"/year/(\\d{4})/\">",
-						Pattern.DOTALL | Pattern.MULTILINE
-								| Pattern.CASE_INSENSITIVE);
-				m = p.matcher(webResult);
-				if (m.find())
-					this.year = Integer.parseInt(m.group(1).trim());
-			} catch (Exception e) {
-				Log.Error(String.format("IMDBFinder for url %s - unable to set year", url) , LogType.MAIN, e);
-			}
-			
-			
-			// Rating
-			try {
-				p = Pattern.compile("<span\\s*itemprop=\"ratingValue\"\\s*>((\\d\\.\\d)|(\\d\\d)|(\\d\\d\\.\\d)|(\\d\\d\\.\\d\\d))</span>", Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
-				m = p.matcher(webResult);	
-				if (m.find())
-					this.setRating(m.group(1).trim());
-			} catch (Exception e) {
-				Log.Error(String.format("IMDBFinder for url %s - unable to set rating", url) , LogType.MAIN, e);
-			}
-			
-			// Genres
-			try {
-				p = Pattern.compile("href=\"/genre/[^\"]*\"\\s*>(.*?)</a>", Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
-				m = p.matcher(webResult);	
-				while (m.find()) 
-					this.genres.add(m.group(1).trim());
-			} catch (Exception e) {
-				Log.Error(String.format("IMDBFinder for url %s - unable to set genres", url) , LogType.MAIN, e);
-			}
-			
-			// Duration
-			try {
-				p = Pattern.compile("<time\\s*itemprop=\"duration\".*?>(\\d{1,3})\\s*min</time>", Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
-				m = p.matcher(webResult);	
-				if (m.find()) 
-					this.setDurationMinutes(Integer.parseInt(m.group(1).trim()));
-			} catch (NumberFormatException e) {
-				Log.Error(String.format("IMDBFinder for url %s - unable to set duration", url) , LogType.MAIN, e);
-			}
-			
-			// Director
-			try {
-				p = Pattern.compile("itemprop=\"director\"\\s*>(.*?)</a>", Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
-				m = p.matcher(webResult);	
-				if (m.find()) 
-					this.setDirector(m.group(1).trim());
-			} catch (Exception e) {
-				Log.Error(String.format("IMDBFinder for url %s - unable to set director", url) , LogType.MAIN, e);
-			}
+			parse(webResult);
 			
 		}
 		catch (Exception e) {
 			Log.Error(String.format("Failed to get IMDB information from url :: %s", url), LogType.FIND, e);
 		}		
 		
+	}
+	
+	private void parse(String webResult) {
+		Pattern p;
+		Matcher m;
+
+		/*
+		// Poster
+		try {
+			p = Pattern.compile("<img\\s*src=\"([^\"]*)\"[^>]*?alt=\"[^\"]*Poster", Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+			m = p.matcher(webResult);
+		
+			if (m.find()) {
+				String posterUrl = m.group(1);
+				File f = WebRetriever.getWebFile(posterUrl, Util.getTempDirectory());
+				this.setImage(readFile(f));
+			}
+		}
+		catch (Exception e) {
+		}
+		*/
+		
+		// Story
+		try {
+			p = Pattern.compile("<p\\s*itemprop=\"description\">(.*?)</p>", 
+					Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+			m = p.matcher(webResult);	
+			if (m.find())
+				this.setStory(m.group(1).trim());
+		} catch (Exception e) {
+			Log.Error(String.format("IMDBFinder for url %s - unable to set story", url) , LogType.MAIN, e);
+		}
+	
+		try {
+			// Year
+			p = Pattern.compile("<a\\s*href=\"/year/(\\d{4})/\">",
+					Pattern.DOTALL | Pattern.MULTILINE
+							| Pattern.CASE_INSENSITIVE);
+			m = p.matcher(webResult);
+			if (m.find())
+				this.year = Integer.parseInt(m.group(1).trim());
+		} catch (Exception e) {
+			Log.Error(String.format("IMDBFinder for url %s - unable to set year", url) , LogType.MAIN, e);
+		}
+		
+		
+		// Rating
+		try {
+			p = Pattern.compile("<span\\s*itemprop=\"ratingValue\"\\s*>((\\d\\.\\d)|(\\d\\d)|(\\d\\d\\.\\d)|(\\d\\d\\.\\d\\d))</span>", Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+			m = p.matcher(webResult);	
+			if (m.find())
+				this.setRating(m.group(1).trim());
+		} catch (Exception e) {
+			Log.Error(String.format("IMDBFinder for url %s - unable to set rating", url) , LogType.MAIN, e);
+		}
+		
+		// Genres
+		try {
+			p = Pattern.compile("href=\"/genre/[^\"]*\"\\s*>(.*?)</a>", Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+			m = p.matcher(webResult);	
+			while (m.find()) 
+				this.genres.add(m.group(1).trim());
+		} catch (Exception e) {
+			Log.Error(String.format("IMDBFinder for url %s - unable to set genres", url) , LogType.MAIN, e);
+		}
+		
+		// Duration
+		try {
+			p = Pattern.compile("<time\\s*itemprop=\"duration\".*?>(\\d{1,3})\\s*min</time>", Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+			m = p.matcher(webResult);	
+			if (m.find()) 
+				this.setDurationMinutes(Integer.parseInt(m.group(1).trim()));
+		} catch (NumberFormatException e) {
+			Log.Error(String.format("IMDBFinder for url %s - unable to set duration", url) , LogType.MAIN, e);
+		}
+		
+		// Director
+		try {
+			p = Pattern.compile("itemprop=\"director\"\\s*>(.*?)</a>", Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+			m = p.matcher(webResult);	
+			if (m.find()) 
+				this.setDirector(m.group(1).trim());
+		} catch (Exception e) {
+			Log.Error(String.format("IMDBFinder for url %s - unable to set director", url) , LogType.MAIN, e);
+		}
 	}
 	
 	private byte[] readFile(File f) {
@@ -176,6 +185,13 @@ public class IMDBRecord {
 		
 		IMDBRecord rec = new IMDBRecord(url);
 	
+		return rec;
+	}
+	
+	public static IMDBRecord getFromWebResult(String webResult) {
+		IMDBRecord rec = new IMDBRecord();
+		rec.parse(webResult);
+		
 		return rec;
 	}
 

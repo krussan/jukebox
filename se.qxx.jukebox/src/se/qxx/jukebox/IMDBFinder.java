@@ -40,12 +40,21 @@ public class IMDBFinder {
 
 			String webResult = WebRetriever.getWebResult(urlString);
 
-
-			IMDBRecord rec = findUrlByPopularTitles(m, webResult);
-			if (rec == null) {
-				rec = findUrlByExactMatches(m, webResult);
+			// Accomodate for that sometimes IMDB redirects you
+			// directly to the correct movie. (i.e. "Cleanskin")
+			// This could be detected by that the title of the web page is the
+			// title of the movie or NOT "IMDB search"
+			IMDBRecord rec;
+			if (isRedirectedToMovie(webResult)) {
+				rec = IMDBRecord.getFromWebResult(webResult);
+				
 			}
-
+			else {
+				rec = findUrlByPopularTitles(m, webResult);
+				if (rec ==null) {
+					rec = findUrlByExactMatches(m, webResult);
+				}
+			}
 			
 			//TODO: Probably add this to user settings
 			Random r = new Random();
@@ -71,6 +80,14 @@ public class IMDBFinder {
 		}
 	}
 	
+	private static boolean isRedirectedToMovie(String webResult) {
+		Pattern p = Pattern.compile("<title>\\s*IMDb\\s*Search\\s*</title>"
+				, Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
+		Matcher m = p.matcher(webResult);
+		
+		return !m.find();
+	}
+	
 	private static boolean testResult(Movie m, IMDBRecord result) {
 		if (m == null || result == null)
 			return false;
@@ -84,7 +101,7 @@ public class IMDBFinder {
 			text,
 			"<p>(.*?)Titles\\s*\\(Exact\\s*Matches\\)(.*?)<table>(.*?)<\\/table>",
 			3,
-			"<a\\s*href=\"([^\"]*?)\"[^>]*>[^<]+?</a>\\s*\\((\\d{4})\\)",
+			"<a\\s*href=\"([^\"]*?)\"[^>]*>[^<]+?</a>\\s*\\((\\d{4})[^\\)]*?\\)",
 			1,
 			2);
 	}
@@ -95,7 +112,7 @@ public class IMDBFinder {
 			text,
 			"<p>(.*?)Popular\\s*Titles(.*?)<table>(.*?)<\\/table>",
 			3,
-			"<a\\s*href=\"([^\"]*?)\"[^>]*>[^<]+?</a>\\s*\\((\\d{4})\\)",
+			"<a\\s*href=\"([^\"]*?)\"[^>]*>[^<]+?</a>\\s*\\((\\d{4})[^\\)]*?\\)",
 			1,
 			2);
 	}
@@ -111,7 +128,8 @@ public class IMDBFinder {
 		
 		//TODO: Also match by length of movie
 		try {
-			Pattern p = Pattern.compile(patternForBlock);
+			Pattern p = Pattern.compile(patternForBlock
+					, Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
 			Matcher m = p.matcher(text);
 			
 			if (m.find()) {
@@ -148,7 +166,6 @@ public class IMDBFinder {
 
 		return null;
 	}
-	
 }
 
 /*
