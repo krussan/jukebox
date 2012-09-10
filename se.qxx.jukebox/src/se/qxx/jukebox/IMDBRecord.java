@@ -22,7 +22,6 @@ public class IMDBRecord {
 	private byte[] image;
 	
 	private IMDBRecord() {
-		
 	}
 	
 	private IMDBRecord(String url) {
@@ -31,8 +30,7 @@ public class IMDBRecord {
 		
 		//TODO: Extract all regex:es to config file in case IMDB decides to change layout
 		try {
-			String webResult = WebRetriever.getWebResult(url);	
-			
+			String webResult = WebRetriever.getWebResult(url).getResult();
 			parse(webResult);
 			
 		}
@@ -188,10 +186,16 @@ public class IMDBRecord {
 		return rec;
 	}
 	
-	public static IMDBRecord getFromWebResult(String webResult) {
+	public static IMDBRecord getFromWebResult(WebResult webResult) {
 		IMDBRecord rec = new IMDBRecord();
-		rec.parse(webResult);
+		rec.url = webResult.getUrl();
 		
+		try {
+			rec.parse(webResult.getResult());
+		}
+		catch (Exception e) {
+			Log.Error(String.format("Failed to get IMDB information from url :: %s", webResult.getUrl()), LogType.FIND, e);
+		}
 		return rec;
 	}
 

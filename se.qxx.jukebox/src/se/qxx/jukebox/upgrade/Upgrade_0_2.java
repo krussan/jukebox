@@ -34,7 +34,8 @@ public class Upgrade_0_2 implements IIncrimentalUpgrade {
 		Upgrader.runDatabasescripts(DbScripts);
 
 		//TODO: perform upgrade for version 0.2
-		List<Movie> list = DB.searchMovies("");
+		/*List<Movie> list = DB.searchMovies("");
+
 		
 		int nrOfMovies = list.size();
 		int iterator = 1;
@@ -49,7 +50,7 @@ public class Upgrade_0_2 implements IIncrimentalUpgrade {
 				System.out.println(String.format("Failed to update movie %s", m.getTitle()));
 			}
 			
-		}
+		}*/
 		
 		// get duration	
 		// update genres

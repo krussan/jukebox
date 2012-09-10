@@ -38,22 +38,25 @@ public class IMDBFinder {
 			String urlParameters = java.net.URLEncoder.encode(m.getTitle(), "ISO-8859-1");
 			String urlString = "http://www.imdb.com/find?s=tt&q=" + urlParameters;
 
-			String webResult = WebRetriever.getWebResult(urlString);
-
+			WebResult webResult = WebRetriever.getWebResult(urlString);
+			
 			// Accomodate for that sometimes IMDB redirects you
 			// directly to the correct movie. (i.e. "Cleanskin")
 			// This could be detected by that the title of the web page is the
 			// title of the movie or NOT "IMDB search"
 			IMDBRecord rec;
-			if (isRedirectedToMovie(webResult)) {
+			if (webResult.isRedirected()) {
 				rec = IMDBRecord.getFromWebResult(webResult);
-				
 			}
 			else {
-				rec = findUrlByPopularTitles(m, webResult);
-				if (rec ==null) {
-					rec = findUrlByExactMatches(m, webResult);
-				}
+				rec = findUrlByPopularTitles(m, webResult.getResult());
+				if (rec == null)
+					rec = findUrlByExactMatches(m, webResult.getResult());
+					
+				if (rec == null)
+					rec = findUrlByApproxMatches(m, webResult.getResult());
+				
+				
 			}
 			
 			//TODO: Probably add this to user settings
@@ -80,13 +83,13 @@ public class IMDBFinder {
 		}
 	}
 	
-	private static boolean isRedirectedToMovie(String webResult) {
+	/*private static boolean isRedirectedToMovie(String webResult) {
 		Pattern p = Pattern.compile("<title>\\s*IMDb\\s*Search\\s*</title>"
 				, Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
 		Matcher m = p.matcher(webResult);
 		
 		return !m.find();
-	}
+	}*/
 	
 	private static boolean testResult(Movie m, IMDBRecord result) {
 		if (m == null || result == null)
@@ -111,6 +114,17 @@ public class IMDBFinder {
 			movie,
 			text,
 			"<p>(.*?)Popular\\s*Titles(.*?)<table>(.*?)<\\/table>",
+			3,
+			"<a\\s*href=\"([^\"]*?)\"[^>]*>[^<]+?</a>\\s*\\((\\d{4})[^\\)]*?\\)",
+			1,
+			2);
+	}
+	
+	private static IMDBRecord findUrlByApproxMatches(Movie movie, String text) {
+		return findUrl(
+			movie,
+			text,
+			"<p>(.*?)Titles\\s*\\(Approx\\s*Matches\\)(.*?)<table>(.*?)<\\/table>",
 			3,
 			"<a\\s*href=\"([^\"]*?)\"[^>]*>[^<]+?</a>\\s*\\((\\d{4})[^\\)]*?\\)",
 			1,

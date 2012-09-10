@@ -233,10 +233,7 @@ public class SubtitleDownloader implements Runnable {
 						Log.Debug(String.format(
 								"%s implements ISubtitleFinder", className), Log.LogType.FIND);
 
-						Class<?>[] parTypes = new Class<?>[] {};
-						Object[] args = new Object[] {};
-						Constructor<?> con = c.getConstructor(parTypes);
-						Object o = con.newInstance(args);
+						Object o = Util.getInstance(className);
 
 						ArrayList<String> languages = new ArrayList<String>();
 						languages.add("Eng");

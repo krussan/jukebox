@@ -46,7 +46,7 @@ public class UndertexterSe implements ISubtitleFinder {
 		searchString = java.net.URLEncoder.encode(searchString.trim(), "ISO-8859-1");
 		
 		url = url.replaceAll("__searchString__", searchString);
-		String webResult = WebRetriever.getWebResult(url);
+		String webResult = WebRetriever.getWebResult(url).getResult();
 
 		// replace newline
 		webResult = webResult.replace("\r", "");

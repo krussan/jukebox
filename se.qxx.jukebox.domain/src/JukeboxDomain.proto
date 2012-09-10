@@ -18,6 +18,12 @@ enum JukeboxRequestType {
 	ToggleFullscreen = 13;
 }
 
+enum Identifier {
+	Filename = 1;
+	ParentDirectory = 2;
+	NFO = 3;
+}
+
 message JukeboxRequest {
 	required JukeboxRequestType type = 1;
 	optional bytes arguments = 2;
@@ -78,6 +84,8 @@ message Movie {
 	optional string story = 16;
 	optional bytes image = 17;
 	repeated string genre = 18;
+	optional Identifier identifier = 19;
+	optional int32 identifierRating = 20;
 }
 
 message JukeboxResponseListMovies {

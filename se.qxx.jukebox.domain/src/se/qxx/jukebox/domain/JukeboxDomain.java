@@ -110,6 +110,78 @@ public final class JukeboxDomain {
     // @@protoc_insertion_point(enum_scope:se.qxx.jukebox.domain.JukeboxRequestType)
   }
   
+  public enum Identifier
+      implements com.google.protobuf.ProtocolMessageEnum {
+    Filename(0, 1),
+    ParentDirectory(1, 2),
+    NFO(2, 3),
+    ;
+    
+    public static final int Filename_VALUE = 1;
+    public static final int ParentDirectory_VALUE = 2;
+    public static final int NFO_VALUE = 3;
+    
+    
+    public final int getNumber() { return value; }
+    
+    public static Identifier valueOf(int value) {
+      switch (value) {
+        case 1: return Filename;
+        case 2: return ParentDirectory;
+        case 3: return NFO;
+        default: return null;
+      }
+    }
+    
+    public static com.google.protobuf.Internal.EnumLiteMap<Identifier>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static com.google.protobuf.Internal.EnumLiteMap<Identifier>
+        internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<Identifier>() {
+            public Identifier findValueByNumber(int number) {
+              return Identifier.valueOf(number);
+            }
+          };
+    
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      return getDescriptor().getValues().get(index);
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return se.qxx.jukebox.domain.JukeboxDomain.getDescriptor().getEnumTypes().get(1);
+    }
+    
+    private static final Identifier[] VALUES = {
+      Filename, ParentDirectory, NFO, 
+    };
+    
+    public static Identifier valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      return VALUES[desc.getIndex()];
+    }
+    
+    private final int index;
+    private final int value;
+    
+    private Identifier(int index, int value) {
+      this.index = index;
+      this.value = value;
+    }
+    
+    // @@protoc_insertion_point(enum_scope:se.qxx.jukebox.domain.Identifier)
+  }
+  
   public interface JukeboxRequestOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
@@ -4008,6 +4080,14 @@ public final class JukeboxDomain {
     java.util.List<String> getGenreList();
     int getGenreCount();
     String getGenre(int index);
+    
+    // optional .se.qxx.jukebox.domain.Identifier identifier = 19;
+    boolean hasIdentifier();
+    se.qxx.jukebox.domain.JukeboxDomain.Identifier getIdentifier();
+    
+    // optional int32 identifierRating = 20;
+    boolean hasIdentifierRating();
+    int getIdentifierRating();
   }
   public static final class Movie extends
       com.google.protobuf.GeneratedMessage
@@ -4508,6 +4588,26 @@ public final class JukeboxDomain {
       return genre_.get(index);
     }
     
+    // optional .se.qxx.jukebox.domain.Identifier identifier = 19;
+    public static final int IDENTIFIER_FIELD_NUMBER = 19;
+    private se.qxx.jukebox.domain.JukeboxDomain.Identifier identifier_;
+    public boolean hasIdentifier() {
+      return ((bitField0_ & 0x00020000) == 0x00020000);
+    }
+    public se.qxx.jukebox.domain.JukeboxDomain.Identifier getIdentifier() {
+      return identifier_;
+    }
+    
+    // optional int32 identifierRating = 20;
+    public static final int IDENTIFIERRATING_FIELD_NUMBER = 20;
+    private int identifierRating_;
+    public boolean hasIdentifierRating() {
+      return ((bitField0_ & 0x00040000) == 0x00040000);
+    }
+    public int getIdentifierRating() {
+      return identifierRating_;
+    }
+    
     private void initFields() {
       iD_ = 0;
       filename_ = "";
@@ -4527,6 +4627,8 @@ public final class JukeboxDomain {
       story_ = "";
       image_ = com.google.protobuf.ByteString.EMPTY;
       genre_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      identifier_ = se.qxx.jukebox.domain.JukeboxDomain.Identifier.Filename;
+      identifierRating_ = 0;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -4601,6 +4703,12 @@ public final class JukeboxDomain {
       }
       for (int i = 0; i < genre_.size(); i++) {
         output.writeBytes(18, genre_.getByteString(i));
+      }
+      if (((bitField0_ & 0x00020000) == 0x00020000)) {
+        output.writeEnum(19, identifier_.getNumber());
+      }
+      if (((bitField0_ & 0x00040000) == 0x00040000)) {
+        output.writeInt32(20, identifierRating_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -4687,6 +4795,14 @@ public final class JukeboxDomain {
         }
         size += dataSize;
         size += 2 * getGenreList().size();
+      }
+      if (((bitField0_ & 0x00020000) == 0x00020000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(19, identifier_.getNumber());
+      }
+      if (((bitField0_ & 0x00040000) == 0x00040000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(20, identifierRating_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -4848,6 +4964,10 @@ public final class JukeboxDomain {
         bitField0_ = (bitField0_ & ~0x00010000);
         genre_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x00020000);
+        identifier_ = se.qxx.jukebox.domain.JukeboxDomain.Identifier.Filename;
+        bitField0_ = (bitField0_ & ~0x00040000);
+        identifierRating_ = 0;
+        bitField0_ = (bitField0_ & ~0x00080000);
         return this;
       }
       
@@ -4960,6 +5080,14 @@ public final class JukeboxDomain {
           bitField0_ = (bitField0_ & ~0x00020000);
         }
         result.genre_ = genre_;
+        if (((from_bitField0_ & 0x00040000) == 0x00040000)) {
+          to_bitField0_ |= 0x00020000;
+        }
+        result.identifier_ = identifier_;
+        if (((from_bitField0_ & 0x00080000) == 0x00080000)) {
+          to_bitField0_ |= 0x00040000;
+        }
+        result.identifierRating_ = identifierRating_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -5036,6 +5164,12 @@ public final class JukeboxDomain {
             genre_.addAll(other.genre_);
           }
           onChanged();
+        }
+        if (other.hasIdentifier()) {
+          setIdentifier(other.getIdentifier());
+        }
+        if (other.hasIdentifierRating()) {
+          setIdentifierRating(other.getIdentifierRating());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -5164,6 +5298,22 @@ public final class JukeboxDomain {
             case 146: {
               ensureGenreIsMutable();
               genre_.add(input.readBytes());
+              break;
+            }
+            case 152: {
+              int rawValue = input.readEnum();
+              se.qxx.jukebox.domain.JukeboxDomain.Identifier value = se.qxx.jukebox.domain.JukeboxDomain.Identifier.valueOf(rawValue);
+              if (value == null) {
+                unknownFields.mergeVarintField(19, rawValue);
+              } else {
+                bitField0_ |= 0x00040000;
+                identifier_ = value;
+              }
+              break;
+            }
+            case 160: {
+              bitField0_ |= 0x00080000;
+              identifierRating_ = input.readInt32();
               break;
             }
           }
@@ -5781,6 +5931,51 @@ public final class JukeboxDomain {
         ensureGenreIsMutable();
         genre_.add(value);
         onChanged();
+      }
+      
+      // optional .se.qxx.jukebox.domain.Identifier identifier = 19;
+      private se.qxx.jukebox.domain.JukeboxDomain.Identifier identifier_ = se.qxx.jukebox.domain.JukeboxDomain.Identifier.Filename;
+      public boolean hasIdentifier() {
+        return ((bitField0_ & 0x00040000) == 0x00040000);
+      }
+      public se.qxx.jukebox.domain.JukeboxDomain.Identifier getIdentifier() {
+        return identifier_;
+      }
+      public Builder setIdentifier(se.qxx.jukebox.domain.JukeboxDomain.Identifier value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00040000;
+        identifier_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearIdentifier() {
+        bitField0_ = (bitField0_ & ~0x00040000);
+        identifier_ = se.qxx.jukebox.domain.JukeboxDomain.Identifier.Filename;
+        onChanged();
+        return this;
+      }
+      
+      // optional int32 identifierRating = 20;
+      private int identifierRating_ ;
+      public boolean hasIdentifierRating() {
+        return ((bitField0_ & 0x00080000) == 0x00080000);
+      }
+      public int getIdentifierRating() {
+        return identifierRating_;
+      }
+      public Builder setIdentifierRating(int value) {
+        bitField0_ |= 0x00080000;
+        identifierRating_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearIdentifierRating() {
+        bitField0_ = (bitField0_ & ~0x00080000);
+        identifierRating_ = 0;
+        onChanged();
+        return this;
       }
       
       // @@protoc_insertion_point(builder_scope:se.qxx.jukebox.domain.Movie)
@@ -8692,7 +8887,7 @@ public final class JukeboxDomain {
       "tle\022\017\n\007movieId\030\001 \001(\005\022\022\n\nmovieTitle\030\002 \001(\t" +
       "\022\023\n\013subtitileId\030\003 \001(\005\022\030\n\020subtitleFileNam" +
       "e\030\004 \001(\t\"\033\n\031JukeboxRequestSkipForward\"\035\n\033" +
-      "JukeboxRequestSkipBackwards\"\246\002\n\005Movie\022\n\n" +
+      "JukeboxRequestSkipBackwards\"\367\002\n\005Movie\022\n\n" +
       "\002ID\030\001 \002(\005\022\020\n\010filename\030\002 \002(\t\022\r\n\005title\030\003 \001" +
       "(\t\022\014\n\004year\030\004 \001(\005\022\014\n\004type\030\005 \001(\t\022\016\n\006format" +
       "\030\006 \001(\t\022\r\n\005sound\030\007 \001(\t\022\020\n\010language\030\010 \001(\t\022" +
@@ -8700,23 +8895,26 @@ public final class JukeboxDomain {
       "_id\030\013 \001(\t\022\020\n\010filepath\030\014 \001(\t\022\020\n\010duration\030" +
       "\r \001(\005\022\016\n\006rating\030\016 \001(\t\022\020\n\010director\030\017 \001(\t\022" +
       "\r\n\005story\030\020 \001(\t\022\r\n\005image\030\021 \001(\014\022\r\n\005genre\030\022" +
-      " \003(\t\"I\n\031JukeboxResponseListMovies\022,\n\006mov" +
-      "ies\030\001 \003(\0132\034.se.qxx.jukebox.domain.Movie\"" +
-      ".\n\032JukeboxResponseListPlayers\022\020\n\010hostnam" +
-      "e\030\001 \003(\t\"\023\n\021JukeboxResponseOK\",\n\024JukeboxR" +
-      "esponseError\022\024\n\014errorMessage\030\001 \001(\t\"]\n\017Ju" +
-      "keboxResponse\0227\n\004type\030\001 \002(\0162).se.qxx.juk" +
-      "ebox.domain.JukeboxRequestType\022\021\n\targume",
-      "nts\030\002 \001(\014\"*\n\024JukeboxRequestWakeup\022\022\n\npla" +
-      "yerName\030\001 \002(\t\"4\n\036JukeboxRequestToggleFul" +
-      "lscreen\022\022\n\nplayerName\030\001 \002(\t*\352\001\n\022JukeboxR" +
-      "equestType\022\016\n\nListMovies\020\001\022\031\n\025StartSubti" +
-      "tleIdentity\020\002\022\016\n\nStartMovie\020\003\022\r\n\tStopMov" +
-      "ie\020\004\022\020\n\014MarkSubtitle\020\005\022\017\n\013SkipForward\020\006\022" +
-      "\021\n\rSkipBackwards\020\007\022\017\n\013ListPlayers\020\010\022\t\n\005E" +
-      "rror\020\t\022\006\n\002OK\020\n\022\016\n\nPauseMovie\020\013\022\n\n\006Wakeup" +
-      "\020\014\022\024\n\020ToggleFullscreen\020\rB\027\n\025se.qxx.jukeb" +
-      "ox.domain"
+      " \003(\t\0225\n\nidentifier\030\023 \001(\0162!.se.qxx.jukebo" +
+      "x.domain.Identifier\022\030\n\020identifierRating\030" +
+      "\024 \001(\005\"I\n\031JukeboxResponseListMovies\022,\n\006mo" +
+      "vies\030\001 \003(\0132\034.se.qxx.jukebox.domain.Movie" +
+      "\".\n\032JukeboxResponseListPlayers\022\020\n\010hostna" +
+      "me\030\001 \003(\t\"\023\n\021JukeboxResponseOK\",\n\024Jukebox" +
+      "ResponseError\022\024\n\014errorMessage\030\001 \001(\t\"]\n\017J",
+      "ukeboxResponse\0227\n\004type\030\001 \002(\0162).se.qxx.ju" +
+      "kebox.domain.JukeboxRequestType\022\021\n\targum" +
+      "ents\030\002 \001(\014\"*\n\024JukeboxRequestWakeup\022\022\n\npl" +
+      "ayerName\030\001 \002(\t\"4\n\036JukeboxRequestToggleFu" +
+      "llscreen\022\022\n\nplayerName\030\001 \002(\t*\352\001\n\022Jukebox" +
+      "RequestType\022\016\n\nListMovies\020\001\022\031\n\025StartSubt" +
+      "itleIdentity\020\002\022\016\n\nStartMovie\020\003\022\r\n\tStopMo" +
+      "vie\020\004\022\020\n\014MarkSubtitle\020\005\022\017\n\013SkipForward\020\006" +
+      "\022\021\n\rSkipBackwards\020\007\022\017\n\013ListPlayers\020\010\022\t\n\005" +
+      "Error\020\t\022\006\n\002OK\020\n\022\016\n\nPauseMovie\020\013\022\n\n\006Wakeu",
+      "p\020\014\022\024\n\020ToggleFullscreen\020\r*8\n\nIdentifier\022" +
+      "\014\n\010Filename\020\001\022\023\n\017ParentDirectory\020\002\022\007\n\003NF" +
+      "O\020\003B\027\n\025se.qxx.jukebox.domain"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -8808,7 +9006,7 @@ public final class JukeboxDomain {
           internal_static_se_qxx_jukebox_domain_Movie_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_se_qxx_jukebox_domain_Movie_descriptor,
-              new java.lang.String[] { "ID", "Filename", "Title", "Year", "Type", "Format", "Sound", "Language", "Group", "ImdbUrl", "ImdbId", "Filepath", "Duration", "Rating", "Director", "Story", "Image", "Genre", },
+              new java.lang.String[] { "ID", "Filename", "Title", "Year", "Type", "Format", "Sound", "Language", "Group", "ImdbUrl", "ImdbId", "Filepath", "Duration", "Rating", "Director", "Story", "Image", "Genre", "Identifier", "IdentifierRating", },
               se.qxx.jukebox.domain.JukeboxDomain.Movie.class,
               se.qxx.jukebox.domain.JukeboxDomain.Movie.Builder.class);
           internal_static_se_qxx_jukebox_domain_JukeboxResponseListMovies_descriptor =

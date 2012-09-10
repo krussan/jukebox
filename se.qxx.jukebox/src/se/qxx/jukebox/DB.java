@@ -4,6 +4,7 @@ import java.sql.*;
 import java.util.ArrayList;
 
 import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.domain.JukeboxDomain.Identifier;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.subtitles.SubFile.Rating;
 
@@ -20,7 +21,7 @@ public class DB {
 
 			PreparedStatement prep = conn.prepareStatement(
 			" select ID, filename, filepath, title, year, type, format, sound, language, groupName, imdburl" +
-			"      , duration, rating, director, story" +
+			"      , duration, rating, director, story, identifier, identifierRating" +
 			" from movie where title = ?");
 					
 			prep.setString(1, title);
@@ -47,7 +48,7 @@ public class DB {
 
 			PreparedStatement prep = conn.prepareStatement(
 				" select ID, filename, filepath, title, year, type, format, sound, language, groupName, imdburl" +
-				"      , duration, rating, director, story" +
+				"      , duration, rating, director, story, identifier, identifierRating" +
 				" from movie where ID = ?");
 					
 			prep.setInt(1, id);
@@ -86,11 +87,13 @@ public class DB {
 				"    , rating = ?" +
 				"    , director = ?" +
 				"    , story = ?" +
+				"    , identifier = ?" +
+				"    , identifierRating = ?" +
 				" WHERE ID = ?"
 			);
 			
 			addArguments(prep, m);
-			prep.setInt(15, m.getID());
+			prep.setInt(17, m.getID());
 			
 			prep.execute();
 		}
@@ -109,9 +112,9 @@ public class DB {
 			
 			PreparedStatement prep = conn.prepareStatement(
 					"insert into movie " +
-					"(filename, filepath, title, year, type, format, sound, language, groupName, imdburl, duration, rating, director, story)" +
+					"(filename, filepath, title, year, type, format, sound, language, groupName, imdburl, duration, rating, director, story, identifier, identifierRating)" +
 					"values" +
-					"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+					"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			
 			addArguments(prep, m);
 			prep.execute();
@@ -190,6 +193,8 @@ public class DB {
 		prep.setString(12, m.getRating());
 		prep.setString(13, m.getDirector());
 		prep.setString(14, m.getStory());
+		prep.setString(15, m.getIdentifier().toString());
+		prep.setInt(16, m.getIdentifierRating());
 	}
 	
 	private static int getIdentity(Connection conn) throws SQLException {
@@ -286,7 +291,7 @@ public class DB {
 	
 			PreparedStatement prep = conn.prepareStatement(
 					" select ID, filename, filepath, title, year, type, format, sound, language, groupName, imdburl" +
-					"      , duration, rating, director, story" +
+					"      , duration, rating, director, story, identifier, identifierRating" +
 					" FROM movie" +
 					" WHERE title LIKE '%" + searchString + "%'"
 					);
@@ -316,7 +321,7 @@ public class DB {
 	
 			PreparedStatement prep = conn.prepareStatement(
 					" SELECT M.ID, M.filename, M.filepath, M.title, M.year, M.type, M.format, M.sound, M.language, M.groupName, M.imdburl " +
-					"      , M.duration, M.rating, M.director, M.story" +
+					"      , M.duration, M.rating, M.director, M.story, M.identifier, M.identifierRating" +
 					" FROM movie AS M" +
 					" INNER JOIN subtitleQueue SQ ON SQ._movie_ID = M.ID" +
 					" WHERE retreivedAt IS NULL AND result = 0"
@@ -400,6 +405,8 @@ public class DB {
 				.setRating(rs.getString("rating"))
 				.setDirector(rs.getString("director"))
 				.setStory(rs.getString("story"))
+				.setIdentifier(Identifier.valueOf(rs.getString("identifier")))
+				.setIdentifierRating(rs.getInt("identifierRating"))
 				.build();
 
 		return m;

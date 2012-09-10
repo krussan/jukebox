@@ -9,274 +9,256 @@
 
             <xs:sequence>
 
-                <xs:element name="catalogs" >
+            	<xs:element name="catalogs">
 
-                    <xs:complexType>
+            		<xs:complexType>
 
-                        <xs:sequence>
+            			<xs:sequence>
 
-                            <xs:element
-                                name="catalog"
-                                maxOccurs="unbounded" >
+            				<xs:element name="catalog"
+            					maxOccurs="unbounded">
 
+            					<xs:complexType>
+
+            						<xs:sequence>
+
+            							<xs:element name="extensions">
+
+            								<xs:complexType>
+
+            									<xs:sequence>
+
+            										<xs:element
+            											name="extension" maxOccurs="unbounded">
+
+            											<xs:complexType>
+
+            												<xs:attribute
+            													name="value" type="xs:string" use="required" />
+            											</xs:complexType>
+            										</xs:element>
+            									</xs:sequence>
+            								</xs:complexType>
+            							</xs:element>
+
+            							<xs:element name="vlcpaths">
+            								<xs:complexType>
+            									<xs:sequence>
+            										<xs:element
+            											name="vlcpath" maxOccurs="unbounded"
+            											minOccurs="0">
+            											<xs:complexType>
+            												<xs:sequence>
+            												</xs:sequence>
+            												<xs:attribute
+            													name="player" type="xs:string">
+            												</xs:attribute>
+            												<xs:attribute
+            													name="path" type="xs:string">
+            												</xs:attribute>
+            											</xs:complexType>
+            										</xs:element>
+            									</xs:sequence>
+            								</xs:complexType>
+            							</xs:element>
+            						</xs:sequence>
+
+            						<xs:attribute name="path"
+            							type="xs:string" use="required" />
+
+            						<xs:attribute
+            							name="includeSubdirectories" type="xs:boolean"
+            							use="required" />
+            					</xs:complexType>
+            				</xs:element>
+            			</xs:sequence>
+            		</xs:complexType>
+            	</xs:element>
+
+            	<xs:element name="subFinders">
+
+            		<xs:complexType>
+
+            			<xs:sequence>
+
+            				<xs:element name="subFinder"
+            					maxOccurs="unbounded">
+
+            					<xs:complexType>
+
+            						<xs:sequence>
+
+            							<xs:element
+            								name="subFinderSettings" maxOccurs="1"
+            								minOccurs="1">
+
+            								<xs:complexType>
+
+            									<xs:sequence>
+
+            										<xs:element
+            											name="setting" maxOccurs="unbounded"
+            											minOccurs="0">
+
+            											<xs:complexType>
+
+            												<xs:sequence>
+
+            													<xs:element
+            														name="key" type="xs:string">
+            													</xs:element>
+
+            													<xs:element
+            														name="value" type="xs:string">
+            													</xs:element>
+            												</xs:sequence>
+            											</xs:complexType>
+            										</xs:element>
+            									</xs:sequence>
+            								</xs:complexType>
+            							</xs:element>
+            						</xs:sequence>
+
+            						<xs:attribute name="class"
+            							type="xs:string" use="required" />
+            					</xs:complexType>
+            				</xs:element>
+            			</xs:sequence>
+
+            			<xs:attribute name="subsPath" type="xs:string"
+            				use="required" />
+            		</xs:complexType>
+            	</xs:element>
+
+            	<xs:element name="stringSplitters">
+
+            		<xs:complexType>
+
+            			<xs:sequence>
+
+            				<xs:element name="splitter"
+            					maxOccurs="unbounded">
+
+            					<xs:complexType>
+
+            						<xs:sequence>
+
+            							<xs:element name="regex"
+            								type="xs:string">
+            							</xs:element>
+
+            							<xs:element name="ignore"
+            								type="xs:string">
+            							</xs:element>
+            						</xs:sequence>
+            					</xs:complexType>
+            				</xs:element>
+
+            				<xs:element name="exclude"
+            					type="excludeType">
+            				</xs:element>
+            			</xs:sequence>
+            		</xs:complexType>
+            	</xs:element>
+
+            	<xs:element name="tcpListener">
+
+            		<xs:complexType>
+
+            			<xs:sequence>
+
+            				<xs:element name="port">
+
+            					<xs:complexType>
+
+            						<xs:attribute name="value"
+            							type="xs:unsignedShort" use="required" />
+            					</xs:complexType>
+            				</xs:element>
+            			</xs:sequence>
+            		</xs:complexType>
+            	</xs:element>
+
+            	<xs:element name="vlc">
+
+            		<xs:complexType>
+
+            			<xs:sequence>
+
+            				<xs:element name="server"
+            					maxOccurs="unbounded" minOccurs="1">
+
+            					<xs:complexType>
+
+            						<xs:sequence></xs:sequence>
+
+            						<xs:attribute name="host"
+            							type="xs:string">
+            						</xs:attribute>
+
+            						<xs:attribute name="port"
+            							type="xs:int">
+            						</xs:attribute>
+
+            						<xs:attribute name="subsPath"
+            							type="xs:string">
+            						</xs:attribute>
+
+            						<xs:attribute name="name"
+            							type="xs:string">
+            						</xs:attribute>
+            						<xs:attribute name="macAddress"
+            							type="xs:string">
+            						</xs:attribute>
+            					</xs:complexType>
+            				</xs:element>
+            			</xs:sequence>
+            		</xs:complexType>
+            	</xs:element>
+
+            	<xs:element name="logs">
+
+            		<xs:complexType>
+
+            			<xs:sequence>
+
+            				<xs:element name="log" maxOccurs="unbounded"
+            					minOccurs="0">
+
+            					<xs:complexType>
+
+            						<xs:attribute name="type"
+            							type="xs:string" use="required" />
+
+            						<xs:attribute name="filename"
+            							type="xs:string" use="optional" />
+
+            						<xs:attribute name="level"
+            							type="xs:string" use="required" />
+
+            						<xs:attribute name="logs"
+            							type="xs:string">
+            						</xs:attribute>
+            					</xs:complexType>
+            				</xs:element>
+            			</xs:sequence>
+            		</xs:complexType>
+            	</xs:element>
+            	<xs:element name="builders">
+            		<xs:complexType>
+            			<xs:sequence>
+            				<xs:element name="builder" maxOccurs="unbounded" minOccurs="0">
                                 <xs:complexType>
-
-                                    <xs:sequence>
-
-                                    	<xs:element name="extensions">
-
-                                    		<xs:complexType>
-
-                                    			<xs:sequence>
-
-                                    				<xs:element
-                                    					name="extension"
-                                    					maxOccurs="unbounded">
-
-                                    					<xs:complexType>
-
-                                    						<xs:attribute
-                                    							name="value" type="xs:string"
-                                    							use="required" />
-                                    					</xs:complexType>
-                                    				</xs:element>
-                                    			</xs:sequence>
-                                    		</xs:complexType>
-                                    	</xs:element>
-
-                                    	<xs:element name="vlcpaths">
-                                    		<xs:complexType>
-                                    			<xs:sequence>
-                                    				<xs:element
-                                    					name="vlcpath" maxOccurs="unbounded" minOccurs="0">
-                                    					<xs:complexType>
-                                    						<xs:sequence>
-                                    						</xs:sequence>
-                                    						<xs:attribute
-                                    							name="player"
-                                    							type="xs:string">
-                                    						</xs:attribute>
-                                    						<xs:attribute
-                                    							name="path"
-                                    							type="xs:string">
-                                    						</xs:attribute>
-                                    					</xs:complexType>
-                                    				</xs:element>
-                                    			</xs:sequence>
-                                    		</xs:complexType>
-                                    	</xs:element>
-                                    </xs:sequence>
-
-                                    <xs:attribute
-                                        name="path"
-                                        type="xs:string"
-                                        use="required" />
-
-                                    <xs:attribute
-                                        name="includeSubdirectories"
-                                        type="xs:boolean"
-                                        use="required" />
-                                </xs:complexType>
-                            </xs:element>
-                        </xs:sequence>
-                    </xs:complexType>
-                </xs:element>
-
-                <xs:element name="subFinders" >
-
-                    <xs:complexType>
-
-                        <xs:sequence>
-
-                            <xs:element
-                                name="subFinder"
-                                maxOccurs="unbounded" >
-
-                                <xs:complexType>
-
-                                    <xs:sequence>
-
-                                        <xs:element
-                                            name="subFinderSettings"
-                                            maxOccurs="1"
-                                            minOccurs="1" >
-
-                                            <xs:complexType>
-
-                                                <xs:sequence>
-
-                                                    <xs:element
-                                                        name="setting"
-                                                        maxOccurs="unbounded"
-                                                        minOccurs="0" >
-
-                                                        <xs:complexType>
-
-                                                            <xs:sequence>
-
-                                                                <xs:element
-                                                                    name="key"
-                                                                    type="xs:string" >
-                                                                </xs:element>
-
-                                                                <xs:element
-                                                                    name="value"
-                                                                    type="xs:string" >
-                                                                </xs:element>
-                                                            </xs:sequence>
-                                                        </xs:complexType>
-                                                    </xs:element>
-                                                </xs:sequence>
-                                            </xs:complexType>
-                                        </xs:element>
-                                    </xs:sequence>
-
-                                    <xs:attribute
-                                        name="class"
-                                        type="xs:string"
-                                        use="required" />
-                                </xs:complexType>
-                            </xs:element>
-                        </xs:sequence>
-
-                        <xs:attribute
-                            name="subsPath"
-                            type="xs:string"
-                            use="required" />
-                    </xs:complexType>
-                </xs:element>
-
-                <xs:element name="stringSplitters" >
-
-                    <xs:complexType>
-
-                        <xs:sequence>
-
-                            <xs:element
-                                name="splitter"
-                                maxOccurs="unbounded" >
-
-                                <xs:complexType>
-
-                                    <xs:sequence>
-
-                                        <xs:element
-                                            name="regex"
-                                            type="xs:string" >
-                                        </xs:element>
-
-                                        <xs:element
-                                            name="ignore"
-                                            type="xs:string" >
-                                        </xs:element>
-                                    </xs:sequence>
-                                </xs:complexType>
-                            </xs:element>
-
-                            <xs:element
-                                name="exclude"
-                                type="excludeType" >
-                            </xs:element>
-                        </xs:sequence>
-                    </xs:complexType>
-                </xs:element>
-
-                <xs:element name="tcpListener" >
-
-                    <xs:complexType>
-
-                        <xs:sequence>
-
-                            <xs:element name="port" >
-
-                                <xs:complexType>
-
-                                    <xs:attribute
-                                        name="value"
-                                        type="xs:unsignedShort"
-                                        use="required" />
-                                </xs:complexType>
-                            </xs:element>
-                        </xs:sequence>
-                    </xs:complexType>
-                </xs:element>
-
-                <xs:element name="vlc" >
-
-                    <xs:complexType>
-
-                        <xs:sequence>
-
-                            <xs:element
-                                name="server"
-                                maxOccurs="unbounded"
-                                minOccurs="1" >
-
-                                <xs:complexType>
-
-                                	<xs:sequence></xs:sequence>
-
-                                	<xs:attribute name="host"
+                                	<xs:attribute name="class"
                                 		type="xs:string">
                                 	</xs:attribute>
-
-                                	<xs:attribute name="port"
-                                		type="xs:int">
-                                	</xs:attribute>
-
-                                	<xs:attribute name="subsPath"
-                                		type="xs:string">
-                                	</xs:attribute>
-
-                                	<xs:attribute name="name"
-                                		type="xs:string">
-                                	</xs:attribute>
-                                	<xs:attribute name="macAddress"
-                                		type="xs:string">
+                                	<xs:attribute name="enabled"
+                                		type="xs:boolean">
                                 	</xs:attribute>
                                 </xs:complexType>
-                            </xs:element>
-                        </xs:sequence>
-                    </xs:complexType>
-                </xs:element>
-
-                <xs:element name="logs" >
-
-                    <xs:complexType>
-
-                        <xs:sequence>
-
-                            <xs:element
-                                name="log"
-                                maxOccurs="unbounded"
-                                minOccurs="0" >
-
-                                <xs:complexType>
-
-                                    <xs:attribute
-                                        name="type"
-                                        type="xs:string"
-                                        use="required" />
-
-                                    <xs:attribute
-                                        name="filename"
-                                        type="xs:string"
-                                        use="optional" />
-
-                                    <xs:attribute
-                                        name="level"
-                                        type="xs:string"
-                                        use="required" />
-
-                                    <xs:attribute
-                                        name="logs"
-                                        type="xs:string" >
-                                    </xs:attribute>
-                                </xs:complexType>
-                            </xs:element>
-                        </xs:sequence>
-                    </xs:complexType>
-                </xs:element>
+            				</xs:element>
+            			</xs:sequence>
+            		</xs:complexType></xs:element>
             </xs:sequence>
         </xs:complexType>
     </xs:element>

@@ -5,6 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.builders.MovieBuilder;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 
 public class FileCreatedHandler implements INotifyClient {
@@ -29,12 +30,14 @@ public class FileCreatedHandler implements INotifyClient {
 				Log.Info(String.format("Ignoring %s as this appears to be a TV episode", filename), LogType.FIND);
 			}
 			else {
-				Movie m = Util.extractMovie(path, filename);
+				Movie m = MovieBuilder.identifyMovie(path, Util.getFilenameWithoutExtension(filename));
 				
 				// TODO: Get info about movie from NFO if available
 				// TODO: Get info from parent directory if different from base directory...??
 				
 				if (m != null) {
+					Log.Info(String.format("Movie identified by %s as :: %s", m.getIdentifier().toString(), m.getTitle()), Log.LogType.FIND);
+
 					// Check if movie exists in db
 					Movie dbMovie = DB.getMovie(m.getTitle());
 					if (dbMovie != null) {
@@ -47,7 +50,7 @@ public class FileCreatedHandler implements INotifyClient {
 					}
 					else {
 						// If not get information and subtitles
-						
+						// If title is the same as the filename (except ignore pattern) then don't identify on IMDB.
 						if (Arguments.get().isImdbIdentifierEnabled())
 							m = getImdbInformation(m);
 						
@@ -67,7 +70,6 @@ public class FileCreatedHandler implements INotifyClient {
 		//find imdb link
 		try {
 			m = IMDBFinder.Search(m);
-			Log.Info(String.format("Movie identified as :: %s", m.getTitle()), Log.LogType.FIND);
 		}
 		catch (IOException e) {
 			Log.Error("Error occured when finding IMDB link", Log.LogType.FIND, e);

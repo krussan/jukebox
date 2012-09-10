@@ -19,17 +19,19 @@ import java.net.URLEncoder;
 
 public class WebRetriever {
 	
-	public static String getWebResult(String urlString) throws IOException {
+	public static WebResult getWebResult(String urlString) throws IOException {
 		URL url = new URL(urlString);
 		HttpURLConnection httpcon = (HttpURLConnection) url.openConnection(); 
 		httpcon.addRequestProperty("User-Agent", "Mozilla/4.76"); 
 		
 		String result = Util.readMessageFromStream(httpcon.getInputStream());
         
+		WebResult res = new WebResult(httpcon.getURL(), result, url.toString() == httpcon.getURL().toString());
+		
 		httpcon.disconnect();
 		httpcon = null;
 				
-		return result;	
+		return res;
 	}
 	
 	public static File getWebFile(String urlString, String savePath) throws IOException {
