@@ -13,4 +13,7 @@
     <string name="btnWakeup">Wakeup</string>
     <string name="btnFullscreen">Toggle fullscreen</string>
     <string name="btnViewInfo">View info</string>
+    <string name="lblTitle">Title</string>
+    <string name="lblYear">Year</string>
+    <string name="lblStory">Story</string>
 </resources>
