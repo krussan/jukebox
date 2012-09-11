@@ -70,6 +70,8 @@ public class FileCreatedHandler implements INotifyClient {
 		//find imdb link
 		try {
 			m = IMDBFinder.Search(m);
+			if (m.getImdbUrl() != null && m.getImdbUrl() != "")
+				Log.Info(String.format("IMDB link found for :: %s", m.getTitle()), LogType.FIND);
 		}
 		catch (IOException e) {
 			Log.Error("Error occured when finding IMDB link", Log.LogType.FIND, e);

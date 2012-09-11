@@ -9,9 +9,41 @@ public class Jukebox {
 	 */
 	public static void main(String[] args) {
 		Arguments.initialize(args);
-		startMainThread();		
+		
+		if (Arguments.get().isHelpRequested()) {
+			displayHelp();
+			return;
+		}
+		
+		if (Arguments.get().isPurgeMode()) {
+			purge();
+			return;
+		}
+					
+		startMainThread();
+			
 	}
 	
+	private static void displayHelp() {
+		System.out.println("");
+		System.out.println("Jukebox starter - run.sh");
+		System.out.println("");
+		System.out.println("   run.sh [-ds] [-di] [-dt] [--purge] [--help]");
+		System.out.println("");
+		System.out.println("\t-ds\tDisable subtitle downloader");
+		System.out.println("\t-di\tDisable imdb identifier");
+		System.out.println("\t-ds\tDisable tcp listener");
+		System.out.println("\t--purge\tPurges all content from database and exit");
+		System.out.println("\t--help\tDisplays this help");
+		System.out.println("");
+	}
+	
+	private static void purge() {
+		System.out.println("Purging database ....");
+		DB.purgeDatabase();
+		System.out.println("Done !");
+	}
+
 	private static void startMainThread()  {
 		try {
 			

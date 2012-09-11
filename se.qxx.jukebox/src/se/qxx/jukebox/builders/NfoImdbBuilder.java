@@ -14,7 +14,7 @@ public class NfoImdbBuilder extends MovieBuilder {
 	@Override
 	public Movie extractMovie(String filepath, String filename) {
 		Movie m = null;
-		try {
+		/*try {
 			File f = new File(String.format("%s/%s.nfo", filepath, filename));
 			if (f.exists()) {
 				BufferedReader bf = new BufferedReader(new FileReader(f));
@@ -25,7 +25,7 @@ public class NfoImdbBuilder extends MovieBuilder {
 			}
 		} catch (Exception e) {
 		}
-		
-		return m;
+		*/
+		return m; 
 	}
 }

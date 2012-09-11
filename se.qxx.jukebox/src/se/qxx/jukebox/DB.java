@@ -3,6 +3,8 @@ package se.qxx.jukebox;
 import java.sql.*;
 import java.util.ArrayList;
 
+import com.google.protobuf.ByteString;
+
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Identifier;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
@@ -28,7 +30,7 @@ public class DB {
 				
 			ResultSet rs = prep.executeQuery();
 			if (rs.next())
-				return extractMovie(rs);
+				return extractPosterImage(extractMovie(rs), conn);
 			else
 				return null;
 
@@ -39,6 +41,51 @@ public class DB {
 		}finally {
 			DB.disconnect(conn);
 		}
+	}
+	
+	private static Movie extractPosterImage(Movie m, Connection conn) throws SQLException {
+		byte[] imageData = getImageData(m.getID(), ImageType.Poster, conn);
+		return Movie.newBuilder(m).setImage(ByteString.copyFrom(imageData)).build();
+	}
+
+	private static void addImage(int movieID, ImageType imageType, byte[] data, Connection conn) throws SQLException {
+		if (data.length > 0) {
+			PreparedStatement prep = conn.prepareStatement(
+				" INSERT INTO BlobData (data) VALUES (?)");
+			
+			prep.setBytes(1, data);
+			prep.execute();
+			
+			int id = getIdentity(conn);
+			
+			prep = conn.prepareStatement(
+				" INSERT INTO MovieImage (_movie_id, _blob_id, imageType) VALUES (?, ?, ?)");
+			
+			prep.setInt(1, movieID);
+			prep.setInt(2, id);
+			prep.setString(3, imageType.toString());
+					
+			prep.execute();
+		}
+	}
+	private static byte[] getImageData(int movieID, ImageType imageType, Connection conn) throws SQLException {
+		byte[] data = null;
+		PreparedStatement prep = conn.prepareStatement(
+		   " SELECT B.data" +
+		   " FROM MovieImage MI" +
+		   " INNER JOIN BlobData B ON MI._blob_id = B.id " +
+		   " WHERE MI._movie_id = ?");
+		
+		prep.setInt(1, movieID);
+		
+		ResultSet rs = prep.executeQuery();
+		
+		if (rs.next())
+		{
+			data = rs.getBytes("data");
+		}
+		
+		return data;
 	}
 	
 	public synchronized static Movie getMovie(int id) {
@@ -55,7 +102,7 @@ public class DB {
 				
 			ResultSet rs = prep.executeQuery();
 			if (rs.next())
-				return extractMovie(rs);
+				return extractPosterImage(extractMovie(rs), conn);
 			else
 				return null;
 
@@ -91,7 +138,8 @@ public class DB {
 				"    , identifierRating = ?" +
 				" WHERE ID = ?"
 			);
-			
+
+			//TODO: Should we update image as well??
 			addArguments(prep, m);
 			prep.setInt(17, m.getID());
 			
@@ -133,6 +181,8 @@ public class DB {
 				
 				prep.execute();
 			}
+			
+			addImage(i, ImageType.Poster, m.getImage().toByteArray(), conn);
 			
 			Movie mm = Movie.newBuilder().mergeFrom(m).setID(i).build();
 			
@@ -444,5 +494,36 @@ public class DB {
 				conn.close();
 		} catch (SQLException e) {
 		}
+	}
+	
+	public static boolean purgeDatabase() {
+		Connection conn = null;
+		String[] statements = new String[] {
+			"DELETE FROM BlobData",
+			"DELETE FROM MovieImage",
+			"DELETE FROM subtitles",
+			"DELETE FROM subtitleQueue",
+			"DELETE FROM Genre",
+			"DELETE FROM MovieGenre",
+			"DELETE FROM Movie"
+		};
+		
+		try {
+			conn = DB.initialize();
+		
+			for (String stmt : statements) {
+				PreparedStatement prep = conn.prepareStatement(stmt);
+				prep.execute();				
+			}
+			
+			return true;
+		}
+		catch (Exception e) {
+			Log.Error("Purge failed", LogType.UPGRADE, e);
+			return false;
+		}
+		finally {
+			DB.disconnect(conn);
+		}		
 	}
 }

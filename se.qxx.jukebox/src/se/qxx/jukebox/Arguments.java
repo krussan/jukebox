@@ -8,6 +8,9 @@ public class Arguments {
 	private boolean subtitleDownloaderEnabled = true;
 	private boolean tcpListenerEnabled = true;
 	private boolean imdbIdentitifierEnabled = true;
+	private boolean purgeMode = false;
+	private boolean helpRequested = false;
+	
 	private static Arguments _instance;
 	
 	public boolean isSubtitleDownloaderEnabled() {
@@ -51,6 +54,12 @@ public class Arguments {
 		
 		if (arguments.contains("-di"))
 			_instance.setImdbIdentifierEnabled(false);
+		
+		if (arguments.contains("--purge"))
+			_instance.setPurgeMode(true);
+		
+		if (arguments.contains("--help") || arguments.contains("-?"))
+			_instance.setHelpRequested(true);
 	}
 	
 	public static Arguments get() {
@@ -58,5 +67,21 @@ public class Arguments {
 			_instance = new Arguments();
 		
 		return _instance;
+	}
+
+	public boolean isPurgeMode() {
+		return purgeMode;
+	}
+
+	public void setPurgeMode(boolean purgeMode) {
+		this.purgeMode = purgeMode;
+	}
+
+	public boolean isHelpRequested() {
+		return helpRequested;
+	}
+
+	public void setHelpRequested(boolean helpRequested) {
+		this.helpRequested = helpRequested;
 	}
 }

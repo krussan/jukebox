@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 import com.google.code.regexp.NamedMatcher;
 import com.google.code.regexp.NamedPattern;
+import com.google.protobuf.ByteString;
 
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
@@ -74,6 +75,7 @@ public class IMDBFinder {
 						.setStory(rec.getStory())
 						.setRating(rec.getRating())
 						.addAllGenre(rec.getAllGenres())
+						.setImage(ByteString.copyFrom(rec.getImage()))
 						.build();
 			}
 			else

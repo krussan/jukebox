@@ -44,7 +44,7 @@ public class IMDBRecord {
 		Pattern p;
 		Matcher m;
 
-		/*
+		
 		// Poster
 		try {
 			p = Pattern.compile("<img\\s*src=\"([^\"]*)\"[^>]*?alt=\"[^\"]*Poster", Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
@@ -54,11 +54,13 @@ public class IMDBRecord {
 				String posterUrl = m.group(1);
 				File f = WebRetriever.getWebFile(posterUrl, Util.getTempDirectory());
 				this.setImage(readFile(f));
+				
+				f.delete();
 			}
 		}
 		catch (Exception e) {
 		}
-		*/
+		
 		
 		// Story
 		try {
