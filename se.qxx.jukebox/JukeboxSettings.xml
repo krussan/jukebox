@@ -7,6 +7,8 @@
       </vlcpaths>
       <extensions>
         <extension value="avi"/>
+        <extension value="mkv"/>
+        <extension value="mp4"/>
       </extensions>
     </catalog>
   </catalogs>
