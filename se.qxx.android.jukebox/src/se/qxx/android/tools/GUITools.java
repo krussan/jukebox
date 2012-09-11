@@ -1,6 +1,7 @@
 package se.qxx.android.tools;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -36,12 +37,12 @@ public class GUITools {
     	return BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
 	}
 	
-	public static Bitmap scaleImage(int maxWidthOrHeight, Bitmap bitmap, Activity activity)
+	public static Bitmap scaleImage(int maxWidthOrHeight, Bitmap bitmap, Context context)
 	{
 	    // Get current dimensions AND the desired bounding box
 	    int width = bitmap.getWidth();
 	    int height = bitmap.getHeight();
-	    int bounding = dpToPx(maxWidthOrHeight, activity);
+	    int bounding = dpToPx(maxWidthOrHeight, context);
 
 	    // Determine how much to scale: the dimension requiring less scaling is
 	    // closer to the its side. This way the image always stays inside your
@@ -62,9 +63,9 @@ public class GUITools {
 	    return scaledBitmap;
 	}
 
-	public static int dpToPx(int dp, Activity activity)
+	public static int dpToPx(int dp, Context c)
 	{
-	    float density = activity.getApplicationContext().getResources().getDisplayMetrics().density;
+	    float density = c.getApplicationContext().getResources().getDisplayMetrics().density;
 	    return Math.round((float)dp * density);
 	}
 	

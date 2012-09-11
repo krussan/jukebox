@@ -69,8 +69,8 @@ public class JukeboxActivity extends Activity implements ModelUpdatedEventListen
 	                if (iv != null) {
 	            	    if (!m.getImage().isEmpty()) {
 	            	    	Bitmap image = GUITools.getBitmapFromByteArray(m.getImage().toByteArray());
-	            	    	GUITools.scaleImage(40, image, activity)
-	            	    	GUITools.setImageOnImageView(iv, m.getImage().toByteArray());
+	            	    	Bitmap scaledImage = GUITools.scaleImage(80, image, v.getContext());
+	            	    	iv.setImageBitmap(scaledImage);
 	            	    }
 	            	    else
 	            	    	iv.setImageResource(R.drawable.icon);
