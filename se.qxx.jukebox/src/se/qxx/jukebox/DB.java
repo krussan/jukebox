@@ -2,12 +2,14 @@ package se.qxx.jukebox;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.google.protobuf.ByteString;
 
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Identifier;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.domain.JukeboxDomain.Movie.Builder;
 import se.qxx.jukebox.subtitles.SubFile.Rating;
 
 public class DB {
@@ -30,7 +32,7 @@ public class DB {
 				
 			ResultSet rs = prep.executeQuery();
 			if (rs.next())
-				return extractPosterImage(extractMovie(rs), conn);
+				return extractMovie(rs, conn);
 			else
 				return null;
 
@@ -43,13 +45,13 @@ public class DB {
 		}
 	}
 	
-	private static Movie extractPosterImage(Movie m, Connection conn) throws SQLException {
-		byte[] imageData = getImageData(m.getID(), ImageType.Poster, conn);
-		if (imageData != null)
-			return Movie.newBuilder(m).setImage(ByteString.copyFrom(imageData)).build();
-		else
-			return m;
-	}
+//	private static Movie extractPosterImage(m, Connection conn) throws SQLException {
+//		byte[] imageData = getImageData(m.getID(), ImageType.Poster, conn);
+//		if (imageData != null)
+//			return Movie.newBuilder(m).setImage(ByteString.copyFrom(imageData)).build();
+//		else
+//			return m;
+//	}
 
 	private static void addImage(int movieID, ImageType imageType, byte[] data, Connection conn) throws SQLException {
 		if (data.length > 0) {
@@ -105,7 +107,7 @@ public class DB {
 				
 			ResultSet rs = prep.executeQuery();
 			if (rs.next())
-				return extractPosterImage(extractMovie(rs), conn);
+				return extractMovie(rs, conn);
 			else
 				return null;
 
@@ -228,7 +230,24 @@ public class DB {
 			return rs.getInt("ID");
 		else
 			return -1;
+	}
+	
+	private static List<String> getGenres(int movieID, Connection conn) throws SQLException {
+		List<String> list = new ArrayList<String>();
 		
+		PreparedStatement prep = conn.prepareStatement(
+			" SELECT G.genreName FROM MovieGenre MG" +
+			" INNER JOIN Genre G ON MG._genre_ID = G.ID" +
+			" WHERE MG._movie_ID = ?");
+		
+		prep.setInt(1, movieID);
+		
+		ResultSet rs = prep.executeQuery();
+		
+		while (rs.next()) 
+			list.add(rs.getString("genreName"));
+		
+		return list;
 	}
 
 	private static void addArguments(PreparedStatement prep, Movie m) throws SQLException {
@@ -353,7 +372,7 @@ public class DB {
 			ResultSet rs = prep.executeQuery();
 			ArrayList<Movie> result = new ArrayList<Movie>();
 			while (rs.next()) {
-				result.add(extractPosterImage(extractMovie(rs), conn));
+				result.add(extractMovie(rs, conn));
 			}
 					
 			return result;
@@ -384,7 +403,7 @@ public class DB {
 			ResultSet rs = prep.executeQuery();
 			ArrayList<Movie> result = new ArrayList<Movie>();
 			while (rs.next()) {
-				result.add(extractMovie(rs));
+				result.add(extractMovie(rs, conn));
 			}
 					
 			return result;
@@ -440,9 +459,14 @@ public class DB {
 		}
 	}
 	
-	private static Movie extractMovie(ResultSet rs) throws SQLException {
-		Movie m = Movie.newBuilder()
-				.setID(rs.getInt("ID"))
+	private static Movie extractMovie(ResultSet rs, Connection conn) throws SQLException {
+		int id = rs.getInt("ID");
+		byte[] imageData = getImageData(id, ImageType.Poster, conn);
+				
+		List<String> genres = getGenres(id, conn);
+		
+		Builder builder = Movie.newBuilder()
+				.setID(id)
 				.setFilename(rs.getString("filename"))
 				.setFilepath(rs.getString("filepath"))
 				.setTitle(rs.getString("title"))
@@ -453,16 +477,18 @@ public class DB {
 				.setLanguage(rs.getString("language"))
 				.setGroup(rs.getString("groupName"))
 				.setImdbUrl(rs.getString("imdburl"))
-				//  M.duration, M.rating, M.director, M.story"
 				.setDuration(rs.getInt("duration"))
 				.setRating(rs.getString("rating"))
 				.setDirector(rs.getString("director"))
 				.setStory(rs.getString("story"))
 				.setIdentifier(Identifier.valueOf(rs.getString("identifier")))
 				.setIdentifierRating(rs.getInt("identifierRating"))
-				.build();
-
-		return m;
+				.addAllGenre(genres);
+		
+		if (imageData != null)
+			builder = builder.setImage(ByteString.copyFrom(imageData));
+		
+		return builder.build();
 	}
 	
 	public static boolean executeUpgradeStatement(String sql) {

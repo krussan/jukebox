@@ -16,4 +16,8 @@
     <string name="lblTitle">Title</string>
     <string name="lblYear">Year</string>
     <string name="lblStory">Story</string>
+    <string name="lblGenre">Genre</string>
+    <string name="lblDirector">Director</string>
+    <string name="lblDuration">Duration</string>
+    <string name="lblRating">Rating</string>
 </resources>

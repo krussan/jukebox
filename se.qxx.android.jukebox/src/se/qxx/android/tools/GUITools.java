@@ -27,6 +27,10 @@ public class GUITools {
 	public static void setImageOnImageView(int id, byte[] imageData, Activity activity) {
 		setImageOnImageView(id, getBitmapFromByteArray(imageData), activity);
 	}
+
+	public static void setImageOnImageView(ImageView imageView, byte[] imageData) {
+		imageView.setImageBitmap(getBitmapFromByteArray(imageData));
+	}
 	
 	public static Bitmap getBitmapFromByteArray(byte[] imageData) {
     	return BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
@@ -73,7 +77,7 @@ public class GUITools {
 	        	 btnToFlash.setBackgroundResource(0);
 	         } 
 	    }, timeout);
-	}
+	} 
 	
 	public static void flashBtn (int btnToFlashID, int replaceImageID, Activity activity){
 		flashBtn(btnToFlashID, replaceImageID, 50, activity);

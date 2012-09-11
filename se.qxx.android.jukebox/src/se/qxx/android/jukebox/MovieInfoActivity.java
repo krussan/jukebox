@@ -1,5 +1,7 @@
 package se.qxx.android.jukebox;
 
+import org.apache.commons.lang3.StringUtils;
+
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
@@ -29,9 +31,18 @@ public class MovieInfoActivity extends Activity {
 	    if (!m.getImage().isEmpty()) 
 	    	GUITools.setImageOnImageView(R.id.imageView1, m.getImage().toByteArray(), this);
 	    	    
+	    int duration = m.getDuration();
+	    int hours = duration / 60;
+	    int minutes = duration % 60;
+	    
 	    GUITools.setTextOnTextview(R.id.textViewTitle, Html.fromHtml(m.getTitle()).toString(), this);
 	    GUITools.setTextOnTextview(R.id.textViewYear, Integer.toString(m.getYear()), this);
 	    GUITools.setTextOnTextview(R.id.textViewStory, Html.fromHtml(m.getStory()).toString(), this);
+	    GUITools.setTextOnTextview(R.id.textViewGenre, "Genre :: " + StringUtils.join(m.getGenreList(), " / "), this);
+	    GUITools.setTextOnTextview(R.id.textViewDirector, "Director :: " + Html.fromHtml(m.getDirector()).toString(), this);
+	    GUITools.setTextOnTextview(R.id.textViewDuration, String.format("Duration :: %s h %s m", hours, minutes) , this);
+	    GUITools.setTextOnTextview(R.id.textViewRating, String.format("Rating :: %s / 10", m.getRating()) , this);
+	    
 	}
 	
 	private void sendCommand(String message, JukeboxRequestType type) {

@@ -37,25 +37,30 @@ public final class R {
         public static final int stop32=0x7f020014;
     }
     public static final class id {
-        public static final int bottomtext=0x7f080011;
-        public static final int btnFullscreen=0x7f08000f;
-        public static final int btnPause=0x7f08000c;
-        public static final int btnPlay=0x7f08000b;
-        public static final int btnSelectPlayer=0x7f080009;
-        public static final int btnStop=0x7f08000d;
-        public static final int btnViewInfo=0x7f080008;
-        public static final int btnWakeup=0x7f08000e;
+        public static final int bottomtext=0x7f080016;
+        public static final int btnFullscreen=0x7f080010;
+        public static final int btnPause=0x7f08000d;
+        public static final int btnPlay=0x7f08000c;
+        public static final int btnSelectPlayer=0x7f08000a;
+        public static final int btnStop=0x7f08000e;
+        public static final int btnViewInfo=0x7f080009;
+        public static final int btnWakeup=0x7f08000f;
         public static final int button2=0x7f080000;
-        public static final int imageView1=0x7f080002;
-        public static final int linearLayout1=0x7f080006;
-        public static final int linearLayoutButtons1=0x7f08000a;
-        public static final int linearLayoutButtons2=0x7f080007;
+        public static final int imageView1=0x7f080003;
+        public static final int linearLayout1=0x7f080007;
+        public static final int linearLayout2=0x7f080002;
+        public static final int linearLayoutButtons1=0x7f08000b;
+        public static final int linearLayoutButtons2=0x7f080008;
         public static final int listView1=0x7f080001;
-        public static final int preferences=0x7f080012;
-        public static final int textViewStory=0x7f080005;
-        public static final int textViewTitle=0x7f080003;
-        public static final int textViewYear=0x7f080004;
-        public static final int toptext=0x7f080010;
+        public static final int preferences=0x7f080017;
+        public static final int textViewDirector=0x7f080012;
+        public static final int textViewDuration=0x7f080013;
+        public static final int textViewGenre=0x7f080011;
+        public static final int textViewRating=0x7f080014;
+        public static final int textViewStory=0x7f080006;
+        public static final int textViewTitle=0x7f080004;
+        public static final int textViewYear=0x7f080005;
+        public static final int toptext=0x7f080015;
     }
     public static final class layout {
         public static final int main=0x7f030000;
@@ -76,6 +81,10 @@ public final class R {
         public static final int btnWakeup=0x7f050009;
         public static final int defaultServerIpAddress=0x7f050004;
         public static final int hello=0x7f050000;
+        public static final int lblDirector=0x7f050010;
+        public static final int lblDuration=0x7f050011;
+        public static final int lblGenre=0x7f05000f;
+        public static final int lblRating=0x7f050012;
         public static final int lblStory=0x7f05000e;
         public static final int lblTitle=0x7f05000c;
         public static final int lblYear=0x7f05000d;

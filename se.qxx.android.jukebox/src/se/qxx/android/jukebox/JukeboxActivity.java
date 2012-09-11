@@ -4,6 +4,7 @@ import java.util.EventObject;
 import java.util.List;
 
 import se.qxx.android.jukebox.Model.ModelUpdatedEventListener;
+import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
@@ -12,6 +13,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,6 +24,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -57,11 +60,21 @@ public class JukeboxActivity extends Activity implements ModelUpdatedEventListen
 	            if (m != null) {
 	            	TextView tt = (TextView) v.findViewById(R.id.toptext);
 	            	TextView bt = (TextView) v.findViewById(R.id.bottomtext);
+	            	ImageView iv = (ImageView) v.findViewById(R.id.imageView1);
 	            	
 	            	if (tt != null) {
 	                    tt.setText(m.getTitle());                            }
 	            	if(bt != null){
 	                    bt.setText(String.valueOf(m.getYear()));
+	                if (iv != null) {
+	            	    if (!m.getImage().isEmpty()) {
+	            	    	Bitmap image = GUITools.getBitmapFromByteArray(m.getImage().toByteArray());
+	            	    	GUITools.scaleImage(40, image, activity)
+	            	    	GUITools.setImageOnImageView(iv, m.getImage().toByteArray());
+	            	    }
+	            	    else
+	            	    	iv.setImageResource(R.drawable.icon);
+	                }
 	              }
 	            }
 			}

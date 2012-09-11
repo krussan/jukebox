@@ -15,7 +15,7 @@ public class Upgrade_0_2 implements IIncrimentalUpgrade {
 	  , "ALTER TABLE Movie ADD rating varchar(5)"
 	  , "ALTER TABLE Movie ADD director varchar(100)"
 	  , "ALTER TABLE Movie ADD story varchar(1024)"
-	  , "CREATE TABLE Genre (ID int IDENTITY(1,1) PRIMARY KEY, genreName varchar(50) NOT NULL)"
+	  , "CREATE TABLE Genre (ID INTEGER PRIMARY KEY, genreName varchar(50) NOT NULL)"
 	  , "CREATE TABLE MovieGenre (_movie_ID int NOT NULL REFERENCES Movie(ID), _genre_ID int NOT NULL REFERENCES Genre(ID) )"
 	};
 	
