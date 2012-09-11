@@ -117,6 +117,7 @@ public class JukeboxActivity extends Activity implements ModelUpdatedEventListen
     public void onConnectClickHandler(View view) throws InterruptedException {
     	Logger.Log().i("onConnectClicked");
 
+    	Model.get().clearMovies();
 		connect();
    		
     }

@@ -45,7 +45,10 @@ public class DB {
 	
 	private static Movie extractPosterImage(Movie m, Connection conn) throws SQLException {
 		byte[] imageData = getImageData(m.getID(), ImageType.Poster, conn);
-		return Movie.newBuilder(m).setImage(ByteString.copyFrom(imageData)).build();
+		if (imageData != null)
+			return Movie.newBuilder(m).setImage(ByteString.copyFrom(imageData)).build();
+		else
+			return m;
 	}
 
 	private static void addImage(int movieID, ImageType imageType, byte[] data, Connection conn) throws SQLException {
@@ -350,7 +353,7 @@ public class DB {
 			ResultSet rs = prep.executeQuery();
 			ArrayList<Movie> result = new ArrayList<Movie>();
 			while (rs.next()) {
-				result.add(extractMovie(rs));
+				result.add(extractPosterImage(extractMovie(rs), conn));
 			}
 					
 			return result;
