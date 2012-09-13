@@ -15,6 +15,7 @@ import com.google.protobuf.ByteString;
 
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.domain.JukeboxDomain.Movie.Builder;
 
 public class IMDBFinder {
 	private static long nextSearch = 0;
@@ -47,9 +48,11 @@ public class IMDBFinder {
 			// title of the movie or NOT "IMDB search"
 			IMDBRecord rec;
 			if (webResult.isRedirected()) {
+				Log.Info(String.format("IMDB :: %s is redirected to movie", m.getTitle()), LogType.FIND);
 				rec = IMDBRecord.getFromWebResult(webResult);
 			}
 			else {
+				Log.Info(String.format("IMDB :: %s is NOT redirected to movie", m.getTitle()), LogType.FIND);				
 				rec = findUrlByPopularTitles(m, webResult.getResult());
 				if (rec == null)
 					rec = findUrlByExactMatches(m, webResult.getResult());
@@ -68,15 +71,21 @@ public class IMDBFinder {
 			nextSearch = Util.getCurrentTimestamp() + n;
 			
 			if (rec != null) {
-				return Movie.newBuilder().mergeFrom(m)
+				Builder b = Movie.newBuilder().mergeFrom(m)
 						.setImdbUrl(rec.getUrl())
 						.setDirector(rec.getDirector())
 						.setDuration(rec.getDurationMinutes())
 						.setStory(rec.getStory())
 						.setRating(rec.getRating())
-						.addAllGenre(rec.getAllGenres())
-						.setImage(ByteString.copyFrom(rec.getImage()))
-						.build();
+						.addAllGenre(rec.getAllGenres());
+				
+				if (rec.getImage() != null)
+					b.setImage(ByteString.copyFrom(rec.getImage()));
+				
+				if (m.getYear() == 0)
+					b.setYear(rec.getYear());
+				
+				return b.build();
 			}
 			else
 				return m;

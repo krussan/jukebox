@@ -33,7 +33,6 @@ public class FileCreatedHandler implements INotifyClient {
 				Movie m = MovieBuilder.identifyMovie(path, Util.getFilenameWithoutExtension(filename));
 				
 				// TODO: Get info about movie from NFO if available
-				// TODO: Get info from parent directory if different from base directory...??
 				
 				if (m != null) {
 					Log.Info(String.format("Movie identified by %s as :: %s", m.getIdentifier().toString(), m.getTitle()), Log.LogType.FIND);

@@ -17,6 +17,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import se.qxx.jukebox.Log.LogType;
+
 public class WebRetriever {
 	
 	public static WebResult getWebResult(String urlString) throws IOException {
@@ -26,7 +28,10 @@ public class WebRetriever {
 		
 		String result = Util.readMessageFromStream(httpcon.getInputStream());
         
-		WebResult res = new WebResult(httpcon.getURL(), result, url.toString() == httpcon.getURL().toString());
+//		Log.Info(String.format("1st url :: %s", url.toString()), LogType.MAIN);
+//		Log.Info(String.format("2nd url :: %s", httpcon.getURL().toString()), LogType.MAIN);
+		
+		WebResult res = new WebResult(httpcon.getURL(), result, !url.toString().equals(httpcon.getURL().toString()));
 		
 		httpcon.disconnect();
 		httpcon = null;

@@ -251,38 +251,9 @@ public class SubtitleDownloader implements Runnable {
 
 				}
 
-			} catch (ClassNotFoundException e) {
+			} catch (Exception e) {
 				
-				Log.Error(String.format("Error when loading subfinder :: %s",
-						className), Log.LogType.SUBS, e);
-			} catch (IllegalArgumentException e) {
-				
-				Log.Error(String.format("Error when loading subfinder :: %s",
-						className), Log.LogType.SUBS, e);
-			} catch (InstantiationException e) {
-				
-				Log.Error(String.format("Error when loading subfinder :: %s",
-						className), Log.LogType.SUBS, e);
-			} catch (IllegalAccessException e) {
-				
-				Log.Error(String.format("Error when loading subfinder :: %s",
-						className), Log.LogType.SUBS, e);
-			} catch (InvocationTargetException e) {
-				
-				Log.Error(String.format("Error when loading subfinder :: %s",
-						className), Log.LogType.SUBS, e);
-			} catch (SecurityException e) {
-				
-				Log.Error(String.format("Error when loading subfinder :: %s",
-						className), Log.LogType.SUBS, e);
-			} catch (NoSuchMethodException e) {
-				
-				Log.Error(String.format("Error when loading subfinder :: %s",
-						className), Log.LogType.SUBS, e);
-			} catch (IOException e) {
-				
-				Log.Error(String.format("Error when loading subfinder :: %s",
-						className), Log.LogType.SUBS, e);
+				Log.Error(String.format("Error when loading subfinder :: %s", className), Log.LogType.SUBS, e);
 			}
 		}
 

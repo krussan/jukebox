@@ -12,14 +12,14 @@ import java.net.MalformedURLException;
 import se.qxx.jukebox.Log.LogType;
 
 public class IMDBRecord { 
-	private String url;
-	private int year;
-	private int durationMinutes;
+	private String url = "";
+	private int year = 0;
+	private int durationMinutes = 0;
 	private List<String> genres = new ArrayList<String>();
-	private String rating;
-	private String director;
-	private String story;
-	private byte[] image;
+	private String rating = "";
+	private String director = "";
+	private String story = "";
+	private byte[] image = null;
 	
 	private IMDBRecord() {
 	}

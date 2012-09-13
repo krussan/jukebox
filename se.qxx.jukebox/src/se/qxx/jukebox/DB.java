@@ -284,17 +284,24 @@ public class DB {
 		try {
 			conn = DB.initialize();
 			
-			PreparedStatement prep = conn.prepareStatement(
-					"insert into subtitles " +
-					"(_movie_ID, filename, description, rating)" +
-					"values" +
-					"(?, ?, ?, ?)");
+			if (!subFileExist(m, filename, conn)) {
+				PreparedStatement prep = conn.prepareStatement(
+						"insert into subtitles " +
+						"(_movie_ID, filename, description, rating)" +
+						"values" +
+						"(?, ?, ?, ?)");
+				
+				prep.setInt(1, m.getID());
+				prep.setString(2, filename);
+				prep.setString(3, description);
+				prep.setString(4, rating.toString());
+				prep.execute();				
+			}
+			else
+			{
+				
+			}
 			
-			prep.setInt(1, m.getID());
-			prep.setString(2, filename);
-			prep.setString(4, description);
-			prep.setString(4, rating.toString());
-			prep.execute();
 						
 		}
 		catch (Exception e) {
@@ -305,6 +312,11 @@ public class DB {
 		}
 	}
 	
+	private static boolean subFileExist(Movie m, String filename, Connection conn) {
+		//TODO: Implement
+		return false;
+	}
+
 	public synchronized static void addMovieToSubtitleQueue(Movie m) {
 		Connection conn = null;
 		try {
