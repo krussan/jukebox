@@ -19,6 +19,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestPauseMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStartMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStopMovie;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSuspend;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestWakeup;
@@ -62,6 +63,9 @@ public class JukeboxConnectionHandler implements Runnable {
 			break;
 		case JukeboxRequestType.ToggleFullscreen_VALUE:
 			b = toggleFullscreen();
+			break;
+		case JukeboxRequestType.Suspend_VALUE:
+			b = suspend();
 			break;
 		default:
 		}
@@ -119,6 +123,14 @@ public class JukeboxConnectionHandler implements Runnable {
 				.build();
 		
 		return sendAndRetreive(JukeboxRequestType.ToggleFullscreen, sm);		
+	}
+	
+	private Bundle suspend() {
+		JukeboxRequestSuspend sm = JukeboxRequestSuspend.newBuilder()
+				.setPlayerName("vlc_main")
+				.build();
+		
+		return sendAndRetreive(JukeboxRequestType.Suspend, sm);		
 	}
 	
 	private Bundle sendAndRetreive(JukeboxRequestType type, com.google.protobuf.GeneratedMessage message) {
@@ -196,6 +208,10 @@ public class JukeboxConnectionHandler implements Runnable {
     		case StopMovie:
     			break;
     		case Wakeup:
+    			break;
+    		case ToggleFullscreen:
+    			break;
+    		case Suspend:
     			break;
     		case Error:
     			JukeboxResponseError err = JukeboxResponseError.parseFrom(data);

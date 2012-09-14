@@ -210,6 +210,9 @@
             						<xs:attribute name="macAddress"
             							type="xs:string">
             						</xs:attribute>
+            						<xs:attribute name="hibernatorPort"
+            							type="xs:int">
+            						</xs:attribute>
             					</xs:complexType>
             				</xs:element>
             			</xs:sequence>

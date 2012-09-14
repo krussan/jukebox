@@ -61,7 +61,7 @@ public class MovieInfoActivity extends Activity {
 		switch (id) {
 			case R.id.btnPlay:
 				sendCommand("Starting movie...", JukeboxRequestType.StartMovie);
-				break;
+				break;	
 			case R.id.btnFullscreen:
 				sendCommand("Toggling fullscreen...", JukeboxRequestType.ToggleFullscreen);
 				break;
@@ -83,6 +83,9 @@ public class MovieInfoActivity extends Activity {
 				else {
 					Toast.makeText(this, "No IMDB link available", Toast.LENGTH_SHORT).show();
 				}
+				break;
+			case R.id.btnSuspend:
+				sendCommand("Suspending target media player...", JukeboxRequestType.Suspend);
 				break;
 			default:
 				break;

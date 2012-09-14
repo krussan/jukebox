@@ -6,6 +6,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import se.qxx.jukebox.DB;
+import se.qxx.jukebox.HibernatorClientConnection;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.WakeOnLan;
 import se.qxx.jukebox.Log.LogType;
@@ -131,6 +132,44 @@ public class VLCDistributor {
 		
 		return false;
 	}
+	
+	public boolean suspend(String hostName) throws VLCConnectionNotFoundException {
+		Server s = findServerInSettings(hostName);
+		try {
+			if (s!=null) {
+				HibernatorClientConnection c = new HibernatorClientConnection(s.getHost(), s.getHibernatorPort());
+				c.suspend();
+				c.disconnect();
+				return true;
+			}
+		}
+		catch (Exception e)
+		{
+			Log.Error("Error when sending suspend command", LogType.COMM, e);			
+			return false;
+		}
+		
+		return false;
+	}
+	
+	public boolean hibernate(String hostName) throws VLCConnectionNotFoundException {
+		Server s = findServerInSettings(hostName);
+		try {
+			if (s!=null) {
+				HibernatorClientConnection c = new HibernatorClientConnection(s.getHost(), s.getHibernatorPort());
+				c.hibernate();
+				c.disconnect();
+				return true;
+			}
+		}
+		catch (Exception e)
+		{
+			Log.Error("Error when sending suspend command", LogType.COMM, e);			
+			return false;
+		}
+		
+		return false;
+	}	
 
 	private se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog.Vlcpaths.Vlcpath findVlcPath(Catalog c, String hostName) {
 		Log.Debug(String.format("Finding %s in %s", hostName, c.getPath()), Log.LogType.COMM);

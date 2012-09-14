@@ -72,6 +72,7 @@
   		port="2150"
   		subsPath="/media/ultra/Subs"
   		macAddress="00-17-42-BE-FC-36"
+  		hibernatorPort="2148"  		
  	/>	
   </vlc>
   <logs>

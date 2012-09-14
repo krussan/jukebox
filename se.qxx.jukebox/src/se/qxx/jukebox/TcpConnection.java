@@ -23,6 +23,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestPauseMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStartMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStopMovie;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSuspend;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestWakeup;
@@ -95,6 +96,8 @@ public class TcpConnection implements Runnable {
 				return wakeup(req);
 			case ToggleFullscreen:
 				return toggleFullscreen(req);
+			case Suspend:
+				return suspend(req);
 			default:
 				break;
 			}
@@ -239,4 +242,21 @@ public class TcpConnection implements Runnable {
 			
 		}		
 	}	
+	
+	private JukeboxResponse suspend(JukeboxRequest req) throws IOException {
+		ByteString data = req.getArguments();
+		JukeboxRequestSuspend args = JukeboxRequestSuspend.parseFrom(data);
+
+		Log.Debug(String.format("Suspending computer with player %s...", args.getPlayerName()), Log.LogType.COMM);
+		
+		try {
+			if (VLCDistributor.get().suspend(args.getPlayerName()))
+				return JukeboxResponse.newBuilder().setType(JukeboxRequestType.OK).build();
+			else
+				return buildErrorMessage("Error occured when connecting to target control service"); 
+		} catch (VLCConnectionNotFoundException e) {
+			return buildErrorMessage("Error occured when connecting to target control service"); 
+			
+		}				
+	}
 }

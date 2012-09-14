@@ -16,6 +16,7 @@ enum JukeboxRequestType {
 	PauseMovie = 11;
 	Wakeup = 12;
 	ToggleFullscreen = 13;
+	Suspend = 14;
 }
 
 enum Identifier {
@@ -113,5 +114,9 @@ message JukeboxRequestWakeup {
 }
 
 message JukeboxRequestToggleFullscreen {
+	required string playerName = 1;
+}
+
+message JukeboxRequestSuspend {
 	required string playerName = 1;
 }
