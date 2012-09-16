@@ -93,6 +93,9 @@ public class JukeboxActivity extends Activity implements ModelUpdatedEventListen
         setContentView(R.layout.main);
         JukeboxSettings.init(this);
         
+        // clear movies to avoid duplicates when re-initiating app
+        Model.get().clearMovies();
+        
 		ListView v = (ListView)findViewById(R.id.listView1);
 		v.setOnItemClickListener(this);
 		
@@ -127,12 +130,22 @@ public class JukeboxActivity extends Activity implements ModelUpdatedEventListen
     	return true;
     };
     
-    public void onConnectClickHandler(View view) throws InterruptedException {
-    	Logger.Log().i("onConnectClicked");
+    public void onButtonClicked(View v) {
+		int id = v.getId();
+		
+		switch (id) {
+		case R.id.btnConnect:
+	    	Logger.Log().i("onConnectClicked");
 
-    	Model.get().clearMovies();
-		connect();
-   		
+	    	Model.get().clearMovies();
+			connect();
+			break;
+		case R.id.btnSelectMediaPlayer:
+			break;
+		default:
+			break;
+		
+		}
     }
     
     public void connect() {

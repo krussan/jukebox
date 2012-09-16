@@ -20,4 +20,6 @@
     <string name="lblDirector">Director</string>
     <string name="lblDuration">Duration</string>
     <string name="lblRating">Rating</string>
+    <string name="lblConnect">Connect</string>
+    <string name="lblSelectMediaPlayer">Player</string>
 </resources>

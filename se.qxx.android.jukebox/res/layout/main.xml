@@ -4,9 +4,18 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-	<Button android:text="Connect" android:id="@+id/button2" android:layout_width="wrap_content" android:layout_height="wrap_content"
-		android:onClick="onConnectClickHandler"></Button>
-
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" >
+    
+		<Button android:text="@string/lblConnect" android:id="@+id/btnConnect" android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:onClick="onButtonClicked"></Button>
+	
+		<Button android:text="@string/lblSelectMediaPlayer" android:id="@+id/btnSelectMediaPlayer" android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:onClick="onButtonClicked"></Button>
+		
+	</LinearLayout>
 	<ListView
 	    android:id="@+id/listView1"
 	    android:layout_width="match_parent"
