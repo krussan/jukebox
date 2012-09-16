@@ -121,7 +121,7 @@ public class VLCDistributor {
 		
 		try {
 		if (s != null) {
-			WakeOnLan.sendPacket(s.getHost(), s.getMacAddress());
+			WakeOnLan.sendPacket(s.getBroadcastAddress(), s.getMacAddress());
 			return true;
 		}
 		}

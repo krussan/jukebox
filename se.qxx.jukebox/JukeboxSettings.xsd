@@ -213,6 +213,9 @@
             						<xs:attribute name="hibernatorPort"
             							type="xs:int">
             						</xs:attribute>
+            						<xs:attribute name="broadcastAddress"
+            							type="xs:string">
+            						</xs:attribute>
             					</xs:complexType>
             				</xs:element>
             			</xs:sequence>

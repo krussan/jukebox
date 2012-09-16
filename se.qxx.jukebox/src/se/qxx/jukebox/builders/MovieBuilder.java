@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
+import com.sun.xml.internal.ws.util.StringUtils;
+
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Util;
 import se.qxx.jukebox.Log.LogType;
@@ -58,12 +60,16 @@ public abstract class MovieBuilder {
 		
 		Collections.sort(proposals, new MovieBuilderComparer());
 
+		Movie m = null;
 		if (proposals.size() > 0) {
-			return proposals.get(proposals.size() - 1);
+			m = proposals.get(proposals.size() - 1);
+			
+			m = Movie.newBuilder(m).setFilename(filename).setFilepath(filepath).build();
 		}
 		else {
 			Log.Info(String.format("Failed to identify movie with filename %s", filename), LogType.FIND);
-			return null;
 		}
+		
+		return m;
 	}
 }

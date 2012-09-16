@@ -30,7 +30,7 @@ public class FileCreatedHandler implements INotifyClient {
 				Log.Info(String.format("Ignoring %s as this appears to be a TV episode", filename), LogType.FIND);
 			}
 			else {
-				Movie m = MovieBuilder.identifyMovie(path, Util.getFilenameWithoutExtension(filename));
+				Movie m = MovieBuilder.identifyMovie(path, filename);
 				
 				// TODO: Get info about movie from NFO if available
 				
@@ -86,6 +86,8 @@ public class FileCreatedHandler implements INotifyClient {
 		Pattern p2 = Pattern.compile("\\d{1,2}x\\d{1,2}", Pattern.CASE_INSENSITIVE);
 		Matcher m2 = p2.matcher(filename);
 		
-		return m1.find() || m2.find();
+		Pattern p3 = Pattern.compile("Episode", Pattern.CASE_INSENSITIVE);
+		Matcher m3 = p3.matcher(filename);
+		return m1.find() || m2.find() || m3.find();
 	}
 }

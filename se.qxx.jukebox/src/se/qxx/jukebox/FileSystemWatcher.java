@@ -1,4 +1,4 @@
-	package se.qxx.jukebox;
+package se.qxx.jukebox;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ public class FileSystemWatcher implements Runnable {
 	    }
 
 	  };
-
+	  
 	  protected File directory;
 	  protected List<INotifyClient> clients;
 
@@ -35,10 +35,11 @@ public class FileSystemWatcher implements Runnable {
 	    /*if (!directoryToWatch.isDirectory()) {
 	      throw new RuntimeException("It needs to be a directory");
 	    }*/
-	    directory = directoryToWatch;
-	    _filter = filter;
-	    files = getCurrentRepresentation();
-	    clients = new ArrayList<INotifyClient>();
+	    
+	    this.directory = directoryToWatch;
+	    this._filter = filter;
+	    this.files = getCurrentRepresentation();
+	    this.clients = new ArrayList<INotifyClient>();
 	    
 	    this.watchCreated = watchCreated;
 	    this.watchModified = watchModified;

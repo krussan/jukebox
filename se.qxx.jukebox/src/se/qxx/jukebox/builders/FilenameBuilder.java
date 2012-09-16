@@ -6,7 +6,9 @@ import java.util.regex.Pattern;
 import com.google.code.regexp.NamedMatcher;
 import com.google.code.regexp.NamedPattern;
 
+import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Util;
+import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Identifier;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.settings.Settings;
@@ -16,6 +18,7 @@ public class FilenameBuilder extends MovieBuilder {
 
 	@Override
 	public Movie extractMovie(String filepath, String filename) {
+		Log.Info(String.format("FilenameBuilder filename :: %s", filename), LogType.FIND);
 		int maxGroupMatch = 0;
 		ArrayList<String> groupsToCheck = getGroupsToCheck();
 		
@@ -26,16 +29,21 @@ public class FilenameBuilder extends MovieBuilder {
 				language = "", 
 				group = "";
 		int year = 0;
-		
-		String fileNameToMatch = filename;
+
+		//TODO: check that file ends with one of the listened for extensions and remove it
+		// For now we remove any extension (beyond the last dot)	
+		String fileNameToMatch = Util.getFilenameWithoutExtension(filename);
+
 		
 		for (Splitter splitter : Settings.get().getStringSplitters().getSplitter()) {
 			//ignoring some keywords specified in xml
 			String strIgnorePattern = splitter.getIgnore().trim();
-			fileNameToMatch = Util.replaceIgnorePattern(fileNameToMatch, strIgnorePattern);
+			String fileNameWithoutIgnore = Util.replaceIgnorePattern(fileNameToMatch, strIgnorePattern);
+	
+			Log.Info(String.format("FilenameBuilder filename to match :: %s", fileNameWithoutIgnore), LogType.FIND);
 			
 			NamedPattern p = NamedPattern.compile(splitter.getRegex().trim(), Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
-			NamedMatcher m = p.matcher(fileNameToMatch);
+			NamedMatcher m = p.matcher(fileNameWithoutIgnore);
 
 			int matches = 0;
 			for (String s : groupsToCheck) {

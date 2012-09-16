@@ -35,9 +35,6 @@ public class Util {
 			Matcher ignoreMatcher = ignorePattern.matcher(fileNameToMatch);
 			//fileNameToMatch = fileNameToMatch.replaceAll(strIgnorePattern, "");
 			fileNameToMatch = ignoreMatcher.replaceAll("");
-			
-			Log.Debug(String.format("ignore pattern :: %s", strIgnorePattern), Log.LogType.FIND);
-			Log.Debug(String.format("filename after parsing away some keywords: %s", fileNameToMatch), Log.LogType.FIND);
 		}
 		return fileNameToMatch;
 	}

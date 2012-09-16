@@ -21,7 +21,7 @@ public class FileRepresentation {
 	public void setLastModified(long lastModified){
 		this._lastModified = lastModified;
 	}
-	
+	 
 	public long getLastModified() {
 		return this._lastModified;
 	}

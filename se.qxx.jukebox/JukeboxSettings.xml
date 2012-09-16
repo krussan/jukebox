@@ -69,6 +69,7 @@
   	<server 
   	    name="vlc_main"
   		host="192.168.1.130" 
+  		broadcastAddress="192.168.1.255"
   		port="2150"
   		subsPath="/media/ultra/Subs"
   		macAddress="00-17-42-BE-FC-36"
