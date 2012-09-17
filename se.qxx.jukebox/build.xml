@@ -73,7 +73,7 @@
 	<target name="createrunscript">
 		<echo file="${build.dir}/run.sh">#!/bin/sh
 ./stop.sh > /dev/null 2> /dev/null
-java -cp 'jna.jar:${jar.file}:named-regexp.jar:protobuf-2.4.1.jar:sqlite-jdbc-3.7.2.jar' ${main-class} $* &amp;
+java -cp 'jna.jar:${jar.file}:named-regexp.jar:protobuf-2.4.1.jar:sqlite-jdbc-3.7.2.jar:commons-lang3-3.1.jar' ${main-class} $* &amp;
 echo $! > jukebox.pid
 		</echo>
 		
@@ -85,8 +85,20 @@ else
    LD_LIBRARY_PATH=$PWD
 fi
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
-java -cp 'jna.jar:${jar.file}:named-regexp.jar:protobuf-2.4.1.jar:sqlite-jdbc-3.7.2.jar' se.qxx.jukebox.tests.TestMediaInfo $*
+java -cp 'jna.jar:${jar.file}:named-regexp.jar:protobuf-2.4.1.jar:sqlite-jdbc-3.7.2.jar:commons-lang3-3.1.jar' se.qxx.jukebox.tests.TestMediaInfo $*
 		</echo>
+		
+		<echo file="${build.dir}/testNfoScanner.sh">#!/bin/sh
+if [ -n "$LD_LIBRARY_PATH" ]
+then
+   LD_LIBRARY_PATH=$PWD:${LD_LIBRARY_PATH}
+else
+   LD_LIBRARY_PATH=$PWD
+fi
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+java -cp 'jna.jar:${jar.file}:named-regexp.jar:protobuf-2.4.1.jar:sqlite-jdbc-3.7.2.jar:commons-lang3-3.1.jar' se.qxx.jukebox.tests.TestNfoScanner $*
+		</echo>
+				
 		<copy file="${main.dir}/JukeboxSettings.xml" todir="${build.dir}" />
 		<copy todir="${build.dir}">
 	    	<fileset dir="${main.dir}/native/${target.platform}">
@@ -94,7 +106,7 @@ java -cp 'jna.jar:${jar.file}:named-regexp.jar:protobuf-2.4.1.jar:sqlite-jdbc-3.
 	    	</fileset> 
 	    </copy>
 	</target> 
-	
+			
 	<target name="cleanDB">
 		
 	</target>

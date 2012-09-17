@@ -10,7 +10,20 @@ import java.util.regex.Pattern;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 
 public class NfoImdbBuilder extends MovieBuilder {
-
+	
+	public final String[] releaseKeywords = {"release", "release name"};
+	public final String[] titleKeywords = {"title"};
+	public final String[] audioKeywords = {"audio"};
+	public final String[] languageKeywords = {"language"};
+	public final String[] videoKeywords = {"video"};
+	public final String[] resolutionKeywords = {"resolution"};
+	public final String[] aspectRatioKeywords = {"aspect ratio"};
+	public final String[] subtitlesKeywords = {"subs", "subtitles"};
+	public final String[] durationKeywords = {"runtime", "duration", "run time"};
+	public final String[] genreKeywords = {"genre"};
+	public final String[] formatKeywords = {"format"};
+	public final String[] framerateKeywords = {"framerate", "frame rate"};
+	
 	@Override
 	public Movie extractMovie(String filepath, String filename) {
 		Movie m = null;
