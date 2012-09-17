@@ -46,10 +46,15 @@ public abstract class MovieBuilder {
 		// Execute all enabled builders, perform rating and return the one with the best match.
 		for (Builder b : Settings.get().getBuilders().getBuilder()) {
 			String className = b.getClazz();
+			int weight = (b.getWeight() > 0 ? b.getWeight() : 1);
+			
 			try {
 				if (b.isEnabled()) {
 					Object o = Util.getInstance(className);
 					Movie proposal = ((MovieBuilder)o).extractMovie(filepath, filename);
+					proposal = Movie.newBuilder(proposal)
+							.setIdentifierRating(proposal.getIdentifierRating() * weight)
+							.build();
 					if (proposal != null)
 						proposals.add(proposal);
 				}
@@ -64,7 +69,10 @@ public abstract class MovieBuilder {
 		if (proposals.size() > 0) {
 			m = proposals.get(proposals.size() - 1);
 			
-			m = Movie.newBuilder(m).setFilename(filename).setFilepath(filepath).build();
+			m = Movie.newBuilder(m)
+					.setFilename(filename)
+					.setFilepath(filepath)
+					.build();
 		}
 		else {
 			Log.Info(String.format("Failed to identify movie with filename %s", filename), LogType.FIND);

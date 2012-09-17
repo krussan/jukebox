@@ -59,8 +59,8 @@
     </splitter>
   </stringSplitters>
   <builders>
-      <builder class="se.qxx.jukebox.builders.FilenameBuilder" enabled="true" />
-      <builder class="se.qxx.jukebox.builders.ParentDirectoryBuilder" enabled="true" />
+      <builder class="se.qxx.jukebox.builders.FilenameBuilder" enabled="true" weight="1" />
+      <builder class="se.qxx.jukebox.builders.ParentDirectoryBuilder" enabled="true" wight="1" />
   </builders>
   <tcpListener>
     <port value="2152"/>

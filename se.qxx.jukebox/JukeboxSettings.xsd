@@ -261,6 +261,9 @@
                                 	<xs:attribute name="enabled"
                                 		type="xs:boolean">
                                 	</xs:attribute>
+                                	<xs:attribute name="weight"
+                                		type="xs:int">
+                                	</xs:attribute>
                                 </xs:complexType>
             				</xs:element>
             			</xs:sequence>
