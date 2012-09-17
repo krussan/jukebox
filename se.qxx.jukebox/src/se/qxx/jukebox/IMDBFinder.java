@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -18,6 +20,10 @@ import com.google.protobuf.ByteString;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie.Builder;
+import se.qxx.jukebox.settings.Settings;
+import se.qxx.jukebox.settings.imdb.Imdb.SearchPatterns.SearchResultPattern;
+import se.qxx.jukebox.settings.imdb.Imdb;
+import se.qxx.jukebox.settings.imdb.SearchPatternComparer;
 
 public class IMDBFinder {
 	private static long nextSearch = 0;
@@ -40,41 +46,36 @@ public class IMDBFinder {
 				Thread.sleep(nextSearch - currentTimeStamp);
 			
 			String urlParameters = java.net.URLEncoder.encode(m.getTitle(), "ISO-8859-1");
-			String urlString = "http://www.imdb.com/find?s=tt&q=" + urlParameters;
+			String urlString = Settings.imdb().getSearchUrl().replace("%%TITLE%%", urlParameters);
+			//String urlString = "http://www.imdb.com/find?s=tt&q=" + urlParameters;
 
 			WebResult webResult = WebRetriever.getWebResult(urlString);
 			
 			// Accomodate for that sometimes IMDB redirects you
 			// directly to the correct movie. (i.e. "Cleanskin")
-			// This could be detected by that the title of the web page is the
-			// title of the movie or NOT "IMDB search"
 			IMDBRecord rec;
+
 			if (webResult.isRedirected()) {
 				Log.Info(String.format("IMDB :: %s is redirected to movie", m.getTitle()), LogType.FIND);
 				rec = IMDBRecord.getFromWebResult(webResult);
 			}
-			else {
+			else {				
 				Log.Info(String.format("IMDB :: %s is NOT redirected to movie", m.getTitle()), LogType.FIND);				
-				rec = findUrlByPopularTitles(m, webResult.getResult());
-				if (rec == null)
-					rec = findUrlByExactMatches(m, webResult.getResult());
-					
-				if (rec == null)
-					rec = findUrlByApproxMatches(m, webResult.getResult());
-				
-				
+				rec = findMovieInSearchResults(m, webResult.getResult());			
 			}
-			
-			//TODO: Probably add this to user settings
+
+			// sleep randomly to avoid detection
 			Random r = new Random();
-			int n = r.nextInt(20000) + 10000;
+			int minSeconds = Settings.imdb().getSettings().getSleepSecondsMin() * 1000;
+			int maxSeconds = Settings.imdb().getSettings().getSleepSecondsMax() * 1000;
+			int n = r.nextInt(minSeconds) + maxSeconds - minSeconds;
 			
-			// sleep randomly to avoid detection (from 10 sec to 30 sec)
 			nextSearch = Util.getCurrentTimestamp() + n;
 			
 			if (rec != null) {
 				// get releaseInfo to get the correct international title
-				// c
+				String preferredTitle = getPreferredTitle(rec);
+				
 				Builder b = Movie.newBuilder().mergeFrom(m)
 						.setImdbUrl(rec.getUrl())
 						.setDirector(rec.getDirector())
@@ -83,10 +84,8 @@ public class IMDBFinder {
 						.setRating(rec.getRating())
 						.addAllGenre(rec.getAllGenres());
 				
-				if (!StringUtils.isEmpty(rec.getTitle())) 
-					b.setTitle(rec.getTitle());
-				else 
-					Log.Debug(String.format("Error finding title for %s", m.getTitle()), LogType.FIND);
+				if (!StringUtils.isEmpty(preferredTitle)) 
+					b.setTitle(preferredTitle);
 				
 				if (rec.getImage() != null)
 					b.setImage(ByteString.copyFrom(rec.getImage()));
@@ -102,53 +101,65 @@ public class IMDBFinder {
 			return m;
 		}
 	}
-	
-	/*private static boolean isRedirectedToMovie(String webResult) {
-		Pattern p = Pattern.compile("<title>\\s*IMDb\\s*Search\\s*</title>"
-				, Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
-		Matcher m = p.matcher(webResult);
 		
-		return !m.find();
-	}*/
+	private static boolean usePreferredCountryDefault() {
+		String preferredTitleCountry = Settings.imdb().getTitle().getPreferredLanguage();
+		
+		return StringUtils.isEmpty(preferredTitleCountry) 
+				|| StringUtils.equalsIgnoreCase(preferredTitleCountry, "default");
+	}
+	
+	private static String getPreferredTitle(IMDBRecord rec) {
+		String title = rec.getTitle();
+		boolean useOriginal = Settings.imdb().getTitle().isUseOriginalIfExists();
+		String preferredTitleCountry = Settings.imdb().getTitle().getPreferredLanguage();		
+		
+		if (usePreferredCountryDefault() && !useOriginal) {
+			return title;
+		}
+		else {
+			String url = rec.getUrl() + "releaseinfo";
+			
+			try {
+				WebResult webResult = WebRetriever.getWebResult(url);
+				
+				String foundTitle = findPreferredTitle(webResult.getResult(), preferredTitleCountry);
+				return (StringUtils.isEmpty(foundTitle) ? title : foundTitle);
+				
+			} catch (IOException e) {
+				Log.Error("Error when trying to get releaseinfo from IMDB", LogType.FIND, e);
+			}
+		}
+		
+		return title;
+	}
+
+	private static IMDBRecord findMovieInSearchResults(Movie m, String text) {
+		List<SearchResultPattern> patterns = Settings.imdb().getSearchPatterns().getSearchResultPattern();
+		
+		Collections.sort(patterns, new SearchPatternComparer());
+		IMDBRecord rec = null;
+		for (SearchResultPattern p : patterns) {
+			rec = findUrl(m
+					, text
+					, StringUtils.trim(p.getBlockPattern())
+					, p.getGroupBlock()
+					, StringUtils.trim(p.getRecordPattern())
+					, p.getGroupRecordUrl()
+					, p.getGroupRecordYear());
+			
+			if  (rec!=null)
+				break;
+		}
+		
+		return rec;
+	}
 	
 	private static boolean testResult(Movie m, IMDBRecord result) {
 		if (m == null || result == null)
 			return false;
 		
 		return (m.getYear() == 0 || m.getYear() == result.getYear());
-	}
-
-	private static IMDBRecord findUrlByExactMatches(Movie movie, String text) {
-		return findUrl(
-			movie,
-			text,
-			"<p>(.*?)Titles\\s*\\(Exact\\s*Matches\\)(.*?)<table>(.*?)<\\/table>",
-			3,
-			"<a\\s*href=\"([^\"]*?)\"[^>]*>[^<]+?</a>\\s*\\((\\d{4})[^\\)]*?\\)",
-			1,
-			2);
-	}
-
-	private static IMDBRecord findUrlByPopularTitles(Movie movie, String text) {
-		return findUrl(
-			movie,
-			text,
-			"<p>(.*?)Popular\\s*Titles(.*?)<table>(.*?)<\\/table>",
-			3,
-			"<a\\s*href=\"([^\"]*?)\"[^>]*>[^<]+?</a>\\s*\\((\\d{4})[^\\)]*?\\)",
-			1,
-			2);
-	}
-	
-	private static IMDBRecord findUrlByApproxMatches(Movie movie, String text) {
-		return findUrl(
-			movie,
-			text,
-			"<p>(.*?)Titles\\s*\\(Approx\\s*Matches\\)(.*?)<table>(.*?)<\\/table>",
-			3,
-			"<a\\s*href=\"([^\"]*?)\"[^>]*>[^<]+?</a>\\s*\\((\\d{4})[^\\)]*?\\)",
-			1,
-			2);
 	}
 
 	private static IMDBRecord findUrl(
@@ -162,36 +173,30 @@ public class IMDBFinder {
 		
 		//TODO: Also match by length of movie
 		try {
-			Pattern p = Pattern.compile(patternForBlock
-					, Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
-			Matcher m = p.matcher(text);
-			
-			if (m.find()) {
-				String blockMatch = m.group(patternGroupForBlock);
+			List<String[]> records = parseBlockAndRecords(
+					text
+					, patternForBlock
+					, patternGroupForBlock
+					, patternForRecord
+					, urlGroup
+					, yearGroup);
+		
+			for (String[] record : records) {
+				String url = record[0];
+				int year = Integer.parseInt(record[1]);
 				
-				Pattern pRec = Pattern.compile(patternForRecord);
-				Matcher mRec = pRec.matcher(blockMatch);
+				IMDBRecord rec = new IMDBRecord(url, year);
 				
-				while (mRec.find()) {
-					String url = mRec.group(urlGroup);
-					int year = Integer.parseInt(mRec.group(yearGroup));
-					
-					IMDBRecord rec = new IMDBRecord(url, year);
-					
-					if (testResult(movie, rec))
-					{
-						// if year and title matches then continue to the URL and extract information about the movie.
-						rec = IMDBRecord.get(url);
+				if (testResult(movie, rec))
+				{
+					// if year and title matches then continue to the URL and extract information about the movie.
+					rec = IMDBRecord.get(url);
 
-						// If the duration of the movie corresponds with the information retreived from MediaInfo then we're
-						// probably right. 
+					// If the duration of the movie corresponds with the information retreived from MediaInfo then we're
+					// probably right. 
 
-						return rec;
-					}
-						
-					
-				}
-				
+					return rec;
+				}				
 			}
 		}
 		catch (Exception e) {
@@ -200,46 +205,71 @@ public class IMDBFinder {
 
 		return null;
 	}
+
+	private static String findPreferredTitle(String text, String country) {
+		Log.Info(String.format("Finding preferred title for %s", country), LogType.FIND);
+		Imdb.Title t = Settings.imdb().getTitle();
+		Imdb.Title.TitleResultPattern s = t.getTitleResultPattern();
+		
+		List<String[]> records = parseBlockAndRecords(
+				text
+				, StringUtils.trim(s.getBlockPattern())
+				, s.getGroupBlock()
+				, StringUtils.trim(s.getRecordPattern())
+				, s.getGroupRecordTitle()
+				, s.getGroupRecordCountry());
+		
+		boolean useOriginal = t.isUseOriginalIfExists();
+		
+		for (String[] record : records) {
+			String recordCountry = record[1];
+			String recordTitle = record[0];
+			
+			if (useOriginal && StringUtils.containsIgnoreCase(recordCountry, "(original title)")) {
+				Log.Info("IMDB :: TITLE :: Found original", LogType.FIND);
+				return recordTitle;
+			}
+			
+			if (StringUtils.containsIgnoreCase(recordCountry, country)) {
+				Log.Info("IMDB :: TITLE :: Found specific", LogType.FIND);
+				return recordTitle;		
+			}
+		}
+		
+		return StringUtils.EMPTY;
+	}
+
+	private static List<String[]> parseBlockAndRecords(
+			String text, 
+			String patternForBlock, 
+			int patternGroupForBlock,
+			String patternForRecord,
+			int... groupIndex) {
+				
+		List<String[]> ret = new ArrayList<String[]>();
+		
+		Pattern p = Pattern.compile(patternForBlock
+				, Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
+		Matcher m = p.matcher(text);
+		
+		if (m.find()) {
+			String blockMatch = m.group(patternGroupForBlock);
+			
+			Pattern pRec = Pattern.compile(patternForRecord);
+			Matcher mRec = pRec.matcher(blockMatch);
+			
+			while (mRec.find()) {				
+				List<String> values = new ArrayList<String>();
+				
+				for (int i=0;i<groupIndex.length;i++) {
+					values.add(mRec.group(groupIndex[i]));
+				}
+				
+				ret.add(values.toArray(new String[values.size()]));
+			}				
+		}
+		
+		return ret;
+		
+	}	
 }
-
-/*
-    internal class IMDBFinder {
-        //http://www.imdb.com/find?s=all&q=the+decent
-        // search for :
-        // Titles (Exact Matches)
-        // Popular Titles               <-- This is the one
-        // Titles (Partial Matches)
-        // Titles (Approx Matches)
-        // find first href after that
-
-        // Titles\s\(Exact\sMatches\).*?\<a\s*href\s*=\s*["|'](?<url>.*?)["|']
-        // Popular\sTitles.*?\<a\s*href\s*=\s*["|'](?<url>.*?)["|']
-        public static void Search(Movie m) {
-            string url = String.Format("http://www.imdb.com/find?s=all&q={0}", System.Web.HttpUtility.UrlEncode(m.Title));
-            WebRequest w = HttpWebRequest.Create(url);
-            WebResponse resp = w.GetResponse();
-
-            string response = String.Empty;
-            using (StreamReader sr = new StreamReader(resp.GetResponseStream())) {
-                response = sr.ReadToEnd();
-            }
-
-            Match match = Regex.Match(response, @"Titles\s\(Exact\sMatches\).*?\<a\s*href\s*=\s*[""|'](?<url>.*?)[""|']");
-            if (match.Length > 0) {
-                m.IMDB_URL = String.Format("http://www.imdb.com{0}", match.Groups["url"].Value);
-            }
-            else {
-                match = Regex.Match(response, @"Popular\sTitles.*?\<a\s*href\s*=\s*[""|'](?<url>.*?)[""|']");
-                if (match.Length > 0)
-                    m.IMDB_URL = String.Format("http://www.imdb.com{0}", match.Groups["url"].Value);
-            }
-
-            if (!String.IsNullOrEmpty(m.IMDB_URL)) {
-                Match idMatch = Regex.Match(m.IMDB_URL, @"http://www.imdb.com/title/tt(?<id>\d*)/");
-                if (idMatch.Length > 0)
-                    m.IMDB_ID = Convert.ToInt32(idMatch.Groups["id"].Value);
-            }
-        }
-    }
-
-*/

@@ -1,8 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <imdb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="imdb.xsd">
     <settings
-        preferredTitleLanguage="default"
+        sleepSecondsMin="20"
+        sleepSecondsMax="30"
     />
+    <title
+        preferredLanguage="default"
+        useOriginalIfExists="true">
+        <titleResultPattern
+            groupBlock="1"
+            groupRecordTitle="1"
+            groupRecordCountry="2">
+            <blockPattern><![CDATA[<a\s*name="akas">.*?</a>.*?<table[^>]*>(.*?)</table>]]></blockPattern>
+            <recordPattern><![CDATA[<tr>\s*<td>(.*?)</td>\s*<td>(.*?)</td>]]></recordPattern>
+        </titleResultPattern>
+        
+    </title>
+    
     <searchUrl><![CDATA[http://www.imdb.com/find?s=tt&q=%%TITLE%%]]></searchUrl>
     <searchPatterns>
      <searchResultPattern
@@ -51,19 +65,27 @@
     <infoPatterns>
         <infoPattern type="title" group="1">
             <regex><![CDATA[<h1[^>]*?itemprop="name"[^>]*?>(.*?)<]]></regex>
+        </infoPattern>
         <infoPattern type="poster" group="1">
             <regex><![CDATA[<img\s*src="([^"]*)"[^>]*?alt="[^"]*Poster]]></regex>
+		</infoPattern>            
         <infoPattern type="story" group="1">
             <regex><![CDATA[<p\s*itemprop="description">(.*?)</p>]]></regex>
+		</infoPattern>            
         <infoPattern type="year" group="1">
             <regex><![CDATA[<a\s*href="/year/(\d{4})/">]]></regex>
+		</infoPattern>            
         <infoPattern type="rating" group="1">
             <regex><![CDATA[<span\s*itemprop="ratingValue"\s*>((\d\.\d)|(\d\d)|(\d\d\.\d)|(\d\d\.\d\d))]]></regex>
+		</infoPattern>            
         <infoPattern type="genres" group="1">
             <regex><![CDATA[href="/genre/[^"]*"\s*>(.*?)</a>]]></regex>
+		</infoPattern>            
         <infoPattern type="duration" group="1">
             <regex><![CDATA[<time\s*itemprop="duration".*?>(\d{1,3})\s*min</time>]]></regex>
+		</infoPattern>            
         <infoPattern type="director" group="1">
             <regex><![CDATA[itemprop="director"\s*>(.*?)</a>]]></regex>
+		</infoPattern>            
     </infoPatterns>
 </imdb>

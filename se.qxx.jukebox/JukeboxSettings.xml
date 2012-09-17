@@ -62,56 +62,6 @@
       <builder class="se.qxx.jukebox.builders.FilenameBuilder" enabled="true" weight="1" />
       <builder class="se.qxx.jukebox.builders.ParentDirectoryBuilder" enabled="true" weight="1" />
   </builders>
-  <imdb>
-      <searchUrl>
-          <![CDATA[http://www.imdb.com/find?s=tt&q=%%TITLE%%]]>
-      </searchUrl>
-      <searchPatterns>
-	      <searchResultPattern
-	          name="PopularTitles"
-	          enabled="true"
-	          priority="1">
-	  		<blockPattern group="3">
-			    <![CDATA[<p>(.*?)Popular\s*Titles(.*?)<table>(.*?)<\/table>]]>
-			</blockPattern>
-	  		<recordPattern groupUrl="1" groupYear="2">
-	  		    <![CDATA[<a\s*href="([^"]*?)"[^>]*>[^<]+?</a>\s*\((\d{4})[^\)]*?\)]]>
-	 		</recordPattern>
-	      </searchResultPattern>
-	      <searchResultPattern
-	          name="ExactMatches"
-	          enabled="true"
-	          priority="2">
-	  		<blockPattern group="3">
-			    <![CDATA[<p>(.*?)Titles\s*\(Exact\s*Matches\)(.*?)<table>(.*?)<\/table>]]>
-			</blockPattern>
-	  		<recordPattern groupUrl="1" groupYear="2">
-	  		    <![CDATA[<a\s*href="([^"]*?)"[^>]*>[^<]+?</a>\s*\((\d{4})[^\)]*?\)]]>
-	 		</recordPattern>
-	      </searchResultPattern>
-		  <searchResultPattern
-	          name="ApproxMatches"
-	          enabled="true"
-	          priority="3">
-	  		<blockPattern group="3">
-			    <![CDATA[<p>(.*?)Titles\s*\(Approx\s*Matches\)(.*?)<table>(.*?)<\/table>]]>
-			</blockPattern>
-	  		<recordPattern groupUrl="1" groupYear="2">
-	  		    <![CDATA[<a\s*href="([^"]*?)"[^>]*>[^<]+?</a>\s*\((\d{4})[^\)]*?\)]]>
-	 		</recordPattern>
-	      </searchResultPattern>	      	      
-      </patterns>
-      <infoPatterns>
-          <infoPattern type="title" group="1"><![CDATA[<h1[^>]*?itemprop="name"[^>]*?>(.*?)<]]>
-          <infoPattern type="poster" group="1"><![CDATA[<img\s*src="([^"]*)"[^>]*?alt="[^"]*Poster]]>
-          <infoPattern type="story" group="1"><![CDATA[<p\s*itemprop="description">(.*?)</p>]]>
-          <infoPattern type="year" group="1"><![CDATA[<a\s*href="/year/(\d{4})/">]]> 
-          <infoPattern type="rating" group="1"><![CDATA[<span\s*itemprop="ratingValue"\s*>((\d\.\d)|(\d\d)|(\d\d\.\d)|(\d\d\.\d\d))]]>
-          <infoPattern type="genres" group="1"><![CDATA[href="/genre/[^"]*"\s*>(.*?)</a>]]>
-          <infoPattern type="duration" group="1"><![CDATA[<time\s*itemprop="duration".*?>(\d{1,3})\s*min</time>]]>
-          <infoPattern type="director" group="1"><![CDATA[itemprop="director"\s*>(.*?)</a>]]>
-      </infoPatterns>
-  </imdb>
   <tcpListener>
     <port value="2152"/>
   </tcpListener>

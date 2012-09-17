@@ -22,7 +22,23 @@
 
             						<xs:sequence>
 
-            							<xs:element name="extensions">
+                                        <xs:element name="vlcpaths">
+            								<xs:complexType>
+            									<xs:sequence>
+            										<xs:element name="vlcpath" maxOccurs="unbounded" minOccurs="0">
+            											<xs:complexType>
+            												<xs:sequence>
+            												</xs:sequence>
+            												<xs:attribute name="player" type="xs:string">
+            												</xs:attribute>
+            												<xs:attribute name="path" type="xs:string">
+            												</xs:attribute>
+            											</xs:complexType>
+            										</xs:element>
+            									</xs:sequence>
+            								</xs:complexType>
+            							</xs:element>
+                                        <xs:element name="extensions">
 
             								<xs:complexType>
 
@@ -41,26 +57,6 @@
             								</xs:complexType>
             							</xs:element>
 
-            							<xs:element name="vlcpaths">
-            								<xs:complexType>
-            									<xs:sequence>
-            										<xs:element
-            											name="vlcpath" maxOccurs="unbounded"
-            											minOccurs="0">
-            											<xs:complexType>
-            												<xs:sequence>
-            												</xs:sequence>
-            												<xs:attribute
-            													name="player" type="xs:string">
-            												</xs:attribute>
-            												<xs:attribute
-            													name="path" type="xs:string">
-            												</xs:attribute>
-            											</xs:complexType>
-            										</xs:element>
-            									</xs:sequence>
-            								</xs:complexType>
-            							</xs:element>
             						</xs:sequence>
 
             						<xs:attribute name="path"
@@ -136,7 +132,9 @@
 
             			<xs:sequence>
 
-            				<xs:element name="splitter"
+                            <xs:element name="exclude" type="excludeType">
+            				</xs:element>
+                            <xs:element name="splitter"
             					maxOccurs="unbounded">
 
             					<xs:complexType>
@@ -154,14 +152,26 @@
             					</xs:complexType>
             				</xs:element>
 
-            				<xs:element name="exclude"
-            					type="excludeType">
-            				</xs:element>
             			</xs:sequence>
             		</xs:complexType>
             	</xs:element>
 
-            	<xs:element name="tcpListener">
+                <xs:element name="builders">
+            		<xs:complexType>
+            			<xs:sequence>
+            				<xs:element name="builder" maxOccurs="unbounded" minOccurs="0">
+                                <xs:complexType>
+                                	<xs:attribute name="class" type="xs:string">
+                                	</xs:attribute>
+                                	<xs:attribute name="enabled" type="xs:boolean">
+                                	</xs:attribute>
+                                	<xs:attribute name="weight" type="xs:int">
+                                	</xs:attribute>
+                                </xs:complexType>
+            				</xs:element>
+            			</xs:sequence>
+            		</xs:complexType></xs:element>
+                <xs:element name="tcpListener">
 
             		<xs:complexType>
 
@@ -250,24 +260,6 @@
             			</xs:sequence>
             		</xs:complexType>
             	</xs:element>
-            	<xs:element name="builders">
-            		<xs:complexType>
-            			<xs:sequence>
-            				<xs:element name="builder" maxOccurs="unbounded" minOccurs="0">
-                                <xs:complexType>
-                                	<xs:attribute name="class"
-                                		type="xs:string">
-                                	</xs:attribute>
-                                	<xs:attribute name="enabled"
-                                		type="xs:boolean">
-                                	</xs:attribute>
-                                	<xs:attribute name="weight"
-                                		type="xs:int">
-                                	</xs:attribute>
-                                </xs:complexType>
-            				</xs:element>
-            			</xs:sequence>
-            		</xs:complexType></xs:element>
             </xs:sequence>
         </xs:complexType>
     </xs:element>

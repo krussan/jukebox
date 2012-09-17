@@ -7,6 +7,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.ValidationEvent;
+import javax.xml.bind.ValidationEventHandler;
 import javax.xml.transform.stream.StreamSource;
 
 public class ImdbSettings {
@@ -35,6 +37,13 @@ public class ImdbSettings {
 	private void readSettingFile() throws IOException, JAXBException {
 		JAXBContext c = JAXBContext.newInstance(Imdb.class);
 		Unmarshaller u = c.createUnmarshaller();
+		u.setEventHandler(
+			    new ValidationEventHandler() {
+			        public boolean handleEvent(ValidationEvent event ) {
+			            throw new RuntimeException(event.getMessage(),
+			                                       event.getLinkedException());
+			        }
+			});
 		
 		JAXBElement<Imdb> root = u.unmarshal(new StreamSource(new File("imdb.xml")), Imdb.class);
 		_imdb = root.getValue();

@@ -37,10 +37,18 @@
 	        <arg value="${main.src.dir}"/>
 	        <arg value="-p"/>
 	        <arg value="se.qxx.jukebox.settings"/>
-	        <arg value="${solution.dir}/se.qxx.jukebox/JukeboxSettings.xsd"/>
+	        <arg value="${main.dir}/JukeboxSettings.xsd"/>
 	    </exec>
-		
-	</target>
+
+	    <exec executable="${jdk.dir}/bin/xjc.exe">
+	        <arg value="-d"/>
+	        <arg value="${main.src.dir}"/>
+	        <arg value="-p"/>
+	        <arg value="se.qxx.jukebox.settings.imdb"/>
+	        <arg value="${main.dir}/imdb.xsd"/>
+	    </exec>
+	    	    		
+	</target> 
 	
 	<target name="protoc">
 	    <exec executable="${protoc.dir}/protoc.exe" dir="${domain.src.dir}">
@@ -110,8 +118,21 @@ fi
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
 java -cp 'jna.jar:${jar.file}:named-regexp.jar:protobuf-2.4.1.jar:sqlite-jdbc-3.7.2.jar:commons-lang3-3.1.jar' se.qxx.jukebox.tests.TestNfoScanner $*
 		</echo>
-				
+
+				<echo file="${build.dir}/testImdbXml.sh">#!/bin/sh
+if [ -n "$LD_LIBRARY_PATH" ]
+then
+   LD_LIBRARY_PATH=$PWD:${LD_LIBRARY_PATH}
+else
+   LD_LIBRARY_PATH=$PWD
+fi
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+java -cp 'jna.jar:${jar.file}:named-regexp.jar:protobuf-2.4.1.jar:sqlite-jdbc-3.7.2.jar:commons-lang3-3.1.jar' se.qxx.jukebox.tests.TestImdbXmlReader $*
+		</echo>
+						
 		<copy file="${main.dir}/JukeboxSettings.xml" todir="${build.dir}" />
+		<copy file="${main.dir}/imdb.xml" todir="${build.dir}" />
+			
 		<copy todir="${build.dir}">
 	    	<fileset dir="${main.dir}/native/${target.platform}">
 	    	    <include name="*" />

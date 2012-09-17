@@ -1,9 +1,13 @@
 package se.qxx.jukebox;
 
+import java.io.IOException;
 import java.util.ArrayList;
+
+import javax.xml.bind.JAXBException;
 
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog.Extensions.Extension;
+import se.qxx.jukebox.settings.imdb.ImdbSettings;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.vlc.VLCConnection;
 
@@ -23,6 +27,8 @@ public class Main implements Runnable, INotifyClient
 	public void run() {
 		
 		try {
+			readSettings();
+			
 			if (Arguments.get().isTcpListenerEnabled())
 				setupListening();
 			
@@ -42,12 +48,12 @@ public class Main implements Runnable, INotifyClient
 			s.acquire();
 
 			while (isRunning) {
-				Settings.readSettings();
-				
 				setupCatalogs();
-				
+
 				// acquire a new to block this thread until it is released by another thread (by calling stop)
 				s.acquire();
+				
+				readSettings();				
 			}
 		}
 		catch (Exception e) {
@@ -115,4 +121,9 @@ public class Main implements Runnable, INotifyClient
 			
 		}
 	}	
+	
+	private void readSettings() throws IOException, JAXBException {
+		Settings.readSettings();
+		ImdbSettings.readSettings();		
+	}
 }

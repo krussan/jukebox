@@ -1,75 +1,92 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/imdb" xmlns:tns="http://www.example.org/imdb" elementFormDefault="qualified">
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    attributeFormDefault="unqualified"
+    elementFormDefault="qualified">
 
-    <element name="imdb">
-    	<complexType>
-    		<sequence>
-    			<element name="searchUrl" type="string"></element>
-    			<element name="searchPatterns" maxOccurs="1"
-    				minOccurs="0">
-    				<complexType>
-    					<sequence>
-    						<element name="searchResultPattern"
-    							maxOccurs="unbounded" minOccurs="0">
-    							<complexType>
-    								<sequence>
-    									<element name="blockPattern"
-    										type="string">
-    									</element>
-    									<element name="recordPattern"
-    										type="string">
-    									</element>
-    								</sequence>
-    								<attribute name="name"
-    									type="string">
-    								</attribute>
-    								<attribute name="enabled"
-    									type="boolean">
-    								</attribute>
-    								<attribute name="priority"
-    									type="int">
-    								</attribute>
-    								<attribute name="groupBlock"
-    									type="int">
-    								</attribute>
-    								<attribute name="groupRecordUrl"
-    									type="int">
-    								</attribute>
-    								<attribute name="groupRecordYear"
-    									type="int">
-    								</attribute>
-    							</complexType>
-    						</element>
-    					</sequence>
-    				</complexType>
-    			</element>
-    			<element name="infoPatterns" maxOccurs="1"
-    				minOccurs="0">
-    				<complexType>
-    					<sequence>
-    						<element name="infoPattern"
-    							maxOccurs="unbounded" minOccurs="0">
-    							<complexType>
-    								<sequence>
-    									<element name="regex"
-    										type="string">
-    									</element>
-    								</sequence>
-    								<attribute name="type"
-    									type="string">
-    								</attribute>
-    								<attribute name="group"
-    									type="int">
-    								</attribute>
-    							</complexType>
-    						</element>
-    					</sequence>
-    				</complexType>
-    			</element>
-    			<element name="settings">
-    				<complexType>
-    					<attribute name="preferredTitleLanguage" type="string"></attribute>
-    				</complexType></element>
-    		</sequence>
-    	</complexType></element>
-</schema>
+    <xs:element name="imdb">
+    	<xs:complexType>
+    		<xs:sequence>
+                <xs:element name="settings" maxOccurs="1" minOccurs="1">
+    				<xs:complexType>
+    					<xs:attribute name="sleepSecondsMin" type="xs:int" use="required">
+    					</xs:attribute>
+    					<xs:attribute name="sleepSecondsMax" type="xs:int" use="required">
+    					</xs:attribute>
+    				</xs:complexType>
+    			</xs:element>
+                <xs:element name="title" maxOccurs="1" minOccurs="1">
+    				<xs:complexType>
+    					<xs:sequence>
+    						<xs:element name="titleResultPattern" maxOccurs="1" minOccurs="0">
+    							<xs:complexType>
+    								<xs:sequence>
+    									<xs:element name="blockPattern" type="xs:string">
+    									</xs:element>
+    									<xs:element name="recordPattern" type="xs:string">
+    									</xs:element>
+    								</xs:sequence>
+    								<xs:attribute name="groupBlock" type="xs:int">
+    								</xs:attribute>
+    								<xs:attribute name="groupRecordTitle" type="xs:int">
+    								</xs:attribute>
+    								<xs:attribute name="groupRecordCountry" type="xs:int">
+    								</xs:attribute>
+    							</xs:complexType>
+    						</xs:element>
+    					</xs:sequence>
+    					<xs:attribute name="preferredLanguage" type="xs:string">
+    					</xs:attribute>
+    					<xs:attribute name="useOriginalIfExists" type="xs:boolean">
+    					</xs:attribute>
+    				</xs:complexType>
+    			</xs:element>
+                <xs:element name="searchUrl" type="xs:string" maxOccurs="1" minOccurs="1"></xs:element>
+    			<xs:element name="searchPatterns" maxOccurs="1" minOccurs="0">
+    				<xs:complexType>
+    					<xs:sequence>
+    						<xs:element name="searchResultPattern" maxOccurs="unbounded" minOccurs="0">
+    							<xs:complexType>
+    								<xs:sequence>
+    									<xs:element name="blockPattern" type="xs:string">
+    									</xs:element>
+    									<xs:element name="recordPattern" type="xs:string">
+    									</xs:element>
+    								</xs:sequence>
+    								<xs:attribute name="name" type="xs:string">
+    								</xs:attribute>
+    								<xs:attribute name="enabled" type="xs:boolean" use="required">
+    								</xs:attribute>
+    								<xs:attribute name="priority" type="xs:int" use="required">
+    								</xs:attribute>
+    								<xs:attribute name="groupBlock" type="xs:int" use="required">
+    								</xs:attribute>
+    								<xs:attribute name="groupRecordUrl" type="xs:int" use="required">
+    								</xs:attribute>
+    								<xs:attribute name="groupRecordYear" type="xs:int" use="required">
+    								</xs:attribute>
+    							</xs:complexType>
+    						</xs:element>
+    					</xs:sequence>
+    				</xs:complexType>
+    			</xs:element>
+    			<xs:element name="infoPatterns" maxOccurs="1" minOccurs="0">
+    				<xs:complexType>
+    					<xs:sequence>
+    						<xs:element name="infoPattern" maxOccurs="unbounded" minOccurs="0">
+    							<xs:complexType>
+    								<xs:sequence>
+    									<xs:element name="regex" type="xs:string">
+    									</xs:element>
+    								</xs:sequence>
+    								<xs:attribute name="type" type="xs:string">
+    								</xs:attribute>
+    								<xs:attribute name="group" type="xs:int">
+    								</xs:attribute>
+    							</xs:complexType>
+    						</xs:element>
+    					</xs:sequence>
+    				</xs:complexType>
+    			</xs:element>
+    		</xs:sequence>
+    	</xs:complexType></xs:element>
+</xs:schema>

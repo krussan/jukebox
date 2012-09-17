@@ -8,7 +8,7 @@ public class WebResult {
 	private boolean isRedirected;
 	
 	public WebResult(URL url, String result, boolean isRedirected) {
-		this.setUrl(url);
+		this.setUrl(url.toString().split("\\?")[0]);
 		this.setResult(result);
 		this.setRedirected(isRedirected);
 	}
@@ -16,8 +16,8 @@ public class WebResult {
 	public String getUrl() {
 		return url;
 	}
-	private void setUrl(URL url) {
-		this.url = url.toString();
+	private void setUrl(String string) {
+		this.url = string;
 	}
 	public String getResult() {
 		return result;
