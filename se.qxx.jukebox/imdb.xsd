@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/imdb" xmlns:tns="http://www.example.org/imdb" elementFormDefault="qualified">
+
+    <element name="imdb">
+    	<complexType>
+    		<sequence>
+    			<element name="searchUrl" type="string"></element>
+    			<element name="searchPatterns" maxOccurs="1"
+    				minOccurs="0">
+    				<complexType>
+    					<sequence>
+    						<element name="searchResultPattern"
+    							maxOccurs="unbounded" minOccurs="0">
+    							<complexType>
+    								<sequence>
+    									<element name="blockPattern"
+    										type="string">
+    									</element>
+    									<element name="recordPattern"
+    										type="string">
+    									</element>
+    								</sequence>
+    								<attribute name="name"
+    									type="string">
+    								</attribute>
+    								<attribute name="enabled"
+    									type="boolean">
+    								</attribute>
+    								<attribute name="priority"
+    									type="int">
+    								</attribute>
+    								<attribute name="groupBlock"
+    									type="int">
+    								</attribute>
+    								<attribute name="groupRecordUrl"
+    									type="int">
+    								</attribute>
+    								<attribute name="groupRecordYear"
+    									type="int">
+    								</attribute>
+    							</complexType>
+    						</element>
+    					</sequence>
+    				</complexType>
+    			</element>
+    			<element name="infoPatterns" maxOccurs="1"
+    				minOccurs="0">
+    				<complexType>
+    					<sequence>
+    						<element name="infoPattern"
+    							maxOccurs="unbounded" minOccurs="0">
+    							<complexType>
+    								<sequence>
+    									<element name="regex"
+    										type="string">
+    									</element>
+    								</sequence>
+    								<attribute name="type"
+    									type="string">
+    								</attribute>
+    								<attribute name="group"
+    									type="int">
+    								</attribute>
+    							</complexType>
+    						</element>
+    					</sequence>
+    				</complexType>
+    			</element>
+    			<element name="settings">
+    				<complexType>
+    					<attribute name="preferredTitleLanguage" type="string"></attribute>
+    				</complexType></element>
+    		</sequence>
+    	</complexType></element>
+</schema>

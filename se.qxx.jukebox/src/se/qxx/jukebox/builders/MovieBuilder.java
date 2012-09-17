@@ -46,17 +46,23 @@ public abstract class MovieBuilder {
 		// Execute all enabled builders, perform rating and return the one with the best match.
 		for (Builder b : Settings.get().getBuilders().getBuilder()) {
 			String className = b.getClazz();
-			int weight = (b.getWeight() > 0 ? b.getWeight() : 1);
+			int weight = 1;
+			if (b.getWeight() != null)
+				weight = b.getWeight();
 			
 			try {
 				if (b.isEnabled()) {
 					Object o = Util.getInstance(className);
-					Movie proposal = ((MovieBuilder)o).extractMovie(filepath, filename);
-					proposal = Movie.newBuilder(proposal)
-							.setIdentifierRating(proposal.getIdentifierRating() * weight)
-							.build();
-					if (proposal != null)
-						proposals.add(proposal);
+					if (o != null) {
+						Movie proposal = ((MovieBuilder)o).extractMovie(filepath, filename);
+						if (proposal != null) {
+							proposal = Movie.newBuilder(proposal)
+									.setIdentifierRating(proposal.getIdentifierRating() * weight)
+									.build();
+							
+							proposals.add(proposal);
+						}
+					}
 				}
 			} catch (Exception e) {
 				Log.Error(String.format("Error when loading or executing movie builder %s", className), Log.LogType.FIND, e);
@@ -69,10 +75,11 @@ public abstract class MovieBuilder {
 		if (proposals.size() > 0) {
 			m = proposals.get(proposals.size() - 1);
 			
-			m = Movie.newBuilder(m)
-					.setFilename(filename)
-					.setFilepath(filepath)
-					.build();
+			if (m != null) 
+				m = Movie.newBuilder(m)
+						.setFilename(filename)
+						.setFilepath(filepath)
+						.build();
 		}
 		else {
 			Log.Info(String.format("Failed to identify movie with filename %s", filename), LogType.FIND);

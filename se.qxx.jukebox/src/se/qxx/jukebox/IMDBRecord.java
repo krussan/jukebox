@@ -9,6 +9,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
+import org.apache.commons.lang3.StringUtils;
+
 import se.qxx.jukebox.Log.LogType;
 
 public class IMDBRecord { 
@@ -20,6 +22,7 @@ public class IMDBRecord {
 	private String director = "";
 	private String story = "";
 	private byte[] image = null;
+	private String title = "";
 	
 	private IMDBRecord() {
 	}
@@ -44,6 +47,23 @@ public class IMDBRecord {
 		Pattern p;
 		Matcher m;
 
+		// Title
+		try {
+			//p = Pattern.compile("<h1[^>]*?itemprop=\"name\"[^>]*?>(.*?)(<[^>]*>(.*?))*</h1>", Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+			//p = Pattern.compile("<h1[^>]*?itemprop=\"name\"[^>]*?>(.*?(<[^>]*>.*?)*</h1>", Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+			p = Pattern.compile("<h1[^>]*?itemprop=\"name\"[^>]*?>(.*?)<", Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+			//<h1[^>]*?itemprop="name"[^>]*?>(.*?)<
+			m = p.matcher(webResult);
+			
+			if (m.find()) {
+				String title = StringUtils.trim(m.group(1));
+				Log.Debug(String.format("Title found :: %s", title), LogType.FIND);
+				this.setTitle(title);
+			}
+		}
+		catch (Exception e) {
+			Log.Error(String.format("IMDBFinder for url %s - unable to set title", url) , LogType.MAIN, e);
+		}
 		
 		// Poster
 		try {
@@ -59,6 +79,7 @@ public class IMDBRecord {
 			}
 		}
 		catch (Exception e) {
+			Log.Error(String.format("IMDBFinder for url %s - unable to set poster", url) , LogType.MAIN, e);
 		}
 		
 		
@@ -244,5 +265,12 @@ public class IMDBRecord {
 	public List<String> getAllGenres() {
 		return this.genres;
 	}
-	
+
+	public String getTitle() {
+		return title;
+	}
+
+	private void setTitle(String title) {
+		this.title = title;
+	}
 }

@@ -8,6 +8,9 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
+import se.qxx.jukebox.settings.imdb.Imdb;
+import se.qxx.jukebox.settings.imdb.ImdbSettings;
+
 
 public class Settings {
 
@@ -23,12 +26,16 @@ public class Settings {
 		if (_instance == null) {
 			_instance = new Settings();
 		}
-		
+			
 		return _instance;
 	}
 	
 	public static JukeboxListenerSettings get() {
 		return getInstance()._settings;
+	}
+	
+	public static Imdb imdb() {
+		return ImdbSettings.get();
 	}
 	
 	public static void readSettings() throws IOException, JAXBException {

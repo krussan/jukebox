@@ -9,6 +9,8 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.code.regexp.NamedMatcher;
 import com.google.code.regexp.NamedPattern;
 import com.google.protobuf.ByteString;
@@ -71,6 +73,8 @@ public class IMDBFinder {
 			nextSearch = Util.getCurrentTimestamp() + n;
 			
 			if (rec != null) {
+				// get releaseInfo to get the correct international title
+				// c
 				Builder b = Movie.newBuilder().mergeFrom(m)
 						.setImdbUrl(rec.getUrl())
 						.setDirector(rec.getDirector())
@@ -78,6 +82,11 @@ public class IMDBFinder {
 						.setStory(rec.getStory())
 						.setRating(rec.getRating())
 						.addAllGenre(rec.getAllGenres());
+				
+				if (!StringUtils.isEmpty(rec.getTitle())) 
+					b.setTitle(rec.getTitle());
+				else 
+					Log.Debug(String.format("Error finding title for %s", m.getTitle()), LogType.FIND);
 				
 				if (rec.getImage() != null)
 					b.setImage(ByteString.copyFrom(rec.getImage()));

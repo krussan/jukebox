@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<imdb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="imdb.xsd">
+    <settings
+        preferredTitleLanguage="default"
+    />
+    <searchUrl><![CDATA[http://www.imdb.com/find?s=tt&q=%%TITLE%%]]></searchUrl>
+    <searchPatterns>
+     <searchResultPattern
+         name="PopularTitles"
+         enabled="true"
+         priority="1"
+         groupBlock="3"
+         groupRecordUrl="1"
+         groupRecordYear="2">         
+ 		<blockPattern>
+	    	<![CDATA[<p>(.*?)Popular\s*Titles(.*?)<table>(.*?)<\/table>]]>
+		</blockPattern>
+ 		<recordPattern>
+ 		    <![CDATA[<a\s*href="([^"]*?)"[^>]*>[^<]+?</a>\s*\((\d{4})[^\)]*?\)]]>
+		</recordPattern>
+     </searchResultPattern>
+     <searchResultPattern
+         name="ExactMatches"
+         enabled="true"
+         priority="2"
+         groupBlock="3"
+         groupRecordUrl="1"
+         groupRecordYear="2">
+ 		<blockPattern>
+		    <![CDATA[<p>(.*?)Titles\s*\(Exact\s*Matches\)(.*?)<table>(.*?)<\/table>]]>
+		</blockPattern>
+ 		<recordPattern>
+ 		    <![CDATA[<a\s*href="([^"]*?)"[^>]*>[^<]+?</a>\s*\((\d{4})[^\)]*?\)]]>
+		</recordPattern>
+     </searchResultPattern>
+	 <searchResultPattern
+         name="ApproxMatches"
+         enabled="true"
+         priority="3"
+         groupBlock="3"
+         groupRecordUrl="1"
+         groupRecordYear="2">         
+ 		<blockPattern>
+		    <![CDATA[<p>(.*?)Titles\s*\(Approx\s*Matches\)(.*?)<table>(.*?)<\/table>]]>
+		</blockPattern>
+ 		<recordPattern>
+ 		    <![CDATA[<a\s*href="([^"]*?)"[^>]*>[^<]+?</a>\s*\((\d{4})[^\)]*?\)]]>
+		</recordPattern>
+     </searchResultPattern>	      	      
+    </searchPatterns>
+    <infoPatterns>
+        <infoPattern type="title" group="1">
+            <regex><![CDATA[<h1[^>]*?itemprop="name"[^>]*?>(.*?)<]]></regex>
+        <infoPattern type="poster" group="1">
+            <regex><![CDATA[<img\s*src="([^"]*)"[^>]*?alt="[^"]*Poster]]></regex>
+        <infoPattern type="story" group="1">
+            <regex><![CDATA[<p\s*itemprop="description">(.*?)</p>]]></regex>
+        <infoPattern type="year" group="1">
+            <regex><![CDATA[<a\s*href="/year/(\d{4})/">]]></regex>
+        <infoPattern type="rating" group="1">
+            <regex><![CDATA[<span\s*itemprop="ratingValue"\s*>((\d\.\d)|(\d\d)|(\d\d\.\d)|(\d\d\.\d\d))]]></regex>
+        <infoPattern type="genres" group="1">
+            <regex><![CDATA[href="/genre/[^"]*"\s*>(.*?)</a>]]></regex>
+        <infoPattern type="duration" group="1">
+            <regex><![CDATA[<time\s*itemprop="duration".*?>(\d{1,3})\s*min</time>]]></regex>
+        <infoPattern type="director" group="1">
+            <regex><![CDATA[itemprop="director"\s*>(.*?)</a>]]></regex>
+    </infoPatterns>
+</imdb>

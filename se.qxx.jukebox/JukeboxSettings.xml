@@ -35,7 +35,7 @@
   	<splitter>
   		<regex>
   		    <!-- Matches Batman.Under.The.Red.Hood.2010.720p.XviD.AC3-ViSiON.avi -->
-  			<![CDATA[(?<title>(?<g1>\w[.|_|\s-]*)*)(?<g8>[\[|(]?(?<year>(?<decade>19|20)\d{2})[\]|)]?)+[.|_|\s-]*(?<g2>\[?(?<type>1080p|720p|DVDScr|DVDSCR|DvDRip|DVDRip|BRRip|BDRip|PPVRIP|PPV|TELESYNC|TS|HDRip|R5\s*LINE|R5\s*LiNE|R5\s*Line|CAM)\]?)?[.|_|\s-]*(?<g3>\[?(?<format>Xvid|XviD|XViD|XvID|XVID|x264|IFLIX)\]?)?[.|_|\s-]*(?<g4>\[?(?<sound>AC3\s5\.1|AC3)\]?)?[.|_|\s-]*(?<g5>\[(?<language>ENG|SWE)\])?[.|_|\s-]*(?<group>.*)[.|_|\s-]*(?<cd>Part[.|_|\s-]*1|Part[.|_|\s-]*2)?(?<cd>CD[.|_|\s-]*1|CD[.|_|\s-]*2)?]]>
+  			<![CDATA[(?<title>(?<g1>\w[.|_|\s|-]*)*)(?<g8>[\[|(]?(?<year>(?<decade>19|20)\d{2})[\]|)]?)+[.|_|\s|-]*(?<g2>\[?(?<type>1080p|720p|DVDScr|DVDSCR|DvDRip|DVDRip|BRRip|BDRip|PPVRIP|PPV|TELESYNC|TS|HDRip|R5\s*LINE|R5\s*LiNE|R5\s*Line|CAM)\]?)?[.|_|\s|-]*(?<g3>\[?(?<format>Xvid|XviD|XViD|XvID|XVID|x264|IFLIX)\]?)?[.|_|\s|-]*(?<g4>\[?(?<sound>AC3\s5\.1|AC3)\]?)?[.|_|\s|-]*(?<g5>\[(?<language>ENG|SWE)\])?[.|_|\s|-]*(?<group>.*)[.|_|\s|-]*(?<cd>Part[.|_|\s|-]*1|Part[.|_|\s|-]*2)?(?<cd>CD[.|_|\s|-]*1|CD[.|_|\s|-]*2)?]]>
   		</regex>
   		<ignore>
   		    <![CDATA[READNFO|CAM|LIMITED|SWESUB|UNRATED|REPACK|\d{2}K|UNRATED|V3|\d{1,3}MB|HDtv|i2p|EXTENDED]]>
@@ -43,7 +43,7 @@
   	</splitter>
   	<splitter>
   		<regex>
-  			<![CDATA[(?<title>(?<g1>\w[.|_|\s-]*)*)\[?(?<type>1080p|720p|DVDScr|DVDSCR|DvDRip|DVDRip|BRRip|BDRip|PPVRIP|PPV|TELESYNC|TS|HDRip|R5\s*LINE|R5\s*LiNE|R5\s*Line|CAM)\]?[.|_|\s-]*(?<g2>\[?(?<format>Xvid|XviD|XViD|XvID|XVID|x264|IFLIX)\]?)?[.|_|\s-]*(?<g3>\[?(?<sound>AC3\s5\.1|AC3)\]?)?[.|_|\s-]*(?<g4>\[(?<language>ENG|SWE)\])?[.|_|\s-]*(?<group>.*)]]>
+  			<![CDATA[(?<title>(?<g1>\w[.|_|\s|-]*)*)\[?(?<type>1080p|720p|DVDScr|DVDSCR|DvDRip|DVDRip|BRRip|BDRip|PPVRIP|PPV|TELESYNC|TS|HDRip|R5\s*LINE|R5\s*LiNE|R5\s*Line|CAM)\]?[.|_|\s|-]*(?<g2>\[?(?<format>Xvid|XviD|XViD|XvID|XVID|x264|IFLIX)\]?)?[.|_|\s|-]*(?<g3>\[?(?<sound>AC3\s5\.1|AC3)\]?)?[.|_|\s|-]*(?<g4>\[(?<language>ENG|SWE)\])?[.|_|\s|-]*(?<group>.*)]]>
   		</regex>
   		<ignore>
   		    <![CDATA[READNFO|CAM|LIMITED|SWESUB|UNRATED|REPACK|\d{2}K|UNRATED|V3|\d{1,3}MB|HDtv|i2p|EXTENDED]]>
@@ -60,8 +60,58 @@
   </stringSplitters>
   <builders>
       <builder class="se.qxx.jukebox.builders.FilenameBuilder" enabled="true" weight="1" />
-      <builder class="se.qxx.jukebox.builders.ParentDirectoryBuilder" enabled="true" wight="1" />
+      <builder class="se.qxx.jukebox.builders.ParentDirectoryBuilder" enabled="true" weight="1" />
   </builders>
+  <imdb>
+      <searchUrl>
+          <![CDATA[http://www.imdb.com/find?s=tt&q=%%TITLE%%]]>
+      </searchUrl>
+      <searchPatterns>
+	      <searchResultPattern
+	          name="PopularTitles"
+	          enabled="true"
+	          priority="1">
+	  		<blockPattern group="3">
+			    <![CDATA[<p>(.*?)Popular\s*Titles(.*?)<table>(.*?)<\/table>]]>
+			</blockPattern>
+	  		<recordPattern groupUrl="1" groupYear="2">
+	  		    <![CDATA[<a\s*href="([^"]*?)"[^>]*>[^<]+?</a>\s*\((\d{4})[^\)]*?\)]]>
+	 		</recordPattern>
+	      </searchResultPattern>
+	      <searchResultPattern
+	          name="ExactMatches"
+	          enabled="true"
+	          priority="2">
+	  		<blockPattern group="3">
+			    <![CDATA[<p>(.*?)Titles\s*\(Exact\s*Matches\)(.*?)<table>(.*?)<\/table>]]>
+			</blockPattern>
+	  		<recordPattern groupUrl="1" groupYear="2">
+	  		    <![CDATA[<a\s*href="([^"]*?)"[^>]*>[^<]+?</a>\s*\((\d{4})[^\)]*?\)]]>
+	 		</recordPattern>
+	      </searchResultPattern>
+		  <searchResultPattern
+	          name="ApproxMatches"
+	          enabled="true"
+	          priority="3">
+	  		<blockPattern group="3">
+			    <![CDATA[<p>(.*?)Titles\s*\(Approx\s*Matches\)(.*?)<table>(.*?)<\/table>]]>
+			</blockPattern>
+	  		<recordPattern groupUrl="1" groupYear="2">
+	  		    <![CDATA[<a\s*href="([^"]*?)"[^>]*>[^<]+?</a>\s*\((\d{4})[^\)]*?\)]]>
+	 		</recordPattern>
+	      </searchResultPattern>	      	      
+      </patterns>
+      <infoPatterns>
+          <infoPattern type="title" group="1"><![CDATA[<h1[^>]*?itemprop="name"[^>]*?>(.*?)<]]>
+          <infoPattern type="poster" group="1"><![CDATA[<img\s*src="([^"]*)"[^>]*?alt="[^"]*Poster]]>
+          <infoPattern type="story" group="1"><![CDATA[<p\s*itemprop="description">(.*?)</p>]]>
+          <infoPattern type="year" group="1"><![CDATA[<a\s*href="/year/(\d{4})/">]]> 
+          <infoPattern type="rating" group="1"><![CDATA[<span\s*itemprop="ratingValue"\s*>((\d\.\d)|(\d\d)|(\d\d\.\d)|(\d\d\.\d\d))]]>
+          <infoPattern type="genres" group="1"><![CDATA[href="/genre/[^"]*"\s*>(.*?)</a>]]>
+          <infoPattern type="duration" group="1"><![CDATA[<time\s*itemprop="duration".*?>(\d{1,3})\s*min</time>]]>
+          <infoPattern type="director" group="1"><![CDATA[itemprop="director"\s*>(.*?)</a>]]>
+      </infoPatterns>
+  </imdb>
   <tcpListener>
     <port value="2152"/>
   </tcpListener>
