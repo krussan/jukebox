@@ -22,4 +22,5 @@
     <string name="lblRating">Rating</string>
     <string name="lblConnect">Connect</string>
     <string name="lblSelectMediaPlayer">Player</string>
+    <string name="lblMediaPlayerName">Media player</string>
 </resources>

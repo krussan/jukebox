@@ -52,11 +52,11 @@ public class Model {
 		
 	private static Model _instance;
 	private List<Movie> _movies;
-	private List<String> players;
+	private List<String> _players;
 	
 	private Model() {
 		_movies = new ArrayList<Movie>();
-		players = new ArrayList<String>();
+		_players = new ArrayList<String>();
 	}
 	
 	public static Model get() {
@@ -107,13 +107,24 @@ public class Model {
 		this.currentMovie = currentMovie;
 	}
 	
-	public void getPlayers() {
+	public List<String> getPlayers() {
+		return _players;
+	}
+	
+	public void addAllPlayers(List<String> players) {
+		_players.addAll(players);
+		Collections.sort(_players);
 		
+		fireModelUpdatedEvent();
+	}
+	
+	public void clearPlayers() {
+		_players.clear();
+		fireModelUpdatedEvent();
 	}
 	
 	public void sortMovies() {
 		Collections.sort(_movies, new Comparator<Movie>() {
-
 			@Override
 			public int compare(Movie lhs, Movie rhs) {
 				

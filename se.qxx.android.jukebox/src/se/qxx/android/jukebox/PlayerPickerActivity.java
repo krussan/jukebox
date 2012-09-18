@@ -8,14 +8,18 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-public class PlayerPickerActivity extends ListActivity {
+public class PlayerPickerActivity extends JukeboxActivityBase {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
-	
-	    ListAdapter la = new ArrayAdapter<String>(this, resource, textViewResourceId)
+
+	    ListView view = (ListView)findViewById(R.id.listPlayers);
 	    
+	    
+	    ListAdapter la = new ArrayAdapter<String>(this, R.id.listMediaPlayer, R.id.txtPlayerName);
+	    view.setAdapter(la);
 	}
 
 }
+ 

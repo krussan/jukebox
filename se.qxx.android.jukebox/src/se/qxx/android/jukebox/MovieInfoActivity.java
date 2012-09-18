@@ -19,7 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MovieInfoActivity extends Activity {
+public class MovieInfoActivity extends JukeboxActivityBase {
 
 	/** Called when the activity is first created. */
 	@Override
@@ -43,14 +43,6 @@ public class MovieInfoActivity extends Activity {
 	    GUITools.setTextOnTextview(R.id.textViewDuration, String.format("Duration :: %s h %s m", hours, minutes) , this);
 	    GUITools.setTextOnTextview(R.id.textViewRating, String.format("Rating :: %s / 10", m.getRating()) , this);
 	    
-	}
-	
-	private void sendCommand(String message, JukeboxRequestType type) {
-       	ProgressDialog d = ProgressDialog.show(this, "Jukebox", message);
-
-       	JukeboxConnectionHandler h = new JukeboxConnectionHandler(new ProgressDialogHandler(this, d), type);
-       	Thread t = new Thread(h);
-       	t.start();				
 	}
 		
 	public void onButtonClicked(View v) {

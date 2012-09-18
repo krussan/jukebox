@@ -26,6 +26,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestWakeup;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponse;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseError;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers;
 
 import se.qxx.android.tools.Logger;
 
@@ -192,8 +193,12 @@ public class JukeboxConnectionHandler implements Runnable {
     	try {
     		switch (type) {
     		case ListMovies:
-    			JukeboxResponseListMovies resp = JukeboxResponseListMovies.parseFrom(data);
-    			Model.get().addAllMovies(resp.getMoviesList());
+    			JukeboxResponseListMovies resp1 = JukeboxResponseListMovies.parseFrom(data);
+    			Model.get().addAllMovies(resp1.getMoviesList());
+    			break;
+    		case ListPlayers:
+    			JukeboxResponseListPlayers resp2 = JukeboxResponseListPlayers.parseFrom(data);
+    			Model.get().addAllPlayers(resp2.getHostnameList());
     			break;
     		case MarkSubtitle:
     			break;
