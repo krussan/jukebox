@@ -31,7 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-public class JukeboxActivity extends Activity implements ModelUpdatedEventListener, OnItemClickListener {
+public class JukeboxActivity extends JukeboxActivityBase implements ModelUpdatedEventListener, OnItemClickListener {
 	private EditText text;
 	private JukeboxMovieLayoutAdapter _jukeboxMovieLayoutAdapter;
 	
@@ -141,6 +141,10 @@ public class JukeboxActivity extends Activity implements ModelUpdatedEventListen
 			connect();
 			break;
 		case R.id.btnSelectMediaPlayer:
+			Logger.Log().i("selectMediaPlayerClicked");
+			
+			Intent i = new Intent(this, PlayerPickerActivity.class);
+			startActivity(i);
 			break;
 		default:
 			break;
@@ -149,21 +153,9 @@ public class JukeboxActivity extends Activity implements ModelUpdatedEventListen
     }
     
     public void connect() {
-       	ProgressDialog d = ProgressDialog.show(this, "Jukebox", "Getting list of movies");
-
-       	JukeboxConnectionHandler h = new JukeboxConnectionHandler(new ProgressDialogHandler(this, d), JukeboxRequestType.ListMovies);
-       	Thread t = new Thread(h);
-       	t.start();    	
+    	this.sendCommand("Getting list of movies", JukeboxRequestType.ListMovies);
     }
     
-    // This method is called at button click because we assigned the name to the
- 	// "On Click property" of the button
- 	public void myClickHandler(View view) {
- 		switch (view.getId()) {
-
- 		}
- 	}
- 	
 
 	@Override
 	public void handleModelUpdatedEventListener(EventObject e) {
@@ -172,7 +164,6 @@ public class JukeboxActivity extends Activity implements ModelUpdatedEventListen
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
-		
 		Movie m = (Movie)arg0.getItemAtPosition(pos);
 		Model.get().setCurrentMovie(m);
 		Intent i = new Intent(this, MovieInfoActivity.class);
