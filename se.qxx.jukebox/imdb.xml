@@ -62,6 +62,21 @@
 		</recordPattern>
      </searchResultPattern>	      	      
     </searchPatterns>
+	 <searchResultPattern
+         name="PartialMatches"
+         enabled="true"
+         priority="4"
+         groupBlock="3"
+         groupRecordUrl="1"
+         groupRecordYear="2">         
+ 		<blockPattern>
+		    <![CDATA[<p>(.*?)Titles\s*\(Partial\s*Matches\)(.*?)<table>(.*?)<\/table>	]]>
+		</blockPattern>
+ 		<recordPattern>
+ 		    <![CDATA[<a\s*href="([^"]*?)"[^>]*>[^<]+?</a>\s*\((\d{4})[^\)]*?\)]]>
+		</recordPattern>
+     </searchResultPattern>	      	      
+    </searchPatterns>
     <infoPatterns>
         <infoPattern type="title" group="1">
             <regex><![CDATA[<h1[^>]*?itemprop="name"[^>]*?>(.*?)<]]></regex>
