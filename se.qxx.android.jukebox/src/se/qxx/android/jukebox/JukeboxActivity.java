@@ -80,7 +80,6 @@ public class JukeboxActivity extends JukeboxActivityBase implements ModelUpdated
 		
 		switch (id) {
 		case R.id.btnRefresh:
-		case R.id.btnConnect:
 	    	Logger.Log().i("onConnectClicked");
 
 	    	Model.get().clearMovies();
