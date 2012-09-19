@@ -16,18 +16,21 @@
             android:background="@drawable/btnrefresh"
             android:onClick="onButtonClicked"
             />
-		<Button android:text="@string/lblConnect" 
-		    android:id="@+id/btnConnect" 
-		    android:layout_width="wrap_content" 
-		    android:layout_height="wrap_content"
-			android:onClick="onButtonClicked"></Button>
 	
 		<Button android:text="@string/lblSelectMediaPlayer" 
 		    android:id="@+id/btnSelectMediaPlayer" 
 		    android:layout_width="wrap_content" 
 		    android:layout_height="wrap_content"
 			android:onClick="onButtonClicked"></Button>
-		
+
+		<Button 
+		    android:id="@+id/btnOnOff" 
+		    android:layout_width="wrap_content" 
+		    android:layout_height="wrap_content"
+			android:onClick="onButtonClicked"
+			android:background="@drawable/btnonoff"
+		/>
+						
 	</LinearLayout>
 	<ListView
 	    android:id="@+id/listView1"
