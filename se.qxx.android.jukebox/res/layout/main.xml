@@ -9,10 +9,23 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal" >
     
-		<Button android:text="@string/lblConnect" android:id="@+id/btnConnect" android:layout_width="wrap_content" android:layout_height="wrap_content"
+        <Button 
+            android:id="@+id/btnRefresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btnrefresh"
+            android:onClick="onButtonClicked"
+            />
+		<Button android:text="@string/lblConnect" 
+		    android:id="@+id/btnConnect" 
+		    android:layout_width="wrap_content" 
+		    android:layout_height="wrap_content"
 			android:onClick="onButtonClicked"></Button>
 	
-		<Button android:text="@string/lblSelectMediaPlayer" android:id="@+id/btnSelectMediaPlayer" android:layout_width="wrap_content" android:layout_height="wrap_content"
+		<Button android:text="@string/lblSelectMediaPlayer" 
+		    android:id="@+id/btnSelectMediaPlayer" 
+		    android:layout_width="wrap_content" 
+		    android:layout_height="wrap_content"
 			android:onClick="onButtonClicked"></Button>
 		
 	</LinearLayout>

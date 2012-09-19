@@ -5,6 +5,7 @@
       android:versionName="1.0">
     <uses-sdk android:minSdkVersion="10" />
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application android:icon="@drawable/icon" android:label="@string/app_name">
         <activity android:name=".JukeboxActivity"
@@ -16,7 +17,7 @@
         </activity>
         <activity android:name="JukeboxPreferenceActivity" android:theme="@android:style/Theme.Black.NoTitleBar"></activity>
         <activity android:name="MovieInfoActivity" android:theme="@android:style/Theme.Black.NoTitleBar"></activity>
-        <activity android:name="PlayerPickerActivity"></activity>
+        <activity android:name=".PlayerPickerActivity" android:theme="@android:style/Theme.Black.NoTitleBar"></activity>
 
     </application>
 </manifest>

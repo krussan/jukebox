@@ -1,39 +1,26 @@
 package se.qxx.android.jukebox;
 
 import java.util.EventObject;
-import java.util.List;
 
-import se.qxx.android.jukebox.Model.ModelUpdatedEventListener;
-import se.qxx.android.tools.GUITools;
+import se.qxx.android.jukebox.model.Model;
+import se.qxx.android.jukebox.model.ModelUpdatedEvent;
+import se.qxx.android.jukebox.model.ModelUpdatedType;
+import se.qxx.android.jukebox.model.Model.ModelUpdatedEventListener;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
-import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RadioButton;
-import android.widget.TextView;
-import android.widget.Toast;
 
 
 public class JukeboxActivity extends JukeboxActivityBase implements ModelUpdatedEventListener, OnItemClickListener {
-	private EditText text;
-	private JukeboxMovieLayoutAdapter _jukeboxMovieLayoutAdapter;
+	private MovieLayoutAdapter _jukeboxMovieLayoutAdapter;
 	
     private Runnable modelResultUpdatedRunnable = new Runnable() {
 
@@ -43,48 +30,6 @@ public class JukeboxActivity extends JukeboxActivityBase implements ModelUpdated
         }
     };
     
-	private class JukeboxMovieLayoutAdapter extends ModelAdapter {
-		
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			View v = convertView; 
-			
-			try {
-				
-				
-	            if (v == null) {
-	                LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	                v = vi.inflate(R.layout.movielistrow, null);
-	            }
-	            Movie m = (Movie)this.getItem(position);
-	            if (m != null) {
-	            	TextView tt = (TextView) v.findViewById(R.id.toptext);
-	            	TextView bt = (TextView) v.findViewById(R.id.bottomtext);
-	            	ImageView iv = (ImageView) v.findViewById(R.id.imageView1);
-	            	
-	            	if (tt != null) {
-	                    tt.setText(m.getTitle());                            }
-	            	if(bt != null){
-	                    bt.setText(String.valueOf(m.getYear()));
-	                if (iv != null) {
-	            	    if (!m.getImage().isEmpty()) {
-	            	    	Bitmap image = GUITools.getBitmapFromByteArray(m.getImage().toByteArray());
-	            	    	Bitmap scaledImage = GUITools.scaleImage(80, image, v.getContext());
-	            	    	iv.setImageBitmap(scaledImage);
-	            	    }
-	            	    else
-	            	    	iv.setImageResource(R.drawable.icon);
-	                }
-	              }
-	            }
-			}
-			catch (Exception e) {
-				Logger.Log().e("Error occured while populating list", e);
-			}
-			
-            return v;
-		}
-	}
 	
     /** Called when the activity is first created. */
     @Override
@@ -99,7 +44,7 @@ public class JukeboxActivity extends JukeboxActivityBase implements ModelUpdated
 		ListView v = (ListView)findViewById(R.id.listView1);
 		v.setOnItemClickListener(this);
 		
-		_jukeboxMovieLayoutAdapter = new JukeboxMovieLayoutAdapter(); 
+		_jukeboxMovieLayoutAdapter = new MovieLayoutAdapter(this); 
 		v.setAdapter(_jukeboxMovieLayoutAdapter);
 		
 		Model.get().addEventListener(this);
@@ -134,6 +79,7 @@ public class JukeboxActivity extends JukeboxActivityBase implements ModelUpdated
 		int id = v.getId();
 		
 		switch (id) {
+		case R.id.btnRefresh:
 		case R.id.btnConnect:
 	    	Logger.Log().i("onConnectClicked");
 
@@ -159,7 +105,11 @@ public class JukeboxActivity extends JukeboxActivityBase implements ModelUpdated
 
 	@Override
 	public void handleModelUpdatedEventListener(EventObject e) {
-		runOnUiThread(modelResultUpdatedRunnable);
+		ModelUpdatedEvent ev = (ModelUpdatedEvent)e;
+		
+		if (ev.getType() == ModelUpdatedType.Movies) {
+			runOnUiThread(modelResultUpdatedRunnable);
+		}
 	}
 
 	@Override

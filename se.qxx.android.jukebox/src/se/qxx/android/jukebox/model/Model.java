@@ -1,4 +1,4 @@
-package se.qxx.android.jukebox;
+package se.qxx.android.jukebox.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,18 +11,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 public class Model {
 	
 	private Movie currentMovie;
-	
-	public class ModelUpdatedEvent extends java.util.EventObject {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 6575858181792885533L;
-
-		public ModelUpdatedEvent(Object source) {
-			super(source);
-		}
-	}
-	
+		
 	public interface ModelUpdatedEventListener {
 		public void handleModelUpdatedEventListener(java.util.EventObject e);
 	}
@@ -38,8 +27,8 @@ public class Model {
 		_listeners.remove(listener);
 	}
 	
-	private synchronized void fireModelUpdatedEvent() {
-		ModelUpdatedEvent event = new ModelUpdatedEvent(this);
+	private synchronized void fireModelUpdatedEvent(ModelUpdatedType type) {
+		ModelUpdatedEvent event = new ModelUpdatedEvent(this, type);
 		Iterator<ModelUpdatedEventListener> i = _listeners.iterator();
 
 		while(i.hasNext())  {
@@ -68,23 +57,23 @@ public class Model {
 	
 	public void addMovie(Movie movie) {
 		_movies.add(movie);
-		fireModelUpdatedEvent();
+		fireModelUpdatedEvent(ModelUpdatedType.Movies);
 	}
 	
 	public void removeMovie(Movie movie) {
 		_movies.remove(movie);
-		fireModelUpdatedEvent();
+		fireModelUpdatedEvent(ModelUpdatedType.Movies);
 	}
 	
 	public void addAllMovies(List<Movie> movies) {
 		_movies.addAll(movies);
 		sortMovies(); 
-		fireModelUpdatedEvent();
+		fireModelUpdatedEvent(ModelUpdatedType.Movies);
 	}
 	
 	public void clearMovies() {
 		_movies.clear();
-		fireModelUpdatedEvent();
+		fireModelUpdatedEvent(ModelUpdatedType.Movies);
 	}
 	
 	public Movie getMovie(int position) {
@@ -115,12 +104,20 @@ public class Model {
 		_players.addAll(players);
 		Collections.sort(_players);
 		
-		fireModelUpdatedEvent();
+		fireModelUpdatedEvent(ModelUpdatedType.Players);
 	}
 	
 	public void clearPlayers() {
 		_players.clear();
-		fireModelUpdatedEvent();
+		fireModelUpdatedEvent(ModelUpdatedType.Players);
+	}
+	
+	public int countPlayers() {
+		return _players.size();
+	}
+	
+	public String getPlayer(int index) {
+		return _players.get(index);
 	}
 	
 	public void sortMovies() {

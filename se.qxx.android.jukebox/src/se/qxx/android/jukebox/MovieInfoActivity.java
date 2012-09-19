@@ -2,6 +2,7 @@ package se.qxx.android.jukebox;
 
 import org.apache.commons.lang3.StringUtils;
 
+import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
@@ -21,34 +22,40 @@ import android.widget.Toast;
 
 public class MovieInfoActivity extends JukeboxActivityBase {
 
+	private View getRootView() {
+		return this.findViewById(R.id.rootMovieItem);
+	}
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.movieitem);
 	    Movie m = Model.get().getCurrentMovie();
-	    			    
+
+	    View rootView = this.getRootView();
+	    
 	    if (!m.getImage().isEmpty()) 
-	    	GUITools.setImageOnImageView(R.id.imageView1, m.getImage().toByteArray(), this);
+	    	GUITools.setImageOnImageView(R.id.imageView1, m.getImage().toByteArray(), rootView);
 	    	    
 	    int duration = m.getDuration();
 	    int hours = duration / 60;
 	    int minutes = duration % 60;
 	    
-	    GUITools.setTextOnTextview(R.id.textViewTitle, Html.fromHtml(m.getTitle()).toString(), this);
-	    GUITools.setTextOnTextview(R.id.textViewYear, Integer.toString(m.getYear()), this);
-	    GUITools.setTextOnTextview(R.id.textViewStory, Html.fromHtml(m.getStory()).toString(), this);
-	    GUITools.setTextOnTextview(R.id.textViewGenre, "Genre :: " + StringUtils.join(m.getGenreList(), " / "), this);
-	    GUITools.setTextOnTextview(R.id.textViewDirector, "Director :: " + Html.fromHtml(m.getDirector()).toString(), this);
-	    GUITools.setTextOnTextview(R.id.textViewDuration, String.format("Duration :: %s h %s m", hours, minutes) , this);
-	    GUITools.setTextOnTextview(R.id.textViewRating, String.format("Rating :: %s / 10", m.getRating()) , this);
+	    GUITools.setTextOnTextview(R.id.textViewTitle, Html.fromHtml(m.getTitle()).toString(), rootView);
+	    GUITools.setTextOnTextview(R.id.textViewYear, Integer.toString(m.getYear()), rootView);
+	    GUITools.setTextOnTextview(R.id.textViewStory, Html.fromHtml(m.getStory()).toString(), rootView);
+	    GUITools.setTextOnTextview(R.id.textViewGenre, "Genre :: " + StringUtils.join(m.getGenreList(), " / "), rootView);
+	    GUITools.setTextOnTextview(R.id.textViewDirector, "Director :: " + Html.fromHtml(m.getDirector()).toString(), rootView);
+	    GUITools.setTextOnTextview(R.id.textViewDuration, String.format("Duration :: %s h %s m", hours, minutes) , rootView);
+	    GUITools.setTextOnTextview(R.id.textViewRating, String.format("Rating :: %s / 10", m.getRating()) , rootView);
 	    
 	}
 		
 	public void onButtonClicked(View v) {
 		int id = v.getId();
-		GUITools.flashBtnColor(id, this);
-		GUITools.performHapticFeedback(id, this);
+		GUITools.flashBtnColor(id, this.getRootView());
+		GUITools.performHapticFeedback(id, this.getRootView());
 		
 		switch (id) {
 			case R.id.btnPlay:

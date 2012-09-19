@@ -15,18 +15,26 @@ import android.widget.TextView;
 
 public class GUITools {
 
-	public static void setTextOnTextview(int id, String text, Activity activity) {
-		TextView tv = (TextView)activity.findViewById(id);
-		tv.setText(text);
+	public static void setTextOnTextview(int id, String text, View v) {
+		TextView tv = (TextView)v.findViewById(id);
+		if (tv != null)
+			tv.setText(text);
 	}
 	
-	public static void setImageOnImageView(int id, Bitmap bitmap, Activity activity) {
-		ImageView iv = (ImageView)activity.findViewById(id);
-		iv.setImageBitmap(bitmap);
+	public static void setImageOnImageView(int id, Bitmap bitmap, View v) {
+		ImageView iv = (ImageView)v.findViewById(id);
+		if (iv != null)
+			iv.setImageBitmap(bitmap);
 	}
 	
-	public static void setImageOnImageView(int id, byte[] imageData, Activity activity) {
-		setImageOnImageView(id, getBitmapFromByteArray(imageData), activity);
+	public static void setImageResourceOnImageView(int id, int resourceid, View v) {
+		ImageView iv = (ImageView)v.findViewById(id);
+		if (iv != null)
+			iv.setImageResource(resourceid);
+	}
+	
+	public static void setImageOnImageView(int id, byte[] imageData, View v) {
+		setImageOnImageView(id, getBitmapFromByteArray(imageData), v);
 	}
 
 	public static void setImageOnImageView(ImageView imageView, byte[] imageData) {
@@ -69,43 +77,50 @@ public class GUITools {
 	    return Math.round((float)dp * density);
 	}
 	
-	public static void flashBtn (int btnToFlashID, int replaceImageID, int timeout, Activity activity){
-		final ImageButton btnToFlash = (ImageButton)activity.findViewById(btnToFlashID);
-		btnToFlash.setBackgroundResource(replaceImageID);
-	    Handler handler = new Handler(); 
-	    handler.postDelayed(new Runnable() { 
-	         public void run() { 
-	        	 btnToFlash.setBackgroundResource(0);
-	         } 
-	    }, timeout);
+	public static void flashBtn (int btnToFlashID, int replaceImageID, int timeout, View v){
+		final ImageButton btnToFlash = (ImageButton)v.findViewById(btnToFlashID);
+		if (btnToFlash != null) {
+			btnToFlash.setBackgroundResource(replaceImageID);
+		    Handler handler = new Handler(); 
+		    handler.postDelayed(new Runnable() { 
+		         public void run() { 
+		        	 btnToFlash.setBackgroundResource(0);
+		         } 
+		    }, timeout);
+		}
 	} 
 	
-	public static void flashBtn (int btnToFlashID, int replaceImageID, Activity activity){
-		flashBtn(btnToFlashID, replaceImageID, 50, activity);
+	public static void flashBtn (int btnToFlashID, int replaceImageID, View v){
+		flashBtn(btnToFlashID, replaceImageID, 50, v);
 	}	
 	
-	public static void flashBtnColor (int btnToFlashID, int color, int timeout, Activity activity){
-		final ImageButton btnToFlash = (ImageButton)activity.findViewById(btnToFlashID);
-		btnToFlash.setBackgroundColor(color);
-	    Handler handler = new Handler(); 
-	    handler.postDelayed(new Runnable() { 
-	         public void run() { 
-	        	 btnToFlash.setBackgroundColor(0);
-	         } 
-	    }, timeout);
+	public static void flashBtnColor (int btnToFlashID, int color, int timeout, View v){
+		final ImageButton btnToFlash = (ImageButton)v.findViewById(btnToFlashID);
+		if (btnToFlash != null) {
+			btnToFlash.setBackgroundColor(color);
+		    Handler handler = new Handler(); 
+		    handler.postDelayed(new Runnable() { 
+		         public void run() { 
+		        	 btnToFlash.setBackgroundColor(0);
+		         } 
+		    }, timeout);
+		}
 	}
 	
-	public static void flashBtnColor (int btnToFlashID, int color,Activity activity){
-		flashBtnColor(btnToFlashID, color, 50, activity);
+	public static void flashBtnColor (int btnToFlashID, int color,View v){
+		flashBtnColor(btnToFlashID, color, 50, v);
 	}
 	
-	public static void flashBtnColor (int btnToFlashID, Activity activity){
-		flashBtnColor(btnToFlashID, Color.WHITE, 50, activity);
+	public static void flashBtnColor (int btnToFlashID, View v){
+		flashBtnColor(btnToFlashID, Color.WHITE, 50, v);
 	}
 	
-	public static void performHapticFeedback(int id, Activity activity) {
-		View v = activity.findViewById(id);
-		v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+	public static void performHapticFeedback(int id, View v) {
+		View view = v.findViewById(id);
+		
+		if (view!=null) {
+			view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+		}
 	}
 }
 

@@ -23,4 +23,5 @@
     <string name="lblConnect">Connect</string>
     <string name="lblSelectMediaPlayer">Player</string>
     <string name="lblMediaPlayerName">Media player</string>
+    <string name="lblContentRefresh">Refresh</string>
 </resources>

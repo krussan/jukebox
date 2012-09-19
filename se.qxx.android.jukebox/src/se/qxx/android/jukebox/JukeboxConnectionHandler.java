@@ -16,6 +16,7 @@ import android.util.Log;
 
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequest;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestPauseMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStartMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStopMovie;
@@ -28,6 +29,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseError;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers;
 
+import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.Logger;
 
 public class JukeboxConnectionHandler implements Runnable {
@@ -67,6 +69,9 @@ public class JukeboxConnectionHandler implements Runnable {
 			break;
 		case JukeboxRequestType.Suspend_VALUE:
 			b = suspend();
+			break;
+		case JukeboxRequestType.ListPlayers_VALUE:
+			b = listPlayers();
 			break;
 		default:
 		}
@@ -133,7 +138,14 @@ public class JukeboxConnectionHandler implements Runnable {
 		
 		return sendAndRetreive(JukeboxRequestType.Suspend, sm);		
 	}
-	
+
+	private Bundle listPlayers() {
+		JukeboxRequestListPlayers sm = JukeboxRequestListPlayers.newBuilder()
+				.build();
+		
+		return sendAndRetreive(JukeboxRequestType.ListPlayers, sm);		
+	}
+
 	private Bundle sendAndRetreive(JukeboxRequestType type, com.google.protobuf.GeneratedMessage message) {
     	Logger.Log().i("opening socket");
     	

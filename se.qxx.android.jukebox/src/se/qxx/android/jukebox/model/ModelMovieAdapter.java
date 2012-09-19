@@ -1,14 +1,13 @@
-package se.qxx.android.jukebox;
+package se.qxx.android.jukebox.model;
 
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-public abstract class ModelAdapter extends BaseAdapter {
+public abstract class ModelMovieAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		
 		return Model.get().countMovies();
 	}
 	
