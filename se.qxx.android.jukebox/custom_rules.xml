@@ -1,14 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="custom_rules">
-    <property name="apk.deploy.path" value="chris@ULTRA:/c/media/Dev/src/jukebox-apk" />
-	<property name="key.file" value="D:/util/keys/BLACK_HELL_openSSH.ppk" />
-        
+
+    <include file="../global_properties.xml" />		
+    
     <target name="-post-build">
 		<scp 
 			file="${out.final.file}" 
-			todir="${apk.deploy.path}" 
+			todir="${jukebox.apk.deploy.path}" 
 			trust="true"
-			keyfile="${key.file}"
+			keyfile="${jukebox.key.file}"
 		/>
     </target>
+    
+    <target name="-pre-build">
+		<javac 
+		    srcdir="${jukebox.domain.src.dir}" 
+		    destdir="${out.classes.absolute.dir}" 
+		    includeantruntime="false" 
+			classpathref="jukebox.classpath"		    
+		    debug="false"
+	    />
+    </target>    
 </project>

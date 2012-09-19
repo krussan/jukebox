@@ -61,7 +61,6 @@
  		    <![CDATA[<a\s*href="([^"]*?)"[^>]*>[^<]+?</a>\s*\((\d{4})[^\)]*?\)]]>
 		</recordPattern>
      </searchResultPattern>	      	      
-    </searchPatterns>
 	 <searchResultPattern
          name="PartialMatches"
          enabled="true"

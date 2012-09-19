@@ -6,10 +6,6 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 
 public class JukeboxActivityBase extends Activity {
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-	}
 	
 	protected void sendCommand(String message, JukeboxRequestType type) {
        	ProgressDialog d = ProgressDialog.show(this, "Jukebox", message);

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="global_properties">
+	<property name="jukebox.jdk.dir" value="C:/Program Files/Java/jdk1.6.0_30" />
+	<property name="jukebox.protoc.dir" value="D:/util" />
+	<property name="jukebox.root.dir" value="D:/Dev/svn/jukebox" />
+	<property name="jukebox.lib.dir" value="${jukebox.root.dir}/lib" />	
+	<property name="jukebox.solution.dir" value="${jukebox.root.dir}/trunk" />
+
+	<property name="jukebox.domain.src.dir" value="${jukebox.solution.dir}/se.qxx.jukebox.domain/src" />
+
+	<property name="jukebox.deploy.server" value="ULTRA" />
+	<property name="jukebox.deploy.server.path" value="/c/media/Dev/src/jukebox" />
+	<property name="jukebox.deploy.server.path.apk" value="/c/media/Dev/src/jukebox-apk" />
+	<property name="jukebox.deploy.user" value="chris" />
+	<property name="jukebox.deploy.path" value="${jukebox.deploy.user}@${jukebox.deploy.server}:${jukebox.deploy.server.path}" />
+	<property name="jukebox.key.file" value="D:/util/keys/BLACK_HELL_openSSH.ppk" />
+
+	<property name="jukebox.apk.deploy.path" value="${jukebox.deploy.user}@${jukebox.deploy.server}:${jukebox.deploy.server.path.apk}" />
+
+	<path id="jukebox.classpath">
+        <fileset dir="${jukebox.lib.dir}" includes="**/*.jar"/>
+    </path>
+	
+</project>
