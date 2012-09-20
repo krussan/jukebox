@@ -78,7 +78,7 @@
     									<xs:element name="regex" type="xs:string">
     									</xs:element>
     								</xs:sequence>
-    								<xs:attribute name="type" type="xs:string">
+    								<xs:attribute name="type" type="InfoPatternType">
     								</xs:attribute>
     								<xs:attribute name="group" type="xs:int">
     								</xs:attribute>
@@ -89,4 +89,18 @@
     			</xs:element>
     		</xs:sequence>
     	</xs:complexType></xs:element>
+
+    <xs:simpleType name="InfoPatternType">
+    	<xs:restriction base="xs:string">
+    		<xs:enumeration value="title" />
+    		<xs:enumeration value="poster" />
+    		<xs:enumeration value="story" />
+    		<xs:enumeration value="year" />
+    		<xs:enumeration value="rating" />
+    		<xs:enumeration value="genres" />
+    		<xs:enumeration value="duration" />
+    		<xs:enumeration value="director" />
+    		
+    	</xs:restriction>
+    </xs:simpleType>
 </xs:schema>

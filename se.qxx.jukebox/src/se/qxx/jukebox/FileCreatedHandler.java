@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
+
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.builders.MovieBuilder;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
@@ -22,7 +24,7 @@ public class FileCreatedHandler implements INotifyClient {
 		String filename = f.getName();
 		String path = f.getPath();
 		// Added ignore on all filename that contains the string sample
-		if (Util.stringContainsIgnoreCase(filename, "sample")) {
+		if (StringUtils.containsIgnoreCase(filename, "sample")) {
 			Log.Info(String.format("Ignoring %s as this appears to be a sample", filename), LogType.FIND);
 		}
 		else {
