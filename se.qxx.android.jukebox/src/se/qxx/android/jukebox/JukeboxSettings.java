@@ -6,26 +6,40 @@ import android.preference.PreferenceManager;
 
 public class JukeboxSettings {
 	private static JukeboxSettings _instance = null;
-	SharedPreferences preferences;
+	private SharedPreferences preferences;
+	private SharedPreferences storage;
 	
-	public String get_serverIpAddress() {
-		return preferences.getString("serverIpAddress", "");
+	private final String SERVER_IP_ADDRESS = "serverIpAddress";
+	private final String SERVER_PORT = "serverPort";
+	private final String CURRENT_MEDIA_PLAYER = "currentMediaPlayer";
+	
+	public String getServerIpAddress() {
+		return preferences.getString(SERVER_IP_ADDRESS, "");
 	}
 
-	public void set_serverIpAddress(String _serverIpAddress) {
-		preferences.edit().putString("serverIpAddress", _serverIpAddress);
+	public void setServerIpAddress(String _serverIpAddress) {
+		preferences.edit().putString(SERVER_IP_ADDRESS, _serverIpAddress);
 	}
 	
-	public int get_serverPort() {
-		return Integer.parseInt(preferences.getString("serverPort", "2150"));
+	public int getServerPort() {
+		return Integer.parseInt(preferences.getString(SERVER_PORT, "2150"));
 	}
 
-	public void set_serverPort(int _serverPort) {
-		preferences.edit().putString("serverPort", String.valueOf(_serverPort));
+	public void setServerPort(int _serverPort) {
+		preferences.edit().putString(SERVER_PORT, String.valueOf(_serverPort));
+	}
+	
+	public String getCurrentMediaPlayer() {
+		return storage.getString(CURRENT_MEDIA_PLAYER, "vlc_main");
+	}
+	
+	public void setCurrentMediaPlayer(String mediaPlayerName) {
+		storage.edit().putString(CURRENT_MEDIA_PLAYER, mediaPlayerName);
 	}
 
 	private JukeboxSettings(Context c) {
 		preferences = PreferenceManager.getDefaultSharedPreferences(c);
+		storage = c.getSharedPreferences("jukeboxstorage", 0);
 	}
 			
 	public static JukeboxSettings init(Context c) {

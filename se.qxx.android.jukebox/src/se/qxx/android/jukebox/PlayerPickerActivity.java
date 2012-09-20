@@ -8,6 +8,7 @@ import se.qxx.android.jukebox.model.ModelUpdatedEvent;
 import se.qxx.android.jukebox.model.ModelUpdatedType;
 import se.qxx.android.jukebox.model.Model.ModelUpdatedEventListener;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -28,9 +29,8 @@ public class PlayerPickerActivity extends JukeboxActivityBase implements ModelUp
 	    
 	    this.sendCommand("Getting list of player", JukeboxRequestType.ListPlayers);
 	    
-	    adapter = new ArrayAdapter<String>(this, R.layout.playerpickerrow, R.id.txtPlayerName, Model.get().getPlayers());
+	    adapter = new PlayerLayoutAdapter(this, R.layout.playerpickerrow, R.id.txtPlayerName, Model.get().getPlayers());
 	    view.setAdapter(adapter);
-	    
 	}
 
 	@Override

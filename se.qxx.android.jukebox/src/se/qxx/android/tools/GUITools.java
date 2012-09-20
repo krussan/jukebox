@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.widget.ImageButton;
@@ -31,6 +32,12 @@ public class GUITools {
 		ImageView iv = (ImageView)v.findViewById(id);
 		if (iv != null)
 			iv.setImageResource(resourceid);
+	}
+
+	public static void setImageResourceOnImageButton(int id, int resourceid, View v) {
+		ImageButton btn = (ImageButton)v.findViewById(id);
+		if (btn != null)
+			btn.setImageResource(resourceid);
 	}
 	
 	public static void setImageOnImageView(int id, byte[] imageData, View v) {
@@ -121,6 +128,14 @@ public class GUITools {
 		if (view!=null) {
 			view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
 		}
+	}
+	
+	private static Vibrator vibr;
+	public static void vibrate(long milliseconds, Context context) {
+		if (vibr == null)
+			vibr = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
+		
+		vibr.vibrate(milliseconds);
 	}
 }
 

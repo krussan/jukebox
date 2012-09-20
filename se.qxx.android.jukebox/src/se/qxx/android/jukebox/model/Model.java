@@ -11,7 +11,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 public class Model {
 	
 	private Movie currentMovie;
-		
+	
 	public interface ModelUpdatedEventListener {
 		public void handleModelUpdatedEventListener(java.util.EventObject e);
 	}

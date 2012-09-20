@@ -1,5 +1,7 @@
 package se.qxx.android.jukebox;
 
+import java.util.List;
+
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.R.drawable;
 import se.qxx.android.jukebox.R.id;
@@ -14,12 +16,13 @@ import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 
-public class PlayerLayoutAdapter extends ModelPlayersAdapter {
+public class PlayerLayoutAdapter extends ArrayAdapter<String>{
 
 	private Context context;
-	public PlayerLayoutAdapter(Context context) {
-		super();
+	public PlayerLayoutAdapter(Context context, int layoutResource, int textViewResorce, List<String> values) {
+		super(context, layoutResource, textViewResorce, values);
 		this.context = context;
 	}
 	
@@ -32,20 +35,14 @@ public class PlayerLayoutAdapter extends ModelPlayersAdapter {
 	            LayoutInflater vi = (LayoutInflater)this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	            v = vi.inflate(R.layout.playerpickerrow, null);
 	        }
-	        Movie m = (Movie)this.getItem(position);
-	        if (m != null) {
-	        	GUITools.setTextOnTextview(R.id.toptext, m.getTitle(), v);
-	        	GUITools.setTextOnTextview(R.id.bottomtext, Integer.toString(m.getYear()), v);
-	
-	    	    if (!m.getImage().isEmpty()) {
-	    	    	Bitmap image = GUITools.getBitmapFromByteArray(m.getImage().toByteArray());
-	    	    	Bitmap scaledImage = GUITools.scaleImage(80, image, v.getContext());
-	    	    	GUITools.setImageOnImageView(R.id.imageView1, scaledImage, v);
-	    	    }
-	    	    else {
-	    	    	GUITools.setImageResourceOnImageView(R.id.imageView1, R.drawable.icon, v);
-	    	    }
-	    	}
+	        String name = this.getItem(position);
+	        String currentMediaPlayer = JukeboxSettings.get().getCurrentMediaPlayer();
+	        
+	        GUITools.setTextOnTextview(R.id.txtPlayerName, currentMediaPlayer, v);
+	        
+	        if (name.equals(currentMediaPlayer))
+	        	GUITools.setImageResourceOnImageButton(R.id.btnPickPlayer, R.drawable.selected, v);
+	        
 		}
 		catch (Exception e) {
 			Logger.Log().e("Error occured while populating list", e);

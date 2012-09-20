@@ -4,34 +4,39 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal" >
-    
+    <RelativeLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
         <Button 
             android:id="@+id/btnRefresh"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/btnrefresh"
             android:onClick="onButtonClicked"
+            android:layout_gravity="left"
             />
-	
-		<Button android:text="@string/lblSelectMediaPlayer" 
+
+		<Button 
 		    android:id="@+id/btnSelectMediaPlayer" 
 		    android:layout_width="wrap_content" 
 		    android:layout_height="wrap_content"
-			android:onClick="onButtonClicked"></Button>
-
+			android:onClick="onButtonClicked" 
+			android:layout_toRightOf="@id/btnRefresh"
+			android:background="@drawable/btnplayer"
+		/>
+        
+        
 		<Button 
 		    android:id="@+id/btnOnOff" 	
 		    android:layout_width="wrap_content" 
 		    android:layout_height="wrap_content"
 			android:onClick="onButtonClicked"
 			android:background="@drawable/btnonoff"
+			android:layout_alignParentRight="true"
 		/>
-						
-	</LinearLayout>
+        
+    </RelativeLayout>
+
 	<ListView
 	    android:id="@+id/listView1"
 	    android:layout_width="match_parent"

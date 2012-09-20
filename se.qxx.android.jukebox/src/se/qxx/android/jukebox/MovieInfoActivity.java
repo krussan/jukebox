@@ -55,7 +55,7 @@ public class MovieInfoActivity extends JukeboxActivityBase {
 	public void onButtonClicked(View v) {
 		int id = v.getId();
 		GUITools.flashBtnColor(id, this.getRootView());
-		GUITools.performHapticFeedback(id, this.getRootView());
+		GUITools.vibrate(28, this);
 		
 		switch (id) {
 			case R.id.btnPlay:

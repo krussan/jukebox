@@ -154,8 +154,8 @@ public class JukeboxConnectionHandler implements Runnable {
     	
     	try {
 	    	s.connect(new InetSocketAddress(
-	    			JukeboxSettings.get().get_serverIpAddress(), 
-	    			JukeboxSettings.get().get_serverPort()), 
+	    			JukeboxSettings.get().getServerIpAddress(), 
+	    			JukeboxSettings.get().getServerPort()), 
 	    			5000);
 	    	
 	    	Logger.Log().i("socket opened");
@@ -206,10 +206,12 @@ public class JukeboxConnectionHandler implements Runnable {
     		switch (type) {
     		case ListMovies:
     			JukeboxResponseListMovies resp1 = JukeboxResponseListMovies.parseFrom(data);
+    			Model.get().clearMovies();
     			Model.get().addAllMovies(resp1.getMoviesList());
     			break;
     		case ListPlayers:
     			JukeboxResponseListPlayers resp2 = JukeboxResponseListPlayers.parseFrom(data);
+    			Model.get().clearPlayers();
     			Model.get().addAllPlayers(resp2.getHostnameList());
     			break;
     		case MarkSubtitle:

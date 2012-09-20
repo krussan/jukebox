@@ -6,6 +6,7 @@ import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.jukebox.model.ModelUpdatedEvent;
 import se.qxx.android.jukebox.model.ModelUpdatedType;
 import se.qxx.android.jukebox.model.Model.ModelUpdatedEventListener;
+import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
@@ -37,10 +38,7 @@ public class JukeboxActivity extends JukeboxActivityBase implements ModelUpdated
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         JukeboxSettings.init(this);
-        
-        // clear movies to avoid duplicates when re-initiating app
-        Model.get().clearMovies();
-        
+                
 		ListView v = (ListView)findViewById(R.id.listView1);
 		v.setOnItemClickListener(this);
 		
@@ -77,6 +75,7 @@ public class JukeboxActivity extends JukeboxActivityBase implements ModelUpdated
     
     public void onButtonClicked(View v) {
 		int id = v.getId();
+		GUITools.vibrate(28, this);
 		
 		switch (id) {
 		case R.id.btnRefresh:
