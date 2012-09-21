@@ -9,6 +9,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
+import javax.swing.text.html.HTML;
+
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.Log.LogType;
@@ -58,37 +61,39 @@ public class IMDBRecord {
 			
 			if (m.find()) {
 				try {
+					String value = StringUtils.trim(m.group(infoPattern.getGroup()));
+					String unescapedValue = StringEscapeUtils.unescapeHtml4(value);
+					
 					switch (infoPattern.getType()) {
 					case TITLE:
-						this.setTitle(StringUtils.trim(m.group(infoPattern.getGroup())));
+						this.setTitle(unescapedValue);
 						break;
 					case DIRECTOR:
-						this.setDirector(StringUtils.trim(m.group(infoPattern.getGroup())));
+						this.setDirector(unescapedValue);
 						break;
 					case DURATION:
-						this.setDurationMinutes(Integer.parseInt(StringUtils.trim(m.group(infoPattern.getGroup()))));
+						this.setDurationMinutes(Integer.parseInt(unescapedValue));
 						break;
 					case GENRES:
-						this.genres.add(StringUtils.trim(m.group(infoPattern.getGroup())));					
+						this.genres.add(unescapedValue);					
 						while (m.find()) 
-							this.genres.add(StringUtils.trim(m.group(infoPattern.getGroup())));					
+							this.genres.add(unescapedValue);					
 						
 						break;
 					case POSTER:
-						String posterUrl = StringUtils.trim(m.group(infoPattern.getGroup()));
-						File f = WebRetriever.getWebFile(posterUrl, Util.getTempDirectory());
+						File f = WebRetriever.getWebFile(value, Util.getTempDirectory());
 						this.setImage(readFile(f));
 						
 						f.delete();
 						break;
 					case RATING:
-						this.setRating(StringUtils.trim(m.group(infoPattern.getGroup())));
+						this.setRating(unescapedValue);
 						break;
 					case STORY:
-						this.setStory(StringUtils.trim(m.group(infoPattern.getGroup())));
+						this.setStory(unescapedValue);
 						break;		
 					case YEAR:
-						this.setYear(Integer.parseInt(StringUtils.trim(m.group(infoPattern.getGroup()))));
+						this.setYear(Integer.parseInt(unescapedValue));
 						break;
 					}
 				}

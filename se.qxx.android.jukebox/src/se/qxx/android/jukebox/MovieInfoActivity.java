@@ -16,13 +16,15 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class MovieInfoActivity extends JukeboxActivityBase {
 
-	private View getRootView() {
+	@Override
+	protected View getRootView() {
 		return this.findViewById(R.id.rootMovieItem);
 	}
 	
@@ -49,7 +51,7 @@ public class MovieInfoActivity extends JukeboxActivityBase {
 	    GUITools.setTextOnTextview(R.id.textViewDirector, "Director :: " + Html.fromHtml(m.getDirector()).toString(), rootView);
 	    GUITools.setTextOnTextview(R.id.textViewDuration, String.format("Duration :: %s h %s m", hours, minutes) , rootView);
 	    GUITools.setTextOnTextview(R.id.textViewRating, String.format("Rating :: %s / 10", m.getRating()) , rootView);
-	    
+	   	    
 	}
 		
 	public void onButtonClicked(View v) {
@@ -70,9 +72,6 @@ public class MovieInfoActivity extends JukeboxActivityBase {
 			case R.id.btnStop:
 				sendCommand("Stopping...", JukeboxRequestType.StopMovie);
 				break;
-			case R.id.btnWakeup:
-				sendCommand("Waking up...", JukeboxRequestType.Wakeup);
-				break;
 			case R.id.btnViewInfo:
 				String url = Model.get().getCurrentMovie().getImdbUrl();
 				if (url != null && url.length() > 0) {
@@ -82,9 +81,6 @@ public class MovieInfoActivity extends JukeboxActivityBase {
 				else {
 					Toast.makeText(this, "No IMDB link available", Toast.LENGTH_SHORT).show();
 				}
-				break;
-			case R.id.btnSuspend:
-				sendCommand("Suspending target media player...", JukeboxRequestType.Suspend);
 				break;
 			default:
 				break;

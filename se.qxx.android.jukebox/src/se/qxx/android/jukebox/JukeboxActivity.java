@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
@@ -31,6 +32,10 @@ public class JukeboxActivity extends JukeboxActivityBase implements ModelUpdated
         }
     };
     
+	@Override
+	protected View getRootView() {
+		return findViewById(R.id.rootMain);
+	}
 	
     /** Called when the activity is first created. */
     @Override
@@ -38,7 +43,7 @@ public class JukeboxActivity extends JukeboxActivityBase implements ModelUpdated
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         JukeboxSettings.init(this);
-                
+        
 		ListView v = (ListView)findViewById(R.id.listView1);
 		v.setOnItemClickListener(this);
 		
@@ -47,10 +52,25 @@ public class JukeboxActivity extends JukeboxActivityBase implements ModelUpdated
 		
 		Model.get().addEventListener(this);
 		
+		setupOnOffButton();
+
 		connect();
     }
 
-    @Override
+    private void setupOnOffButton() {
+        View rootView = this.getRootView();
+    	
+	    if (JukeboxSettings.get().isCurrentMediaPlayerOn()) {
+	    	GUITools.showView(R.id.btnOff, rootView);
+	    	GUITools.hideView(R.id.btnOn, rootView);
+	    }
+	    else {
+	    	GUITools.showView(R.id.btnOn, rootView);
+	    	GUITools.hideView(R.id.btnOff, rootView);	    	
+	    }
+	}
+
+	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
     	
     	//super.onCreateOptionsMenu(menu);
@@ -90,13 +110,29 @@ public class JukeboxActivity extends JukeboxActivityBase implements ModelUpdated
 			Intent i = new Intent(this, PlayerPickerActivity.class);
 			startActivity(i);
 			break;
+		case R.id.btnOn:
+		case R.id.btnOff:
+			onoff();
+			break;
 		default:
 			break;
 		
 		}
     }
     
-    public void connect() {
+    private void onoff() {
+    	//TODO: Check if computer is live.
+    	boolean isOnline = JukeboxSettings.get().isCurrentMediaPlayerOn();
+    	if (isOnline) 
+    		sendCommand("Suspending target media player...", JukeboxRequestType.Suspend);
+    	else    		
+    		sendCommand("Waking up...", JukeboxRequestType.Wakeup);
+    	
+    	JukeboxSettings.get().setIsCurrentMediaPlayerOn(!isOnline);
+    	setupOnOffButton();
+	}
+
+	public void connect() {
     	this.sendCommand("Getting list of movies", JukeboxRequestType.ListMovies);
     }
     
@@ -117,5 +153,6 @@ public class JukeboxActivity extends JukeboxActivityBase implements ModelUpdated
 		Intent i = new Intent(this, MovieInfoActivity.class);
 		startActivity(i);
 	}
+
 
 }

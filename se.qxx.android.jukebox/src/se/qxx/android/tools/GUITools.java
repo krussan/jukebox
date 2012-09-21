@@ -16,10 +16,29 @@ import android.widget.TextView;
 
 public class GUITools {
 
+	public static void hideView(int id, View rootView) {
+		View v = rootView.findViewById(id);
+		if (v!= null)
+			v.setVisibility(View.GONE);
+	}
+	
+	public static void showView(int id, View rootView) {
+		View v = rootView.findViewById(id);
+		if (v!=null)
+			v.setVisibility(View.VISIBLE);
+	}
+		
 	public static void setTextOnTextview(int id, String text, View v) {
 		TextView tv = (TextView)v.findViewById(id);
 		if (tv != null)
 			tv.setText(text);
+	}
+	
+	public static void setResourceOnBackground(int id, int resource_id, View v) {
+		v.findViewById(id);
+		
+		if (v != null)
+			v.setBackgroundResource(resource_id);
 	}
 	
 	public static void setImageOnImageView(int id, Bitmap bitmap, View v) {

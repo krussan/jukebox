@@ -69,27 +69,18 @@
                 android:onClick="onButtonClicked"
                 android:src="@drawable/infoabout" />
 
-            <ImageButton
-                android:id="@+id/btnSelectPlayer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="#00000000"
-                android:hapticFeedbackEnabled="true"
-                android:onClick="onButtonClicked"
-                android:src="@drawable/pictures" />
-            
-            <ImageButton
-                android:id="@+id/btnSuspend"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:background="#00000000"
-                android:hapticFeedbackEnabled="true"
-                android:onClick="onButtonClicked"
-                android:src="@drawable/battery" />
-            
+	        <ImageButton
+	            android:id="@+id/btnFullscreen"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:background="@drawable/btnfullscreen"
+	            android:hapticFeedbackEnabled="true"
+	            android:onClick="onButtonClicked"
+			/>
+                        
         </LinearLayout>
     </LinearLayout>
-
+ö
     <LinearLayout
         android:id="@+id/linearLayoutButtons1"
         android:layout_width="match_parent"
@@ -98,50 +89,49 @@
         android:layout_alignParentLeft="true"
         android:gravity="center_horizontal" >
 
-        <ImageButton
+        <Button
             android:id="@+id/btnPlay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#00000000"
-            android:hapticFeedbackEnabled="true"
+            android:background="@drawable/btnplay"
             android:onClick="onButtonClicked"
-            android:src="@drawable/play" />
+        />
 
-        <ImageButton
+        <Button
             android:id="@+id/btnPause"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#00000000"
+            android:background="@drawable/btnpause"
             android:hapticFeedbackEnabled="true"
             android:onClick="onButtonClicked"
             android:src="@drawable/pause" />
 
-        <ImageButton
+        <Button
             android:id="@+id/btnStop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#00000000"
+            android:background="@drawable/btnstop"
             android:hapticFeedbackEnabled="true"
             android:onClick="onButtonClicked"
-            android:src="@drawable/stop" />
+		/>
 
-        <ImageButton
-            android:id="@+id/btnWakeup"
+        <Button
+            android:id="@+id/btnForward"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#00000000"
+            android:background="@drawable/btnforward"
             android:hapticFeedbackEnabled="true"
             android:onClick="onButtonClicked"
-            android:src="@drawable/clock" />
+		/>
 
-        <ImageButton
-            android:id="@+id/btnFullscreen"
+		<Button
+            android:id="@+id/btnBackward"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#00000000"
+            android:background="@drawable/btnbackward"
             android:hapticFeedbackEnabled="true"
             android:onClick="onButtonClicked"
-            android:src="@drawable/console" />
+		/>        
     </LinearLayout>
 
     <TextView

@@ -8,12 +8,17 @@ import se.qxx.android.jukebox.model.ModelUpdatedEvent;
 import se.qxx.android.jukebox.model.ModelUpdatedType;
 import se.qxx.android.jukebox.model.Model.ModelUpdatedEventListener;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
+import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.AdapterView.OnItemClickListener;
 
-public class PlayerPickerActivity extends JukeboxActivityBase implements ModelUpdatedEventListener {
+public class PlayerPickerActivity extends JukeboxActivityBase implements ModelUpdatedEventListener, OnItemClickListener {
 
 	ArrayAdapter<String> adapter;
 	List<String> values;
@@ -31,6 +36,10 @@ public class PlayerPickerActivity extends JukeboxActivityBase implements ModelUp
 	    
 	    adapter = new PlayerLayoutAdapter(this, R.layout.playerpickerrow, R.id.txtPlayerName, Model.get().getPlayers());
 	    view.setAdapter(adapter);
+	    
+		ListView v = (ListView)findViewById(R.id.listPlayers);
+		v.setOnItemClickListener(this);
+	    
 	}
 
 	@Override
@@ -38,14 +47,30 @@ public class PlayerPickerActivity extends JukeboxActivityBase implements ModelUp
 		ModelUpdatedEvent ev = (ModelUpdatedEvent)e;
 
 		if (ev.getType() == ModelUpdatedType.Players) {
-			runOnUiThread(new Runnable() {
-				
-				@Override
-				public void run() {
-					adapter.notifyDataSetChanged();
-				}
-			});
+			updateList();
 		}		
+	}
+	
+	private void updateList() {
+		runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				adapter.notifyDataSetChanged();
+			}
+		});		
+	}
+	
+	@Override
+	public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
+		String playerName = (String)arg0.getItemAtPosition(pos);
+		JukeboxSettings.get().setCurrentMediaPlayer(playerName);
+		updateList();
+	}
+
+	@Override
+	protected View getRootView() {
+		return findViewById(R.id.rootPlayerPicker);
 	}
 
 }
