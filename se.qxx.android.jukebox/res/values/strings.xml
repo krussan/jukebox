@@ -25,4 +25,7 @@
     <string name="lblMediaPlayerName">Media player</string>
     <string name="lblContentRefresh">Refresh</string>
     <string name="descSelect">Select</string>
+    <string name="descPosterImage">Poster image</string>
+    <string name="lblFilename">Filename</string>
+    <string name="descViewInfo">View IMDB info</string>
 </resources>

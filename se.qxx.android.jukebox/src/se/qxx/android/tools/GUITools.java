@@ -19,7 +19,7 @@ public class GUITools {
 	public static void hideView(int id, View rootView) {
 		View v = rootView.findViewById(id);
 		if (v!= null)
-			v.setVisibility(View.GONE);
+			v.setVisibility(View.INVISIBLE);
 	}
 	
 	public static void showView(int id, View rootView) {

@@ -67,7 +67,7 @@ public class JukeboxActivity extends JukeboxActivityBase implements ModelUpdated
 	    else {
 	    	GUITools.showView(R.id.btnOn, rootView);
 	    	GUITools.hideView(R.id.btnOff, rootView);	    	
-	    }
+	    } 
 	}
 
 	@Override
@@ -148,8 +148,7 @@ public class JukeboxActivity extends JukeboxActivityBase implements ModelUpdated
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
-		Movie m = (Movie)arg0.getItemAtPosition(pos);
-		Model.get().setCurrentMovie(m);
+		Model.get().setCurrentMovie(pos);
 		Intent i = new Intent(this, MovieInfoActivity.class);
 		startActivity(i);
 	}

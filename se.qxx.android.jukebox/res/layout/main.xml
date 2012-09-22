@@ -41,7 +41,7 @@
 		    android:layout_width="wrap_content" 
 		    android:layout_height="wrap_content"
 			android:onClick="onButtonClicked"
-			android:background="@drawable/btnonoff"
+			android:background="@drawable/btnonoffred"
 			android:layout_alignParentRight="true"
 		/>
     </RelativeLayout>

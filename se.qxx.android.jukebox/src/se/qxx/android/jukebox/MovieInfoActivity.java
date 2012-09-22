@@ -15,14 +15,16 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewSwitcher;
 
 public class MovieInfoActivity extends JukeboxActivityBase {
-
+	
 	@Override
 	protected View getRootView() {
 		return this.findViewById(R.id.rootMovieItem);
@@ -33,6 +35,12 @@ public class MovieInfoActivity extends JukeboxActivityBase {
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.movieitem);
+	    
+	    initializeView();
+	    
+	}
+	
+	private void initializeView() {
 	    Movie m = Model.get().getCurrentMovie();
 
 	    View rootView = this.getRootView();
@@ -44,19 +52,19 @@ public class MovieInfoActivity extends JukeboxActivityBase {
 	    int hours = duration / 60;
 	    int minutes = duration % 60;
 	    
-	    GUITools.setTextOnTextview(R.id.textViewTitle, Html.fromHtml(m.getTitle()).toString(), rootView);
+	    GUITools.setTextOnTextview(R.id.textViewTitle, m.getTitle(), rootView);
 	    GUITools.setTextOnTextview(R.id.textViewYear, Integer.toString(m.getYear()), rootView);
-	    GUITools.setTextOnTextview(R.id.textViewStory, Html.fromHtml(m.getStory()).toString(), rootView);
-	    GUITools.setTextOnTextview(R.id.textViewGenre, "Genre :: " + StringUtils.join(m.getGenreList(), " / "), rootView);
-	    GUITools.setTextOnTextview(R.id.textViewDirector, "Director :: " + Html.fromHtml(m.getDirector()).toString(), rootView);
+	    GUITools.setTextOnTextview(R.id.textViewStory, m.getStory(), rootView);
+	    GUITools.setTextOnTextview(R.id.textViewGenre, String.format("Genre :: %s", StringUtils.join(m.getGenreList(), " / ")), rootView);
+	    GUITools.setTextOnTextview(R.id.textViewDirector, String.format("Director :: %s", m.getDirector()), rootView);
 	    GUITools.setTextOnTextview(R.id.textViewDuration, String.format("Duration :: %s h %s m", hours, minutes) , rootView);
 	    GUITools.setTextOnTextview(R.id.textViewRating, String.format("Rating :: %s / 10", m.getRating()) , rootView);
-	   	    
+	    GUITools.setTextOnTextview(R.id.textViewFilename, String.format("Filename :: %s", m.getFilename()) , rootView);
+	    
 	}
 		
 	public void onButtonClicked(View v) {
 		int id = v.getId();
-		GUITools.flashBtnColor(id, this.getRootView());
 		GUITools.vibrate(28, this);
 		
 		switch (id) {
@@ -86,5 +94,4 @@ public class MovieInfoActivity extends JukeboxActivityBase {
 				break;
 		}
 	}
-	
 }

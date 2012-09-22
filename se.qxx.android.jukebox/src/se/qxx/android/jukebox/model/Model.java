@@ -10,7 +10,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 
 public class Model {
 	
-	private Movie currentMovie;
+	private int currentMovieId = -1;
 	
 	public interface ModelUpdatedEventListener {
 		public void handleModelUpdatedEventListener(java.util.EventObject e);
@@ -89,11 +89,27 @@ public class Model {
 	}
 
 	public Movie getCurrentMovie() {
-		return currentMovie;
+		if (this.currentMovieId >= 0 && this.currentMovieId < this._movies.size())
+			return this._movies.get(this.currentMovieId);
+		else
+			return null;
 	}
 
-	public void setCurrentMovie(Movie currentMovie) {
-		this.currentMovie = currentMovie;
+	public void currentMovieSetNext() {
+		this.currentMovieId++;
+		if (this.currentMovieId > this._movies.size())
+			this.currentMovieId = 0;
+	}
+	
+	public void currentMovieSetPrevious() {
+		this.currentMovieId--;
+		if (this.currentMovieId < 0)
+			this.currentMovieId = this._movies.size() == 0 ? 0 : this._movies.size() - 1;
+	}
+	
+	public void setCurrentMovie(int index) {
+		
+		this.currentMovieId = index;
 	}
 	
 	public List<String> getPlayers() {

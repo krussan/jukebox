@@ -16,5 +16,5 @@ public abstract class JukeboxActivityBase extends Activity {
        	JukeboxConnectionHandler h = new JukeboxConnectionHandler(new ProgressDialogHandler(this, d), type);
        	Thread t = new Thread(h);
        	t.start();				
-	}	
+	}	  
 }
