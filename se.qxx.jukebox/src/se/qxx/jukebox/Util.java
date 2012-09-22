@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -93,34 +94,12 @@ public class Util {
 	public static String getFilenameWithoutExtension(String filename) {
 		int index = filename.lastIndexOf('.');
 		if (index >= 0)
-			return filename.substring(0,  filename.lastIndexOf('.'));
+			return filename.substring(0,  index);
 		else
 			return filename;
 	}
 	
-	/**
-	 * Return a temporary filename to download subtitles to.
-	 * @param filename The filename of the movie
-	 * @return
-	 */
-	public static String getTempSubsName(String filename) {
-		String path = createTempSubsPath();
-        return String.format("%s/%s_%s", path, Thread.currentThread().getId(), filename);
-	}
-	
-	/**
-	 * Returns a temporary path to download subtitles to
-	 * @return
-	 */
-	public static String createTempSubsPath() {
-		String tempPath = Settings.get().getSubFinders().getSubsPath() + "/temp";
-		File path = new File(tempPath);
-		if (!path.exists()) {
-			path.mkdir();
-		}
-		
-		return tempPath;
-	}
+
 	
 	/**
 	 * Copies the content of a stream to a string
@@ -263,4 +242,16 @@ public class Util {
 		Constructor<?> con = c.getConstructor(parTypes);
 		return con.newInstance(args);		
 	}
+	
+	public static Object getInstance(String className, Object[] args) throws ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
+		Class<?> c = Class.forName(className);
+				
+		Class<?>[] parTypes = new Class<?>[args.length];
+		for (int i=0;i<args.length;i++) 
+			parTypes[i] = args.getClass();
+		
+		Constructor<?> con = c.getConstructor(parTypes);
+		return con.newInstance(args);		
+	}
+	
 }

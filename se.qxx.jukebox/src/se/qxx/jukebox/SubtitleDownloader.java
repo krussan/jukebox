@@ -14,11 +14,13 @@ import java.util.List;
 import java.util.Queue;
 
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Logs;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder;
 import se.qxx.jukebox.subtitles.SubFile;
 import se.qxx.jukebox.subtitles.SubFile.Rating;
+import se.qxx.jukebox.subtitles.SubFinderBase;
 
 public class SubtitleDownloader implements Runnable {
 
@@ -100,9 +102,13 @@ public class SubtitleDownloader implements Runnable {
 	}
 
 	public void stop() {
-
+		this._isRunning = false;
 	}
 
+	/**
+	 * Wrapper function for getting subs for a specific movie
+	 * @param m
+	 */
 	private void getSubtitles(Movie m) {
 		List<SubFile> files = checkSubs(m);
 
@@ -116,6 +122,11 @@ public class SubtitleDownloader implements Runnable {
 		extractSubs(m, files);
 	}
 
+	/**
+	 * Checks both movie path and jukebox subs path for subtitles for a specific movie
+	 * @param m
+	 * @return A list of subfiles for the movie
+	 */
 	private List<SubFile> checkSubs(Movie m) {
 		// check if subs exist in directory. If so set that as the sub
 		// check file that begins with the same filename and has extension of
@@ -124,6 +135,7 @@ public class SubtitleDownloader implements Runnable {
 		// it does check that for subtitles.
 		// also check subs directory (if the movie has been in DB before)
 		// to avoid downloading subs again
+		
 		List<SubFile> list = new ArrayList<SubFile>();
 		File dir = new File(m.getFilepath());
 		String movieFilenameWithoutExt = Util.getFilenameWithoutExtension(m.getFilename());
@@ -155,6 +167,14 @@ public class SubtitleDownloader implements Runnable {
 		return list;
 	}
 
+	/**
+	 * Checks if a directory contains subfiles for a movie. The subtitles has to start with
+	 * the same name as the file of the movie and end with one of the subtitle extensions srt, idx or sub.
+	 * 
+	 * @param movieFilenameWithoutExt
+	 * @param dir
+	 * @return A list of subfiles. An empty list if none found.
+	 */
 	private List<SubFile> checkDirForSubs(String movieFilenameWithoutExt, File dir) {
 		List<SubFile> list = new ArrayList<SubFile>();
 		if (dir != null) {
@@ -177,31 +197,19 @@ public class SubtitleDownloader implements Runnable {
 		return list;
 	}
 
+	/**
+	 * 
+	 * @param m
+	 * @param files
+	 */
 	private void extractSubs(Movie m, List<SubFile> files) {
 		int c = 0;
 		for (SubFile subfile : files) {
 			try {
 				File f = subfile.getFile();
-				File unpackedFile = Unpacker.unpackFile(f);
+				File unpackedFile = Unpacker.unpackFile(f, SubFinderBase.createTempSubsPath());
 
-				String filename = m.getFilename();
-				filename = filename.substring(0, filename.lastIndexOf("."));
-
-				String extension = unpackedFile.getName();
-				extension = extension.substring(extension.lastIndexOf(".") + 1,
-						extension.length());
-
-				// rename file to filename_of_movie.iterator.srt/sub
-				String path = f.getAbsolutePath();
-
-				// replace backward slash with forward slash
-				path = path.replace("\\", "/");
-
-				path = path.substring(0, path.lastIndexOf("/"));
-				filename = String.format("%s/%s.%s.%s", path, filename, c,
-						extension);
-				File newFile = new File(filename);
-				unpackedFile.renameTo(newFile);
+				String filename = moveFileToSubsPath(m, c, f, unpackedFile);
 
 				c++;
 
@@ -219,37 +227,47 @@ public class SubtitleDownloader implements Runnable {
 		}
 	}
 
+	protected String moveFileToSubsPath(
+			Movie m, 
+			int c, 
+			File f,
+			File unpackedFile) {
+		String filename = m.getFilename();
+		filename = filename.substring(0, filename.lastIndexOf("."));
+
+		String extension = unpackedFile.getName();
+		extension = extension.substring(extension.lastIndexOf(".") + 1,
+				extension.length());
+
+		// rename file to filename_of_movie.iterator.srt/sub
+		String path = f.getAbsolutePath();
+
+		// replace backward slash with forward slash
+		path = path.replace("\\", "/");
+		path = path.substring(0, path.lastIndexOf("/"));
+		filename = String.format("%s/%s.%s.%s", path, filename, c,
+				extension);
+		
+		File newFile = new File(filename);
+		unpackedFile.renameTo(newFile);
+		return filename;
+	}
+
 	private List<SubFile> callSubtitleDownloaders(Movie m) {
 		ArrayList<SubFile> subtitleFiles = new ArrayList<SubFile>();
 		for (SubFinder f : Settings.get().getSubFinders().getSubFinder()) {
 			String className = f.getClazz();
 
 			try {
-				Class<?> c = Class.forName(className);
-				Class<?>[] interfaces = c.getInterfaces();
-				for (Class<?> i : interfaces) {
-					if (i.getName().equals(
-							"se.qxx.jukebox.subtitles.ISubtitleFinder")) {
-						Log.Debug(String.format(
-								"%s implements ISubtitleFinder", className), Log.LogType.FIND);
+				Object[] args = new Object[] {f.getSubFinderSettings()};
+				SubFinderBase finder = (SubFinderBase)Util.getInstance(className, args);
 
-						Object o = Util.getInstance(className);
+				ArrayList<String> languages = new ArrayList<String>();
+				languages.add("Eng");
+				languages.add("Swe");
 
-						ArrayList<String> languages = new ArrayList<String>();
-						languages.add("Eng");
-						languages.add("Swe");
-
-						// add list of downloaded files to list
-						subtitleFiles
-								.addAll(((se.qxx.jukebox.subtitles.ISubtitleFinder) o)
-										.findSubtitles(m, languages, Settings
-												.get().getSubFinders()
-												.getSubsPath(),
-												f.getSubFinderSettings()));
-
-					}
-
-				}
+				// add list of downloaded files to list
+				subtitleFiles.addAll(finder.findSubtitles(m, languages));
 
 			} catch (Exception e) {
 				

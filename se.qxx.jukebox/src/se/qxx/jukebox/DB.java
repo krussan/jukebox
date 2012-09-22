@@ -17,8 +17,46 @@ public class DB {
 	private DB() {
 		
 	}
+
+	//---------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------ Search
+	//---------------------------------------------------------------------------------------
 	
-	public synchronized static Movie getMovie(String title) {
+	public synchronized static ArrayList<Movie> searchMovies(String searchString) {
+		Connection conn = null;
+		try {
+			conn = DB.initialize();
+	
+			PreparedStatement prep = conn.prepareStatement(
+					" select ID, filename, filepath, title, year, type, format, sound, language, groupName, imdburl" +
+					"      , duration, rating, director, story, identifier, identifierRating" +
+					" FROM movie" +
+					" WHERE title LIKE '%" + searchString + "%'"
+					);
+			//prep.setString(1, searchString);
+			
+			ResultSet rs = prep.executeQuery();
+			ArrayList<Movie> result = new ArrayList<Movie>();
+			while (rs.next()) {
+				result.add(extractMovie(rs, conn));
+			}
+					
+			return result;
+		}
+		catch (Exception e) {
+			Log.Error("Failed to retrieve movie listing from DB", Log.LogType.MAIN, e);
+			
+			return new ArrayList<Movie>();
+		}finally {
+			DB.disconnect(conn);
+		}
+	}
+
+	//---------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------ Movies
+	//---------------------------------------------------------------------------------------
+	
+	public synchronized static Movie getMovieByFilename(String filename, String filepath) {
 		Connection conn = null;
 		try {
 			conn = DB.initialize();
@@ -26,9 +64,10 @@ public class DB {
 			PreparedStatement prep = conn.prepareStatement(
 			" select ID, filename, filepath, title, year, type, format, sound, language, groupName, imdburl" +
 			"      , duration, rating, director, story, identifier, identifierRating" +
-			" from movie where title = ?");
+			" from movie where filename = ? and filepath = ?");
 					
-			prep.setString(1, title);
+			prep.setString(1, filename);
+			prep.setString(2, filename);
 				
 			ResultSet rs = prep.executeQuery();
 			if (rs.next())
@@ -44,55 +83,7 @@ public class DB {
 			DB.disconnect(conn);
 		}
 	}
-	
-//	private static Movie extractPosterImage(m, Connection conn) throws SQLException {
-//		byte[] imageData = getImageData(m.getID(), ImageType.Poster, conn);
-//		if (imageData != null)
-//			return Movie.newBuilder(m).setImage(ByteString.copyFrom(imageData)).build();
-//		else
-//			return m;
-//	}
-
-	private static void addImage(int movieID, ImageType imageType, byte[] data, Connection conn) throws SQLException {
-		if (data.length > 0) {
-			PreparedStatement prep = conn.prepareStatement(
-				" INSERT INTO BlobData (data) VALUES (?)");
-			
-			prep.setBytes(1, data);
-			prep.execute();
-			
-			int id = getIdentity(conn);
-			
-			prep = conn.prepareStatement(
-				" INSERT INTO MovieImage (_movie_id, _blob_id, imageType) VALUES (?, ?, ?)");
-			
-			prep.setInt(1, movieID);
-			prep.setInt(2, id);
-			prep.setString(3, imageType.toString());
-					
-			prep.execute();
-		}
-	}
-	private static byte[] getImageData(int movieID, ImageType imageType, Connection conn) throws SQLException {
-		byte[] data = null;
-		PreparedStatement prep = conn.prepareStatement(
-		   " SELECT B.data" +
-		   " FROM MovieImage MI" +
-		   " INNER JOIN BlobData B ON MI._blob_id = B.id " +
-		   " WHERE MI._movie_id = ?");
 		
-		prep.setInt(1, movieID);
-		
-		ResultSet rs = prep.executeQuery();
-		
-		if (rs.next())
-		{
-			data = rs.getBytes("data");
-		}
-		
-		return data;
-	}
-	
 	public synchronized static Movie getMovie(int id) {
 		Connection conn = null;
 		try {
@@ -206,6 +197,55 @@ public class DB {
 		}
 	}
 	
+	//---------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------ Images
+	//---------------------------------------------------------------------------------------
+	
+	private static void addImage(int movieID, ImageType imageType, byte[] data, Connection conn) throws SQLException {
+		if (data.length > 0) {
+			PreparedStatement prep = conn.prepareStatement(
+				" INSERT INTO BlobData (data) VALUES (?)");
+			
+			prep.setBytes(1, data);
+			prep.execute();
+			
+			int id = getIdentity(conn);
+			
+			prep = conn.prepareStatement(
+				" INSERT INTO MovieImage (_movie_id, _blob_id, imageType) VALUES (?, ?, ?)");
+			
+			prep.setInt(1, movieID);
+			prep.setInt(2, id);
+			prep.setString(3, imageType.toString());
+					
+			prep.execute();
+		}
+	}
+	
+	private static byte[] getImageData(int movieID, ImageType imageType, Connection conn) throws SQLException {
+		byte[] data = null;
+		PreparedStatement prep = conn.prepareStatement(
+		   " SELECT B.data" +
+		   " FROM MovieImage MI" +
+		   " INNER JOIN BlobData B ON MI._blob_id = B.id " +
+		   " WHERE MI._movie_id = ?");
+		
+		prep.setInt(1, movieID);
+		
+		ResultSet rs = prep.executeQuery();
+		
+		if (rs.next())
+		{
+			data = rs.getBytes("data");
+		}
+		
+		return data;
+	}
+
+	//---------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------ Genres
+	//---------------------------------------------------------------------------------------
+	
 	private static int addGenre(String genre, Connection conn) throws SQLException {
 		PreparedStatement prep = conn.prepareStatement(
 				"INSERT INTO Genre (genreName) VALUES (?)");
@@ -250,35 +290,43 @@ public class DB {
 		return list;
 	}
 
-	private static void addArguments(PreparedStatement prep, Movie m) throws SQLException {
-		prep.setString(1, m.getFilename());
-		prep.setString(2, m.getFilepath());
-		prep.setString(3, m.getTitle());
-		prep.setInt(4, m.getYear());
-		prep.setString(5, m.getType());
-		prep.setString(6, m.getFormat());
-		prep.setString(7, m.getSound());
-		prep.setString(8, m.getLanguage());
-		prep.setString(9, m.getGroup());
-		prep.setString(10, m.getImdbUrl());
-		prep.setInt(11, m.getDuration());
-		prep.setString(12, m.getRating());
-		prep.setString(13, m.getDirector());
-		prep.setString(14, m.getStory());
-		prep.setString(15, m.getIdentifier().toString());
-		prep.setInt(16, m.getIdentifierRating());
-	}
+	//---------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------ Subtitles
+	//---------------------------------------------------------------------------------------
 	
-	private static int getIdentity(Connection conn) throws SQLException {
-		PreparedStatement prep = conn.prepareStatement("SELECT last_insert_rowid()");
-		ResultSet rs = prep.executeQuery();
+	/**
+	 * Returns true if the movie has a subtitle downloaded or has a subtitle in the queue
+	 * @param m
+	 */
+	public synchronized static boolean hasSubtitles(Movie m) {
+		Connection conn = null;
+		try {
+			conn = DB.initialize();
+			
+			PreparedStatement prep = conn.prepareStatement(
+				" SELECT 1 FROM subtitles" +
+				" WHERE _movie_ID = ?" +
+				" UNION " +
+				" SELECT 1 FROM subtitleQueue " +
+				" WHERE _movie_ID = ?");
+			
+			prep.setInt(1, m.getID());
+			prep.setInt(2, m.getID());
+
+			ResultSet rs = prep.executeQuery();
+			return rs.next();
+			
+		}
+		catch (Exception e) {
+			Log.Error("Failed to check if subtitles exist", Log.LogType.MAIN, e);
+			
+		}finally {
+			DB.disconnect(conn);
+		}
 		
-		if (rs.next())
-			return rs.getInt(1);
-		else
-			return -1;
+		// if error occured then set to true to avoid downloading subtitles
+		return true;
 	}
-	
 	public synchronized static void addSubtitle(Movie m, String filename, String description, Rating rating) {
 		Connection conn = null;
 		try {
@@ -312,9 +360,18 @@ public class DB {
 		}
 	}
 	
-	private static boolean subFileExist(Movie m, String filename, Connection conn) {
-		//TODO: Implement
-		return false;
+	private static boolean subFileExist(Movie m, String filename, Connection conn) throws SQLException {
+		PreparedStatement prep = conn.prepareStatement(
+				"SELECT _movie_ID, filename, description, rating FROM subtitles WHERE _movie_ID = ? AND filename = ?");
+		prep.setInt(1, m.getID());
+		prep.setString(2, filename);
+
+		ResultSet rs = prep.executeQuery();
+		if (rs.next())
+			return true;
+		else
+			return false;
+
 	}
 
 	public synchronized static void addMovieToSubtitleQueue(Movie m) {
@@ -368,35 +425,7 @@ public class DB {
 			DB.disconnect(conn);
 		}
 	}
-	public synchronized static ArrayList<Movie> searchMovies(String searchString) {
-		Connection conn = null;
-		try {
-			conn = DB.initialize();
-	
-			PreparedStatement prep = conn.prepareStatement(
-					" select ID, filename, filepath, title, year, type, format, sound, language, groupName, imdburl" +
-					"      , duration, rating, director, story, identifier, identifierRating" +
-					" FROM movie" +
-					" WHERE title LIKE '%" + searchString + "%'"
-					);
-			//prep.setString(1, searchString);
-			
-			ResultSet rs = prep.executeQuery();
-			ArrayList<Movie> result = new ArrayList<Movie>();
-			while (rs.next()) {
-				result.add(extractMovie(rs, conn));
-			}
-					
-			return result;
-		}
-		catch (Exception e) {
-			Log.Error("Failed to retrieve movie listing from DB", Log.LogType.MAIN, e);
-			
-			return new ArrayList<Movie>();
-		}finally {
-			DB.disconnect(conn);
-		}
-	}
+
 	
 	public synchronized static ArrayList<Movie> getSubtitleQueue() {
 		Connection conn = null;
@@ -428,6 +457,9 @@ public class DB {
 			DB.disconnect(conn);
 		}
 	}
+	//---------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------ Version
+	//---------------------------------------------------------------------------------------
 	
 	public synchronized static Version getVersion() throws ClassNotFoundException {
 		Connection conn = null;
@@ -470,7 +502,11 @@ public class DB {
 			DB.disconnect(conn);
 		}
 	}
-	
+
+	//---------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------ Helpers
+	//---------------------------------------------------------------------------------------
+
 	private static Movie extractMovie(ResultSet rs, Connection conn) throws SQLException {
 		int id = rs.getInt("ID");
 		byte[] imageData = getImageData(id, ImageType.Poster, conn);
@@ -536,7 +572,40 @@ public class DB {
 		} catch (SQLException e) {
 		}
 	}
+
+	private static void addArguments(PreparedStatement prep, Movie m) throws SQLException {
+		prep.setString(1, m.getFilename());
+		prep.setString(2, m.getFilepath());
+		prep.setString(3, m.getTitle());
+		prep.setInt(4, m.getYear());
+		prep.setString(5, m.getType());
+		prep.setString(6, m.getFormat());
+		prep.setString(7, m.getSound());
+		prep.setString(8, m.getLanguage());
+		prep.setString(9, m.getGroup());
+		prep.setString(10, m.getImdbUrl());
+		prep.setInt(11, m.getDuration());
+		prep.setString(12, m.getRating());
+		prep.setString(13, m.getDirector());
+		prep.setString(14, m.getStory());
+		prep.setString(15, m.getIdentifier().toString());
+		prep.setInt(16, m.getIdentifierRating());
+	}
 	
+	private static int getIdentity(Connection conn) throws SQLException {
+		PreparedStatement prep = conn.prepareStatement("SELECT last_insert_rowid()");
+		ResultSet rs = prep.executeQuery();
+		
+		if (rs.next())
+			return rs.getInt(1);
+		else
+			return -1;
+	}
+	
+	//---------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------ Purge
+	//---------------------------------------------------------------------------------------
+
 	public static boolean purgeDatabase() {
 		Connection conn = null;
 		String[] statements = new String[] {

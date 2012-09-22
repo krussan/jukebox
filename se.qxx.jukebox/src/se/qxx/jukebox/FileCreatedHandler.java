@@ -40,24 +40,22 @@ public class FileCreatedHandler implements INotifyClient {
 					Log.Info(String.format("Movie identified by %s as :: %s", m.getIdentifier().toString(), m.getTitle()), Log.LogType.FIND);
 
 					// Check if movie exists in db
-					Movie dbMovie = DB.getMovie(m.getTitle());
-					if (dbMovie != null) {
-						// If it does but in a different path update the path
-						if (!m.getFilepath().equals(dbMovie.getFilepath())) {
-							Movie store = Movie.newBuilder(dbMovie).setFilepath(m.getFilepath()).build();
-							DB.updateMovie(store);
-						}
-						// If it does but in same path exit
-					}
-					else {
+					Movie dbMovie = DB.getMovieByFilename(filename, path);
+					if (dbMovie == null) {
 						// If not get information and subtitles
 						// If title is the same as the filename (except ignore pattern) then don't identify on IMDB.
-						if (Arguments.get().isImdbIdentifierEnabled())
+						if (Arguments.get().isImdbIdentifierEnabled()) 
 							m = getImdbInformation(m);
 						
 						m = DB.addMovie(m);
 						
 						SubtitleDownloader.get().addMovie(m);			
+					} 
+					else {
+						// Check if movie has subs. If not then add it to the subtitle queue.
+						if (!DB.hasSubtitles(dbMovie)) {
+							SubtitleDownloader.get().addMovie(dbMovie);
+						}
 					}
 				}
 				else {

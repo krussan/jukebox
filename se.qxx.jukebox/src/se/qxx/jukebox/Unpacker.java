@@ -14,22 +14,33 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class Unpacker {
-	public static File unpackFile(File f) {
+	public static File unpackFile(File f, String path) {
 		File unpackedFile = null;
 		if(f.getName().endsWith(".rar")) 
-			unpackedFile = unrarFile(f);
+			unpackedFile = unrarFile(f, path);
 		else if (f.getName().endsWith(".zip"))
-			unpackedFile = unzipFile(f);
+			unpackedFile = unzipFile(f, path);
 		else
-			unpackedFile = f;
+			unpackedFile = moveFile(f, path);
 
 		return unpackedFile;
 	}
 	
-	public static List<File> unpackFiles(List<File> files) {
+	public static File moveFile(File f, String path) {
+		File targetFile = getTargetFile(f, path);
+		f.renameTo(targetFile);
+		return targetFile;
+	}
+	
+	private static File getTargetFile(File f, String path) {
+		String targetName = String.format("%s/%s", path, f.getName());
+		return new File(targetName);
+	}
+	
+	public static List<File> unpackFiles(List<File> files, String path) {
 		ArrayList<File> unpackedFiles = new ArrayList<File>();
 		for (File f : files) {
-			File unpackedFile = unpackFile(f);
+			File unpackedFile = unpackFile(f, path);
 			if (unpackedFile != null)
 				unpackedFiles.add(unpackedFile);
 		}
@@ -37,14 +48,15 @@ public class Unpacker {
 		return unpackedFiles;
 	}
 	
-	private static File unrarFile(File f) {
+	private static File unrarFile(File f, String path) {
 		String fileList = executeCommand(String.format("unrar lb %s", f.getName()));
 		BufferedReader sr = new BufferedReader(new StringReader(fileList));
 		String entryName;
 		try {
 			while ((entryName = sr.readLine()) != null) {
 				if (entryName.endsWith("srt") || entryName.endsWith("sub")) {   				
-					String outputFilename = Util.getTempSubsName(entryName);
+					File targetFile = getTargetFile(f, path);
+					String outputFilename = targetFile.getAbsolutePath();
 					executeCommand(String.format("unrar e %s %s", f.getName(), outputFilename));
 					
 					return new File(outputFilename);
@@ -78,7 +90,7 @@ public class Unpacker {
 		return sb.toString();
 	}
 	
-	private static File unzipFile(File f) {
+	private static File unzipFile(File f, String path) {
 		try {
 			ZipInputStream zipinputstream = new ZipInputStream(new FileInputStream(f));
 		
@@ -92,7 +104,8 @@ public class Unpacker {
                 
                 if (entryName.endsWith("srt") || entryName.endsWith("sub")) {
 	                FileOutputStream fileoutputstream;
-	                String outputFilename = Util.getTempSubsName(entryName);
+	                File targetFile = getTargetFile(f, path);
+	                String outputFilename = targetFile.getAbsolutePath();
 	                fileoutputstream = new FileOutputStream(outputFilename);             
 	
 	            	byte[] buf = new byte[1024];
