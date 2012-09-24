@@ -123,6 +123,9 @@
 
             			<xs:attribute name="subsPath" type="xs:string"
             				use="required" />
+            			<xs:attribute name="threadWaitSeconds"
+            				type="xs:int">
+            			</xs:attribute>
             		</xs:complexType>
             	</xs:element>
 

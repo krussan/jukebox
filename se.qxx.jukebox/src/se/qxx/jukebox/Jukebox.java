@@ -19,6 +19,11 @@ public class Jukebox {
 			purge();
 			return;
 		}
+		
+		if (Arguments.get().isPurgeSubtitles()) {
+			purgeSubs();
+			return;
+		}
 					
 		startMainThread();
 			
@@ -34,6 +39,7 @@ public class Jukebox {
 		System.out.println("\t-di\tDisable imdb identifier");
 		System.out.println("\t-ds\tDisable tcp listener");
 		System.out.println("\t--purge\tPurges all content from database and exit");
+		System.out.println("\t--purgeSubs\tPurges all subtitles and queue from database");
 		System.out.println("\t--help\tDisplays this help");
 		System.out.println("");
 	}
@@ -41,6 +47,12 @@ public class Jukebox {
 	private static void purge() {
 		System.out.println("Purging database ....");
 		DB.purgeDatabase();
+		System.out.println("Done !");
+	}
+
+	private static void purgeSubs() {
+		System.out.println("Purging subtitles from database ....");
+		DB.purgeSubs();
 		System.out.println("Done !");
 	}
 

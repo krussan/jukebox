@@ -8,7 +8,8 @@ public class SubFile implements Comparable<SubFile> {
 		NotMatched,
 		ProbableMatch,
 		PositiveMatch,
-		ExactMatch
+		ExactMatch,
+		SubsExist
 	}
 	private String _url;
 	private File _file;

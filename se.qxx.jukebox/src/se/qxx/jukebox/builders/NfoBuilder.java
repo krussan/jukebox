@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FilenameUtils;
+
 import se.qxx.jukebox.Util;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 
@@ -18,7 +20,7 @@ public class NfoBuilder extends MovieBuilder {
 	public Movie extractMovie(String filepath, String filename) {
 		Movie m = null;
 		try {
-			String filenameWithoutExt = Util.getFilenameWithoutExtension(filename);
+			String filenameWithoutExt = FilenameUtils.getBaseName(filename);
 			File f = new File(String.format("%s/%s.nfo", filepath, filename));
 			if (f.exists()) {
 				NFOScanner scanner = new NFOScanner(f);

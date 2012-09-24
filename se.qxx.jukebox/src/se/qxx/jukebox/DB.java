@@ -67,7 +67,7 @@ public class DB {
 			" from movie where filename = ? and filepath = ?");
 					
 			prep.setString(1, filename);
-			prep.setString(2, filename);
+			prep.setString(2, filepath);
 				
 			ResultSet rs = prep.executeQuery();
 			if (rs.next())
@@ -629,11 +629,38 @@ public class DB {
 			return true;
 		}
 		catch (Exception e) {
-			Log.Error("Purge failed", LogType.UPGRADE, e);
+			Log.Error("Purge failed", LogType.MAIN, e);
 			return false;
 		}
 		finally {
 			DB.disconnect(conn);
 		}		
 	}
+
+	public static boolean purgeSubs() {
+		Connection conn = null;
+		String[] statements = new String[] {
+			"DELETE FROM subtitles",
+			"DELETE FROM subtitleQueue"
+		};
+		
+		try {
+			conn = DB.initialize();
+		
+			for (String stmt : statements) {
+				PreparedStatement prep = conn.prepareStatement(stmt);
+				prep.execute();				
+			}
+			
+			return true;
+		}
+		catch (Exception e) {
+			Log.Error("Purge of subtitles failed", LogType.MAIN, e);
+			return false;
+		}
+		finally {
+			DB.disconnect(conn);
+		}		
+	}
+	
 }

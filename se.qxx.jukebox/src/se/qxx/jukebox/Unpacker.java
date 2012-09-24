@@ -9,13 +9,23 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import se.qxx.jukebox.Log.LogType;
+
 public class Unpacker {
 	public static File unpackFile(File f, String path) {
 		File unpackedFile = null;
+		Log.Info(String.format("Unpacking file %s", f.getName()), LogType.SUBS);
+		
 		if(f.getName().endsWith(".rar")) 
 			unpackedFile = unrarFile(f, path);
 		else if (f.getName().endsWith(".zip"))
@@ -27,13 +37,21 @@ public class Unpacker {
 	}
 	
 	public static File moveFile(File f, String path) {
-		File targetFile = getTargetFile(f, path);
-		f.renameTo(targetFile);
+		Log.Info(String.format("File is not an archive. Moving to temp folder :: %s", path), LogType.SUBS);
+		
+		File targetFile = getTargetFile(f.getName(), path);
+		
+		try {
+			FileUtils.copyFile(f, targetFile);
+		} catch (IOException e) {
+			Log.Error(String.format("Error when copying file %s to %s", f.getName(), targetFile.getName()), LogType.SUBS, e);
+		}
+		
 		return targetFile;
 	}
 	
-	private static File getTargetFile(File f, String path) {
-		String targetName = String.format("%s/%s", path, f.getName());
+	private static File getTargetFile(String filename, String path) {
+		String targetName = String.format("%s/%s", path, filename);
 		return new File(targetName);
 	}
 	
@@ -49,48 +67,77 @@ public class Unpacker {
 	}
 	
 	private static File unrarFile(File f, String path) {
-		String fileList = executeCommand(String.format("unrar lb %s", f.getName()));
+		Log.Info(String.format("File appears to be a RAR archive"), LogType.SUBS);
+
+		String fileList = executeCommand(
+			"unrar",
+			"lb",
+			f.getAbsolutePath());
+			
 		BufferedReader sr = new BufferedReader(new StringReader(fileList));
 		String entryName;
 		try {
 			while ((entryName = sr.readLine()) != null) {
-				if (entryName.endsWith("srt") || entryName.endsWith("sub")) {   				
-					File targetFile = getTargetFile(f, path);
-					String outputFilename = targetFile.getAbsolutePath();
-					executeCommand(String.format("unrar e %s %s", f.getName(), outputFilename));
+				Log.Debug(String.format("entryName :: %s", entryName), LogType.SUBS);
+				if (StringUtils.endsWithIgnoreCase(entryName, "srt") || StringUtils.endsWithIgnoreCase(entryName, "sub")) {   				
+					File targetFile = getTargetFile(entryName, path);
+					String outputPath = FilenameUtils.getFullPath(targetFile.getAbsolutePath());
+					String outputFilename = outputPath + entryName;
+					
+					executeCommand(
+						"unrar", 
+						"e",
+						f.getAbsolutePath(),
+						outputPath);
 					
 					return new File(outputFilename);
 				}
 			}
 		} catch (IOException e) {
-			
 			Log.Error(String.format("Error when unpacking sub with filename :: %s", f.getName()), Log.LogType.SUBS, e);
 		}
 		
 		return null;
 	}
 
-	private static String executeCommand(String command) {
-		StringBuilder sb = new StringBuilder();
+	private static String executeCommand(String command, String... args) {
+		String output = StringUtils.EMPTY;
+		
+		Log.Debug(String.format("Executing command :: %s", command), LogType.SUBS);
+		List<String> processArguments = new ArrayList<String>();
+		processArguments.add(command);
+		processArguments.addAll(Arrays.asList(args));
 		
 		try {
-			Process p = Runtime.getRuntime().exec(command);
-			DataInputStream is = new DataInputStream(p.getInputStream());
+			ProcessBuilder pb = new ProcessBuilder(processArguments);
+			Process p = pb.start();
+			
+			output = Util.readMessageFromStream(p.getInputStream());
 
-			BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-			String input;
-			while ((input = rd.readLine()) != null) {
-			    sb.append(input);
+			Log.Debug(String.format("Read %s characters from command stream", output.length()), LogType.SUBS);
+			p.waitFor();
+			
+			Log.Debug(String.format("Process exit value :: %s", p.exitValue()), LogType.SUBS);
+
+			String errorMessage = Util.readMessageFromStream(p.getErrorStream());
+			
+			if (p.exitValue() != 0) {
+				Log.Debug("Error when unpacking archive:", LogType.SUBS);
 			}
+
+			Log.Debug(errorMessage, LogType.SUBS);
 			
-		} catch (IOException e) {
-			
-			Log.Error(String.format("Error while executing command :: %s", command), Log.LogType.MAIN, e);
+		} catch (IOException e) {			
+			Log.Error(String.format("Error while executing command :: %s", command), Log.LogType.SUBS, e);
+		} catch (InterruptedException e) {
+			Log.Error(String.format("Error while executing command :: %s", command), Log.LogType.SUBS, e);
 		}	
-		return sb.toString();
+		return output;
 	}
 	
 	private static File unzipFile(File f, String path) {
+		Log.Info(String.format("File appears to be a ZIP archive"), LogType.SUBS);
+		
 		try {
 			ZipInputStream zipinputstream = new ZipInputStream(new FileInputStream(f));
 		
@@ -99,12 +146,13 @@ public class Unpacker {
             { 
                 //for each entry to be extracted
                 String entryName = zipentry.getName();
-                System.out.println("entryname "+entryName);
+                Log.Info(String.format("ZIP entry :: %s", entryName), LogType.SUBS);
+                
                 int n;
                 
-                if (entryName.endsWith("srt") || entryName.endsWith("sub")) {
+                if (StringUtils.endsWithIgnoreCase(entryName, "srt") || StringUtils.endsWithIgnoreCase(entryName, "sub")) {
 	                FileOutputStream fileoutputstream;
-	                File targetFile = getTargetFile(f, path);
+	                File targetFile = getTargetFile(entryName, path);
 	                String outputFilename = targetFile.getAbsolutePath();
 	                fileoutputstream = new FileOutputStream(outputFilename);             
 	

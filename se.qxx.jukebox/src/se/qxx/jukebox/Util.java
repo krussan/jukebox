@@ -14,6 +14,11 @@ import java.util.regex.Pattern;
 
 import javax.swing.filechooser.FileSystemView;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
+
 import se.qxx.jukebox.builders.FilenameBuilder;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.settings.Settings;
@@ -48,58 +53,6 @@ public class Util {
 	public static String parseAwaySpace(String inputString) {
 		return inputString.replace(".", " ").replace("_", " ").replace("-", " ");
 	}
-
-	/**
-	 * Rates a sub file (or a string) depending on the all categories in the Movie
-	 * class
-	 * 
-	 * @param m 				- The movie to compare against
-	 * @param subFilename		- the filename or string of the subfile
-	 * @return Rating			- A rating based on the Rating enumeration				
-	 */
-	public static Rating rateSub(Movie m, String subFilename) {
-		FilenameBuilder b = new FilenameBuilder();
-		Movie subMovie = b.extractMovie("", subFilename);
-		Rating r = Rating.NotMatched;
-		
-		if (subMovie != null) {
-			//Check if filenames match exactly
-			String filenameWithoutExtension = getFilenameWithoutExtension(m.getFilename());
-			if (filenameWithoutExtension.equals(subFilename))
-				return Rating.ExactMatch;
-			
-			
-			String group = m.getGroup();
-			String subGroup = subMovie.getGroup();
-			
-			if (subGroup != null) {
-				if (subGroup.equals(group) && subGroup != "") {
-					if (subMovie.getFormat().equals(m.getFormat()) && subMovie.getFormat() != "")
-						r = Rating.PositiveMatch;
-					else
-						r = Rating.ProbableMatch;
-				}
-			}
-		}
-		return r;
-	
-	}
-	
-	/**
-	 * Returns the filename except extension
-	 * 
-	 * @param filename
-	 * @return
-	 */
-	public static String getFilenameWithoutExtension(String filename) {
-		int index = filename.lastIndexOf('.');
-		if (index >= 0)
-			return filename.substring(0,  index);
-		else
-			return filename;
-	}
-	
-
 	
 	/**
 	 * Copies the content of a stream to a string
@@ -192,25 +145,13 @@ public class Util {
 			return false;
 		}
 	}
-	
-	/**
-	 * Function that returns if a string contains another string ignoring case
-	 * @param text The string to be searched
-	 * @param pattern The string to be found
-	 * @return
-	 */
-	public static boolean stringContainsIgnoreCase(String text, String pattern) {
-		Pattern p = Pattern.compile(Pattern.quote(pattern), Pattern.CASE_INSENSITIVE);
-		Matcher m = p.matcher(text);
-		return m.find();
-	}	
-	
+		
 	/**
 	 * Returns the system temporary directory
 	 * @return
 	 */
 	public static String getTempDirectory() {
-        return System.getProperty("java.io.tmpdir");
+        return SystemUtils.getJavaIoTmpDir().getAbsolutePath();
 	}
 	
 	/**
@@ -243,15 +184,21 @@ public class Util {
 		return con.newInstance(args);		
 	}
 	
-	public static Object getInstance(String className, Object[] args) throws ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
+	public static Object getInstance(String className, Class<?>[] constructorDefinition, Object[] args) throws ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
 		Class<?> c = Class.forName(className);
 				
-		Class<?>[] parTypes = new Class<?>[args.length];
-		for (int i=0;i<args.length;i++) 
-			parTypes[i] = args.getClass();
-		
-		Constructor<?> con = c.getConstructor(parTypes);
+		Constructor<?> con = c.getConstructor(constructorDefinition);
 		return con.newInstance(args);		
+	}
+
+	public static String getImdbIdFromUrl(String imdbUrl) {
+		// http://www.imdb.com/title/tt1541874/
+		Pattern p = Pattern.compile("http://www.imdb.com/.*?/tt(\\d*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
+		Matcher m = p.matcher(imdbUrl);
+		if (m.find())
+			return m.group(1);
+		else
+			return StringUtils.EMPTY;
 	}
 	
 }

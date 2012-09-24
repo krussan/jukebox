@@ -82,4 +82,24 @@ public abstract class MovieBuilder {
 		
 		return m;
 	}
+	
+	public static MovieBuilder getIdentifyingBuilder(Movie m) {
+		MovieBuilder mb = null;
+		switch (m.getIdentifier()) {
+		case Filename:
+			mb = new FilenameBuilder();
+			break;
+		case NFO:
+			mb = new NfoBuilder();
+			break;
+		case ParentDirectory:
+			mb = new ParentDirectoryBuilder();
+			break;
+		default:
+			mb = new FilenameBuilder();
+		}
+		
+		return mb;
+	}
+
 }

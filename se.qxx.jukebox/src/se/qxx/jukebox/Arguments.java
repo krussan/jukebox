@@ -1,6 +1,7 @@
 package se.qxx.jukebox;
 
 import java.util.Arrays;
+
 import java.util.List;
 
 public class Arguments {
@@ -10,6 +11,7 @@ public class Arguments {
 	private boolean imdbIdentitifierEnabled = true;
 	private boolean purgeMode = false;
 	private boolean helpRequested = false;
+	private boolean purgeSubtitles = false;
 	
 	private static Arguments _instance;
 	
@@ -60,6 +62,9 @@ public class Arguments {
 		
 		if (arguments.contains("--help") || arguments.contains("-?"))
 			_instance.setHelpRequested(true);
+		
+		if (arguments.contains("--purgeSubs"))
+			_instance.setPurgeSubtitles(true);
 	}
 	
 	public static Arguments get() {
@@ -83,5 +88,13 @@ public class Arguments {
 
 	public void setHelpRequested(boolean helpRequested) {
 		this.helpRequested = helpRequested;
+	}
+
+	public boolean isPurgeSubtitles() {
+		return purgeSubtitles;
+	}
+
+	public void setPurgeSubtitles(boolean purgeSubtitles) {
+		this.purgeSubtitles = purgeSubtitles;
 	}
 }

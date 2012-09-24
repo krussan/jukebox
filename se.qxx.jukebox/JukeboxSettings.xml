@@ -12,7 +12,7 @@
       </extensions>
     </catalog>
   </catalogs>
-  <subFinders subsPath="/c/media/Subs">
+  <subFinders subsPath="/c/media/Subs" threadWaitSeconds="25">
     <subFinder class="se.qxx.jukebox.subtitles.UndertexterSe">
     	<subFinderSettings>
     		<setting>

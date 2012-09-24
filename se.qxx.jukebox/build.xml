@@ -63,7 +63,7 @@
 		    destdir="${classes.dir}" 
 		    classpathref="jukebox.classpath" 
 		    includeantruntime="true"
-		    debug="true"
+		    debug="true"	
 	    />
 	</target>
 	
@@ -81,7 +81,7 @@
 	<target name="createrunscript">
 		<echo file="${build.dir}/run.sh">#!/bin/sh
 ./stop.sh > /dev/null 2> /dev/null
-java -cp 'jna.jar:${jar.file}:named-regexp.jar:protobuf-2.4.1.jar:sqlite-jdbc-3.7.2.jar:commons-lang3-3.1.jar' ${main-class} $* &amp;
+java -cp 'jna.jar:${jar.file}:named-regexp.jar:protobuf-2.4.1.jar:sqlite-jdbc-3.7.2.jar:commons-lang3-3.1.jar:commons-io-2.4.jar:commons-codec-1.7.jar' ${main-class} $* &amp;
 echo $! > jukebox.pid
 		</echo>
 		
@@ -93,7 +93,7 @@ else
    LD_LIBRARY_PATH=$PWD
 fi
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
-java -cp 'jna.jar:${jar.file}:named-regexp.jar:protobuf-2.4.1.jar:sqlite-jdbc-3.7.2.jar:commons-lang3-3.1.jar' se.qxx.jukebox.tests.TestMediaInfo $*
+java -cp 'jna.jar:${jar.file}:named-regexp.jar:protobuf-2.4.1.jar:sqlite-jdbc-3.7.2.jar:commons-lang3-3.1.jar:commons-io-2.4.jar:commons-codec-1.7.jar' se.qxx.jukebox.tests.TestMediaInfo $*
 		</echo>
 		
 		<echo file="${build.dir}/testNfoScanner.sh">#!/bin/sh
@@ -104,7 +104,7 @@ else
    LD_LIBRARY_PATH=$PWD
 fi
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
-java -cp 'jna.jar:${jar.file}:named-regexp.jar:protobuf-2.4.1.jar:sqlite-jdbc-3.7.2.jar:commons-lang3-3.1.jar' se.qxx.jukebox.tests.TestNfoScanner $*
+java -cp 'jna.jar:${jar.file}:named-regexp.jar:protobuf-2.4.1.jar:sqlite-jdbc-3.7.2.jar:commons-lang3-3.1.jar:commons-io-2.4.jar:commons-codec-1.7.jar' se.qxx.jukebox.tests.TestNfoScanner $*
 		</echo>
 
 				<echo file="${build.dir}/testImdbXml.sh">#!/bin/sh
@@ -115,7 +115,7 @@ else
    LD_LIBRARY_PATH=$PWD
 fi
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
-java -cp 'jna.jar:${jar.file}:named-regexp.jar:protobuf-2.4.1.jar:sqlite-jdbc-3.7.2.jar:commons-lang3-3.1.jar' se.qxx.jukebox.tests.TestImdbXmlReader $*
+java -cp 'jna.jar:${jar.file}:named-regexp.jar:protobuf-2.4.1.jar:sqlite-jdbc-3.7.2.jar:commons-lang3-3.1.jar:commons-io-2.4.jar:commons-codec-1.7.jar' se.qxx.jukebox.tests.TestImdbXmlReader $*
 		</echo>
 						
 		<copy file="${main.dir}/JukeboxSettings.xml" todir="${build.dir}" />

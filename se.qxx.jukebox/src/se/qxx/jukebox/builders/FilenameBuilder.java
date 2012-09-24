@@ -3,6 +3,8 @@ package se.qxx.jukebox.builders;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FilenameUtils;
+
 import com.google.code.regexp.NamedMatcher;
 import com.google.code.regexp.NamedPattern;
 
@@ -32,8 +34,7 @@ public class FilenameBuilder extends MovieBuilder {
 
 		//TODO: check that file ends with one of the listened for extensions and remove it
 		// For now we remove any extension (beyond the last dot)	
-		String fileNameToMatch = Util.getFilenameWithoutExtension(filename);
-
+		String fileNameToMatch = FilenameUtils.getBaseName(filename);
 		
 		for (Splitter splitter : Settings.get().getStringSplitters().getSplitter()) {
 			//ignoring some keywords specified in xml
