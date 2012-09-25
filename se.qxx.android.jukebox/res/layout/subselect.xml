@@ -96,23 +96,9 @@
         android:paddingRight="12dp"
         android:paddingBottom="4dp"        
         android:layout_below="@id/linearLayout2"/>
-  
-    <TextView
-        android:id="@+id/textViewStory"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/lblStory"
-        android:textAppearance="?android:attr/textAppearanceSmall" 
-        android:layout_below="@id/textViewFilename"
-        android:layout_alignParentLeft="true"
-        android:paddingTop="6dp"
-        android:paddingLeft="12dp"
-        android:paddingRight="12dp"
-        android:paddingBottom="4dp"
-	/>
 
     <SeekBar
-        android:id="@+id/seekBar1"
+        android:id="@+id/seekBarDuration"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/linearLayoutButtons1"

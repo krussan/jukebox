@@ -115,6 +115,16 @@ public class VLCDistributor {
 		
 		return true; 
 	}
+
+	public boolean seek(String hostName, int seconds) throws VLCConnectionNotFoundException {
+		if (!assertLiveConnection(hostName))
+			return false;
+		
+		VLCConnection conn = findConnection(hostName);
+		conn.seek(seconds);
+		
+		return true; 
+	}
 	
 	public boolean wakeup(String hostName) throws VLCConnectionNotFoundException {
 		Server s = findServerInSettings(hostName);

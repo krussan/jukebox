@@ -68,4 +68,11 @@ public class VLCConnection extends TcpClient {
 		}
 	}
 
+	public void seek(int seconds) {
+		try {
+			this.sendCommand(String.format("seek %s\n", seconds));
+		} catch (Exception e) {
+			Log.Error("Error while seeking in file", Log.LogType.COMM, e);
+		}	
+	}
 }

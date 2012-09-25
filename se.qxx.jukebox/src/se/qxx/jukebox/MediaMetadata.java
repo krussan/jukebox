@@ -26,6 +26,9 @@ public class MediaMetadata {
 	public int getDurationMinutes(){
 		return Math.round(this.getDuration() / 1000 / 60);
 	}
+	public int getDurationSeconds(){
+		return Math.round(this.getDuration() / 1000);
+	}	
 	private void setDuration(long duration) {
 		this.duration = duration;
 	}
@@ -66,7 +69,7 @@ public class MediaMetadata {
 		try {
 			MediaMetadata mm = MediaMetadata.getMediaMetadata(fullFilePath);
 			newMovie = Movie.newBuilder(m)
-					.setMetaDuration(mm.getDurationMinutes())
+					.setMetaDuration(mm.getDurationSeconds())
 					.setMetaFramerate(mm.getFramerate())
 					.build();
 			

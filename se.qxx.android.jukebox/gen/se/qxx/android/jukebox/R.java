@@ -120,7 +120,7 @@ public final class R {
         public static final int rootMovieItem=0x7f080006;
         public static final int rootPlayerPicker=0x7f08001d;
         public static final int rootSubSelect=0x7f080021;
-        public static final int seekBar1=0x7f080025;
+        public static final int seekBarDuration=0x7f080025;
         public static final int textViewDirector=0x7f08000c;
         public static final int textViewDuration=0x7f08000d;
         public static final int textViewFilename=0x7f080019;

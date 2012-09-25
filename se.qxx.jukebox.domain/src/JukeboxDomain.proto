@@ -17,6 +17,7 @@ enum JukeboxRequestType {
 	Wakeup = 12;
 	ToggleFullscreen = 13;
 	Suspend = 14;
+	Seek = 15;
 }
 
 enum Identifier {
@@ -65,6 +66,11 @@ message JukeboxRequestMarkSubtitle {
 message JukeboxRequestSkipForward {}
 
 message JukeboxRequestSkipBackwards {}
+
+message JukeboxRequestSeek {
+	required string playerName = 1;
+	required int32 seconds = 2;
+}
 
 message Movie {
 	required int32 ID = 1;

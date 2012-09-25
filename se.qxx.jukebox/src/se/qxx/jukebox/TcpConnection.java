@@ -21,6 +21,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequest;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestPauseMovie;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSeek;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStartMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStopMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSuspend;
@@ -98,6 +99,8 @@ public class TcpConnection implements Runnable {
 				return toggleFullscreen(req);
 			case Suspend:
 				return suspend(req);
+			case Seek:
+				return seek(req);
 			default:
 				break;
 			}
@@ -178,6 +181,22 @@ public class TcpConnection implements Runnable {
 			
 		}		
 	}
+
+	private JukeboxResponse seek(JukeboxRequest req) throws IOException {
+		ByteString data = req.getArguments();
+		JukeboxRequestSeek args = JukeboxRequestSeek.parseFrom(data);
+
+		Log.Debug(String.format("Seeking on player %s to %s seconds", args.getPlayerName(), args.getSeconds()), Log.LogType.COMM);
+		
+		try {
+			if (VLCDistributor.get().seek(args.getPlayerName(), args.getSeconds()))
+				return JukeboxResponse.newBuilder().setType(JukeboxRequestType.OK).build();
+			else
+				return buildErrorMessage("Error occured when connecting to target media player"); 
+		} catch (VLCConnectionNotFoundException e) {
+			return buildErrorMessage("Error occured when connecting to target media player"); 
+		}		
+	}	
 	
 	private JukeboxResponse buildErrorMessage(String errorMessage) {
 		
