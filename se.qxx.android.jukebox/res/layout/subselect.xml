@@ -4,7 +4,7 @@
     android:layout_height="fill_parent"
     android:gravity="center|clip_vertical|fill_horizontal"
     android:orientation="vertical" 
-    android:id="@+id/rootMovieItem">
+    android:id="@+id/rootSubSelect">
 
     <LinearLayout
         android:id="@+id/linearLayout2"
@@ -13,7 +13,7 @@
         android:layout_alignParentTop="true" >
 
         <ImageView
-            android:id="@+id/imageView1"
+            android:id="@+id/imgSubPoster"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="12dp"
@@ -39,35 +39,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/lblYear"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
-        
-		    <TextView
-		        android:id="@+id/textViewGenre"
-		        android:layout_width="fill_parent"
-		        android:layout_height="wrap_content"
-		        android:text="@string/lblGenre"
-		        android:textAppearance="?android:attr/textAppearanceSmall" />
-		
-		    <TextView
-		        android:id="@+id/textViewDirector"
-		        android:layout_width="fill_parent"
-		        android:layout_height="wrap_content"
-		        android:text="@string/lblDirector"
-		        android:textAppearance="?android:attr/textAppearanceSmall" />
-		
-		    <TextView
-		        android:id="@+id/textViewDuration"
-		        android:layout_width="fill_parent"
-		        android:layout_height="wrap_content"
-		        android:text="@string/lblDuration"
-		        android:textAppearance="?android:attr/textAppearanceSmall" />
-		
-		    <TextView
-		        android:id="@+id/textViewRating"
-		        android:layout_width="fill_parent"
-		        android:layout_height="wrap_content"
-		        android:text="@string/lblRating"
-		        android:textAppearance="?android:attr/textAppearanceSmall" />
-                
+                    
         </LinearLayout>
     </LinearLayout>
 
@@ -78,35 +50,28 @@
         android:layout_alignParentBottom="true"
         android:gravity="center_horizontal" >
 
-
-            <ImageButton
-                android:id="@+id/btnViewInfo"
+            <Button
+                android:id="@+id/btnSubOk"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="#00000000"
-                android:hapticFeedbackEnabled="true"
-                android:onClick="onButtonClicked"
-                android:src="@drawable/infoabout"
-                android:contentDescription="@string/descViewInfo" />
+                android:onClick="onButtonClicked" 
+                android:text="@string/btnSubOk" />
 
+            <Button
+                android:id="@+id/btnSubNotOk"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onButtonClicked" 
+                android:text="@string/btnSubNotOk" />
+            
 	        <Button
 	            android:id="@+id/btnFullscreen"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:background="@drawable/btnfullscreen"
-	            android:hapticFeedbackEnabled="true"
 	            android:onClick="onButtonClicked"
 			/>
 	        
-	        <Button
-	            android:id="@+id/btnSubSelection"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:hapticFeedbackEnabled="true"
-	            android:onClick="onButtonClicked"
-	            android:text="@string/btnSubselect"
-			/>
-	        	        
                         
     </LinearLayout>
 
@@ -117,50 +82,6 @@
         android:layout_above="@+id/linearLayout1"
         android:layout_alignParentLeft="true"
         android:gravity="center_horizontal" >
-
-		<Button
-            android:id="@+id/btnBackward"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/btnbackward"
-            android:hapticFeedbackEnabled="true"
-            android:onClick="onButtonClicked"
-		/>        
-        
-        <Button
-            android:id="@+id/btnPlay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/btnplay"
-            android:onClick="onButtonClicked"
-        />
-
-        <Button
-            android:id="@+id/btnPause"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/btnpause"
-            android:hapticFeedbackEnabled="true"
-            android:onClick="onButtonClicked"
-            android:src="@drawable/pause" />
-
-        <Button
-            android:id="@+id/btnStop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/btnstop"
-            android:hapticFeedbackEnabled="true"
-            android:onClick="onButtonClicked"
-		/>
-
-        <Button
-            android:id="@+id/btnForward"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/btnforward"
-            android:hapticFeedbackEnabled="true"
-            android:onClick="onButtonClicked"
-		/>
 
     </LinearLayout>
 
@@ -190,5 +111,14 @@
         android:paddingBottom="4dp"
 	/>
 
+    <SeekBar
+        android:id="@+id/seekBar1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/linearLayoutButtons1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="26dp"
+        android:max="1000"
+        android:progress="0" />
 
 </RelativeLayout>

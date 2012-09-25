@@ -46,7 +46,9 @@ public class FileCreatedHandler implements INotifyClient {
 						// If title is the same as the filename (except ignore pattern) then don't identify on IMDB.
 						if (Arguments.get().isImdbIdentifierEnabled()) 
 							m = getImdbInformation(m);
-						
+			
+						// Get media information from MediaInfo library
+						m = MediaMetadata.addMediaMetadata(m);
 						m = DB.addMovie(m);
 						
 						SubtitleDownloader.get().addMovie(m);			

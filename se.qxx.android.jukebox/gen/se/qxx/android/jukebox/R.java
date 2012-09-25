@@ -92,39 +92,45 @@ public final class R {
         public static final int zap=0x7f02004b;
     }
     public static final class id {
-        public static final int bottomtext=0x7f08001b;
+        public static final int bottomtext=0x7f08001c;
         public static final int btnBackward=0x7f080014;
         public static final int btnForward=0x7f080018;
-        public static final int btnFullscreen=0x7f080012;
+        public static final int btnFullscreen=0x7f080011;
         public static final int btnOff=0x7f080004;
         public static final int btnOn=0x7f080003;
         public static final int btnPause=0x7f080016;
-        public static final int btnPickPlayer=0x7f08001f;
+        public static final int btnPickPlayer=0x7f080020;
         public static final int btnPlay=0x7f080015;
         public static final int btnRefresh=0x7f080001;
         public static final int btnSelectMediaPlayer=0x7f080002;
         public static final int btnStop=0x7f080017;
-        public static final int btnViewInfo=0x7f080011;
+        public static final int btnSubNotOk=0x7f080024;
+        public static final int btnSubOk=0x7f080023;
+        public static final int btnSubSelection=0x7f080012;
+        public static final int btnViewInfo=0x7f080010;
         public static final int imageView1=0x7f080008;
-        public static final int linearLayout1=0x7f080010;
+        public static final int imgSubPoster=0x7f080022;
+        public static final int linearLayout1=0x7f08000f;
         public static final int linearLayout2=0x7f080007;
         public static final int linearLayoutButtons1=0x7f080013;
-        public static final int listPlayers=0x7f08001d;
+        public static final int listPlayers=0x7f08001e;
         public static final int listView1=0x7f080005;
-        public static final int preferences=0x7f080020;
+        public static final int preferences=0x7f080026;
         public static final int rootMain=0x7f080000;
         public static final int rootMovieItem=0x7f080006;
-        public static final int rootPlayerPicker=0x7f08001c;
-        public static final int textViewDirector=0x7f08000d;
-        public static final int textViewDuration=0x7f08000e;
-        public static final int textViewFilename=0x7f08000b;
-        public static final int textViewGenre=0x7f08000c;
-        public static final int textViewRating=0x7f08000f;
-        public static final int textViewStory=0x7f080019;
+        public static final int rootPlayerPicker=0x7f08001d;
+        public static final int rootSubSelect=0x7f080021;
+        public static final int seekBar1=0x7f080025;
+        public static final int textViewDirector=0x7f08000c;
+        public static final int textViewDuration=0x7f08000d;
+        public static final int textViewFilename=0x7f080019;
+        public static final int textViewGenre=0x7f08000b;
+        public static final int textViewRating=0x7f08000e;
+        public static final int textViewStory=0x7f08001a;
         public static final int textViewTitle=0x7f080009;
         public static final int textViewYear=0x7f08000a;
-        public static final int toptext=0x7f08001a;
-        public static final int txtPlayerName=0x7f08001e;
+        public static final int toptext=0x7f08001b;
+        public static final int txtPlayerName=0x7f08001f;
     }
     public static final class layout {
         public static final int main=0x7f030000;
@@ -132,6 +138,7 @@ public final class R {
         public static final int movielistrow=0x7f030002;
         public static final int playerpicker=0x7f030003;
         public static final int playerpickerrow=0x7f030004;
+        public static final int subselect=0x7f030005;
     }
     public static final class menu {
         public static final int mainmenu=0x7f070000;
@@ -142,6 +149,9 @@ public final class R {
         public static final int btnPause=0x7f050008;
         public static final int btnPlay=0x7f050006;
         public static final int btnStop=0x7f050007;
+        public static final int btnSubNotOk=0x7f05001d;
+        public static final int btnSubOk=0x7f05001c;
+        public static final int btnSubselect=0x7f05001b;
         public static final int btnViewInfo=0x7f05000b;
         public static final int btnWakeup=0x7f050009;
         public static final int defaultServerIpAddress=0x7f050004;

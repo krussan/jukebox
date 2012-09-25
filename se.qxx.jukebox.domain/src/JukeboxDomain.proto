@@ -87,6 +87,8 @@ message Movie {
 	repeated string genre = 18;
 	optional Identifier identifier = 19;
 	optional int32 identifierRating = 20;
+	optional int32 metaDuration = 21;
+	optional string metaFramerate = 22;
 }
 
 message JukeboxResponseListMovies {

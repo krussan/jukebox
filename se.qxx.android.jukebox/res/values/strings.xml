@@ -28,4 +28,7 @@
     <string name="descPosterImage">Poster image</string>
     <string name="lblFilename">Filename</string>
     <string name="descViewInfo">View IMDB info</string>
+    <string name="btnSubselect">Select subs</string>
+    <string name="btnSubOk">OK</string>
+    <string name="btnSubNotOk">Not OK</string>
 </resources>

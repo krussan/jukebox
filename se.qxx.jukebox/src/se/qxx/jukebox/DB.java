@@ -29,7 +29,7 @@ public class DB {
 	
 			PreparedStatement prep = conn.prepareStatement(
 					" select ID, filename, filepath, title, year, type, format, sound, language, groupName, imdburl" +
-					"      , duration, rating, director, story, identifier, identifierRating" +
+					"      , duration, rating, director, story, identifier, identifierRating, metaDuration, metaFramerate" +
 					" FROM movie" +
 					" WHERE title LIKE '%" + searchString + "%'"
 					);
@@ -63,7 +63,7 @@ public class DB {
 
 			PreparedStatement prep = conn.prepareStatement(
 			" select ID, filename, filepath, title, year, type, format, sound, language, groupName, imdburl" +
-			"      , duration, rating, director, story, identifier, identifierRating" +
+			"      , duration, rating, director, story, identifier, identifierRating, metaDuration, metaFramerate" +
 			" from movie where filename = ? and filepath = ?");
 					
 			prep.setString(1, filename);
@@ -91,7 +91,7 @@ public class DB {
 
 			PreparedStatement prep = conn.prepareStatement(
 				" select ID, filename, filepath, title, year, type, format, sound, language, groupName, imdburl" +
-				"      , duration, rating, director, story, identifier, identifierRating" +
+				"      , duration, rating, director, story, identifier, identifierRating, metaDuration, metaFramerate" +
 				" from movie where ID = ?");
 					
 			prep.setInt(1, id);
@@ -132,12 +132,14 @@ public class DB {
 				"    , story = ?" +
 				"    , identifier = ?" +
 				"    , identifierRating = ?" +
+				"    , metaDuration = ?" +
+				"    , metaFramerate = ?" +
 				" WHERE ID = ?"
 			);
 
 			//TODO: Should we update image as well??
 			addArguments(prep, m);
-			prep.setInt(17, m.getID());
+			prep.setInt(19, m.getID());
 			
 			prep.execute();
 		}
@@ -156,9 +158,9 @@ public class DB {
 			
 			PreparedStatement prep = conn.prepareStatement(
 					"insert into movie " +
-					"(filename, filepath, title, year, type, format, sound, language, groupName, imdburl, duration, rating, director, story, identifier, identifierRating)" +
+					"(filename, filepath, title, year, type, format, sound, language, groupName, imdburl, duration, rating, director, story, identifier, identifierRating, metaDuration, metaFramerate)" +
 					"values" +
-					"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+					"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			
 			addArguments(prep, m);
 			prep.execute();
@@ -434,7 +436,7 @@ public class DB {
 	
 			PreparedStatement prep = conn.prepareStatement(
 					" SELECT M.ID, M.filename, M.filepath, M.title, M.year, M.type, M.format, M.sound, M.language, M.groupName, M.imdburl " +
-					"      , M.duration, M.rating, M.director, M.story, M.identifier, M.identifierRating" +
+					"      , M.duration, M.rating, M.director, M.story, M.identifier, M.identifierRating, M.metaDuration, M.metaFramerate" +
 					" FROM movie AS M" +
 					" INNER JOIN subtitleQueue SQ ON SQ._movie_ID = M.ID" +
 					" WHERE retreivedAt IS NULL AND result = 0"
@@ -531,7 +533,10 @@ public class DB {
 				.setStory(rs.getString("story"))
 				.setIdentifier(Identifier.valueOf(rs.getString("identifier")))
 				.setIdentifierRating(rs.getInt("identifierRating"))
-				.addAllGenre(genres);
+				.addAllGenre(genres)
+				.setMetaDuration(rs.getInt("metaDuration"))
+				.setMetaFramerate(rs.getString("metaFramerate"));
+		
 		
 		if (imageData != null)
 			builder = builder.setImage(ByteString.copyFrom(imageData));
@@ -590,6 +595,8 @@ public class DB {
 		prep.setString(14, m.getStory());
 		prep.setString(15, m.getIdentifier().toString());
 		prep.setInt(16, m.getIdentifierRating());
+		prep.setInt(17, m.getMetaDuration());
+		prep.setString(18, m.getMetaFramerate());
 	}
 	
 	private static int getIdentity(Connection conn) throws SQLException {
