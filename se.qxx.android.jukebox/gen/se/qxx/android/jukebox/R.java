@@ -115,7 +115,7 @@ public final class R {
         public static final int linearLayoutButtons1=0x7f080013;
         public static final int listPlayers=0x7f08001e;
         public static final int listView1=0x7f080005;
-        public static final int preferences=0x7f080026;
+        public static final int preferences=0x7f080027;
         public static final int rootMain=0x7f080000;
         public static final int rootMovieItem=0x7f080006;
         public static final int rootPlayerPicker=0x7f08001d;
@@ -131,6 +131,7 @@ public final class R {
         public static final int textViewYear=0x7f08000a;
         public static final int toptext=0x7f08001b;
         public static final int txtPlayerName=0x7f08001f;
+        public static final int txtSeekIndicator=0x7f080026;
     }
     public static final class layout {
         public static final int main=0x7f030000;
@@ -167,6 +168,7 @@ public final class R {
         public static final int lblGenre=0x7f05000f;
         public static final int lblMediaPlayerName=0x7f050015;
         public static final int lblRating=0x7f050012;
+        public static final int lblSeekBarIndicator=0x7f05001e;
         public static final int lblSelectMediaPlayer=0x7f050014;
         public static final int lblStory=0x7f05000e;
         public static final int lblTitle=0x7f05000c;

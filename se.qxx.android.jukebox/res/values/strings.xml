@@ -31,4 +31,5 @@
     <string name="btnSubselect">Select subs</string>
     <string name="btnSubOk">OK</string>
     <string name="btnSubNotOk">Not OK</string>
+    <string name="lblSeekBarIndicator">00:00</string>
 </resources>

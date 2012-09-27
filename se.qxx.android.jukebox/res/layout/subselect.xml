@@ -107,4 +107,13 @@
         android:max="1000"
         android:progress="0" />
 
+    <TextView
+        android:id="@+id/txtSeekIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/seekBarDuration"
+        android:layout_centerHorizontal="true"
+        android:text="@string/lblSeekBarIndicator"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
 </RelativeLayout>

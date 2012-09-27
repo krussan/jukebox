@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
 
 public class SubSelectActivity extends JukeboxActivityBase implements OnSeekBarChangeListener {
 
@@ -54,7 +55,7 @@ public class SubSelectActivity extends JukeboxActivityBase implements OnSeekBarC
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) {
-		// TODO Update some textview with the current time
+		runOnUiThread(new UpdateSeekIndicator(progress));		
 	}
 
 	@Override
@@ -63,7 +64,25 @@ public class SubSelectActivity extends JukeboxActivityBase implements OnSeekBarC
 
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
-		//TODO: send seek command to server		
+		//TODO: send seek command to media player
+		int seconds = seekBar.getProgress();
+	}
+	
+	private class UpdateSeekIndicator implements Runnable {
+		private int progress = 0;
+		public UpdateSeekIndicator(int progress) {
+			this.progress = progress;
+		}
+		
+		@Override
+		public void run() {
+			int hours = progress / 3600;
+			int minutes = (progress % 3600) / 60;
+			int seconds = (progress % 3600) % 60;
+			
+			TextView tv = (TextView)findViewById(R.id.txtSeekIndicator);
+			tv.setText(String.format("%s:%s:%s", hours, minutes, seconds));				
+		}		
 	}
     
 }
