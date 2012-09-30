@@ -128,3 +128,10 @@ message JukeboxRequestToggleFullscreen {
 message JukeboxRequestSuspend {
 	required string playerName = 1;
 }
+
+message Subtitle {
+	required int32 movieid = 1;
+	required string filename = 2;
+	required string description = 3;
+	required string rating = 4;
+}

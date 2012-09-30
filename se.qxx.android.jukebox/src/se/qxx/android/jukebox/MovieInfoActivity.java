@@ -90,6 +90,10 @@ public class MovieInfoActivity extends JukeboxActivityBase {
 					Toast.makeText(this, "No IMDB link available", Toast.LENGTH_SHORT).show();
 				}
 				break;
+			case R.id.btnSubSelection:
+				Intent i = new Intent(this, SubSelectActivity.class);
+				startActivity(i);
+				break;
 			default:
 				break;
 		}

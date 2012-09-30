@@ -64,6 +64,8 @@ public class SubtitleDownloader implements Runnable {
 			}
 		}
 		
+		initializeSubsDatabase();
+		
 		while (this._isRunning = true) {
 			int result = 0;
 			try {
@@ -99,6 +101,12 @@ public class SubtitleDownloader implements Runnable {
 			}			
 		}
 		// this.wait();
+	}
+
+	private void initializeSubsDatabase() {
+		//TODO: Initialize subtitles by scanning subs directory. 
+		// If an unclean purge has been performed then there could be subs in the directory
+		// but not in the database		
 	}
 
 	private void cleanupTempDirectory() {

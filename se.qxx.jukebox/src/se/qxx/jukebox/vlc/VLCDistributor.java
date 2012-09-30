@@ -5,12 +5,15 @@ import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import se.qxx.jukebox.DB;
 import se.qxx.jukebox.HibernatorClientConnection;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.WakeOnLan;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog.Vlcpaths.Vlcpath;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Vlc.Server;
@@ -47,6 +50,9 @@ public class VLCDistributor {
 			return false;
 		
 		VLCConnection conn = findConnection(hostName);
+		Server vlcServer = findServerInSettings(hostName);
+		String vlcSubsPath = vlcServer.getSubsPath();
+		String serverSubsPath = Settings.get().getSubFinders().getSubsPath();
 		Movie m = DB.getMovie(id);
 		
 		if (m != null) {
@@ -58,7 +64,14 @@ public class VLCDistributor {
 					Vlcpath vlcPath = findVlcPath(c, hostName);
 					if (vlcPath != null) {
 						String filename = filepath.replace(c.getPath(), vlcPath.getPath()) + "/" + m.getFilename();
-						conn.enqueue(filename);
+						
+						List<Subtitle> subtitles = DB.getSubtitles(id);
+						List<String> subFiles = new ArrayList<String>();
+						
+						for(Subtitle sub : subtitles)
+							subFiles.add(sub.getFilename().replace(serverSubsPath, vlcSubsPath));
+						
+						conn.enqueue(filename, subFiles);
 						
 						return true;
 					}

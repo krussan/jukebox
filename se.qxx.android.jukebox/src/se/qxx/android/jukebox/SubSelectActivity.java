@@ -1,9 +1,8 @@
 package se.qxx.android.jukebox;
 
-import org.apache.commons.lang3.StringUtils;
-
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import android.os.Bundle;
 import android.view.View;
@@ -34,10 +33,6 @@ public class SubSelectActivity extends JukeboxActivityBase implements OnSeekBarC
 	    
 	    if (!m.getImage().isEmpty()) 
 	    	GUITools.setImageOnImageView(R.id.imgSubPoster, m.getImage().toByteArray(), rootView);
-	    	    
-	    int duration = m.getDuration();
-	    int hours = duration / 60;
-	    int minutes = duration % 60;
 	    
 	    GUITools.setTextOnTextview(R.id.textViewTitle, m.getTitle(), rootView);
 	    GUITools.setTextOnTextview(R.id.textViewYear, Integer.toString(m.getYear()), rootView);
@@ -50,6 +45,7 @@ public class SubSelectActivity extends JukeboxActivityBase implements OnSeekBarC
 	    }
 	    
 	    //TODO: setProgress if movie is actually playing
+	    sendCommand("Starting movie...", JukeboxRequestType.StartMovie);
 	}
 
 	@Override
@@ -66,6 +62,7 @@ public class SubSelectActivity extends JukeboxActivityBase implements OnSeekBarC
 	public void onStopTrackingTouch(SeekBar seekBar) {
 		//TODO: send seek command to media player
 		int seconds = seekBar.getProgress();
+		sendCommand("Seeking...", JukeboxRequestType.Seek, seconds);
 	}
 	
 	private class UpdateSeekIndicator implements Runnable {

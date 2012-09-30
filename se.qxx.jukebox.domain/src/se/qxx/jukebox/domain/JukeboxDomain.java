@@ -9761,6 +9761,658 @@ public final class JukeboxDomain {
     // @@protoc_insertion_point(class_scope:se.qxx.jukebox.domain.JukeboxRequestSuspend)
   }
   
+  public interface SubtitleOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // required int32 movieid = 1;
+    boolean hasMovieid();
+    int getMovieid();
+    
+    // required string filename = 2;
+    boolean hasFilename();
+    String getFilename();
+    
+    // required string description = 3;
+    boolean hasDescription();
+    String getDescription();
+    
+    // required string rating = 4;
+    boolean hasRating();
+    String getRating();
+  }
+  public static final class Subtitle extends
+      com.google.protobuf.GeneratedMessage
+      implements SubtitleOrBuilder {
+    // Use Subtitle.newBuilder() to construct.
+    private Subtitle(Builder builder) {
+      super(builder);
+    }
+    private Subtitle(boolean noInit) {}
+    
+    private static final Subtitle defaultInstance;
+    public static Subtitle getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public Subtitle getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return se.qxx.jukebox.domain.JukeboxDomain.internal_static_se_qxx_jukebox_domain_Subtitle_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return se.qxx.jukebox.domain.JukeboxDomain.internal_static_se_qxx_jukebox_domain_Subtitle_fieldAccessorTable;
+    }
+    
+    private int bitField0_;
+    // required int32 movieid = 1;
+    public static final int MOVIEID_FIELD_NUMBER = 1;
+    private int movieid_;
+    public boolean hasMovieid() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public int getMovieid() {
+      return movieid_;
+    }
+    
+    // required string filename = 2;
+    public static final int FILENAME_FIELD_NUMBER = 2;
+    private java.lang.Object filename_;
+    public boolean hasFilename() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public String getFilename() {
+      java.lang.Object ref = filename_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          filename_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getFilenameBytes() {
+      java.lang.Object ref = filename_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        filename_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
+    // required string description = 3;
+    public static final int DESCRIPTION_FIELD_NUMBER = 3;
+    private java.lang.Object description_;
+    public boolean hasDescription() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public String getDescription() {
+      java.lang.Object ref = description_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          description_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getDescriptionBytes() {
+      java.lang.Object ref = description_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        description_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
+    // required string rating = 4;
+    public static final int RATING_FIELD_NUMBER = 4;
+    private java.lang.Object rating_;
+    public boolean hasRating() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    public String getRating() {
+      java.lang.Object ref = rating_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          rating_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getRatingBytes() {
+      java.lang.Object ref = rating_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        rating_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
+    private void initFields() {
+      movieid_ = 0;
+      filename_ = "";
+      description_ = "";
+      rating_ = "";
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (!hasMovieid()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasFilename()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasDescription()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasRating()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeInt32(1, movieid_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBytes(2, getFilenameBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeBytes(3, getDescriptionBytes());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeBytes(4, getRatingBytes());
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, movieid_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, getFilenameBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(3, getDescriptionBytes());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(4, getRatingBytes());
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    public static se.qxx.jukebox.domain.JukeboxDomain.Subtitle parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.Subtitle parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.Subtitle parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.Subtitle parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.Subtitle parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.Subtitle parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.Subtitle parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.Subtitle parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.Subtitle parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static se.qxx.jukebox.domain.JukeboxDomain.Subtitle parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(se.qxx.jukebox.domain.JukeboxDomain.Subtitle prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements se.qxx.jukebox.domain.JukeboxDomain.SubtitleOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return se.qxx.jukebox.domain.JukeboxDomain.internal_static_se_qxx_jukebox_domain_Subtitle_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return se.qxx.jukebox.domain.JukeboxDomain.internal_static_se_qxx_jukebox_domain_Subtitle_fieldAccessorTable;
+      }
+      
+      // Construct using se.qxx.jukebox.domain.JukeboxDomain.Subtitle.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        movieid_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        filename_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
+        description_ = "";
+        bitField0_ = (bitField0_ & ~0x00000004);
+        rating_ = "";
+        bitField0_ = (bitField0_ & ~0x00000008);
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return se.qxx.jukebox.domain.JukeboxDomain.Subtitle.getDescriptor();
+      }
+      
+      public se.qxx.jukebox.domain.JukeboxDomain.Subtitle getDefaultInstanceForType() {
+        return se.qxx.jukebox.domain.JukeboxDomain.Subtitle.getDefaultInstance();
+      }
+      
+      public se.qxx.jukebox.domain.JukeboxDomain.Subtitle build() {
+        se.qxx.jukebox.domain.JukeboxDomain.Subtitle result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private se.qxx.jukebox.domain.JukeboxDomain.Subtitle buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        se.qxx.jukebox.domain.JukeboxDomain.Subtitle result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public se.qxx.jukebox.domain.JukeboxDomain.Subtitle buildPartial() {
+        se.qxx.jukebox.domain.JukeboxDomain.Subtitle result = new se.qxx.jukebox.domain.JukeboxDomain.Subtitle(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.movieid_ = movieid_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.filename_ = filename_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.description_ = description_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.rating_ = rating_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof se.qxx.jukebox.domain.JukeboxDomain.Subtitle) {
+          return mergeFrom((se.qxx.jukebox.domain.JukeboxDomain.Subtitle)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(se.qxx.jukebox.domain.JukeboxDomain.Subtitle other) {
+        if (other == se.qxx.jukebox.domain.JukeboxDomain.Subtitle.getDefaultInstance()) return this;
+        if (other.hasMovieid()) {
+          setMovieid(other.getMovieid());
+        }
+        if (other.hasFilename()) {
+          setFilename(other.getFilename());
+        }
+        if (other.hasDescription()) {
+          setDescription(other.getDescription());
+        }
+        if (other.hasRating()) {
+          setRating(other.getRating());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        if (!hasMovieid()) {
+          
+          return false;
+        }
+        if (!hasFilename()) {
+          
+          return false;
+        }
+        if (!hasDescription()) {
+          
+          return false;
+        }
+        if (!hasRating()) {
+          
+          return false;
+        }
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              movieid_ = input.readInt32();
+              break;
+            }
+            case 18: {
+              bitField0_ |= 0x00000002;
+              filename_ = input.readBytes();
+              break;
+            }
+            case 26: {
+              bitField0_ |= 0x00000004;
+              description_ = input.readBytes();
+              break;
+            }
+            case 34: {
+              bitField0_ |= 0x00000008;
+              rating_ = input.readBytes();
+              break;
+            }
+          }
+        }
+      }
+      
+      private int bitField0_;
+      
+      // required int32 movieid = 1;
+      private int movieid_ ;
+      public boolean hasMovieid() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public int getMovieid() {
+        return movieid_;
+      }
+      public Builder setMovieid(int value) {
+        bitField0_ |= 0x00000001;
+        movieid_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearMovieid() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        movieid_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // required string filename = 2;
+      private java.lang.Object filename_ = "";
+      public boolean hasFilename() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public String getFilename() {
+        java.lang.Object ref = filename_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          filename_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setFilename(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        filename_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearFilename() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        filename_ = getDefaultInstance().getFilename();
+        onChanged();
+        return this;
+      }
+      void setFilename(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000002;
+        filename_ = value;
+        onChanged();
+      }
+      
+      // required string description = 3;
+      private java.lang.Object description_ = "";
+      public boolean hasDescription() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public String getDescription() {
+        java.lang.Object ref = description_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          description_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setDescription(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        description_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearDescription() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        description_ = getDefaultInstance().getDescription();
+        onChanged();
+        return this;
+      }
+      void setDescription(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000004;
+        description_ = value;
+        onChanged();
+      }
+      
+      // required string rating = 4;
+      private java.lang.Object rating_ = "";
+      public boolean hasRating() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      public String getRating() {
+        java.lang.Object ref = rating_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          rating_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setRating(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        rating_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearRating() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        rating_ = getDefaultInstance().getRating();
+        onChanged();
+        return this;
+      }
+      void setRating(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000008;
+        rating_ = value;
+        onChanged();
+      }
+      
+      // @@protoc_insertion_point(builder_scope:se.qxx.jukebox.domain.Subtitle)
+    }
+    
+    static {
+      defaultInstance = new Subtitle(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:se.qxx.jukebox.domain.Subtitle)
+  }
+  
   private static com.google.protobuf.Descriptors.Descriptor
     internal_static_se_qxx_jukebox_domain_JukeboxRequest_descriptor;
   private static
@@ -9861,6 +10513,11 @@ public final class JukeboxDomain {
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_se_qxx_jukebox_domain_JukeboxRequestSuspend_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_se_qxx_jukebox_domain_Subtitle_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_se_qxx_jukebox_domain_Subtitle_fieldAccessorTable;
   
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -9908,15 +10565,18 @@ public final class JukeboxDomain {
       "keboxRequestWakeup\022\022\n\nplayerName\030\001 \002(\t\"4" +
       "\n\036JukeboxRequestToggleFullscreen\022\022\n\nplay" +
       "erName\030\001 \002(\t\"+\n\025JukeboxRequestSuspend\022\022\n" +
-      "\nplayerName\030\001 \002(\t*\201\002\n\022JukeboxRequestType" +
-      "\022\016\n\nListMovies\020\001\022\031\n\025StartSubtitleIdentit",
-      "y\020\002\022\016\n\nStartMovie\020\003\022\r\n\tStopMovie\020\004\022\020\n\014Ma" +
-      "rkSubtitle\020\005\022\017\n\013SkipForward\020\006\022\021\n\rSkipBac" +
-      "kwards\020\007\022\017\n\013ListPlayers\020\010\022\t\n\005Error\020\t\022\006\n\002" +
-      "OK\020\n\022\016\n\nPauseMovie\020\013\022\n\n\006Wakeup\020\014\022\024\n\020Togg" +
-      "leFullscreen\020\r\022\013\n\007Suspend\020\016\022\010\n\004Seek\020\017*8\n" +
-      "\nIdentifier\022\014\n\010Filename\020\001\022\023\n\017ParentDirec" +
-      "tory\020\002\022\007\n\003NFO\020\003B\027\n\025se.qxx.jukebox.domain"
+      "\nplayerName\030\001 \002(\t\"R\n\010Subtitle\022\017\n\007movieid" +
+      "\030\001 \002(\005\022\020\n\010filename\030\002 \002(\t\022\023\n\013description\030",
+      "\003 \002(\t\022\016\n\006rating\030\004 \002(\t*\201\002\n\022JukeboxRequest" +
+      "Type\022\016\n\nListMovies\020\001\022\031\n\025StartSubtitleIde" +
+      "ntity\020\002\022\016\n\nStartMovie\020\003\022\r\n\tStopMovie\020\004\022\020" +
+      "\n\014MarkSubtitle\020\005\022\017\n\013SkipForward\020\006\022\021\n\rSki" +
+      "pBackwards\020\007\022\017\n\013ListPlayers\020\010\022\t\n\005Error\020\t" +
+      "\022\006\n\002OK\020\n\022\016\n\nPauseMovie\020\013\022\n\n\006Wakeup\020\014\022\024\n\020" +
+      "ToggleFullscreen\020\r\022\013\n\007Suspend\020\016\022\010\n\004Seek\020" +
+      "\017*8\n\nIdentifier\022\014\n\010Filename\020\001\022\023\n\017ParentD" +
+      "irectory\020\002\022\007\n\003NFO\020\003B\027\n\025se.qxx.jukebox.do" +
+      "main"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -10083,6 +10743,14 @@ public final class JukeboxDomain {
               new java.lang.String[] { "PlayerName", },
               se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSuspend.class,
               se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSuspend.Builder.class);
+          internal_static_se_qxx_jukebox_domain_Subtitle_descriptor =
+            getDescriptor().getMessageTypes().get(20);
+          internal_static_se_qxx_jukebox_domain_Subtitle_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_se_qxx_jukebox_domain_Subtitle_descriptor,
+              new java.lang.String[] { "Movieid", "Filename", "Description", "Rating", },
+              se.qxx.jukebox.domain.JukeboxDomain.Subtitle.class,
+              se.qxx.jukebox.domain.JukeboxDomain.Subtitle.Builder.class);
           return null;
         }
       };

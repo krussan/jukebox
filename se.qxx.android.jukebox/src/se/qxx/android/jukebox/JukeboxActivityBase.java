@@ -10,10 +10,10 @@ public abstract class JukeboxActivityBase extends Activity {
 	
 	protected abstract View getRootView();
 	
-	protected void sendCommand(String message, JukeboxRequestType type) {
+	protected void sendCommand(String message, JukeboxRequestType type, Object... args) {
        	ProgressDialog d = ProgressDialog.show(this, "Jukebox", message);
 
-       	JukeboxConnectionHandler h = new JukeboxConnectionHandler(new ProgressDialogHandler(this, d), type);
+       	JukeboxConnectionHandler h = new JukeboxConnectionHandler(new ProgressDialogHandler(this, d), type, args);
        	Thread t = new Thread(h);
        	t.start();				
 	}	  

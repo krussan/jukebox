@@ -18,6 +18,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequest;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestPauseMovie;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSeek;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStartMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStopMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSuspend;
@@ -39,10 +40,12 @@ public class JukeboxConnectionHandler implements Runnable {
 	
 	private JukeboxRequestType _type;
 	private Handler _handler;
+	private Object[] arguments;
 	
-	public JukeboxConnectionHandler(Handler h, JukeboxRequestType t) {
+	public JukeboxConnectionHandler(Handler h, JukeboxRequestType t, Object... args) {
 		this._type = t;
 		this._handler = h;
+		this.arguments = args;
 	}
 	
 	public void run() {
@@ -73,6 +76,9 @@ public class JukeboxConnectionHandler implements Runnable {
 		case JukeboxRequestType.ListPlayers_VALUE:
 			b = listPlayers();
 			break;
+		case JukeboxRequestType.Seek_VALUE:
+			b = seek();
+			break;
 		default:
 		}
 		
@@ -84,7 +90,7 @@ public class JukeboxConnectionHandler implements Runnable {
 	
 	private Bundle startMovie() {
 		JukeboxRequestStartMovie sm = JukeboxRequestStartMovie.newBuilder()
-				.setPlayerName("vlc_main")
+				.setPlayerName(JukeboxSettings.get().getCurrentMediaPlayer())
 				.setMovieId(Model.get().getCurrentMovie().getID())
 				.build();
 		
@@ -93,7 +99,7 @@ public class JukeboxConnectionHandler implements Runnable {
 	
 	private Bundle stopMovie() {
 		JukeboxRequestStopMovie sm = JukeboxRequestStopMovie.newBuilder()
-				.setPlayerName("vlc_main")
+				.setPlayerName(JukeboxSettings.get().getCurrentMediaPlayer())
 				.build();
 		
 		return sendAndRetreive(JukeboxRequestType.StopMovie, sm);
@@ -101,7 +107,7 @@ public class JukeboxConnectionHandler implements Runnable {
 	
 	private Bundle pauseMovie() {
 		JukeboxRequestPauseMovie sm = JukeboxRequestPauseMovie.newBuilder()
-				.setPlayerName("vlc_main")
+				.setPlayerName(JukeboxSettings.get().getCurrentMediaPlayer())
 				.build();
 		
 		return sendAndRetreive(JukeboxRequestType.PauseMovie, sm);		
@@ -117,7 +123,7 @@ public class JukeboxConnectionHandler implements Runnable {
 	
 	private Bundle wakeup() {
 		JukeboxRequestWakeup sm = JukeboxRequestWakeup.newBuilder()
-				.setPlayerName("vlc_main")
+				.setPlayerName(JukeboxSettings.get().getCurrentMediaPlayer())
 				.build();
 		
 		return sendAndRetreive(JukeboxRequestType.Wakeup, sm);		
@@ -125,7 +131,7 @@ public class JukeboxConnectionHandler implements Runnable {
 	
 	private Bundle toggleFullscreen() {
 		JukeboxRequestToggleFullscreen sm = JukeboxRequestToggleFullscreen.newBuilder()
-				.setPlayerName("vlc_main")
+				.setPlayerName(JukeboxSettings.get().getCurrentMediaPlayer())
 				.build();
 		
 		return sendAndRetreive(JukeboxRequestType.ToggleFullscreen, sm);		
@@ -133,7 +139,7 @@ public class JukeboxConnectionHandler implements Runnable {
 	
 	private Bundle suspend() {
 		JukeboxRequestSuspend sm = JukeboxRequestSuspend.newBuilder()
-				.setPlayerName("vlc_main")
+				.setPlayerName(JukeboxSettings.get().getCurrentMediaPlayer())
 				.build();
 		
 		return sendAndRetreive(JukeboxRequestType.Suspend, sm);		
@@ -145,6 +151,23 @@ public class JukeboxConnectionHandler implements Runnable {
 		
 		return sendAndRetreive(JukeboxRequestType.ListPlayers, sm);		
 	}
+	
+	private Bundle seek() {
+		if (this.arguments.length > 0)
+		{
+			if (this.arguments[0] instanceof Integer) {
+				int seconds = (Integer)this.arguments[0];
+				JukeboxRequestSeek sm = JukeboxRequestSeek.newBuilder()
+						.setPlayerName(JukeboxSettings.get().getCurrentMediaPlayer())
+						.setSeconds(seconds)
+						.build();
+				
+				return sendAndRetreive(JukeboxRequestType.Seek, sm);
+			}
+		}
+		
+		return new Bundle();		
+	}	
 
 	private Bundle sendAndRetreive(JukeboxRequestType type, com.google.protobuf.GeneratedMessage message) {
     	Logger.Log().i("opening socket");

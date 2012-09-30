@@ -10,6 +10,7 @@ import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Identifier;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie.Builder;
+import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.subtitles.SubFile.Rating;
 
 public class DB {
@@ -373,7 +374,6 @@ public class DB {
 			return true;
 		else
 			return false;
-
 	}
 
 	public synchronized static void addMovieToSubtitleQueue(Movie m) {
@@ -459,6 +459,35 @@ public class DB {
 			DB.disconnect(conn);
 		}
 	}
+	
+	public synchronized static ArrayList<Subtitle> getSubtitles(int movieid) {
+		Connection conn = null;
+		try {
+			conn = DB.initialize();
+	
+			PreparedStatement prep = conn.prepareStatement(
+				" SELECT _movie_ID, filename, description, rating " +
+				" FROM subtitles" +
+				" WHERE _movie_ID = ?");
+			
+			prep.setInt(1, movieid);
+						
+			ResultSet rs = prep.executeQuery();
+			ArrayList<Subtitle> result = new ArrayList<Subtitle>();
+			while (rs.next()) {
+				result.add(extractSubtitle(rs, conn));
+			}
+					
+			return result;
+		}
+		catch (Exception e) {
+			Log.Error("Failed to retrieve movie subtitles from DB", Log.LogType.MAIN, e);
+			
+			return new ArrayList<Subtitle>();
+		}finally {
+			DB.disconnect(conn);
+		}
+	}	
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Version
 	//---------------------------------------------------------------------------------------
@@ -543,7 +572,16 @@ public class DB {
 		
 		return builder.build();
 	}
-	
+
+	private static Subtitle extractSubtitle(ResultSet rs, Connection conn) throws SQLException {		
+		return Subtitle.newBuilder()
+				.setMovieid(rs.getInt("_movie_ID"))
+				.setFilename(rs.getString("filename"))
+				.setDescription(rs.getString("description"))
+				.setRating(rs.getString("rating"))
+				.build();				
+	}
+
 	public static boolean executeUpgradeStatement(String sql) {
 		Connection conn = null;
 		try {
