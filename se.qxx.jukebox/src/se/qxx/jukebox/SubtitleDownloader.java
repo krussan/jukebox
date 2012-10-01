@@ -107,6 +107,30 @@ public class SubtitleDownloader implements Runnable {
 		//TODO: Initialize subtitles by scanning subs directory. 
 		// If an unclean purge has been performed then there could be subs in the directory
 		// but not in the database		
+		
+		String path = Settings.get().getSubFinders().getSubsPath();
+		ExtensionFileFilter filter = new ExtensionFileFilter();
+		filter.addExtension("srt");
+		filter.addExtension("sub");
+		filter.addExtension("idx");
+		
+		List<File> list =  Util.getFileListing(new File(path), filter);
+		
+		for (File subFile : list) {
+			String subFilename = subFile.getAbsolutePath();
+			Log.Debug(String.format("INITSUBS :: Initializing subtitles for %s", subFilename), LogType.SUBS);
+			String movieName = FilenameUtils.getBaseName(subFile.getParentFile().getAbsolutePath());
+			Movie m = DB.getMovieByStartOfFilename(movieName);
+			
+			if (m != null) {
+				Log.Debug(String.format("INITSUBS :: Movie Found :: %s", m.getTitle()), LogType.SUBS);
+				if (!DB.subFileExistsInDB(subFilename)) {
+					Log.Debug(String.format("INITSUBS :: Sub not found ... Adding %s", subFilename), LogType.SUBS);
+					
+					DB.addSubtitle(m, subFilename, StringUtils.EMPTY, Rating.NotMatched);
+				}
+			}
+		}
 	}
 
 	private void cleanupTempDirectory() {

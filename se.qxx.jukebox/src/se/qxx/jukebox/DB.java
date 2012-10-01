@@ -84,7 +84,34 @@ public class DB {
 			DB.disconnect(conn);
 		}
 	}
-		
+
+	public synchronized static Movie getMovieByStartOfFilename(String startOfFilename) {
+		Connection conn = null;
+		try {
+			conn = DB.initialize();
+
+			PreparedStatement prep = conn.prepareStatement(
+			" select ID, filename, filepath, title, year, type, format, sound, language, groupName, imdburl" +
+			"      , duration, rating, director, story, identifier, identifierRating, metaDuration, metaFramerate" +
+			" from movie where filename LIKE ? ");
+					
+			prep.setString(1, startOfFilename + "%");
+				
+			ResultSet rs = prep.executeQuery();
+			if (rs.next())
+				return extractMovie(rs, conn);
+			else
+				return null;
+
+		} catch (Exception e) {
+			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
+			
+			return null;
+		}finally {
+			DB.disconnect(conn);
+		}
+	}
+
 	public synchronized static Movie getMovie(int id) {
 		Connection conn = null;
 		try {
@@ -347,12 +374,7 @@ public class DB {
 				prep.setString(3, description);
 				prep.setString(4, rating.toString());
 				prep.execute();				
-			}
-			else
-			{
-				
-			}
-			
+			}			
 						
 		}
 		catch (Exception e) {
@@ -488,6 +510,30 @@ public class DB {
 			DB.disconnect(conn);
 		}
 	}	
+	
+	public static boolean subFileExistsInDB(String filename) {
+		Connection conn = null;
+		try {
+			conn = DB.initialize();
+	
+			PreparedStatement prep = conn.prepareStatement(
+				" SELECT 1 " +
+				" FROM subtitles" +
+				" WHERE filename = ?");
+			
+			prep.setString(1, filename);
+						
+			ResultSet rs = prep.executeQuery();
+
+			return rs.next();
+		}
+		catch (Exception e) {
+			Log.Error("Failed to retrieve movie subtitles from DB", Log.LogType.MAIN, e);
+			return false;
+		}finally {
+			DB.disconnect(conn);
+		}		
+	}
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Version
 	//---------------------------------------------------------------------------------------

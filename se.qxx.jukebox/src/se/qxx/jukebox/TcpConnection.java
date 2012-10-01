@@ -20,6 +20,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequest;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListSubtitles;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestPauseMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSeek;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStartMovie;
@@ -32,7 +33,9 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponse;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseError;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListSubtitles;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Vlc.Server;
 import se.qxx.jukebox.vlc.VLCConnectionNotFoundException;
@@ -101,6 +104,8 @@ public class TcpConnection implements Runnable {
 				return suspend(req);
 			case Seek:
 				return seek(req);
+			case ListSubtitles:
+				return listSubtitles(req);
 			default:
 				break;
 			}
@@ -196,6 +201,26 @@ public class TcpConnection implements Runnable {
 		} catch (VLCConnectionNotFoundException e) {
 			return buildErrorMessage("Error occured when connecting to target media player"); 
 		}		
+	}	
+	
+	private JukeboxResponse listSubtitles(JukeboxRequest req) throws IOException {
+		ByteString data = req.getArguments();
+		JukeboxRequestListSubtitles args = JukeboxRequestListSubtitles.parseFrom(data);
+
+		Log.Debug(String.format("Getting list of subtitles form movie ID :: %s", args.getMovieId()), Log.LogType.COMM);
+
+		List<Subtitle> subs = DB.getSubtitles(args.getMovieId());
+	
+		JukeboxResponseListSubtitles ls = JukeboxResponseListSubtitles.newBuilder()
+				.addAllSubtitle(subs)
+				.build();
+		
+		JukeboxResponse resp = JukeboxResponse.newBuilder()
+				.setType(JukeboxRequestType.ListPlayers)
+				.setArguments(ls.toByteString())
+				.build();
+			
+		return resp;
 	}	
 	
 	private JukeboxResponse buildErrorMessage(String errorMessage) {

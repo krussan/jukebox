@@ -18,6 +18,7 @@ enum JukeboxRequestType {
 	ToggleFullscreen = 13;
 	Suspend = 14;
 	Seek = 15;
+	ListSubtitles = 16;
 }
 
 enum Identifier {
@@ -72,6 +73,10 @@ message JukeboxRequestSeek {
 	required int32 seconds = 2;
 }
 
+message JukeboxRequestListSubtitles {
+	required int32 movieId = 1;
+}
+
 message Movie {
 	required int32 ID = 1;
 	required string filename = 2;
@@ -105,6 +110,9 @@ message JukeboxResponseListPlayers {
 	repeated string hostname = 1;
 }
 
+message JukeboxResponseListSubtitles {
+	repeated Subtitle subtitle = 1;
+}
 message JukeboxResponseOK {
 }
 
