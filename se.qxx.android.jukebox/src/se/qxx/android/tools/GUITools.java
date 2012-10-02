@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.os.Handler;
 import android.os.Vibrator;
+import android.util.DisplayMetrics;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.widget.ImageButton;
@@ -155,6 +156,11 @@ public class GUITools {
 			vibr = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
 		
 		vibr.vibrate(milliseconds);
+	}
+	
+	public static DisplayMetrics getDisplayMetrics(Context c) {
+		DisplayMetrics metrics = c.getApplicationContext().getResources().getDisplayMetrics();
+		return metrics;
 	}
 }
 

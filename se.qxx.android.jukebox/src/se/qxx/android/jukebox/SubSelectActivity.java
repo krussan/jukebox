@@ -81,5 +81,21 @@ public class SubSelectActivity extends JukeboxActivityBase implements OnSeekBarC
 			tv.setText(String.format("%s:%s:%s", hours, minutes, seconds));				
 		}		
 	}
+	
+    public void onButtonClicked(View v) {
+    	int id = v.getId();
+    	
+    	switch (id) {
+    	case R.id.btnSubOk:
+			sendCommand("Sending OK...", JukeboxRequestType.MarkSubtitle, true);
+    		break;
+    	case R.id.btnSubNotOk:
+			sendCommand("Sending OK...", JukeboxRequestType.MarkSubtitle, false);    		
+    		break;
+    	case R.id.btnSubFullscreen:
+			sendCommand("Toggling fullscreen...", JukeboxRequestType.ToggleFullscreen);
+			break;
+    	}
+    }	
     
 }

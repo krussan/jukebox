@@ -17,6 +17,8 @@ import android.util.Log;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequest;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListSubtitles;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMarkSubtitle;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestPauseMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSeek;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStartMovie;
@@ -29,6 +31,8 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponse;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseError;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListSubtitles;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseStartMovie;
 
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.Logger;
@@ -78,6 +82,12 @@ public class JukeboxConnectionHandler implements Runnable {
 			break;
 		case JukeboxRequestType.Seek_VALUE:
 			b = seek();
+			break;
+		case JukeboxRequestType.ListSubtitles_VALUE:
+			b = listSubtitles();
+			break;
+		case JukeboxRequestType.MarkSubtitle_VALUE:
+			b = markSubtitle();
 			break;
 		default:
 		}
@@ -152,6 +162,14 @@ public class JukeboxConnectionHandler implements Runnable {
 		return sendAndRetreive(JukeboxRequestType.ListPlayers, sm);		
 	}
 	
+	private Bundle listSubtitles() {
+		JukeboxRequestListSubtitles sm = JukeboxRequestListSubtitles.newBuilder()
+				.setMovieId(Model.get().getCurrentMovie().getID())
+				.build();
+		
+		return sendAndRetreive(JukeboxRequestType.ListSubtitles, sm);
+	}
+	
 	private Bundle seek() {
 		if (this.arguments.length > 0)
 		{
@@ -163,6 +181,22 @@ public class JukeboxConnectionHandler implements Runnable {
 						.build();
 				
 				return sendAndRetreive(JukeboxRequestType.Seek, sm);
+			}
+		}
+		
+		return new Bundle();		
+	}	
+	
+	private Bundle markSubtitle() {
+		if (this.arguments.length > 0)
+		{
+			if (this.arguments[0] instanceof Boolean) {
+				boolean subOk= (Boolean)this.arguments[0];
+				JukeboxRequestMarkSubtitle sm = JukeboxRequestMarkSubtitle.newBuilder()
+						.setIsOk(subOk)
+						.build();
+				
+				return sendAndRetreive(JukeboxRequestType.MarkSubtitle, sm);
 			}
 		}
 		
@@ -237,6 +271,11 @@ public class JukeboxConnectionHandler implements Runnable {
     			Model.get().clearPlayers();
     			Model.get().addAllPlayers(resp2.getHostnameList());
     			break;
+    		case ListSubtitles:
+    			JukeboxResponseListSubtitles resp3 = JukeboxResponseListSubtitles.parseFrom(data);
+    			Model.get().clearSubtitles();
+    			Model.get().addAllSubtitles(resp3.getSubtitleList());
+    			break;
     		case MarkSubtitle:
     			break;
     		case SkipBackwards:
@@ -244,6 +283,9 @@ public class JukeboxConnectionHandler implements Runnable {
     		case SkipForward:
     			break;
     		case StartMovie:
+    			JukeboxResponseStartMovie resp4 = JukeboxResponseStartMovie.parseFrom(data);
+    			Model.get().clearSubtitles();
+    			Model.get().addAllSubtitles(resp4.getSubtitleList());
     			break;
     		case StartSubtitleIdentity:
     			break;

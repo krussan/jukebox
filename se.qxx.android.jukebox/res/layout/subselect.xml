@@ -65,7 +65,7 @@
                 android:text="@string/btnSubNotOk" />
             
 	        <Button
-	            android:id="@+id/btnFullscreen"
+	            android:id="@+id/btnSubFullscreen"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:background="@drawable/btnfullscreen"

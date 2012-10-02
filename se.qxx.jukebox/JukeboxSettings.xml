@@ -75,6 +75,15 @@
   		macAddress="00-17-42-BE-FC-36"
   		hibernatorPort="2148"  		
  	/>	
+   	<server 
+  	    name="black_hell"
+  		host="192.168.1.120" 
+  		broadcastAddress="192.168.1.255"
+  		port="2150"
+  		subsPath="Z:/Subs"
+  		macAddress="00-1E-8C-1F-94-ED"
+  		hibernatorPort="2148"  		
+ 	/>		
   </vlc>
   <logs>
   	<log type="file" filename="/c/media/Dev/src/jukebox/jukebox.log" level="DEBUG" logs="MAIN" />

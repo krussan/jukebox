@@ -2,6 +2,10 @@ package se.qxx.jukebox.domain;
 
 option java_package = "se.qxx.jukebox.domain";
 
+//---------------------------------------------------------------------------------------
+//----------------------------------------------------------------------- Enumerations
+//---------------------------------------------------------------------------------------
+
 enum JukeboxRequestType {
 	ListMovies = 1;
 	StartSubtitleIdentity = 2;
@@ -19,6 +23,8 @@ enum JukeboxRequestType {
 	Suspend = 14;
 	Seek = 15;
 	ListSubtitles = 16;
+	SetSubtitle = 17;
+	VRatio = 18;
 }
 
 enum Identifier {
@@ -26,6 +32,46 @@ enum Identifier {
 	ParentDirectory = 2;
 	NFO = 3;
 }
+
+//---------------------------------------------------------------------------------------
+//----------------------------------------------------------------------- Objects
+//---------------------------------------------------------------------------------------
+
+message Movie {
+	required int32 ID = 1;
+	required string filename = 2;
+	optional string title = 3;
+	optional int32 year = 4;
+	optional string type = 5;
+	optional string format = 6;
+	optional string sound = 7;
+	optional string language = 8;
+	optional string group = 9;
+	optional string imdb_url = 10;
+	optional string imdb_id = 11;
+	optional string filepath = 12;	
+	optional int32 duration = 13;
+	optional string rating = 14;
+	optional string director = 15;
+	optional string story = 16;
+	optional bytes image = 17;
+	repeated string genre = 18;
+	optional Identifier identifier = 19;
+	optional int32 identifierRating = 20;
+	optional int32 metaDuration = 21;
+	optional string metaFramerate = 22;
+}
+
+message Subtitle {
+	required int32 movieid = 1;
+	required string filename = 2;
+	required string description = 3;
+	required string rating = 4;
+}
+
+//---------------------------------------------------------------------------------------
+//----------------------------------------------------------------------- Requests
+//---------------------------------------------------------------------------------------
 
 message JukeboxRequest {
 	required JukeboxRequestType type = 1;
@@ -58,72 +104,14 @@ message JukeboxRequestPauseMovie {
 }
 
 message JukeboxRequestMarkSubtitle {
-	optional int32 movieId = 1;
-	optional string movieTitle = 2;
-	optional int32 subtitileId =3;
-	optional string subtitleFileName = 4;
+	required int32 movieId = 1;
+	required string subtitleFileName = 2;
+	required bool isOk = 3;
 }
 
 message JukeboxRequestSkipForward {}
 
 message JukeboxRequestSkipBackwards {}
-
-message JukeboxRequestSeek {
-	required string playerName = 1;
-	required int32 seconds = 2;
-}
-
-message JukeboxRequestListSubtitles {
-	required int32 movieId = 1;
-}
-
-message Movie {
-	required int32 ID = 1;
-	required string filename = 2;
-	optional string title = 3;
-	optional int32 year = 4;
-	optional string type = 5;
-	optional string format = 6;
-	optional string sound = 7;
-	optional string language = 8;
-	optional string group = 9;
-	optional string imdb_url = 10;
-	optional string imdb_id = 11;
-	optional string filepath = 12;	
-	optional int32 duration = 13;
-	optional string rating = 14;
-	optional string director = 15;
-	optional string story = 16;
-	optional bytes image = 17;
-	repeated string genre = 18;
-	optional Identifier identifier = 19;
-	optional int32 identifierRating = 20;
-	optional int32 metaDuration = 21;
-	optional string metaFramerate = 22;
-}
-
-message JukeboxResponseListMovies {
-	repeated Movie movies = 1;
-}
-
-message JukeboxResponseListPlayers {
-	repeated string hostname = 1;
-}
-
-message JukeboxResponseListSubtitles {
-	repeated Subtitle subtitle = 1;
-}
-message JukeboxResponseOK {
-}
-
-message JukeboxResponseError {
-	optional string errorMessage = 1;
-}
-
-message JukeboxResponse {
-	required JukeboxRequestType type = 1;
-	optional bytes arguments = 2;
-}
 
 message JukeboxRequestWakeup {
 	required string playerName = 1;
@@ -137,9 +125,58 @@ message JukeboxRequestSuspend {
 	required string playerName = 1;
 }
 
-message Subtitle {
-	required int32 movieid = 1;
-	required string filename = 2;
-	required string description = 3;
-	required string rating = 4;
+message JukeboxRequestSeek {
+	required string playerName = 1;
+	required int32 seconds = 2;
 }
+
+message JukeboxRequestListSubtitles {
+	required int32 movieId = 1;
+}
+
+message JukeboxRequestSetSubtitle {
+	required string playerName = 1;
+	required int32 subtitleID = 2;
+}
+
+message JukeboxRequestVRatio {
+	required string playerName = 1;
+}
+
+//---------------------------------------------------------------------------------------
+//-------------------------------------------------------------------- Standard responses
+//---------------------------------------------------------------------------------------
+
+message JukeboxResponseOK {
+}
+
+message JukeboxResponseError {
+	optional string errorMessage = 1;
+}
+
+
+//---------------------------------------------------------------------------------------
+//----------------------------------------------------------------------- Responses
+//---------------------------------------------------------------------------------------
+
+message JukeboxResponse {
+	required JukeboxRequestType type = 1;
+	optional bytes arguments = 2;
+}
+
+message JukeboxResponseListMovies {
+	repeated Movie movies = 1;
+}
+
+message JukeboxResponseListPlayers {
+	repeated string hostname = 1;
+}
+
+message JukeboxResponseListSubtitles {
+	repeated Subtitle subtitle = 1;
+}
+
+message JukeboxResponseStartMovie {
+	repeated Subtitle subtitle = 1;
+}
+

@@ -139,6 +139,25 @@ public class VLCDistributor {
 		return true; 
 	}
 	
+	public boolean toggleVRatio(String hostName) throws VLCConnectionNotFoundException {
+		if (!assertLiveConnection(hostName))
+			return false;
+		
+		VLCConnection conn = findConnection(hostName);
+		conn.toggleVRatio();
+		
+		return true; 
+	}
+
+	public boolean setSubtitle(String hostName, int subtitleID) throws VLCConnectionNotFoundException {
+		if (!assertLiveConnection(hostName))
+			return false;
+		
+		VLCConnection conn = findConnection(hostName);
+		conn.setSubtitle(subtitleID);
+		
+		return true; 
+	}
 	public boolean wakeup(String hostName) throws VLCConnectionNotFoundException {
 		Server s = findServerInSettings(hostName);
 		

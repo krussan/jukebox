@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
+import se.qxx.android.tools.SimpleGestureListener;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import android.app.Activity;
@@ -22,8 +23,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
+import se.qxx.android.tools.SimpleGestureFilter;
 
-public class MovieInfoActivity extends JukeboxActivityBase {
+public class MovieInfoActivity extends JukeboxActivityBase implements SimpleGestureListener {
+	SimpleGestureFilter detector;
 	
 	@Override
 	protected View getRootView() {
@@ -35,6 +38,7 @@ public class MovieInfoActivity extends JukeboxActivityBase {
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.movieitem);
+	    
 	    
 	    initializeView();
 	    
@@ -60,7 +64,8 @@ public class MovieInfoActivity extends JukeboxActivityBase {
 	    GUITools.setTextOnTextview(R.id.textViewDuration, String.format("Duration :: %s h %s m", hours, minutes) , rootView);
 	    GUITools.setTextOnTextview(R.id.textViewRating, String.format("Rating :: %s / 10", m.getRating()) , rootView);
 	    GUITools.setTextOnTextview(R.id.textViewFilename, String.format("Filename :: %s", m.getFilename()) , rootView);
-	    
+
+	    detector = new SimpleGestureFilter(this, this);
 	}
 		
 	public void onButtonClicked(View v) {
@@ -70,6 +75,7 @@ public class MovieInfoActivity extends JukeboxActivityBase {
 		switch (id) {
 			case R.id.btnPlay:
 				sendCommand("Starting movie...", JukeboxRequestType.StartMovie);
+				sendCommand("Getting subtitles...", JukeboxRequestType.ListSubtitles);
 				break;	
 			case R.id.btnFullscreen:
 				sendCommand("Toggling fullscreen...", JukeboxRequestType.ToggleFullscreen);
@@ -98,4 +104,38 @@ public class MovieInfoActivity extends JukeboxActivityBase {
 				break;
 		}
 	}
+
+    @Override 
+    public boolean dispatchTouchEvent(MotionEvent me){
+    	boolean b = super.dispatchTouchEvent(me);
+    	if (!b && this.detector != null)
+    		this.detector.onTouchEvent(me);
+    	
+    	return b;
+    }
+    
+	@Override
+	public void onSwipe(int direction) {
+		String str = "";
+		
+		switch (direction) {  
+		  case SimpleGestureFilter.SWIPE_RIGHT : 
+			  str = "Swipe Right";
+	  		  break;
+		  case SimpleGestureFilter.SWIPE_LEFT :  
+			  str = "Swipe Left";
+		      break;
+		  case SimpleGestureFilter.SWIPE_DOWN :  
+			  str = "Swipe Down";
+		      break;
+		  case SimpleGestureFilter.SWIPE_UP :    
+			  str = "Swipe Up";
+		      break;                                     
+		  } 
+		  Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
+	 }
+	
+	 @Override
+	 public void onDoubleTap() {
+	 }
 }

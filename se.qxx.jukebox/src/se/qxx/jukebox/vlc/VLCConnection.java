@@ -75,4 +75,21 @@ public class VLCConnection extends TcpClient {
 			Log.Error("Error while seeking in file", Log.LogType.COMM, e);
 		}	
 	}
+	
+	public void toggleVRatio() {
+		try {
+			this.sendCommand("vratio\n");
+		} catch (Exception e) {
+			Log.Error("Error while setting vertical ratio", Log.LogType.COMM, e);
+		}	
+	}
+	
+	public void setSubtitle(int subtitleID) {
+		try {
+			this.sendCommand(String.format("strack %s\n", subtitleID));
+		} catch (Exception e) {
+			Log.Error("Error while setting subtitle track", Log.LogType.COMM, e);
+		}
+	}
+	
 }

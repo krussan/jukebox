@@ -23,17 +23,20 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListSubtitles;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestPauseMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSeek;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSetSubtitle;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStartMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStopMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSuspend;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestVRatio;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestWakeup;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponse;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseError;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListSubtitles;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseStartMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.settings.Settings;
@@ -106,6 +109,10 @@ public class TcpConnection implements Runnable {
 				return seek(req);
 			case ListSubtitles:
 				return listSubtitles(req);
+			case VRatio:
+				return toggleVRatio(req);
+			case SetSubtitle:
+				return setSubtitle(req);
 			default:
 				break;
 			}
@@ -143,8 +150,21 @@ public class TcpConnection implements Runnable {
 		Log.Debug(String.format("Starting movie with ID: %s on player %s", args.getMovieId(), args.getPlayerName()), Log.LogType.COMM);
 		
 		try {
-			if (VLCDistributor.get().startMovie(args.getPlayerName(), args.getMovieId()))
-				return JukeboxResponse.newBuilder().setType(JukeboxRequestType.OK).build();
+			if (VLCDistributor.get().startMovie(args.getPlayerName(), args.getMovieId())) {
+				List<Subtitle> subs = DB.getSubtitles(args.getMovieId());
+				
+				JukeboxResponseStartMovie ls = JukeboxResponseStartMovie.newBuilder()
+						.addAllSubtitle(subs)
+						.build();
+				
+				JukeboxResponse resp = JukeboxResponse.newBuilder()
+						.setType(JukeboxRequestType.StartMovie)
+						.setArguments(ls.toByteString())
+						.build();
+					
+				return resp;
+				
+			}
 			else
 				return buildErrorMessage("Error occured when connecting to target media player"); 
 		} catch (VLCConnectionNotFoundException e) {
@@ -216,7 +236,7 @@ public class TcpConnection implements Runnable {
 				.build();
 		
 		JukeboxResponse resp = JukeboxResponse.newBuilder()
-				.setType(JukeboxRequestType.ListPlayers)
+				.setType(JukeboxRequestType.ListSubtitles)
 				.setArguments(ls.toByteString())
 				.build();
 			
@@ -286,6 +306,40 @@ public class TcpConnection implements Runnable {
 			
 		}		
 	}	
+
+	private JukeboxResponse toggleVRatio(JukeboxRequest req) throws IOException {
+		ByteString data = req.getArguments();
+		JukeboxRequestVRatio args = JukeboxRequestVRatio.parseFrom(data);
+
+		Log.Debug(String.format("Toggling vratio on %s...", args.getPlayerName()), Log.LogType.COMM);
+		
+		try {
+			if (VLCDistributor.get().toggleVRatio(args.getPlayerName()))
+				return JukeboxResponse.newBuilder().setType(JukeboxRequestType.OK).build();
+			else
+				return buildErrorMessage("Error occured when connecting to target media player"); 
+		} catch (VLCConnectionNotFoundException e) {
+			return buildErrorMessage("Error occured when connecting to target media player"); 
+			
+		}		
+	}	
+
+	private JukeboxResponse setSubtitle(JukeboxRequest req) throws IOException {
+		ByteString data = req.getArguments();
+		JukeboxRequestSetSubtitle args = JukeboxRequestSetSubtitle.parseFrom(data);
+
+		Log.Debug(String.format("Setting subtitle on %s...", args.getPlayerName()), Log.LogType.COMM);
+		
+		try {
+			if (VLCDistributor.get().setSubtitle(args.getPlayerName(), args.getSubtitleID()))
+				return JukeboxResponse.newBuilder().setType(JukeboxRequestType.OK).build();
+			else
+				return buildErrorMessage("Error occured when connecting to target media player"); 
+		} catch (VLCConnectionNotFoundException e) {
+			return buildErrorMessage("Error occured when connecting to target media player"); 
+			
+		}		
+	}
 	
 	private JukeboxResponse suspend(JukeboxRequest req) throws IOException {
 		ByteString data = req.getArguments();

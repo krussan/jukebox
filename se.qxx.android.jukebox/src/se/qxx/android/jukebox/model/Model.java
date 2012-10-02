@@ -7,10 +7,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 
 public class Model {
 	
 	private int currentMovieId = -1;
+	private int currentSubId = -1;
 	
 	public interface ModelUpdatedEventListener {
 		public void handleModelUpdatedEventListener(java.util.EventObject e);
@@ -42,6 +44,7 @@ public class Model {
 	private static Model _instance;
 	private List<Movie> _movies;
 	private List<String> _players;
+	private List<Subtitle> _subs;
 	
 	private Model() {
 		_movies = new ArrayList<Movie>();
@@ -95,9 +98,23 @@ public class Model {
 			return null;
 	}
 
+	public Movie getPreviousMovie() {
+		if (this.currentMovieId == 0)
+			return this._movies.get(this._movies.size() == 0 ? 0 : this._movies.size() - 1);
+		else
+			return this._movies.get(this.currentMovieId - 1);
+	}
+	
+	public Movie getNextMovie() {
+		if (this.currentMovieId == this._movies.size() - 1)
+			return this._movies.get(0);
+		else
+			return this._movies.get(this.currentMovieId + 1);
+	}	
+	
 	public void currentMovieSetNext() {
 		this.currentMovieId++;
-		if (this.currentMovieId > this._movies.size())
+		if (this.currentMovieId == this._movies.size())
 			this.currentMovieId = 0;
 	}
 	
@@ -146,5 +163,28 @@ public class Model {
 		});
 	}
 
+	public List<Subtitle> getSubtitles() {
+		return _subs;
+	}
+	
+	public void addAllSubtitles(List<Subtitle> subs) {
+		_subs.addAll(subs);
+		
+		fireModelUpdatedEvent(ModelUpdatedType.Subs);
+	}
+	
+	public void clearSubtitles() {
+		_subs.clear();
+		fireModelUpdatedEvent(ModelUpdatedType.Subs);
+	}
+	
+	public int countSubtitles() {
+		return _subs.size();
+	}
+	
+	public Subtitle getSubtitle(int index) {
+		return _subs.get(index);
+	}
+	
 	
 }

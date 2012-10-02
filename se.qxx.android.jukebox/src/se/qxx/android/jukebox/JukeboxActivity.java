@@ -149,7 +149,7 @@ public class JukeboxActivity extends JukeboxActivityBase implements ModelUpdated
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
 		Model.get().setCurrentMovie(pos);
-		Intent i = new Intent(this, MovieInfoActivity.class);
+		Intent i = new Intent(this, FlipperActivity.class);
 		startActivity(i);
 	}
 
