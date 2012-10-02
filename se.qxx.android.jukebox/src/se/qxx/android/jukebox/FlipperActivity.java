@@ -6,9 +6,12 @@ import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.SimpleGestureFilter;
 import se.qxx.android.tools.SimpleGestureListener;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -169,5 +172,42 @@ public class FlipperActivity extends JukeboxActivityBase implements SimpleGestur
 	public void onAnimationStart(Animation arg0) {
 		// TODO Auto-generated method stub
 		
+	}	
+	
+	public void onButtonClicked(View v) {
+		int id = v.getId();
+		GUITools.vibrate(28, this);
+		
+		switch (id) {
+			case R.id.btnPlay:
+				sendCommand("Starting movie...", JukeboxRequestType.StartMovie);
+				sendCommand("Getting subtitles...", JukeboxRequestType.ListSubtitles);
+				break;	
+			case R.id.btnFullscreen:
+				sendCommand("Toggling fullscreen...", JukeboxRequestType.ToggleFullscreen);
+				break;
+			case R.id.btnPause:
+				sendCommand("Pausing...", JukeboxRequestType.PauseMovie);
+				break;
+			case R.id.btnStop:
+				sendCommand("Stopping...", JukeboxRequestType.StopMovie);
+				break;
+			case R.id.btnViewInfo:
+				String url = Model.get().getCurrentMovie().getImdbUrl();
+				if (url != null && url.length() > 0) {
+					Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+					startActivity(browserIntent);
+				}
+				else {
+					Toast.makeText(this, "No IMDB link available", Toast.LENGTH_SHORT).show();
+				}
+				break;
+			case R.id.btnSubSelection:
+				Intent i = new Intent(this, SubSelectActivity.class);
+				startActivity(i);
+				break;
+			default:
+				break;
+		}
 	}	
 }

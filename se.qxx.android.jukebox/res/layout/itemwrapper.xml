@@ -1,8 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ViewFlipper xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" 
-    android:id="@+id/rootFlipper">
+    android:layout_height="fill_parent"
+    android:gravity="center|clip_vertical|fill_horizontal"
+    android:orientation="vertical" 
+    android:id="@+id/rootMovieItem">
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center_horizontal" >
 
 
-</ViewFlipper>
+            <ImageButton
+                android:id="@+id/btnViewInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#00000000"
+                android:hapticFeedbackEnabled="true"
+                android:onClick="onButtonClicked"
+                android:src="@drawable/infoabout"
+                android:contentDescription="@string/descViewInfo" />
+
+	        <Button
+	            android:id="@+id/btnFullscreen"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:background="@drawable/btnfullscreen"
+	            android:hapticFeedbackEnabled="true"
+	            android:onClick="onButtonClicked"
+			/>
+	        
+	        <Button
+	            android:id="@+id/btnSubSelection"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:hapticFeedbackEnabled="true"
+	            android:onClick="onButtonClicked"
+	            android:text="@string/btnSubselect"
+			/>
+	        	        
+                        
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayoutButtons1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/linearLayout1"
+        android:layout_alignParentLeft="true"
+        android:gravity="center_horizontal" >
+
+		<Button
+            android:id="@+id/btnBackward"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btnbackward"
+            android:hapticFeedbackEnabled="true"
+            android:onClick="onButtonClicked"
+		/>        
+        
+        <Button
+            android:id="@+id/btnPlay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btnplay"
+            android:onClick="onButtonClicked"
+        />
+
+        <Button
+            android:id="@+id/btnPause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btnpause"
+            android:hapticFeedbackEnabled="true"
+            android:onClick="onButtonClicked"
+            android:src="@drawable/pause" />
+
+        <Button
+            android:id="@+id/btnStop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btnstop"
+            android:hapticFeedbackEnabled="true"
+            android:onClick="onButtonClicked"
+		/>
+
+        <Button
+            android:id="@+id/btnForward"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btnforward"
+            android:hapticFeedbackEnabled="true"
+            android:onClick="onButtonClicked"
+		/>
+
+    </LinearLayout>
+
+	<ViewFlipper xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content" 
+	    android:layout_alignParentTop="true"
+	    android:id="@+id/rootFlipper">
+	
+	</ViewFlipper>
+</RelativeLayout>
