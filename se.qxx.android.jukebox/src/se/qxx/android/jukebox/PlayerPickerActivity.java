@@ -26,7 +26,7 @@ public class PlayerPickerActivity extends JukeboxActivityBase implements ModelUp
 	    setContentView(R.layout.playerpicker);
 	    Model.get().addEventListener(this);
 	    
-	    this.sendCommand("Getting list of player", JukeboxRequestType.ListPlayers);
+	    this.sendCommand("Getting list of players", JukeboxRequestType.ListPlayers);
 	    
 	    adapter = new PlayerLayoutAdapter(this);	    
 	    ListView listView = (ListView)findViewById(R.id.listPlayers);	    
@@ -54,16 +54,17 @@ public class PlayerPickerActivity extends JukeboxActivityBase implements ModelUp
 		});		
 	}
 	
-	@Override
-	public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
-		String playerName = (String)arg0.getItemAtPosition(pos);
-		JukeboxSettings.get().setCurrentMediaPlayer(playerName);
-		updateList();
-	}
-
+	
 	@Override
 	protected View getRootView() {
 		return findViewById(R.id.rootPlayerPicker);
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+		String playerName = (String)arg0.getItemAtPosition(arg2);
+		JukeboxSettings.get().setCurrentMediaPlayer(playerName);
+		updateList();		
 	}
 
 }

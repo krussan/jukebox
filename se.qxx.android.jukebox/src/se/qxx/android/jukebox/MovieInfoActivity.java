@@ -74,8 +74,8 @@ public class MovieInfoActivity extends JukeboxActivityBase implements SimpleGest
 		
 		switch (id) {
 			case R.id.btnPlay:
-				sendCommand("Starting movie...", JukeboxRequestType.StartMovie);
-				sendCommand("Getting subtitles...", JukeboxRequestType.ListSubtitles);
+				Intent iPlay = new Intent(this, NowPlayingActivity.class);
+				startActivity(iPlay);
 				break;	
 			case R.id.btnFullscreen:
 				sendCommand("Toggling fullscreen...", JukeboxRequestType.ToggleFullscreen);

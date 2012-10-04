@@ -1,0 +1,63 @@
+package se.qxx.android.jukebox;
+
+import com.google.protobuf.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
+
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponse;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseTime;
+import android.app.ProgressDialog;
+
+public class Seeker implements JukeboxResponseListener, Runnable {
+
+	private boolean isRunning = false;
+	private SeekerListener listener;
+	
+	public Seeker(SeekerListener listener) {
+		this.listener = listener;
+	}
+	
+	public void stop() {
+		this.isRunning = false;
+	}
+	
+	private void getTime() {
+       	JukeboxConnectionHandler h = new JukeboxConnectionHandler(this, JukeboxRequestType.Time);
+       	Thread t = new Thread(h);
+       	t.start();
+	}
+
+	@Override
+	public void onResponseReceived(JukeboxResponse resp) {
+		JukeboxRequestType type = resp.getType();
+		if (type == JukeboxRequestType.Time) {
+			try {
+				int seconds = JukeboxResponseTime.parseFrom(resp.getArguments()).getSeconds();
+				if (this.listener != null)
+					this.listener.updateSeeker(seconds);
+				
+			} catch (InvalidProtocolBufferException e) {
+			}
+			
+		}
+	}
+
+	@Override
+	public void run() {
+		this.isRunning = true;
+		while (this.isRunning) {
+			try {
+				getTime();
+				Thread.sleep(3000);
+				
+			} catch (InterruptedException e) {
+			}
+			
+		}
+	}
+	
+	public void start() {
+		Thread t = new Thread(this);
+		t.start();
+	}
+}

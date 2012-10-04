@@ -25,6 +25,10 @@ enum JukeboxRequestType {
 	ListSubtitles = 16;
 	SetSubtitle = 17;
 	VRatio = 18;
+	Info = 19;
+	Time = 20;
+	IsPlaying = 21;
+	GetTitle = 22;
 }
 
 enum Identifier {
@@ -143,6 +147,18 @@ message JukeboxRequestVRatio {
 	required string playerName = 1;
 }
 
+message JukeboxRequestTime {
+	required string playerName = 1;
+}
+
+message JukeboxRequestIsPlaying {
+	required string playerName = 1;
+}
+
+message JukeboxRequestGetTitle {
+	required string playerName = 1;
+}
+
 //---------------------------------------------------------------------------------------
 //-------------------------------------------------------------------- Standard responses
 //---------------------------------------------------------------------------------------
@@ -180,3 +196,14 @@ message JukeboxResponseStartMovie {
 	repeated Subtitle subtitle = 1;
 }
 
+message JukeboxResponseTime {
+	required int32 seconds = 1;
+}
+
+message JukeboxResponseIsPlaying {
+	required bool isPlaying = 1;
+}
+
+message JukeboxResponseGetTitle {
+	required string title = 1;
+}

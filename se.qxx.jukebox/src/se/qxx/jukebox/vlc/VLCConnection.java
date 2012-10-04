@@ -3,6 +3,8 @@ package se.qxx.jukebox.vlc;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.TcpClient;
 
@@ -92,4 +94,45 @@ public class VLCConnection extends TcpClient {
 		}
 	}
 	
+	public String getTime() {
+		try {
+			this.sendCommand("get_time\n");
+			String response = this.readResponseLine();
+			
+			return response;
+		} catch (Exception e) {
+			Log.Error("Error while setting subtitle track", Log.LogType.COMM, e);
+		}		
+		
+		return StringUtils.EMPTY;
+	}
+
+	public boolean isPlaying() {
+		try {
+			this.sendCommand("is_playing\n");
+			String response = StringUtils.trim(this.readResponseLine());
+			
+			if (response.equals("0"))
+				return false;
+			else
+				return true;
+		} catch (Exception e) {
+			Log.Error("Error while setting subtitle track", Log.LogType.COMM, e);
+		}		
+		
+		return false;
+	}
+
+	public String getTitle() {
+		try {
+			this.sendCommand("get_title\n");
+			String response = StringUtils.trim(this.readResponseLine());
+			
+			return response;
+		} catch (Exception e) {
+			Log.Error("Error while setting subtitle track", Log.LogType.COMM, e);
+		}		
+		
+		return StringUtils.EMPTY;
+	}	
 }

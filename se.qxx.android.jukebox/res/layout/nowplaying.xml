@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center|clip_vertical|fill_horizontal"
+    android:orientation="vertical" 
+    android:id="@+id/rootNowPlaying">
+    
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center_horizontal" >
+
+
+            <ImageButton
+                android:id="@+id/btnViewInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#00000000"
+                android:hapticFeedbackEnabled="true"
+                android:onClick="onButtonClicked"
+                android:src="@drawable/infoabout"
+                android:contentDescription="@string/descViewInfo" />
+
+	        <Button
+	            android:id="@+id/btnFullscreen"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:background="@drawable/btnfullscreen"
+	            android:hapticFeedbackEnabled="true"
+	            android:onClick="onButtonClicked"
+			/>
+	        
+	        <Button
+	            android:id="@+id/btnSubSelection"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:hapticFeedbackEnabled="true"
+	            android:onClick="onButtonClicked"
+	            android:text="@string/btnSubselect"
+			/>
+	        	        
+                        
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayoutButtons1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/linearLayout1"
+        android:layout_alignParentLeft="true"
+        android:gravity="center_horizontal" >
+
+		<Button
+            android:id="@+id/btnBackward"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btnbackward"
+            android:hapticFeedbackEnabled="true"
+            android:onClick="onButtonClicked"
+		/>        
+        
+        <Button
+            android:id="@+id/btnPlay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btnplay"
+            android:onClick="onButtonClicked"
+        />
+
+        <Button
+            android:id="@+id/btnPause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btnpause"
+            android:hapticFeedbackEnabled="true"
+            android:onClick="onButtonClicked"
+            android:src="@drawable/pause" />
+
+        <Button
+            android:id="@+id/btnStop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btnstop"
+            android:hapticFeedbackEnabled="true"
+            android:onClick="onButtonClicked"
+		/>
+
+        <Button
+            android:id="@+id/btnForward"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btnforward"
+            android:hapticFeedbackEnabled="true"
+            android:onClick="onButtonClicked"
+		/>
+
+    </LinearLayout>
+    
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true" >
+
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:src="@android:drawable/ic_menu_gallery"
+            android:contentDescription="@string/descPosterImage" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp" >
+
+            <TextView
+                android:id="@+id/textViewTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lblTitle"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <TextView
+                android:id="@+id/textViewYear"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/lblYear"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+        
+		    <TextView
+		        android:id="@+id/textViewGenre"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"
+		        android:text="@string/lblGenre"
+		        android:textAppearance="?android:attr/textAppearanceSmall" />
+		
+		    <TextView
+		        android:id="@+id/textViewDirector"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"
+		        android:text="@string/lblDirector"
+		        android:textAppearance="?android:attr/textAppearanceSmall" />
+		
+		    <TextView
+		        android:id="@+id/textViewDuration"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"
+		        android:text="@string/lblDuration"
+		        android:textAppearance="?android:attr/textAppearanceSmall" />
+		
+		    <TextView
+		        android:id="@+id/textViewRating"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"
+		        android:text="@string/lblRating"
+		        android:textAppearance="?android:attr/textAppearanceSmall" />
+                
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/textViewFilename"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/lblFilename"
+        android:textAppearance="?android:attr/textAppearanceSmall" 
+        android:paddingTop="12dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:paddingBottom="4dp"        
+        android:layout_below="@id/linearLayout2"/>
+  
+    <TextView
+        android:id="@+id/textViewStory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/lblStory"
+        android:textAppearance="?android:attr/textAppearanceSmall" 
+        android:layout_below="@id/textViewFilename"
+        android:layout_alignParentLeft="true"
+        android:paddingTop="6dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:paddingBottom="4dp"
+	/>
+
+    <SeekBar
+        android:id="@+id/seekBarDuration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/linearLayoutButtons1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="26dp"
+        android:max="1000"
+        android:progress="0" />
+
+    <TextView
+        android:id="@+id/txtSeekIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/seekBarDuration"
+        android:layout_centerHorizontal="true"
+        android:text="@string/lblSeekBarIndicator"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+</RelativeLayout>

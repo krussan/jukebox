@@ -4,6 +4,7 @@
     <catalog includeSubdirectories="true" path="/c/media/BitTorrent">
       <vlcpaths>
       	<vlcpath player="vlc_main" path="file:///media/ultra/BitTorrent" />
+      	<vlcpath player="black_hell" path="file:///Z:/BitTorrent" />
       </vlcpaths>
       <extensions>
         <extension value="avi"/>
@@ -77,7 +78,7 @@
  	/>	
    	<server 
   	    name="black_hell"
-  		host="192.168.1.120" 
+  		host="192.168.1.100" 
   		broadcastAddress="192.168.1.255"
   		port="2150"
   		subsPath="Z:/Subs"

@@ -1,8 +1,15 @@
 package se.qxx.jukebox;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Socket;
+
+import org.apache.commons.lang3.StringUtils;
+
+import se.qxx.jukebox.Log.LogType;
 
 public class TcpClient {
 	String host;
@@ -55,6 +62,14 @@ public class TcpClient {
 
 		out.writeBytes(command);
 		out.flush();
+	}
+
+	protected String readResponseLine() throws IOException {
+		BufferedReader r = new BufferedReader(new InputStreamReader(_sock.getInputStream()));
+		Log.Debug("Waiting for response", LogType.COMM);
+		String line = r.readLine();
+		Log.Debug(String.format("Response was :: %s", line), LogType.COMM);
+		return line;
 	}
 	
 }

@@ -32,9 +32,9 @@ public class PlayerLayoutAdapter extends ModelPlayersAdapter {
 	        GUITools.setTextOnTextview(R.id.txtPlayerName, name, v);
 	        
 	        if (name.equals(currentMediaPlayer))
-	        	GUITools.setImageResourceOnImageButton(R.id.btnPickPlayer, R.drawable.selected, v);
+	        	GUITools.setImageResourceOnImageView(R.id.imgPlayerSelected, R.drawable.selected, v);
 	        else
-	        	GUITools.setImageResourceOnImageButton(R.id.btnPickPlayer, R.drawable.todo, v);
+	        	GUITools.setImageResourceOnImageView(R.id.imgPlayerSelected, R.drawable.todo, v);
 		}
 		catch (Exception e) {
 			Logger.Log().e("Error occured while populating list", e);

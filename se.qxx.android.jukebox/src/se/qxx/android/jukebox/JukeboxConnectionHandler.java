@@ -15,6 +15,8 @@ import android.os.Message;
 import android.util.Log;
 
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequest;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGetTitle;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestIsPlaying;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListSubtitles;
@@ -24,6 +26,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSeek;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStartMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStopMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSuspend;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestTime;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestWakeup;
@@ -45,57 +48,80 @@ public class JukeboxConnectionHandler implements Runnable {
 	private JukeboxRequestType _type;
 	private Handler _handler;
 	private Object[] arguments;
+	private JukeboxResponseListener listener;
 	
 	public JukeboxConnectionHandler(Handler h, JukeboxRequestType t, Object... args) {
 		this._type = t;
 		this._handler = h;
 		this.arguments = args;
 	}
+
+	public JukeboxConnectionHandler(JukeboxResponseListener listener, JukeboxRequestType t, Object... args) {
+		this._type = t;
+		this.listener = listener;
+		this.arguments = args;
+	}
 	
 	public void run() {
 		Bundle b = new Bundle();
 		
-		switch (this._type.getNumber()) {
-		case JukeboxRequestType.ListMovies_VALUE:
+		switch (this._type) {
+		case ListMovies:
 			b = listMovies();
 			break;
-		case JukeboxRequestType.StartMovie_VALUE:
+		case StartMovie:
 			b = startMovie();
 			break;
-		case JukeboxRequestType.StopMovie_VALUE:
+		case StopMovie:
 			b = stopMovie();
 			break;
-		case JukeboxRequestType.PauseMovie_VALUE:
+		case PauseMovie:
 			b = pauseMovie();
 			break;
-		case JukeboxRequestType.Wakeup_VALUE:
+		case Wakeup:
 			b = wakeup();
 			break;
-		case JukeboxRequestType.ToggleFullscreen_VALUE:
+		case ToggleFullscreen:
 			b = toggleFullscreen();
 			break;
-		case JukeboxRequestType.Suspend_VALUE:
+		case Suspend:
 			b = suspend();
 			break;
-		case JukeboxRequestType.ListPlayers_VALUE:
+		case ListPlayers:
 			b = listPlayers();
 			break;
-		case JukeboxRequestType.Seek_VALUE:
+		case Seek:
 			b = seek();
 			break;
-		case JukeboxRequestType.ListSubtitles_VALUE:
+		case ListSubtitles:
 			b = listSubtitles();
 			break;
-		case JukeboxRequestType.MarkSubtitle_VALUE:
+		case MarkSubtitle:
 			b = markSubtitle();
 			break;
+		case IsPlaying:
+			b = isPlaying();
+			break;
+		case GetTitle:
+			b = getTitle();
+			break;
+		case Time:
+			b = getTime();
+			break;
 		default:
+		}
+		
+		switch (this._type) {
+		case MarkSubtitle:
+			break;
+			
 		}
 		
 		Message m = new Message();
 		m.setData(b);
 		
-		this._handler.sendMessage(m);
+		if (this._handler != null)
+			this._handler.sendMessage(m);
 	}
 	
 	private Bundle startMovie() {
@@ -145,6 +171,30 @@ public class JukeboxConnectionHandler implements Runnable {
 				.build();
 		
 		return sendAndRetreive(JukeboxRequestType.ToggleFullscreen, sm);		
+	}
+
+	private Bundle isPlaying() {
+		JukeboxRequestIsPlaying sm = JukeboxRequestIsPlaying.newBuilder()
+				.setPlayerName(JukeboxSettings.get().getCurrentMediaPlayer())
+				.build();
+		
+		return sendAndRetreive(JukeboxRequestType.IsPlaying, sm);		
+	}
+
+	private Bundle getTime() {
+		JukeboxRequestTime sm = JukeboxRequestTime.newBuilder()
+				.setPlayerName(JukeboxSettings.get().getCurrentMediaPlayer())
+				.build();
+		
+		return sendAndRetreive(JukeboxRequestType.Time, sm);		
+	}
+	
+	private Bundle getTitle() {
+		JukeboxRequestGetTitle sm = JukeboxRequestGetTitle.newBuilder()
+				.setPlayerName(JukeboxSettings.get().getCurrentMediaPlayer())
+				.build();
+		
+		return sendAndRetreive(JukeboxRequestType.GetTitle, sm);		
 	}
 	
 	private Bundle suspend() {
@@ -206,7 +256,6 @@ public class JukeboxConnectionHandler implements Runnable {
 	private Bundle sendAndRetreive(JukeboxRequestType type, com.google.protobuf.GeneratedMessage message) {
     	Logger.Log().i("opening socket");
     	
-    	//TODO: configure server address or display a list of possible servers
     	java.net.Socket s = new java.net.Socket();
     	
     	try {
@@ -236,6 +285,9 @@ public class JukeboxConnectionHandler implements Runnable {
 	    		return setResponse(false, "Response is null");
 	    	}
 	    	else {
+	    		if (this.listener != null)
+	    			this.listener.onResponseReceived(resp);
+	    		
 		    	ByteString data = resp.getArguments();    	
 		    	handleResponse(resp.getType(), data);
 		    	
@@ -296,7 +348,7 @@ public class JukeboxConnectionHandler implements Runnable {
     		case ToggleFullscreen:
     			break;
     		case Suspend:
-    			break;
+    			break;	
     		case Error:
     			JukeboxResponseError err = JukeboxResponseError.parseFrom(data);
     			Log.e("Jukebox", "Error occured when communicating with jukebox server");

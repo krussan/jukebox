@@ -26,6 +26,14 @@
 			android:background="@drawable/btnplayer"
 		/>
         
+		<Button 
+		    android:id="@+id/btnCurrentMovie" 
+		    android:layout_width="wrap_content" 
+		    android:layout_height="wrap_content"
+			android:onClick="onButtonClicked" 
+			android:layout_toRightOf="@id/btnSelectMediaPlayer"
+			android:background="@drawable/btncurrent"
+		/>
         
 		<Button 
 		    android:id="@+id/btnOn" 	

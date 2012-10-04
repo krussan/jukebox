@@ -49,6 +49,7 @@ public class Model {
 	private Model() {
 		_movies = new ArrayList<Movie>();
 		_players = new ArrayList<String>();
+		_subs = new ArrayList<Subtitle>();		
 	}
 	
 	public static Model get() {

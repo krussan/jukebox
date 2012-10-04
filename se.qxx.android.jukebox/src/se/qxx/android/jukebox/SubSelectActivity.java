@@ -51,7 +51,8 @@ public class SubSelectActivity extends JukeboxActivityBase implements OnSeekBarC
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) {
-		runOnUiThread(new UpdateSeekIndicator(progress));		
+		TextView tv = (TextView)findViewById(R.id.txtSeekIndicator);
+		runOnUiThread(new UpdateSeekIndicator(progress, tv));		
 	}
 
 	@Override
@@ -64,24 +65,7 @@ public class SubSelectActivity extends JukeboxActivityBase implements OnSeekBarC
 		int seconds = seekBar.getProgress();
 		sendCommand("Seeking...", JukeboxRequestType.Seek, seconds);
 	}
-	
-	private class UpdateSeekIndicator implements Runnable {
-		private int progress = 0;
-		public UpdateSeekIndicator(int progress) {
-			this.progress = progress;
-		}
 		
-		@Override
-		public void run() {
-			int hours = progress / 3600;
-			int minutes = (progress % 3600) / 60;
-			int seconds = (progress % 3600) % 60;
-			
-			TextView tv = (TextView)findViewById(R.id.txtSeekIndicator);
-			tv.setText(String.format("%s:%s:%s", hours, minutes, seconds));				
-		}		
-	}
-	
     public void onButtonClicked(View v) {
     	int id = v.getId();
     	

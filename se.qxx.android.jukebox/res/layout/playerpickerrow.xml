@@ -12,16 +12,18 @@
 		android:textAppearance="?android:attr/textAppearanceLarge" 
 		android:layout_alignParentLeft="true"
 		android:gravity="center_vertical"
+		android:padding="10dp"
 	/> 
 
-	<ImageButton
-	    android:id="@+id/btnPickPlayer"
+	<ImageView
+	    android:id="@+id/imgPlayerSelected"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
 		android:layout_alignParentRight="true"
 		android:src="@drawable/todo"
 		android:background="#00000000"
 		android:contentDescription="@string/descSelect"
+		android:padding="10dp"
 	/> 
 			
     

@@ -13,12 +13,16 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.protobuf.ByteString;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequest;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGetTitle;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestIsPlaying;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListSubtitles;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestPauseMovie;
@@ -27,16 +31,20 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSetSubtitle;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStartMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStopMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSuspend;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestTime;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestVRatio;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestWakeup;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponse;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseError;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseGetTitle;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseIsPlaying;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListSubtitles;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseStartMovie;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseTime;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.settings.Settings;
@@ -113,6 +121,12 @@ public class TcpConnection implements Runnable {
 				return toggleVRatio(req);
 			case SetSubtitle:
 				return setSubtitle(req);
+			case Time:
+				return getTime(req);
+			case IsPlaying:
+				return isPlaying(req);
+			case GetTitle:
+				return getTitle(req);
 			default:
 				break;
 			}
@@ -338,6 +352,74 @@ public class TcpConnection implements Runnable {
 		} catch (VLCConnectionNotFoundException e) {
 			return buildErrorMessage("Error occured when connecting to target media player"); 
 			
+		}		
+	}
+
+	private JukeboxResponse getTime(JukeboxRequest req) throws IOException {
+		ByteString data = req.getArguments();
+		JukeboxRequestTime args = JukeboxRequestTime.parseFrom(data);
+
+		Log.Debug(String.format("Getting time on %s...", args.getPlayerName()), Log.LogType.COMM);
+		
+		try {
+			String response = VLCDistributor.get().getTime(args.getPlayerName());
+			if (response.equals(StringUtils.EMPTY))
+				return buildErrorMessage("Error occured when connecting to target media player"); 
+			else {
+				int seconds = Integer.parseInt(response);
+				JukeboxResponseTime time = JukeboxResponseTime.newBuilder().setSeconds(seconds).build();
+				
+				return JukeboxResponse.newBuilder()
+						.setType(JukeboxRequestType.Time)
+						.setArguments(time.toByteString())
+						.build();
+			}
+				
+		} catch (VLCConnectionNotFoundException e) {
+			return buildErrorMessage("Error occured when connecting to target media player"); 
+			
+		}		
+	}
+
+	private JukeboxResponse getTitle(JukeboxRequest req) throws IOException {
+		ByteString data = req.getArguments();
+		JukeboxRequestGetTitle args = JukeboxRequestGetTitle.parseFrom(data);
+
+		Log.Debug(String.format("Getting title on %s...", args.getPlayerName()), Log.LogType.COMM);
+		
+		try {
+			String response = StringUtils.trim(VLCDistributor.get().getTitle(args.getPlayerName()));
+			JukeboxResponseGetTitle r = JukeboxResponseGetTitle.newBuilder().setTitle(response).build();
+				
+			return JukeboxResponse.newBuilder()
+					.setType(JukeboxRequestType.GetTitle)
+					.setArguments(r.toByteString())
+					.build();
+				
+		} catch (VLCConnectionNotFoundException e) {
+			return buildErrorMessage("Error occured when connecting to target media player"); 
+			
+		}		
+	}	
+	
+	private JukeboxResponse isPlaying(JukeboxRequest req) throws IOException {
+		ByteString data = req.getArguments();
+		JukeboxRequestIsPlaying args = JukeboxRequestIsPlaying.parseFrom(data);
+
+		Log.Debug(String.format("Getting is playing status on %s...", args.getPlayerName()), Log.LogType.COMM);
+		
+		try {
+			boolean isPlaying = VLCDistributor.get().isPlaying(args.getPlayerName());
+
+			JukeboxResponseIsPlaying r = JukeboxResponseIsPlaying.newBuilder().setIsPlaying(isPlaying).build();
+				
+			return JukeboxResponse.newBuilder()
+					.setType(JukeboxRequestType.IsPlaying)
+					.setArguments(r.toByteString())
+					.build();
+				
+		} catch (VLCConnectionNotFoundException e) {
+			return buildErrorMessage("Error occured when connecting to target media player"); 
 		}		
 	}
 	

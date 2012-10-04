@@ -37,7 +37,7 @@ public class FlipperActivity extends JukeboxActivityBase implements SimpleGestur
 	protected View getRootView() {
 		return findViewById(R.id.rootFlipper);
 	}
-	
+		
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +56,7 @@ public class FlipperActivity extends JukeboxActivityBase implements SimpleGestur
 	    DisplayMetrics metrics = GUITools.getDisplayMetrics(this);
 	    
 	    detector.setSwipeMaxDistance(Math.max(metrics.widthPixels, metrics.heightPixels));
-	    detector.setSwipeMinDistance(50);
+	    detector.setSwipeMinDistance(100);
 	}
     
     private void loadAnimations() {
@@ -180,8 +180,8 @@ public class FlipperActivity extends JukeboxActivityBase implements SimpleGestur
 		
 		switch (id) {
 			case R.id.btnPlay:
-				sendCommand("Starting movie...", JukeboxRequestType.StartMovie);
-				sendCommand("Getting subtitles...", JukeboxRequestType.ListSubtitles);
+				Intent iPlay = new Intent(this, NowPlayingActivity.class);
+				startActivity(iPlay);
 				break;	
 			case R.id.btnFullscreen:
 				sendCommand("Toggling fullscreen...", JukeboxRequestType.ToggleFullscreen);

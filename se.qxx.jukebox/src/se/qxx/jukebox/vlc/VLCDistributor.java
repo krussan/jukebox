@@ -158,6 +158,33 @@ public class VLCDistributor {
 		
 		return true; 
 	}
+	
+	public String getTime(String hostName) throws VLCConnectionNotFoundException {
+		if (!assertLiveConnection(hostName))
+			return StringUtils.EMPTY;
+		
+		VLCConnection conn = findConnection(hostName);
+		
+		return conn.getTime(); 
+	}
+
+	public boolean isPlaying(String hostName) throws VLCConnectionNotFoundException {
+		if (!assertLiveConnection(hostName))
+			return false;
+		
+		VLCConnection conn = findConnection(hostName);
+		return conn.isPlaying();
+	}
+
+	public String getTitle(String hostName) throws VLCConnectionNotFoundException {
+		if (!assertLiveConnection(hostName))
+			return StringUtils.EMPTY;
+		
+		VLCConnection conn = findConnection(hostName);
+		return conn.getTitle();
+	}
+	
+	
 	public boolean wakeup(String hostName) throws VLCConnectionNotFoundException {
 		Server s = findServerInSettings(hostName);
 		
