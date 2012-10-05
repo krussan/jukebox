@@ -52,7 +52,7 @@ public class SubSelectActivity extends JukeboxActivityBase implements OnSeekBarC
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) {
 		TextView tv = (TextView)findViewById(R.id.txtSeekIndicator);
-		runOnUiThread(new UpdateSeekIndicator(progress, tv));		
+		runOnUiThread(new UpdateSeekIndicator(progress, tv, seekBar));		
 	}
 
 	@Override

@@ -26,6 +26,7 @@ import android.content.DialogInterface.OnDismissListener;
 public class NowPlayingActivity extends JukeboxActivityBase implements OnSeekBarChangeListener, SeekerListener, JukeboxResponseListener {
 
 	private Seeker seeker;
+	private boolean isManualSeeking = false;
 	
 	@Override
 	protected View getRootView() {
@@ -67,7 +68,6 @@ public class NowPlayingActivity extends JukeboxActivityBase implements OnSeekBar
 	    	sb.setOnSeekBarChangeListener(this);
 	    }
 	    
-	    //TODO: setProgress if movie is actually playing
 	    sendCommand(this, "Checking status", JukeboxRequestType.IsPlaying);
 	}
 	
@@ -75,19 +75,22 @@ public class NowPlayingActivity extends JukeboxActivityBase implements OnSeekBar
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) {
-		TextView tv = (TextView)findViewById(R.id.txtSeekIndicator);
-		runOnUiThread(new UpdateSeekIndicator(progress, tv));		
 	}
 
 	@Override
 	public void onStartTrackingTouch(SeekBar seekBar) {
+		this.isManualSeeking = true;
 	}
 
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
-		//TODO: send seek command to media player
+		final TextView tv = (TextView)findViewById(R.id.txtSeekIndicator);
+
 		int seconds = seekBar.getProgress();
-		sendCommand("Seeking...", JukeboxRequestType.Seek, seconds);
+		sendCommand(this, "Seeking...", JukeboxRequestType.Seek, seconds);
+		runOnUiThread(new UpdateSeekIndicator(seconds, tv, seekBar));		
+		
+		this.isManualSeeking = false;
 	}
 	
     public void onButtonClicked(View v) {
@@ -96,16 +99,17 @@ public class NowPlayingActivity extends JukeboxActivityBase implements OnSeekBar
 		
 		switch (id) {
 			case R.id.btnPlay:
-				sendCommand("Starting movie...", JukeboxRequestType.StartMovie);
-				sendCommand("Getting subtitles...", JukeboxRequestType.ListSubtitles);
+				sendCommand(this, "Starting movie...", JukeboxRequestType.StartMovie);
 				break;	
 			case R.id.btnFullscreen:
 				sendCommand("Toggling fullscreen...", JukeboxRequestType.ToggleFullscreen);
 				break;
 			case R.id.btnPause:
+				seeker.stop();
 				sendCommand("Pausing...", JukeboxRequestType.PauseMovie);
 				break;
 			case R.id.btnStop:
+				seeker.stop();
 				sendCommand("Stopping...", JukeboxRequestType.StopMovie);
 				break;
 			case R.id.btnViewInfo:
@@ -130,8 +134,20 @@ public class NowPlayingActivity extends JukeboxActivityBase implements OnSeekBar
 	@Override
 	public void updateSeeker(final int seconds) {
 		final TextView tv = (TextView)findViewById(R.id.txtSeekIndicator);
+		final SeekBar seekBar = (SeekBar)findViewById(R.id.seekBarDuration);
 		
-		runOnUiThread(new UpdateSeekIndicator(seconds, tv));
+		if (!this.isManualSeeking)
+			runOnUiThread(new UpdateSeekIndicator(seconds, tv, seekBar));
+	}
+	
+	@Override
+	public void increaseSeeker(int advanceSeconds) {
+		final TextView tv = (TextView)findViewById(R.id.txtSeekIndicator);		
+		final SeekBar seekBar = (SeekBar)findViewById(R.id.seekBarDuration);
+		int seconds = seekBar.getProgress();
+
+		if (!this.isManualSeeking)
+			runOnUiThread(new UpdateSeekIndicator(seconds + advanceSeconds, tv, seekBar));
 	}
 
 	

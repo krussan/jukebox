@@ -1,5 +1,7 @@
 package se.qxx.android.jukebox;
 
+import java.util.Date;
+
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 
@@ -10,6 +12,7 @@ import android.app.ProgressDialog;
 
 public class Seeker implements JukeboxResponseListener, Runnable {
 
+	private Thread internalThread;
 	private boolean isRunning = false;
 	private SeekerListener listener;
 	
@@ -23,7 +26,7 @@ public class Seeker implements JukeboxResponseListener, Runnable {
 	
 	private void getTime() {
        	JukeboxConnectionHandler h = new JukeboxConnectionHandler(this, JukeboxRequestType.Time);
-       	Thread t = new Thread(h);
+     	Thread t = new Thread(h);
        	t.start();
 	}
 
@@ -48,16 +51,29 @@ public class Seeker implements JukeboxResponseListener, Runnable {
 		while (this.isRunning) {
 			try {
 				getTime();
-				Thread.sleep(3000);
+
+				long millis = (new Date()).getTime();
 				
+				while ((new Date()).getTime() - millis < 15000 && this.isRunning) {
+					Thread.sleep(1000);
+					if (this.listener != null)
+						this.listener.increaseSeeker(1);
+				}
 			} catch (InterruptedException e) {
 			}
-			
 		}
 	}
 	
 	public void start() {
-		Thread t = new Thread(this);
-		t.start();
+		if (internalThread != null) {
+			if (internalThread.isAlive()) 
+				this.isRunning = true;
+			else 
+				internalThread.start();			
+		}
+		else {
+			internalThread = new Thread(this);
+			internalThread.start();			
+		}
 	}
 }
