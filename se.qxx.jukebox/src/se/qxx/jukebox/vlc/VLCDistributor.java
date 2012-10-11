@@ -72,7 +72,7 @@ public class VLCDistributor {
 							subFiles.add(sub.getFilename().replace(serverSubsPath, vlcSubsPath));
 						
 						conn.enqueue(filename, subFiles);
-						
+												
 						return true;
 					}
 					else {
@@ -98,13 +98,7 @@ public class VLCDistributor {
 		VLCConnection conn = findConnection(hostName);
 		conn.stopPlayback();
 		
-		try {
-			Thread.sleep(COMMAND_DELAY);
-		} catch (InterruptedException e) {
-			
-			e.printStackTrace();
-		}
-
+		
 		conn.clearPlaylist();
 		return true;
 	}
@@ -265,6 +259,7 @@ public class VLCDistributor {
 		if (conn == null) {
 			Server s = findServerInSettings(hostName);
 			conn = new VLCConnection(s.getHost(), s.getPort());
+			this.connectors.put(hostName, conn);
 		}
 		
 		return conn;	

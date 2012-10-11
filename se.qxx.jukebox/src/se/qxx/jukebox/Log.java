@@ -19,7 +19,8 @@ public class Log {
 		SUBS,
 		FIND,
 		COMM,
-		UPGRADE
+		UPGRADE,
+		VLCRESPONSE
 	}
 	
 	public static void Critical(String msg, LogType type) {

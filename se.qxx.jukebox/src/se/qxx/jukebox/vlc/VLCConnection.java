@@ -25,6 +25,7 @@ public class VLCConnection extends TcpClient {
 	public void toggleFullscreen() {
 		try {
 			this.sendCommand("fullscreen\n");
+			this.readResponseLine();
 		}
 		catch (Exception e) {
 			Log.Error("Error while setting fullscreen mode.", Log.LogType.COMM, e);
@@ -41,6 +42,7 @@ public class VLCConnection extends TcpClient {
 
 		try {
 			this.sendCommand(output);
+			this.readResponseLines(2);
 		} catch (Exception e) {
 			Log.Error("Error while adding file to playlist", Log.LogType.COMM, e);
 		}
@@ -49,6 +51,7 @@ public class VLCConnection extends TcpClient {
 	public void stopPlayback() {
 		try {
 			this.sendCommand("stop\n");
+			this.readResponseLine();
 		} catch (Exception e) {
 			Log.Error("Error while stopping movie", Log.LogType.COMM, e);
 		}
@@ -57,6 +60,7 @@ public class VLCConnection extends TcpClient {
 	public void pausePlayback() {
 		try {
 			this.sendCommand("pause\n");
+			this.readResponseLine();
 		} catch (Exception e) {
 			Log.Error("Error while pausing movie", Log.LogType.COMM, e);
 		}
@@ -65,6 +69,7 @@ public class VLCConnection extends TcpClient {
 	public void clearPlaylist() {
 		try {
 			this.sendCommand("clear\n");
+			this.readResponseLine();
 		} catch (Exception e) {
 			Log.Error("Error while clearing playlist", Log.LogType.COMM, e);
 		}
@@ -73,6 +78,7 @@ public class VLCConnection extends TcpClient {
 	public void seek(int seconds) {
 		try {
 			this.sendCommand(String.format("seek %s\n", seconds));
+			this.readResponseLine();
 		} catch (Exception e) {
 			Log.Error("Error while seeking in file", Log.LogType.COMM, e);
 		}	
@@ -81,6 +87,7 @@ public class VLCConnection extends TcpClient {
 	public void toggleVRatio() {
 		try {
 			this.sendCommand("vratio\n");
+			this.readResponseLine();
 		} catch (Exception e) {
 			Log.Error("Error while setting vertical ratio", Log.LogType.COMM, e);
 		}	
@@ -89,6 +96,7 @@ public class VLCConnection extends TcpClient {
 	public void setSubtitle(int subtitleID) {
 		try {
 			this.sendCommand(String.format("strack %s\n", subtitleID));
+			this.readResponseLine();
 		} catch (Exception e) {
 			Log.Error("Error while setting subtitle track", Log.LogType.COMM, e);
 		}

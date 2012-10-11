@@ -1,11 +1,17 @@
 package se.qxx.jukebox;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.nio.charset.Charset;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -62,13 +68,57 @@ public class TcpClient {
 
 		out.writeBytes(command);
 		out.flush();
+		
+//		String response = readResponse();
+		
+	}
+	
+	private String readResponse() throws IOException {
+		byte[] data = new byte[512];
+		int bytesRead, offset = 0;
+		
+		InputStream inp = _sock.getInputStream();
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		File f = new File("tcpclient.out");
+		FileOutputStream fos = new FileOutputStream(f, true);
+		
+		int available = inp.available();
+		
+		while (available > 0 && (bytesRead = inp.read(data, 0, data.length)) != -1) {
+			offset += bytesRead;
+			bos.write(data, offset, bytesRead);
+			fos.write(data, offset, bytesRead);			
+		}		
+		
+		fos.flush();
+		bos.flush();
+
+		String response = bos.toString("ISO-8859-1");
+		
+		bos.close();
+		fos.close();
+		
+		return response;
 	}
 
 	protected String readResponseLine() throws IOException {
-		BufferedReader r = new BufferedReader(new InputStreamReader(_sock.getInputStream()));
+		return readResponseLines(1);
+	}
+	
+	protected String readResponseLines(int nrOfLines) throws IOException {
+		InputStream ins = _sock.getInputStream();
+		InputStreamReader isr = new InputStreamReader(ins, "ISO-8859-1");
+		BufferedReader r = new BufferedReader(isr);
+		
 		Log.Debug("Waiting for response", LogType.COMM);
-		String line = r.readLine();
-		Log.Debug(String.format("Response was :: %s", line), LogType.COMM);
+
+		String line = StringUtils.EMPTY;
+		
+		for (int i = 0; i<nrOfLines;i++) {
+			line = r.readLine();
+			Log.Debug(String.format("Response was :: %s", line), LogType.COMM);			
+		}
+		
 		return line;
 	}
 	

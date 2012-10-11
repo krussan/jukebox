@@ -159,8 +159,9 @@ public class NowPlayingActivity extends JukeboxActivityBase implements OnSeekBar
 				if (isPlaying) {
 					sendCommand(this, "Checking current playing movie...", JukeboxRequestType.GetTitle);
 				}
-				else
+				else {
 				    sendCommand(this, "Starting movie...", JukeboxRequestType.StartMovie);						
+				}
 			} catch (InvalidProtocolBufferException e) {
 				Log.e(getLocalClassName(), "Error while parsing response from IsPlaying", e);
 			}
