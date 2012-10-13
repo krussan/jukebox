@@ -23,6 +23,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListSubtitles;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMarkSubtitle;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestPauseMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSeek;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSetSubtitle;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStartMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStopMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSuspend;
@@ -108,15 +109,12 @@ public class JukeboxConnectionHandler implements Runnable {
 		case Time:
 			b = getTime();
 			break;
+		case SetSubtitle:
+			b = setSubtitle();
+			break;
 		default:
 		}
-		
-		switch (this._type) {
-		case MarkSubtitle:
-			break;
-			
-		}
-		
+				
 		Message m = new Message();
 		m.setData(b);
 		
@@ -231,6 +229,23 @@ public class JukeboxConnectionHandler implements Runnable {
 						.build();
 				
 				return sendAndRetreive(JukeboxRequestType.Seek, sm);
+			}
+		}
+		
+		return new Bundle();		
+	}	
+
+	private Bundle setSubtitle() {
+		if (this.arguments.length > 0)
+		{
+			if (this.arguments[0] instanceof Integer) {
+				int id = (Integer)this.arguments[0];
+				JukeboxRequestSetSubtitle sm = JukeboxRequestSetSubtitle.newBuilder()
+						.setPlayerName(JukeboxSettings.get().getCurrentMediaPlayer())
+						.setSubtitleID(id)
+						.build();
+				
+				return sendAndRetreive(JukeboxRequestType.SetSubtitle, sm);
 			}
 		}
 		

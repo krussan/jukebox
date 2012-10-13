@@ -1,29 +1,39 @@
 package se.qxx.android.jukebox;
 
+import java.util.EventObject;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import se.qxx.android.jukebox.model.Model;
+import se.qxx.android.jukebox.model.ModelUpdatedEvent;
+import se.qxx.android.jukebox.model.ModelUpdatedType;
+import se.qxx.android.jukebox.model.Model.ModelUpdatedEventListener;
 import se.qxx.android.tools.GUITools;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponse;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseGetTitle;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseIsPlaying;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.SeekBar;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.content.DialogInterface.OnDismissListener;
 
-public class NowPlayingActivity extends JukeboxActivityBase implements OnSeekBarChangeListener, SeekerListener, JukeboxResponseListener {
+public class NowPlayingActivity extends JukeboxActivityBase 
+	implements OnSeekBarChangeListener, SeekerListener, JukeboxResponseListener, ModelUpdatedEventListener {
 
 	private Seeker seeker;
 	private boolean isManualSeeking = false;
@@ -69,6 +79,8 @@ public class NowPlayingActivity extends JukeboxActivityBase implements OnSeekBar
 	    }
 	    
 	    sendCommand(this, "Checking status", JukeboxRequestType.IsPlaying);
+	    
+	    Model.get().addEventListener(this);
 	}
 	
 
@@ -127,8 +139,9 @@ public class NowPlayingActivity extends JukeboxActivityBase implements OnSeekBar
 				}
 				break;
 			case R.id.btnSubSelection:
-				Intent i = new Intent(this, SubSelectActivity.class);
-				startActivity(i);
+				pickSubtitle();
+//				Intent i = new Intent(this, SubSelectActivity.class);
+//				startActivity(i);
 				break;
 			default:
 				break;
@@ -200,5 +213,27 @@ public class NowPlayingActivity extends JukeboxActivityBase implements OnSeekBar
 		}
 	}
 
+	private void pickSubtitle() {
+		Builder b = new Builder(this);
+		b.setTitle("Pick subtitle");
+		b.setItems(Model.get().getSubtitleDescriptions(), new OnClickListener() {
+			@Override
+			public void onClick(DialogInterface arg0, int arg1) {
+				Model.get().setCurrentSubtitle(arg1);
+			}
+			
+		});
+		
+		b.show();
+	}
+
+	@Override
+	public void handleModelUpdatedEventListener(EventObject e) {
+		ModelUpdatedEvent ev = (ModelUpdatedEvent)e;
+		
+		if (ev.getType() == ModelUpdatedType.CurrentSub) {
+			this.sendCommand("Switching subtitle", JukeboxRequestType.SetSubtitle, Model.get().getCurrentSubtitleID());
+		}
+	}
 
 }

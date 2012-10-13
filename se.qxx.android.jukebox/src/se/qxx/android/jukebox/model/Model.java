@@ -6,6 +6,8 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 
@@ -168,6 +170,19 @@ public class Model {
 		return _subs;
 	}
 	
+	public String[] getSubtitleDescriptions() {
+		List<String> strings = new ArrayList<String>();
+		for (Subtitle s : this._subs) {
+			String desc = s.getDescription();
+			
+			if (StringUtils.isEmpty(desc))
+				strings.add(s.getFilename());
+			else
+				strings.add(desc);
+		}
+
+		return (String[])strings.toArray();
+	}
 	public void addAllSubtitles(List<Subtitle> subs) {
 		_subs.addAll(subs);
 		
@@ -185,6 +200,25 @@ public class Model {
 	
 	public Subtitle getSubtitle(int index) {
 		return _subs.get(index);
+	}
+
+	public void setCurrentSubtitle(int id) {
+		currentSubId = id;
+	}
+
+	public void setCurrentSubtitle(String description) {
+		for (int i = 0;i<_subs.size(); i++) {
+			Subtitle s = _subs.get(i);
+			if (StringUtils.equalsIgnoreCase(description, s.getDescription()) || StringUtils.equalsIgnoreCase(description, s.getFilename())) {
+				currentSubId = i;
+				fireModelUpdatedEvent(ModelUpdatedType.CurrentSub);
+				break;
+			}				
+		}
+	}
+	
+	public int getCurrentSubtitleID() {
+		return currentSubId;
 	}
 	
 	
