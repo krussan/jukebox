@@ -12,6 +12,12 @@ public class UpdateSeekIndicator implements Runnable {
 		this.tv = view;
 		this.seekBar = seekBar;
 	}
+
+	public UpdateSeekIndicator(int progress, TextView view) {
+		this.progress = progress;
+		this.tv = view;
+	}
+
 	
 	@Override
 	public void run() {
@@ -19,7 +25,10 @@ public class UpdateSeekIndicator implements Runnable {
 		int minutes = (progress % 3600) / 60;
 		int seconds = (progress % 3600) % 60;
 		
-		this.tv.setText(String.format("%s:%s:%s", hours, minutes, seconds));
-		this.seekBar.setProgress(progress);
+		if (this.tv != null)
+			this.tv.setText(String.format("%s:%s:%s", hours, minutes, seconds));
+		
+		if (this.seekBar != null)
+			this.seekBar.setProgress(progress);
 	}		
 }

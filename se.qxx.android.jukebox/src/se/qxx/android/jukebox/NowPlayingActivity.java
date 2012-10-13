@@ -74,7 +74,11 @@ public class NowPlayingActivity extends JukeboxActivityBase implements OnSeekBar
 
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress,
-			boolean fromUser) {
+			boolean fromUser) {		
+		final TextView tv = (TextView)findViewById(R.id.txtSeekIndicator);
+		
+		if (this.isManualSeeking)
+			runOnUiThread(new UpdateSeekIndicator(progress, tv));
 	}
 
 	@Override
@@ -169,17 +173,16 @@ public class NowPlayingActivity extends JukeboxActivityBase implements OnSeekBar
 		
 		if (resp.getType() == JukeboxRequestType.GetTitle) {
 			try {
-				String title = JukeboxResponseGetTitle.parseFrom(resp.getArguments()).getTitle();
-				String currentTitle = Model.get().getCurrentMovie().getFilename();
+				String playerFilename = JukeboxResponseGetTitle.parseFrom(resp.getArguments()).getTitle();
+				String currentFilename = Model.get().getCurrentMovie().getFilename();
 				
-				if (StringUtils.equalsIgnoreCase(title, currentTitle)) {
+				if (StringUtils.equalsIgnoreCase(playerFilename, currentFilename)) {
 					//initialize seeker
 					seeker.start();
 				}
 				else {
 					// stop movie and start new
 					sendCommand(this, "Stopping movie", JukeboxRequestType.StopMovie);
-					sendCommand(this, "Starting movie", JukeboxRequestType.StartMovie);
 				}
 			} catch (InvalidProtocolBufferException e) {
 				// TODO Auto-generated catch block
@@ -191,7 +194,10 @@ public class NowPlayingActivity extends JukeboxActivityBase implements OnSeekBar
 			sendCommand(this, "Getting subtitles", JukeboxRequestType.ListSubtitles);			
 			seeker.start();
 		}
-		
+
+		if (resp.getType() == JukeboxRequestType.StopMovie) {
+			sendCommand(this, "Starting movie", JukeboxRequestType.StartMovie);
+		}
 	}
 
 
