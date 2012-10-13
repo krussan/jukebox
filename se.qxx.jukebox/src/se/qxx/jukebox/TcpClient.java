@@ -36,7 +36,8 @@ public class TcpClient {
 		if (_sock == null)
 			return false;
 		else
-			return _sock.isConnected();
+			return _sock.isConnected() && !_sock.isClosed();
+		
 	}
 	
 	private void connect() {
@@ -73,33 +74,33 @@ public class TcpClient {
 		
 	}
 	
-	private String readResponse() throws IOException {
-		byte[] data = new byte[512];
-		int bytesRead, offset = 0;
-		
-		InputStream inp = _sock.getInputStream();
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		File f = new File("tcpclient.out");
-		FileOutputStream fos = new FileOutputStream(f, true);
-		
-		int available = inp.available();
-		
-		while (available > 0 && (bytesRead = inp.read(data, 0, data.length)) != -1) {
-			offset += bytesRead;
-			bos.write(data, offset, bytesRead);
-			fos.write(data, offset, bytesRead);			
-		}		
-		
-		fos.flush();
-		bos.flush();
-
-		String response = bos.toString("ISO-8859-1");
-		
-		bos.close();
-		fos.close();
-		
-		return response;
-	}
+//	private String readResponse() throws IOException {
+//		byte[] data = new byte[512];
+//		int bytesRead, offset = 0;
+//		
+//		InputStream inp = _sock.getInputStream();
+//		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//		File f = new File("tcpclient.out");
+//		FileOutputStream fos = new FileOutputStream(f, true);
+//		
+//		int available = inp.available();
+//		
+//		while (available > 0 && (bytesRead = inp.read(data, 0, data.length)) != -1) {
+//			offset += bytesRead;
+//			bos.write(data, offset, bytesRead);
+//			fos.write(data, offset, bytesRead);			
+//		}		
+//		
+//		fos.flush();
+//		bos.flush();
+//
+//		String response = bos.toString("ISO-8859-1");
+//		
+//		bos.close();
+//		fos.close();
+//		
+//		return response;
+//	}
 
 	protected String readResponseLine() throws IOException {
 		return readResponseLines(1);
@@ -110,8 +111,6 @@ public class TcpClient {
 		InputStreamReader isr = new InputStreamReader(ins, "ISO-8859-1");
 		BufferedReader r = new BufferedReader(isr);
 		
-		Log.Debug("Waiting for response", LogType.COMM);
-
 		String line = StringUtils.EMPTY;
 		
 		for (int i = 0; i<nrOfLines;i++) {

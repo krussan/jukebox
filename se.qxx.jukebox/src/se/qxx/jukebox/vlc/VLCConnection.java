@@ -1,12 +1,17 @@
 package se.qxx.jukebox.vlc;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.Log;
+import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.TcpClient;
+import se.qxx.jukebox.Util;
 
 /**
  * Connection to a VLC player initialized with the RC interface
@@ -15,6 +20,8 @@ import se.qxx.jukebox.TcpClient;
  */
 public class VLCConnection extends TcpClient {
 		
+	private final int COMMAND_TIMEOUT = 10000;
+	
 	/**
 	 * Initializes a new connection to a VLC player. The VLC player has to be initiated with the RC interface.
 	 * I.e. vlc -I rc --rc-host ip:port
@@ -61,7 +68,8 @@ public class VLCConnection extends TcpClient {
 
 		try {
 			this.sendCommand(output);
-			this.readResponseLines(2);
+			this.readLinesUntilFound("add:\\sreturned.*");
+			
 		} catch (Exception e) {
 			Log.Error("Error while adding file to playlist", Log.LogType.COMM, e);
 		}
@@ -73,7 +81,7 @@ public class VLCConnection extends TcpClient {
 	public void stopPlayback() {
 		try {
 			this.sendCommand("stop\n");
-			this.readResponseLine();
+			this.readLinesUntilFound("stop:\\sreturned.*");
 		} catch (Exception e) {
 			Log.Error("Error while stopping movie", Log.LogType.COMM, e);
 		}
@@ -85,7 +93,7 @@ public class VLCConnection extends TcpClient {
 	public void pausePlayback() {
 		try {
 			this.sendCommand("pause\n");
-			this.readResponseLine();
+			this.readLinesUntilFound("pause:\\sreturned.*");
 		} catch (Exception e) {
 			Log.Error("Error while pausing movie", Log.LogType.COMM, e);
 		}
@@ -97,7 +105,7 @@ public class VLCConnection extends TcpClient {
 	public void clearPlaylist() {
 		try {
 			this.sendCommand("clear\n");
-			this.readResponseLine();
+			this.readLinesUntilFound("clear:\\sreturned.*");
 		} catch (Exception e) {
 			Log.Error("Error while clearing playlist", Log.LogType.COMM, e);
 		}
@@ -110,7 +118,7 @@ public class VLCConnection extends TcpClient {
 	public void seek(int seconds) {
 		try {
 			this.sendCommand(String.format("seek %s\n", seconds));
-			this.readResponseLine();
+			this.readLinesUntilFound("seek:\\sreturned.*");
 		} catch (Exception e) {
 			Log.Error("Error while seeking in file", Log.LogType.COMM, e);
 		}	
@@ -149,7 +157,7 @@ public class VLCConnection extends TcpClient {
 	public String getTime() {
 		try {
 			this.sendCommand("get_time\n");
-			String response = this.readResponseLine();
+			String response = this.readNextLineIgnoringStatusChanges();
 			
 			return response;
 		} catch (Exception e) {
@@ -166,7 +174,7 @@ public class VLCConnection extends TcpClient {
 	public boolean isPlaying() {
 		try {
 			this.sendCommand("is_playing\n");
-			String response = StringUtils.trim(this.readResponseLine());
+			String response = StringUtils.trim(this.readNextLineIgnoringStatusChanges());
 			
 			if (response.equals("0"))
 				return false;
@@ -186,7 +194,7 @@ public class VLCConnection extends TcpClient {
 	public String getTitle() {
 		try {
 			this.sendCommand("get_title\n");
-			String response = StringUtils.trim(this.readResponseLine());
+			String response = StringUtils.trim(this.readNextLineIgnoringStatusChanges());
 			
 			return response;
 		} catch (Exception e) {
@@ -194,5 +202,51 @@ public class VLCConnection extends TcpClient {
 		}		
 		
 		return StringUtils.EMPTY;
+	}
+	
+	/**
+	 * Reads lines from response stream until a line is found that matches a regular expression patter
+	 * @param pattern	The pattern to match
+	 * @return			Returns true if response was found. False if the function timed out.
+	 * @throws IOException
+	 */
+	private boolean readLinesUntilFound(String pattern) throws IOException {
+		boolean found = false;
+		long startTime = Util.getCurrentTimestamp();
+		String line = StringUtils.EMPTY;
+
+		Log.Debug(String.format("Waiting for response like :: %s", pattern), LogType.COMM);
+		Pattern p = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+		
+		while (!found && Util.getCurrentTimestamp() - startTime <= COMMAND_TIMEOUT) {
+			line = this.readResponseLine();
+			Matcher m = p.matcher(line);
+
+			found = m.matches();
+		}
+		
+		return found;
+	}
+	
+	/**
+	 * Reads the next line from the response stream. If status changes are found then these are ignored.
+	 * @return		The next line received
+	 * @throws IOException
+	 */
+	private String readNextLineIgnoringStatusChanges() throws IOException {
+		long startTime = Util.getCurrentTimestamp();
+		String line = StringUtils.EMPTY;
+		
+		Pattern p = Pattern.compile("status\\schange:.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+		
+		while (Util.getCurrentTimestamp() - startTime <= COMMAND_TIMEOUT) {			
+			line = this.readResponseLine();
+			Matcher m = p.matcher(line);
+
+			if (!m.matches())
+				break;
+		}
+		
+		return line;
 	}	
 }

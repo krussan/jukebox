@@ -43,10 +43,6 @@ public class VLCDistributor {
 		return _instance;
 	}
 	
-	public static VLCConnection getConnection(String hostName) {
-		
-	}
-	
 	/**
 	 * Lists the players declared in the XML file
 	 * @return A list of strings with the player names
