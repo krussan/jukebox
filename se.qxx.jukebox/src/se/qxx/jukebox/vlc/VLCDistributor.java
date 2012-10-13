@@ -24,12 +24,18 @@ public class VLCDistributor {
 	private final int COMMAND_DELAY = 3000;
 	private static VLCDistributor _instance;
 	private Hashtable<String, VLCConnection> connectors;
-	
+
+	/**
+	 * Private constructor for the VLC Distributor.
+	 */
 	private VLCDistributor() {
 		this.connectors = new Hashtable<String, VLCConnection>();
-		
 	}
 	
+	/**
+	 * Public getter for the singleton VLC Distributor object
+	 * @return The VLC Distributor
+	 */
 	public static VLCDistributor get() {
 		if (_instance == null)
 			_instance = new VLCDistributor();
@@ -37,6 +43,14 @@ public class VLCDistributor {
 		return _instance;
 	}
 	
+	public static VLCConnection getConnection(String hostName) {
+		
+	}
+	
+	/**
+	 * Lists the players declared in the XML file
+	 * @return A list of strings with the player names
+	 */
 	public List<String> listPlayers() {
 		List<String> list = new ArrayList<String>();
 		for (Server s : Settings.get().getVlc().getServer()) {
@@ -45,6 +59,13 @@ public class VLCDistributor {
 		return list;
 	}
 	
+	/**
+	 * Starts a movie on a specific VLC playrer
+	 * @param hostName 	The player on which to start the movie
+	 * @param id 		The ID of the movie
+	 * @return			True if the call succeeds
+	 * @throws VLCConnectionNotFoundException
+	 */
 	public boolean startMovie(String hostName, int id) throws VLCConnectionNotFoundException {
 		if (!assertLiveConnection(hostName))
 			return false;
@@ -91,6 +112,12 @@ public class VLCDistributor {
 		return false;
 	}
 	
+	/**
+	 * Stops a movie on a specific VLC player and clears the playlist
+	 * @param hostName		The player on which to stop the movie
+	 * @return				True if the call succeeds
+	 * @throws VLCConnectionNotFoundException
+	 */
 	public boolean stopMovie(String hostName) throws VLCConnectionNotFoundException {
 		if (!assertLiveConnection(hostName))
 			return false;
@@ -103,6 +130,12 @@ public class VLCDistributor {
 		return true;
 	}
 
+	/**
+	 * Pauses a movie on a specific VLC player
+	 * @param hostName		The player on which to pause the movie
+	 * @return				True if the call succeeds	
+	 * @throws VLCConnectionNotFoundException
+	 */
 	public boolean pauseMovie(String hostName) throws VLCConnectionNotFoundException {
 		if (!assertLiveConnection(hostName))
 			return false;
@@ -113,6 +146,12 @@ public class VLCDistributor {
 		return true; 
 	}
 	
+	/**
+	 * Toggles fullscreen mode on a specific VLC player
+	 * @param hostName
+	 * @return
+	 * @throws VLCConnectionNotFoundException
+	 */
 	public boolean toggleFullscreen(String hostName) throws VLCConnectionNotFoundException {
 		if (!assertLiveConnection(hostName))
 			return false;
