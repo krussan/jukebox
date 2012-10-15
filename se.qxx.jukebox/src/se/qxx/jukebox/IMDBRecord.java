@@ -76,8 +76,12 @@ public class IMDBRecord {
 						break;
 					case GENRES:
 						this.genres.add(unescapedValue);					
-						while (m.find()) 
+						while (m.find()) {
+							value = StringUtils.trim(m.group(infoPattern.getGroup()));
+							unescapedValue = StringEscapeUtils.unescapeHtml4(value);
+							
 							this.genres.add(unescapedValue);					
+						}
 						
 						break;
 					case POSTER:
