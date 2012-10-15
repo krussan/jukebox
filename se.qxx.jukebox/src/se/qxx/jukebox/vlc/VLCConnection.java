@@ -19,8 +19,8 @@ import se.qxx.jukebox.Util;
  *
  */
 public class VLCConnection extends TcpClient {
-	
-	private final int COMMAND_TIMEOUT = 10000;
+	private static String mutex = "MUTEX";
+	private final static int COMMAND_TIMEOUT = 3000;
 	
 	/**
 	 * Initializes a new connection to a VLC player. The VLC player has to be initiated with the RC interface.
@@ -29,7 +29,7 @@ public class VLCConnection extends TcpClient {
 	 * @param port	The port number of the host to connect to
 	 */
 	public VLCConnection(String host, int port) {
-		super("VLC", host, port);
+		super("VLC", host, port, COMMAND_TIMEOUT);
 	}
 		
 	/**
@@ -37,7 +37,7 @@ public class VLCConnection extends TcpClient {
 	 * @param filename	The MRL of the file to enqueue
 	 */
 	public void enqueue(String filename) {
-		synchronized (this) {
+		synchronized (mutex) {
 			enqueue(filename, new ArrayList<String>());
 		}
 	}
@@ -46,7 +46,7 @@ public class VLCConnection extends TcpClient {
 	 * Toggles fullscreen
 	 */
 	public void toggleFullscreen() {
-		synchronized (this) {
+		synchronized (mutex) {
 			try {
 				this.sendCommand("fullscreen\n");
 			}
@@ -63,7 +63,7 @@ public class VLCConnection extends TcpClient {
 	 */
 	public void enqueue(String filename, List<String> subFiles) {
 		//add file://Y:/Videos/Kick.Ass[2010]DVD.ENG.X264.mp4 :sub-file=file://Y:/Videos/Repo Men.srt
-		synchronized (this) {
+		synchronized (mutex) {
 			String output = String.format("add %s", filename);
 			for (String subFile : subFiles) {
 				output += String.format(" :sub-file=%s", subFile);
@@ -84,7 +84,7 @@ public class VLCConnection extends TcpClient {
 	 * Stops playback
 	 */
 	public void stopPlayback() {
-		synchronized (this) {
+		synchronized (mutex) {
 			try {
 				this.sendCommand("stop\n");
 				this.readLinesUntilFound("stop:\\sreturned.*");
@@ -98,7 +98,7 @@ public class VLCConnection extends TcpClient {
 	 * Pauses playback
 	 */
 	public void pausePlayback() {
-		synchronized (this) {
+		synchronized (mutex) {
 			try {
 				this.sendCommand("pause\n");
 				this.readLinesUntilFound("pause:\\sreturned.*");
@@ -112,7 +112,7 @@ public class VLCConnection extends TcpClient {
 	 * Clears the playlist
 	 */
 	public void clearPlaylist() {
-		synchronized (this) {
+		synchronized (mutex) {
 			try {
 				this.sendCommand("clear\n");
 				this.readLinesUntilFound("clear:\\sreturned.*");
@@ -127,7 +127,7 @@ public class VLCConnection extends TcpClient {
 	 * @param seconds	The number of seconds to move to
 	 */
 	public void seek(int seconds) {
-		synchronized (this) {
+		synchronized (mutex) {
 			try {
 				this.sendCommand(String.format("seek %s\n", seconds));
 				this.readLinesUntilFound("seek:\\sreturned.*");
@@ -142,7 +142,7 @@ public class VLCConnection extends TcpClient {
 	 * Toggles VRatio output
 	 */
 	public void toggleVRatio() {
-		synchronized (this) {
+		synchronized (mutex) {
 			try {
 				this.sendCommand("vratio\n");
 				this.readResponseLine();
@@ -157,7 +157,7 @@ public class VLCConnection extends TcpClient {
 	 * @param subtitleID	The ID of the subtitle
 	 */
 	public void setSubtitle(int subtitleID) {
-		synchronized (this) {
+		synchronized (mutex) {
 			try {
 				this.sendCommand(String.format("strack %s\n", subtitleID));
 				this.readResponseLine();
@@ -172,7 +172,7 @@ public class VLCConnection extends TcpClient {
 	 * @return	The number of seconds since start of playback
 	 */
 	public String getTime() {
-		synchronized (this) {
+		synchronized (mutex) {
 			try {
 				this.sendCommand("get_time\n");
 				String response = this.readNextLineIgnoringStatusChanges();
@@ -182,7 +182,7 @@ public class VLCConnection extends TcpClient {
 				Log.Error("Error while setting subtitle track", Log.LogType.COMM, e);
 			}		
 		
-			return StringUtils.EMPTY;
+			return "0";
 		}
 	}
 
@@ -191,7 +191,7 @@ public class VLCConnection extends TcpClient {
 	 * @return	True if a movie is playing. False otherwise.
 	 */
 	public boolean isPlaying() {
-		synchronized (this) {
+		synchronized (mutex) {
 			try {
 				this.sendCommand("is_playing\n");
 				String response = StringUtils.trim(this.readNextLineIgnoringStatusChanges());
@@ -213,7 +213,7 @@ public class VLCConnection extends TcpClient {
 	 * @return 		The filename of the current active movie
 	 */
 	public String getTitle() {
-		synchronized (this) {
+		synchronized (mutex) {
 			try {
 				this.sendCommand("get_title\n");
 				String response = StringUtils.trim(this.readNextLineIgnoringStatusChanges());

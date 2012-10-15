@@ -21,16 +21,19 @@ public class TcpClient {
 	String host;
 	int port;
 	String clientName;
+	int readTimeout = 0;
 	
 	Socket _sock;
 	
-	public TcpClient(String clientName, String host, int port) {
+	public TcpClient(String clientName, String host, int port, int readTimeout) {
 		this.host = host;
 		this.port = port;
 		this.clientName = clientName;
+		this.readTimeout = readTimeout;
 		
 		connect();		
 	}
+
 	
 	public boolean isConnected() {
 		if (_sock == null)
@@ -43,6 +46,7 @@ public class TcpClient {
 		try {
 			Log.Debug(String.format("Connecting to %s at %s port %s", this.clientName, this.host, this.port), Log.LogType.COMM);
 			_sock = new Socket(this.host, this.port);
+			_sock.setSoTimeout(this.readTimeout);
 			Log.Debug("Connected...", Log.LogType.COMM);
 		} catch (Exception e) {
 			Log.Error(String.format("Unable to connect to %s host :: %s port :: %s", this.clientName, this.host, this.port), Log.LogType.COMM, e);

@@ -4,7 +4,7 @@ public class HibernatorClientConnection extends TcpClient {
 		
 	public HibernatorClientConnection(String host, int port) 
 	{
-		super("Hibernator", host, port);
+		super("Hibernator", host, port, 0);
 	}
 	
 	public void suspend() {
