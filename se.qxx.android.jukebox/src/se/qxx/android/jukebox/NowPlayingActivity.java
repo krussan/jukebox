@@ -17,7 +17,6 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseGetTitle;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseIsPlaying;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
@@ -26,11 +25,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.SeekBar;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.SeekBar.OnSeekBarChangeListener;
-import android.content.DialogInterface.OnDismissListener;
 
 public class NowPlayingActivity extends JukeboxActivityBase 
 	implements OnSeekBarChangeListener, SeekerListener, JukeboxResponseListener, ModelUpdatedEventListener {
@@ -121,7 +118,7 @@ public class NowPlayingActivity extends JukeboxActivityBase
 				sendCommand("Toggling fullscreen...", JukeboxRequestType.ToggleFullscreen);
 				break;
 			case R.id.btnPause:
-				seeker.stop();
+				seeker.toggle();
 				sendCommand("Pausing...", JukeboxRequestType.PauseMovie);
 				break;
 			case R.id.btnStop:
@@ -214,7 +211,7 @@ public class NowPlayingActivity extends JukeboxActivityBase
 	}
 
 	private void pickSubtitle() {
-		Builder b = new Builder(this);
+		AlertDialog.Builder b = new AlertDialog.Builder(this);
 		b.setTitle("Pick subtitle");
 		b.setItems(Model.get().getSubtitleDescriptions(), new OnClickListener() {
 			@Override

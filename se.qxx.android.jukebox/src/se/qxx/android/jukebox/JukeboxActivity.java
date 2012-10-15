@@ -54,7 +54,11 @@ public class JukeboxActivity extends JukeboxActivityBase implements ModelUpdated
 		
 		setupOnOffButton();
 
-		connect();
+		if (!Model.get().isInitialized())
+			connect();
+		else
+			runOnUiThread(modelResultUpdatedRunnable);		
+		
     }
 
     private void setupOnOffButton() {
@@ -133,7 +137,7 @@ public class JukeboxActivity extends JukeboxActivityBase implements ModelUpdated
 	}
 
 	public void connect() {
-    	this.sendCommand("Getting list of movies", JukeboxRequestType.ListMovies);
+		this.sendCommand("Getting list of movies", JukeboxRequestType.ListMovies);	
     }
     
 

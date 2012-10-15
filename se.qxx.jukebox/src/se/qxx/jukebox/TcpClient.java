@@ -35,9 +35,8 @@ public class TcpClient {
 	public boolean isConnected() {
 		if (_sock == null)
 			return false;
-		else
+		else 
 			return _sock.isConnected() && !_sock.isClosed();
-		
 	}
 	
 	private void connect() {

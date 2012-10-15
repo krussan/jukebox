@@ -15,6 +15,7 @@ public class Model {
 	
 	private int currentMovieId = -1;
 	private int currentSubId = -1;
+	private boolean initialized = false;
 	
 	public interface ModelUpdatedEventListener {
 		public void handleModelUpdatedEventListener(java.util.EventObject e);
@@ -219,6 +220,14 @@ public class Model {
 	
 	public int getCurrentSubtitleID() {
 		return currentSubId;
+	}
+
+	public boolean isInitialized() {
+		return initialized;
+	}
+
+	public void setInitialized(boolean initialized) {
+		this.initialized = initialized;
 	}
 	
 	

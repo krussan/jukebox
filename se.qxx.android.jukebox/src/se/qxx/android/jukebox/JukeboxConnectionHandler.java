@@ -332,6 +332,7 @@ public class JukeboxConnectionHandler implements Runnable {
     			JukeboxResponseListMovies resp1 = JukeboxResponseListMovies.parseFrom(data);
     			Model.get().clearMovies();
     			Model.get().addAllMovies(resp1.getMoviesList());
+    			Model.get().setInitialized(true);
     			break;
     		case ListPlayers:
     			JukeboxResponseListPlayers resp2 = JukeboxResponseListPlayers.parseFrom(data);

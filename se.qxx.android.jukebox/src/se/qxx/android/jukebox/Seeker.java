@@ -68,12 +68,24 @@ public class Seeker implements JukeboxResponseListener, Runnable {
 		if (internalThread != null) {
 			if (internalThread.isAlive()) 
 				this.isRunning = true;
-			else 
-				internalThread.start();			
+			else {
+				startNewThread();
+			}
 		}
 		else {
-			internalThread = new Thread(this);
-			internalThread.start();			
+			startNewThread();			
 		}
+	}
+
+	protected void startNewThread() {
+		internalThread = new Thread(this);
+		internalThread.start();
+	}
+	
+	public void toggle() {
+		if (this.isRunning)
+			this.stop();
+		else
+			this.start();
 	}
 }
