@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FilenameUtils;
+
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Identifier;
@@ -16,13 +18,13 @@ public class ParentDirectoryBuilder extends FilenameBuilder {
 	@Override
 	public Movie extractMovie(String filepath, String filename) {
 		File path = new File(filepath); 
-
+		String parentDirectoryName = FilenameUtils.getName(filepath);
 		
 		Pattern pattern = Pattern.compile("CD[1-9]+", Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
-		Matcher matcher = pattern.matcher(filepath);
+		Matcher matcher = pattern.matcher(parentDirectoryName);
 		
 		if (matcher.matches()) {
-			Log.Info("ParentDirectory apperas to be a CD indicator..", LogType.FIND);
+			Log.Info("ParentDirectory appears to be a CD indicator..", LogType.FIND);
 			path = path.getParentFile();
 			filepath = path.getAbsolutePath();
 		}
