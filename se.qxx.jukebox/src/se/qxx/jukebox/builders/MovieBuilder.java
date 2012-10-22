@@ -68,13 +68,15 @@ public abstract class MovieBuilder {
 
 		Movie m = null;
 		if (proposals.size() > 0) {
-			m = proposals.get(proposals.size() - 1);
+			m = proposals.get(0);
 			
-			if (m != null) 
+			if (m != null)  {
+				Log.Debug(String.format("MovieBuilder :: Selected proposal has rating of %s", m.getIdentifierRating()), LogType.FIND);
 				m = Movie.newBuilder(m)
 						.setFilename(filename)
 						.setFilepath(filepath)
 						.build();
+			}
 		}
 		else {
 			Log.Info(String.format("Failed to identify movie with filename %s", filename), LogType.FIND);

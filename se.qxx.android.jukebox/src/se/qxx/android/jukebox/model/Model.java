@@ -182,8 +182,9 @@ public class Model {
 				strings.add(desc);
 		}
 
-		return (String[])strings.toArray();
+		return  (String[])strings.toArray(new String[0]);
 	}
+	
 	public void addAllSubtitles(List<Subtitle> subs) {
 		_subs.addAll(subs);
 		
@@ -205,6 +206,7 @@ public class Model {
 
 	public void setCurrentSubtitle(int id) {
 		currentSubId = id;
+		fireModelUpdatedEvent(ModelUpdatedType.CurrentSub);		
 	}
 
 	public void setCurrentSubtitle(String description) {

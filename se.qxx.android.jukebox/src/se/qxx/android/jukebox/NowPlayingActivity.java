@@ -187,7 +187,8 @@ public class NowPlayingActivity extends JukeboxActivityBase
 				String currentFilename = Model.get().getCurrentMovie().getFilename();
 				
 				if (StringUtils.equalsIgnoreCase(playerFilename, currentFilename)) {
-					//initialize seeker
+					//initialize seeker and get subtitles if app has been reinitialized
+					sendCommand(this, "Getting subtitles", JukeboxRequestType.ListSubtitles);			
 					seeker.start();
 				}
 				else {

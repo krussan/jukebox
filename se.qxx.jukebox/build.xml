@@ -78,54 +78,53 @@
  		</jar>
 	</target>
 	
+	<target name="createscript">
+	    <loadfile srcFile="script.template.txt"
+	        property="script.template"> 
+	        <filterchain>
+	            <expandproperties />
+	        </filterchain>
+	    </loadfile>
+	    
+	    <echo file="${script.file}" message="${script.template}" />	    
+	    
+	</target>
+	
 	<target name="createrunscript">
-		<echo file="${build.dir}/run.sh">#!/bin/sh
-./stop.sh > /dev/null 2> /dev/null
+	    <antcall target="createscript">
+	        <param name="script.class" value="${main-class}" />
+	        <param name="script.file" value="${build.dir}/run.sh" />
+	    </antcall>
+	    <echo file="${build.dir}/run.sh}" append="true">
+	        echo $! > jukebox.pid
+	    </echo>
 
-if [ -n "$LD_LIBRARY_PATH" ]
-then
-   LD_LIBRARY_PATH=$PWD:${LD_LIBRARY_PATH}
-else
-   LD_LIBRARY_PATH=$PWD
-fi
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+	    <antcall target="createscript">
+	        <param name="script.class" value="se.qxx.jukebox.tests.TestMediaInfo" />
+	        <param name="script.file" value="${build.dir}/testMediaInfo.sh" />
+	    </antcall>
 
-java -cp 'jna.jar:${jar.file}:named-regexp.jar:protobuf-2.4.1.jar:sqlite-jdbc-3.7.2.jar:commons-lang3-3.1.jar:commons-io-2.4.jar:commons-codec-1.7.jar' ${main-class} $* &amp;
-echo $! > jukebox.pid
-		</echo>
-		
-		<echo file="${build.dir}/testMediaInfo.sh">#!/bin/sh
-if [ -n "$LD_LIBRARY_PATH" ]
-then
-   LD_LIBRARY_PATH=$PWD:${LD_LIBRARY_PATH}
-else
-   LD_LIBRARY_PATH=$PWD
-fi
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
-java -cp 'jna.jar:${jar.file}:named-regexp.jar:protobuf-2.4.1.jar:sqlite-jdbc-3.7.2.jar:commons-lang3-3.1.jar:commons-io-2.4.jar:commons-codec-1.7.jar' se.qxx.jukebox.tests.TestMediaInfo $*
-		</echo>
-		
-		<echo file="${build.dir}/testNfoScanner.sh">#!/bin/sh
-if [ -n "$LD_LIBRARY_PATH" ]
-then
-   LD_LIBRARY_PATH=$PWD:${LD_LIBRARY_PATH}
-else
-   LD_LIBRARY_PATH=$PWD
-fi
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
-java -cp 'jna.jar:${jar.file}:named-regexp.jar:protobuf-2.4.1.jar:sqlite-jdbc-3.7.2.jar:commons-lang3-3.1.jar:commons-io-2.4.jar:commons-codec-1.7.jar' se.qxx.jukebox.tests.TestNfoScanner $*
-		</echo>
+	    <antcall target="createscript">
+	        <param name="script.class" value="se.qxx.jukebox.tests.TestNfoScanner" />
+	        <param name="script.file" value="${build.dir}/testNfoScanner.sh" />
+	    </antcall>
 
-				<echo file="${build.dir}/testImdbXml.sh">#!/bin/sh
-if [ -n "$LD_LIBRARY_PATH" ]
-then
-   LD_LIBRARY_PATH=$PWD:${LD_LIBRARY_PATH}
-else
-   LD_LIBRARY_PATH=$PWD
-fi
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
-java -cp 'jna.jar:${jar.file}:named-regexp.jar:protobuf-2.4.1.jar:sqlite-jdbc-3.7.2.jar:commons-lang3-3.1.jar:commons-io-2.4.jar:commons-codec-1.7.jar' se.qxx.jukebox.tests.TestImdbXmlReader $*
-		</echo>
+	    <antcall target="createscript">
+	        <param name="script.class" value="se.qxx.jukebox.tests.TestImdbXmlReader" />
+	        <param name="script.file" value="${build.dir}/testImdbXml.sh" />
+	    </antcall>
+
+	    <antcall target="createscript">
+	        <param name="script.class" value="se.qxx.jukebox.tests.TestFilenameBuilder" />
+	        <param name="script.file" value="${build.dir}/testFilenameBuilder.sh" />
+	    </antcall>
+
+	    <antcall target="createscript">
+	        <param name="script.class" value="se.qxx.jukebox.tests.TestMovieBuilder" />
+	        <param name="script.file" value="${build.dir}/testMovieBuilder.sh" />
+	    </antcall>
+	    	    	    	    	    	    	    	    
+		<fixcrlf srcdir="${build.dir}" includes="**/*.sh" eol="lf" eof="remove" />
 						
 		<copy file="${main.dir}/JukeboxSettings.xml" todir="${build.dir}" />
 		<copy file="${main.dir}/imdb.xml" todir="${build.dir}" />

@@ -70,6 +70,7 @@ public class VLCConnection extends TcpClient {
 			}
 			output += "\n";
 	
+			Log.Debug(String.format("Sending enqueue command:: %s", output), LogType.COMM);
 			try {
 				this.sendCommand(output);
 				this.readLinesUntilFound("add:\\sreturned.*");

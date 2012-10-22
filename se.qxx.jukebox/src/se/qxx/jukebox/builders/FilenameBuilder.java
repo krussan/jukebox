@@ -24,7 +24,7 @@ public class FilenameBuilder extends MovieBuilder {
 		int maxGroupMatch = 0;
 		ArrayList<String> groupsToCheck = getGroupsToCheck();
 		
-		String 	title = "", 
+		String 	title = "",  	
 				type = "",
 				format = "", 
 				sound = "", 
@@ -53,7 +53,8 @@ public class FilenameBuilder extends MovieBuilder {
 						if (m.group(s).length() > 0) 
 							matches++;
 			}
-			
+		
+			Log.Debug(String.format("FilenameBuilder :: nrOfMatches :: %s", matches), LogType.FIND);
 			
 			if (matches > maxGroupMatch) {
 				maxGroupMatch = matches;
@@ -83,7 +84,6 @@ public class FilenameBuilder extends MovieBuilder {
 					group = Util.parseAwaySpace(m.group("group"));
 				
 			}
-			
 		}
 
 		//if movie ends with extension then something is wrong
@@ -91,6 +91,7 @@ public class FilenameBuilder extends MovieBuilder {
 			return null;
 		
 		if (maxGroupMatch > 0) {
+			Log.Debug(String.format("FilenameBuilder :: Max match :: %s", maxGroupMatch), LogType.FIND);
 			Movie movie = Movie.newBuilder()
 				.setID(-1)
 				.setFilename(filename)
@@ -110,6 +111,7 @@ public class FilenameBuilder extends MovieBuilder {
 		}
 		else {
 			// movie does not match
+			Log.Info("FilenameBuilder :: No Match", LogType.FIND);
 			return Movie.newBuilder().setID(-1).build();
 		}
 	}
