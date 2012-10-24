@@ -121,7 +121,7 @@ public class JukeboxConnectionHandler implements Runnable {
 		if (this._handler != null)
 			this._handler.sendMessage(m);
 	}
-	
+	 
 	private Bundle startMovie() {
 		JukeboxRequestStartMovie sm = JukeboxRequestStartMovie.newBuilder()
 				.setPlayerName(JukeboxSettings.get().getCurrentMediaPlayer())

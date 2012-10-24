@@ -32,4 +32,5 @@
     <string name="btnSubOk">OK</string>
     <string name="btnSubNotOk">Not OK</string>
     <string name="lblSeekBarIndicator">00:00</string>
+    <string name="descDownloading">Downloading</string>
 </resources>

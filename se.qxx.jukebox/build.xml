@@ -95,9 +95,7 @@
 	        <param name="script.class" value="${main-class}" />
 	        <param name="script.file" value="${build.dir}/run.sh" />
 	    </antcall>
-	    <echo file="${build.dir}/run.sh}" append="true">
-	        echo $! > jukebox.pid
-	    </echo>
+	    <echo file="${build.dir}/run.sh" append="true">echo $! > jukebox.pid</echo>
 
 	    <antcall target="createscript">
 	        <param name="script.class" value="se.qxx.jukebox.tests.TestMediaInfo" />

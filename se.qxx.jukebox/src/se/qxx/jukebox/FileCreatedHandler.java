@@ -23,6 +23,7 @@ public class FileCreatedHandler implements INotifyClient {
 		
 		String filename = f.getName();
 		String path = f.getPath();
+		
 		// Added ignore on all filename that contains the string sample
 		if (StringUtils.containsIgnoreCase(filename, "sample")) {
 			Log.Info(String.format("Ignoring %s as this appears to be a sample", filename), LogType.FIND);
@@ -33,9 +34,7 @@ public class FileCreatedHandler implements INotifyClient {
 			}
 			else {
 				Movie m = MovieBuilder.identifyMovie(path, filename);
-				
-				// TODO: Get info about movie from NFO if available
-				
+						
 				if (m != null) {
 					Log.Info(String.format("Movie identified by %s as :: %s", m.getIdentifier().toString(), m.getTitle()), Log.LogType.FIND);
 
@@ -70,8 +69,8 @@ public class FileCreatedHandler implements INotifyClient {
 	private Movie getImdbInformation(Movie m) {
 		//find imdb link
 		try {
-			m = IMDBFinder.Search(m);
-			if (m.getImdbUrl() != null && m.getImdbUrl() != "")
+			m = IMDBFinder.Get(m);
+			if (!StringUtils.isEmpty(m.getImdbUrl()))
 				Log.Info(String.format("IMDB link found for :: %s", m.getTitle()), LogType.FIND);
 		}
 		catch (IOException e) {

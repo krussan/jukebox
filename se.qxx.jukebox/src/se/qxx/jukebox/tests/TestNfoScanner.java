@@ -3,8 +3,13 @@ package se.qxx.jukebox.tests;
 import java.io.File;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
+
 import se.qxx.jukebox.builders.NFOLine;
 import se.qxx.jukebox.builders.NFOScanner;
+import se.qxx.jukebox.builders.NfoBuilder;
+import se.qxx.jukebox.domain.JukeboxDomain.Identifier;
+import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 
 public class TestNfoScanner {
 	public static void main(String[] args) {
@@ -19,5 +24,24 @@ public class TestNfoScanner {
 	    for (int i = 0;i<lines.size();i++) {
 	    	System.out.println(String.format("%s : %s\t%s\t\t%s", i, lines.get(i).getType().toString(), lines.get(i).getValue(), lines.get(i).getLine()));
 	    }
+	    
+	    System.out.println("--------------------------------------------------------------");
+	    System.out.println("--------------------------------------------------------------");
+	    System.out.println("--------------------------------------------------------------");
+
+		String filePath = FilenameUtils.getPath(FileName);
+		String singleFile = FilenameUtils.getName(FileName);
+ 
+		NfoBuilder builder = new NfoBuilder();
+		
+	    Movie m = builder.extractMovie(filePath, singleFile);
+	    System.out.println(String.format("TITLE\t::\t%s", m.getTitle()));
+	    System.out.println(String.format("YEAR\t::\t%s", m.getYear()));
+	    System.out.println(String.format("TYPE\t::\t%s", m.getType()));
+	    System.out.println(String.format("SOUND\t::\t%s", m.getSound()));
+	    System.out.println(String.format("LANGUAGE\t::\t%s", m.getLanguage()));
+	    System.out.println(String.format("ID-RATING\t::\t%s", m.getIdentifierRating()));
+	    System.out.println(String.format("IMDB-URL\t::\t%s", m.getImdbUrl()));
+	    	    
 	}
 }

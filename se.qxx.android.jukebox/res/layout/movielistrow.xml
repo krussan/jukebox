@@ -9,29 +9,57 @@
         android:id="@+id/imageView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/icon" />    
-    <LinearLayout
-        android:id="@+id/linearLayout1"
+        android:src="@drawable/icon" 
+        android:contentDescription="@string/descPosterImage"
+        android:layout_margin="5dp"/>    
+    <RelativeLayout
+        android:id="@+id/relativeLayout1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical" 
-        android:paddingLeft="10dp">
+        >
 
         <TextView
             android:id="@+id/toptext"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TextView"
-            android:textAppearance="?android:attr/textAppearanceLarge" /> 
-            />
-        
+            android:text="@string/lblTitle"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+    
         <TextView
             android:id="@+id/bottomtext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TextView" />
-        
+            android:layout_below="@id/toptext"
+            android:text="@string/lblYear" 
+        />
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/txtRating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="@string/lblRating" 
+        />        
+
+        <ImageView
+            android:id="@+id/imgDownloading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/toptext"
+            android:layout_alignParentRight="true"
+            android:src="@android:drawable/stat_sys_download" 
+            android:contentDescription="@string/descDownloading"/>
+
+        <ImageView
+            android:id="@+id/imgWatched"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/txtRating"
+            android:layout_below="@id/toptext"
+            android:src="@android:drawable/ic_menu_view" />
+       
+    </RelativeLayout>
    
 </LinearLayout>

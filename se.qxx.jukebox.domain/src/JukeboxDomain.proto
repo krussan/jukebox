@@ -64,6 +64,7 @@ message Movie {
 	optional int32 identifierRating = 20;
 	optional int32 metaDuration = 21;
 	optional string metaFramerate = 22;
+	optional bool watched = 23;
 }
 
 message Subtitle {

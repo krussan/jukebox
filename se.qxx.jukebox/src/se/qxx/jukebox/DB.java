@@ -4,6 +4,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.protobuf.ByteString;
 
 import se.qxx.jukebox.Log.LogType;
@@ -15,6 +17,11 @@ import se.qxx.jukebox.subtitles.SubFile.Rating;
 
 public class DB {
     
+	private final static String[] COLUMNS = {"ID", "filename", "filepath", "title", "year",
+			"type", "format", "sound", "language", "groupName", "imdburl", "duration",
+			"rating", "director", "story", "identifier", "identifierRating", "metaDuration", 
+			"metaFramerate", "watched"};
+	
 	private DB() {
 		
 	}
@@ -25,16 +32,13 @@ public class DB {
 	
 	public synchronized static ArrayList<Movie> searchMovies(String searchString) {
 		Connection conn = null;
+		String statement = String.format("%s WHERE title LIKE ?", getSelectStatement());
+
 		try {
 			conn = DB.initialize();
 	
-			PreparedStatement prep = conn.prepareStatement(
-					" select ID, filename, filepath, title, year, type, format, sound, language, groupName, imdburl" +
-					"      , duration, rating, director, story, identifier, identifierRating, metaDuration, metaFramerate" +
-					" FROM movie" +
-					" WHERE title LIKE '%" + searchString + "%'"
-					);
-			//prep.setString(1, searchString);
+			PreparedStatement prep = conn.prepareStatement(statement);
+			prep.setString(1, "%" + searchString + "%");
 			
 			ResultSet rs = prep.executeQuery();
 			ArrayList<Movie> result = new ArrayList<Movie>();
@@ -46,7 +50,7 @@ public class DB {
 		}
 		catch (Exception e) {
 			Log.Error("Failed to retrieve movie listing from DB", Log.LogType.MAIN, e);
-			
+			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
 			return new ArrayList<Movie>();
 		}finally {
 			DB.disconnect(conn);
@@ -59,14 +63,12 @@ public class DB {
 	
 	public synchronized static Movie getMovieByFilename(String filename, String filepath) {
 		Connection conn = null;
+		String statement = String.format("%s WHERE filename = ? and filepath = ?", getSelectStatement());
+
 		try {
 			conn = DB.initialize();
 
-			PreparedStatement prep = conn.prepareStatement(
-			" select ID, filename, filepath, title, year, type, format, sound, language, groupName, imdburl" +
-			"      , duration, rating, director, story, identifier, identifierRating, metaDuration, metaFramerate" +
-			" from movie where filename = ? and filepath = ?");
-					
+			PreparedStatement prep = conn.prepareStatement(statement);
 			prep.setString(1, filename);
 			prep.setString(2, filepath);
 				
@@ -78,6 +80,7 @@ public class DB {
 
 		} catch (Exception e) {
 			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
+			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
 			
 			return null;
 		}finally {
@@ -87,14 +90,11 @@ public class DB {
 
 	public synchronized static Movie getMovieByStartOfFilename(String startOfFilename) {
 		Connection conn = null;
+		String statement = String.format("%s WHERE filename LIKE ?", getSelectStatement());
 		try {
 			conn = DB.initialize();
 
-			PreparedStatement prep = conn.prepareStatement(
-			" select ID, filename, filepath, title, year, type, format, sound, language, groupName, imdburl" +
-			"      , duration, rating, director, story, identifier, identifierRating, metaDuration, metaFramerate" +
-			" from movie where filename LIKE ? ");
-					
+			PreparedStatement prep = conn.prepareStatement(statement);
 			prep.setString(1, startOfFilename + "%");
 				
 			ResultSet rs = prep.executeQuery();
@@ -105,6 +105,7 @@ public class DB {
 
 		} catch (Exception e) {
 			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
+			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
 			
 			return null;
 		}finally {
@@ -114,13 +115,12 @@ public class DB {
 
 	public synchronized static Movie getMovie(int id) {
 		Connection conn = null;
+		String statement = String.format("%s WHERE ID = ?", getSelectStatement());
+
 		try {
 			conn = DB.initialize();
 
-			PreparedStatement prep = conn.prepareStatement(
-				" select ID, filename, filepath, title, year, type, format, sound, language, groupName, imdburl" +
-				"      , duration, rating, director, story, identifier, identifierRating, metaDuration, metaFramerate" +
-				" from movie where ID = ?");
+			PreparedStatement prep = conn.prepareStatement(statement);
 					
 			prep.setInt(1, id);
 				
@@ -132,6 +132,7 @@ public class DB {
 
 		} catch (Exception e) {
 			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
+			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
 			
 			return null;
 		}finally {
@@ -141,38 +142,21 @@ public class DB {
 	
 	public synchronized static void updateMovie(Movie m) {
 		Connection conn = null;
+		String statement = String.format("%s WHERE ID = ?", getUpdateStatement());
 		try {
 			conn = DB.initialize();
-			PreparedStatement prep = conn.prepareStatement(
-				"update movie" +
-				"  set filename = ?" +
-				"    , filepath = ?" + 
-				"    , title = ?" + 
-				"    , year = ?" +
-				"    , format = ?" +
-				"    , sound = ?" +
-				"    , language = ?" +
-				"    , groupName = ?" +
-				"    , imdburl = ?" +
-				"    , duration = ?" +
-				"    , rating = ?" +
-				"    , director = ?" +
-				"    , story = ?" +
-				"    , identifier = ?" +
-				"    , identifierRating = ?" +
-				"    , metaDuration = ?" +
-				"    , metaFramerate = ?" +
-				" WHERE ID = ?"
-			);
+			PreparedStatement prep = conn.prepareStatement(statement);
 
 			//TODO: Should we update image as well??
 			addArguments(prep, m);
-			prep.setInt(19, m.getID());
+			prep.setInt(COLUMNS.length, m.getID());
 			
 			prep.execute();
 		}
 		catch (Exception e) {
 			Log.Error("Failed to update movie in DB", Log.LogType.MAIN, e);
+			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
+	
 		}finally {
 			DB.disconnect(conn);
 		}
@@ -180,15 +164,13 @@ public class DB {
 
 	public synchronized static Movie addMovie(Movie m) {
 		Connection conn = null;
+		String statement = getInsertStatement();
+		
 		try {
 			conn = DB.initialize();
 			conn.setAutoCommit(false);
 			
-			PreparedStatement prep = conn.prepareStatement(
-					"insert into movie " +
-					"(filename, filepath, title, year, type, format, sound, language, groupName, imdburl, duration, rating, director, story, identifier, identifierRating, metaDuration, metaFramerate)" +
-					"values" +
-					"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			PreparedStatement prep = conn.prepareStatement(statement);
 			
 			addArguments(prep, m);
 			prep.execute();
@@ -200,8 +182,8 @@ public class DB {
 				if (genreID == -1)
 					genreID = addGenre(genre, conn);
 				
-				prep = conn.prepareStatement(
-						"INSERT INTO MovieGenre (_movie_ID, _genre_ID) VALUES (?, ?)");
+				statement = "INSERT INTO MovieGenre (_movie_ID, _genre_ID) VALUES (?, ?)"; 
+				prep = conn.prepareStatement(statement);
 				prep.setInt(1, i);
 				prep.setInt(2, genreID);
 				
@@ -218,6 +200,8 @@ public class DB {
 		}
 		catch (Exception e) {
 			Log.Error("Failed to store movie to DB", Log.LogType.MAIN, e);
+			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
+			
 			try {
 				conn.rollback();
 			} catch (SQLException sqlEx) {}
@@ -330,15 +314,17 @@ public class DB {
 	 */
 	public synchronized static boolean hasSubtitles(Movie m) {
 		Connection conn = null;
-		try {
-			conn = DB.initialize();
-			
-			PreparedStatement prep = conn.prepareStatement(
+		String statement =
 				" SELECT 1 FROM subtitles" +
 				" WHERE _movie_ID = ?" +
 				" UNION " +
 				" SELECT 1 FROM subtitleQueue " +
-				" WHERE _movie_ID = ?");
+				" WHERE _movie_ID = ?";
+		
+		try {
+			conn = DB.initialize();
+			
+			PreparedStatement prep = conn.prepareStatement(statement);
 			
 			prep.setInt(1, m.getID());
 			prep.setInt(2, m.getID());
@@ -349,6 +335,7 @@ public class DB {
 		}
 		catch (Exception e) {
 			Log.Error("Failed to check if subtitles exist", Log.LogType.MAIN, e);
+			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
 			
 		}finally {
 			DB.disconnect(conn);
@@ -359,15 +346,17 @@ public class DB {
 	}
 	public synchronized static void addSubtitle(Movie m, String filename, String description, Rating rating) {
 		Connection conn = null;
+		String statement = 
+				"insert into subtitles " +
+				"(_movie_ID, filename, description, rating)" +
+				"values" +
+				"(?, ?, ?, ?)";
+		
 		try {
 			conn = DB.initialize();
 			
 			if (!subFileExist(m, filename, conn)) {
-				PreparedStatement prep = conn.prepareStatement(
-						"insert into subtitles " +
-						"(_movie_ID, filename, description, rating)" +
-						"values" +
-						"(?, ?, ?, ?)");
+				PreparedStatement prep = conn.prepareStatement(statement);
 				
 				prep.setInt(1, m.getID());
 				prep.setString(2, filename);
@@ -379,6 +368,7 @@ public class DB {
 		}
 		catch (Exception e) {
 			Log.Error("Failed to add subtitles to DB", Log.LogType.MAIN, e);
+			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
 			
 		}finally {
 			DB.disconnect(conn);
@@ -400,13 +390,14 @@ public class DB {
 
 	public synchronized static void addMovieToSubtitleQueue(Movie m) {
 		Connection conn = null;
+		String statement = 
+				"insert into subtitleQueue " +
+				"(queuedAt, _movie_ID, result)" +
+				"values" +
+				"(datetime(), ?, 0)";				
 		try {
 			conn = DB.initialize();
-			PreparedStatement prep = conn.prepareStatement(
-					"insert into subtitleQueue " +
-					"(queuedAt, _movie_ID, result)" +
-					"values" +
-					"(datetime(), ?, 0)");
+			PreparedStatement prep = conn.prepareStatement(statement);
 			
 			prep.setInt(1, m.getID());
 			prep.execute();
@@ -415,6 +406,8 @@ public class DB {
 		}
 		catch (Exception e) {
 			Log.Error("Failed to store movie to DB", Log.LogType.MAIN, e);
+			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
+			
 		}finally {
 			DB.disconnect(conn);
 		}
@@ -422,22 +415,25 @@ public class DB {
 
 	public synchronized static void setSubtitleDownloaded(Movie m, int result) {
 		Connection conn = null;
+		String statement = StringUtils.EMPTY;
+		
 		try {
 			conn = DB.initialize();
 			PreparedStatement prep;
 			if (result >= 0) {
-				prep = conn.prepareStatement(
+				statement = 
 					"update subtitleQueue " +
 					" set retreivedAt = datetime() " +
 					"  , result = ?" +
-					"where _movie_ID = ?");
-			} else
-			{
-				prep = conn.prepareStatement(
+					"where _movie_ID = ?";
+			} 
+			else {
+				statement = 
 					"update subtitleQueue " +
 					" set result = ?" +
-					"where _movie_ID = ?");
+					"where _movie_ID = ?";
 			}
+			prep = conn.prepareStatement(statement);
 			prep.setInt(1, result);
 			prep.setInt(2, m.getID());
 			prep.execute();
@@ -445,6 +441,8 @@ public class DB {
 		}
 		catch (Exception e) {
 			Log.Error("Failed to store movie to DB", Log.LogType.MAIN, e);
+			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
+			
 		}finally {
 			DB.disconnect(conn);
 		}
@@ -453,17 +451,17 @@ public class DB {
 	
 	public synchronized static ArrayList<Movie> getSubtitleQueue() {
 		Connection conn = null;
+		String statement = 
+				String.format("SELECT %s %s %s %s",
+						getColumnList("M", true, ","),
+						"FROM movie AS M",
+						"INNER JOIN subtitleQueue SQ ON SQ._movie_ID = M.ID",
+						"WHERE retreivedAt IS NULL AND result = 0");
+				
 		try {
 			conn = DB.initialize();
 	
-			PreparedStatement prep = conn.prepareStatement(
-					" SELECT M.ID, M.filename, M.filepath, M.title, M.year, M.type, M.format, M.sound, M.language, M.groupName, M.imdburl " +
-					"      , M.duration, M.rating, M.director, M.story, M.identifier, M.identifierRating, M.metaDuration, M.metaFramerate" +
-					" FROM movie AS M" +
-					" INNER JOIN subtitleQueue SQ ON SQ._movie_ID = M.ID" +
-					" WHERE retreivedAt IS NULL AND result = 0"
-					);
-			//prep.setString(1, searchString);
+			PreparedStatement prep = conn.prepareStatement(statement);
 			
 			ResultSet rs = prep.executeQuery();
 			ArrayList<Movie> result = new ArrayList<Movie>();
@@ -475,6 +473,7 @@ public class DB {
 		}
 		catch (Exception e) {
 			Log.Error("Failed to retrieve movie listing from DB", Log.LogType.MAIN, e);
+			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
 			
 			return new ArrayList<Movie>();
 		}finally {
@@ -484,14 +483,15 @@ public class DB {
 	
 	public synchronized static ArrayList<Subtitle> getSubtitles(int movieid) {
 		Connection conn = null;
+		String statement =
+				" SELECT _movie_ID, filename, description, rating " +
+				" FROM subtitles" +
+				" WHERE _movie_ID = ?";
+		
 		try {
 			conn = DB.initialize();
 	
-			PreparedStatement prep = conn.prepareStatement(
-				" SELECT _movie_ID, filename, description, rating " +
-				" FROM subtitles" +
-				" WHERE _movie_ID = ?");
-			
+			PreparedStatement prep = conn.prepareStatement(statement);
 			prep.setInt(1, movieid);
 						
 			ResultSet rs = prep.executeQuery();
@@ -504,6 +504,7 @@ public class DB {
 		}
 		catch (Exception e) {
 			Log.Error("Failed to retrieve movie subtitles from DB", Log.LogType.MAIN, e);
+			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
 			
 			return new ArrayList<Subtitle>();
 		}finally {
@@ -513,14 +514,15 @@ public class DB {
 	
 	public static boolean subFileExistsInDB(String filename) {
 		Connection conn = null;
+		String statement =
+				" SELECT 1 " +
+				" FROM subtitles" +
+				" WHERE filename = ?";
+		
 		try {
 			conn = DB.initialize();
 	
-			PreparedStatement prep = conn.prepareStatement(
-				" SELECT 1 " +
-				" FROM subtitles" +
-				" WHERE filename = ?");
-			
+			PreparedStatement prep = conn.prepareStatement(statement);
 			prep.setString(1, filename);
 						
 			ResultSet rs = prep.executeQuery();
@@ -529,6 +531,8 @@ public class DB {
 		}
 		catch (Exception e) {
 			Log.Error("Failed to retrieve movie subtitles from DB", Log.LogType.MAIN, e);
+			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
+	
 			return false;
 		}finally {
 			DB.disconnect(conn);
@@ -610,8 +614,8 @@ public class DB {
 				.setIdentifierRating(rs.getInt("identifierRating"))
 				.addAllGenre(genres)
 				.setMetaDuration(rs.getInt("metaDuration"))
-				.setMetaFramerate(rs.getString("metaFramerate"));
-		
+				.setMetaFramerate(rs.getString("metaFramerate"))
+				.setWatched(rs.getBoolean("watched"));
 		
 		if (imageData != null)
 			builder = builder.setImage(ByteString.copyFrom(imageData));
@@ -681,6 +685,7 @@ public class DB {
 		prep.setInt(16, m.getIdentifierRating());
 		prep.setInt(17, m.getMetaDuration());
 		prep.setString(18, m.getMetaFramerate());
+		prep.setBoolean(19, m.getWatched());
 	}
 	
 	private static int getIdentity(Connection conn) throws SQLException {
@@ -691,6 +696,39 @@ public class DB {
 			return rs.getInt(1);
 		else
 			return -1;
+	}
+	
+	private static String getSelectStatement() {
+		return String.format("SELECT %s FROM Movie", getColumnList("", true, ","));
+	}
+	
+	private static String getColumnList(String alias, boolean includeIdColumn, String separator) {
+		String prefix = StringUtils.EMPTY;
+		if (!StringUtils.isEmpty(alias))
+			prefix = alias + ".";
+
+		if (!includeIdColumn) {
+			List<String> updateColumns = new ArrayList<String>();
+			
+			for (String column : COLUMNS)
+				if (!StringUtils.equalsIgnoreCase("ID", column))
+					updateColumns.add(column);
+			
+			return prefix + StringUtils.join(updateColumns, separator + prefix) ;			
+		}
+		else {
+			return prefix + StringUtils.join(COLUMNS, separator + prefix);			
+		} 
+	}
+
+	private static String getUpdateStatement() {
+		return String.format("UPDATE Movie SET %s = ?", getColumnList("", false, " = ?,"));
+	}	
+		
+	private static String getInsertStatement() {
+		return String.format("INSERT INTO Movie (%s) VALUES (%s)",
+				getColumnList("", false, ","),
+				StringUtils.repeat("?", ",", COLUMNS.length - 1));
 	}
 	
 	//---------------------------------------------------------------------------------------

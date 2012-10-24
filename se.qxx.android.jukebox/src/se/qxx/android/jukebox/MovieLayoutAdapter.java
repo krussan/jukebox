@@ -36,6 +36,9 @@ public class MovieLayoutAdapter extends ModelMovieAdapter {
 	        if (m != null) {
 	        	GUITools.setTextOnTextview(R.id.toptext, m.getTitle(), v);
 	        	GUITools.setTextOnTextview(R.id.bottomtext, Integer.toString(m.getYear()), v);
+	        	GUITools.setTextOnTextview(R.id.txtRating, m.getRating(), v);
+	        	if (m.getMetaDuration() >= 0)
+	        		GUITools.hideView(R.id.imgDownloading, v);
 	
 	    	    if (!m.getImage().isEmpty()) {
 	    	    	Bitmap image = GUITools.getBitmapFromByteArray(m.getImage().toByteArray());

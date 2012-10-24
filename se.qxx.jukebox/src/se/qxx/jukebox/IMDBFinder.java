@@ -1,6 +1,7 @@
 package se.qxx.jukebox;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -28,7 +29,19 @@ import se.qxx.jukebox.settings.imdb.SearchPatternComparer;
 public class IMDBFinder {
 	private static long nextSearch = 0;
 	
-	public synchronized static Movie Search(Movie m) throws IOException {
+	public synchronized static Movie Get(Movie m) throws IOException {
+		String imdbUrl = m.getImdbUrl();
+		if (StringUtils.isEmpty(imdbUrl))
+		{
+			return Search(m);
+		}
+		else {
+			IMDBRecord rec = IMDBRecord.get(imdbUrl);
+			return extractMovieInfo(m, rec);
+		}
+	}
+	
+	private synchronized static Movie Search(Movie m) throws IOException {
         //http://www.imdb.com/find?s=all&q=the+decent
         // search for :
         // Titles (Exact Matches)
@@ -45,11 +58,7 @@ public class IMDBFinder {
 			if (currentTimeStamp < nextSearch)
 				Thread.sleep(nextSearch - currentTimeStamp);
 			
-			String urlParameters = java.net.URLEncoder.encode(m.getTitle(), "ISO-8859-1");
-			String urlString = Settings.imdb().getSearchUrl().replace("%%TITLE%%", urlParameters);
-			//String urlString = "http://www.imdb.com/find?s=tt&q=" + urlParameters;
-
-			WebResult webResult = WebRetriever.getWebResult(urlString);
+			WebResult webResult = getSearchResult(m);
 			
 			// Accomodate for that sometimes IMDB redirects you
 			// directly to the correct movie. (i.e. "Cleanskin")
@@ -64,42 +73,60 @@ public class IMDBFinder {
 				rec = findMovieInSearchResults(m, webResult.getResult());			
 			}
 
-			// sleep randomly to avoid detection
-			Random r = new Random();
-			int minSeconds = Settings.imdb().getSettings().getSleepSecondsMin() * 1000;
-			int maxSeconds = Settings.imdb().getSettings().getSleepSecondsMax() * 1000;
-			int n = r.nextInt(minSeconds) + maxSeconds - minSeconds;
+			setNextSearchTimer();
 			
-			nextSearch = Util.getCurrentTimestamp() + n;
-			
-			if (rec != null) {
-				// get releaseInfo to get the correct international title
-				String preferredTitle = getPreferredTitle(rec);
-				
-				Builder b = Movie.newBuilder().mergeFrom(m)
-						.setImdbUrl(rec.getUrl())
-						.setDirector(rec.getDirector())
-						.setDuration(rec.getDurationMinutes())
-						.setStory(rec.getStory())
-						.setRating(rec.getRating())
-						.addAllGenre(rec.getAllGenres());
-				
-				if (!StringUtils.isEmpty(preferredTitle)) 
-					b.setTitle(preferredTitle);
-				
-				if (rec.getImage() != null)
-					b.setImage(ByteString.copyFrom(rec.getImage()));
-				
-				if (m.getYear() == 0)
-					b.setYear(rec.getYear());
-				
-				return b.build();
-			}
-			else
-				return m;
+			return extractMovieInfo(m, rec);
 		} catch (InterruptedException e) {
 			return m;
 		}
+	}
+
+	protected static WebResult getSearchResult(Movie m)
+			throws UnsupportedEncodingException, IOException {
+		String urlParameters = java.net.URLEncoder.encode(m.getTitle(), "ISO-8859-1");
+		String urlString = Settings.imdb().getSearchUrl().replace("%%TITLE%%", urlParameters);
+		//String urlString = "http://www.imdb.com/find?s=tt&q=" + urlParameters;
+
+		WebResult webResult = WebRetriever.getWebResult(urlString);
+		return webResult;
+	}
+
+	private static void setNextSearchTimer() {
+		// sleep randomly to avoid detection
+		Random r = new Random();
+		int minSeconds = Settings.imdb().getSettings().getSleepSecondsMin() * 1000;
+		int maxSeconds = Settings.imdb().getSettings().getSleepSecondsMax() * 1000;
+		int n = r.nextInt(minSeconds) + maxSeconds - minSeconds;
+		
+		nextSearch = Util.getCurrentTimestamp() + n;
+	}
+
+	private static Movie extractMovieInfo(Movie m, IMDBRecord rec) {
+		if (rec != null) {
+			// get releaseInfo to get the correct international title
+			String preferredTitle = getPreferredTitle(rec);
+			
+			Builder b = Movie.newBuilder(m)
+					.setImdbUrl(rec.getUrl())
+					.setDirector(rec.getDirector())
+					.setDuration(rec.getDurationMinutes())
+					.setStory(rec.getStory())
+					.setRating(rec.getRating())
+					.addAllGenre(rec.getAllGenres());
+			
+			if (!StringUtils.isEmpty(preferredTitle)) 
+				b.setTitle(preferredTitle);
+			
+			if (rec.getImage() != null)
+				b.setImage(ByteString.copyFrom(rec.getImage()));
+			
+			if (m.getYear() == 0)
+				b.setYear(rec.getYear());
+			
+			return b.build();
+		}
+		else
+			return m;
 	}
 		
 	private static boolean usePreferredCountryDefault() {
