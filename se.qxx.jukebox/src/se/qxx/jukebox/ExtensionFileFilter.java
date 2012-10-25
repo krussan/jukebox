@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class ExtensionFileFilter  implements java.io.FileFilter {
 
 	private ArrayList<String> exts = new ArrayList<String>(); 
@@ -23,7 +25,7 @@ public class ExtensionFileFilter  implements java.io.FileFilter {
 	    } else if (f.isFile()) {
 	      Iterator<String> it = exts.iterator();
 	      while (it.hasNext()) {
-	        if (f.getName().endsWith(it.next()))
+	        if (StringUtils.endsWithIgnoreCase(f.getName(), it.next()))
 	          return true;
 	      }
 	    }

@@ -1,7 +1,10 @@
 package se.qxx.jukebox.tests;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
+
+import javax.xml.bind.JAXBException;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -10,9 +13,14 @@ import se.qxx.jukebox.builders.NFOScanner;
 import se.qxx.jukebox.builders.NfoBuilder;
 import se.qxx.jukebox.domain.JukeboxDomain.Identifier;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.settings.Settings;
+import se.qxx.jukebox.settings.imdb.ImdbSettings;
 
 public class TestNfoScanner {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException, JAXBException {
+		Settings.readSettings();
+		ImdbSettings.readSettings();		
+		
 	    String FileName = "example.nfo";
 	    System.out.println(String.format("Nr of args\t\t::%s", args.length));
 	    if (args.length > 0)
@@ -29,7 +37,7 @@ public class TestNfoScanner {
 	    System.out.println("--------------------------------------------------------------");
 	    System.out.println("--------------------------------------------------------------");
 
-		String filePath = FilenameUtils.getPath(FileName);
+		String filePath = FilenameUtils.getFullPath(FileName);
 		String singleFile = FilenameUtils.getName(FileName);
  
 		NfoBuilder builder = new NfoBuilder();

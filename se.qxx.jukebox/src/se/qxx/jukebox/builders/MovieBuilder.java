@@ -3,6 +3,8 @@ package se.qxx.jukebox.builders;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import org.apache.commons.lang3.StringUtils;
+
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Util;
 import se.qxx.jukebox.Log.LogType;
@@ -37,6 +39,7 @@ public abstract class MovieBuilder {
 	 */
 	public static Movie identifyMovie(String filepath, String filename) {
 		ArrayList<Movie> proposals = new ArrayList<Movie>();
+		String imdbUrl = StringUtils.EMPTY;
 		
 		// Execute all enabled builders, perform rating and return the one with the best match.
 		for (Builder b : Settings.get().getBuilders().getBuilder()) {
@@ -55,6 +58,11 @@ public abstract class MovieBuilder {
 									.setIdentifierRating(proposal.getIdentifierRating() * weight)
 									.build();
 							
+							if (!StringUtils.isEmpty(proposal.getImdbUrl()) && StringUtils.isEmpty(imdbUrl)) {
+								imdbUrl = proposal.getImdbUrl();
+								Log.Debug(String.format("MovieBuilder :: ImdbUrl found :: %s", imdbUrl), LogType.FIND);								
+							}
+							
 							proposals.add(proposal);
 						}
 					}
@@ -72,10 +80,17 @@ public abstract class MovieBuilder {
 			
 			if (m != null)  {
 				Log.Debug(String.format("MovieBuilder :: Selected proposal has rating of %s", m.getIdentifierRating()), LogType.FIND);
-				m = Movie.newBuilder(m)
+				se.qxx.jukebox.domain.JukeboxDomain.Movie.Builder builder = Movie.newBuilder(m)
 						.setFilename(filename)
-						.setFilepath(filepath)
-						.build();
+						.setFilepath(filepath);
+
+				// If a Imdb Link has been found in one of the builders
+				// then merge it into this one
+				if (!StringUtils.isEmpty(imdbUrl))
+					builder.setImdbUrl(imdbUrl);
+				
+				m = builder.build();
+				
 			}
 		}
 		else {

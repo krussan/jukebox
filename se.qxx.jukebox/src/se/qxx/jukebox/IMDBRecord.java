@@ -157,14 +157,18 @@ public class IMDBRecord {
 	}
 	
 	public static IMDBRecord get(String url) throws MalformedURLException {
-		if (!url.startsWith("http://www.imdb.com") && url.startsWith("/")) {
-			url = "http://www.imdb.com" + url;
-		}
-		else {
-			throw new MalformedURLException("A IMDB url must start with http://www.imdb.com");
-		}
+		String internalUrl = StringUtils.trim(url);
 		
-		IMDBRecord rec = new IMDBRecord(url);
+		if (StringUtils.startsWithIgnoreCase(internalUrl, "www.imdb.com"))
+			internalUrl = "http://" + internalUrl;
+		
+		if (StringUtils.startsWithIgnoreCase(internalUrl, "/"))
+			internalUrl = "http://www.imdb.com" + internalUrl;
+
+		if (!StringUtils.startsWithIgnoreCase(internalUrl, "http://www.imdb.com"))
+			throw new MalformedURLException(String.format("A IMDB url must start with http://www.imdb.com. Url was :: %s", internalUrl));
+				
+		IMDBRecord rec = new IMDBRecord(internalUrl);
 	
 		return rec;
 	}

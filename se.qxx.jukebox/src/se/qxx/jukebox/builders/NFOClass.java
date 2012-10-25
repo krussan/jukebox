@@ -14,5 +14,6 @@ public enum NFOClass {
 	Format,
 	FrameRate,
 	Ignore,
-	IMDBLink
+	IMDBLink,
+	Presents
 }
