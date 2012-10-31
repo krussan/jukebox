@@ -1,13 +1,17 @@
 package se.qxx.jukebox;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -227,6 +231,11 @@ public class SubtitleDownloader implements Runnable {
 	
 	private void writeSubsXmlFile() {
 		try {
+			
+			//TODO: <HIGH> This needs to actually MERGE the information in xml file
+			// and that in the database. Otherwise we will start deleting entries old entries that don't
+			// yet have a movie reference
+						
 			DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = dbfac.newDocumentBuilder();
 			Document doc = docBuilder.newDocument();
@@ -255,8 +264,22 @@ public class SubtitleDownloader implements Runnable {
 					subs.appendChild(movie);
 			}
 			
-			doc.appendChild(subs);
 			
+			Subs subsFile = getSubsFile();
+			for (se.qxx.jukebox.subtitles.Subs.Movie subsMovie : subsFile.getMovie()) {
+				Movie movie = DB.getMovieByStartOfFilename(subsMovie.getFilename());
+				if (movie == null) {
+					Log.Debug(String.format("SUBS :: Adding subs to xml file even if movie does not exist yet :: %s", subsMovie.getFilename()), LogType.SUBS);
+
+					JAXBContext c = JAXBContext.newInstance(se.qxx.jukebox.subtitles.Subs.Movie.class);
+					Marshaller m = c.createMarshaller();
+				
+					m.marshal(subsMovie, subs);
+				}
+			}
+
+			doc.appendChild(subs);
+
 			Log.Debug(String.format("SUBS :: Writing xml file :: %s", subsXmlFilename), LogType.SUBS);
 			writeXmlDocument(doc, subsXmlFilename);
 		} catch (Exception e) {
@@ -324,7 +347,6 @@ public class SubtitleDownloader implements Runnable {
 			// Extract files from rar/zip
 			extractSubs(m, files);
 		}
-
 	}
 	
 	private List<SubFile> checkSubsDirForSubs(Movie m) {
