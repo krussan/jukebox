@@ -35,7 +35,15 @@
 	        <arg value="se.qxx.jukebox.settings.imdb"/>
 	        <arg value="${main.dir}/imdb.xsd"/>
 	    </exec>
-	    	    		
+
+	    <exec executable="${jukebox.jdk.dir}/bin/xjc.exe">
+	        <arg value="-d"/>
+	        <arg value="${main.src.dir}"/>
+	        <arg value="-p"/>
+	        <arg value="se.qxx.jukebox.subtitles"/>
+	        <arg value="${main.dir}/subs.xsd"/>
+	    </exec>
+	    	    	    		
 	</target> 
 	
 	<target name="protoc">

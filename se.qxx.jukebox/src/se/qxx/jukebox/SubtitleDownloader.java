@@ -3,29 +3,40 @@ package se.qxx.jukebox;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings;
 import se.qxx.jukebox.settings.Settings;
-import se.qxx.jukebox.settings.JukeboxListenerSettings.Logs;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder;
 import se.qxx.jukebox.subtitles.SubFile;
 import se.qxx.jukebox.subtitles.SubFile.Rating;
 import se.qxx.jukebox.subtitles.SubFinderBase;
+import se.qxx.jukebox.subtitles.Subs;
 
 public class SubtitleDownloader implements Runnable {
 
@@ -34,6 +45,8 @@ public class SubtitleDownloader implements Runnable {
 	// has been downloaded
 
 
+	private String subsPath = StringUtils.EMPTY;
+	private String subsXmlFilename = StringUtils.EMPTY;
 	private static SubtitleDownloader _instance;
 	private boolean _isRunning;
 
@@ -64,6 +77,9 @@ public class SubtitleDownloader implements Runnable {
 			}
 		}
 		
+		subsPath = Settings.get().getSubFinders().getSubsPath();
+		subsXmlFilename = String.format("%s/%s", FilenameUtils.normalize(subsPath), "subs.xml");
+		
 		initializeSubsDatabase();
 		
 		while (this._isRunning = true) {
@@ -73,6 +89,7 @@ public class SubtitleDownloader implements Runnable {
 					try {
 						if (m != null) {
 							getSubtitles(m);
+							writeSubsXmlFile();
 							result = 1;
 						}
 					} catch (Exception e) {
@@ -87,7 +104,6 @@ public class SubtitleDownloader implements Runnable {
 						DB.setSubtitleDownloaded(m, result);
 					}
 				}
-
 				
 				// wait for trigger
 				synchronized (_instance) {
@@ -96,8 +112,7 @@ public class SubtitleDownloader implements Runnable {
 				}
 				
 			} catch (InterruptedException e) {
-				
-				e.printStackTrace();
+				Log.Error("SUBS :: SubtitleDownloader is going down ...", LogType.SUBS, e);
 			}			
 		}
 		// this.wait();
@@ -105,16 +120,91 @@ public class SubtitleDownloader implements Runnable {
 
 	private void initializeSubsDatabase() {
 		//TODO: Initialize subtitles by scanning subs directory. 
+		// If subs.xml exist then use the xml file for identifying subs. Otherwise scan directory. 
 		// If an unclean purge has been performed then there could be subs in the directory
 		// but not in the database		
+		if (!initSubsDatabaseFromXmlFile())
+			initSubsDatabaseFromDisk();
+	}
+	
+	private boolean initSubsDatabaseFromXmlFile() {
+		try {				
+			Subs subs = getSubsFile();
+			if (subs != null) {
+				if (saveXmlFileToSubsDatabase(subs));
+					return true;
+			}
+		}
+		catch (Exception e) {
+			Log.Error("Error occured when parsing subs Xml file", LogType.SUBS, e);
+		}
 		
-		String path = Settings.get().getSubFinders().getSubsPath();
+		return false;		
+	}
+	
+	private boolean saveXmlFileToSubsDatabase(Subs subs) {
+		Log.Debug("INITSUBS_XML :: Saving subs xml file to database", LogType.SUBS);
+		
+		try {
+			for (se.qxx.jukebox.subtitles.Subs.Movie movie : subs.getMovie()) {
+				String movieFilename = movie.getFilename();
+				for (se.qxx.jukebox.subtitles.Subs.Movie.Sub sub : movie.getSub()) {
+					Movie m = DB.getMovieByStartOfFilename(movieFilename);
+					if (m != null) {
+						String subsFilename = String.format("%s/%s/%s", subsPath, movieFilename, sub.getFilename());
+
+						if (!DB.subFileExistsInDB(subsFilename)) {
+							Rating r = Rating.valueOf(sub.getRating());
+							Log.Debug(String.format("INITSUBS_XML :: Adding to subs database :: %s", sub.getFilename()), LogType.SUBS);
+							DB.addSubtitle(m, subsFilename, sub.getDescription(), r);
+						}
+						else {
+							Log.Debug(String.format("INITSUBS_XML :: Sub exists in DB :: %s", sub.getFilename()), LogType.SUBS);							
+						}
+					}
+				}
+			}
+		}
+		catch (Exception e) {
+			Log.Error("Error occured when parsing subs Xml file", LogType.SUBS, e);			
+		}
+		
+		return false;
+	}
+
+	private Subs getSubsFile() {
+		try {
+			Log.Debug(String.format("INITSUBS :: Looking for subs xml file :: %s", subsXmlFilename), LogType.SUBS);
+			File subsFile = new File(subsXmlFilename);
+			
+			if (subsFile.exists()) {
+				JAXBContext c = JAXBContext.newInstance(Subs.class);
+				Unmarshaller u = c.createUnmarshaller();
+				
+				JAXBElement<Subs> root = u.unmarshal(new StreamSource(subsFile), Subs.class);
+				Subs subs = root.getValue();		
+				
+				return subs;				
+			}
+			
+
+		} catch (JAXBException e) {
+			Log.Error("Error occured when parsing subs Xml file", LogType.SUBS, e);
+		}
+		
+		Log.Debug("INITSUBS :: Subs xml file not found or error occured", LogType.SUBS);
+		
+		return null;
+	}
+	
+	
+	private void initSubsDatabaseFromDisk() {
 		ExtensionFileFilter filter = new ExtensionFileFilter();
 		filter.addExtension("srt");
 		filter.addExtension("sub");
 		filter.addExtension("idx");
 		
-		List<File> list =  Util.getFileListing(new File(path), filter);
+		List<File> list =  Util.getFileListing(new File(subsPath), filter);
 		
 		for (File subFile : list) {
 			String subFilename = subFile.getAbsolutePath();
@@ -131,14 +221,73 @@ public class SubtitleDownloader implements Runnable {
 				}
 			}
 		}
+		
+		writeSubsXmlFile();
+	}
+	
+	private void writeSubsXmlFile() {
+		try {
+			DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = dbfac.newDocumentBuilder();
+			Document doc = docBuilder.newDocument();
+
+			Element subs = doc.createElement("subs");
+			
+			List<Movie> movies = DB.searchMovies(StringUtils.EMPTY);
+			for (Movie m : movies) {
+				Element movie = doc.createElement("movie");
+				movie.getAttributes().setNamedItem(getAttribute(doc, "filename", FilenameUtils.getBaseName(m.getFilename())));
+				
+				
+				List<Subtitle> subtitles = DB.getSubtitles(m.getID());
+				for (Subtitle s : subtitles) {
+					String subsFilename = FilenameUtils.getName(s.getFilename());
+					Element sub = doc.createElement("sub");
+					NamedNodeMap attrs = sub.getAttributes();
+					attrs.setNamedItem(getAttribute(doc, "filename", subsFilename));
+					attrs.setNamedItem(getAttribute(doc, "description", s.getDescription()));
+					attrs.setNamedItem(getAttribute(doc, "rating", s.getRating()));
+					
+					movie.appendChild(sub);
+				}
+				
+				if (subtitles.size() > 0)
+					subs.appendChild(movie);
+			}
+			
+			doc.appendChild(subs);
+			
+			Log.Debug(String.format("SUBS :: Writing xml file :: %s", subsXmlFilename), LogType.SUBS);
+			writeXmlDocument(doc, subsXmlFilename);
+		} catch (Exception e) {
+			Log.Error("Error when writing xml to file", LogType.SUBS, e);
+		}
+	}
+	
+	private void writeXmlDocument(Document doc, String filename) {
+		try {
+			Transformer transformer = TransformerFactory.newInstance().newTransformer();
+			Result output = new StreamResult(new File(filename));
+			Source input = new DOMSource(doc);
+
+			transformer.transform(input, output);
+		} catch (Exception e) {
+			Log.Error("Error when writing xml to file", LogType.SUBS, e);
+		}		
+	}
+	
+	private Attr getAttribute(Document doc, String name, String value) {
+		Attr a = doc.createAttribute(name);
+		a.setValue(value);
+		return a;
 	}
 
 	private void cleanupTempDirectory() {
-		String path = FilenameUtils.normalize(String.format("%s/temp", Settings.get().getSubFinders().getSubsPath()));
-		Log.Info(String.format("Removing temporary directory :: %s", path), LogType.SUBS);
-		File tempDir = new File(path);
+		Log.Info(String.format("Removing temporary directory :: %s", subsPath), LogType.SUBS);
+		File tempDir = new File(subsPath);
 		try {
-			FileUtils.deleteDirectory(tempDir);
+			if (tempDir.exists()) 
+				FileUtils.deleteDirectory(tempDir);
 		} catch (IOException e) {
 			Log.Error("Error when deleting temp directory", LogType.SUBS, e);
 		}
@@ -182,8 +331,6 @@ public class SubtitleDownloader implements Runnable {
 		List<SubFile> list = new ArrayList<SubFile>();
 
 		String movieFilenameWithoutExt = FilenameUtils.getBaseName(m.getFilename());
-		
-		String subsPath =  Settings.get().getSubFinders().getSubsPath();
 		File subsPathDir = new File(FilenameUtils.normalize(String.format("%s/%s", subsPath, movieFilenameWithoutExt)));
 		
 		list.addAll(checkDirForSubs(movieFilenameWithoutExt,subsPathDir));
@@ -318,7 +465,7 @@ public class SubtitleDownloader implements Runnable {
 		// rename file to filename_of_movie.iterator.srt/sub		
 		String movieFilename = FilenameUtils.getBaseName(m.getFilename());		
 		String subExtension = FilenameUtils.getExtension(subFile.getName());
-		String movieSubsPath = String.format("%s/%s", Settings.get().getSubFinders().getSubsPath(), movieFilename);
+		String movieSubsPath = String.format("%s/%s", subsPath, movieFilename);
 		
 		String finalSubfileName = FilenameUtils.normalize(String.format("%s/%s.%s.%s", movieSubsPath, movieFilename, c, subExtension));
 		

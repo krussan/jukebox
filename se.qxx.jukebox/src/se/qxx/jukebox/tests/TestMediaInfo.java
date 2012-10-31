@@ -76,7 +76,11 @@ public class TestMediaInfo {
 	    
 	    System.out.print("Duration\t\t:: ");
 	    System.out.println(MI.Get(MediaInfo.StreamKind.General, 0, "Duration/String2"));
+	    System.out.print("FrameRate\t\t:: ");
 	    System.out.println(MI.Get(MediaInfo.StreamKind.Video, 0, "FrameRate"));
+	    System.out.print("MovieName\t\t:: ");
+	    System.out.println(MI.Get(MediaInfo.StreamKind.General, 0, "Movie name"));
+	    
 	    
 	    System.out.println("--------------------------------------------------------------------");
 	    System.out.println("--------------------------------------------------------------------");
