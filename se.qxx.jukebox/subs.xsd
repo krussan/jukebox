@@ -18,7 +18,7 @@
     									type="xs:string" use="required">
     								</xs:attribute>
     								<xs:attribute name="rating"
-    									type="xs:string" use="required">
+    									type="xs:string" use="required"	>
     								</xs:attribute>
     							</xs:complexType>
     						</xs:element>

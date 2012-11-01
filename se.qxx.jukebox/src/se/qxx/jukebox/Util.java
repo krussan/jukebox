@@ -200,5 +200,15 @@ public class Util {
 		else
 			return StringUtils.EMPTY;
 	}
+
+	public static void waitForSettings() {
+		while (Settings.get() == null) {
+			Log.Info("Settings has not been initialized. Sleeping for 10 seconds", Log.LogType.MAIN);
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+			}
+		}		
+	}
 	
 }

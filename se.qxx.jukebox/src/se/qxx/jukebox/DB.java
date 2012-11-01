@@ -10,17 +10,18 @@ import com.google.protobuf.ByteString;
 
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Identifier;
+import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie.Builder;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.subtitles.SubFile.Rating;
+import se.qxx.jukebox.upgrade.UpgradeFailedException;
 
 public class DB {
     
-	private final static String[] COLUMNS = {"ID", "filename", "filepath", "title", "year",
+	private final static String[] COLUMNS = {"ID", "title", "year",
 			"type", "format", "sound", "language", "groupName", "imdburl", "duration",
-			"rating", "director", "story", "identifier", "identifierRating", "metaDuration", 
-			"metaFramerate", "watched"};
+			"rating", "director", "story", "identifier", "identifierRating", "watched"};
 	
 	private DB() {
 		
@@ -140,27 +141,27 @@ public class DB {
 		}
 	}
 	
-	public synchronized static void updateMovie(Movie m) {
-		Connection conn = null;
-		String statement = String.format("%s WHERE ID = ?", getUpdateStatement());
-		try {
-			conn = DB.initialize();
-			PreparedStatement prep = conn.prepareStatement(statement);
-
-			//TODO: Should we update image as well??
-			addArguments(prep, m);
-			prep.setInt(COLUMNS.length, m.getID());
-			
-			prep.execute();
-		}
-		catch (Exception e) {
-			Log.Error("Failed to update movie in DB", Log.LogType.MAIN, e);
-			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
-	
-		}finally {
-			DB.disconnect(conn);
-		}
-	}
+//	public synchronized static void updateMovie(Movie m) {
+//		Connection conn = null;
+//		String statement = String.format("%s WHERE ID = ?", getUpdateStatement());
+//		try {
+//			conn = DB.initialize();
+//			PreparedStatement prep = conn.prepareStatement(statement);
+//
+//			//TODO: Should we update image as well??
+//			addArguments(prep, m);
+//			prep.setInt(COLUMNS.length, m.getID());
+//			
+//			prep.execute();
+//		}
+//		catch (Exception e) {
+//			Log.Error("Failed to update movie in DB", Log.LogType.MAIN, e);
+//			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
+//	
+//		}finally {
+//			DB.disconnect(conn);
+//		}
+//	}
 
 	public synchronized static Movie addMovie(Movie m) {
 		Connection conn = null;
@@ -177,22 +178,11 @@ public class DB {
 			
 			int i = getIdentity(conn);
 	
-			for(String genre : m.getGenreList()) {
-				int genreID = getGenreID(genre, conn);
-				if (genreID == -1)
-					genreID = addGenre(genre, conn);
-				
-				statement = "INSERT INTO MovieGenre (_movie_ID, _genre_ID) VALUES (?, ?)"; 
-				prep = conn.prepareStatement(statement);
-				prep.setInt(1, i);
-				prep.setInt(2, genreID);
-				
-				prep.execute();
-			}
-			
+			addMovieGenres(m.getGenreList(), i, conn);
+			addMovieMedia(m.getMediaList(), i, conn);
 			addImage(i, ImageType.Poster, m.getImage().toByteArray(), conn);
 			
-			Movie mm = Movie.newBuilder().mergeFrom(m).setID(i).build();
+			Movie mm = Movie.newBuilder(m).setID(i).build();
 			
 			conn.commit();
 			
@@ -208,6 +198,38 @@ public class DB {
 			return null;
 		}finally {
 			DB.disconnect(conn);
+		}
+	}
+
+	protected static void addMovieGenres(List<String> genres, int movieID, Connection conn) throws SQLException {
+		PreparedStatement prep;
+		for(String genre : genres) {
+			int genreID = getGenreID(genre, conn);
+			if (genreID == -1)
+				genreID = addGenre(genre, conn);
+			
+			String statement = "INSERT INTO MovieGenre (_movie_ID, _genre_ID) VALUES (?, ?)"; 
+			prep = conn.prepareStatement(statement);
+			prep.setInt(1, movieID);
+			prep.setInt(2, genreID);
+			
+			prep.execute();
+		}
+	}
+	
+	protected static void addMovieMedia(List<Media> medias, int movieID, Connection conn) throws SQLException {
+		PreparedStatement prep;
+		for(Media media : medias) {			
+			String statement = "INSERT INTO Media (_movie_ID, idx, filepath, filename, metaDuration, metaFramerate) VALUES (?, ?, ?, ?, ?, ?)"; 
+			prep = conn.prepareStatement(statement);
+			prep.setInt(1, movieID);
+			prep.setInt(2, media.getIndex());
+			prep.setString(3, media.getFilepath());
+			prep.setString(4, media.getFilename());
+			prep.setInt(5, media.getMetaDuration());
+			prep.setString(6, media.getMetaFramerate());
+			
+			prep.execute();
 		}
 	}
 	
@@ -303,6 +325,36 @@ public class DB {
 		
 		return list;
 	}
+
+	//---------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------ Media
+	//---------------------------------------------------------------------------------------
+	private static List<Media> getMedia(int movieID, Connection conn) throws SQLException {
+		List<Media> list = new ArrayList<Media>();
+		
+		PreparedStatement prep = conn.prepareStatement(
+			" SELECT MD._movie_ID, MD.filename, MD.filepath, MD.idx, MD.metaDuration, MD.metaFramerate " +
+			" FROM Media MD" +
+			" WHERE MD._movie_ID = ?");
+		
+		prep.setInt(1, movieID);
+		ResultSet rs = prep.executeQuery();
+				
+		while (rs.next()) {
+			Media md = se.qxx.jukebox.domain.JukeboxDomain.Media.newBuilder()
+					.setIndex(rs.getInt("idx"))
+					.setFilename(rs.getString("filename"))
+					.setFilepath(rs.getString("filepath"))
+					.setMetaDuration(rs.getInt("metaDuration"))
+					.setMetaFramerate(rs.getString("metaFramerate"))
+					.build();
+			
+			list.add(md);
+		}
+		
+		return list;
+	}
+	
 
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Subtitles
@@ -593,11 +645,11 @@ public class DB {
 		byte[] imageData = getImageData(id, ImageType.Poster, conn);
 				
 		List<String> genres = getGenres(id, conn);
+		List<Media> media = getMedia(id, conn);
 		
 		Builder builder = Movie.newBuilder()
 				.setID(id)
-				.setFilename(rs.getString("filename"))
-				.setFilepath(rs.getString("filepath"))
+				.addAllMedia(media)
 				.setTitle(rs.getString("title"))
 				.setYear(rs.getInt("year"))
 				.setType(rs.getString("type"))
@@ -613,8 +665,6 @@ public class DB {
 				.setIdentifier(Identifier.valueOf(rs.getString("identifier")))
 				.setIdentifierRating(rs.getInt("identifierRating"))
 				.addAllGenre(genres)
-				.setMetaDuration(rs.getInt("metaDuration"))
-				.setMetaFramerate(rs.getString("metaFramerate"))
 				.setWatched(rs.getBoolean("watched"));
 		
 		if (imageData != null)
@@ -632,21 +682,36 @@ public class DB {
 				.build();				
 	}
 
-	public static boolean executeUpgradeStatement(String sql) {
+	public static boolean executeUpgradeStatements(String[] statements) {
 		Connection conn = null;
+		String sql = StringUtils.EMPTY;
 		try {
 			conn = DB.initialize();
-		
-			PreparedStatement prep = conn.prepareStatement(sql);
-			
-			prep.execute();
+			conn.setAutoCommit(false);
+
+			int nrOfScripts = statements.length;
+			for (int i=0; i<statements.length;i++) {
+				sql = statements[i];
+				System.out.println(String.format("Running script\t\t[%s/%s]", i + 1, nrOfScripts));
+
+				PreparedStatement prep = conn.prepareStatement(sql);			
+				prep.execute();
+			}
+
+			conn.commit();
 			
 			return true;
 		}
+				
 		catch (Exception e) {
 			Log.Error("Upgrade failed", LogType.UPGRADE, e);
 			Log.Debug("Failing query was::", LogType.UPGRADE);
 			Log.Debug(sql, LogType.UPGRADE);
+			
+			try {
+				conn.rollback();
+			} catch (SQLException sqlEx) {}
+			
 			return false;
 		}
 		finally {
@@ -667,25 +732,21 @@ public class DB {
 	}
 
 	private static void addArguments(PreparedStatement prep, Movie m) throws SQLException {
-		prep.setString(1, m.getFilename());
-		prep.setString(2, m.getFilepath());
-		prep.setString(3, m.getTitle());
-		prep.setInt(4, m.getYear());
-		prep.setString(5, m.getType());
-		prep.setString(6, m.getFormat());
-		prep.setString(7, m.getSound());
-		prep.setString(8, m.getLanguage());
-		prep.setString(9, m.getGroup());
-		prep.setString(10, m.getImdbUrl());
-		prep.setInt(11, m.getDuration());
-		prep.setString(12, m.getRating());
-		prep.setString(13, m.getDirector());
-		prep.setString(14, m.getStory());
-		prep.setString(15, m.getIdentifier().toString());
-		prep.setInt(16, m.getIdentifierRating());
-		prep.setInt(17, m.getMetaDuration());
-		prep.setString(18, m.getMetaFramerate());
-		prep.setBoolean(19, m.getWatched());
+		prep.setString(1, m.getTitle());
+		prep.setInt(2, m.getYear());
+		prep.setString(3, m.getType());
+		prep.setString(4, m.getFormat());
+		prep.setString(5, m.getSound());
+		prep.setString(6, m.getLanguage());
+		prep.setString(7, m.getGroup());
+		prep.setString(8, m.getImdbUrl());
+		prep.setInt(9, m.getDuration());
+		prep.setString(10, m.getRating());
+		prep.setString(11, m.getDirector());
+		prep.setString(12, m.getStory());
+		prep.setString(13, m.getIdentifier().toString());
+		prep.setInt(14, m.getIdentifierRating());
+		prep.setBoolean(15, m.getWatched());
 	}
 	
 	private static int getIdentity(Connection conn) throws SQLException {

@@ -17,10 +17,7 @@ public class TcpListener implements Runnable {
 		
 		try {
 
-			while (Settings.get() == null) {
-				Log.Info("Settings has not been initialized. Sleeping for 10 seconds", Log.LogType.MAIN);
-				Thread.sleep(500);
-			}
+			Util.waitForSettings();
 			
 			int port = Settings.get().getTcpListener().getPort().getValue();
 			ServerSocket socket;
@@ -44,9 +41,6 @@ public class TcpListener implements Runnable {
 			Log.Error("Error while establishing client socket", Log.LogType.COMM, e);
 			isRunning = false;
 		}
-		catch (InterruptedException e) {
-			Log.Error("Settings has not been initialized", Log.LogType.COMM, e);
-		}		
 	}
 	
 	public void stopListening() {

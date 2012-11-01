@@ -83,11 +83,8 @@ public class Upgrader {
 	
 	public static void runDatabasescripts(String[] dbScripts) throws UpgradeFailedException {
 		System.out.println("Upgrading database...");
-		int nrOfScripts = dbScripts.length;
-		for (int i=0; i<dbScripts.length;i++) {
-			System.out.println(String.format("Running script\t\t[%s/%s]", i + 1, nrOfScripts));
-			if (!DB.executeUpgradeStatement(dbScripts[i]))
-				throw new UpgradeFailedException();
-		}
+
+		if (!DB.executeUpgradeStatements(dbScripts))
+			throw new UpgradeFailedException();
 	}
 }

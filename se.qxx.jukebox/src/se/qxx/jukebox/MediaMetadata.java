@@ -1,12 +1,15 @@
 package se.qxx.jukebox;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
 import net.sourceforge.filebot.mediainfo.MediaInfo;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.builders.MovieBuilder;
+import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 
 public class MediaMetadata {
@@ -62,23 +65,31 @@ public class MediaMetadata {
 	
 	
 	public static Movie addMediaMetadata(Movie m) {
-		String fullFilePath = String.format("%s/%s", m.getFilepath(), m.getFilename());
-		Movie newMovie = m;
-
-		Log.Debug(String.format("Finding media meta data for file %s", m.getFilename()), LogType.FIND);
-		try {
-			MediaMetadata mm = MediaMetadata.getMediaMetadata(fullFilePath);
-			newMovie = Movie.newBuilder(m)
-					.setMetaDuration(mm.getDurationSeconds())
-					.setMetaFramerate(mm.getFramerate())
-					.build();
-			
-			
-		} catch (Exception e) {
-    		Log.Error(String.format("Error when retreiving media info from file %s", fullFilePath), LogType.FIND, e);
-		}
+		List<Media> mediaList = new ArrayList<Media>();
 		
-		return newMovie;
+		for (Media md : m.getMediaList()) {
+			String fullFilePath = String.format("%s/%s", md.getFilepath(), md.getFilename());
+			Log.Debug(String.format("Finding media meta data for file %s", md.getFilename()), LogType.FIND);
+
+			try {
+				MediaMetadata mm = MediaMetadata.getMediaMetadata(fullFilePath);
+				Media newMedia = Media.newBuilder(md)
+						.setMetaDuration(mm.getDurationSeconds())
+						.setMetaFramerate(mm.getFramerate())
+						.build();
+				
+				mediaList.add(newMedia);
+				
+			} catch (Exception e) {
+	    		Log.Error(String.format("Error when retreiving media info from file %s", fullFilePath), LogType.FIND, e);
+			}
+
+		}
+
+		return Movie.newBuilder(m)
+				.clearMedia()
+				.addAllMedia(mediaList)
+				.build();
 	}
 	
 }

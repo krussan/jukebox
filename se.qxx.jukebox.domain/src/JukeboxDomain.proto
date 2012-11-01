@@ -43,7 +43,7 @@ enum Identifier {
 
 message Movie {
 	required int32 ID = 1;
-	required string filename = 2;
+	repeated Media media = 2;	
 	optional string title = 3;
 	optional int32 year = 4;
 	optional string type = 5;
@@ -52,19 +52,16 @@ message Movie {
 	optional string language = 8;
 	optional string group = 9;
 	optional string imdb_url = 10;
-	optional string imdb_id = 11;
-	optional string filepath = 12;	
-	optional int32 duration = 13;
-	optional string rating = 14;
-	optional string director = 15;
-	optional string story = 16;
-	optional bytes image = 17;
-	repeated string genre = 18;
-	optional Identifier identifier = 19;
-	optional int32 identifierRating = 20;
-	optional int32 metaDuration = 21;
-	optional string metaFramerate = 22;
-	optional bool watched = 23;
+	optional string imdb_id = 11;	
+	optional int32 duration = 12;
+	optional string rating = 13;
+	optional string director = 14;
+	optional string story = 15;
+	optional bytes image = 16;
+	repeated string genre = 17;
+	optional Identifier identifier = 18;
+	optional int32 identifierRating = 19;
+	optional bool watched = 20;
 }
 
 message Subtitle {
@@ -72,6 +69,15 @@ message Subtitle {
 	required string filename = 2;
 	required string description = 3;
 	required string rating = 4;
+	required int32 mediaIndex = 5;
+}
+
+message Media {
+	required int32 index = 1;
+	required string filename = 2;
+	required string filepath = 3;
+	optional int32 metaDuration = 4;
+	optional string metaFramerate = 5;	
 }
 
 //---------------------------------------------------------------------------------------
