@@ -135,8 +135,21 @@
 
             			<xs:sequence>
 
-                            <xs:element name="exclude" type="excludeType">
+            				<xs:element name="exclude"
+            					type="excludeType">
             				</xs:element>
+                            <xs:element name="parts">
+                                <xs:complexType>
+                                	<xs:sequence>
+                                		<xs:element name="regex"
+                                			type="xs:string">
+                                		</xs:element>
+                                	</xs:sequence>
+                                	<xs:attribute name="groupPart"
+                                		type="xs:int">
+                                	</xs:attribute>
+                                </xs:complexType>
+                            </xs:element>
                             <xs:element name="splitter"
             					maxOccurs="unbounded">
 

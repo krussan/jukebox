@@ -65,19 +65,20 @@ message Movie {
 }
 
 message Subtitle {
-	required int32 movieid = 1;
-	required string filename = 2;
-	required string description = 3;
-	required string rating = 4;
-	required int32 mediaIndex = 5;
+	required string filename = 1;
+	required string description = 2;
+	required string rating = 3;
+	required int32 mediaIndex = 4;
 }
 
 message Media {
-	required int32 index = 1;
-	required string filename = 2;
-	required string filepath = 3;
-	optional int32 metaDuration = 4;
-	optional string metaFramerate = 5;	
+	required int32 ID = 1;
+	required int32 index = 2;
+	required string filename = 3;
+	required string filepath = 4;
+	optional int32 metaDuration = 5;
+	optional string metaFramerate = 6;
+	repeated Subtitle subs = 7;		
 }
 
 //---------------------------------------------------------------------------------------

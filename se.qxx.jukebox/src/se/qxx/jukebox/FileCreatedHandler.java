@@ -1,6 +1,7 @@
 package se.qxx.jukebox;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -8,6 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.builders.MovieBuilder;
+import se.qxx.jukebox.builders.PartPattern;
+import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 
 public class FileCreatedHandler implements INotifyClient {
@@ -36,28 +39,7 @@ public class FileCreatedHandler implements INotifyClient {
 				Movie m = MovieBuilder.identifyMovie(path, filename);
 						
 				if (m != null) {
-					Log.Info(String.format("Movie identified by %s as :: %s", m.getIdentifier().toString(), m.getTitle()), Log.LogType.FIND);
-
-					// Check if movie exists in db
-					Movie dbMovie = DB.getMovieByFilename(filename, path);
-					if (dbMovie == null) {
-						// If not get information and subtitles
-						// If title is the same as the filename (except ignore pattern) then don't identify on IMDB.
-						if (Arguments.get().isImdbIdentifierEnabled()) 
-							m = getImdbInformation(m);
-			
-						// Get media information from MediaInfo library
-						m = MediaMetadata.addMediaMetadata(m);
-						m = DB.addMovie(m);
-						
-						SubtitleDownloader.get().addMovie(m);			
-					} 
-					else {
-						// Check if movie has subs. If not then add it to the subtitle queue.
-						if (!DB.hasSubtitles(dbMovie)) {
-							SubtitleDownloader.get().addMovie(dbMovie);
-						}
-					}
+					matchMovieWithDatabase(m, filename, path);
 				}
 				else {
 					Log.Info(String.format("Failed to identity movie with filename :: %s", f.getName()), Log.LogType.FIND);
@@ -65,7 +47,65 @@ public class FileCreatedHandler implements INotifyClient {
 			}
 		}
 	}
+
+	protected void matchMovieWithDatabase(Movie m, String filename, String path) {
+		Log.Info(String.format("Movie identified by %s as :: %s", m.getIdentifier().toString(), m.getTitle()), Log.LogType.FIND);
+		
+		// Check if movie exists in db
+		PartPattern pp = new PartPattern(filename);
+		Movie dbMovie = DB.getMovieByStartOfFilename(pp.getPrefixFilename());
+		Media newMedia = m.getMedia(0);
+
+		if (dbMovie == null)
+			getInfoAndSaveMovie(m, newMedia);			
+		else 
+			checkExistingMedia(dbMovie, newMedia);
+	}
+
+	protected void getInfoAndSaveMovie(Movie m, Media newMedia) {
+		// If not get information and subtitles
+		// If title is the same as the filename (except ignore pattern) then don't identify on IMDB.
+		if (Arguments.get().isImdbIdentifierEnabled()) 
+			m = getImdbInformation(m);
+
+		// Get media information from MediaInfo library
+		Media md = MediaMetadata.addMediaMetadata(newMedia);
+		m = Movie.newBuilder(m)
+				.clearMedia()
+				.addMedia(md)
+				.build();
+		
+		m = DB.addMovie(m);
+		
+		SubtitleDownloader.get().addMovie(m);
+	}
+
+	protected void checkExistingMedia(Movie dbMovie, Media newMedia) {
+		// Check if media exists
+		if (mediaExists(dbMovie, newMedia)) {
+			// Check if movie has subs. If not then add it to the subtitle queue.
+			if (!DB.hasSubtitles(dbMovie)) {
+				SubtitleDownloader.get().addMovie(dbMovie);
+			}							
+		}
+		else {
+			// Add media metadata
+			Media md = MediaMetadata.addMediaMetadata(newMedia);
+
+			// If movie exist but not the media then add the media
+			DB.addMedia(dbMovie.getID(), md);
+		}
+	}
 	
+	private boolean mediaExists(Movie m, Media mediaToFind) {
+		for (Media md : m.getMediaList()) {
+			if (StringUtils.equalsIgnoreCase(md.getFilename(), mediaToFind.getFilename()) && StringUtils.equalsIgnoreCase(md.getFilepath(), mediaToFind.getFilepath()))
+				return false;
+		}
+		
+		return true;
+	}
+
 	private Movie getImdbInformation(Movie m) {
 		//find imdb link
 		try {

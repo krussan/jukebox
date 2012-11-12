@@ -32,6 +32,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 
 import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.builders.PartPattern;
+import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings;
@@ -268,25 +270,27 @@ public class SubtitleDownloader implements Runnable {
 
 			Element subs = doc.createElement("subs");
 			
-			List<Movie> movies = DB.searchMovies(StringUtils.EMPTY);
+			List<Movie> movies = DB.searchMoviesByTitle(StringUtils.EMPTY);
 			for (Movie m : movies) {
-				Element movie = doc.createElement("movie");
-				movie.getAttributes().setNamedItem(getAttribute(doc, "filename", FilenameUtils.getBaseName(m.getFilename())));
-				
-				List<Subtitle> subtitles = DB.getSubtitles(m.getID());
-				for (Subtitle s : subtitles) {
-					String subsFilename = FilenameUtils.getName(s.getFilename());
-					Element sub = doc.createElement("sub");
-					NamedNodeMap attrs = sub.getAttributes();
-					attrs.setNamedItem(getAttribute(doc, "filename", subsFilename));
-					attrs.setNamedItem(getAttribute(doc, "description", s.getDescription()));
-					attrs.setNamedItem(getAttribute(doc, "rating", s.getRating()));
+				for (Media md : m.getMediaList()) {
+					Element movie = doc.createElement("movie");
+					movie.getAttributes().setNamedItem(getAttribute(doc, "filename", FilenameUtils.getBaseName(md.getFilename())));
 					
-					movie.appendChild(sub);
+					List<Subtitle> subtitles = DB.getSubtitles(md.getID());
+					for (Subtitle s : subtitles) {
+						String subsFilename = FilenameUtils.getName(s.getFilename());
+						Element sub = doc.createElement("sub");
+						NamedNodeMap attrs = sub.getAttributes();
+						attrs.setNamedItem(getAttribute(doc, "filename", subsFilename));
+						attrs.setNamedItem(getAttribute(doc, "description", s.getDescription()));
+						attrs.setNamedItem(getAttribute(doc, "rating", s.getRating()));
+						
+						movie.appendChild(sub);
+					}
+					
+					if (subtitles.size() > 0)
+						subs.appendChild(movie);
 				}
-				
-				if (subtitles.size() > 0)
-					subs.appendChild(movie);
 			}
 			
 			
@@ -559,11 +563,9 @@ public class SubtitleDownloader implements Runnable {
 			Movie m, 
 			int c, 
 			File subFile) {
-		
+	
+		String subExtension = FilenameUtils.getExtension(subFile.getName());		
 		// rename file to filename_of_movie.iterator.srt/sub		
-		String movieFilename = FilenameUtils.getBaseName(m.getFilename());		
-		String subExtension = FilenameUtils.getExtension(subFile.getName());
-		String movieSubsPath = String.format("%s/%s", subsPath, movieFilename);
 		
 		String finalSubfileName = FilenameUtils.normalize(String.format("%s/%s.%s.%s", movieSubsPath, movieFilename, c, subExtension));
 		
@@ -575,6 +577,13 @@ public class SubtitleDownloader implements Runnable {
 		}
 		
 		return finalSubfileName;
+	}
+	
+	private String getSubsPath(Movie m) {
+		String movieFilename = FilenameUtils.getBaseName(m.getFilename());	
+		PartPattern pp = new PartPattern(movieFilename);
+		String movieSubsPath = String.format("%s/%s", subsPath, pp.getResultingFilename());
+		
 	}
 	
 

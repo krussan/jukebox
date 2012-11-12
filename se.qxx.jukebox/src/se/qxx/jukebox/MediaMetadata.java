@@ -64,32 +64,21 @@ public class MediaMetadata {
 	}
 	
 	
-	public static Movie addMediaMetadata(Movie m) {
-		List<Media> mediaList = new ArrayList<Media>();
-		
-		for (Media md : m.getMediaList()) {
-			String fullFilePath = String.format("%s/%s", md.getFilepath(), md.getFilename());
-			Log.Debug(String.format("Finding media meta data for file %s", md.getFilename()), LogType.FIND);
+	public static Media addMediaMetadata(Media md) {
+		String fullFilePath = String.format("%s/%s", md.getFilepath(), md.getFilename());
+		Log.Debug(String.format("Finding media meta data for file %s", md.getFilename()), LogType.FIND);
 
-			try {
-				MediaMetadata mm = MediaMetadata.getMediaMetadata(fullFilePath);
-				Media newMedia = Media.newBuilder(md)
-						.setMetaDuration(mm.getDurationSeconds())
-						.setMetaFramerate(mm.getFramerate())
-						.build();
-				
-				mediaList.add(newMedia);
-				
-			} catch (Exception e) {
-	    		Log.Error(String.format("Error when retreiving media info from file %s", fullFilePath), LogType.FIND, e);
-			}
-
+		try {
+			MediaMetadata mm = MediaMetadata.getMediaMetadata(fullFilePath);
+			return Media.newBuilder(md)
+					.setMetaDuration(mm.getDurationSeconds())
+					.setMetaFramerate(mm.getFramerate())
+					.build();
+							
+		} catch (Exception e) {
+    		Log.Error(String.format("Error when retreiving media info from file %s", fullFilePath), LogType.FIND, e);
 		}
 
-		return Movie.newBuilder(m)
-				.clearMedia()
-				.addAllMedia(mediaList)
-				.build();
+		return md;
 	}
-	
 }

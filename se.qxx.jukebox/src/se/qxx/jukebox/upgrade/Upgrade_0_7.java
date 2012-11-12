@@ -12,7 +12,8 @@ public class Upgrade_0_7 implements IIncrimentalUpgrade {
 
 	static final String[] DbScripts = {
 		"CREATE TABLE Media (" +
-		"   _movie_id int NOT NULL" +
+		"   ID integer PRIMARY KEY NOT NULL" +
+		" , _movie_id int NOT NULL" +
 		" , idx int NOT NULL" +
 		" , filepath varchar(500)" +
 		" , filename varchar(500)" +
@@ -50,7 +51,23 @@ public class Upgrade_0_7 implements IIncrimentalUpgrade {
 		
 		"DROP TABLE Movie",
 		
-		"ALTER TABLE xxMovie RENAME TO Movie"
+		"ALTER TABLE xxMovie RENAME TO Movie",
+		
+		"CREATE TABLE [xxSubtitles] (" +
+		"   _media_ID int NOT NULL REFERENCES Media(ID)" +
+		" , filename varchar(255)" +
+		" , description varchar(255)" +
+		" , rating varchar(30))",
+		
+		"INSERT INTO xxSubtitles (_media_ID, filename, description, rating)" +
+		" SELECT MD.ID, S.filename, S.description, S.rating" +
+		" FROM Movie M" +
+		" INNER JOIN subtitles S ON S._movie_ID = M.ID" +
+		" INNER JOIN Media MD ON MD._movie_ID = M.ID",
+		
+		"DROP TABLE subtitles",
+		
+		"ALTER TABLE xxSubtitles RENAME TO subtitles"
 		
 	};
 	
