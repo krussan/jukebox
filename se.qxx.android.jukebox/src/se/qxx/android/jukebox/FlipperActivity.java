@@ -107,7 +107,7 @@ public class FlipperActivity extends JukeboxActivityBase implements SimpleGestur
 	    GUITools.setTextOnTextview(R.id.textViewDirector, String.format("Director :: %s", m.getDirector()), v);
 	    GUITools.setTextOnTextview(R.id.textViewDuration, String.format("Duration :: %s h %s m", hours, minutes) , v);
 	    GUITools.setTextOnTextview(R.id.textViewRating, String.format("Rating :: %s / 10", m.getRating()), v);
-	    GUITools.setTextOnTextview(R.id.textViewFilename, String.format("Filename :: %s", m.getFilename()), v);
+	    //GUITools.setTextOnTextview(R.id.textViewFilename, String.format("Filename :: %s", m.getFilename()), v);
 
 	    //detector = new SimpleGestureFilter(this, this);
 	}    
@@ -183,15 +183,15 @@ public class FlipperActivity extends JukeboxActivityBase implements SimpleGestur
 				Intent iPlay = new Intent(this, NowPlayingActivity.class);
 				startActivity(iPlay);
 				break;	
-			case R.id.btnFullscreen:
-				sendCommand("Toggling fullscreen...", JukeboxRequestType.ToggleFullscreen);
-				break;
-			case R.id.btnPause:
-				sendCommand("Pausing...", JukeboxRequestType.PauseMovie);
-				break;
-			case R.id.btnStop:
-				sendCommand("Stopping...", JukeboxRequestType.StopMovie);
-				break;
+//			case R.id.btnFullscreen:
+//				sendCommand("Toggling fullscreen...", JukeboxRequestType.ToggleFullscreen);
+//				break;
+//			case R.id.btnPause:
+//				sendCommand("Pausing...", JukeboxRequestType.PauseMovie);
+//				break;
+//			case R.id.btnStop:
+//				sendCommand("Stopping...", JukeboxRequestType.StopMovie);
+//				break;
 			case R.id.btnViewInfo:
 				String url = Model.get().getCurrentMovie().getImdbUrl();
 				if (url != null && url.length() > 0) {
@@ -202,10 +202,10 @@ public class FlipperActivity extends JukeboxActivityBase implements SimpleGestur
 					Toast.makeText(this, "No IMDB link available", Toast.LENGTH_SHORT).show();
 				}
 				break;
-			case R.id.btnSubSelection:
-				Intent i = new Intent(this, SubSelectActivity.class);
-				startActivity(i);
-				break;
+//			case R.id.btnSubSelection:
+//				Intent i = new Intent(this, SubSelectActivity.class);
+//				startActivity(i);
+//				break;
 			default:
 				break;
 		}

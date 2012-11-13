@@ -15,6 +15,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponse;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseGetTitle;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseIsPlaying;
+import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -67,13 +68,14 @@ public class NowPlayingActivity extends JukeboxActivityBase
 	    
 	    GUITools.setTextOnTextview(R.id.textViewTitle, m.getTitle(), rootView);
 	    GUITools.setTextOnTextview(R.id.textViewYear, Integer.toString(m.getYear()), rootView);
-	    GUITools.setTextOnTextview(R.id.textViewFilename, String.format("Filename :: %s", m.getFilename()) , rootView);
+//	    GUITools.setTextOnTextview(R.id.textViewFilename, String.format("Filename :: %s", m.getFilename()) , rootView);
 	    
-	    SeekBar sb = (SeekBar)findViewById(R.id.seekBarDuration);
-	    if (sb != null) {
-	    	sb.setMax(m.getMetaDuration());
-	    	sb.setOnSeekBarChangeListener(this);
-	    }
+	    //TODO: MEDIA -- Fix this
+//	    SeekBar sb = (SeekBar)findViewById(R.id.seekBarDuration);
+//	    if (sb != null) {
+//	    	sb.setMax(m.getMetaDuration());
+//	    	sb.setOnSeekBarChangeListener(this);
+//	    }
 	    
 	    sendCommand(this, "Checking status", JukeboxRequestType.IsPlaying);
 	    
@@ -184,9 +186,7 @@ public class NowPlayingActivity extends JukeboxActivityBase
 		if (resp.getType() == JukeboxRequestType.GetTitle) {
 			try {
 				String playerFilename = JukeboxResponseGetTitle.parseFrom(resp.getArguments()).getTitle();
-				String currentFilename = Model.get().getCurrentMovie().getFilename();
-				
-				if (StringUtils.equalsIgnoreCase(playerFilename, currentFilename)) {
+				if (matchCurrentFilenameAgainstMedia(playerFilename)) {
 					//initialize seeker and get subtitles if app has been reinitialized
 					sendCommand(this, "Getting subtitles", JukeboxRequestType.ListSubtitles);			
 					seeker.start();
@@ -195,6 +195,8 @@ public class NowPlayingActivity extends JukeboxActivityBase
 					// stop movie and start new
 					sendCommand(this, "Stopping movie", JukeboxRequestType.StopMovie);
 				}
+				
+				
 			} catch (InvalidProtocolBufferException e) {
 				// TODO Auto-generated catch block
 				Log.e(getLocalClassName(), "Error while parsing response from GetTitle", e);
@@ -209,6 +211,16 @@ public class NowPlayingActivity extends JukeboxActivityBase
 		if (resp.getType() == JukeboxRequestType.StopMovie) {
 			sendCommand(this, "Starting movie", JukeboxRequestType.StartMovie);
 		}
+	}
+
+	protected boolean matchCurrentFilenameAgainstMedia(String playerFilename) {
+		for (Media md : Model.get().getCurrentMovie().getMediaList()) {
+			if (StringUtils.equalsIgnoreCase(playerFilename, md.getFilename())) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 	private void pickSubtitle() {
