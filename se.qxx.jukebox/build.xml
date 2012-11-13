@@ -3,9 +3,9 @@
     <!--  MAIN JUKEBOX BUILD FILE -->
     
 	<buildnumber file="build.num" />
-	
+	 
 	<include file="../global_properties.xml" />
-	<property name="version.num" value="0.0.${build.number}" />
+	<property name="version.num" value="0.7.${build.number}" />
 				
 	<property name="main.dir" value="${jukebox.solution.dir}/se.qxx.jukebox" />
 	<property name="main.src.dir" value="${main.dir}/src" />
