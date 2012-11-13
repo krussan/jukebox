@@ -22,7 +22,7 @@ public class Upgrade_0_7 implements IIncrimentalUpgrade {
 		")",
 		
 		"INSERT INTO Media (_movie_id, idx, filename, filepath, metaDuration, metaFramerate) " +
-		" SELECT _movie_id, 1, filename, filepath, metaDuration, metaFramerate " +
+		" SELECT ID, 1, filename, filepath, metaDuration, metaFramerate " +
 		"FROM Movie",
 		
 		"CREATE TABLE [xxMovie] (" +

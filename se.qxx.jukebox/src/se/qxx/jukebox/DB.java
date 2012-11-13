@@ -99,9 +99,43 @@ public class DB {
 //		}
 //	}
 
-	public synchronized static Movie getMovieByStartOfFilename(String startOfFilename) {
+	public synchronized static Movie getMovieByStartOfMediaFilename(String startOfMediaFilename) {
 		Connection conn = null;
-		String statement = String.format("%s WHERE filename LIKE ?", getSelectStatement());
+		String statement = String.format(
+				" SELECT %s " +
+				" FROM Media MD" +
+				" INNER JOIN Movie M ON MD._movie_ID = M.ID" +
+				" WHERE MD.filename LIKE ?"
+				, getColumnList("M", true, ","));
+		
+		try {
+			conn = DB.initialize();
+
+			PreparedStatement prep = conn.prepareStatement(statement);
+			prep.setString(1, startOfMediaFilename + "%");
+				
+			ResultSet rs = prep.executeQuery();
+			if (rs.next())
+				return extractMovie(rs, conn);
+			else
+				return null;
+
+		} catch (Exception e) {
+			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
+			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
+			
+			return null;
+		}finally {
+			DB.disconnect(conn);
+		}
+	}
+
+	public synchronized static Media getMediaByStartOfFilename(String startOfFilename) {
+		Connection conn = null;
+		String statement = 
+				" SELECT ID, _movie_id, idx, filename, filepath, metaDuration, metaFramerate" +
+				" FROM Media" +
+				" WHERE filename LIKE ?";
 		try {
 			conn = DB.initialize();
 
@@ -110,7 +144,7 @@ public class DB {
 				
 			ResultSet rs = prep.executeQuery();
 			if (rs.next())
-				return extractMovie(rs, conn);
+				return extractMedia(rs, conn);
 			else
 				return null;
 
@@ -341,18 +375,7 @@ public class DB {
 		ResultSet rs = prep.executeQuery();
 				
 		while (rs.next()) {
-			int mediaid = rs.getInt("ID");
-			List<Subtitle> subs = getSubtitles(mediaid, conn);
-						
-			Media md = se.qxx.jukebox.domain.JukeboxDomain.Media.newBuilder()
-					.setID(mediaid)
-					.setIndex(rs.getInt("idx"))
-					.setFilename(rs.getString("filename"))
-					.setFilepath(rs.getString("filepath"))
-					.setMetaDuration(rs.getInt("metaDuration"))
-					.setMetaFramerate(rs.getString("metaFramerate"))
-					.addAllSubs(subs)
-					.build();
+			Media md = extractMedia(rs, conn);
 
 			list.add(md);
 		}
@@ -395,7 +418,25 @@ public class DB {
 		
 		return i;
 	}
-	
+
+	protected synchronized static Media extractMedia(ResultSet rs, Connection conn)
+			throws SQLException {
+		int mediaid = rs.getInt("ID");
+		
+		List<Subtitle> subs = getSubtitles(mediaid, conn);
+					
+		Media md = se.qxx.jukebox.domain.JukeboxDomain.Media.newBuilder()
+				.setID(mediaid)
+				.setIndex(rs.getInt("idx"))
+				.setFilename(rs.getString("filename"))
+				.setFilepath(rs.getString("filepath"))
+				.setMetaDuration(rs.getInt("metaDuration"))
+				.setMetaFramerate(rs.getString("metaFramerate"))
+				.addAllSubs(subs)
+				.build();
+		return md;
+	}
+
 
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Subtitles
@@ -438,21 +479,21 @@ public class DB {
 		// if error occured then set to true to avoid downloading subtitles
 		return true;
 	}
-	public synchronized static void addSubtitle(Movie m, String filename, String description, Rating rating) {
+	public synchronized static void addSubtitle(Media md, String filename, String description, Rating rating) {
 		Connection conn = null;
 		String statement = 
 				"insert into subtitles " +
-				"(_movie_ID, filename, description, rating)" +
+				"(_media_ID, filename, description, rating)" +
 				"values" +
 				"(?, ?, ?, ?)";
 		
 		try {
 			conn = DB.initialize();
 			
-			if (!subFileExist(m, filename, conn)) {
+			if (!subFileExist(md, filename, conn)) {
 				PreparedStatement prep = conn.prepareStatement(statement);
 				
-				prep.setInt(1, m.getID());
+				prep.setInt(1, md.getID());
 				prep.setString(2, filename);
 				prep.setString(3, description);
 				prep.setString(4, rating.toString());
@@ -469,10 +510,10 @@ public class DB {
 		}
 	}
 	
-	private synchronized static boolean subFileExist(Movie m, String filename, Connection conn) throws SQLException {
+	private synchronized static boolean subFileExist(Media md, String filename, Connection conn) throws SQLException {
 		PreparedStatement prep = conn.prepareStatement(
-				"SELECT _movie_ID, filename, description, rating FROM subtitles WHERE _movie_ID = ? AND filename = ?");
-		prep.setInt(1, m.getID());
+				"SELECT 1 FROM subtitles WHERE _media_ID = ? AND filename = ?");
+		prep.setInt(1, md.getID());
 		prep.setString(2, filename);
 
 		ResultSet rs = prep.executeQuery();
@@ -575,13 +616,13 @@ public class DB {
 		}
 	}
 	
-	public synchronized static ArrayList<Subtitle> getSubtitles(boolean checkthis, int mediaid) {
+	public synchronized static ArrayList<Subtitle> getSubtitles(Media media) {
 		Connection conn = null;
 		
 		try {
 			conn = DB.initialize();
 
-			return getSubtitles(mediaid, conn);
+			return getSubtitles(media.getID(), conn);
 		}
 		catch (Exception e) {
 			Log.Error("Failed to retrieve movie subtitles from DB", Log.LogType.MAIN, e);
@@ -592,7 +633,7 @@ public class DB {
 		}
 	}
 
-	protected synchronized static ArrayList<Subtitle> getSubtitles(boolean checkthis, int mediaid, Connection conn) throws SQLException {
+	private synchronized static ArrayList<Subtitle> getSubtitles(int mediaid, Connection conn) throws SQLException {
 
 		String statement =
 				" SELECT _media_ID, filename, description, rating " +
@@ -712,7 +753,6 @@ public class DB {
 				.setIdentifier(Identifier.valueOf(rs.getString("identifier")))
 				.setIdentifierRating(rs.getInt("identifierRating"))
 				.addAllGenre(genres)
-				.addAllSubs(subs)
 				.setWatched(rs.getBoolean("watched"));
 		
 		if (imageData != null)
@@ -853,6 +893,7 @@ public class DB {
 			"DELETE FROM subtitleQueue",
 			"DELETE FROM Genre",
 			"DELETE FROM MovieGenre",
+			"DELETE FROM Media",
 			"DELETE FROM Movie"
 		};
 		

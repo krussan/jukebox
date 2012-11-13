@@ -93,8 +93,6 @@ public class NfoBuilder extends MovieBuilder {
 								
 				m = Movie.newBuilder()
 						.setID(-1)
-						.setFilename(filename)
-						.setFilepath(filepath)
 						.setTitle(title)
 						.setYear(year)
 						.setType(type)

@@ -164,14 +164,14 @@ public class SubtitleDownloader implements Runnable {
 			for (se.qxx.jukebox.subtitles.Subs.Movie movie : subs.getMovie()) {
 				String movieFilename = movie.getFilename();
 				for (se.qxx.jukebox.subtitles.Subs.Movie.Sub sub : movie.getSub()) {
-					Movie m = DB.getMovieByStartOfFilename(movieFilename);
-					if (m != null) {
+					Media md = DB.getMediaByStartOfFilename(movieFilename);
+					if (md != null) {
 						String subsFilename = String.format("%s/%s/%s", subsPath, movieFilename, sub.getFilename());
 
 						if (!DB.subFileExistsInDB(subsFilename)) {
 							Rating r = Rating.valueOf(sub.getRating());
 							Log.Debug(String.format("INITSUBS_XML :: Adding to subs database :: %s", sub.getFilename()), LogType.SUBS);
-							DB.addSubtitle(m, subsFilename, sub.getDescription(), r);
+							DB.addSubtitle(md, subsFilename, sub.getDescription(), r);
 						}
 						else {
 							Log.Debug(String.format("INITSUBS_XML :: Sub exists in DB :: %s", sub.getFilename()), LogType.SUBS);							
@@ -236,15 +236,15 @@ public class SubtitleDownloader implements Runnable {
 		for (File subFile : list) {
 			String subFilename = subFile.getAbsolutePath();
 			Log.Debug(String.format("INITSUBS :: Initializing subtitles for %s", subFilename), LogType.SUBS);
-			String movieName = FilenameUtils.getBaseName(subFile.getParentFile().getAbsolutePath());
-			Movie m = DB.getMovieByStartOfFilename(movieName);
+			String mediaName = FilenameUtils.getBaseName(subFile.getParentFile().getAbsolutePath());
+			Media md = DB.getMediaByStartOfFilename(mediaName);
 			
-			if (m != null) {
-				Log.Debug(String.format("INITSUBS :: Movie Found :: %s", m.getTitle()), LogType.SUBS);
+			if (md != null) {
+				Log.Debug(String.format("INITSUBS :: Movie Found :: %s", md.getFilename()), LogType.SUBS);
 				if (!DB.subFileExistsInDB(subFilename)) {
 					Log.Debug(String.format("INITSUBS :: Sub not found ... Adding %s", subFilename), LogType.SUBS);
 					
-					DB.addSubtitle(m, subFilename, StringUtils.EMPTY, Rating.NotMatched);
+					DB.addSubtitle(md, subFilename, StringUtils.EMPTY, Rating.NotMatched);
 				}
 			}
 		}
@@ -276,7 +276,7 @@ public class SubtitleDownloader implements Runnable {
 					Element movie = doc.createElement("movie");
 					movie.getAttributes().setNamedItem(getAttribute(doc, "filename", FilenameUtils.getBaseName(md.getFilename())));
 					
-					List<Subtitle> subtitles = DB.getSubtitles(md.getID());
+					List<Subtitle> subtitles = DB.getSubtitles(md);
 					for (Subtitle s : subtitles) {
 						String subsFilename = FilenameUtils.getName(s.getFilename());
 						Element sub = doc.createElement("sub");
@@ -296,8 +296,8 @@ public class SubtitleDownloader implements Runnable {
 			
 			Subs subsFile = getSubsFile();
 			for (se.qxx.jukebox.subtitles.Subs.Movie subsMovie : subsFile.getMovie()) {
-				Movie movie = DB.getMovieByStartOfFilename(subsMovie.getFilename());
-				if (movie == null) {
+				Media md = DB.getMediaByStartOfFilename(subsMovie.getFilename());
+				if (md == null) {
 					Log.Debug(String.format("SUBS :: Adding subs to xml file even if movie does not exist yet :: %s", subsMovie.getFilename()), LogType.SUBS);
 
 					JAXBContext c = JAXBContext.newInstance(se.qxx.jukebox.subtitles.Subs.Movie.class);
@@ -385,11 +385,13 @@ public class SubtitleDownloader implements Runnable {
 	 * @param m
 	 */
 	private void getSubtitles(Movie m) {
-		
-		List<SubFile> files = checkSubsDirForSubs(m);
+		// We only check if there exist subs for the first media file.
+		// If it does then it should exist from the others as well.
+		Media md = m.getMedia(0);
+		List<SubFile> files = checkSubsDirForSubs(md);
 		
 		if (files.size() == 0) {
-			files = checkMovieDirForSubs(m);
+			files = checkMovieDirForSubs(md);
 			if (files.size() == 0) {
 				// use reflection to get all subfinders
 				// get files
@@ -398,7 +400,7 @@ public class SubtitleDownloader implements Runnable {
 	
 			// Extract files from rar/zip
 			extractSubs(m, files);
-		}
+		}			
 	}
 	
 	/**
@@ -406,11 +408,11 @@ public class SubtitleDownloader implements Runnable {
 	 * @param m The movie to find subtitles for
 	 * @return Returns a list of subtitles, present in the subs directory, for the specific movie. 
 	 */
-	private List<SubFile> checkSubsDirForSubs(Movie m) {
+	private List<SubFile> checkSubsDirForSubs(Media md) {
 		List<SubFile> list = new ArrayList<SubFile>();
 
-		String movieFilenameWithoutExt = FilenameUtils.getBaseName(m.getFilename());
-		File subsPathDir = new File(FilenameUtils.normalize(String.format("%s/%s", subsPath, movieFilenameWithoutExt)));
+		String movieFilenameWithoutExt = FilenameUtils.getBaseName(md.getFilename());
+		File subsPathDir = new File(getSubsPath(md));
 		
 		list.addAll(checkDirForSubs(movieFilenameWithoutExt,subsPathDir));
 
@@ -424,7 +426,7 @@ public class SubtitleDownloader implements Runnable {
 	 * @param m
 	 * @return A list of subfiles for the movie
 	 */
-	private List<SubFile> checkMovieDirForSubs(Movie m) {
+	private List<SubFile> checkMovieDirForSubs(Media md) {
 		// check if subs exist in directory. If so set that as the sub
 		// check file that begins with the same filename and has extension of
 		// sub, idx, srt
@@ -432,10 +434,13 @@ public class SubtitleDownloader implements Runnable {
 		// it does check that for subtitles.
 		// also check subs directory (if the movie has been in DB before)
 		// to avoid downloading subs again
-		String movieFilenameWithoutExt = FilenameUtils.getBaseName(m.getFilename());
-		File dir = new File(m.getFilepath());
 		
-		List<SubFile> list = checkDirForSubs(movieFilenameWithoutExt, dir);
+		// We check for a srt/idx/sub file for the first media only
+		String mediaFilename = md.getFilename();
+		String mediaPath = md.getFilepath();
+
+		File dir = new File(mediaPath);
+		List<SubFile> list = checkDirForSubs(mediaFilename, dir);
 		
 		String[] dirs = dir.list(new FilenameFilter() {
 			
@@ -446,10 +451,10 @@ public class SubtitleDownloader implements Runnable {
 		});
 		
 		for (String newDir : dirs) {
-			list.addAll(checkDirForSubs(movieFilenameWithoutExt, new File(newDir)));
+			list.addAll(checkDirForSubs(mediaFilename, new File(newDir)));
 		}
 		
-		Log.Debug(String.format("Found %s subs for movie %s in movie folder", list.size(), movieFilenameWithoutExt), Log.LogType.SUBS);
+		Log.Debug(String.format("Found %s subs for movie %s in movie folder", list.size(), mediaFilename), Log.LogType.SUBS);
 			
 		return list;
 	}
@@ -504,16 +509,27 @@ public class SubtitleDownloader implements Runnable {
 				File f = subfile.getFile();
 				clearPath(unpackPath);
 				
-				File unpackedFile = Unpacker.unpackFile(f, unpackPath);
+				List<File> unpackedFiles = Unpacker.unpackFiles(f, unpackPath);
 
-				if (unpackedFile != null) {
-					String filename = moveFileToSubsPath(m, c, unpackedFile);
-	
-					c++;
-	
-					// store filename of sub in database
-					DB.addSubtitle(m, filename, subfile.getDescription(), subfile.getRating());
+				for (File unpackedFile : unpackedFiles) {
+					if (unpackedFile != null) {
+						Media md = matchFileToMedia(m, unpackedFile);
+						
+						if (md != null) {
+							String filename = moveFileToSubsPath(md, c, unpackedFile);
+			
+							c++;
+			
+							// store filename of sub in database
+							DB.addSubtitle(md, filename, subfile.getDescription(), subfile.getRating());
+							
+						}
+						else {
+							Log.Debug(String.format("Failed to match sub %s against media for movie %s", unpackedFile.getName(), m.getTitle()), LogType.SUBS);
+						}
+					}
 				}
+
 			} catch (Exception e) {
 				Log.Error("Error when downloading subtitles... Continuing with next one", Log.LogType.SUBS, e);
 			}
@@ -523,6 +539,23 @@ public class SubtitleDownloader implements Runnable {
 			FileUtils.deleteDirectory(new File(SubFinderBase.createTempSubsPath(m)));
 		} catch (IOException e) {
 		}
+	}
+
+	/**
+	 * Matches the filename of an unpacked sub file against the media in the movie
+	 * @param m
+	 * @param unpackedFile
+	 * @return The media matching the sub filename
+	 */
+	private Media matchFileToMedia(Movie m, File unpackedFile) {
+		int part = new PartPattern(FilenameUtils.getBaseName(unpackedFile.getName())).getPart();
+		
+		for (Media md : m.getMediaList()) {
+			if (md.getIndex() == part) 
+				return md;
+		}
+		
+		return null;
 	}
 
 	/**
@@ -560,14 +593,19 @@ public class SubtitleDownloader implements Runnable {
 	 * @return A path string pointing to the new sub file
 	 */
 	protected String moveFileToSubsPath(
-			Movie m, 
+			Media md, 
 			int c, 
 			File subFile) {
 	
 		String subExtension = FilenameUtils.getExtension(subFile.getName());		
 		// rename file to filename_of_movie.iterator.srt/sub		
 		
-		String finalSubfileName = FilenameUtils.normalize(String.format("%s/%s.%s.%s", movieSubsPath, movieFilename, c, subExtension));
+		String finalSubfileName = FilenameUtils.normalize(
+			String.format("%s/%s.%s.%s"
+				, getSubsPath(md)
+				, FilenameUtils.getBaseName(md.getFilename())
+				, c
+				, subExtension));
 		
 		File newFile = new File(finalSubfileName);
 		try {
@@ -579,11 +617,11 @@ public class SubtitleDownloader implements Runnable {
 		return finalSubfileName;
 	}
 	
-	private String getSubsPath(Movie m) {
-		String movieFilename = FilenameUtils.getBaseName(m.getFilename());	
+	private String getSubsPath(Media md) {
+		String movieFilename = FilenameUtils.getBaseName(md.getFilename());	
 		PartPattern pp = new PartPattern(movieFilename);
 		String movieSubsPath = String.format("%s/%s", subsPath, pp.getResultingFilename());
-		
+		return movieSubsPath;		
 	}
 	
 
@@ -619,5 +657,5 @@ public class SubtitleDownloader implements Runnable {
 
 		return subtitleFiles;
 	}
-
+	
 }

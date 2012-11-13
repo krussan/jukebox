@@ -87,15 +87,14 @@ public class FilenameBuilder extends MovieBuilder {
 		}
 
 		//if movie ends with extension then something is wrong
-		if (title.endsWith(filename.substring(filename.length() - 3)))
-			return null;
+		if (filename.length() - 3 > 0) 
+			if (title.endsWith(filename.substring(filename.length() - 3)))
+				return null;
 		
 		if (maxGroupMatch > 0) {
 			Log.Debug(String.format("FilenameBuilder :: Max match :: %s", maxGroupMatch), LogType.FIND);
 			Movie movie = Movie.newBuilder()
 				.setID(-1)
-				.setFilename(filename)
-				.setFilepath(filepath)
 				.setTitle(title)
 				.setYear(year)
 				.setType(type)

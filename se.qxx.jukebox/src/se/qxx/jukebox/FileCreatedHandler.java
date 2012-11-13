@@ -39,7 +39,7 @@ public class FileCreatedHandler implements INotifyClient {
 				Movie m = MovieBuilder.identifyMovie(path, filename);
 						
 				if (m != null) {
-					matchMovieWithDatabase(m, filename, path);
+					matchMovieWithDatabase(m, filename);
 				}
 				else {
 					Log.Info(String.format("Failed to identity movie with filename :: %s", f.getName()), Log.LogType.FIND);
@@ -48,62 +48,91 @@ public class FileCreatedHandler implements INotifyClient {
 		}
 	}
 
-	protected void matchMovieWithDatabase(Movie m, String filename, String path) {
-		Log.Info(String.format("Movie identified by %s as :: %s", m.getIdentifier().toString(), m.getTitle()), Log.LogType.FIND);
+	/**
+	 * Checks if the media present in a movie exists in database.
+	 * If the movie does not exist then get media information and add it to the database
+	 * If the movie exist then check existing media and add it if it does not exist.
+	 * @param movie
+	 * @param filename
+	 */
+	protected synchronized void matchMovieWithDatabase(Movie movie, String filename) {
+		Log.Info(String.format("FileCreatedHandler -- Movie identified by %s as :: %s"
+				, movie.getIdentifier().toString(), movie.getTitle()), Log.LogType.FIND);
 		
 		// Check if movie exists in db
 		PartPattern pp = new PartPattern(filename);
-		Movie dbMovie = DB.getMovieByStartOfFilename(pp.getPrefixFilename());
-		Media newMedia = m.getMedia(0);
+		
+		Log.Debug(String.format("FileCreatedHandler :: Finding movie that starts with :: %s", pp.getPrefixFilename()), LogType.FIND);
+		
+		// Careful here! As the identification of the other movie parts could be in a 
+		// different thread. Hence synchronized declaration.
+		Movie dbMovie = DB.getMovieByStartOfMediaFilename(pp.getPrefixFilename());
+		Media newMedia = movie.getMedia(0);
 
-		if (dbMovie == null)
-			getInfoAndSaveMovie(m, newMedia);			
-		else 
+		if (dbMovie == null) {
+			Log.Debug("FileCreatedHandler :: Movie not found -- adding new", LogType.FIND);
+			getInfoAndSaveMovie(movie, newMedia);			
+		}
+		else {
+			Log.Debug("FileCreatedHandler :: Movie found -- checking existing media", LogType.FIND);	
 			checkExistingMedia(dbMovie, newMedia);
+		}
 	}
 
-	protected void getInfoAndSaveMovie(Movie m, Media newMedia) {
+	/**
+	 * Gets IMDB and metadata information from media and adds it to the database.
+	 * @param m
+	 * @param newMedia
+	 */
+	protected void getInfoAndSaveMovie(Movie movie, Media media) {
 		// If not get information and subtitles
 		// If title is the same as the filename (except ignore pattern) then don't identify on IMDB.
 		if (Arguments.get().isImdbIdentifierEnabled()) 
-			m = getImdbInformation(m);
+			movie = getImdbInformation(movie);
 
 		// Get media information from MediaInfo library
-		Media md = MediaMetadata.addMediaMetadata(newMedia);
-		m = Movie.newBuilder(m)
+		Media md = MediaMetadata.addMediaMetadata(media);
+		movie = Movie.newBuilder(movie)
 				.clearMedia()
 				.addMedia(md)
 				.build();
 		
-		m = DB.addMovie(m);
+		movie = DB.addMovie(movie);
 		
-		SubtitleDownloader.get().addMovie(m);
+		SubtitleDownloader.get().addMovie(movie);
 	}
 
-	protected void checkExistingMedia(Movie dbMovie, Media newMedia) {
+	/**
+	 * Checks if a media exist in a movie.
+	 * If it does then add the movie to the SubtitleDownloader if no subtitles exist.
+	 * Otherwise add metadata information to the media and add it to database
+	 * @param m
+	 * @param md
+	 */
+	protected void checkExistingMedia(Movie movie, Media media) {
 		// Check if media exists
-		if (mediaExists(dbMovie, newMedia)) {
+		if (mediaExists(movie, media)) {
 			// Check if movie has subs. If not then add it to the subtitle queue.
-			if (!DB.hasSubtitles(dbMovie)) {
-				SubtitleDownloader.get().addMovie(dbMovie);
+			if (!DB.hasSubtitles(movie)) {
+				SubtitleDownloader.get().addMovie(movie);
 			}							
 		}
 		else {
 			// Add media metadata
-			Media md = MediaMetadata.addMediaMetadata(newMedia);
+			media = MediaMetadata.addMediaMetadata(media);
 
 			// If movie exist but not the media then add the media
-			DB.addMedia(dbMovie.getID(), md);
+			DB.addMedia(movie.getID(), media);
 		}
 	}
 	
 	private boolean mediaExists(Movie m, Media mediaToFind) {
 		for (Media md : m.getMediaList()) {
 			if (StringUtils.equalsIgnoreCase(md.getFilename(), mediaToFind.getFilename()) && StringUtils.equalsIgnoreCase(md.getFilepath(), mediaToFind.getFilepath()))
-				return false;
+				return true;
 		}
 		
-		return true;
+		return false;
 	}
 
 	private Movie getImdbInformation(Movie m) {

@@ -80,6 +80,7 @@ public abstract class MovieBuilder {
 				Log.Debug(String.format("MovieBuilder :: Selected proposal has rating of %s", m.getIdentifierRating()), LogType.FIND);
 				
 				Media md = Media.newBuilder()
+						.setID(-1)
 						.setIndex(part)
 						.setFilename(filename)
 						.setFilepath(filepath)
@@ -141,7 +142,7 @@ public abstract class MovieBuilder {
 				if (b.isEnabled()) {
 					Object o = Util.getInstance(className);
 					if (o != null) {
-						Movie proposal = ((MovieBuilder)o).extractMovie(filepath, searchFilename);
+						Movie proposal = ((MovieBuilder)o).extractMovie(filepath, filename);
 						if (proposal != null) {
 							proposal = Movie.newBuilder(proposal)
 									.setIdentifierRating(proposal.getIdentifierRating() * weight)

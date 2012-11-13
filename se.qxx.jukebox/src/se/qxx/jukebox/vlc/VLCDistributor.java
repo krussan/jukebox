@@ -12,6 +12,7 @@ import se.qxx.jukebox.HibernatorClientConnection;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.WakeOnLan;
 import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
@@ -73,30 +74,31 @@ public class VLCDistributor {
 		Movie m = DB.getMovie(id);
 		
 		if (m != null) {
-			String filepath = m.getFilepath();
-			for (Catalog c : Settings.get().getCatalogs().getCatalog()) {
-				Log.Debug(String.format("Comparing %s with %s", c.getPath(), filepath), Log.LogType.COMM);
-				if (filepath.startsWith(c.getPath())) {
-					
-					Vlcpath vlcPath = findVlcPath(c, hostName);
-					if (vlcPath != null) {
-						String filename = filepath.replace(c.getPath(), vlcPath.getPath()) + "/" + m.getFilename();
-						
-						List<Subtitle> subtitles = DB.getSubtitles(id);
-						List<String> subFiles = new ArrayList<String>();
-						
-						for(Subtitle sub : subtitles)
-							subFiles.add(sub.getFilename().replace(serverSubsPath, vlcSubsPath));
-						
-						conn.enqueue(filename, subFiles);
-												
-						return true;
+			for (Media md : m.getMediaList()) {
+				String filepath = md.getFilepath();
+				for (Catalog c : Settings.get().getCatalogs().getCatalog()) {
+					Log.Debug(String.format("Comparing %s with %s", c.getPath(), filepath), Log.LogType.COMM);
+					if (filepath.startsWith(c.getPath())) {
+						Vlcpath vlcPath = findVlcPath(c, hostName);
+						if (vlcPath != null) {
+							String filename = filepath.replace(c.getPath(), vlcPath.getPath()) + "/" + md.getFilename();
+							
+							List<Subtitle> subtitles = DB.getSubtitles(md);
+							List<String> subFiles = new ArrayList<String>();
+							
+							for(Subtitle sub : subtitles)
+								subFiles.add(sub.getFilename().replace(serverSubsPath, vlcSubsPath));
+							
+							conn.enqueue(filename, subFiles);
+													
+							return true;
+						}
+						else {
+							Log.Debug("Couldn't find vlc path in catalog", Log.LogType.COMM);
+						}
 					}
-					else {
-						Log.Debug("Couldn't find vlc path in catalog", Log.LogType.COMM);
-					}
-				}
-			} 
+				} 
+			}
 			Log.Debug("Couldn't find filepath in settings", Log.LogType.COMM);
 		}
 		else {

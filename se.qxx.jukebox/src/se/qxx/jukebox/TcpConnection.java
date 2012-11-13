@@ -144,7 +144,7 @@ public class TcpConnection implements Runnable {
 		
 		String searchString = args.getSearchString();
 		
-		List<Movie> list = DB.searchMovies(searchString);
+		List<Movie> list = DB.searchMoviesByTitle(searchString);
 
 		JukeboxResponseListMovies lm = JukeboxResponseListMovies.newBuilder().addAllMovies(list).build();
     	
@@ -165,7 +165,8 @@ public class TcpConnection implements Runnable {
 		
 		try {
 			if (VLCDistributor.get().startMovie(args.getPlayerName(), args.getMovieId())) {
-				List<Subtitle> subs = DB.getSubtitles(args.getMovieId());
+				//TODO: MEDIA -- Fix this
+				List<Subtitle> subs = new ArrayList<Subtitle>();// DB.getSubtitles(args.getMovieId());
 				
 				JukeboxResponseStartMovie ls = JukeboxResponseStartMovie.newBuilder()
 						.addAllSubtitle(subs)
@@ -243,7 +244,8 @@ public class TcpConnection implements Runnable {
 
 		Log.Debug(String.format("Getting list of subtitles form movie ID :: %s", args.getMovieId()), Log.LogType.COMM);
 
-		List<Subtitle> subs = DB.getSubtitles(args.getMovieId());
+		//TODO: MEDIA -- Fix this 
+		List<Subtitle> subs = new ArrayList<Subtitle>(); //DB.getSubtitles(args.getMovieId());
 	
 		JukeboxResponseListSubtitles ls = JukeboxResponseListSubtitles.newBuilder()
 				.addAllSubtitle(subs)

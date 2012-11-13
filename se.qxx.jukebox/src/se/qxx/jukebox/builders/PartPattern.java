@@ -48,14 +48,17 @@ public class PartPattern {
 	}
 	
 	public PartPattern(String filename) {
-		String partPattern = Settings.get().getStringSplitters().getParts().getRegex();
-		int partGroup = Settings.get().getStringSplitters().getParts().getGroupPart();
+		String partPattern = StringUtils.trim(Settings.get().getStringSplitters().getParts().getPartPattern().getRegex());
+		int partGroup = Settings.get().getStringSplitters().getParts().getPartPattern().getGroupPart();
 		
-		Pattern p = Pattern.compile(partPattern);
+		Pattern p = Pattern.compile(partPattern, Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
 		Matcher m = p.matcher(filename);
+
+		Log.Debug(String.format("PartPattern :: Matching filename :: %s :: Regex :: %s", filename, partPattern), LogType.FIND);
+
 		String partIdentifier = StringUtils.EMPTY;
 		int partIndex = -1;
-		String resultingFilename = StringUtils.EMPTY;
+		String resultingFilename = filename;
 		
 		if (m.find()) {
 			partIndex = m.start(partGroup);
@@ -78,7 +81,7 @@ public class PartPattern {
 				this.setPart(intPart);
 				this.setPartIndexInFilename(partIndex);
 				if (partIndex > 0)
-					this.setPrefixFilename(originalFilename.substring(0, partIndex - 1));
+					this.setPrefixFilename(originalFilename.substring(0, partIndex - 2));
 			}
 			catch (NumberFormatException e) {
 			}

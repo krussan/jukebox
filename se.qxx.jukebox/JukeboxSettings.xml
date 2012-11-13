@@ -34,9 +34,11 @@
     	</regex>
     </exclude>
     <parts>
-        <regex groupPart="2">
-            <![CDATA[(Part|CD)[.|_|\s|-]*(\d+)]]>
-        </regex>
+        <partPattern groupPart="2">
+	        <regex>
+	            <![CDATA[(Part|CD)[.|_|\s|-]*(\d+)]]>
+	        </regex>            
+        </partPattern>
     </parts>
   	<splitter>
   		<regex>

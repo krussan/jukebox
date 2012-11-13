@@ -109,7 +109,7 @@ public class UndertexterSe extends SubFinderBase {
 		
 		List<SubFile> listSubs = new ArrayList<SubFile>();
 		
-		Log.Debug(String.format("UndertexterSe :: Finding subtitles for %s", m.getFilename()), Log.LogType.SUBS);
+		Log.Debug(String.format("UndertexterSe :: Finding subtitles for %s", m.getTitle()), Log.LogType.SUBS);
 		
 		while (matcher.find()) {
 			String urlString = matcher.group("url");

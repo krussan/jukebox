@@ -22,21 +22,22 @@ import org.apache.commons.lang3.StringUtils;
 import se.qxx.jukebox.Log.LogType;
 
 public class Unpacker {
-	public static File unpackFile(File f, String path) {
-		File unpackedFile = null;
+	
+	public static List<File> unpackFiles(File f, String path) {
+		List<File> unpackedFiles;
 		Log.Info(String.format("Unpacking file %s", f.getName()), LogType.SUBS);
 		
 		if(f.getName().endsWith(".rar")) 
-			unpackedFile = unrarFile(f, path);
+			unpackedFiles = unrarFile(f, path);
 		else if (f.getName().endsWith(".zip"))
-			unpackedFile = unzipFile(f, path);
+			unpackedFiles = unzipFile(f, path);
 		else
-			unpackedFile = moveFile(f, path);
+			unpackedFiles = moveFile(f, path);
 
-		return unpackedFile;
+		return unpackedFiles;
 	}
 	
-	public static File moveFile(File f, String path) {
+	public static List<File> moveFile(File f, String path) {
 		Log.Info(String.format("File is not an archive. Moving to temp folder :: %s", path), LogType.SUBS);
 		
 		File targetFile = getTargetFile(f.getName(), path);
@@ -46,8 +47,11 @@ public class Unpacker {
 		} catch (IOException e) {
 			Log.Error(String.format("Error when copying file %s to %s", f.getName(), targetFile.getName()), LogType.SUBS, e);
 		}
+
+		ArrayList<File> unpackedFiles = new ArrayList<File>();
+		unpackedFiles.add(targetFile);
 		
-		return targetFile;
+		return unpackedFiles;
 	}
 	
 	private static File getTargetFile(String filename, String path) {
@@ -55,20 +59,22 @@ public class Unpacker {
 		return new File(targetName);
 	}
 	
-	public static List<File> unpackFiles(List<File> files, String path) {
-		ArrayList<File> unpackedFiles = new ArrayList<File>();
-		for (File f : files) {
-			File unpackedFile = unpackFile(f, path);
-			if (unpackedFile != null)
-				unpackedFiles.add(unpackedFile);
-		}
-		
-		return unpackedFiles;
-	}
+//	public static List<File> unpackFiles(List<File> files, String path) {
+//		ArrayList<File> unpackedFiles = new ArrayList<File>();
+//		for (File f : files) {
+//			File unpackedFile = unpackFile(f, path);
+//			if (unpackedFile != null)
+//				unpackedFiles.add(unpackedFile);
+//		}
+//		
+//		return unpackedFiles;
+//	}
 	
-	private static File unrarFile(File f, String path) {
+	private static List<File> unrarFile(File f, String path) {
 		Log.Info(String.format("File appears to be a RAR archive"), LogType.SUBS);
 
+		ArrayList<File> unpackedFiles = new ArrayList<File>();
+		
 		String fileList = executeCommand(
 			"unrar",
 			"lb",
@@ -90,14 +96,14 @@ public class Unpacker {
 						f.getAbsolutePath(),
 						outputPath);
 					
-					return new File(outputFilename);
+					unpackedFiles.add(new File(outputFilename));
 				}
 			}
 		} catch (IOException e) {
 			Log.Error(String.format("Error when unpacking sub with filename :: %s", f.getName()), Log.LogType.SUBS, e);
 		}
 		
-		return null;
+		return unpackedFiles;
 	}
 
 	private static String executeCommand(String command, String... args) {
@@ -135,8 +141,10 @@ public class Unpacker {
 		return output;
 	}
 	
-	private static File unzipFile(File f, String path) {
+	private static List<File> unzipFile(File f, String path) {
 		Log.Info(String.format("File appears to be a ZIP archive"), LogType.SUBS);
+		
+		ArrayList<File> unpackedFiles = new ArrayList<File>();
 		
 		try {
 			ZipInputStream zipinputstream = new ZipInputStream(new FileInputStream(f));
@@ -165,7 +173,7 @@ public class Unpacker {
 	                zipinputstream.closeEntry();
 	                zipinputstream.close();
 	                
-	                return new File(outputFilename);
+	                unpackedFiles.add(new File(outputFilename));
                 }
 	            
                 zipinputstream.closeEntry();
@@ -178,7 +186,8 @@ public class Unpacker {
 			
 			Log.Error(String.format("Error when unpacking sub with filename :: %s", f.getName()), Log.LogType.SUBS, e);
 		} 
-		return null;
+		
+		return unpackedFiles;
 	}
 
 	

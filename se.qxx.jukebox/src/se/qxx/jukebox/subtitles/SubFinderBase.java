@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import se.qxx.jukebox.Util;
 import se.qxx.jukebox.builders.FilenameBuilder;
 import se.qxx.jukebox.builders.MovieBuilder;
+import se.qxx.jukebox.builders.PartPattern;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.settings.JukeboxListenerSettings;
 import se.qxx.jukebox.settings.Settings;
@@ -31,39 +32,27 @@ public abstract class SubFinderBase {
 		return this.settings.get(key);
 	}
 
-	protected String createSubsPath(Movie m) {
-		String filename = FilenameUtils.normalize(String.format("%s/%s"
-				, Settings.get().getSubFinders().getSubsPath()
-				, FilenameUtils.getBaseName(m.getFilename())));
-		
-		File f = new File(filename);
-		if (!f.exists())
-			f.mkdirs();
-		return filename;
-	}
+//	protected String createSubsPath(Movie m) {
+//		String filename = FilenameUtils.normalize(String.format("%s/%s"
+//				, Settings.get().getSubFinders().getSubsPath()
+//				, FilenameUtils.getBaseName(m.getFilename())));
+//		
+//		File f = new File(filename);
+//		if (!f.exists())
+//			f.mkdirs();
+//		return filename;
+//	}
 	
-	/**
-	 * Return a temporary filename to download subtitles to.
-	 * @param filename The filename of the movie
-	 * @return
-	 */
+//	/**
+//	 * Return a temporary filename to download subtitles to.
+//	 * @param filename The filename of the movie
+//	 * @return
+//	 */
 //	public static String getTempSubsName(Movie m) {
 //		String path = createTempSubsPath();
 //        return String.format("%s/%s_%s", path, Thread.currentThread().getId(), filename);
 //	}
 	
-	/**
-	 * Returns a temporary path to download subtitles to
-	 * @return
-	 */
-	public static String createTempSubsPath(Movie m) {
-		String tempPath = FilenameUtils.normalize(String.format("%s/temp/%s", Settings.get().getSubFinders().getSubsPath(), FilenameUtils.getBaseName(m.getFilename())));
-		File path = new File(tempPath);
-		if (!path.exists())
-			path.mkdirs();
-		
-		return tempPath;
-	}	
 	
 	/**
 	 * Rates a sub file (or a string) depending on the all categories in the Movie
@@ -73,16 +62,16 @@ public abstract class SubFinderBase {
 	 * @param subFilename		- the filename or string of the subfile
 	 * @return Rating			- A rating based on the Rating enumeration				
 	 */
-	protected Rating rateSub(Movie m, String subFilename) {
+	protected Rating rateSub(Movie m, String subFileDescription) {
 		FilenameBuilder b = new FilenameBuilder();
-		Movie subMovie = b.extractMovie("", subFilename);
+		Movie subMovie = b.extractMovie("", subFileDescription);
 		Rating r = Rating.NotMatched;
 		
+		PartPattern moviePP = new PartPattern(FilenameUtils.getBaseName(m.getMedia(0).getFilename()));
+		PartPattern subPP = new PartPattern(subFileDescription);
+		
 		if (subMovie != null) {
-			//Check if filenames match exactly
-			String filenameWithoutExtension = FilenameUtils.getBaseName(m.getFilename());
-
-			if (StringUtils.equalsIgnoreCase(filenameWithoutExtension, subFilename))
+			if (StringUtils.equalsIgnoreCase(moviePP.getPrefixFilename(), subPP.getPrefixFilename()))
 				return Rating.ExactMatch;
 			
 			String group = m.getGroup();
@@ -100,4 +89,23 @@ public abstract class SubFinderBase {
 		return r;
 	
 	}	
+	
+	/**
+	 * Returns a temporary path to download subtitles to
+	 * @return
+	 */
+	public static String createTempSubsPath(Movie m) {
+		String tempPath = 
+			FilenameUtils.normalize(
+				String.format("%s/temp/%s"
+					, Settings.get().getSubFinders().getSubsPath()
+					, m.getID()));
+
+		File path = new File(tempPath);
+		if (!path.exists())
+			path.mkdirs();
+		
+		return tempPath;
+	}	
+	
 }

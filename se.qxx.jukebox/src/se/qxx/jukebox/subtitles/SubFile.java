@@ -15,6 +15,7 @@ public class SubFile implements Comparable<SubFile> {
 	private File _file;
 	private Rating _rating = Rating.NotMatched;
 	private String _description;
+	private int index;
 	
 	public SubFile(String url, String description) {
 		this._url = url;
@@ -50,6 +51,14 @@ public class SubFile implements Comparable<SubFile> {
 		this._url = _url;
 	}
 
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
+	}
+	
 	@Override
 	public int compareTo(SubFile that) {
 		if (this._rating == Rating.ExactMatch) return -1;
@@ -66,4 +75,5 @@ public class SubFile implements Comparable<SubFile> {
 		
 		return this._description.compareTo(that._description);
 	}
+
 }
