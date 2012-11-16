@@ -10,6 +10,7 @@ import javax.xml.bind.JAXBException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import se.qxx.jukebox.Util;
 import se.qxx.jukebox.builders.FilenameBuilder;
 import se.qxx.jukebox.builders.MovieBuilder;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
@@ -25,8 +26,6 @@ public class TestMovieBuilder {
 			Settings.readSettings();
 			ImdbSettings.readSettings();		
 			
-			List<String> extensions = getExtensions();
-			
 			String filename = args[0];
 			
 			String filePath = FilenameUtils.getFullPathNoEndSeparator(filename);
@@ -38,22 +37,11 @@ public class TestMovieBuilder {
 			Movie m = MovieBuilder.identifyMovie(filePath, singleFile);
 
 			System.out.println(String.format("Movie identified by :: %s", m.getIdentifier()));
+			
+			System.out.println(m.toString());
 		}
 		else {
 			System.out.println("No arguments");
 		}
-	}
-	
-	private static List<String> getExtensions() {
-		List<String> list = new ArrayList<String>();
-		
-		for (JukeboxListenerSettings.Catalogs.Catalog c : Settings.get().getCatalogs().getCatalog()) {
-			for (JukeboxListenerSettings.Catalogs.Catalog.Extensions.Extension e : c.getExtensions().getExtension()) {
-				if (!list.contains(e.getValue()))
-					list.add(e.getValue());
-			}
-		}
-		
-		return list;
 	}
 }

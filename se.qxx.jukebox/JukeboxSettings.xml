@@ -18,8 +18,16 @@
     	<subFinderSettings>
     		<setting>
     			<key>regex</key>
-    			<value><![CDATA[<tr[^>]*?>.*?<td[^>]*?>.*?<a[^>]*?alt\s*=\s*"Ladda\sner\sundertext[^"]*?".*?href\s*=\s*\"(?<url>[^\"]*?)\"[^>]*?>.*?Nedladdningar.*?<br>\s*(?<name>[^<]*?)</td[^>]*?>.*?</tr[^>]*?>]]></value>    			   		
+    			<value><![CDATA[<tr[^>]*?>.*?<td[^>]*?>.*?<a[^>]*?alt\s*=\s*"Ladda\sner\sundertext[^"]*?".*?href\s*=\s*\"([^\"]*?)\"[^>]*?>.*?Nedladdningar.*?<br>\s*([^<]*?)</td[^>]*?>.*?</tr[^>]*?>]]></value>    			   		
 			</setting>
+			<setting>
+			    <key>urlRegexGroup</key>
+			    <value>1</value>
+			</setting>
+			<setting>
+			    <key>nameRegexGroup</key>
+			    <value>2</value>
+			</setting>			
     		<setting>
     			<key>url</key>
     			<value><![CDATA[http://www.undertexter.se/?p=soek&add=arkiv&str=__searchString__]]></value>
@@ -41,28 +49,48 @@
         </partPattern>
     </parts>
   	<splitter>
+  	    <groups>
+  	        <group property="title" id="1"/>
+  	        <group property="year" id="4" />
+    	    <group property="type" id="7" />
+  	        <group property="format" id="9" />
+  	        <group property="sound" id="11" />
+  	      	<group property="language" id="13" />
+  	      	<group property="group" id="14" />  	        	        	        	        	        	        	        	        	        	        
+  	    </groups>
   		<regex>
   		    <!-- Matches Batman.Under.The.Red.Hood.2010.720p.XviD.AC3-ViSiON.avi -->
-  			<![CDATA[(?<title>(?<g1>\w[.|_|\s|-]*)*)(?<g8>[\[|(]?(?<year>(?<decade>19|20)\d{2})[\]|)]?)+[.|_|\s|-]*(?<g2>\[?(?<type>1080p|720p|DVDScr|DVDSCR|DvDRip|DVDRip|BRRip|BDRip|PPVRIP|PPV|TELESYNC|TS|HDRip|R5\s*LINE|R5\s*LiNE|R5\s*Line|CAM)\]?)?[.|_|\s|-]*(?<g3>\[?(?<format>Xvid|XviD|XViD|XvID|XVID|x264|IFLIX)\]?)?[.|_|\s|-]*(?<g4>\[?(?<sound>AC3\s5\.1|AC3)\]?)?[.|_|\s|-]*(?<g5>\[(?<language>ENG|SWE)\])?[.|_|\s|-]*(?<group>.*)[.|_|\s|-]*]]>
+  			<![CDATA[((\w[.|_|\s|-]*)*)([\[|(]?((19|20)\d{2})[\]|)]?)+[.|_|\s|-]*(\[?(1080p|720p|dvdscr|dvdrip|brrip|bdrip|ppvrip|ppv|telesync|ts|hdrip|r5\s*line|cam)\]?)?[.|_|\s|-]*(\[?(xvid|x264|iflix)\]?)?[.|_|\s|-]*(\[?(ac3\s5\.1|ac3)\]?)?[.|_|\s|-]*(\[(eng|swe)\])?[.|_|\s|-]*(.*)[.|_|\s|-]*]]>
   		</regex>
   		<ignore>
-  		    <![CDATA[READNFO|CAM|LIMITED|SWESUB|UNRATED|REPACK|\d{2}K|UNRATED|V3|\d{1,3}MB|HDtv|i2p|EXTENDED|RETAIL]]>
+  		    <![CDATA[READNFO|CAM|LIMITED|SWESUB|UNRATED|REPACK|\d{2}K|UNRATED|V3|\d{1,3}MB|HDtv|i2p|EXTENDED|RETAIL|(\w[.|_|\s|-]DC]]>
   		</ignore>
   	</splitter>
   	<splitter>
+    	<groups>
+  	        <group property="title" id="1"/>
+    	    <group property="type" id="3" />
+  	        <group property="format" id="5" />
+  	        <group property="sound" id="7" />
+  	      	<group property="language" id="9" />
+  	      	<group property="group" id="10" />  	        	        	        	        	        	        	        	        	        	        
+  	    </groups> 	    	    
   		<regex>
-  			<![CDATA[(?<title>(?<g1>\w[.|_|\s|-]*)*)\[?(?<type>1080p|720p|DVDScr|DVDSCR|DvDRip|DVDRip|BRRip|BDRip|PPVRIP|PPV|TELESYNC|TS|HDRip|R5\s*LINE|R5\s*LiNE|R5\s*Line|CAM)\]?[.|_|\s|-]*(?<g2>\[?(?<format>Xvid|XviD|XViD|XvID|XVID|x264|IFLIX)\]?)?[.|_|\s|-]*(?<g3>\[?(?<sound>AC3\s5\.1|AC3)\]?)?[.|_|\s|-]*(?<g4>\[(?<language>ENG|SWE)\])?[.|_|\s|-]*(?<group>.*)(?<part>Part[.|_|\s|-]*1|Part[.|_|\s|-]*2)?(?<cd>CD[.|_|\s|-]*1|CD[.|_|\s|-]*2)?]]>
+  			<![CDATA[((\w[.|_|\s|-]*)*)\[?(1080p|720p|dvdscr|dvdrip|brrip|bdrip|ppvrip|ppv|telesync|ts|hdrip|r5\s*line|cam)\]?[.|_|\s|-]*(\[?(xvid|x264|iflix)\]?)?[.|_|\s|-]*(\[?(ac3\s5\.1|ac3)\]?)?[.|_|\s|-]*(\[(eng|swe)\])?[.|_|\s|-]*(.*)]]>
   		</regex>
   		<ignore>
-  		    <![CDATA[READNFO|CAM|LIMITED|SWESUB|UNRATED|REPACK|\d{2}K|UNRATED|V3|\d{1,3}MB|HDtv|i2p|EXTENDED|RETAIL]]>
+  		    <![CDATA[READNFO|CAM|LIMITED|SWESUB|UNRATED|REPACK|\d{2}K|UNRATED|V3|\d{1,3}MB|HDtv|i2p|EXTENDED|RETAIL|(\w[.|_|\s|-]DC]]>
   		</ignore>
   	</splitter>
     <splitter>
+        <groups>
+            <group property="title" id="1" />
+        </groups>
     	<regex>
-    		<![CDATA[(?<title>.*)]]>
+    		<![CDATA[(.*)]]>
     	</regex>
   		<ignore>
-  		    <![CDATA[READNFO|CAM|LIMITED|SWESUB|UNRATED|REPACK|\d{2}K|UNRATED|V3|\d{1,3}MB|HDtv|i2p|EXTENDED|RETAIL|1080p|720p|DVDScr|DVDSCR|DvDRip|DVDRip|BRRip|BDRip|PPVRIP|PPV|TELESYNC|TS|HDRip|R5\s*LINE|R5\s*LiNE|R5\s*Line|CAM|Xvid|XviD|XViD|XvID|XVID|x264|IFLIX|AC3\s5\.1|AC3]]>
+  		    <![CDATA[READNFO|CAM|LIMITED|SWESUB|UNRATED|REPACK|\d{2}K|UNRATED|V3|\d{1,3}MB|HDtv|i2p|EXTENDED|RETAIL|1080p|720p|DVDScr|DVDSCR|DvDRip|DVDRip|BRRip|BDRip|PPVRIP|PPV|TELESYNC|TS|HDRip|R5\s*LINE|R5\s*LiNE|R5\s*Line|CAM|Xvid|XviD|XViD|XvID|XVID|x264|IFLIX|AC3\s5\.1|AC3|(\w[.|_|\s|-]DC]]>
   		</ignore>
     </splitter>
   </stringSplitters>

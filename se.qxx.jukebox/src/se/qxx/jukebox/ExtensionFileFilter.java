@@ -3,6 +3,7 @@ package se.qxx.jukebox;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -16,6 +17,10 @@ public class ExtensionFileFilter  implements java.io.FileFilter {
 	
 	public void addExtension(String extension) {
 		exts.add(extension);
+	}
+	
+	public void addExtensions(List<String> extensions) {
+		exts.addAll(extensions);
 	}
 	
 	public boolean accept(File f) {

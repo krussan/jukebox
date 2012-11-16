@@ -7,26 +7,17 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.filechooser.FileSystemView;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 
-import se.qxx.jukebox.builders.FilenameBuilder;
-import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.settings.JukeboxListenerSettings;
 import se.qxx.jukebox.settings.Settings;
-import se.qxx.jukebox.settings.JukeboxListenerSettings.StringSplitters.Splitter;
-import se.qxx.jukebox.subtitles.SubFile.Rating;
-
-import com.google.code.regexp.NamedMatcher;
-import com.google.code.regexp.NamedPattern;
 
 public class Util {
 	/**
@@ -37,7 +28,7 @@ public class Util {
 	 */
 	public static String replaceIgnorePattern(String fileNameToMatch, String strIgnorePattern) {
 		if (strIgnorePattern.trim().length() > 0) {
-			Pattern ignorePattern = Pattern.compile(strIgnorePattern, Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
+			Pattern ignorePattern = Pattern.compile(strIgnorePattern, Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ | Pattern.DOTALL);
 			Matcher ignoreMatcher = ignorePattern.matcher(fileNameToMatch);
 			//fileNameToMatch = fileNameToMatch.replaceAll(strIgnorePattern, "");
 			fileNameToMatch = ignoreMatcher.replaceAll("");
@@ -210,5 +201,17 @@ public class Util {
 			}
 		}		
 	}
-	
+
+	public static List<String> getExtensions() {
+		List<String> list = new ArrayList<String>();
+		
+		for (JukeboxListenerSettings.Catalogs.Catalog c : Settings.get().getCatalogs().getCatalog()) {
+			for (JukeboxListenerSettings.Catalogs.Catalog.Extensions.Extension e : c.getExtensions().getExtension()) {
+				if (!list.contains(e.getValue()))
+					list.add(e.getValue());
+			}
+		}
+		
+		return list;
+	}
 }

@@ -1,18 +1,18 @@
 package se.qxx.jukebox.builders;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FilenameUtils;
-
-import com.google.code.regexp.NamedMatcher;
-import com.google.code.regexp.NamedPattern;
+import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Util;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Identifier;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.settings.JukeboxListenerSettings.StringSplitters.Splitter.Groups.Group;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.StringSplitters.Splitter;
 
@@ -37,51 +37,42 @@ public class FilenameBuilder extends MovieBuilder {
 		String fileNameToMatch = FilenameUtils.getBaseName(filename);
 		
 		for (Splitter splitter : Settings.get().getStringSplitters().getSplitter()) {
+			
 			//ignoring some keywords specified in xml
 			String strIgnorePattern = splitter.getIgnore().trim();
 			String fileNameWithoutIgnore = Util.replaceIgnorePattern(fileNameToMatch, strIgnorePattern);
 	
 			Log.Info(String.format("FilenameBuilder filename to match :: %s", fileNameWithoutIgnore), LogType.FIND);
 			
-			NamedPattern p = NamedPattern.compile(splitter.getRegex().trim(), Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
-			NamedMatcher m = p.matcher(fileNameWithoutIgnore);
+			
+			Pattern p = Pattern.compile(splitter.getRegex().trim(), Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+			Matcher m = p.matcher(fileNameWithoutIgnore);
 
 			int matches = 0;
-			for (String s : groupsToCheck) {
-				if (m.matches() && p.groupNames().contains(s))
-					if (m.group(s) != null)
-						if (m.group(s).length() > 0) 
-							matches++;
+			if (m.matches()) {
+				for (String s : groupsToCheck) {
+					if (!StringUtils.isEmpty(getProperty(splitter, m, s)))
+						matches++;
+				}
 			}
 		
 			Log.Debug(String.format("FilenameBuilder :: nrOfMatches :: %s", matches), LogType.FIND);
 			
 			if (matches > maxGroupMatch) {
 				maxGroupMatch = matches;
-
-				if (m.group("title") != null && p.groupNames().contains("title")) 
-					title = Util.parseAwaySpace(m.group("title"));
 				
-				if (m.group("year") != null && p.groupNames().contains("year")) {
-					String yearString = m.group("year");
+				title = getProperty(splitter, m, "title");
+
+				String yearString = getProperty(splitter, m, "year");
+				if (!StringUtils.isEmpty(yearString))
 					if (Util.tryParseInt(yearString))
 						year = Integer.parseInt(yearString);
-				}
 				
-				if (m.group("type") != null && p.groupNames().contains("type")) 
-					type = Util.parseAwaySpace(m.group("type"));
-				
-				if (m.group("format") != null && p.groupNames().contains("format")) 
-					format = Util.parseAwaySpace(m.group("format"));
-				
-				if (m.group("sound") != null && p.groupNames().contains("sound")) 
-					sound = Util.parseAwaySpace(m.group("sound"));
-				
-				if (m.group("language") != null && p.groupNames().contains("language")) 
-					language = Util.parseAwaySpace(m.group("language"));
-				
-				if (m.group("group") != null && p.groupNames().contains("group")) 
-					group = Util.parseAwaySpace(m.group("group"));
+				type = getProperty(splitter, m, "type");
+				format = getProperty(splitter, m, "format");
+				sound = getProperty(splitter, m, "sound");
+				language = getProperty(splitter, m, "language");
+				group = getProperty(splitter, m, "group");
 				
 			}
 		}
@@ -113,5 +104,24 @@ public class FilenameBuilder extends MovieBuilder {
 			Log.Info("FilenameBuilder :: No Match", LogType.FIND);
 			return Movie.newBuilder().setID(-1).build();
 		}
+	}
+	
+	private String getProperty(Splitter splitter, Matcher matcher, String property) {
+		int groupId = getGroupIndex(splitter, property);
+
+		if (groupId > 0)
+			if (matcher.group(groupId) != null)
+				return StringUtils.trim(Util.parseAwaySpace(matcher.group(groupId)));
+
+		return StringUtils.EMPTY;
+	}
+
+	private int getGroupIndex(Splitter s, String property) {
+		for(Group g : s.getGroups().getGroup()) {
+			if (StringUtils.equalsIgnoreCase(g.getProperty(), property))
+				return g.getId();
+		}
+
+		return -1;
 	}
 }

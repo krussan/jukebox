@@ -12,17 +12,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
-import se.qxx.jukebox.settings.JukeboxListenerSettings;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings;
 import se.qxx.jukebox.subtitles.SubFile.Rating;
-
-import com.google.code.regexp.NamedMatcher;
-import com.google.code.regexp.NamedPattern;
 
 public class UndertexterSe extends SubFinderBase {
 	
@@ -104,16 +101,22 @@ public class UndertexterSe extends SubFinderBase {
 
 	protected List<SubFile> collectSubFiles(Movie m, String webResult) {
 		String pattern = this.getSetting(SETTING_PATTERN);
-		NamedPattern p = NamedPattern.compile(pattern, Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.UNICODE_CASE | Pattern.UNIX_LINES);
-		NamedMatcher matcher = p.matcher(webResult);
+		Pattern p = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.UNICODE_CASE | Pattern.UNIX_LINES);
+		Matcher matcher = p.matcher(webResult);
+		
+		String urlRegexGroup = getSetting("urlRegexGroup");
+		String nameRegexGroup = getSetting("nameRegexGroup");
+		
+		int urlGroup = Integer.parseInt(urlRegexGroup);
+		int urlName = Integer.parseInt(nameRegexGroup);
 		
 		List<SubFile> listSubs = new ArrayList<SubFile>();
 		
 		Log.Debug(String.format("UndertexterSe :: Finding subtitles for %s", m.getTitle()), Log.LogType.SUBS);
 		
 		while (matcher.find()) {
-			String urlString = matcher.group("url");
-			String description = matcher.group("name"); 
+			String urlString = matcher.group(urlGroup);
+			String description = matcher.group(urlName); 
 			
 			SubFile sf = new SubFile(urlString, description);
 			Rating r = this.rateSub(m, description);

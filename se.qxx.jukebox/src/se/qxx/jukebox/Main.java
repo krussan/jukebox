@@ -84,21 +84,20 @@ public class Main implements Runnable, INotifyClient
 		}
 		
 		watchers.clear();
+
+		ExtensionFileFilter ff = new ExtensionFileFilter();
+		ff.addExtensions(Util.getExtensions());
 		
 		for (Catalog c : Settings.get().getCatalogs().getCatalog()) {
-			for (Extension e : c.getExtensions().getExtension()) {
-				ExtensionFileFilter ff = new ExtensionFileFilter();
-				ff.addExtension(e.getValue());
-				FileSystemWatcher f = new FileSystemWatcher(c.getPath(), ff, true, false);
-				
-				Log.Debug(String.format("Starting listening on :: %s", c.getPath()), Log.LogType.FIND);
-				
-				f.registerClient(h);
-				f.setSleepTime(500);
-				f.startListening();
-				
-				watchers.add(f);
-			}
+			FileSystemWatcher f = new FileSystemWatcher(c.getPath(), ff, true, false);
+			
+			Log.Debug(String.format("Starting listening on :: %s", c.getPath()), Log.LogType.FIND);
+			
+			f.registerClient(h);
+			f.setSleepTime(500);
+			f.startListening();
+			
+			watchers.add(f);
 		}
 	}
 	

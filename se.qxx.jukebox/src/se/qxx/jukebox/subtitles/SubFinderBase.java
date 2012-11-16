@@ -58,22 +58,22 @@ public abstract class SubFinderBase {
 	 * Rates a sub file (or a string) depending on the all categories in the Movie
 	 * class
 	 * 
-	 * @param m 				- The movie to compare against
-	 * @param subFilename		- the filename or string of the subfile
-	 * @return Rating			- A rating based on the Rating enumeration				
+	 * @param m 				 - The movie to compare against
+	 * @param subFileDescription - The description of the subtitle file. Could be the same as the filename but without extension.
+	 * @return Rating			 - A rating based on the Rating enumeration				
 	 */
 	protected Rating rateSub(Movie m, String subFileDescription) {
 		FilenameBuilder b = new FilenameBuilder();
-		Movie subMovie = b.extractMovie("", subFileDescription);
+		Movie subMovie = b.extractMovie("", subFileDescription.concat(".dummy"));
 		Rating r = Rating.NotMatched;
 		
 		PartPattern moviePP = new PartPattern(FilenameUtils.getBaseName(m.getMedia(0).getFilename()));
 		PartPattern subPP = new PartPattern(subFileDescription);
+
+		if (StringUtils.equalsIgnoreCase(moviePP.getResultingFilename(), subPP.getResultingFilename()))
+			return Rating.ExactMatch;
 		
 		if (subMovie != null) {
-			if (StringUtils.equalsIgnoreCase(moviePP.getPrefixFilename(), subPP.getPrefixFilename()))
-				return Rating.ExactMatch;
-			
 			String group = m.getGroup();
 			String subGroup = subMovie.getGroup();
 			

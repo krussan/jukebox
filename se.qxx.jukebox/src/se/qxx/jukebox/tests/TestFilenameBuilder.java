@@ -1,8 +1,6 @@
 package se.qxx.jukebox.tests;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -10,8 +8,9 @@ import javax.xml.bind.JAXBException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import se.qxx.jukebox.Util;
 import se.qxx.jukebox.builders.FilenameBuilder;
-import se.qxx.jukebox.settings.JukeboxListenerSettings;
+import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.imdb.ImdbSettings;
 
@@ -23,7 +22,7 @@ public class TestFilenameBuilder {
 			Settings.readSettings();
 			ImdbSettings.readSettings();		
 			
-			List<String> extensions = getExtensions();
+			List<String> extensions = Util.getExtensions();
 			
 			String filename = args[0];
 
@@ -45,23 +44,14 @@ public class TestFilenameBuilder {
 			System.out.println(singleFile);
 			
 			FilenameBuilder fb = new FilenameBuilder();
-			fb.extractMovie(filePath, singleFile);
+			Movie m = fb.extractMovie(filePath, singleFile);
+			
+			System.out.println(m.toString());
 		}
 		else {
 			System.out.println("No arguments");
 		}
 	}
 	
-	private static List<String> getExtensions() {
-		List<String> list = new ArrayList<String>();
-		
-		for (JukeboxListenerSettings.Catalogs.Catalog c : Settings.get().getCatalogs().getCatalog()) {
-			for (JukeboxListenerSettings.Catalogs.Catalog.Extensions.Extension e : c.getExtensions().getExtension()) {
-				if (!list.contains(e.getValue()))
-					list.add(e.getValue());
-			}
-		}
-		
-		return list;
-	}
+
 }

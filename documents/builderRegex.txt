@@ -1,0 +1,4 @@
+((\w[.|_|\s|-]*)*)([\[|(]?((19|20)\d{2})[\]|)]?)+[.|_|\s|-]*(\[?(1080p|720p|dvdscr|dvdrip|brrip|bdrip|ppvrip|ppv|telesync|ts|hdrip|r5\s*line|cam)\]?)*[.|_|\s|-]*(\[?(xvid|x264|iflix)\]?)?[.|_|\s|-]*(\[?(ac3\s5\.1|ac3)\]?)?[.|_|\s|-]*(\[(eng|swe)\])?[.|_|\s|-]*(.*)[.|_|\s|-]*
+
+
+((\w[.|_|\s|-]*)*)\[?(1080p|720p|dvdscr|dvdrip|brrip|bdrip|ppvrip|ppv|telesync|ts|hdrip|r5\s*line|cam)\]?[.|_|\s|-]*(\[?(xvid|x264|iflix)\]?)?[.|_|\s|-]*(\[?(ac3\s5\.1|ac3)\]?)?[.|_|\s|-]*(\[(eng|swe)\])?[.|_|\s|-]*(.*)

@@ -211,7 +211,8 @@ public class SubtitleDownloader implements Runnable {
 			
 
 		} catch (JAXBException e) {
-			Log.Error("Error occured when parsing subs Xml file", LogType.SUBS, e);
+			Log.Debug("Error occured when parsing subs Xml file", LogType.SUBS);
+			Log.Error("Error occured when parsing subs Xml file", LogType.MAIN, e);
 		}
 		
 		Log.Debug("INITSUBS :: Subs xml file not found or error occured", LogType.SUBS);
@@ -295,20 +296,23 @@ public class SubtitleDownloader implements Runnable {
 			
 			
 			Subs subsFile = getSubsFile();
-			for (se.qxx.jukebox.subtitles.Subs.Movie subsMovie : subsFile.getMovie()) {
-				Media md = DB.getMediaByStartOfFilename(subsMovie.getFilename());
-				if (md == null) {
-					Log.Debug(String.format("SUBS :: Adding subs to xml file even if movie does not exist yet :: %s", subsMovie.getFilename()), LogType.SUBS);
-
-					JAXBContext c = JAXBContext.newInstance(se.qxx.jukebox.subtitles.Subs.Movie.class);
-					Marshaller m = c.createMarshaller();
-				
-					m.marshal(subsMovie, subs);
+			
+			if (subsFile != null) {
+				for (se.qxx.jukebox.subtitles.Subs.Movie subsMovie : subsFile.getMovie()) {
+					Media md = DB.getMediaByStartOfFilename(subsMovie.getFilename());
+					if (md == null) {
+						Log.Debug(String.format("SUBS :: Adding subs to xml file even if movie does not exist yet :: %s", subsMovie.getFilename()), LogType.SUBS);
+	
+						JAXBContext c = JAXBContext.newInstance(se.qxx.jukebox.subtitles.Subs.Movie.class);
+						Marshaller m = c.createMarshaller();
+					
+						m.marshal(subsMovie, subs);
+					}
 				}
+	
+				doc.appendChild(subs);
 			}
-
-			doc.appendChild(subs);
-
+			
 			Log.Debug(String.format("SUBS :: Writing xml file :: %s", subsXmlFilename), LogType.SUBS);
 			writeXmlDocument(doc, subsXmlFilename);
 		} catch (Exception e) {

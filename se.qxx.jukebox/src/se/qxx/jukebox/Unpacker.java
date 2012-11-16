@@ -170,8 +170,6 @@ public class Unpacker {
 	                    fileoutputstream.write(buf, 0, n);
 	
 	                fileoutputstream.close(); 
-	                zipinputstream.closeEntry();
-	                zipinputstream.close();
 	                
 	                unpackedFiles.add(new File(outputFilename));
                 }
