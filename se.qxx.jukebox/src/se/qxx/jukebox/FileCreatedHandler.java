@@ -12,6 +12,7 @@ import se.qxx.jukebox.builders.MovieBuilder;
 import se.qxx.jukebox.builders.PartPattern;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.settings.Settings;
 
 public class FileCreatedHandler implements INotifyClient {
 
@@ -150,14 +151,17 @@ public class FileCreatedHandler implements INotifyClient {
 	}
 	
 	private boolean isTvEpisode(String filename) {
-		Pattern p1 = Pattern.compile("s\\d{1,2}e\\d{1,2}", Pattern.CASE_INSENSITIVE);
-		Matcher m1 = p1.matcher(filename);
+		for(se.qxx.jukebox.settings.JukeboxListenerSettings.StringSplitters.Episodes.Pattern p 
+				: Settings.get().getStringSplitters().getEpisodes().getPattern()) {
+
+			Pattern regexPattern = Pattern.compile(StringUtils.trim(p.getRegex()), Pattern.CASE_INSENSITIVE);
+			Matcher matcher = regexPattern.matcher(filename);
+			
+			if (matcher.find())
+				return true;
+			
+		}
 		
-		Pattern p2 = Pattern.compile("\\d{1,2}x\\d{1,2}", Pattern.CASE_INSENSITIVE);
-		Matcher m2 = p2.matcher(filename);
-		
-		Pattern p3 = Pattern.compile("Episode", Pattern.CASE_INSENSITIVE);
-		Matcher m3 = p3.matcher(filename);
-		return m1.find() || m2.find() || m3.find();
+		return false;
 	}
 }

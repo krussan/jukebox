@@ -48,6 +48,35 @@
 	        </regex>            
         </partPattern>
     </parts>
+    <episodes>
+        <pattern>
+            <groups>
+                <group property="season" id="1" />
+                <group property="episode" id="2" />
+            </groups>
+	        <regex>
+	            <![CDATA[s(\d{1,2})[.|_|\s|-]*e(\d{1,2})]]>
+	        </regex>            
+        </pattern>
+        <pattern>
+            <groups>
+                <group property="season" id="1" />
+                <group property="episode" id="2" />
+            </groups>
+	        <regex>
+	            <![CDATA[\d{1,2}[.|_|\s|-]*sx[.|_|\s|-]*s\d{1,2}]]>
+	        </regex>            
+        </pattern>
+        <pattern>
+            <groups>
+                <group property="season" id="1" />
+                <group property="episode" id="2" />
+            </groups>
+            <regex>
+                <![CDATA[(\d{1,2})[.|_|\s|-]*sezon[.|_|\s|-]*(\d{1,2})[.|_|\s|-]*seriya]]>
+            </regex>
+        </pattern>
+    </episodes>
   	<splitter>
   	    <groups>
   	        <group property="title" id="1"/>
@@ -60,10 +89,10 @@
   	    </groups>
   		<regex>
   		    <!-- Matches Batman.Under.The.Red.Hood.2010.720p.XviD.AC3-ViSiON.avi -->
-  			<![CDATA[((\w[.|_|\s|-]*)*)([\[|(]?((19|20)\d{2})[\]|)]?)+[.|_|\s|-]*(\[?(1080p|720p|dvdscr|dvdrip|brrip|bdrip|ppvrip|ppv|telesync|ts|hdrip|r5\s*line|cam)\]?)?[.|_|\s|-]*(\[?(xvid|x264|iflix)\]?)?[.|_|\s|-]*(\[?(ac3\s5\.1|ac3)\]?)?[.|_|\s|-]*(\[(eng|swe)\])?[.|_|\s|-]*(.*)[.|_|\s|-]*]]>
+  			<![CDATA[((\w[.|_|\s|-]*)*)([\[|(]?((19|20)\d{2})[\]|)]?)+[.|_|\s|-]*([\[|(]?(1080p|720p|dvdscreener|dvdscr|dvdrip|brrip|bdrip|ppvrip|ppv|telesync|ts|hdrip|r5\s*line|cam)[\]|)]?)?[.|_|\s|-]*([\[|(]?(xvid|x264|iflix|h264)[\]|)]?)?[.|_|\s|-]*([\[|(]?(ac3\s5\.1|ac3|aac)[\]|)]?)?[.|_|\s|-]*([\[|(]?(eng|swe)[\]|)]?)?[.|_|\s|-]*(.*)[.|_|\s|-]*]]>
   		</regex>
   		<ignore>
-  		    <![CDATA[READNFO|CAM|LIMITED|SWESUB|UNRATED|REPACK|\d{2}K|UNRATED|V3|\d{1,3}MB|HDtv|i2p|EXTENDED|RETAIL|(\w[.|_|\s|-]DC]]>
+  		    <![CDATA[READNFO|CAM|LIMITED|SWESUB|UNRATED|REPACK|\d{2}K|UNRATED|V3|\d{1,3}MB|\d{1,3}M|HDtv|i2p|EXTENDED|RETAIL|[.|_|\s|-]DC|bluray|www\.\w\.\w\.\w]]>
   		</ignore>
   	</splitter>
   	<splitter>
@@ -76,10 +105,10 @@
   	      	<group property="group" id="10" />  	        	        	        	        	        	        	        	        	        	        
   	    </groups> 	    	    
   		<regex>
-  			<![CDATA[((\w[.|_|\s|-]*)*)\[?(1080p|720p|dvdscr|dvdrip|brrip|bdrip|ppvrip|ppv|telesync|ts|hdrip|r5\s*line|cam)\]?[.|_|\s|-]*(\[?(xvid|x264|iflix)\]?)?[.|_|\s|-]*(\[?(ac3\s5\.1|ac3)\]?)?[.|_|\s|-]*(\[(eng|swe)\])?[.|_|\s|-]*(.*)]]>
+  			<![CDATA[((\w[.|_|\s|-]*)*)[\[|(]?(1080p|720p|dvdscreener|dvdscr|dvdrip|brrip|bdrip|ppvrip|ppv|telesync|ts|hdrip|r5\s*line|cam)[\]|)]?[.|_|\s|-]*([\[|(]?(xvid|x264|iflix|h264)[\]|)]?)?[.|_|\s|-]*([\[|(]?(ac3\s5\.1|ac3|aac)[\]|)]?)?[.|_|\s|-]*([\[|(]?(eng|swe)[\]|)]?)?[.|_|\s|-]*(.*)]]>
   		</regex>
   		<ignore>
-  		    <![CDATA[READNFO|CAM|LIMITED|SWESUB|UNRATED|REPACK|\d{2}K|UNRATED|V3|\d{1,3}MB|HDtv|i2p|EXTENDED|RETAIL|(\w[.|_|\s|-]DC]]>
+  		    <![CDATA[READNFO|CAM|LIMITED|SWESUB|UNRATED|REPACK|\d{2}K|UNRATED|V3|\d{1,3}MB|\d{1,3}M|HDtv|i2p|EXTENDED|RETAIL|[.|_|\s|-]DC|bluray|www\.\w\.\w\.\w]]>
   		</ignore>
   	</splitter>
     <splitter>
@@ -90,7 +119,7 @@
     		<![CDATA[(.*)]]>
     	</regex>
   		<ignore>
-  		    <![CDATA[READNFO|CAM|LIMITED|SWESUB|UNRATED|REPACK|\d{2}K|UNRATED|V3|\d{1,3}MB|HDtv|i2p|EXTENDED|RETAIL|1080p|720p|DVDScr|DVDSCR|DvDRip|DVDRip|BRRip|BDRip|PPVRIP|PPV|TELESYNC|TS|HDRip|R5\s*LINE|R5\s*LiNE|R5\s*Line|CAM|Xvid|XviD|XViD|XvID|XVID|x264|IFLIX|AC3\s5\.1|AC3|(\w[.|_|\s|-]DC]]>
+  		    <![CDATA[READNFO|CAM|LIMITED|SWESUB|UNRATED|REPACK|\d{2}K|UNRATED|V3|\d{1,3}MB|\d{1,3}M|HDtv|i2p|EXTENDED|RETAIL|1080p|720p|DVDScr|DVDSCR|DvDRip|DVDRip|BRRip|BDRip|PPVRIP|PPV|TELESYNC|TS|HDRip|R5\s*LINE|R5\s*LiNE|R5\s*Line|CAM|Xvid|XviD|XViD|XvID|XVID|x264|IFLIX|AC3\s5\.1|AC3|[.|_|\s|-]DC|bluray|www\.\w\.\w\.\w|h264|aac]]>
   		</ignore>
     </splitter>
   </stringSplitters>
