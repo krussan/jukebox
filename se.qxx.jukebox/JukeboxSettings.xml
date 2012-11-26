@@ -64,7 +64,7 @@
                 <group property="episode" id="2" />
             </groups>
 	        <regex>
-	            <![CDATA[\d{1,2}[.|_|\s|-]*sx[.|_|\s|-]*s\d{1,2}]]>
+	            <![CDATA[(\d{1,2})[.|_|\s|-]*x[.|_|\s|-]*(\d{1,2})]]>
 	        </regex>            
         </pattern>
         <pattern>

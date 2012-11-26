@@ -1,8 +1,15 @@
 package se.qxx.jukebox.junit;
 
+import org.junit.Before;
 import org.junit.Test;
 
+import se.qxx.jukebox.DB;
+
 public class TestDatabase {
+	
+	@Before public void setup() {
+		DB.setDatabase("jukebox_test.db");
+	}
 	
 	@Test public void getMovieByFilename() {
 		

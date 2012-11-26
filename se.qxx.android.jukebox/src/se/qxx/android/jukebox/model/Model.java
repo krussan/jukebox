@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 
@@ -15,12 +16,12 @@ public class Model {
 	
 	private int currentMovieId = -1;
 	private int currentSubId = -1;
+	private int currentMediaId = -1;
 	private boolean initialized = false;
 	
 	public interface ModelUpdatedEventListener {
 		public void handleModelUpdatedEventListener(java.util.EventObject e);
 	}
-	
 
 	private List<ModelUpdatedEventListener> _listeners = new ArrayList<Model.ModelUpdatedEventListener>();
 	
@@ -61,7 +62,19 @@ public class Model {
 		
 		return _instance;
 	}
+
+	public boolean isInitialized() {
+		return this.initialized;
+	}
+
+	public void setInitialized(boolean initialized) {
+		this.initialized = initialized;
+	}
 	
+	//---------------------------------------------------------------------------------------
+	// MOVIE
+	//---------------------------------------------------------------------------------------
+
 	public void addMovie(Movie movie) {
 		_movies.add(movie);
 		fireModelUpdatedEvent(ModelUpdatedType.Movies);
@@ -118,20 +131,111 @@ public class Model {
 	
 	public void currentMovieSetNext() {
 		this.currentMovieId++;
+		this.currentMediaId = 0;
 		if (this.currentMovieId == this._movies.size())
 			this.currentMovieId = 0;
 	}
 	
 	public void currentMovieSetPrevious() {
 		this.currentMovieId--;
+		this.currentMediaId = 0;
 		if (this.currentMovieId < 0)
 			this.currentMovieId = this._movies.size() == 0 ? 0 : this._movies.size() - 1;
 	}
 	
 	public void setCurrentMovie(int index) {
-		
 		this.currentMovieId = index;
+		this.currentMediaId = 0;		
 	}
+
+	public void sortMovies() {
+		Collections.sort(_movies, new Comparator<Movie>() {
+			@Override
+			public int compare(Movie lhs, Movie rhs) {
+				
+				return lhs.getTitle().compareTo(rhs.getTitle());
+			}
+		});
+	}
+
+	//---------------------------------------------------------------------------------------
+	// MEDIA
+	//---------------------------------------------------------------------------------------
+	
+	public Media getCurrentMedia() {
+		Movie m = getCurrentMovie();
+		if (m != null) {
+			if (this.currentMediaId >= 0 && this.currentMediaId < m.getMediaList().size())
+				return m.getMediaList().get(this.currentMediaId);
+			else
+				return null;			
+		}
+		else {
+			return null;
+		}
+	}
+
+	public Media getPreviousMedia() {
+		Movie m = getCurrentMovie();
+		if (m != null) {
+			int size = m.getMediaList().size();
+			if (size == 0)
+				return null;
+			else {
+				if (this.currentMediaId == 0)
+					return m.getMedia(size - 1);
+				else
+					return m.getMedia(this.currentMediaId - 1);
+			}
+		}
+		else
+			return null;
+	}
+	
+	public Media getNextMedia() {
+		Movie m = getCurrentMovie();
+		if (m!=null) {			
+			int size = m.getMediaList().size();
+			if (size == 0)
+				return null;
+			else {
+				if (this.currentMediaId == size - 1)
+					return m.getMedia(0);
+				else
+					return m.getMedia(this.currentMediaId + 1);
+			}
+		}
+		else {
+			return null;
+		}
+	}	
+	
+	public void currentMediaSetNext() {
+		this.currentMediaId++;
+		Movie m = getCurrentMovie();
+		if (m != null) {
+			if (this.currentMediaId == m.getMediaList().size())
+				this.currentMediaId = 0;
+		}
+	}
+	
+	public void currentMediaSetPrevious() {
+		this.currentMediaId--;
+		Movie m = getCurrentMovie();
+		if (m != null) {
+			int size = m.getMediaList().size();
+			if (this.currentMediaId < 0)
+				this.currentMediaId = size == 0 ? 0 : size - 1;
+		}
+	}
+	
+	public void setCurrentMedia(int index) {
+		this.currentMediaId = index;
+	}
+	
+	//---------------------------------------------------------------------------------------
+	// PLAYERS
+	//---------------------------------------------------------------------------------------
 	
 	public List<String> getPlayers() {
 		return _players;
@@ -157,16 +261,10 @@ public class Model {
 		return _players.get(index);
 	}
 	
-	public void sortMovies() {
-		Collections.sort(_movies, new Comparator<Movie>() {
-			@Override
-			public int compare(Movie lhs, Movie rhs) {
-				
-				return lhs.getTitle().compareTo(rhs.getTitle());
-			}
-		});
-	}
-
+	//---------------------------------------------------------------------------------------
+	// SUBTITLES
+	//---------------------------------------------------------------------------------------
+	
 	public List<Subtitle> getSubtitles() {
 		return _subs;
 	}
@@ -223,14 +321,5 @@ public class Model {
 	public int getCurrentSubtitleID() {
 		return currentSubId;
 	}
-
-	public boolean isInitialized() {
-		return initialized;
-	}
-
-	public void setInitialized(boolean initialized) {
-		this.initialized = initialized;
-	}
-	
 	
 }

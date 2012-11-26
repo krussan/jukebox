@@ -369,7 +369,8 @@ public class DB {
 		PreparedStatement prep = conn.prepareStatement(
 			" SELECT MD.ID, MD._movie_ID, MD.filename, MD.filepath, MD.idx, MD.metaDuration, MD.metaFramerate " +
 			" FROM Media MD" +
-			" WHERE MD._movie_ID = ?");
+			" WHERE MD._movie_ID = ?" +
+			" ORDER BY idx");
 		
 		prep.setInt(1, movieID);
 		ResultSet rs = prep.executeQuery();

@@ -7,7 +7,6 @@ public class HibernatorTest {
 		try {
 			hib.suspend();
 		} catch (HibernationFailedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

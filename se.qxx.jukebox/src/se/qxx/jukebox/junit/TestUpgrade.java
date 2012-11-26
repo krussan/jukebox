@@ -3,6 +3,7 @@ package se.qxx.jukebox.junit;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 

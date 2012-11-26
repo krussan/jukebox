@@ -164,18 +164,17 @@
         </LinearLayout>
     </LinearLayout>
 
-
-    <TextView
-        android:id="@+id/textViewFilename"
+    <ListView 
+        android:id="@+id/listViewFilename"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/lblFilename"
         android:textAppearance="?android:attr/textAppearanceSmall" 
         android:paddingTop="12dp"
         android:paddingLeft="12dp"
         android:paddingRight="12dp"
         android:paddingBottom="4dp"        
-        android:layout_below="@id/linearLayout2"/>
+        android:layout_below="@id/linearLayout2">
+    </ListView>
   
     <TextView
         android:id="@+id/textViewStory"
@@ -183,7 +182,7 @@
         android:layout_height="wrap_content"
         android:text="@string/lblStory"
         android:textAppearance="?android:attr/textAppearanceSmall" 
-        android:layout_below="@id/textViewFilename"
+        android:layout_below="@id/listViewFilename"
         android:layout_alignParentLeft="true"
         android:paddingTop="6dp"
         android:paddingLeft="12dp"

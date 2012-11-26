@@ -109,6 +109,10 @@ public class FlipperActivity extends JukeboxActivityBase implements SimpleGestur
 	    GUITools.setTextOnTextview(R.id.textViewRating, String.format("Rating :: %s / 10", m.getRating()), v);
 	    //GUITools.setTextOnTextview(R.id.textViewFilename, String.format("Filename :: %s", m.getFilename()), v);
 
+		MovieMediaLayoutAdapter adapter = new MovieMediaLayoutAdapter(this, m); 
+		ListView listView = (ListView)v.findViewById(R.id.listViewFilename);
+		listView.setAdapter(adapter);
+	    
 	    //detector = new SimpleGestureFilter(this, this);
 	}    
 

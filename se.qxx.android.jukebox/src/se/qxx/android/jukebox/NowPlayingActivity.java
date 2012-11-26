@@ -25,6 +25,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -68,6 +69,11 @@ public class NowPlayingActivity extends JukeboxActivityBase
 	    
 	    GUITools.setTextOnTextview(R.id.textViewTitle, m.getTitle(), rootView);
 	    GUITools.setTextOnTextview(R.id.textViewYear, Integer.toString(m.getYear()), rootView);
+	    
+		MovieMediaLayoutAdapter adapter = new MovieMediaLayoutAdapter(this, m); 
+		ListView v = (ListView)findViewById(R.id.listViewFilename);
+		v.setAdapter(adapter);
+	    
 //	    GUITools.setTextOnTextview(R.id.textViewFilename, String.format("Filename :: %s", m.getFilename()) , rootView);
 	    
 	    //TODO: MEDIA -- Fix this
@@ -198,7 +204,6 @@ public class NowPlayingActivity extends JukeboxActivityBase
 				
 				
 			} catch (InvalidProtocolBufferException e) {
-				// TODO Auto-generated catch block
 				Log.e(getLocalClassName(), "Error while parsing response from GetTitle", e);
 			}
 		}
