@@ -637,8 +637,9 @@ public class DB {
 	private synchronized static ArrayList<Subtitle> getSubtitles(int mediaid, Connection conn) throws SQLException {
 
 		String statement =
-				" SELECT _media_ID, filename, description, rating " +
-				" FROM subtitles" +
+				" SELECT S._media_ID, S.filename, S.description, S.rating, MD.idx " +
+				" FROM subtitles S" +
+				" INNER JOIN Media MD ON S._media_ID = MD.ID" +
 				" WHERE _media_ID = ?";
 
 		PreparedStatement prep = conn.prepareStatement(statement);
@@ -767,6 +768,7 @@ public class DB {
 				.setFilename(rs.getString("filename"))
 				.setDescription(rs.getString("description"))
 				.setRating(rs.getString("rating"))
+				.setMediaIndex(rs.getInt("idx"))
 				.build();				
 	}
 

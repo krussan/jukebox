@@ -62,6 +62,8 @@ public class UndertexterSe extends SubFinderBase {
 		//Store downloaded files in temporary storage
 		//SubtitleDownloader will move them to correct path
 		String tempSubPath = createTempSubsPath(m);
+
+		Collections.sort(listSubs);
 		
 		for (SubFile sf : listSubs) {
 			try {
@@ -107,17 +109,24 @@ public class UndertexterSe extends SubFinderBase {
 		String urlRegexGroup = getSetting("urlRegexGroup");
 		String nameRegexGroup = getSetting("nameRegexGroup");
 		
-		int urlGroup = Integer.parseInt(urlRegexGroup);
-		int urlName = Integer.parseInt(nameRegexGroup);
+		int intUrlGroup = Integer.parseInt(urlRegexGroup);
+		int intNameGroup = Integer.parseInt(nameRegexGroup);
 		
 		List<SubFile> listSubs = new ArrayList<SubFile>();
 		
-		Log.Debug(String.format("UndertexterSe :: Finding subtitles for %s", m.getTitle()), Log.LogType.SUBS);
+		Log.Debug(String.format("UndertexterSe :: Finding subtitles for %s", m.getMedia(0).getFilename()), Log.LogType.SUBS);
 		
 		while (matcher.find()) {
-			String urlString = matcher.group(urlGroup);
-			String description = matcher.group(urlName); 
-			
+			String urlString = matcher.group(intUrlGroup);
+			String description = matcher.group(intNameGroup); 
+//			String part = matcher.group(intPartGroup);
+//			int nrOfParts = 0;
+//			if (Util.tryParseInt(part)) 
+//				nrOfParts = Integer.parseInt(part);
+//			
+			//TODO:: is it safe to do this? Could it be that one of the media has not yet been identified?
+			// if (nrOfParts == m.getMediaCount())
+				
 			SubFile sf = new SubFile(urlString, description);
 			Rating r = this.rateSub(m, description);
 			sf.setRating(r);
@@ -128,9 +137,7 @@ public class UndertexterSe extends SubFinderBase {
 		
 		if (listSubs.size()==0)
 			Log.Debug("UndertexterSe :: No subs found", Log.LogType.SUBS);
-			
-		
-		Collections.sort(listSubs);
+					
 		return listSubs;
 	}
 

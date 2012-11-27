@@ -59,21 +59,26 @@ public class SubFile implements Comparable<SubFile> {
 		this.index = index;
 	}
 	
+	public int getRatingIndex() {
+		switch (this.getRating()) {
+		case ExactMatch:
+			return 1;
+		case PositiveMatch:
+			return 2;
+		case ProbableMatch:
+			return 3;
+		case NotMatched:
+			return 4;
+		case SubsExist:
+			return 0;
+		}
+		
+		return 99;
+	}
+	
 	@Override
 	public int compareTo(SubFile that) {
-		if (this._rating == Rating.ExactMatch) return -1;
-		if (that._rating == Rating.ExactMatch) return 1;
-		
-		if (this._rating == Rating.PositiveMatch && (that._rating == Rating.ProbableMatch || that._rating == Rating.NotMatched))
-			return -1;
-		if (that._rating == Rating.PositiveMatch && (this._rating == Rating.ProbableMatch || this._rating == Rating.NotMatched))
-			return 1;
-		if (this._rating == Rating.ProbableMatch && that._rating == Rating.NotMatched)
-			return -1;
-		if (that._rating == Rating.ProbableMatch && this._rating == Rating.NotMatched)
-			return 1;
-		
-		return this._description.compareTo(that._description);
+		return this.getRatingIndex() - that.getRatingIndex();
 	}
 
 }

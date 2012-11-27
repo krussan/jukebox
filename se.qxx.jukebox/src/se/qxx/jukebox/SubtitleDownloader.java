@@ -31,6 +31,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 
+import com.sun.tools.javac.util.Version;
+
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.builders.PartPattern;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
