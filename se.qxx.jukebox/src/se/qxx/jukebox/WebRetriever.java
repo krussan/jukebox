@@ -58,7 +58,7 @@ public class WebRetriever {
 		
 		while (!found) {
 			code = httpcon.getResponseCode();
-			Log.Debug(httpcon.getResponseMessage(), Log.LogType.MAIN);
+			//Log.Debug(httpcon.getResponseMessage(), Log.LogType.MAIN);
 			
 			if (code == 302) {
 				newUrl = httpcon.getHeaderField("Location");

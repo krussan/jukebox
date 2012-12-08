@@ -441,13 +441,11 @@ public class DB {
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Languages
 	//---------------------------------------------------------------------------------------
-	private static int getLanguageID(String language, Connection conn) throws ClassNotFoundException, SQLException {
+	private synchronized static int getLanguageID(String language, Connection conn) throws ClassNotFoundException, SQLException {
 		String statement =
 				" SELECT ID FROM language " +
 				" WHERE language = ?";		
-		
-		conn = DB.initialize();
-		
+				
 		PreparedStatement prep = conn.prepareStatement(statement);
 		
 		prep.setString(1, language);
