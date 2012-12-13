@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -94,9 +95,11 @@ public class Unpacker {
 						"unrar", 
 						"e",
 						f.getAbsolutePath(),
+						entryName,
 						outputPath);
 					
 					unpackedFiles.add(new File(outputFilename));
+					
 				}
 			}
 		} catch (IOException e) {
@@ -109,7 +112,9 @@ public class Unpacker {
 	private static String executeCommand(String command, String... args) {
 		String output = StringUtils.EMPTY;
 		
-		Log.Debug(String.format("Executing command :: %s", command), LogType.SUBS);
+		String arguments = StringUtils.join(args, ' ');
+		
+		Log.Debug(String.format("EXEC :: Executing command :: %s %s", command, arguments), LogType.SUBS);
 		List<String> processArguments = new ArrayList<String>();
 		processArguments.add(command);
 		processArguments.addAll(Arrays.asList(args));
@@ -117,19 +122,27 @@ public class Unpacker {
 		try {
 			ProcessBuilder pb = new ProcessBuilder(processArguments);
 			Process p = pb.start();
-			
-			output = Util.readMessageFromStream(p.getInputStream());
 
-			Log.Debug(String.format("Read %s characters from command stream", output.length()), LogType.SUBS);
+			InputStream stdout = p.getInputStream();
+			InputStream stderr = p.getErrorStream();
+
+			Log.Debug(String.format("EXEC :: Reading from command stream"), LogType.SUBS);
+
+			output = Util.readMessageFromStream(stdout);
+			
+			Log.Debug(String.format("EXEC :: Read %s characters from command stream", output.length()), LogType.SUBS);
 			p.waitFor();
 			
-			Log.Debug(String.format("Process exit value :: %s", p.exitValue()), LogType.SUBS);
+			Log.Debug(String.format("EXEC :: Process exit value :: %s", p.exitValue()), LogType.SUBS);
 
-			String errorMessage = Util.readMessageFromStream(p.getErrorStream());
+			String errorMessage = Util.readMessageFromStream(stderr);
 			
 			if (p.exitValue() != 0) {
-				Log.Debug("Error when unpacking archive:", LogType.SUBS);
+				Log.Debug("EXEC :: Error when unpacking archive:", LogType.SUBS);
 			}
+
+			stdout.close();
+			stderr.close();
 
 			Log.Debug(errorMessage, LogType.SUBS);
 			

@@ -93,6 +93,9 @@ public class UndertexterSe extends SubFinderBase {
 
 		Collections.sort(listSubs);
 		
+		int sizeCollection = listSubs.size();
+		int c = 1;
+		
 		for (SubFile sf : listSubs) {
 			try {
 				File file = WebRetriever.getWebFile(sf.getUrl(), tempSubPath);
@@ -101,13 +104,20 @@ public class UndertexterSe extends SubFinderBase {
 					
 					files.add(sf);
 		
-					Log.Debug(String.format("%s :: File downloaded: %s", this.getClassName(), sf.getFile().getName()), Log.LogType.SUBS);
+					Log.Debug(String.format("%s :: [%s/%s] :: File downloaded: %s"
+							, this.getClassName()
+							, c
+							, sizeCollection
+							, sf.getFile().getName())
+						, Log.LogType.SUBS);
 		
 					if (sf.getRating() == Rating.ExactMatch || sf.getRating() == Rating.PositiveMatch)  {
 						Log.Debug(String.format("%s :: Exact or positive match found. exiting...", this.getClassName()), Log.LogType.SUBS);
 						break;
 					}
 				}
+				
+				c++;
 			}
 			catch (IOException e) {
 				Log.Debug(String.format("%s :: Error when downloading subtitle :: %s", this.getClassName(), sf.getFile().getName()), LogType.SUBS);
