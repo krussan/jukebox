@@ -1,4 +1,4 @@
-package se.qxx.android.jukebox;
+package se.qxx.android.jukebox.comm;
 
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponse;
 

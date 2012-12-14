@@ -94,11 +94,12 @@ public final class R {
         public static final int refresh=0x7f020047;
         public static final int rewind_48=0x7f020048;
         public static final int selected=0x7f020049;
-        public static final int stop=0x7f02004a;
-        public static final int stop32=0x7f02004b;
-        public static final int todo=0x7f02004c;
-        public static final int widescreen=0x7f02004d;
-        public static final int zap=0x7f02004e;
+        public static final int star=0x7f02004a;
+        public static final int stop=0x7f02004b;
+        public static final int stop32=0x7f02004c;
+        public static final int todo=0x7f02004d;
+        public static final int widescreen=0x7f02004e;
+        public static final int zap=0x7f02004f;
     }
     public static final class id {
         public static final int bottomtext=0x7f090019;
@@ -113,15 +114,15 @@ public final class R {
         public static final int btnRefresh=0x7f090006;
         public static final int btnSelectMediaPlayer=0x7f090007;
         public static final int btnStop=0x7f090023;
-        public static final int btnSubFullscreen=0x7f09002f;
-        public static final int btnSubNotOk=0x7f09002e;
-        public static final int btnSubOk=0x7f09002d;
         public static final int btnSubSelection=0x7f09001f;
         public static final int btnViewInfo=0x7f090003;
         public static final int imageView1=0x7f09000e;
         public static final int imgDownloading=0x7f09001b;
         public static final int imgPlayerSelected=0x7f09002a;
-        public static final int imgSubPoster=0x7f09002c;
+        public static final int imgSubRatingExact=0x7f09002d;
+        public static final int imgSubRatingPositive=0x7f09002e;
+        public static final int imgSubRatingProbable=0x7f09002f;
+        public static final int imgSubRatingSubsExist=0x7f09002c;
         public static final int imgWatched=0x7f09001c;
         public static final int linearLayout1=0x7f090001;
         public static final int linearLayout2=0x7f09000d;
@@ -136,11 +137,10 @@ public final class R {
         public static final int rootMovieItem=0x7f090000;
         public static final int rootNowPlaying=0x7f09001d;
         public static final int rootPlayerPicker=0x7f090027;
-        public static final int rootSubSelect=0x7f09002b;
+        public static final int rootSubtitlePicker=0x7f090030;
         public static final int seekBarDuration=0x7f090025;
         public static final int textViewDirector=0x7f090012;
         public static final int textViewDuration=0x7f090013;
-        public static final int textViewFilename=0x7f090030;
         public static final int textViewGenre=0x7f090011;
         public static final int textViewRating=0x7f090014;
         public static final int textViewStory=0x7f090016;
@@ -151,6 +151,7 @@ public final class R {
         public static final int txtPlayerName=0x7f090029;
         public static final int txtRating=0x7f09001a;
         public static final int txtSeekIndicator=0x7f090026;
+        public static final int txtSubName=0x7f09002b;
     }
     public static final class layout {
         public static final int itemwrapper=0x7f030000;
@@ -161,7 +162,8 @@ public final class R {
         public static final int nowplaying=0x7f030005;
         public static final int playerpicker=0x7f030006;
         public static final int playerpickerrow=0x7f030007;
-        public static final int subselect=0x7f030008;
+        public static final int subtitleitem=0x7f030008;
+        public static final int subtitlepicker=0x7f030009;
     }
     public static final class menu {
         public static final int mainmenu=0x7f080000;
@@ -179,8 +181,12 @@ public final class R {
         public static final int btnWakeup=0x7f060009;
         public static final int defaultServerIpAddress=0x7f060004;
         public static final int descDownloading=0x7f06001f;
+        public static final int descExactMatch=0x7f060023;
+        public static final int descPositiveMatch=0x7f060022;
         public static final int descPosterImage=0x7f060018;
+        public static final int descProbableMatch=0x7f060021;
         public static final int descSelect=0x7f060017;
+        public static final int descSubsExist=0x7f060024;
         public static final int descViewInfo=0x7f06001a;
         public static final int hello=0x7f060000;
         public static final int lblConnect=0x7f060013;
@@ -194,6 +200,7 @@ public final class R {
         public static final int lblSeekBarIndicator=0x7f06001e;
         public static final int lblSelectMediaPlayer=0x7f060014;
         public static final int lblStory=0x7f06000e;
+        public static final int lblSubtitleName=0x7f060020;
         public static final int lblTitle=0x7f06000c;
         public static final int lblYear=0x7f06000d;
         public static final int movieIconDescription=0x7f060005;

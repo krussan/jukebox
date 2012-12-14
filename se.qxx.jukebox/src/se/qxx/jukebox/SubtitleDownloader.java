@@ -42,7 +42,7 @@ import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder.SubF
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder;
 import se.qxx.jukebox.subtitles.SubFile;
-import se.qxx.jukebox.subtitles.SubFile.Rating;
+import se.qxx.jukebox.domain.JukeboxDomain.Rating;
 import se.qxx.jukebox.subtitles.SubFinderBase;
 import se.qxx.jukebox.subtitles.Subs;
 
@@ -286,7 +286,7 @@ public class SubtitleDownloader implements Runnable {
 						NamedNodeMap attrs = sub.getAttributes();
 						attrs.setNamedItem(getAttribute(doc, "filename", subsFilename));
 						attrs.setNamedItem(getAttribute(doc, "description", s.getDescription()));
-						attrs.setNamedItem(getAttribute(doc, "rating", s.getRating()));
+						attrs.setNamedItem(getAttribute(doc, "rating", s.getRating().toString()));
 						
 						movie.appendChild(sub);
 					}

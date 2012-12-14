@@ -1,6 +1,10 @@
-package se.qxx.android.jukebox;
+package se.qxx.android.jukebox.adapters;
 
+import se.qxx.android.jukebox.JukeboxSettings;
 import se.qxx.android.jukebox.R;
+import se.qxx.android.jukebox.R.drawable;
+import se.qxx.android.jukebox.R.id;
+import se.qxx.android.jukebox.R.layout;
 import se.qxx.android.jukebox.model.ModelPlayersAdapter;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;

@@ -2,6 +2,7 @@ package se.qxx.android.jukebox;
 
 import java.util.EventObject;
 
+import se.qxx.android.jukebox.adapters.MovieLayoutAdapter;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.jukebox.model.ModelUpdatedEvent;
 import se.qxx.android.jukebox.model.ModelUpdatedType;

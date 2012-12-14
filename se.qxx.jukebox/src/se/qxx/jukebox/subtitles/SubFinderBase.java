@@ -14,7 +14,8 @@ import se.qxx.jukebox.builders.PartPattern;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.settings.JukeboxListenerSettings;
 import se.qxx.jukebox.settings.Settings;
-import se.qxx.jukebox.subtitles.SubFile.Rating;
+import se.qxx.jukebox.domain.JukeboxDomain.Rating;
+
 
 public abstract class SubFinderBase {
 

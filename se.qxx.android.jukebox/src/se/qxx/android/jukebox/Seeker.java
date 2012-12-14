@@ -2,13 +2,13 @@ package se.qxx.android.jukebox;
 
 import java.util.Date;
 
-import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 
+import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
+import se.qxx.android.jukebox.comm.JukeboxResponseListener;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponse;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseTime;
-import android.app.ProgressDialog;
 
 public class Seeker implements JukeboxResponseListener, Runnable {
 

@@ -1,4 +1,4 @@
-package se.qxx.android.jukebox;
+package se.qxx.android.jukebox.exceptions;
 
 public class JukeboxNotInitializedException extends Exception {
 

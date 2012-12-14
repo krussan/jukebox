@@ -1,4 +1,4 @@
-package se.qxx.android.jukebox;
+package se.qxx.android.jukebox.comm;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -38,6 +38,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListSubtitles;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseStartMovie;
 
+import se.qxx.android.jukebox.JukeboxSettings;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.Logger;
 

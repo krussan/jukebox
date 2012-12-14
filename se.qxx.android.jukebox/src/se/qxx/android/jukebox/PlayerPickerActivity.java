@@ -3,6 +3,7 @@ package se.qxx.android.jukebox;
 import java.util.EventObject;
 import java.util.List;
 
+import se.qxx.android.jukebox.adapters.PlayerLayoutAdapter;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.jukebox.model.ModelUpdatedEvent;
 import se.qxx.android.jukebox.model.ModelUpdatedType;

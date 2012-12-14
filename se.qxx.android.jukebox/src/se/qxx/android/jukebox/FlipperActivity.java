@@ -2,6 +2,7 @@ package se.qxx.android.jukebox;
 
 import org.apache.commons.lang3.StringUtils;
 
+import se.qxx.android.jukebox.adapters.MovieMediaLayoutAdapter;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.SimpleGestureFilter;

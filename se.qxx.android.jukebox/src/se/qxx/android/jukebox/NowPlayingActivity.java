@@ -6,6 +6,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
+import se.qxx.android.jukebox.adapters.MovieMediaLayoutAdapter;
+import se.qxx.android.jukebox.comm.JukeboxResponseListener;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.jukebox.model.ModelUpdatedEvent;
 import se.qxx.android.jukebox.model.ModelUpdatedType;
@@ -17,9 +19,6 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseGetTitle;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseIsPlaying;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -65,7 +64,7 @@ public class NowPlayingActivity extends JukeboxActivityBase
 	    View rootView = this.getRootView();
 	    
 	    if (!m.getImage().isEmpty()) 
-	    	GUITools.setImageOnImageView(R.id.imgSubPoster, m.getImage().toByteArray(), rootView);
+	    	GUITools.setImageOnImageView(R.id.imageView1, m.getImage().toByteArray(), rootView);
 	    
 	    GUITools.setTextOnTextview(R.id.textViewTitle, m.getTitle(), rootView);
 	    GUITools.setTextOnTextview(R.id.textViewYear, Integer.toString(m.getYear()), rootView);
@@ -144,9 +143,8 @@ public class NowPlayingActivity extends JukeboxActivityBase
 				}
 				break;
 			case R.id.btnSubSelection:
-				pickSubtitle();
-//				Intent i = new Intent(this, SubSelectActivity.class);
-//				startActivity(i);
+				Intent i = new Intent(this, SubSelectActivity.class);
+				startActivity(i);
 				break;
 			default:
 				break;
@@ -228,19 +226,19 @@ public class NowPlayingActivity extends JukeboxActivityBase
 		return false;
 	}
 
-	private void pickSubtitle() {
-		AlertDialog.Builder b = new AlertDialog.Builder(this);
-		b.setTitle("Pick subtitle");
-		b.setItems(Model.get().getSubtitleDescriptions(), new OnClickListener() {
-			@Override
-			public void onClick(DialogInterface arg0, int arg1) {
-				Model.get().setCurrentSubtitle(arg1);
-			}
-			
-		});
-		
-		b.show();
-	}
+//	private void pickSubtitle() {
+//		AlertDialog.Builder b = new AlertDialog.Builder(this);
+//		b.setTitle("Pick subtitle");
+//		b.setItems(Model.get().getSubtitleDescriptions(), new OnClickListener() {
+//			@Override
+//			public void onClick(DialogInterface arg0, int arg1) {
+//				Model.get().setCurrentSubtitle(arg1);
+//			}
+//			
+//		});
+//		
+//		b.show();
+//	}
 
 	@Override
 	public void handleModelUpdatedEventListener(EventObject e) {

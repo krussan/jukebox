@@ -14,7 +14,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie.Builder;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
-import se.qxx.jukebox.subtitles.SubFile.Rating;
+import se.qxx.jukebox.domain.JukeboxDomain.Rating;
 
 public class DB {
     
@@ -796,7 +796,7 @@ public class DB {
 		return Subtitle.newBuilder()
 				.setFilename(rs.getString("filename"))
 				.setDescription(rs.getString("description"))
-				.setRating(rs.getString("rating"))
+				.setRating(Rating.valueOf(rs.getString("rating")))
 				.setMediaIndex(rs.getInt("idx"))
 				.setLanguage(rs.getString("language"))
 				.build();				

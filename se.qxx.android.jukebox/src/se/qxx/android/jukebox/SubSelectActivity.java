@@ -1,33 +1,49 @@
 package se.qxx.android.jukebox;
 
+import se.qxx.android.jukebox.adapters.MediaSubsLayoutAdapter;
 import se.qxx.android.jukebox.model.Model;
-import se.qxx.android.tools.GUITools;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
+import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.SeekBar;
-import android.widget.SeekBar.OnSeekBarChangeListener;
-import android.widget.TextView;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.AdapterView.OnItemClickListener;
 
-//public class SubSelectActivity extends JukeboxActivityBase implements OnSeekBarChangeListener {
-//
-//	@Override
-//	protected View getRootView() {
-//		return findViewById(R.id.rootSubSelect);
-//	}
-//	
-//    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//
-//        setContentView(R.layout.subselect);
-//        
-//        initializeView();
-//    }
-//
-//	private void initializeView() {
-//	    Movie m = Model.get().getCurrentMovie();
+public class SubSelectActivity extends JukeboxActivityBase implements OnItemClickListener {
+
+	@Override
+	protected View getRootView() {
+		return findViewById(R.id.rootSubtitlePicker);
+	}
+	
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.subtitlepicker);
+        
+        initializeView();
+    }
+
+	private void initializeView() {
+	    Movie m = Model.get().getCurrentMovie();
+	    Media md = Model.get().getCurrentMedia();
+	    
+		MediaSubsLayoutAdapter adapter = new MediaSubsLayoutAdapter(this, md); 
+		ListView v = (ListView)this.getRootView();
+		v.setAdapter(adapter);
+		v.setOnItemClickListener(this);
+	}
+	
+	@Override
+	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+		Subtitle sub = (Subtitle)arg0.getItemAtPosition(arg2);	
+		Model.get().setCurrentSubtitle(sub.getDescription());
+		this.finish();
+	}
+	
 //
 //	    View rootView = this.getRootView();
 //	    
@@ -82,4 +98,4 @@ import android.widget.TextView;
 //    	}
 //    }	
 //    
-//}
+}

@@ -20,7 +20,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings;
-import se.qxx.jukebox.subtitles.SubFile.Rating;
+import se.qxx.jukebox.domain.JukeboxDomain.Rating;
+
 
 public class UndertexterSe extends SubFinderBase {
 	

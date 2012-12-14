@@ -1,4 +1,4 @@
-package se.qxx.android.jukebox;
+package se.qxx.android.jukebox.adapters;
 
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.R.drawable;

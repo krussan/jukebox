@@ -1,4 +1,4 @@
-package se.qxx.android.jukebox;
+package se.qxx.android.tools;
 
 import android.app.ProgressDialog;
 import android.content.Context;

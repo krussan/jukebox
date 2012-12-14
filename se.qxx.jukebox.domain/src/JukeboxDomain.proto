@@ -37,6 +37,15 @@ enum Identifier {
 	NFO = 3;
 }
 
+enum Rating {
+	NotMatched = 1;
+	ProbableMatch = 2;
+	PositiveMatch = 3;
+	ExactMatch = 4;
+	SubsExist = 5;
+}
+
+
 //---------------------------------------------------------------------------------------
 //----------------------------------------------------------------------- Objects
 //---------------------------------------------------------------------------------------
@@ -67,7 +76,7 @@ message Movie {
 message Subtitle {
 	required string filename = 1;
 	required string description = 2;
-	required string rating = 3;
+	required Rating rating = 3;
 	required int32 mediaIndex = 4;
 	required string language = 5;
 }

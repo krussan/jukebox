@@ -33,4 +33,10 @@
     <string name="btnSubNotOk">Not OK</string>
     <string name="lblSeekBarIndicator">00:00</string>
     <string name="descDownloading">Downloading</string>
+    <string name="lblSubtitleName">Name of subtitle</string>
+    <string name="descProbableMatch">Probable match</string>
+    <string name="descPositiveMatch">Positive match</string>
+    <string name="descExactMatch">Exact match</string>
+    <string name="descSubsExist">Subtitles exist</string>
+    
 </resources>

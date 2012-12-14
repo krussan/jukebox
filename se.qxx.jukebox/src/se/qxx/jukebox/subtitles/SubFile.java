@@ -3,16 +3,10 @@ package se.qxx.jukebox.subtitles;
 import java.io.File;
 
 import se.qxx.jukebox.Language;
+import se.qxx.jukebox.domain.JukeboxDomain.Rating;
 
 public class SubFile implements Comparable<SubFile> {
-
-	public enum Rating {
-		NotMatched,
-		ProbableMatch,
-		PositiveMatch,
-		ExactMatch,
-		SubsExist
-	}
+	
 	private String _url;
 	private File _file;
 	private Rating _rating = Rating.NotMatched;
