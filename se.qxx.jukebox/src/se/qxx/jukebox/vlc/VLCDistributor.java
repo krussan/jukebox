@@ -285,7 +285,7 @@ public class VLCDistributor {
 	private boolean assertLiveConnection(String hostName) throws VLCConnectionNotFoundException {
 		VLCConnection conn = findConnection(hostName);
 		if (!conn.isConnected())
-			conn.reconnect();
+			conn = createNewConnection(hostName);
 		
 		return conn.isConnected();
 	}
@@ -293,13 +293,21 @@ public class VLCDistributor {
 	private VLCConnection findConnection(String hostName) throws VLCConnectionNotFoundException {
 		VLCConnection conn = this.connectors.get(hostName);
 		
-		if (conn == null) {
-			Server s = findServerInSettings(hostName);
-			conn = new VLCConnection(s.getHost(), s.getPort());
-			this.connectors.put(hostName, conn);
-		}
+		if (conn == null)
+			conn = createNewConnection(hostName);
 		
 		return conn;	
+	}
+	
+	private VLCConnection createNewConnection(String hostName) throws VLCConnectionNotFoundException {
+		Server s = findServerInSettings(hostName);
+		
+		if (this.connectors.containsKey(hostName))
+			this.connectors.remove(hostName);
+		
+		VLCConnection conn = new VLCConnection(s.getHost(), s.getPort());
+		this.connectors.put(hostName, conn);
+		return conn;
 	}
 	
 	

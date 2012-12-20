@@ -20,6 +20,7 @@ import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.InvalidProtocolBufferException;
 
+import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequest;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGetTitle;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestIsPlaying;
@@ -45,6 +46,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListSubtitles;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseStartMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseTime;
+import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.settings.Settings;
@@ -165,8 +167,8 @@ public class TcpConnection implements Runnable {
 		
 		try {
 			if (VLCDistributor.get().startMovie(args.getPlayerName(), args.getMovieId())) {
-				//TODO: MEDIA -- Fix this
-				List<Subtitle> subs = new ArrayList<Subtitle>();// DB.getSubtitles(args.getMovieId());
+				Movie m = DB.getMovie(args.getMovieId());
+				List<Subtitle> subs = m.getMedia(0).getSubsList();
 				
 				JukeboxResponseStartMovie ls = JukeboxResponseStartMovie.newBuilder()
 						.addAllSubtitle(subs)
@@ -242,10 +244,10 @@ public class TcpConnection implements Runnable {
 		ByteString data = req.getArguments();
 		JukeboxRequestListSubtitles args = JukeboxRequestListSubtitles.parseFrom(data);
 
-		Log.Debug(String.format("Getting list of subtitles form movie ID :: %s", args.getMovieId()), Log.LogType.COMM);
+		Log.Debug(String.format("Getting list of subtitles for media ID :: %s", args.getMediaId()), Log.LogType.COMM);
 
-		//TODO: MEDIA -- Fix this 
-		List<Subtitle> subs = new ArrayList<Subtitle>(); //DB.getSubtitles(args.getMovieId());
+		Media media = DB.getMediaById(args.getMediaId());		
+		List<Subtitle> subs = DB.getSubtitles(media);
 	
 		JukeboxResponseListSubtitles ls = JukeboxResponseListSubtitles.newBuilder()
 				.addAllSubtitle(subs)
@@ -346,11 +348,29 @@ public class TcpConnection implements Runnable {
 
 		Log.Debug(String.format("Setting subtitle on %s...", args.getPlayerName()), Log.LogType.COMM);
 		
+		Media md = DB.getMediaById(args.getMediaID());
+		List<Subtitle> subs = DB.getSubtitles(md);
+		
+		int subTrack = -1;
+		for (int i=0;i<subs.size();i++) {
+			String subDescription = subs.get(i).getDescription();
+			if (StringUtils.equalsIgnoreCase(subDescription, args.getSubtitleDescription())) {
+				subTrack = i+1;
+				Log.Debug(String.format("Found subtitle %s on subtrack %s", subDescription, subTrack), LogType.COMM);
+				break;
+			}
+		}
+		
 		try {
-			if (VLCDistributor.get().setSubtitle(args.getPlayerName(), args.getSubtitleID()))
-				return JukeboxResponse.newBuilder().setType(JukeboxRequestType.OK).build();
-			else
-				return buildErrorMessage("Error occured when connecting to target media player"); 
+			if (subTrack > 0) {
+				if (VLCDistributor.get().setSubtitle(args.getPlayerName(), subTrack))
+					return JukeboxResponse.newBuilder().setType(JukeboxRequestType.OK).build();
+				else
+					return buildErrorMessage("Error occured when connecting to target media player"); 
+			}
+			else {
+				return buildErrorMessage("Subtitle track with that description was not found");
+			}
 		} catch (VLCConnectionNotFoundException e) {
 			return buildErrorMessage("Error occured when connecting to target media player"); 
 			
@@ -369,8 +389,13 @@ public class TcpConnection implements Runnable {
 				return buildErrorMessage("Error occured when connecting to target media player"); 
 			else {
 				int seconds = Integer.parseInt(response);
-				JukeboxResponseTime time = JukeboxResponseTime.newBuilder().setSeconds(seconds).build();
+				String titleFilename = getTitleFilename(args.getPlayerName());
 				
+				JukeboxResponseTime time = JukeboxResponseTime.newBuilder()
+						.setSeconds(seconds)
+						.setFilename(titleFilename)
+						.build();
+
 				return JukeboxResponse.newBuilder()
 						.setType(JukeboxRequestType.Time)
 						.setArguments(time.toByteString())
@@ -389,20 +414,28 @@ public class TcpConnection implements Runnable {
 
 		Log.Debug(String.format("Getting title on %s...", args.getPlayerName()), Log.LogType.COMM);
 		
-		try {
-			String response = StringUtils.trim(VLCDistributor.get().getTitle(args.getPlayerName()));
+		String response = getTitleFilename(args.getPlayerName());
+		if (StringUtils.isEmpty(response)) {
+			return buildErrorMessage("Error occured when connecting to target media player"); 
+		}
+		else
+		{
 			JukeboxResponseGetTitle r = JukeboxResponseGetTitle.newBuilder().setTitle(response).build();
 				
 			return JukeboxResponse.newBuilder()
 					.setType(JukeboxRequestType.GetTitle)
 					.setArguments(r.toByteString())
 					.build();
-				
+		}	
+	}
+	
+	private String getTitleFilename(String playerName) {
+		try {
+			return StringUtils.trim(VLCDistributor.get().getTitle(playerName));
 		} catch (VLCConnectionNotFoundException e) {
-			return buildErrorMessage("Error occured when connecting to target media player"); 
-			
+			return StringUtils.EMPTY; 			
 		}		
-	}	
+	}
 	
 	private JukeboxResponse isPlaying(JukeboxRequest req) throws IOException {
 		ByteString data = req.getArguments();

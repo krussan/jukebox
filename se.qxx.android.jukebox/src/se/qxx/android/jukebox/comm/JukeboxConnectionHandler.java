@@ -213,7 +213,7 @@ public class JukeboxConnectionHandler implements Runnable {
 	
 	private Bundle listSubtitles() {
 		JukeboxRequestListSubtitles sm = JukeboxRequestListSubtitles.newBuilder()
-				.setMovieId(Model.get().getCurrentMovie().getID())
+				.setMediaId(Model.get().getCurrentMedia().getID())
 				.build();
 		
 		return sendAndRetreive(JukeboxRequestType.ListSubtitles, sm);
@@ -237,20 +237,13 @@ public class JukeboxConnectionHandler implements Runnable {
 	}	
 
 	private Bundle setSubtitle() {
-		if (this.arguments.length > 0)
-		{
-			if (this.arguments[0] instanceof Integer) {
-				int id = (Integer)this.arguments[0];
-				JukeboxRequestSetSubtitle sm = JukeboxRequestSetSubtitle.newBuilder()
-						.setPlayerName(JukeboxSettings.get().getCurrentMediaPlayer())
-						.setSubtitleID(id)
-						.build();
-				
-				return sendAndRetreive(JukeboxRequestType.SetSubtitle, sm);
-			}
-		}
+		JukeboxRequestSetSubtitle sm = JukeboxRequestSetSubtitle.newBuilder()
+				.setPlayerName(JukeboxSettings.get().getCurrentMediaPlayer())
+				.setMediaID(Model.get().getCurrentMedia().getID())
+				.setSubtitleDescription(Model.get().getCurrentSubtitle())
+				.build();
 		
-		return new Bundle();		
+		return sendAndRetreive(JukeboxRequestType.SetSubtitle, sm);
 	}	
 	
 	private Bundle markSubtitle() {

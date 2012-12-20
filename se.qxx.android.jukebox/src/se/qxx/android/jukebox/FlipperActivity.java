@@ -12,6 +12,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -94,9 +95,12 @@ public class FlipperActivity extends JukeboxActivityBase implements SimpleGestur
     }
     
 	private void initializeView(View v, Movie m) {
-	    if (!m.getImage().isEmpty()) 
-	    	GUITools.setImageOnImageView(R.id.imageView1, m.getImage().toByteArray(), v);
-	    	    
+	    if (!m.getImage().isEmpty()) {
+	    	Bitmap bm = GUITools.getBitmapFromByteArray(m.getImage().toByteArray());
+	    	Bitmap scaledImage = GUITools.scaleImage(120, bm, v.getContext());
+	    	GUITools.setImageOnImageView(R.id.imageView1, scaledImage, v);	
+	    }
+	    
 	    int duration = m.getDuration();
 	    int hours = duration / 60;
 	    int minutes = duration % 60;

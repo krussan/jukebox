@@ -1,6 +1,7 @@
 package se.qxx.jukebox.vlc;
 
 import java.io.IOException;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -160,6 +161,7 @@ public class VLCConnection extends TcpClient {
 	public void setSubtitle(int subtitleID) {
 		synchronized (mutex) {
 			try {
+				Log.Debug(String.format("Setting subtitle track %s", subtitleID), LogType.COMM);
 				this.sendCommand(String.format("strack %s\n", subtitleID));
 				this.readResponseLine();
 			} catch (Exception e) {
@@ -201,8 +203,11 @@ public class VLCConnection extends TcpClient {
 					return false;
 				else
 					return true;
-			} catch (Exception e) {
+			} catch (SocketException e) {
 				Log.Error("Error while setting subtitle track", Log.LogType.COMM, e);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}		
 			
 			return false;

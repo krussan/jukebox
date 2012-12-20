@@ -363,6 +363,34 @@ public class DB {
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Media
 	//---------------------------------------------------------------------------------------
+	public synchronized static Media getMediaById(int mediaID) {
+		Connection conn = null;
+		String statement = 
+				" SELECT ID, _movie_id, idx, filename, filepath, metaDuration, metaFramerate" +
+				" FROM Media" +
+				" WHERE ID = ?";
+		try {
+			conn = DB.initialize();
+
+			PreparedStatement prep = conn.prepareStatement(statement);
+			prep.setInt(1, mediaID);
+				
+			ResultSet rs = prep.executeQuery();
+			if (rs.next())
+				return extractMedia(rs, conn);
+			else
+				return null;
+
+		} catch (Exception e) {
+			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
+			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
+			
+			return null;
+		}finally {
+			DB.disconnect(conn);
+		}
+	}
+	
 	private synchronized static List<Media> getMedia(int movieID, Connection conn) throws SQLException {
 		List<Media> list = new ArrayList<Media>();
 		
@@ -669,7 +697,8 @@ public class DB {
 				" FROM subtitles S" +
 				" INNER JOIN Media MD ON S._media_ID = MD.ID" +
 				" INNER JOIN Language L ON S._subtitleLanguage_ID = L.ID" +
-				" WHERE _media_ID = ?";
+				" WHERE _media_ID = ?" +
+				" ORDER BY S.filename";
 
 		PreparedStatement prep = conn.prepareStatement(statement);
 		prep.setInt(1, mediaid);

@@ -2,10 +2,13 @@ package se.qxx.android.jukebox;
 
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
 import se.qxx.android.jukebox.comm.JukeboxResponseListener;
+import se.qxx.android.jukebox.model.Model;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponse;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseTime;
@@ -35,9 +38,15 @@ public class Seeker implements JukeboxResponseListener, Runnable {
 		JukeboxRequestType type = resp.getType();
 		if (type == JukeboxRequestType.Time) {
 			try {
-				int seconds = JukeboxResponseTime.parseFrom(resp.getArguments()).getSeconds();
+				JukeboxResponseTime respTime = JukeboxResponseTime.parseFrom(resp.getArguments());
+				
+				// The time command also returns the name of the currently playing file.
+				// If it differs from the model then set the current media
+				if (!StringUtils.equalsIgnoreCase(respTime.getFilename(), Model.get().getCurrentMedia().getFilename()))
+					Model.get().setCurrentMedia(respTime.getFilename());
+				
 				if (this.listener != null)
-					this.listener.updateSeeker(seconds);
+					this.listener.updateSeeker(respTime.getSeconds());
 				
 			} catch (InvalidProtocolBufferException e) {
 			}

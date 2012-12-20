@@ -7,6 +7,7 @@ import se.qxx.android.jukebox.R.layout;
 import se.qxx.android.jukebox.model.ModelMovieAdapter;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
+import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -38,9 +39,15 @@ public class MovieLayoutAdapter extends ModelMovieAdapter {
 	        	GUITools.setTextOnTextview(R.id.bottomtext, Integer.toString(m.getYear()), v);
 	        	GUITools.setTextOnTextview(R.id.txtRating, m.getRating(), v);
 	        	
-	        	//TODO: MEDIA -- Fix This
-//	        	if (m.getMetaDuration() >= 0)
-//	        		GUITools.hideView(R.id.imgDownloading, v);
+	        	// If all media has a meta duration then hide the download icon
+	        	boolean downloadFinished = true;
+	        	for (Media md : m.getMediaList()) {
+	        		if (md.getMetaDuration() == 0)
+	        			downloadFinished = false;
+	        	}
+	        	if (downloadFinished)
+	        		GUITools.hideView(R.id.imgDownloading, v);	
+	        	
 	
 	    	    if (!m.getImage().isEmpty()) {
 	    	    	Bitmap image = GUITools.getBitmapFromByteArray(m.getImage().toByteArray());

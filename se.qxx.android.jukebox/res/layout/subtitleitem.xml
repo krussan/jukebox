@@ -9,7 +9,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:text="@string/lblSubtitleName"
-        android:textAppearance="?android:attr/textAppearanceMedium"/>
+        android:textAppearance="?android:attr/textAppearanceSmall"/>
 
     <ImageView android:id="@+id/imgSubRatingSubsExist"
         android:layout_width="wrap_content"

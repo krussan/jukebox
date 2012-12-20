@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
@@ -15,7 +16,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 public class Model {
 	
 	private int currentMovieId = -1;
-	private int currentSubId = -1;
+	private String currentSub = StringUtils.EMPTY;
 	private int currentMediaId = -1;
 	private boolean initialized = false;
 	
@@ -233,6 +234,28 @@ public class Model {
 		this.currentMediaId = index;
 	}
 	
+	public void setCurrentMedia(Media media) {
+		List<Media> listMedia = this.getCurrentMovie().getMediaList();
+		
+		for(int i=0;i<listMedia.size();i++) {
+			if (listMedia.get(i).getID() == media.getID()) {
+				this.setCurrentMedia(i);
+				break;
+			}
+		}
+	}
+	
+	public void setCurrentMedia(String filename) {
+		List<Media> listMedia = this.getCurrentMovie().getMediaList();
+		
+		for(int i=0;i<listMedia.size();i++) {
+			if (StringUtils.equalsIgnoreCase(listMedia.get(i).getFilename(), filename)) {
+				this.setCurrentMedia(i);
+				break;
+			}
+		}		
+	}
+	
 	//---------------------------------------------------------------------------------------
 	// PLAYERS
 	//---------------------------------------------------------------------------------------
@@ -302,24 +325,17 @@ public class Model {
 		return _subs.get(index);
 	}
 
-	public void setCurrentSubtitle(int id) {
-		currentSubId = id;
-		fireModelUpdatedEvent(ModelUpdatedType.CurrentSub);		
-	}
+//	public void setCurrentSubtitle(int id) {
+//		currentSubId = id;
+//		fireModelUpdatedEvent(ModelUpdatedType.CurrentSub);		
+//	}
 
 	public void setCurrentSubtitle(String description) {
-		for (int i = 0;i<_subs.size(); i++) {
-			Subtitle s = _subs.get(i);
-			if (StringUtils.equalsIgnoreCase(description, s.getDescription()) || StringUtils.equalsIgnoreCase(description, s.getFilename())) {
-				currentSubId = i;
-				fireModelUpdatedEvent(ModelUpdatedType.CurrentSub);
-				break;
-			}				
-		}
+		this.currentSub = description;
 	}
 	
-	public int getCurrentSubtitleID() {
-		return currentSubId;
+	public String getCurrentSubtitle() {
+		return this.currentSub;
 	}
 	
 }

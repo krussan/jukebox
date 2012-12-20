@@ -20,6 +20,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseIsPlaying;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,7 +32,7 @@ import android.widget.Toast;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
 public class NowPlayingActivity extends JukeboxActivityBase 
-	implements OnSeekBarChangeListener, SeekerListener, JukeboxResponseListener, ModelUpdatedEventListener {
+	implements OnSeekBarChangeListener, SeekerListener, JukeboxResponseListener {
 
 	private Seeker seeker;
 	private boolean isManualSeeking = false;
@@ -57,34 +58,38 @@ public class NowPlayingActivity extends JukeboxActivityBase
 		if (seeker != null)
 			seeker.stop();
 	}
+	
+	@Override protected void onResume() {
+		super.onResume();
+		
+		if (seeker != null)
+			seeker.start();
+	};
 		
 	private void initializeView() {
 	    Movie m = Model.get().getCurrentMovie();
 	    seeker = new Seeker(this);
 	    View rootView = this.getRootView();
 	    
-	    if (!m.getImage().isEmpty()) 
-	    	GUITools.setImageOnImageView(R.id.imageView1, m.getImage().toByteArray(), rootView);
-	    
+	    if (!m.getImage().isEmpty()) {
+	    	Bitmap bm = GUITools.getBitmapFromByteArray(m.getImage().toByteArray());
+	    	Bitmap scaledImage = GUITools.scaleImage(120, bm, rootView.getContext());
+	    	GUITools.setImageOnImageView(R.id.imageView1, scaledImage, rootView);	
+	    }
+
 	    GUITools.setTextOnTextview(R.id.textViewTitle, m.getTitle(), rootView);
 	    GUITools.setTextOnTextview(R.id.textViewYear, Integer.toString(m.getYear()), rootView);
 	    
 		MovieMediaLayoutAdapter adapter = new MovieMediaLayoutAdapter(this, m); 
 		ListView v = (ListView)findViewById(R.id.listViewFilename);
 		v.setAdapter(adapter);
-	    
-//	    GUITools.setTextOnTextview(R.id.textViewFilename, String.format("Filename :: %s", m.getFilename()) , rootView);
-	    
-	    //TODO: MEDIA -- Fix this
-//	    SeekBar sb = (SeekBar)findViewById(R.id.seekBarDuration);
-//	    if (sb != null) {
-//	    	sb.setMax(m.getMetaDuration());
-//	    	sb.setOnSeekBarChangeListener(this);
-//	    }
-	    
+
+	    SeekBar sb = (SeekBar)findViewById(R.id.seekBarDuration);
+		sb.setOnSeekBarChangeListener(this);
+		
 	    sendCommand(this, "Checking status", JukeboxRequestType.IsPlaying);
 	    
-	    Model.get().addEventListener(this);
+//	    Model.get().addEventListener(this);
 	}
 	
 
@@ -170,6 +175,12 @@ public class NowPlayingActivity extends JukeboxActivityBase
 			runOnUiThread(new UpdateSeekIndicator(seconds + advanceSeconds, tv, seekBar));
 	}
 
+
+	private void initializeSeeker() {
+	    SeekBar sb = (SeekBar)findViewById(R.id.seekBarDuration);
+	    if (sb != null) 
+	    	sb.setMax(Model.get().getCurrentMedia().getMetaDuration());
+	}
 	
 	@Override
 	public void onResponseReceived(JukeboxResponse resp) {
@@ -190,9 +201,13 @@ public class NowPlayingActivity extends JukeboxActivityBase
 		if (resp.getType() == JukeboxRequestType.GetTitle) {
 			try {
 				String playerFilename = JukeboxResponseGetTitle.parseFrom(resp.getArguments()).getTitle();
-				if (matchCurrentFilenameAgainstMedia(playerFilename)) {
+				Media md = matchCurrentFilenameAgainstMedia(playerFilename);
+				if (md != null) {
 					//initialize seeker and get subtitles if app has been reinitialized
+					Model.get().setCurrentMedia(md);
+					initializeSeeker();
 					sendCommand(this, "Getting subtitles", JukeboxRequestType.ListSubtitles);			
+					
 					seeker.start();
 				}
 				else {
@@ -207,23 +222,25 @@ public class NowPlayingActivity extends JukeboxActivityBase
 		}
 		
 		if (resp.getType() == JukeboxRequestType.StartMovie) {
-			sendCommand(this, "Getting subtitles", JukeboxRequestType.ListSubtitles);			
-			seeker.start();
+			Model.get().setCurrentMedia(0);			
+			initializeSeeker();			
+			seeker.start();			
+			sendCommand(this, "Getting subtitles", JukeboxRequestType.ListSubtitles);
 		}
 
 		if (resp.getType() == JukeboxRequestType.StopMovie) {
 			sendCommand(this, "Starting movie", JukeboxRequestType.StartMovie);
 		}
 	}
-
-	protected boolean matchCurrentFilenameAgainstMedia(String playerFilename) {
+	
+	protected Media matchCurrentFilenameAgainstMedia(String playerFilename) {
 		for (Media md : Model.get().getCurrentMovie().getMediaList()) {
 			if (StringUtils.equalsIgnoreCase(playerFilename, md.getFilename())) {
-				return true;
+				return md;
 			}
 		}
 		
-		return false;
+		return null;
 	}
 
 //	private void pickSubtitle() {
@@ -240,13 +257,13 @@ public class NowPlayingActivity extends JukeboxActivityBase
 //		b.show();
 //	}
 
-	@Override
-	public void handleModelUpdatedEventListener(EventObject e) {
-		ModelUpdatedEvent ev = (ModelUpdatedEvent)e;
-		
-		if (ev.getType() == ModelUpdatedType.CurrentSub) {
-			this.sendCommand("Switching subtitle", JukeboxRequestType.SetSubtitle, Model.get().getCurrentSubtitleID());
-		}
-	}
+//	@Override
+//	public void handleModelUpdatedEventListener(EventObject e) {
+//		ModelUpdatedEvent ev = (ModelUpdatedEvent)e;
+//		
+//		if (ev.getType() == ModelUpdatedType.CurrentSub) {
+//			this.sendCommand("Switching subtitle", JukeboxRequestType.SetSubtitle, Model.get().getCurrentSubtitleID());
+//		}
+//	}
 
 }

@@ -1,5 +1,7 @@
 package se.qxx.android.jukebox.model;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -18,12 +20,13 @@ public abstract class ModelRatedSubtitleAdapter extends BaseAdapter {
 	
 	public ModelRatedSubtitleAdapter(Media media) {
 		this.media = media;
-		sortedSubtitles = this.media.getSubsList();
+		sortedSubtitles = new ArrayList<Subtitle>(this.media.getSubsList());
+		
 		Collections.sort(sortedSubtitles, new Comparator<Subtitle>() {
 			@Override
 			public int compare(Subtitle lhs, Subtitle rhs) {
 				// TODO Auto-generated method stub
-				return lhs.getRating().getNumber() - rhs.getRating().getNumber();
+				return rhs.getRating().getNumber() - lhs.getRating().getNumber();
 			}
 		});
 	}

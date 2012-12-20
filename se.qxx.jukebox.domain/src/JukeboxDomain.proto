@@ -153,12 +153,13 @@ message JukeboxRequestSeek {
 }
 
 message JukeboxRequestListSubtitles {
-	required int32 movieId = 1;
+	required int32 mediaId = 1;
 }
 
 message JukeboxRequestSetSubtitle {
 	required string playerName = 1;
-	required int32 subtitleID = 2;
+	required int32 mediaID = 2;
+	required string subtitleDescription = 3;
 }
 
 message JukeboxRequestVRatio {
@@ -216,6 +217,7 @@ message JukeboxResponseStartMovie {
 
 message JukeboxResponseTime {
 	required int32 seconds = 1;
+	required string filename = 2;
 }
 
 message JukeboxResponseIsPlaying {

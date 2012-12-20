@@ -2,16 +2,21 @@ package se.qxx.android.jukebox;
 
 import se.qxx.android.jukebox.adapters.MediaSubsLayoutAdapter;
 import se.qxx.android.jukebox.model.Model;
+import se.qxx.android.tools.Logger;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class SubSelectActivity extends JukeboxActivityBase implements OnItemClickListener {
+public class SubSelectActivity extends JukeboxActivityBase implements OnItemClickListener, OnDismissListener {
 
 	@Override
 	protected View getRootView() {
@@ -40,7 +45,14 @@ public class SubSelectActivity extends JukeboxActivityBase implements OnItemClic
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		Subtitle sub = (Subtitle)arg0.getItemAtPosition(arg2);	
+		Logger.Log().d(String.format("Setting subtitle to %s", sub.getDescription()));
 		Model.get().setCurrentSubtitle(sub.getDescription());
+		
+		this.sendCommand(this, "Setting subtitle", JukeboxRequestType.SetSubtitle);
+	}
+
+	@Override
+	public void onDismiss(DialogInterface dialog) {
 		this.finish();
 	}
 	
