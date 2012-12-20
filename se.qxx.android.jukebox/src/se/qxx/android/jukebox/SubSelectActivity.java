@@ -2,6 +2,7 @@ package se.qxx.android.jukebox;
 
 import se.qxx.android.jukebox.adapters.MediaSubsLayoutAdapter;
 import se.qxx.android.jukebox.model.Model;
+import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
@@ -36,8 +37,9 @@ public class SubSelectActivity extends JukeboxActivityBase implements OnItemClic
 	    Movie m = Model.get().getCurrentMovie();
 	    Media md = Model.get().getCurrentMedia();
 	    
+	    GUITools.setTextOnTextview(R.id.lblSubpickerFilename, md.getFilename(), this.getRootView());
 		MediaSubsLayoutAdapter adapter = new MediaSubsLayoutAdapter(this, md); 
-		ListView v = (ListView)this.getRootView();
+		ListView v = (ListView)findViewById(R.id.listSubtitlePicker);
 		v.setAdapter(adapter);
 		v.setOnItemClickListener(this);
 	}

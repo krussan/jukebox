@@ -33,6 +33,8 @@ public class MediaSubsLayoutAdapter extends ModelRatedSubtitleAdapter  {
 	        
 	        if (sub != null) {
 	        	GUITools.setTextOnTextview(R.id.txtSubName, sub.getDescription(), v);
+	        	GUITools.setTextOnTextview(R.id.lblSubLanguage, sub.getLanguage(), v);
+	        	
 	        	Rating rating = sub.getRating();
 	        	switch (rating) {
 	        	case SubsExist:
