@@ -2,6 +2,8 @@ package se.qxx.jukebox.vlc;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -56,6 +58,10 @@ public class VLCDistributor {
 		return list;
 	}
 	
+	public boolean startMovie(String hostName, Movie m) throws VLCConnectionNotFoundException {
+		return startMovie(hostName, m, StringUtils.EMPTY);
+	}
+	
 	/**
 	 * Starts a movie on a specific VLC playrer
 	 * @param hostName 	The player on which to start the movie
@@ -63,7 +69,7 @@ public class VLCDistributor {
 	 * @return			True if the call succeeds
 	 * @throws VLCConnectionNotFoundException
 	 */
-	public boolean startMovie(String hostName, int id) throws VLCConnectionNotFoundException {
+	public boolean startMovie(String hostName, Movie m, String subFilename) throws VLCConnectionNotFoundException {
 		if (!assertLiveConnection(hostName))
 			return false;
 		
@@ -71,7 +77,6 @@ public class VLCDistributor {
 		Server vlcServer = findServerInSettings(hostName);
 		String vlcSubsPath = vlcServer.getSubsPath();
 		String serverSubsPath = Settings.get().getSubFinders().getSubsPath();
-		Movie m = DB.getMovie(id);
 		
 		if (m != null) {
 			for (Media md : m.getMediaList()) {
@@ -82,15 +87,20 @@ public class VLCDistributor {
 						Vlcpath vlcPath = findVlcPath(c, hostName);
 						if (vlcPath != null) {
 							String filename = filepath.replace(c.getPath(), vlcPath.getPath()) + "/" + md.getFilename();
+							String finalSubFilename = subFilename;
 							
-							List<Subtitle> subtitles = DB.getSubtitles(md);
-							List<String> subFiles = new ArrayList<String>();
+							if (StringUtils.isEmpty(finalSubFilename)) {
+								// It appears that VLC RC interface only reads the first sub-file option specified
+								// in the command sent. No need to send more than one. We pick the top rated one by sorting
+								// the subtitles.
+								List<Subtitle> sortedSubtitles = sortSubtitles(md);
+	
+								if (sortedSubtitles.size() > 0)
+									finalSubFilename = sortedSubtitles.get(0).getFilename();
+							}													
+
+							conn.enqueue(filename, finalSubFilename.replace(serverSubsPath, vlcSubsPath));
 							
-							for(Subtitle sub : subtitles)
-								subFiles.add(sub.getFilename().replace(serverSubsPath, vlcSubsPath));
-							
-							conn.enqueue(filename, subFiles);
-													
 							return true;
 						}
 						else {
@@ -108,6 +118,20 @@ public class VLCDistributor {
 		//conn.enqueue(filename);
 		
 		return false;
+	}
+
+	protected List<Subtitle> sortSubtitles(Media md) {
+		List<Subtitle> sortedSubtitles = new ArrayList<Subtitle>(md.getSubsList());
+		
+		Collections.sort(sortedSubtitles, new Comparator<Subtitle>() {
+			@Override
+			public int compare(Subtitle lhs, Subtitle rhs) {
+				// TODO Auto-generated method stub
+				return rhs.getRating().getNumber() - lhs.getRating().getNumber();
+			}
+		});
+		
+		return sortedSubtitles;
 	}
 	
 	/**
@@ -188,6 +212,42 @@ public class VLCDistributor {
 		conn.setSubtitle(subtitleID);
 		
 		return true; 
+	}
+	
+	public boolean restartWithSubtitle(String hostName, Movie m, String subFilename, boolean restartAtSamePosition) throws VLCConnectionNotFoundException {
+		//get current time
+		String currentTime = getTime(hostName);
+		int seconds = Integer.parseInt(currentTime);
+		
+		//stop current playback
+		stopMovie(hostName);
+		
+		//clear playlist
+		clearPlaylist(hostName);
+		
+		//add movie
+		startMovie(hostName, m, subFilename);
+		
+		//seek
+		try {
+			Thread.sleep(1500);
+			
+			if (restartAtSamePosition)
+				seek(hostName, seconds);
+		} catch (InterruptedException e) {
+			Log.Error("Error occured when waiting to seek", LogType.COMM, e);
+		}
+		
+		return true;
+	}
+	
+	public void clearPlaylist(String hostName) throws VLCConnectionNotFoundException {
+		if (!assertLiveConnection(hostName))
+			return;
+		
+		VLCConnection conn = findConnection(hostName);
+		conn.clearPlaylist();
+		
 	}
 	
 	public String getTime(String hostName) throws VLCConnectionNotFoundException {

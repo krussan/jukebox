@@ -166,8 +166,8 @@ public class TcpConnection implements Runnable {
 		Log.Debug(String.format("Starting movie with ID: %s on player %s", args.getMovieId(), args.getPlayerName()), Log.LogType.COMM);
 		
 		try {
-			if (VLCDistributor.get().startMovie(args.getPlayerName(), args.getMovieId())) {
-				Movie m = DB.getMovie(args.getMovieId());
+			Movie m = DB.getMovie(args.getMovieId());
+			if (VLCDistributor.get().startMovie(args.getPlayerName(), m)) {
 				List<Subtitle> subs = m.getMedia(0).getSubsList();
 				
 				JukeboxResponseStartMovie ls = JukeboxResponseStartMovie.newBuilder()
@@ -349,21 +349,24 @@ public class TcpConnection implements Runnable {
 		Log.Debug(String.format("Setting subtitle on %s...", args.getPlayerName()), Log.LogType.COMM);
 		
 		Media md = DB.getMediaById(args.getMediaID());
+		Movie m = DB.getMovieByStartOfMediaFilename(md.getFilename());		
 		List<Subtitle> subs = DB.getSubtitles(md);
 		
-		int subTrack = -1;
-		for (int i=0;i<subs.size();i++) {
-			String subDescription = subs.get(i).getDescription();
-			if (StringUtils.equalsIgnoreCase(subDescription, args.getSubtitleDescription())) {
-				subTrack = i+1;
-				Log.Debug(String.format("Found subtitle %s on subtrack %s", subDescription, subTrack), LogType.COMM);
-				break;
-			}
-		}
+		
+		// It appears that VLC RC interface only reads the first sub-file option specified
+		// in the command sent. Thus we need to clear playlist and restart video each time we
+		// change the subtitle track.
+		Subtitle subTrack = getSubtitleTrack(args.getSubtitleDescription(), subs);
+		
+		//VLCDistributor.restart()
 		
 		try {
-			if (subTrack > 0) {
-				if (VLCDistributor.get().setSubtitle(args.getPlayerName(), subTrack))
+			if (subTrack != null) {
+				if (VLCDistributor.get().restartWithSubtitle(
+						args.getPlayerName(), 
+						m, 
+						subTrack.getFilename(), 
+						true))
 					return JukeboxResponse.newBuilder().setType(JukeboxRequestType.OK).build();
 				else
 					return buildErrorMessage("Error occured when connecting to target media player"); 
@@ -375,6 +378,16 @@ public class TcpConnection implements Runnable {
 			return buildErrorMessage("Error occured when connecting to target media player"); 
 			
 		}		
+	}
+
+	protected Subtitle getSubtitleTrack(String description, List<Subtitle> subs) {
+		for (int i=0;i<subs.size();i++) {
+			String subDescription = subs.get(i).getDescription();
+			if (StringUtils.equalsIgnoreCase(subDescription, description)) {
+				return subs.get(i);
+			}
+		}
+		return null;
 	}
 
 	private JukeboxResponse getTime(JukeboxRequest req) throws IOException {

@@ -39,7 +39,7 @@ public class VLCConnection extends TcpClient {
 	 */
 	public void enqueue(String filename) {
 		synchronized (mutex) {
-			enqueue(filename, new ArrayList<String>());
+			enqueue(filename, StringUtils.EMPTY);
 		}
 	}
 	
@@ -62,13 +62,14 @@ public class VLCConnection extends TcpClient {
 	 * @param filename		The MRL of the file to enqueue
 	 * @param subFiles		A list of MLR's to subfiles to be used
 	 */
-	public void enqueue(String filename, List<String> subFiles) {
+	public void enqueue(String filename, String subFile) {
 		//add file://Y:/Videos/Kick.Ass[2010]DVD.ENG.X264.mp4 :sub-file=file://Y:/Videos/Repo Men.srt
 		synchronized (mutex) {
 			String output = String.format("add %s", filename);
-			for (String subFile : subFiles) {
+				
+			if (!StringUtils.isEmpty(subFile)) 
 				output += String.format(" :sub-file=%s", subFile);
-			}
+
 			output += "\n";
 	
 			Log.Debug(String.format("Sending enqueue command:: %s", output), LogType.COMM);

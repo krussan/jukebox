@@ -18,9 +18,9 @@ public class TestVLCConnection {
 			port = Integer.parseInt(args[1]);
 					
 			VLCConnection conn = new VLCConnection(host, port);
-			ArrayList<String> subFiles = new ArrayList<String>();
-			subFiles.add("file://Y:/Videos/Repo Men.srt");
-			conn.enqueue("file://Y:/Videos/Kick.Ass[2010]DVD.ENG.X264.mp4", subFiles);
+			
+			String subfile = "file://Y:/Videos/Repo Men.srt";
+			conn.enqueue("file://Y:/Videos/Kick.Ass[2010]DVD.ENG.X264.mp4", subfile);
 			conn.toggleFullscreen();
 		}
 		 
