@@ -278,5 +278,27 @@ public class VLCConnection extends TcpClient {
 		}
 		
 		return line;
+	}
+
+	public boolean testConnection() {
+		// try something on the wire to assure live connection. Avoid broken pipe exception.
+		// this is ugly but I dont have a better way at the moment
+//		boolean val = false;
+//
+//		synchronized(mutex) {
+//			try {
+//				this.sendCommand("get_time\n");
+//				this.readNextLineIgnoringStatusChanges();
+//				
+//				val = true;
+//			}
+//			catch (IOException e){
+//				Log.Error(String.format("VLC Connection is not live - reinitialize"), LogType.COMM, e);
+//			}
+//		}
+//		
+//		return val;
+		
+		return true;
 	}	
 }

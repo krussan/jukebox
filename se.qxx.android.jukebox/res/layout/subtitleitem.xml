@@ -12,38 +12,12 @@
         android:text="@string/lblSubtitleName"
         android:textAppearance="?android:attr/textAppearanceSmall"/>
 
-	<ImageView android:id="@+id/imgSubRatingProbable"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/star"
-        android:layout_below="@id/txtSubName"
-        android:layout_alignParentLeft="true"
-        android:contentDescription="@string/descProbableMatch"/>
-
-    <ImageView android:id="@+id/imgSubRatingPositive"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/star"
-        android:layout_below="@id/txtSubName"
-        android:layout_toRightOf="@id/imgSubRatingProbable"
-        android:contentDescription="@string/descPositiveMatch"/>
-
-    <ImageView android:id="@+id/imgSubRatingExact"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/star"
-        android:layout_below="@id/txtSubName"
-        android:layout_toRightOf="@id/imgSubRatingPositive"
-        android:contentDescription="@string/descExactMatch"/>
-    		
-    <ImageView android:id="@+id/imgSubRatingSubsExist"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/star"
-        android:layout_below="@id/txtSubName"
-        android:layout_toRightOf="@id/imgSubRatingExact"
-        android:contentDescription="@string/descSubsExist"/>
-
+     <include layout="@layout/subtitlestars" 
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignParentLeft="true"
+         android:layout_below="@id/txtSubName" />        
+ 
 	<TextView android:id="@+id/lblSubLanguage"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"

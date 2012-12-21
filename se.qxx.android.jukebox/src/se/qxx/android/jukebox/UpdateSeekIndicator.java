@@ -26,7 +26,7 @@ public class UpdateSeekIndicator implements Runnable {
 		int seconds = (progress % 3600) % 60;
 		
 		if (this.tv != null)
-			this.tv.setText(String.format("%s:%s:%s", hours, minutes, seconds));
+			this.tv.setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
 		
 		if (this.seekBar != null)
 			this.seekBar.setProgress(progress);

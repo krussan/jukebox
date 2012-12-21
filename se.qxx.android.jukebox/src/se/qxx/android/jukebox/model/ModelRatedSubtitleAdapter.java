@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import se.qxx.jukebox.domain.Sorter;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
@@ -20,15 +21,7 @@ public abstract class ModelRatedSubtitleAdapter extends BaseAdapter {
 	
 	public ModelRatedSubtitleAdapter(Media media) {
 		this.media = media;
-		sortedSubtitles = new ArrayList<Subtitle>(this.media.getSubsList());
-		
-		Collections.sort(sortedSubtitles, new Comparator<Subtitle>() {
-			@Override
-			public int compare(Subtitle lhs, Subtitle rhs) {
-				// TODO Auto-generated method stub
-				return rhs.getRating().getNumber() - lhs.getRating().getNumber();
-			}
-		});
+		sortedSubtitles = Sorter.sortSubtitlesByRating(this.media.getSubsList());
 	}
 	
 	@Override

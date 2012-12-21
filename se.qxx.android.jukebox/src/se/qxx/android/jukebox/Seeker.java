@@ -59,8 +59,6 @@ public class Seeker implements JukeboxResponseListener, Runnable {
 		this.isRunning = true;
 		while (this.isRunning) {
 			try {
-				getTime();
-
 				long millis = (new Date()).getTime();
 				
 				while ((new Date()).getTime() - millis < 15000 && this.isRunning) {
@@ -68,12 +66,14 @@ public class Seeker implements JukeboxResponseListener, Runnable {
 					if (this.listener != null)
 						this.listener.increaseSeeker(1);
 				}
+				
+				getTime(); 				
 			} catch (InterruptedException e) {
 			}
 		}
 	}
-	
-	public void start() {
+
+	public void start(boolean immediate) {
 		if (internalThread != null) {
 			if (internalThread.isAlive()) 
 				this.isRunning = true;
@@ -83,7 +83,14 @@ public class Seeker implements JukeboxResponseListener, Runnable {
 		}
 		else {
 			startNewThread();			
-		}
+		}	
+		
+		if (immediate)
+			getTime();
+	}
+	
+	public void start() {
+		this.start(false);
 	}
 
 	protected void startNewThread() {

@@ -33,7 +33,15 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/toptext"
             android:text="@string/lblYear" 
+            android:textAppearance="?android:attr/textAppearanceMedium"
         />
+        
+        
+        <include layout="@layout/subtitlestars" 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/bottomtext" />        
 
         <TextView
             android:id="@+id/txtRating"
@@ -58,6 +66,7 @@
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/txtRating"
             android:layout_below="@id/toptext"
+            android:layout_toLeftOf="@id/imgDownloading"
             android:src="@android:drawable/ic_menu_view" />
        
     </RelativeLayout>

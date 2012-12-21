@@ -14,6 +14,7 @@ import se.qxx.jukebox.HibernatorClientConnection;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.WakeOnLan;
 import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.domain.Sorter;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
@@ -93,8 +94,8 @@ public class VLCDistributor {
 								// It appears that VLC RC interface only reads the first sub-file option specified
 								// in the command sent. No need to send more than one. We pick the top rated one by sorting
 								// the subtitles.
-								List<Subtitle> sortedSubtitles = sortSubtitles(md);
-	
+								List<Subtitle> sortedSubtitles = Sorter.sortSubtitlesByRating(md.getSubsList());
+								
 								if (sortedSubtitles.size() > 0)
 									finalSubFilename = sortedSubtitles.get(0).getFilename();
 							}													
@@ -118,20 +119,6 @@ public class VLCDistributor {
 		//conn.enqueue(filename);
 		
 		return false;
-	}
-
-	protected List<Subtitle> sortSubtitles(Media md) {
-		List<Subtitle> sortedSubtitles = new ArrayList<Subtitle>(md.getSubsList());
-		
-		Collections.sort(sortedSubtitles, new Comparator<Subtitle>() {
-			@Override
-			public int compare(Subtitle lhs, Subtitle rhs) {
-				// TODO Auto-generated method stub
-				return rhs.getRating().getNumber() - lhs.getRating().getNumber();
-			}
-		});
-		
-		return sortedSubtitles;
 	}
 	
 	/**
@@ -342,15 +329,16 @@ public class VLCDistributor {
 		return null;
 	}
 
-	private boolean assertLiveConnection(String hostName) throws VLCConnectionNotFoundException {
+	private synchronized boolean assertLiveConnection(String hostName) throws VLCConnectionNotFoundException {
 		VLCConnection conn = findConnection(hostName);
-		if (!conn.isConnected())
-			conn = createNewConnection(hostName);
 		
-		return conn.isConnected();
+		if (!conn.isConnected() || !conn.testConnection())
+			conn = createNewConnection(hostName);
+
+		return conn.isConnected();	
 	}
 
-	private VLCConnection findConnection(String hostName) throws VLCConnectionNotFoundException {
+	private synchronized VLCConnection findConnection(String hostName) throws VLCConnectionNotFoundException {
 		VLCConnection conn = this.connectors.get(hostName);
 		
 		if (conn == null)
@@ -359,7 +347,7 @@ public class VLCDistributor {
 		return conn;	
 	}
 	
-	private VLCConnection createNewConnection(String hostName) throws VLCConnectionNotFoundException {
+	private synchronized VLCConnection createNewConnection(String hostName) throws VLCConnectionNotFoundException {
 		Server s = findServerInSettings(hostName);
 		
 		if (this.connectors.containsKey(hostName))

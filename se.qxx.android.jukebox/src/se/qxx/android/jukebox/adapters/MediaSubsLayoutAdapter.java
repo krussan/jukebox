@@ -1,5 +1,6 @@
 package se.qxx.android.jukebox.adapters;
 
+import se.qxx.android.jukebox.IncludeSubtitleRating;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.model.ModelRatedSubtitleAdapter;
 import se.qxx.android.tools.GUITools;
@@ -31,44 +32,7 @@ public class MediaSubsLayoutAdapter extends ModelRatedSubtitleAdapter  {
 	        }
 	        Subtitle sub = (Subtitle)this.getItem(position);
 	        
-	        if (sub != null) {
-	        	GUITools.setTextOnTextview(R.id.txtSubName, sub.getDescription(), v);
-	        	GUITools.setTextOnTextview(R.id.lblSubLanguage, sub.getLanguage(), v);
-	        	
-	        	Rating rating = sub.getRating();
-	        	switch (rating) {
-	        	case SubsExist:
-	    	        GUITools.showView(R.id.imgSubRatingExact, v);
-	    	        GUITools.showView(R.id.imgSubRatingPositive, v);
-	    	        GUITools.showView(R.id.imgSubRatingProbable, v);
-	    	        GUITools.showView(R.id.imgSubRatingSubsExist, v);
-	    	        break;	        	
-	        	case ExactMatch:
-	    	        GUITools.showView(R.id.imgSubRatingExact, v);
-	    	        GUITools.showView(R.id.imgSubRatingPositive, v);
-	    	        GUITools.showView(R.id.imgSubRatingProbable, v);
-	    	        GUITools.hideView(R.id.imgSubRatingSubsExist, v);
-	    	        break;
-	        	case PositiveMatch:
-	    	        GUITools.hideView(R.id.imgSubRatingExact, v);
-	    	        GUITools.showView(R.id.imgSubRatingPositive, v);
-	    	        GUITools.showView(R.id.imgSubRatingProbable, v);
-	    	        GUITools.hideView(R.id.imgSubRatingSubsExist, v);
-	        		break;
-	        	case ProbableMatch:
-	    	        GUITools.hideView(R.id.imgSubRatingExact, v);
-	    	        GUITools.hideView(R.id.imgSubRatingPositive, v);
-	    	        GUITools.showView(R.id.imgSubRatingProbable, v);
-	    	        GUITools.hideView(R.id.imgSubRatingSubsExist, v);
-	        		break;
-	        	case NotMatched:
-	    	        GUITools.hideView(R.id.imgSubRatingExact, v);
-	    	        GUITools.hideView(R.id.imgSubRatingPositive, v);
-	    	        GUITools.hideView(R.id.imgSubRatingProbable, v);
-	    	        GUITools.hideView(R.id.imgSubRatingSubsExist, v);
-	        		break;	        	
-	        	}
-	        }
+	        IncludeSubtitleRating.initialize(sub, v);
 		}
 		catch (Exception e) {
 			Logger.Log().e("Error occured while populating subtitle list", e);

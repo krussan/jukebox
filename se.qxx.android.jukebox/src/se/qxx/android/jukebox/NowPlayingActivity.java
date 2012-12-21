@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
@@ -52,6 +53,13 @@ public class NowPlayingActivity extends JukeboxActivityBase
         initializeView();
     }
 	
+	@Override 
+	protected void onPause() {
+		super.onPause();
+		if (seeker != null)
+			seeker.stop();
+	};
+	
 	@Override
 	protected void onStop() {
 		super.onStop();
@@ -73,16 +81,16 @@ public class NowPlayingActivity extends JukeboxActivityBase
 	    
 	    if (!m.getImage().isEmpty()) {
 	    	Bitmap bm = GUITools.getBitmapFromByteArray(m.getImage().toByteArray());
-	    	Bitmap scaledImage = GUITools.scaleImage(120, bm, rootView.getContext());
-	    	GUITools.setImageOnImageView(R.id.imageView1, scaledImage, rootView);	
+	    	DisplayMetrics metrics = GUITools.getDisplayMetrics(this);
+	    	Bitmap scaledImage = GUITools.scaleImage(300, bm, rootView.getContext());
+	    	GUITools.setImageOnImageView(R.id.imgNowPlaying, scaledImage, rootView);	
 	    }
 
-	    GUITools.setTextOnTextview(R.id.textViewTitle, m.getTitle(), rootView);
-	    GUITools.setTextOnTextview(R.id.textViewYear, Integer.toString(m.getYear()), rootView);
+	    GUITools.setTextOnTextview(R.id.lblNowPlayingTitle, m.getTitle(), rootView);
 	    
-		MovieMediaLayoutAdapter adapter = new MovieMediaLayoutAdapter(this, m); 
-		ListView v = (ListView)findViewById(R.id.listViewFilename);
-		v.setAdapter(adapter);
+//		MovieMediaLayoutAdapter adapter = new MovieMediaLayoutAdapter(this, m); 
+//		ListView v = (ListView)findViewById(R.id.listViewFilename);
+//		v.setAdapter(adapter);
 
 	    SeekBar sb = (SeekBar)findViewById(R.id.seekBarDuration);
 		sb.setOnSeekBarChangeListener(this);
@@ -208,7 +216,8 @@ public class NowPlayingActivity extends JukeboxActivityBase
 					initializeSeeker();
 					sendCommand(this, "Getting subtitles", JukeboxRequestType.ListSubtitles);			
 					
-					seeker.start();
+					//Start seeker and get time asap as the movie is playing
+					seeker.start(true);
 				}
 				else {
 					// stop movie and start new

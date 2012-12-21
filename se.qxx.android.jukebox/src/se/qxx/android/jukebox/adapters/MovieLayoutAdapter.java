@@ -1,5 +1,8 @@
 package se.qxx.android.jukebox.adapters;
 
+import java.util.List;
+
+import se.qxx.android.jukebox.IncludeSubtitleRating;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.R.drawable;
 import se.qxx.android.jukebox.R.id;
@@ -7,6 +10,8 @@ import se.qxx.android.jukebox.R.layout;
 import se.qxx.android.jukebox.model.ModelMovieAdapter;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
+import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
+import se.qxx.jukebox.domain.Sorter;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import android.content.Context;
@@ -47,8 +52,7 @@ public class MovieLayoutAdapter extends ModelMovieAdapter {
 	        	}
 	        	if (downloadFinished)
 	        		GUITools.hideView(R.id.imgDownloading, v);	
-	        	
-	
+	        		
 	    	    if (!m.getImage().isEmpty()) {
 	    	    	Bitmap image = GUITools.getBitmapFromByteArray(m.getImage().toByteArray());
 	    	    	Bitmap scaledImage = GUITools.scaleImage(80, image, v.getContext());
@@ -57,6 +61,11 @@ public class MovieLayoutAdapter extends ModelMovieAdapter {
 	    	    else {
 	    	    	GUITools.setImageResourceOnImageView(R.id.imageView1, R.drawable.icon, v);
 	    	    }
+	    	    
+	    	    List<Subtitle> sortedSubtitles = Sorter.sortSubtitlesByRating(m.getMedia(0).getSubsList());
+	    	    if (sortedSubtitles.size() > 0) 
+	    	    	IncludeSubtitleRating.initialize(sortedSubtitles.get(0), v);
+	    	    
 	    	}
 		}
 		catch (Exception e) {

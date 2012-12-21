@@ -11,7 +11,6 @@ import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
