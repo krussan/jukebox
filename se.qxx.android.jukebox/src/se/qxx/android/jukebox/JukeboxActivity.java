@@ -4,20 +4,18 @@ import java.util.EventObject;
 
 import se.qxx.android.jukebox.adapters.MovieLayoutAdapter;
 import se.qxx.android.jukebox.model.Model;
+import se.qxx.android.jukebox.model.Model.ModelUpdatedEventListener;
 import se.qxx.android.jukebox.model.ModelUpdatedEvent;
 import se.qxx.android.jukebox.model.ModelUpdatedType;
-import se.qxx.android.jukebox.model.Model.ModelUpdatedEventListener;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
-import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 

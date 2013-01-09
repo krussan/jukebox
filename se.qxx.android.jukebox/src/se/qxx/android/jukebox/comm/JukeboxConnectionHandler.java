@@ -6,14 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 
-import com.google.protobuf.ByteString;
-import com.google.protobuf.InvalidProtocolBufferException;
-
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
-
+import se.qxx.android.jukebox.JukeboxSettings;
+import se.qxx.android.jukebox.model.Model;
+import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequest;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGetTitle;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestIsPlaying;
@@ -37,10 +32,13 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListSubtitles;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseStartMovie;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 
-import se.qxx.android.jukebox.JukeboxSettings;
-import se.qxx.android.jukebox.model.Model;
-import se.qxx.android.tools.Logger;
+import com.google.protobuf.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 public class JukeboxConnectionHandler implements Runnable {
 	

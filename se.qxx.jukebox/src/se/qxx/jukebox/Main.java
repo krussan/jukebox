@@ -6,22 +6,15 @@ import java.util.ArrayList;
 import javax.xml.bind.JAXBException;
 
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
-import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog.Extensions.Extension;
-import se.qxx.jukebox.settings.imdb.ImdbSettings;
 import se.qxx.jukebox.settings.Settings;
-import se.qxx.jukebox.vlc.VLCConnection;
+import se.qxx.jukebox.settings.imdb.ImdbSettings;
 
 public class Main implements Runnable, INotifyClient
 {
 	private Boolean isRunning = false;
 	private TcpListener _listener;
-	private VLCConnection _vlcConnection;
 	
 	ArrayList<FileSystemWatcher> watchers = new ArrayList<FileSystemWatcher>();
-	    
-	public Main() {
-	}
-	
 	java.util.concurrent.Semaphore s = new java.util.concurrent.Semaphore(1);	
 	
 	public void run() {

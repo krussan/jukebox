@@ -1,17 +1,9 @@
 package se.qxx.android.jukebox;
 
-import java.util.EventObject;
-
 import org.apache.commons.lang3.StringUtils;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-
-import se.qxx.android.jukebox.adapters.MovieMediaLayoutAdapter;
 import se.qxx.android.jukebox.comm.JukeboxResponseListener;
 import se.qxx.android.jukebox.model.Model;
-import se.qxx.android.jukebox.model.ModelUpdatedEvent;
-import se.qxx.android.jukebox.model.ModelUpdatedType;
-import se.qxx.android.jukebox.model.Model.ModelUpdatedEventListener;
 import se.qxx.android.tools.GUITools;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponse;
@@ -23,14 +15,14 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
-import android.widget.ListView;
 import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.SeekBar.OnSeekBarChangeListener;
+
+import com.google.protobuf.InvalidProtocolBufferException;
 
 public class NowPlayingActivity extends JukeboxActivityBase 
 	implements OnSeekBarChangeListener, SeekerListener, JukeboxResponseListener {
@@ -81,7 +73,7 @@ public class NowPlayingActivity extends JukeboxActivityBase
 	    
 	    if (!m.getImage().isEmpty()) {
 	    	Bitmap bm = GUITools.getBitmapFromByteArray(m.getImage().toByteArray());
-	    	DisplayMetrics metrics = GUITools.getDisplayMetrics(this);
+//	    	DisplayMetrics metrics = GUITools.getDisplayMetrics(this);
 	    	Bitmap scaledImage = GUITools.scaleImage(300, bm, rootView.getContext());
 	    	GUITools.setImageOnImageView(R.id.imgNowPlaying, scaledImage, rootView);	
 	    }

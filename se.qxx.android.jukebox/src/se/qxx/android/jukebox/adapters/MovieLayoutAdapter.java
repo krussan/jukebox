@@ -4,16 +4,13 @@ import java.util.List;
 
 import se.qxx.android.jukebox.IncludeSubtitleRating;
 import se.qxx.android.jukebox.R;
-import se.qxx.android.jukebox.R.drawable;
-import se.qxx.android.jukebox.R.id;
-import se.qxx.android.jukebox.R.layout;
 import se.qxx.android.jukebox.model.ModelMovieAdapter;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
-import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
-import se.qxx.jukebox.domain.Sorter;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
+import se.qxx.jukebox.domain.Sorter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;

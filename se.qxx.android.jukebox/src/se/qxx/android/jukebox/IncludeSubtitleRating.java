@@ -1,9 +1,9 @@
 package se.qxx.android.jukebox;
 
-import android.view.View;
 import se.qxx.android.tools.GUITools;
 import se.qxx.jukebox.domain.JukeboxDomain.Rating;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
+import android.view.View;
 
 public class IncludeSubtitleRating {
 

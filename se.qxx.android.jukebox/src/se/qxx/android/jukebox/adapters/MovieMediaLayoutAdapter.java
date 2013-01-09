@@ -1,8 +1,6 @@
 package se.qxx.android.jukebox.adapters;
 
 import se.qxx.android.jukebox.R;
-import se.qxx.android.jukebox.R.id;
-import se.qxx.android.jukebox.R.layout;
 import se.qxx.android.jukebox.model.ModelMediaAdapter;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;

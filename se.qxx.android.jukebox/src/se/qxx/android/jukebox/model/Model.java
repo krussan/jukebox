@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
@@ -114,6 +113,10 @@ public class Model {
 			return this._movies.get(this.currentMovieId);
 		else
 			return null;
+	}
+
+	public int getCurrentMovieIndex() {
+		return this.currentMovieId;
 	}
 
 	public Movie getPreviousMovie() {

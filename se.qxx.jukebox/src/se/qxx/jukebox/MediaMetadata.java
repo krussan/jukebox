@@ -1,16 +1,13 @@
 package se.qxx.jukebox;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
+
+import net.sourceforge.filebot.mediainfo.MediaInfo;
 
 import org.apache.commons.lang3.StringUtils;
 
-import net.sourceforge.filebot.mediainfo.MediaInfo;
 import se.qxx.jukebox.Log.LogType;
-import se.qxx.jukebox.builders.MovieBuilder;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
-import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 
 public class MediaMetadata {
 

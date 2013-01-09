@@ -1,13 +1,11 @@
 package se.qxx.jukebox;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -31,18 +29,16 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 
-import com.sun.tools.javac.util.Version;
-
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.builders.PartPattern;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.domain.JukeboxDomain.Rating;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
+import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings;
 import se.qxx.jukebox.settings.Settings;
-import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder;
 import se.qxx.jukebox.subtitles.SubFile;
-import se.qxx.jukebox.domain.JukeboxDomain.Rating;
 import se.qxx.jukebox.subtitles.SubFinderBase;
 import se.qxx.jukebox.subtitles.Subs;
 
@@ -56,10 +52,9 @@ public class SubtitleDownloader implements Runnable {
 	private String subsPath = StringUtils.EMPTY;
 	private String subsXmlFilename = StringUtils.EMPTY;
 	private static SubtitleDownloader _instance;
-	private boolean _isRunning;
+	private boolean isRunning;
 
 	private SubtitleDownloader() {
-
 	}
 
 	public static SubtitleDownloader get() {
@@ -71,7 +66,7 @@ public class SubtitleDownloader implements Runnable {
 
 	@Override
 	public void run() {
-		this._isRunning = true;		
+		this.setRunning(true);
 		cleanupTempDirectory();
 		
 		Util.waitForSettings();
@@ -89,7 +84,7 @@ public class SubtitleDownloader implements Runnable {
 		long threadWaitSeconds = Settings.get().getSubFinders().getThreadWaitSeconds() * 1000;
 		List<Movie> _listProcessing =  DB.getSubtitleQueue();				
 		
-		while (this._isRunning = true) {
+		while (isRunning()) {
 			int result = 0;
 			try {
 				for (Movie m : _listProcessing) {
@@ -383,7 +378,7 @@ public class SubtitleDownloader implements Runnable {
 	 * Stops the subtitle download thread
 	 */
 	public void stop() {
-		this._isRunning = false;
+		this.setRunning(false);
 	}
 
 	/**
@@ -662,6 +657,14 @@ public class SubtitleDownloader implements Runnable {
 		}
 
 		return subtitleFiles;
+	}
+
+	public boolean isRunning() {
+		return isRunning;
+	}
+
+	public void setRunning(boolean isRunning) {
+		this.isRunning = isRunning;
 	}
 	
 }

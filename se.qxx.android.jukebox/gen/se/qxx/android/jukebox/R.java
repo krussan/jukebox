@@ -140,12 +140,12 @@ public final class R {
         public static final int listViewFilename=0x7f090015;
         public static final int preferences=0x7f090036;
         public static final int relativeLayout1=0x7f090017;
-        public static final int rootFlipper=0x7f090004;
         public static final int rootMain=0x7f090005;
         public static final int rootMovieItem=0x7f090000;
         public static final int rootNowPlaying=0x7f09001d;
         public static final int rootPlayerPicker=0x7f090029;
         public static final int rootSubtitlePicker=0x7f09002f;
+        public static final int rootViewPager=0x7f090004;
         public static final int seekBarDuration=0x7f090027;
         public static final int textViewDirector=0x7f090012;
         public static final int textViewDuration=0x7f090013;

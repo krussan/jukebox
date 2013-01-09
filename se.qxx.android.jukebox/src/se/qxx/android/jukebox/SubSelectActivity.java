@@ -6,15 +6,14 @@ import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
-import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
 
 public class SubSelectActivity extends JukeboxActivityBase implements OnItemClickListener, OnDismissListener {
 
@@ -33,7 +32,6 @@ public class SubSelectActivity extends JukeboxActivityBase implements OnItemClic
     }
 
 	private void initializeView() {
-	    Movie m = Model.get().getCurrentMovie();
 	    Media md = Model.get().getCurrentMedia();
 	    
 	    GUITools.setTextOnTextview(R.id.lblSubpickerFilename, md.getFilename(), this.getRootView());

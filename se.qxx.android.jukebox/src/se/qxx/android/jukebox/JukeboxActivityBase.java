@@ -4,12 +4,10 @@ import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
 import se.qxx.android.jukebox.comm.JukeboxResponseListener;
 import se.qxx.android.tools.ProgressDialogHandler;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponse;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
-import android.os.Bundle;
 import android.view.View;
 
 public abstract class JukeboxActivityBase extends Activity {

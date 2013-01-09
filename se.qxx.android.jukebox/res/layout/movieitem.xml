@@ -101,5 +101,11 @@
         android:paddingBottom="4dp"
 	/>
 
-
+    <ListView 
+        android:id="@android:id/list"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/textViewStory">
+    </ListView>
+    
 </RelativeLayout>

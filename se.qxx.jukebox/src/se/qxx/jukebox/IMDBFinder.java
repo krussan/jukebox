@@ -11,15 +11,15 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.google.protobuf.ByteString;
-
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie.Builder;
 import se.qxx.jukebox.settings.Settings;
-import se.qxx.jukebox.settings.imdb.Imdb.SearchPatterns.SearchResultPattern;
 import se.qxx.jukebox.settings.imdb.Imdb;
+import se.qxx.jukebox.settings.imdb.Imdb.SearchPatterns.SearchResultPattern;
 import se.qxx.jukebox.settings.imdb.SearchPatternComparer;
+
+import com.google.protobuf.ByteString;
 
 public class IMDBFinder {
 	private static long nextSearch = 0;

@@ -1,7 +1,9 @@
 package se.qxx.jukebox;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
 
 import se.qxx.jukebox.settings.Settings;
 
