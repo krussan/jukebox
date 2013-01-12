@@ -113,12 +113,12 @@ public final class R {
         public static final int btnOff=0x7f09000a;
         public static final int btnOn=0x7f090009;
         public static final int btnPause=0x7f090022;
-        public static final int btnPlay=0x7f090002;
+        public static final int btnPlay=0x7f090003;
         public static final int btnRefresh=0x7f090006;
         public static final int btnSelectMediaPlayer=0x7f090007;
         public static final int btnStop=0x7f090023;
         public static final int btnSubSelection=0x7f09001f;
-        public static final int btnViewInfo=0x7f090003;
+        public static final int btnViewInfo=0x7f090004;
         public static final int imageView1=0x7f09000e;
         public static final int imgDownloading=0x7f09001b;
         public static final int imgNowPlaying=0x7f090026;
@@ -131,7 +131,7 @@ public final class R {
         public static final int lblNowPlayingTitle=0x7f090025;
         public static final int lblSubLanguage=0x7f09002e;
         public static final int lblSubpickerFilename=0x7f090030;
-        public static final int linearLayout1=0x7f090001;
+        public static final int linearLayout1=0x7f090002;
         public static final int linearLayout2=0x7f09000d;
         public static final int linearLayoutButtons1=0x7f090020;
         public static final int listPlayers=0x7f09002a;
@@ -145,7 +145,7 @@ public final class R {
         public static final int rootNowPlaying=0x7f09001d;
         public static final int rootPlayerPicker=0x7f090029;
         public static final int rootSubtitlePicker=0x7f09002f;
-        public static final int rootViewPager=0x7f090004;
+        public static final int rootViewPager=0x7f090001;
         public static final int seekBarDuration=0x7f090027;
         public static final int textViewDirector=0x7f090012;
         public static final int textViewDuration=0x7f090013;
