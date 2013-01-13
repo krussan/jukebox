@@ -20,7 +20,8 @@ public class Log {
 		FIND,
 		COMM,
 		UPGRADE,
-		VLCRESPONSE
+		VLCRESPONSE,
+		IMDB
 	}
 	
 	public static void Critical(String msg, LogType type) {

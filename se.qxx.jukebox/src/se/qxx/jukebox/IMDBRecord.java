@@ -36,6 +36,8 @@ public class IMDBRecord {
 		
 		//TODO: Extract all regex:es to config file in case IMDB decides to change layout
 		try {
+			Log.Debug(String.format("IMDBRECORD :: Making web request to url :: %s", url), LogType.IMDB);
+
 			String webResult = WebRetriever.getWebResult(url).getResult();
 			parse(webResult);
 			
@@ -49,6 +51,8 @@ public class IMDBRecord {
 	private void parse(String webResult) {
 		Pattern p;
 		Matcher m;
+
+		Log.Debug(String.format("IMDBRECORD :: Initializing parsing"), LogType.IMDB);
 
 		List<InfoPattern> patterns = Settings.imdb().getInfoPatterns().getInfoPattern();
 		for (InfoPattern infoPattern : patterns) {

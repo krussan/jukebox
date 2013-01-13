@@ -3,6 +3,7 @@
     <settings
         sleepSecondsMin="20"
         sleepSecondsMax="30"
+        debug="false"
     />
     <title
         preferredLanguage="default"
@@ -20,8 +21,23 @@
     <searchUrl><![CDATA[http://www.imdb.com/find?s=tt&q=%%TITLE%%]]></searchUrl>
     <searchPatterns>
      <searchResultPattern
-         name="PopularTitles"
+         name="November2012"
          enabled="true"
+         priority="1"
+         groupBlock="1"
+         groupRecordUrl="1"
+         groupRecordYear="2">         
+ 		<blockPattern>
+	    	<![CDATA[<table class="findList">(.*?)</table>]]>
+		</blockPattern>
+ 		<recordPattern>
+ 		    <![CDATA[<a\s*href="([^"]*?)"[^>]*>[^<]+?</a>\s*\((\d{4})[^\)]*?\)]]>
+		</recordPattern>
+     </searchResultPattern>
+        
+     <searchResultPattern
+         name="PopularTitles"
+         enabled="false"
          priority="1"
          groupBlock="3"
          groupRecordUrl="1"
@@ -35,7 +51,7 @@
      </searchResultPattern>
      <searchResultPattern
          name="ExactMatches"
-         enabled="true"
+         enabled="false"
          priority="2"
          groupBlock="3"
          groupRecordUrl="1"
@@ -49,7 +65,7 @@
      </searchResultPattern>
 	 <searchResultPattern
          name="ApproxMatches"
-         enabled="true"
+         enabled="false"
          priority="3"
          groupBlock="3"
          groupRecordUrl="1"
@@ -63,7 +79,7 @@
      </searchResultPattern>	      	      
 	 <searchResultPattern
          name="PartialMatches"
-         enabled="true"
+         enabled="false"
          priority="4"
          groupBlock="3"
          groupRecordUrl="1"

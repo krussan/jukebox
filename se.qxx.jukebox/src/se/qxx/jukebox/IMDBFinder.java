@@ -25,12 +25,15 @@ public class IMDBFinder {
 	private static long nextSearch = 0;
 	
 	public synchronized static Movie Get(Movie m) throws IOException {
+		Log.Debug(String.format("Starting search on title :: %s (%s)", m.getTitle(), m.getYear()), LogType.IMDB);
 		String imdbUrl = m.getImdbUrl();
 		if (StringUtils.isEmpty(imdbUrl))
-		{
+		{	
 			return Search(m);
 		}
 		else {
+			Log.Debug(String.format("IMDB url found."), LogType.IMDB);
+			
 			IMDBRecord rec = IMDBRecord.get(imdbUrl);
 			return extractMovieInfo(m, rec);
 		}
@@ -50,9 +53,10 @@ public class IMDBFinder {
 	
 		long currentTimeStamp = Util.getCurrentTimestamp();
 		try {
-			if (currentTimeStamp < nextSearch)
+			if (currentTimeStamp < nextSearch) {
+				Log.Debug(String.format("Waiting %s seconds", (nextSearch - currentTimeStamp) / 1000), LogType.IMDB);
 				Thread.sleep(nextSearch - currentTimeStamp);
-			
+			}
 			WebResult webResult = getSearchResult(m);
 			
 			// Accomodate for that sometimes IMDB redirects you
@@ -60,11 +64,11 @@ public class IMDBFinder {
 			IMDBRecord rec;
 
 			if (webResult.isRedirected()) {
-				Log.Info(String.format("IMDB :: %s is redirected to movie", m.getTitle()), LogType.FIND);
+				Log.Info(String.format("IMDB :: %s is redirected to movie", m.getTitle()), LogType.IMDB);
 				rec = IMDBRecord.getFromWebResult(webResult);
 			}
 			else {				
-				Log.Info(String.format("IMDB :: %s is NOT redirected to movie", m.getTitle()), LogType.FIND);				
+				Log.Info(String.format("IMDB :: %s is NOT redirected to movie", m.getTitle()), LogType.IMDB);				
 				rec = findMovieInSearchResults(m, webResult.getResult());			
 			}
 
@@ -81,6 +85,8 @@ public class IMDBFinder {
 		String urlParameters = java.net.URLEncoder.encode(m.getTitle(), "ISO-8859-1");
 		String urlString = Settings.imdb().getSearchUrl().replace("%%TITLE%%", urlParameters);
 		//String urlString = "http://www.imdb.com/find?s=tt&q=" + urlParameters;
+
+		Log.Debug(String.format("Making web request. Url :: %s", urlString), LogType.IMDB);
 
 		WebResult webResult = WebRetriever.getWebResult(urlString);
 		return webResult;
@@ -162,16 +168,20 @@ public class IMDBFinder {
 		Collections.sort(patterns, new SearchPatternComparer());
 		IMDBRecord rec = null;
 		for (SearchResultPattern p : patterns) {
-			rec = findUrl(m
-					, text
-					, StringUtils.trim(p.getBlockPattern())
-					, p.getGroupBlock()
-					, StringUtils.trim(p.getRecordPattern())
-					, p.getGroupRecordUrl()
-					, p.getGroupRecordYear());
-			
-			if  (rec!=null)
-				break;
+			if (p.isEnabled()) {
+				Log.Debug(String.format("Using pattern :: %s", p.getName()), LogType.IMDB);
+				
+				rec = findUrl(m
+						, text
+						, StringUtils.trim(p.getBlockPattern())
+						, p.getGroupBlock()
+						, StringUtils.trim(p.getRecordPattern())
+						, p.getGroupRecordUrl()
+						, p.getGroupRecordYear());
+				
+				if  (rec!=null)
+					break;
+			}
 		}
 		
 		return rec;
@@ -206,7 +216,7 @@ public class IMDBFinder {
 			for (String[] record : records) {
 				String url = record[0];
 				int year = Integer.parseInt(record[1]);
-				
+								
 				IMDBRecord rec = new IMDBRecord(url, year);
 				
 				if (testResult(movie, rec))
@@ -275,9 +285,12 @@ public class IMDBFinder {
 		Matcher m = p.matcher(text);
 		
 		if (m.find()) {
+			Log.Debug(String.format("Block pattern found"), LogType.IMDB);
+
 			String blockMatch = m.group(patternGroupForBlock);
 			
-			Pattern pRec = Pattern.compile(patternForRecord);
+			Pattern pRec = Pattern.compile(patternForRecord
+					, Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
 			Matcher mRec = pRec.matcher(blockMatch);
 			
 			while (mRec.find()) {				
@@ -291,6 +304,8 @@ public class IMDBFinder {
 			}				
 		}
 		
+		Log.Debug(String.format("%s records found", ret.size()), LogType.IMDB);
+
 		return ret;
 		
 	}	

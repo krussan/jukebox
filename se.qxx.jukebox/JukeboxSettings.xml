@@ -177,5 +177,6 @@
   	<log type="file" filename="/c/media/Dev/src/jukebox/watcher.log" level="DEBUG" logs="FIND" />
   	<log type="file" filename="/c/media/Dev/src/jukebox/comm.log" level="DEBUG" logs="COMM" />
   	<log type="file" filename="/c/media/Dev/src/jukebox/upgrade.log" level="DEBUG" logs="UPGRADE" />
+  	<log type="file" filename="/c/media/Dev/src/jukebox/imdb.log" level="DEBUG" logs="IMDB" />	
   </logs>  
 </JukeboxListenerSettings>
