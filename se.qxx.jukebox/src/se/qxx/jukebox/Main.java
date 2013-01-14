@@ -30,6 +30,9 @@ public class Main implements Runnable, INotifyClient
 				subtitleDownloaderThread.start();
 			}
 			
+			Thread identifierThread = new Thread(MovieIdentifier.get());
+			identifierThread.start();
+			
 			isRunning = true;
 			
 			ExtensionFileFilter filter = new ExtensionFileFilter();

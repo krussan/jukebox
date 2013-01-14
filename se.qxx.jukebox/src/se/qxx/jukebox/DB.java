@@ -103,20 +103,30 @@ public class DB {
 //		}
 //	}
 
+	private static String replaceSearchString(String searchString) {
+		String ret = searchString;
+		ret = StringUtils.replace(ret, "%", "\\%");
+		ret = StringUtils.replace(ret, "_", "\\_");
+		return ret;
+	}
 	public synchronized static Movie getMovieByStartOfMediaFilename(String startOfMediaFilename) {
 		Connection conn = null;
+		String searchString = replaceSearchString(startOfMediaFilename) + "%";
+		
+		Log.Debug(String.format("DB :: Database search string :: %s", searchString), LogType.MAIN);
+		
 		String statement = String.format(
 				" SELECT %s " +
 				" FROM Media MD" +
 				" INNER JOIN Movie M ON MD._movie_ID = M.ID" +
-				" WHERE MD.filename LIKE ?"
+				" WHERE MD.filename LIKE ? ESCAPE '\\'"
 				, getColumnList("M", true, ","));
 		
 		try {
 			conn = DB.initialize();
 
 			PreparedStatement prep = conn.prepareStatement(statement);
-			prep.setString(1, startOfMediaFilename + "%");
+			prep.setString(1, searchString);
 				
 			ResultSet rs = prep.executeQuery();
 			if (rs.next())
@@ -136,15 +146,16 @@ public class DB {
 
 	public synchronized static Media getMediaByStartOfFilename(String startOfFilename) {
 		Connection conn = null;
+		String searchString = replaceSearchString(startOfFilename) + "%";
 		String statement = 
 				" SELECT ID, _movie_id, idx, filename, filepath, metaDuration, metaFramerate" +
 				" FROM Media" +
-				" WHERE filename LIKE ?";
+				" WHERE filename LIKE ? ESCAPE '\\'";
 		try {
 			conn = DB.initialize();
 
 			PreparedStatement prep = conn.prepareStatement(statement);
-			prep.setString(1, startOfFilename + "%");
+			prep.setString(1, searchString);
 				
 			ResultSet rs = prep.executeQuery();
 			if (rs.next())
