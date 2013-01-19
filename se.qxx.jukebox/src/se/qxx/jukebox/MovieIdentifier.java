@@ -2,6 +2,7 @@ package se.qxx.jukebox;
 
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -206,7 +207,9 @@ public class MovieIdentifier implements Runnable {
 	private Movie getImdbInformation(Movie m) {
 		//find imdb link
 		try {
-			m = IMDBFinder.Get(m);
+			List<String> blacklist = DB.getBlacklist(m);
+			m = IMDBFinder.Get(m, blacklist);
+			
 			if (!StringUtils.isEmpty(m.getImdbUrl()))
 				Log.Info(String.format("IMDB link found for :: %s", m.getTitle()), LogType.FIND);
 		}

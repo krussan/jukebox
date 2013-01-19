@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequest;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGetTitle;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestIsPlaying;
@@ -37,6 +38,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListSubtitles;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseStartMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseTime;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestBlacklistMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
@@ -124,6 +126,8 @@ public class TcpConnection implements Runnable {
 				return isPlaying(req);
 			case GetTitle:
 				return getTitle(req);
+			case BlacklistMovie:
+				return blacklist(req);
 			default:
 				break;
 			}
@@ -436,7 +440,30 @@ public class TcpConnection implements Runnable {
 					.build();
 		}	
 	}
-	
+
+	private JukeboxResponse blacklist(JukeboxRequest req) throws IOException {
+		ByteString data = req.getArguments();
+		JukeboxRequestBlacklistMovie args = JukeboxRequestBlacklistMovie.parseFrom(data);
+
+		try {
+			Movie m = DB.getMovie(args.getMovieId());
+			
+			Log.Debug(String.format("Blacklisting movie :: %s", m.getTitle()), LogType.COMM);
+			
+			DB.addToBlacklist(m);
+			DB.removeMovie(m);
+			
+			for (Media md : m.getMediaList())
+				MovieIdentifier.get().addFile(new FileRepresentation(md.getFilepath(), md.getFilepath(), 0));
+		}
+		catch (Exception e) {
+			return buildErrorMessage("Error occured when blacklisting movie");
+		}
+		
+		
+		return JukeboxResponse.newBuilder().setType(JukeboxRequestType.OK).build();
+	}
+
 	private String getTitleFilename(String playerName) {
 		try {
 			return StringUtils.trim(VLCDistributor.get().getTitle(playerName));
@@ -482,4 +509,6 @@ public class TcpConnection implements Runnable {
 			
 		}				
 	}
+	
+	
 }

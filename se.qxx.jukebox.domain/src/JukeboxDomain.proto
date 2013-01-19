@@ -29,6 +29,7 @@ enum JukeboxRequestType {
 	Time = 20;
 	IsPlaying = 21;
 	GetTitle = 22;
+	BlacklistMovie = 23;
 }
 
 enum Identifier {
@@ -176,6 +177,10 @@ message JukeboxRequestIsPlaying {
 
 message JukeboxRequestGetTitle {
 	required string playerName = 1;
+}
+
+message JukeboxRequestBlacklistMovie {
+	required int32 movieId = 1;
 }
 
 //---------------------------------------------------------------------------------------

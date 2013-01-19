@@ -282,6 +282,61 @@ public class DB {
 		}
 	}
 	
+	
+	public synchronized static boolean removeMovie(Movie m) {
+		Connection conn = null;
+		String currentStatement = StringUtils.EMPTY;
+		
+		String[] statementsMovie = new String[] {
+				"DELETE FROM MovieImage WHERE _movie_ID = ?",
+				"DELETE FROM subtitleQueue WHERE _movie_ID = ?",
+				"DELETE FROM MovieGenre WHERE _movie_ID = ?",
+				"DELETE FROM Media WHERE _movie_ID = ?",
+				"DELETE FROM Movie WHERE ID = ?"
+			};
+		String[] statementsMedia = new String[] {
+				"DELETE FROM subtitles WHERE _media_ID = ?"
+			};
+		
+		try {
+			conn = DB.initialize();
+			conn.setAutoCommit(false);
+			List<Media> media = getMedia(m.getID(), conn);
+			
+			for(String statement : statementsMedia) {
+				currentStatement = statement;
+				for (Media md : media) {
+					PreparedStatement prep = conn.prepareStatement(statement);
+					prep.setInt(1, md.getID());
+					
+					prep.execute();
+				}
+			}
+
+			for(String statement : statementsMovie) {
+				PreparedStatement prep = conn.prepareStatement(statement);
+				prep.setInt(1, m.getID());
+				
+				prep.execute();
+			}
+					
+			conn.commit();
+			
+			return true;
+		}
+		catch (Exception e) {
+			Log.Error("Failed to store movie to DB", Log.LogType.MAIN, e);
+			Log.Debug(String.format("Failing query was ::\n\t%s", currentStatement), LogType.MAIN);
+			
+			try {
+				conn.rollback();
+			} catch (SQLException sqlEx) {}
+			return false;
+		}finally {
+			DB.disconnect(conn);
+		}		
+	}
+	
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Images
 	//---------------------------------------------------------------------------------------
@@ -320,9 +375,7 @@ public class DB {
 		ResultSet rs = prep.executeQuery();
 		
 		if (rs.next())
-		{
 			data = rs.getBytes("data");
-		}
 		
 		return data;
 	}
@@ -752,6 +805,74 @@ public class DB {
 			DB.disconnect(conn);
 		}		
 	}
+	
+	//---------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------ Blacklist
+	//---------------------------------------------------------------------------------------
+	
+	public synchronized static void addToBlacklist(Movie m) {
+		Connection conn = null;
+		String statement =
+				" INSERT INTO Blacklist (filepath, filename, imdbid) " +
+				" VALUES (?, ?, ?)";
+		
+		try {
+			conn = DB.initialize();
+
+			for (Media md : m.getMediaList()) {
+				PreparedStatement prep = conn.prepareStatement(statement);
+				prep.setString(1, md.getFilepath());
+				prep.setString(2, md.getFilename());
+				prep.setString(3, Util.getImdbIdFromUrl(m.getImdbUrl()));
+							
+				prep.execute();
+			}
+
+		}
+		catch (Exception e) {
+			Log.Error("Failed to add movie to blacklist in DB", Log.LogType.MAIN, e);
+			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
+		}finally {
+			DB.disconnect(conn);
+		}		
+	}
+	
+	public synchronized static List<String> getBlacklist(Movie m) {
+		Connection conn = null;
+		String statement = StringUtils.EMPTY;
+		List<String> blacklistedIDs = new ArrayList<String>();
+		
+		try {
+			conn = DB.initialize();
+
+			for (Media md : m.getMediaList()) {
+				statement = 
+					" SELECT filepath, filename, imdbid " +
+					" FROM Blacklist " +
+					" WHERE filepath = ? AND filename = ?";
+				
+				PreparedStatement prep = conn.prepareStatement(statement);
+				prep.setString(1, md.getFilepath());
+				prep.setString(2, md.getFilename());
+				
+				ResultSet rs = prep.executeQuery();
+				
+				while (rs.next())
+					blacklistedIDs.add(rs.getString("imdbid"));
+			}
+			
+			return blacklistedIDs;
+		}
+		catch (Exception e) {
+			Log.Error("Failed to add movie to blacklist in DB", Log.LogType.MAIN, e);
+			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
+		}finally {
+			DB.disconnect(conn);
+		}		
+		
+		return blacklistedIDs;
+	}
+	
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Version
 	//---------------------------------------------------------------------------------------

@@ -1,5 +1,7 @@
 package se.qxx.jukebox.tests;
 
+import java.util.ArrayList;
+
 import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.IMDBFinder;
@@ -18,7 +20,7 @@ public class TestImdbFinder {
 					.setID(-1)
 					.setTitle(args[0])
 					.build();
-			Movie mm = IMDBFinder.Get(m);
+			Movie mm = IMDBFinder.Get(m, new ArrayList<String>());
 			
 			System.out.println(mm);
 		}

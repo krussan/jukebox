@@ -24,12 +24,12 @@ import com.google.protobuf.ByteString;
 public class IMDBFinder {
 	private static long nextSearch = 0;
 	
-	public synchronized static Movie Get(Movie m) throws IOException {
+	public synchronized static Movie Get(Movie m, List<String> blacklistedIDs) throws IOException {
 		Log.Debug(String.format("Starting search on title :: %s (%s)", m.getTitle(), m.getYear()), LogType.IMDB);
 		String imdbUrl = m.getImdbUrl();
-		if (StringUtils.isEmpty(imdbUrl))
-		{	
-			return Search(m);
+
+		if (StringUtils.isEmpty(imdbUrl) || urlIsBlacklisted(imdbUrl, blacklistedIDs)) {	
+			return Search(m, blacklistedIDs);
 		}
 		else {
 			Log.Debug(String.format("IMDB url found."), LogType.IMDB);
@@ -39,7 +39,20 @@ public class IMDBFinder {
 		}
 	}
 	
-	private synchronized static Movie Search(Movie m) throws IOException {
+	private static boolean urlIsBlacklisted(String imdbUrl, List<String> blacklistedIDs) {
+		String imdbid = Util.getImdbIdFromUrl(imdbUrl);
+		if (!StringUtils.isEmpty(imdbid)) {	
+			for (String entry : blacklistedIDs) {	
+				if (StringUtils.equalsIgnoreCase(imdbid, entry)) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+
+	private synchronized static Movie Search(Movie m, List<String> blacklistedIDs) throws IOException {
         //http://www.imdb.com/find?s=all&q=the+decent
         // search for :
         // Titles (Exact Matches)
@@ -69,7 +82,7 @@ public class IMDBFinder {
 			}
 			else {				
 				Log.Info(String.format("IMDB :: %s is NOT redirected to movie", m.getTitle()), LogType.IMDB);				
-				rec = findMovieInSearchResults(m, webResult.getResult());			
+				rec = findMovieInSearchResults(m, webResult.getResult(), blacklistedIDs);			
 			}
 
 			setNextSearchTimer();
@@ -162,7 +175,7 @@ public class IMDBFinder {
 		return title;
 	}
 
-	private static IMDBRecord findMovieInSearchResults(Movie m, String text) {
+	private static IMDBRecord findMovieInSearchResults(Movie m, String text, List<String> blacklistedIDs) {
 		List<SearchResultPattern> patterns = Settings.imdb().getSearchPatterns().getSearchResultPattern();
 		
 		Collections.sort(patterns, new SearchPatternComparer());
@@ -177,7 +190,8 @@ public class IMDBFinder {
 						, p.getGroupBlock()
 						, StringUtils.trim(p.getRecordPattern())
 						, p.getGroupRecordUrl()
-						, p.getGroupRecordYear());
+						, p.getGroupRecordYear()
+						, blacklistedIDs);
 				
 				if  (rec!=null)
 					break;
@@ -201,7 +215,8 @@ public class IMDBFinder {
 			int patternGroupForBlock,
 			String patternForRecord,
 			int urlGroup,
-			int yearGroup) {
+			int yearGroup, 
+			List<String> blacklistedIDs) {
 		
 		//TODO: Also match by length of movie
 		try {
@@ -219,7 +234,8 @@ public class IMDBFinder {
 								
 				IMDBRecord rec = new IMDBRecord(url, year);
 				
-				if (testResult(movie, rec))
+				// Check if movie was blacklisted. If it was get the next record matching
+				if (!urlIsBlacklisted(url, blacklistedIDs) && testResult(movie, rec))
 				{
 					// if year and title matches then continue to the URL and extract information about the movie.
 					rec = IMDBRecord.get(url);
