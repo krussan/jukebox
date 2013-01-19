@@ -130,7 +130,6 @@ public abstract class MovieBuilder {
 	 */
 	protected static ArrayList<Movie> identifyAndRate(String filepath, String filename) {
 		ArrayList<Movie> proposals = new ArrayList<Movie>();		
-		String imdbUrl = StringUtils.EMPTY;
 		
 		for (Builder b : Settings.get().getBuilders().getBuilder()) {
 			String className = b.getClazz();
