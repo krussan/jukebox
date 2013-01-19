@@ -10,6 +10,7 @@ import se.qxx.android.jukebox.JukeboxSettings;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequest;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestBlacklistMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGetTitle;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestIsPlaying;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
@@ -32,6 +33,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListSubtitles;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseStartMovie;
+import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -110,6 +112,9 @@ public class JukeboxConnectionHandler implements Runnable {
 			break;
 		case SetSubtitle:
 			b = setSubtitle();
+			break;
+		case BlacklistMovie:
+			b = blacklist();
 			break;
 		default:
 		}
@@ -315,6 +320,19 @@ public class JukeboxConnectionHandler implements Runnable {
     	{
     		return setResponse(false, "Application was unable to connect to server. Check server settings.");    		
     	}	
+	}
+	
+	private Bundle blacklist() {
+		if (this.arguments.length > 0) {
+			if (this.arguments[0] instanceof Movie) {
+				Movie m = (Movie)this.arguments[0];
+				JukeboxRequestBlacklistMovie bm = JukeboxRequestBlacklistMovie.newBuilder().setMovieId(m.getID()).build();
+				return sendAndRetreive(JukeboxRequestType.BlacklistMovie, bm);
+			}
+			
+		}
+		
+		return new Bundle();
 	}
 	
 	private void handleResponse(JukeboxRequestType type, ByteString data) {

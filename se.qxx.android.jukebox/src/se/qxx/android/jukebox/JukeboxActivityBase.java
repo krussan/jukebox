@@ -1,40 +1,18 @@
 package se.qxx.android.jukebox;
 
-import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
-import se.qxx.android.jukebox.comm.JukeboxResponseListener;
-import se.qxx.android.tools.ProgressDialogHandler;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
 import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnDismissListener;
+import android.content.Context;
 import android.view.View;
+import android.view.ViewGroup;
 
-public abstract class JukeboxActivityBase extends Activity {
+public class JukeboxActivityBase extends Activity {
 	
-	protected abstract View getRootView();
-	
-	protected void sendCommand(String message, JukeboxRequestType type, Object... args) {
-		this.sendCommand(new OnDismissListener() {
-			@Override
-			public void onDismiss(DialogInterface dialog) {}
-		}, message, type, args);
-	}	  
-	
-	protected void sendCommand(OnDismissListener listener, String message, JukeboxRequestType type, Object... args) {
-       	ProgressDialog d = ProgressDialog.show(this, "Jukebox", message);
-
-       	if (listener != null)
-       		d.setOnDismissListener(listener);
-       	
-       	JukeboxConnectionHandler h = new JukeboxConnectionHandler(new ProgressDialogHandler(this, d), type, args);
-       	Thread t = new Thread(h);
-       	t.start();						
+	protected final View getRootView() {
+		return ((ViewGroup)findViewById(android.R.id.content)).getChildAt(0);		
 	}
 	
-	protected void sendCommand(final JukeboxResponseListener listener, String message, JukeboxRequestType type, Object... args) {
-       	JukeboxConnectionHandler h = new JukeboxConnectionHandler(listener, type, args);
-       	Thread t = new Thread(h);
-       	t.start();						
-	}	
+	protected final Context getCurrentContext() {
+		return this.getRootView().getContext();
+	}
+	
 }

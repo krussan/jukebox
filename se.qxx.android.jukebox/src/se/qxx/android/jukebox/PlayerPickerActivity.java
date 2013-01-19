@@ -4,6 +4,7 @@ import java.util.EventObject;
 import java.util.List;
 
 import se.qxx.android.jukebox.adapters.PlayerLayoutAdapter;
+import se.qxx.android.jukebox.comm.ConnectionWrapper;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.jukebox.model.Model.ModelUpdatedEventListener;
 import se.qxx.android.jukebox.model.ModelUpdatedEvent;
@@ -26,9 +27,12 @@ public class PlayerPickerActivity extends JukeboxActivityBase implements ModelUp
 
 	    setContentView(R.layout.playerpicker);
 	    Model.get().addEventListener(this);
-	    
-	    this.sendCommand("Getting list of players", JukeboxRequestType.ListPlayers);
-	    
+	    	    
+	    ConnectionWrapper.sendCommandWithProgressDialog(
+    		this.getCurrentContext(), 
+    		"Getting list of players", 
+    		JukeboxRequestType.ListPlayers);
+    
 	    adapter = new PlayerLayoutAdapter(this);	    
 	    ListView listView = (ListView)findViewById(R.id.listPlayers);	    
 
@@ -53,12 +57,6 @@ public class PlayerPickerActivity extends JukeboxActivityBase implements ModelUp
 				adapter.notifyDataSetChanged();
 			}
 		});		
-	}
-	
-	
-	@Override
-	protected View getRootView() {
-		return findViewById(R.id.rootPlayerPicker);
 	}
 
 	@Override

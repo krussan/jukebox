@@ -1,6 +1,7 @@
 package se.qxx.android.jukebox;
 
 import se.qxx.android.jukebox.adapters.MediaSubsLayoutAdapter;
+import se.qxx.android.jukebox.comm.ConnectionWrapper;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
@@ -16,11 +17,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 public class SubSelectActivity extends JukeboxActivityBase implements OnItemClickListener, OnDismissListener {
-
-	@Override
-	protected View getRootView() {
-		return findViewById(R.id.rootSubtitlePicker);
-	}
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,7 +43,7 @@ public class SubSelectActivity extends JukeboxActivityBase implements OnItemClic
 		Logger.Log().d(String.format("Setting subtitle to %s", sub.getDescription()));
 		Model.get().setCurrentSubtitle(sub.getDescription());
 		
-		this.sendCommand(this, "Setting subtitle", JukeboxRequestType.SetSubtitle);
+		ConnectionWrapper.sendCommandWithProgressDialog(this, "Setting subtitle", JukeboxRequestType.SetSubtitle);
 	}
 
 	@Override
@@ -55,58 +51,4 @@ public class SubSelectActivity extends JukeboxActivityBase implements OnItemClic
 		this.finish();
 	}
 	
-//
-//	    View rootView = this.getRootView();
-//	    
-//	    if (!m.getImage().isEmpty()) 
-//	    	GUITools.setImageOnImageView(R.id.imgSubPoster, m.getImage().toByteArray(), rootView);
-//	    
-//	    GUITools.setTextOnTextview(R.id.textViewTitle, m.getTitle(), rootView);
-//	    GUITools.setTextOnTextview(R.id.textViewYear, Integer.toString(m.getYear()), rootView);
-//	    GUITools.setTextOnTextview(R.id.textViewFilename, String.format("Filename :: %s", m.getFilename()) , rootView);
-//	    
-//	    SeekBar sb = (SeekBar)findViewById(R.id.seekBarDuration);
-//	    if (sb != null) {
-//	    	sb.setMax(m.getMetaDuration());
-//	    	sb.setOnSeekBarChangeListener(this);
-//	    }
-//	    
-//	    //TODO: setProgress if movie is actually playing
-//	    sendCommand("Starting movie...", JukeboxRequestType.StartMovie);
-//	}
-//
-//	@Override
-//	public void onProgressChanged(SeekBar seekBar, int progress,
-//			boolean fromUser) {
-//		TextView tv = (TextView)findViewById(R.id.txtSeekIndicator);
-//		runOnUiThread(new UpdateSeekIndicator(progress, tv, seekBar));		
-//	}
-//
-//	@Override
-//	public void onStartTrackingTouch(SeekBar seekBar) {
-//	}
-//
-//	@Override
-//	public void onStopTrackingTouch(SeekBar seekBar) {
-//		//TODO: send seek command to media player
-//		int seconds = seekBar.getProgress();
-//		sendCommand("Seeking...", JukeboxRequestType.Seek, seconds);
-//	}
-//		
-//    public void onButtonClicked(View v) {
-//    	int id = v.getId();
-//    	
-//    	switch (id) {
-//    	case R.id.btnSubOk:
-//			sendCommand("Sending OK...", JukeboxRequestType.MarkSubtitle, true);
-//    		break;
-//    	case R.id.btnSubNotOk:
-//			sendCommand("Sending OK...", JukeboxRequestType.MarkSubtitle, false);    		
-//    		break;
-//    	case R.id.btnSubFullscreen:
-//			sendCommand("Toggling fullscreen...", JukeboxRequestType.ToggleFullscreen);
-//			break;
-//    	}
-//    }	
-//    
 }

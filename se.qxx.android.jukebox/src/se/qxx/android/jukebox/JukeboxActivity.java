@@ -3,6 +3,7 @@ package se.qxx.android.jukebox;
 import java.util.EventObject;
 
 import se.qxx.android.jukebox.adapters.MovieLayoutAdapter;
+import se.qxx.android.jukebox.comm.ConnectionWrapper;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.jukebox.model.Model.ModelUpdatedEventListener;
 import se.qxx.android.jukebox.model.ModelUpdatedEvent;
@@ -10,17 +11,24 @@ import se.qxx.android.jukebox.model.ModelUpdatedType;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 
-public class JukeboxActivity extends JukeboxActivityBase implements ModelUpdatedEventListener, OnItemClickListener {
+public class JukeboxActivity extends JukeboxActivityBase 
+	implements ModelUpdatedEventListener, OnItemClickListener, OnItemLongClickListener {
 	private MovieLayoutAdapter _jukeboxMovieLayoutAdapter;
 	
     private Runnable modelResultUpdatedRunnable = new Runnable() {
@@ -30,12 +38,7 @@ public class JukeboxActivity extends JukeboxActivityBase implements ModelUpdated
             _jukeboxMovieLayoutAdapter.notifyDataSetChanged();
         }
     };
-    
-	@Override
-	protected View getRootView() {
-		return findViewById(R.id.rootMain);
-	}
-	
+    	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,7 @@ public class JukeboxActivity extends JukeboxActivityBase implements ModelUpdated
         
 		ListView v = (ListView)findViewById(R.id.listView1);
 		v.setOnItemClickListener(this);
+		v.setOnItemLongClickListener(this);
 		
 		_jukeboxMovieLayoutAdapter = new MovieLayoutAdapter(this); 
 		v.setAdapter(_jukeboxMovieLayoutAdapter);
@@ -127,16 +131,25 @@ public class JukeboxActivity extends JukeboxActivityBase implements ModelUpdated
     	//TODO: Check if computer is live.
     	boolean isOnline = JukeboxSettings.get().isCurrentMediaPlayerOn();
     	if (isOnline) 
-    		sendCommand("Suspending target media player...", JukeboxRequestType.Suspend);
+    		ConnectionWrapper.sendCommandWithProgressDialog(
+				this.getCurrentContext(), 
+				"Suspending target media player...", 
+				JukeboxRequestType.Suspend);
     	else    		
-    		sendCommand("Waking up...", JukeboxRequestType.Wakeup);
+    		ConnectionWrapper.sendCommandWithProgressDialog(
+				this.getCurrentContext(), 
+				"Waking up...", 
+				JukeboxRequestType.Wakeup);
     	
     	JukeboxSettings.get().setIsCurrentMediaPlayerOn(!isOnline);
     	setupOnOffButton();
 	}
 
 	public void connect() {
-		this.sendCommand("Getting list of movies", JukeboxRequestType.ListMovies);	
+		ConnectionWrapper.sendCommandWithProgressDialog(
+			this.getCurrentContext(), 
+			"Getting list of movies", 
+			JukeboxRequestType.ListMovies);	
     }
     
 
@@ -156,5 +169,11 @@ public class JukeboxActivity extends JukeboxActivityBase implements ModelUpdated
 		startActivity(i);
 	}
 
-
+	@Override
+	public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+		ActionDialog d = new ActionDialog(this, Model.get().getMovie(arg2));
+		d.show();
+		return false;
+	}
+	
 }

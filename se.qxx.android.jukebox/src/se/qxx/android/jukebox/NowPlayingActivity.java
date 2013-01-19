@@ -2,6 +2,7 @@ package se.qxx.android.jukebox;
 
 import org.apache.commons.lang3.StringUtils;
 
+import se.qxx.android.jukebox.comm.ConnectionWrapper;
 import se.qxx.android.jukebox.comm.JukeboxResponseListener;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
@@ -30,12 +31,6 @@ public class NowPlayingActivity extends JukeboxActivityBase
 	private Seeker seeker;
 	private boolean isManualSeeking = false;
 	
-	@Override
-	protected View getRootView() {
-		// TODO Auto-generated method stub
-		return findViewById(R.id.rootNowPlaying);
-	}
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -87,7 +82,7 @@ public class NowPlayingActivity extends JukeboxActivityBase
 	    SeekBar sb = (SeekBar)findViewById(R.id.seekBarDuration);
 		sb.setOnSeekBarChangeListener(this);
 		
-	    sendCommand(this, "Checking status", JukeboxRequestType.IsPlaying);
+		ConnectionWrapper.sendCommandWithResponseListener(this, "Checking status", JukeboxRequestType.IsPlaying);
 	    
 //	    Model.get().addEventListener(this);
 	}
@@ -112,7 +107,7 @@ public class NowPlayingActivity extends JukeboxActivityBase
 		final TextView tv = (TextView)findViewById(R.id.txtSeekIndicator);
 
 		int seconds = seekBar.getProgress();
-		sendCommand(this, "Seeking...", JukeboxRequestType.Seek, seconds);
+		ConnectionWrapper.sendCommandWithResponseListener(this, "Seeking...", JukeboxRequestType.Seek, seconds);
 		runOnUiThread(new UpdateSeekIndicator(seconds, tv, seekBar));		
 		
 		this.isManualSeeking = false;
@@ -124,18 +119,27 @@ public class NowPlayingActivity extends JukeboxActivityBase
 		
 		switch (id) {
 			case R.id.btnPlay:
-				sendCommand(this, "Starting movie...", JukeboxRequestType.StartMovie);
+				ConnectionWrapper.sendCommandWithResponseListener(this, "Starting movie...", JukeboxRequestType.StartMovie);
 				break;	
 			case R.id.btnFullscreen:
-				sendCommand("Toggling fullscreen...", JukeboxRequestType.ToggleFullscreen);
+				ConnectionWrapper.sendCommandWithProgressDialog(
+						this.getRootView().getContext(), 
+						"Toggling fullscreen...", 
+						JukeboxRequestType.ToggleFullscreen);
 				break;
 			case R.id.btnPause:
 				seeker.toggle();
-				sendCommand("Pausing...", JukeboxRequestType.PauseMovie);
+				ConnectionWrapper.sendCommandWithProgressDialog(
+						this.getRootView().getContext(),
+						"Pausing...", 
+						JukeboxRequestType.PauseMovie);
 				break;
 			case R.id.btnStop:
 				seeker.stop();
-				sendCommand("Stopping...", JukeboxRequestType.StopMovie);
+				ConnectionWrapper.sendCommandWithProgressDialog(
+						this.getRootView().getContext(),
+						"Stopping...", 
+						JukeboxRequestType.StopMovie);
 				break;
 			case R.id.btnViewInfo:
 				String url = Model.get().getCurrentMovie().getImdbUrl();
@@ -188,10 +192,16 @@ public class NowPlayingActivity extends JukeboxActivityBase
 			try {
 				boolean isPlaying = JukeboxResponseIsPlaying.parseFrom(resp.getArguments()).getIsPlaying();
 				if (isPlaying) {
-					sendCommand(this, "Checking current playing movie...", JukeboxRequestType.GetTitle);
+					ConnectionWrapper.sendCommandWithResponseListener(
+						this, 
+						"Checking current playing movie...", 
+						JukeboxRequestType.GetTitle);
 				}
 				else {
-				    sendCommand(this, "Starting movie...", JukeboxRequestType.StartMovie);						
+					ConnectionWrapper.sendCommandWithResponseListener(
+						this, 
+						"Starting movie...", 
+						JukeboxRequestType.StartMovie);						
 				}
 			} catch (InvalidProtocolBufferException e) {
 				Log.e(getLocalClassName(), "Error while parsing response from IsPlaying", e);
@@ -206,14 +216,20 @@ public class NowPlayingActivity extends JukeboxActivityBase
 					//initialize seeker and get subtitles if app has been reinitialized
 					Model.get().setCurrentMedia(md);
 					initializeSeeker();
-					sendCommand(this, "Getting subtitles", JukeboxRequestType.ListSubtitles);			
+					ConnectionWrapper.sendCommandWithResponseListener(
+						this, 
+						"Getting subtitles", 
+						JukeboxRequestType.ListSubtitles);			
 					
 					//Start seeker and get time asap as the movie is playing
 					seeker.start(true);
 				}
 				else {
 					// stop movie and start new
-					sendCommand(this, "Stopping movie", JukeboxRequestType.StopMovie);
+					ConnectionWrapper.sendCommandWithResponseListener(
+						this, 
+						"Stopping movie", 
+						JukeboxRequestType.StopMovie);
 				}
 				
 				
@@ -226,11 +242,17 @@ public class NowPlayingActivity extends JukeboxActivityBase
 			Model.get().setCurrentMedia(0);			
 			initializeSeeker();			
 			seeker.start();			
-			sendCommand(this, "Getting subtitles", JukeboxRequestType.ListSubtitles);
+			ConnectionWrapper.sendCommandWithResponseListener(
+				this, 
+				"Getting subtitles", 
+				JukeboxRequestType.ListSubtitles);
 		}
 
 		if (resp.getType() == JukeboxRequestType.StopMovie) {
-			sendCommand(this, "Starting movie", JukeboxRequestType.StartMovie);
+			ConnectionWrapper.sendCommandWithResponseListener(
+				this, 
+				"Starting movie", 
+				JukeboxRequestType.StartMovie);
 		}
 	}
 	
@@ -243,28 +265,5 @@ public class NowPlayingActivity extends JukeboxActivityBase
 		
 		return null;
 	}
-
-//	private void pickSubtitle() {
-//		AlertDialog.Builder b = new AlertDialog.Builder(this);
-//		b.setTitle("Pick subtitle");
-//		b.setItems(Model.get().getSubtitleDescriptions(), new OnClickListener() {
-//			@Override
-//			public void onClick(DialogInterface arg0, int arg1) {
-//				Model.get().setCurrentSubtitle(arg1);
-//			}
-//			
-//		});
-//		
-//		b.show();
-//	}
-
-//	@Override
-//	public void handleModelUpdatedEventListener(EventObject e) {
-//		ModelUpdatedEvent ev = (ModelUpdatedEvent)e;
-//		
-//		if (ev.getType() == ModelUpdatedType.CurrentSub) {
-//			this.sendCommand("Switching subtitle", JukeboxRequestType.SetSubtitle, Model.get().getCurrentSubtitleID());
-//		}
-//	}
 
 }
