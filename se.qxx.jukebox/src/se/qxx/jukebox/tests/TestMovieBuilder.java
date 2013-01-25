@@ -23,8 +23,7 @@ public class TestMovieBuilder {
 	public static void main(String[] args) throws IOException, JAXBException {
 		if (args.length > 0) {
 			
-			Settings.readSettings();
-			ImdbSettings.readSettings();		
+			Settings.initialize();	
 			
 			String filename = args[0];
 			

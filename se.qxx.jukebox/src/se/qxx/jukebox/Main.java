@@ -8,6 +8,7 @@ import javax.xml.bind.JAXBException;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.imdb.ImdbSettings;
+import se.qxx.jukebox.settings.parser.ParserSettings;
 
 public class Main implements Runnable, INotifyClient
 {
@@ -20,7 +21,7 @@ public class Main implements Runnable, INotifyClient
 	public void run() {
 		
 		try {
-			readSettings();
+			Settings.initialize();
 			
 			if (Arguments.get().isTcpListenerEnabled())
 				setupListening();
@@ -49,7 +50,7 @@ public class Main implements Runnable, INotifyClient
 				// acquire a new to block this thread until it is released by another thread (by calling stop)
 				s.acquire();
 				
-				readSettings();				
+				Settings.initialize();				
 			}
 		}
 		catch (Exception e) {
@@ -117,8 +118,4 @@ public class Main implements Runnable, INotifyClient
 		}
 	}	
 	
-	private void readSettings() throws IOException, JAXBException {
-		Settings.readSettings();
-		ImdbSettings.readSettings();		
-	}
 }

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parser xmlns="http://www.qxx.se/jukebox/parser" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.qxx.se/jukebox/parser parser.xsd ">
+  <keywords>
+    <type>
+        <word key="480p" />
+        <word key="720p" />
+        <word key="1080p" />
+        <word key="PPVRIP" />
+        <word key="BRRip" />
+        <word key="DVDRip" />
+        <word key="VODRip" />
+        <word key="HDRip" />
+        <word key="WEBRip" />
+        <word key="DVDSCREENER" />
+        <word key="DVDSCR" />
+        <word key="TS" />
+        <word key="PPV" />
+        <word key="Bluray" />
+        <word key="BDRip" />
+        <word key="HDTV" />        
+    </type>
+    <format>
+        <word key="XviD" />
+        <word key="IFLIX" />
+        <word key="x264" />
+        <word key="h264" />
+    </format>
+    <sound>
+        <word key="AC3" />
+        <word key="aac" />
+        <word key="ac3pt" />
+    </sound>
+    <language>
+        <word key="Eng" />
+        <word key="SWEDISH" />
+        <word key="SWE" />
+        <word key="SWESUB" />
+        <word key="German" />
+        <word key="en" />
+        <word key="de" />
+    </language>
+    <other>
+        <word key="REPACK" />
+        <word key="V2" />
+        <word key="M777" />
+        <word key="READNFO" />
+        <word key="HQ" />
+        <word key="LIMITED" />
+        <word key="MD" />
+        <word key="i2p" />
+        <word key="EXTENDED" />
+        <word key="DC" />        
+    </other>
+  </keywords>
+</parser>

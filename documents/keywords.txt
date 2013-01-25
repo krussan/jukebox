@@ -1,0 +1,49 @@
+---- type ----
+480p
+720p
+1080p
+PPVRIP
+BRRip
+DVDRip
+VODRip
+HDRip
+WEBRip
+DVDSCREENER
+DVDSCR
+TS
+PPV
+Bluray
+BDRip
+
+---- format ----
+XviD
+IFLIX
+x264
+h264
+
+---- sound ----
+AC3
+aac
+ac3pt
+
+---- language ----
+Eng
+SWEDISH
+SWE
+SWESUB
+German
+en
+
+---- other ----
+REPACK
+V2
+M777
+READNFO
+HQ
+LIMITED
+MD
+i2p
+EXTENDED
+DC
+
+

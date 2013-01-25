@@ -18,8 +18,7 @@ import se.qxx.jukebox.settings.imdb.ImdbSettings;
 
 public class TestNfoScanner {
 	public static void main(String[] args) throws IOException, JAXBException {
-		Settings.readSettings();
-		ImdbSettings.readSettings();		
+		Settings.initialize();
 		
 	    String FileName = "example.nfo";
 	    System.out.println(String.format("Nr of args\t\t::%s", args.length));

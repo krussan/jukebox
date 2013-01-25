@@ -11,9 +11,7 @@ import se.qxx.jukebox.settings.imdb.ImdbSettings;
 
 public class TestImdbFinder {
 	public static void main(String[] args) throws Exception {
-		Settings.readSettings();
-		ImdbSettings.readSettings();
-		Settings.get();
+		Settings.initialize();
 
 		if (args.length > 0 && !StringUtils.isEmpty(args[0])) {
 			Movie m = Movie.newBuilder()

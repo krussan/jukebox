@@ -10,6 +10,8 @@ import javax.xml.transform.stream.StreamSource;
 
 import se.qxx.jukebox.settings.imdb.Imdb;
 import se.qxx.jukebox.settings.imdb.ImdbSettings;
+import se.qxx.jukebox.settings.parser.Parser;
+import se.qxx.jukebox.settings.parser.ParserSettings;
 
 
 public class Settings {
@@ -20,6 +22,12 @@ public class Settings {
 	public int serverPort = 45444;	
 	
 	private Settings() {
+	}
+	
+	public static void initialize() throws IOException, JAXBException {
+		Settings.readSettings();
+		ImdbSettings.readSettings();
+		ParserSettings.readSettings();
 	}
 	
 	private static Settings getInstance() {
@@ -36,6 +44,10 @@ public class Settings {
 	
 	public static Imdb imdb() {
 		return ImdbSettings.get();
+	}
+	
+	public static ParserSettings parser() {
+		return ParserSettings.getInstance();
 	}
 	
 	public static void readSettings() throws IOException, JAXBException {

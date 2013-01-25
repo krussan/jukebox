@@ -128,6 +128,8 @@ public class TcpConnection implements Runnable {
 				return getTitle(req);
 			case BlacklistMovie:
 				return blacklist(req);
+			case ToggleWatched:
+				return toggleWatched(req);
 			default:
 				break;
 			}
@@ -454,7 +456,7 @@ public class TcpConnection implements Runnable {
 			DB.removeMovie(m);
 			
 			for (Media md : m.getMediaList())
-				MovieIdentifier.get().addFile(new FileRepresentation(md.getFilepath(), md.getFilepath(), 0));
+				MovieIdentifier.get().addFile(new FileRepresentation(md.getFilepath(), md.getFilename(), 0));
 		}
 		catch (Exception e) {
 			return buildErrorMessage("Error occured when blacklisting movie");
@@ -464,6 +466,20 @@ public class TcpConnection implements Runnable {
 		return JukeboxResponse.newBuilder().setType(JukeboxRequestType.OK).build();
 	}
 
+	private JukeboxResponse toggleWatched(JukeboxRequest req) throws IOException {
+		ByteString data = req.getArguments();
+		JukeboxRequestBlacklistMovie args = JukeboxRequestBlacklistMovie.parseFrom(data);
+		
+		try {
+			DB.toggleWatched(args.getMovieId());
+		}
+		catch (Exception e) {
+			return buildErrorMessage("Error occured when toggling watched status");
+		}
+		
+		return JukeboxResponse.newBuilder().setType(JukeboxRequestType.OK).build();
+	}
+	
 	private String getTitleFilename(String playerName) {
 		try {
 			return StringUtils.trim(VLCDistributor.get().getTitle(playerName));

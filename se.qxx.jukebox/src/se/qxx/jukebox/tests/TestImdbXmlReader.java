@@ -6,10 +6,8 @@ import se.qxx.jukebox.settings.imdb.ImdbSettings;
 
 public class TestImdbXmlReader {
 	public static void main(String[] args) throws Exception {
-			Settings.readSettings();
-			ImdbSettings.readSettings();
+			Settings.initialize();
 			
-			Settings.get();
 			System.out.println(Settings.imdb().getSearchPatterns());
 			
 			System.out.println(Settings.imdb().getSearchUrl());

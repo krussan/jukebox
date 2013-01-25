@@ -43,6 +43,14 @@
 	        <arg value="se.qxx.jukebox.subtitles"/>
 	        <arg value="${main.dir}/subs.xsd"/>
 	    </exec>
+	    
+	    <exec executable="${jukebox.jdk.dir}/bin/xjc.exe">
+	        <arg value="-d"/>
+	        <arg value="${main.src.dir}"/>
+	        <arg value="-p"/>
+	        <arg value="se.qxx.jukebox.settings.parser"/>
+	        <arg value="${main.dir}/parser.xsd"/>
+	    </exec>	    
 	    	    	    		
 	</target> 
 	
@@ -134,11 +142,17 @@
 	        <param name="script.class" value="se.qxx.jukebox.tests.TestImdbFinder" />
 	        <param name="script.file" value="${build.dir}/testImdbFinder.sh" />
 	    </antcall>
+	    
+	    <antcall target="createscript">
+	        <param name="script.class" value="se.qxx.jukebox.tests.TestParserBuilder" />
+	        <param name="script.file" value="${build.dir}/testParserBuilder.sh" />
+	    </antcall>	    
 	    	    	    	    	    	    	    	    	    	    
 		<fixcrlf srcdir="${build.dir}" includes="**/*.sh" eol="lf" eof="remove" />
 						
 		<copy file="${main.dir}/JukeboxSettings.xml" todir="${build.dir}" />
 		<copy file="${main.dir}/imdb.xml" todir="${build.dir}" />
+		<copy file="${main.dir}/parser.xml" todir="${build.dir}" />
 			
 		<copy todir="${build.dir}">
 	    	<fileset dir="${main.dir}/native/${target.platform}">

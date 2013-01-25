@@ -19,8 +19,7 @@ public class TestFilenameBuilder {
 	public static void main(String[] args) throws IOException, JAXBException {
 		if (args.length > 0) {
 			
-			Settings.readSettings();
-			ImdbSettings.readSettings();		
+			Settings.initialize();
 			
 			List<String> extensions = Util.getExtensions();
 			

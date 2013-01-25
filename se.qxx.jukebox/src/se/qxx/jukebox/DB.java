@@ -337,6 +337,29 @@ public class DB {
 		}		
 	}
 	
+	public synchronized static void toggleWatched(int movieID) {
+		Connection conn = null;
+		String statement = 
+				"UPDATE Movie " +
+				"SET watched = NOT watched " +
+				"WHERE ID = ?";
+		
+		try {
+			conn = DB.initialize();
+			
+			PreparedStatement prep = conn.prepareStatement(statement);
+			prep.setInt(1, movieID);
+			prep.execute();
+						
+		}
+		catch (Exception e) {
+			Log.Error("Failed to update watched on movie in DB", Log.LogType.MAIN, e);
+			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
+		}finally {
+			DB.disconnect(conn);
+		}		
+	}
+		
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Images
 	//---------------------------------------------------------------------------------------

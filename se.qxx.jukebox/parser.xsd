@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.qxx.se/jukebox/parser" xmlns:tns="http://www.qxx.se/jukebox/parser" elementFormDefault="qualified">
+    <element name="parser">
+    	<complexType>
+    		<sequence>
+    			<element name="keywords">
+    				<complexType>
+    					<sequence>
+    						<element name="type">
+    							<complexType>
+    								<sequence>
+    									<element name="word"
+    										type="tns:wordType" maxOccurs="unbounded" minOccurs="0">
+    									</element>
+    								</sequence>
+    							</complexType>
+    						</element>
+    						<element name="format">
+    							<complexType>
+    								<sequence>
+    									<element name="word"
+    										type="tns:wordType" maxOccurs="unbounded" minOccurs="0">
+    									</element>
+    								</sequence>
+    							</complexType>
+    						</element>
+    						<element name="sound">
+    							<complexType>
+    								<sequence>
+    									<element name="word"
+    										type="tns:wordType" maxOccurs="unbounded" minOccurs="0">
+    									</element>
+    								</sequence>
+    							</complexType>
+    						</element>
+    						<element name="language">
+    							<complexType>
+    								<sequence>
+    									<element name="word"
+    										type="tns:wordType" maxOccurs="unbounded" minOccurs="0">
+    									</element>
+    								</sequence>
+    							</complexType>
+    						</element>
+    						<element name="other">
+    							<complexType>
+    								<sequence>
+    									<element name="word"
+    										type="tns:wordType" maxOccurs="unbounded" minOccurs="0">
+    									</element>
+    								</sequence>
+    							</complexType>
+    						</element>
+    					</sequence>
+
+    				</complexType>
+    			</element>
+    		</sequence>
+    	</complexType>
+    </element>
+
+    <complexType name="wordType">
+    	<attribute name="key" type="string"></attribute>
+    </complexType>
+</schema>
