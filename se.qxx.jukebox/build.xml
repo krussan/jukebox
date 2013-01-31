@@ -18,9 +18,9 @@
 	<property name="main-class" value="se.qxx.jukebox.Jukebox" />
 
 	<property name="target.platform" value="debian_x86_lenny" />
-    
+
 	<target name="jaxb">
-	    <exec executable="${jukebox.jdk.dir}/bin/xjc.exe">
+	    <exec executable="${jukebox.xjc.comm}">
 	        <arg value="-d"/>
 	        <arg value="${main.src.dir}"/>
 	        <arg value="-p"/>
@@ -28,7 +28,7 @@
 	        <arg value="${main.dir}/JukeboxSettings.xsd"/>
 	    </exec>
 
-	    <exec executable="${jukebox.jdk.dir}/bin/xjc.exe">
+	    <exec executable="${jukebox.xjc.comm}">
 	        <arg value="-d"/>
 	        <arg value="${main.src.dir}"/>
 	        <arg value="-p"/>
@@ -36,7 +36,7 @@
 	        <arg value="${main.dir}/imdb.xsd"/>
 	    </exec>
 
-	    <exec executable="${jukebox.jdk.dir}/bin/xjc.exe">
+	    <exec executable="${jukebox.xjc.comm}">
 	        <arg value="-d"/>
 	        <arg value="${main.src.dir}"/>
 	        <arg value="-p"/>
@@ -44,7 +44,7 @@
 	        <arg value="${main.dir}/subs.xsd"/>
 	    </exec>
 	    
-	    <exec executable="${jukebox.jdk.dir}/bin/xjc.exe">
+	    <exec executable="${jukebox.xjc.comm}">
 	        <arg value="-d"/>
 	        <arg value="${main.src.dir}"/>
 	        <arg value="-p"/>
@@ -55,7 +55,7 @@
 	</target> 
 	
 	<target name="protoc">
-	    <exec executable="${jukebox.protoc.dir}/protoc.exe" dir="${jukebox.domain.src.dir}">
+	    <exec executable="${jukebox.protoc.comm}" dir="${jukebox.domain.src.dir}">
 	        <arg value="--java_out=." />
 	        <arg value="JukeboxDomain.proto" />
 	    </exec>
