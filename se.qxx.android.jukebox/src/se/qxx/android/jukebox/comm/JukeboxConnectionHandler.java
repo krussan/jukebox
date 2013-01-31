@@ -25,6 +25,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStopMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSuspend;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestTime;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleWatched;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestWakeup;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponse;
@@ -115,6 +116,9 @@ public class JukeboxConnectionHandler implements Runnable {
 			break;
 		case BlacklistMovie:
 			b = blacklist();
+			break;
+		case ToggleWatched:
+			b = toggleWatched();
 			break;
 		default:
 		}
@@ -334,7 +338,20 @@ public class JukeboxConnectionHandler implements Runnable {
 		
 		return new Bundle();
 	}
-	
+
+	private Bundle toggleWatched() {
+		if (this.arguments.length > 0) {
+			if (this.arguments[0] instanceof Movie) {
+				Movie m = (Movie)this.arguments[0];
+				JukeboxRequestToggleWatched bm = JukeboxRequestToggleWatched.newBuilder().setMovieId(m.getID()).build();
+				return sendAndRetreive(JukeboxRequestType.ToggleWatched, bm);
+			}
+			
+		}
+		
+		return new Bundle();
+	}
+
 	private void handleResponse(JukeboxRequestType type, ByteString data) {
     	try {
     		switch (type) {

@@ -15,7 +15,8 @@ public class ActionDialog implements OnClickListener{
 	Context context;
 	
 	final String[] commands = {
-		"Blacklist"	
+		"Blacklist",
+		"Toggle watched"
 	};
 	
 	public ActionDialog(Context context, Movie movie) {
@@ -32,12 +33,23 @@ public class ActionDialog implements OnClickListener{
 
 	@Override
 	public void onClick(DialogInterface dialog, int which) {
-		if (which==0) {
+		switch (which) {
+		case 0:
 			ConnectionWrapper.sendCommandWithProgressDialog(
 				this.context, 
 				"Blacklisting...", 
 				JukeboxRequestType.BlacklistMovie, 
 				this.currentMovie);
-		}		
+			
+			break;
+		case 1:
+			ConnectionWrapper.sendCommandWithProgressDialog(
+				this.context, 
+				"Toggling watched status...", 
+				JukeboxRequestType.ToggleWatched, 
+				this.currentMovie);
+			
+			break;
+		}
 	}
 }
