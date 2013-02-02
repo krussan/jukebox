@@ -16991,6 +16991,227 @@ public final class JukeboxDomain {
     // @@protoc_insertion_point(class_scope:se.qxx.jukebox.domain.JukeboxResponseGetTitle)
   }
   
+  public static abstract class JukeboxService
+      implements com.google.protobuf.Service {
+    protected JukeboxService() {}
+    
+    public interface Interface {
+      public abstract void listMovies(
+          com.google.protobuf.RpcController controller,
+          se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies request,
+          com.google.protobuf.RpcCallback<se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies> done);
+      
+    }
+    
+    public static com.google.protobuf.Service newReflectiveService(
+        final Interface impl) {
+      return new JukeboxService() {
+        @java.lang.Override
+        public  void listMovies(
+            com.google.protobuf.RpcController controller,
+            se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies request,
+            com.google.protobuf.RpcCallback<se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies> done) {
+          impl.listMovies(controller, request, done);
+        }
+        
+      };
+    }
+    
+    public static com.google.protobuf.BlockingService
+        newReflectiveBlockingService(final BlockingInterface impl) {
+      return new com.google.protobuf.BlockingService() {
+        public final com.google.protobuf.Descriptors.ServiceDescriptor
+            getDescriptorForType() {
+          return getDescriptor();
+        }
+        
+        public final com.google.protobuf.Message callBlockingMethod(
+            com.google.protobuf.Descriptors.MethodDescriptor method,
+            com.google.protobuf.RpcController controller,
+            com.google.protobuf.Message request)
+            throws com.google.protobuf.ServiceException {
+          if (method.getService() != getDescriptor()) {
+            throw new java.lang.IllegalArgumentException(
+              "Service.callBlockingMethod() given method descriptor for " +
+              "wrong service type.");
+          }
+          switch(method.getIndex()) {
+            case 0:
+              return impl.listMovies(controller, (se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies)request);
+            default:
+              throw new java.lang.AssertionError("Can't get here.");
+          }
+        }
+        
+        public final com.google.protobuf.Message
+            getRequestPrototype(
+            com.google.protobuf.Descriptors.MethodDescriptor method) {
+          if (method.getService() != getDescriptor()) {
+            throw new java.lang.IllegalArgumentException(
+              "Service.getRequestPrototype() given method " +
+              "descriptor for wrong service type.");
+          }
+          switch(method.getIndex()) {
+            case 0:
+              return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies.getDefaultInstance();
+            default:
+              throw new java.lang.AssertionError("Can't get here.");
+          }
+        }
+        
+        public final com.google.protobuf.Message
+            getResponsePrototype(
+            com.google.protobuf.Descriptors.MethodDescriptor method) {
+          if (method.getService() != getDescriptor()) {
+            throw new java.lang.IllegalArgumentException(
+              "Service.getResponsePrototype() given method " +
+              "descriptor for wrong service type.");
+          }
+          switch(method.getIndex()) {
+            case 0:
+              return se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies.getDefaultInstance();
+            default:
+              throw new java.lang.AssertionError("Can't get here.");
+          }
+        }
+        
+      };
+    }
+    
+    public abstract void listMovies(
+        com.google.protobuf.RpcController controller,
+        se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies request,
+        com.google.protobuf.RpcCallback<se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies> done);
+    
+    public static final
+        com.google.protobuf.Descriptors.ServiceDescriptor
+        getDescriptor() {
+      return se.qxx.jukebox.domain.JukeboxDomain.getDescriptor().getServices().get(0);
+    }
+    public final com.google.protobuf.Descriptors.ServiceDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    
+    public final void callMethod(
+        com.google.protobuf.Descriptors.MethodDescriptor method,
+        com.google.protobuf.RpcController controller,
+        com.google.protobuf.Message request,
+        com.google.protobuf.RpcCallback<
+          com.google.protobuf.Message> done) {
+      if (method.getService() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "Service.callMethod() given method descriptor for wrong " +
+          "service type.");
+      }
+      switch(method.getIndex()) {
+        case 0:
+          this.listMovies(controller, (se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies)request,
+            com.google.protobuf.RpcUtil.<se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies>specializeCallback(
+              done));
+          return;
+        default:
+          throw new java.lang.AssertionError("Can't get here.");
+      }
+    }
+    
+    public final com.google.protobuf.Message
+        getRequestPrototype(
+        com.google.protobuf.Descriptors.MethodDescriptor method) {
+      if (method.getService() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "Service.getRequestPrototype() given method " +
+          "descriptor for wrong service type.");
+      }
+      switch(method.getIndex()) {
+        case 0:
+          return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies.getDefaultInstance();
+        default:
+          throw new java.lang.AssertionError("Can't get here.");
+      }
+    }
+    
+    public final com.google.protobuf.Message
+        getResponsePrototype(
+        com.google.protobuf.Descriptors.MethodDescriptor method) {
+      if (method.getService() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "Service.getResponsePrototype() given method " +
+          "descriptor for wrong service type.");
+      }
+      switch(method.getIndex()) {
+        case 0:
+          return se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies.getDefaultInstance();
+        default:
+          throw new java.lang.AssertionError("Can't get here.");
+      }
+    }
+    
+    public static Stub newStub(
+        com.google.protobuf.RpcChannel channel) {
+      return new Stub(channel);
+    }
+    
+    public static final class Stub extends se.qxx.jukebox.domain.JukeboxDomain.JukeboxService implements Interface {
+      private Stub(com.google.protobuf.RpcChannel channel) {
+        this.channel = channel;
+      }
+      
+      private final com.google.protobuf.RpcChannel channel;
+      
+      public com.google.protobuf.RpcChannel getChannel() {
+        return channel;
+      }
+      
+      public  void listMovies(
+          com.google.protobuf.RpcController controller,
+          se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies request,
+          com.google.protobuf.RpcCallback<se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies> done) {
+        channel.callMethod(
+          getDescriptor().getMethods().get(0),
+          controller,
+          request,
+          se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies.getDefaultInstance(),
+          com.google.protobuf.RpcUtil.generalizeCallback(
+            done,
+            se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies.class,
+            se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies.getDefaultInstance()));
+      }
+    }
+    
+    public static BlockingInterface newBlockingStub(
+        com.google.protobuf.BlockingRpcChannel channel) {
+      return new BlockingStub(channel);
+    }
+    
+    public interface BlockingInterface {
+      public se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies listMovies(
+          com.google.protobuf.RpcController controller,
+          se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies request)
+          throws com.google.protobuf.ServiceException;
+    }
+    
+    private static final class BlockingStub implements BlockingInterface {
+      private BlockingStub(com.google.protobuf.BlockingRpcChannel channel) {
+        this.channel = channel;
+      }
+      
+      private final com.google.protobuf.BlockingRpcChannel channel;
+      
+      public se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies listMovies(
+          com.google.protobuf.RpcController controller,
+          se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies request)
+          throws com.google.protobuf.ServiceException {
+        return (se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies) channel.callBlockingMethod(
+          getDescriptor().getMethods().get(0),
+          controller,
+          request,
+          se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies.getDefaultInstance());
+      }
+      
+    }
+  }
+  
   private static com.google.protobuf.Descriptors.Descriptor
     internal_static_se_qxx_jukebox_domain_Movie_descriptor;
   private static
@@ -17251,8 +17472,11 @@ public final class JukeboxDomain {
       "\n\nIdentifier\022\014\n\010Filename\020\001\022\023\n\017ParentDire" +
       "ctory\020\002\022\007\n\003NFO\020\003*]\n\006Rating\022\016\n\nNotMatched" +
       "\020\001\022\021\n\rProbableMatch\020\002\022\021\n\rPositiveMatch\020\003" +
-      "\022\016\n\nExactMatch\020\004\022\r\n\tSubsExist\020\005B\027\n\025se.qx" +
-      "x.jukebox.domain"
+      "\022\016\n\nExactMatch\020\004\022\r\n\tSubsExist\020\0052\201\001\n\016Juke" +
+      "boxService\022o\n\nListMovies\022/.se.qxx.jukebo" +
+      "x.domain.JukeboxRequestListMovies\0320.se.q" +
+      "xx.jukebox.domain.JukeboxResponseListMov",
+      "iesB\032\n\025se.qxx.jukebox.domain\210\001\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {

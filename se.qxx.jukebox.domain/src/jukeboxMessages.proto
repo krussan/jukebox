@@ -1,0 +1,6 @@
+package se.qxx.jukebox.domain;
+
+option java_generic_services = true;
+
+message Empty {
+}
