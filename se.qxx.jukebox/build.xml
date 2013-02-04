@@ -75,6 +75,13 @@
 		    debug="true"
 	    />
 		<javac 
+		    srcdir="${jukebox.comm.src.dir}" 
+		    destdir="${classes.dir}" 
+		    classpathref="jukebox.classpath" 
+		    includeantruntime="true" 
+		    debug="true"
+	    />
+		<javac 
 		    srcdir="${main.src.dir}" 
 		    destdir="${classes.dir}" 
 		    classpathref="jukebox.classpath" 

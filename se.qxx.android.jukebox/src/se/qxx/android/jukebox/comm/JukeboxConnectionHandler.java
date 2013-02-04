@@ -1,440 +1,349 @@
 package se.qxx.android.jukebox.comm;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.InetSocketAddress;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import com.google.protobuf.BlockingRpcChannel;
+import com.google.protobuf.RpcCallback;
+import com.google.protobuf.RpcChannel;
+import com.google.protobuf.RpcController;
+import com.google.protobuf.RpcUtil;
+import com.googlecode.protobuf.socketrpc.RpcChannels;
+import com.googlecode.protobuf.socketrpc.RpcConnectionFactory;
+import com.googlecode.protobuf.socketrpc.SocketRpcConnectionFactories;
+import com.googlecode.protobuf.socketrpc.SocketRpcController;
 
 import se.qxx.android.jukebox.JukeboxSettings;
 import se.qxx.android.jukebox.model.Model;
-import se.qxx.android.tools.Logger;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequest;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestBlacklistMovie;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGetTitle;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestIsPlaying;
+import se.qxx.android.tools.ProgressDialogHandler;
+import se.qxx.jukebox.domain.JukeboxDomain.Empty;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGeneral;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListPlayers;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListSubtitles;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMarkSubtitle;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestPauseMovie;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSeek;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSetSubtitle;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStartMovie;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStopMovie;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSuspend;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestTime;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleWatched;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestWakeup;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponse;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseError;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseGetTitle;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseIsPlaying;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListSubtitles;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseStartMovie;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseTime;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxService;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxService.BlockingInterface;
+import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
 
-import com.google.protobuf.ByteString;
-import com.google.protobuf.InvalidProtocolBufferException;
-
-public class JukeboxConnectionHandler implements Runnable {
+public class JukeboxConnectionHandler {
 	
-	public String responseMessage;
-	public Boolean success;
+	private JukeboxConnectionHandler  instance;
 	
-	private JukeboxRequestType _type;
-	private Handler _handler;
-	private Object[] arguments;
-	private JukeboxResponseListener listener;
+	private BlockingInterface blockingService;
+	private JukeboxService service;
 	
-	public JukeboxConnectionHandler(Handler h, JukeboxRequestType t, Object... args) {
-		this._type = t;
-		this._handler = h;
-		this.arguments = args;
+	public BlockingInterface getBlockingService() {
+		return blockingService;
 	}
-
-	public JukeboxConnectionHandler(JukeboxResponseListener listener, JukeboxRequestType t, Object... args) {
-		this._type = t;
-		this.listener = listener;
-		this.arguments = args;
+	public void setBlockingService(BlockingInterface service) {
+		this.blockingService = service;
 	}
 	
-	public void run() {
-		Bundle b = new Bundle();
-		
-		switch (this._type) {
-		case ListMovies:
-			b = listMovies();
-			break;
-		case StartMovie:
-			b = startMovie();
-			break;
-		case StopMovie:
-			b = stopMovie();
-			break;
-		case PauseMovie:
-			b = pauseMovie();
-			break;
-		case Wakeup:
-			b = wakeup();
-			break;
-		case ToggleFullscreen:
-			b = toggleFullscreen();
-			break;
-		case Suspend:
-			b = suspend();
-			break;
-		case ListPlayers:
-			b = listPlayers();
-			break;
-		case Seek:
-			b = seek();
-			break;
-		case ListSubtitles:
-			b = listSubtitles();
-			break;
-		case MarkSubtitle:
-			b = markSubtitle();
-			break;
-		case IsPlaying:
-			b = isPlaying();
-			break;
-		case GetTitle:
-			b = getTitle();
-			break;
-		case Time:
-			b = getTime();
-			break;
-		case SetSubtitle:
-			b = setSubtitle();
-			break;
-		case BlacklistMovie:
-			b = blacklist();
-			break;
-		case ToggleWatched:
-			b = toggleWatched();
-			break;
-		default:
-		}
-				
-		Message m = new Message();
-		m.setData(b);
-		
-		if (this._handler != null)
-			this._handler.sendMessage(m);
+	public JukeboxService getNonBlockingService() {
+		return service;
 	}
-	 
-	private Bundle startMovie() {
-		JukeboxRequestStartMovie sm = JukeboxRequestStartMovie.newBuilder()
-				.setPlayerName(JukeboxSettings.get().getCurrentMediaPlayer())
-				.setMovieId(Model.get().getCurrentMovie().getID())
-				.build();
-		
-		return sendAndRetreive(JukeboxRequestType.StartMovie, sm);
-	}
+	public void setNonBlockingService(JukeboxService service) {
+		this.service = service;
+	}	
 	
-	private Bundle stopMovie() {
-		JukeboxRequestStopMovie sm = JukeboxRequestStopMovie.newBuilder()
-				.setPlayerName(JukeboxSettings.get().getCurrentMediaPlayer())
-				.build();
-		
-		return sendAndRetreive(JukeboxRequestType.StopMovie, sm);
-	}
-	
-	private Bundle pauseMovie() {
-		JukeboxRequestPauseMovie sm = JukeboxRequestPauseMovie.newBuilder()
-				.setPlayerName(JukeboxSettings.get().getCurrentMediaPlayer())
-				.build();
-		
-		return sendAndRetreive(JukeboxRequestType.PauseMovie, sm);		
-	}
-	
-	private Bundle listMovies() {
-		JukeboxRequestListMovies lm = JukeboxRequestListMovies.newBuilder()
-				.setSearchString("")
-				.build();
-		
-		return sendAndRetreive(JukeboxRequestType.ListMovies, lm);    	
-	}
-	
-	private Bundle wakeup() {
-		JukeboxRequestWakeup sm = JukeboxRequestWakeup.newBuilder()
-				.setPlayerName(JukeboxSettings.get().getCurrentMediaPlayer())
-				.build();
-		
-		return sendAndRetreive(JukeboxRequestType.Wakeup, sm);		
-	}
-	
-	private Bundle toggleFullscreen() {
-		JukeboxRequestToggleFullscreen sm = JukeboxRequestToggleFullscreen.newBuilder()
-				.setPlayerName(JukeboxSettings.get().getCurrentMediaPlayer())
-				.build();
-		
-		return sendAndRetreive(JukeboxRequestType.ToggleFullscreen, sm);		
+	protected JukeboxConnectionHandler() {
+		setupBlockingService();
+		setupNonBlockingService();
 	}
 
-	private Bundle isPlaying() {
-		JukeboxRequestIsPlaying sm = JukeboxRequestIsPlaying.newBuilder()
-				.setPlayerName(JukeboxSettings.get().getCurrentMediaPlayer())
-				.build();
+	private void setupBlockingService() {
+		ExecutorService threadPool = Executors.newFixedThreadPool(1);
 		
-		return sendAndRetreive(JukeboxRequestType.IsPlaying, sm);		
+		RpcConnectionFactory connectionFactory = SocketRpcConnectionFactories.createRpcConnectionFactory(
+    			JukeboxSettings.get().getServerIpAddress(), 
+    			JukeboxSettings.get().getServerPort());
+    			
+		BlockingRpcChannel channel = RpcChannels.newBlockingRpcChannel(connectionFactory);
+		
+		this.setBlockingService(JukeboxService.newBlockingStub(channel));		
 	}
 
-	private Bundle getTime() {
-		JukeboxRequestTime sm = JukeboxRequestTime.newBuilder()
-				.setPlayerName(JukeboxSettings.get().getCurrentMediaPlayer())
-				.build();
+	private void setupNonBlockingService() {
+		ExecutorService threadPool = Executors.newFixedThreadPool(1);
 		
-		return sendAndRetreive(JukeboxRequestType.Time, sm);		
-	}
-	
-	private Bundle getTitle() {
-		JukeboxRequestGetTitle sm = JukeboxRequestGetTitle.newBuilder()
-				.setPlayerName(JukeboxSettings.get().getCurrentMediaPlayer())
-				.build();
+		RpcConnectionFactory connectionFactory = SocketRpcConnectionFactories.createRpcConnectionFactory(
+    			JukeboxSettings.get().getServerIpAddress(), 
+    			JukeboxSettings.get().getServerPort());
+    			
+		RpcChannel channel = RpcChannels.newRpcChannel(connectionFactory, threadPool);
 		
-		return sendAndRetreive(JukeboxRequestType.GetTitle, sm);		
-	}
-	
-	private Bundle suspend() {
-		JukeboxRequestSuspend sm = JukeboxRequestSuspend.newBuilder()
-				.setPlayerName(JukeboxSettings.get().getCurrentMediaPlayer())
-				.build();
-		
-		return sendAndRetreive(JukeboxRequestType.Suspend, sm);		
+		this.setNonBlockingService(JukeboxService.newStub(channel));		
 	}
 
-	private Bundle listPlayers() {
-		JukeboxRequestListPlayers sm = JukeboxRequestListPlayers.newBuilder()
-				.build();
-		
-		return sendAndRetreive(JukeboxRequestType.ListPlayers, sm);		
+	public static void sendCommandWithProgressDialog(Context context, String message, JukeboxRequestType type, Object... args) {
+		ConnectionWrapper.sendCommandWithProgressDialog(context, new OnDismissListener() {
+			@Override
+			public void onDismiss(DialogInterface dialog) {}
+		}, message, type, args);
+	}	  
+	
+	public static void sendCommandWithProgressDialog(Context context, OnDismissListener listener, String message, JukeboxRequestType type, Object... args) {
+       	ProgressDialog d = ProgressDialog.show(context, "Jukebox", message);
+
+       	if (listener != null)
+       		d.setOnDismissListener(listener);
+       	
+       	JukeboxConnectionHandler h = new JukeboxConnectionHandler(new ProgressDialogHandler(context, d), type, args);
+       	Thread t = new Thread(h);
+       	t.start();						
 	}
 	
-	private Bundle listSubtitles() {
-		JukeboxRequestListSubtitles sm = JukeboxRequestListSubtitles.newBuilder()
-				.setMediaId(Model.get().getCurrentMedia().getID())
-				.build();
-		
-		return sendAndRetreive(JukeboxRequestType.ListSubtitles, sm);
-	}
-	
-	private Bundle seek() {
-		if (this.arguments.length > 0)
-		{
-			if (this.arguments[0] instanceof Integer) {
-				int seconds = (Integer)this.arguments[0];
-				JukeboxRequestSeek sm = JukeboxRequestSeek.newBuilder()
-						.setPlayerName(JukeboxSettings.get().getCurrentMediaPlayer())
-						.setSeconds(seconds)
-						.build();
-				
-				return sendAndRetreive(JukeboxRequestType.Seek, sm);
-			}
-		}
-		
-		return new Bundle();		
+	public static void sendCommandWithResponseListener(final JukeboxResponseListener listener, String message, JukeboxRequestType type, Object... args) {
+       	JukeboxConnectionHandler h = new JukeboxConnectionHandler(listener, type, args);
+       	Thread t = new Thread(h);
+       	t.start();						
 	}	
 
-	private Bundle setSubtitle() {
-		JukeboxRequestSetSubtitle sm = JukeboxRequestSetSubtitle.newBuilder()
+	public JukeboxConnectionHandler getInstance() {
+		if (this.instance == null)
+			this.instance = new ConnectionWrapper();
+		
+		return this.instance;
+	}
+	
+	//----------------------------------------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------------------------- RPC Calls
+	//----------------------------------------------------------------------------------------------------------------
+	
+	public Bundle blacklist(Movie m) {
+		RpcController controller = new SocketRpcController();
+		JukeboxRequestMovieID request = JukeboxRequestMovieID.newBuilder().setMovieId(m.getID()).build();
+		this.getBlockingService().blacklist(controller, request);
+		
+		return checkResponse(controller);
+
+	}
+	
+	public Bundle startMovie(String playerName, Movie m) {
+		RpcController controller = new SocketRpcController();		
+		
+		JukeboxRequestStartMovie request = JukeboxRequestStartMovie.newBuilder()
+				.setPlayerName(playerName)  // JukeboxSettings.get().getCurrentMediaPlayer()
+				.setMovieId(m.getID()) // Model.get().getCurrentMovie().getID()
+				.build();		
+
+		JukeboxResponseStartMovie response = this.getBlockingService().startMovie(controller, request);
+
+		if (!controller.failed()) {
+			Model.get().clearSubtitles();
+			Model.get().addAllSubtitles(response.getSubtitleList());				
+
+			return setResponse(true);
+		}
+		else {
+			return setResponse(false, controller.errorText());
+		}
+	}
+	
+	public Bundle stopMovie(String playerName) {
+		RpcController controller = new SocketRpcController();
+		
+		JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
+				.setPlayerName(playerName)
+				.build();
+
+		this.getBlockingService().stopMovie(controller, request);
+		
+		return checkResponse(controller);
+	}
+	
+	public Bundle pauseMovie(String playerName) {
+		RpcController controller = new SocketRpcController();
+		
+		JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
+				.setPlayerName(playerName)
+				.build();
+
+		this.getBlockingService().pauseMovie(controller, request);
+		
+		return checkResponse(controller);		
+	}
+	
+	public Bundle listMovies(String searchString) {
+		RpcController controller = new SocketRpcController();
+		
+		JukeboxRequestListMovies request = JukeboxRequestListMovies.newBuilder()
+				.setSearchString("")
+				.build();
+
+		JukeboxResponseListMovies response = this.getBlockingService().listMovies(controller, request);
+		
+		if (!controller.failed()) {
+  			Model.get().clearMovies();
+			Model.get().addAllMovies(response.getMoviesList());
+			Model.get().setInitialized(true);
+
+			return setResponse(true);
+		}
+		else {
+			return setResponse(false, controller.errorText());
+		}		
+	}
+	
+	public Bundle wakeup(String playerName) {
+		RpcController controller = new SocketRpcController();
+		
+		JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
+				.setPlayerName(playerName)
+				.build();
+
+		this.getBlockingService().wakeup(controller, request);
+		
+		return checkResponse(controller);		
+	}
+
+	public Bundle toggleFullscreen(String playerName) {
+		RpcController controller = new SocketRpcController();
+		
+		JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
+				.setPlayerName(playerName)
+				.build();
+
+		this.getBlockingService().toggleFullscreen(controller, request);
+		
+		return checkResponse(controller);		
+	}
+
+	public Bundle isPlaying(String playerName, RpcCallback<JukeboxResponseIsPlaying> callback) {
+		RpcController controller = new SocketRpcController();
+		
+		JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
+				.setPlayerName(playerName)
+				.build();
+		
+		this.getNonBlockingService().isPlaying(controller, request, callback);
+
+		return checkResponse(controller);		
+	}
+
+	public Bundle getTime(String playerName, RpcCallback<JukeboxResponseTime> callback) {
+		RpcController controller = new SocketRpcController();
+		
+		JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
+				.setPlayerName(playerName)
+				.build();
+		
+		this.getNonBlockingService().getTime(controller, request, callback);
+
+		return checkResponse(controller);		
+	}
+
+	public Bundle getTitle(String playerName, RpcCallback<JukeboxResponseGetTitle> callback) {
+		RpcController controller = new SocketRpcController();
+		
+		JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
+				.setPlayerName(playerName)
+				.build();
+		
+		this.getNonBlockingService().getTitle(controller, request, callback);
+
+		return checkResponse(controller);		
+	}
+
+	public Bundle suspend(String playerName) {
+		RpcController controller = new SocketRpcController();
+		
+		JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
+				.setPlayerName(playerName)
+				.build();
+		
+		this.getNonBlockingService().suspend(controller, request, null);
+
+		return checkResponse(controller);		
+	}	
+	
+	public Bundle listPlayers() {
+		RpcController controller = new SocketRpcController();
+
+		JukeboxResponseListPlayers response = this.getBlockingService().listPlayers(controller, Empty.getDefaultInstance());
+		
+		if (!controller.failed()) {
+			Model.get().clearPlayers();
+			Model.get().addAllPlayers(response.getHostnameList());
+			return setResponse(true);
+		}
+		else {
+			return setResponse(false, controller.errorText());
+		}		
+	}
+	
+	public Bundle listSubtitles(Media md) {
+		RpcController controller = new SocketRpcController();
+		
+		JukeboxRequestListSubtitles request = JukeboxRequestListSubtitles.newBuilder()
+				.setMediaId(md.getID())
+				.build();
+
+		JukeboxResponseListSubtitles response = this.getBlockingService().listSubtitles(controller, request);
+
+		if (!controller.failed()) {
+			Model.get().clearSubtitles();
+			Model.get().addAllSubtitles(response.getSubtitleList());
+			return setResponse(true);
+		}
+		else {
+			return setResponse(false, controller.errorText());
+		}		
+		
+	}
+	
+	public Bundle seek(String playerName, int seconds) {
+		RpcController controller = new SocketRpcController();
+		
+		JukeboxRequestSeek request = JukeboxRequestSeek.newBuilder()
+				.setPlayerName(playerName)
+				.setSeconds(seconds)
+				.build();
+		
+		this.getBlockingService().seek(controller, request);
+
+		return checkResponse(controller);
+	}
+	
+	public Bundle setSubtitle(String playerName, Media md, String subtitle) {
+		RpcController controller = new SocketRpcController();
+		
+		JukeboxRequestSetSubtitle request = JukeboxRequestSetSubtitle.newBuilder()
 				.setPlayerName(JukeboxSettings.get().getCurrentMediaPlayer())
 				.setMediaID(Model.get().getCurrentMedia().getID())
 				.setSubtitleDescription(Model.get().getCurrentSubtitle())
-				.build();
+				.build();		
 		
-		return sendAndRetreive(JukeboxRequestType.SetSubtitle, sm);
-	}	
-	
-	private Bundle markSubtitle() {
-		if (this.arguments.length > 0)
-		{
-			if (this.arguments[0] instanceof Boolean) {
-				boolean subOk= (Boolean)this.arguments[0];
-				JukeboxRequestMarkSubtitle sm = JukeboxRequestMarkSubtitle.newBuilder()
-						.setIsOk(subOk)
-						.build();
-				
-				return sendAndRetreive(JukeboxRequestType.MarkSubtitle, sm);
-			}
-		}
-		
-		return new Bundle();		
-	}	
+		this.getBlockingService().setSubtitle(controller, request);
 
-	private Bundle sendAndRetreive(JukeboxRequestType type, com.google.protobuf.GeneratedMessage message) {
-    	Logger.Log().i("opening socket");
-    	
-    	java.net.Socket s = new java.net.Socket();
-    	
-    	try {
-	    	s.connect(new InetSocketAddress(
-	    			JukeboxSettings.get().getServerIpAddress(), 
-	    			JukeboxSettings.get().getServerPort()), 
-	    			5000);
-	    	
-	    	Logger.Log().i("socket opened");
-	    	Logger.Log().i(String.format("Sending message of type %s", type.toString()));
-	    	
-	    	JukeboxRequest req = getRequest(type, message);
-	    	int lengthOfMessage = req.getSerializedSize();
-	    	
-	    	DataOutputStream dos = new DataOutputStream(s.getOutputStream());
-	    	
-	    	// write length of message
-	    	dos.writeInt(lengthOfMessage);
-	    	// write message
-	    	req.writeTo(dos);
-	    	
-	    	Logger.Log().i("waiting for response...");
-	    	
-	    	JukeboxResponse resp = readResponse(s.getInputStream());
-	    	if (resp == null) {
-	    		Logger.Log().i("...but response is null...");
-	    		return setResponse(false, "Response is null");
-	    	}
-	    	else {
-	    		if (this.listener != null)
-	    			this.listener.onResponseReceived(resp);
-	    		
-		    	ByteString data = resp.getArguments();    	
-		    	handleResponse(resp.getType(), data);
-		    	
-		    	Logger.Log().i("response read");
-		    	
-		    	s.close();
-		    	
-	    		if (resp.getType() == JukeboxRequestType.Error)
-	    			return setResponse(false, JukeboxResponseError.parseFrom(data).getErrorMessage());
-	    		else
-	    			return setResponse(true);	    		
-	    	}	    	
-    	}
-    	catch (java.net.SocketTimeoutException ex) {
-    		return setResponse(false, "Application was unable to connect to server. Check server settings.");    		    	
-    	}
-    	catch (java.io.IOException ioException)
-    	{
-    		return setResponse(false, "Application was unable to connect to server. Check server settings.");    		
-    	}	
-	}
-	
-	private Bundle blacklist() {
-		if (this.arguments.length > 0) {
-			if (this.arguments[0] instanceof Movie) {
-				Movie m = (Movie)this.arguments[0];
-				JukeboxRequestBlacklistMovie bm = JukeboxRequestBlacklistMovie.newBuilder().setMovieId(m.getID()).build();
-				return sendAndRetreive(JukeboxRequestType.BlacklistMovie, bm);
-			}
-			
-		}
-		
-		return new Bundle();
+		return checkResponse(controller);
 	}
 
-	private Bundle toggleWatched() {
-		if (this.arguments.length > 0) {
-			if (this.arguments[0] instanceof Movie) {
-				Movie m = (Movie)this.arguments[0];
-				JukeboxRequestToggleWatched bm = JukeboxRequestToggleWatched.newBuilder().setMovieId(m.getID()).build();
-				return sendAndRetreive(JukeboxRequestType.ToggleWatched, bm);
-			}
-			
-		}
-		
-		return new Bundle();
+	public Bundle toggleWatched(Movie m) {
+		RpcController controller = new SocketRpcController();
+		JukeboxRequestMovieID request = JukeboxRequestMovieID.newBuilder().setMovieId(m.getID()).build();
+		this.getBlockingService().toggleWatched(controller, request);
+
+		return checkResponse(controller);
 	}
 
-	private void handleResponse(JukeboxRequestType type, ByteString data) {
-    	try {
-    		switch (type) {
-    		case ListMovies:
-    			JukeboxResponseListMovies resp1 = JukeboxResponseListMovies.parseFrom(data);
-    			Model.get().clearMovies();
-    			Model.get().addAllMovies(resp1.getMoviesList());
-    			Model.get().setInitialized(true);
-    			break;
-    		case ListPlayers:
-    			JukeboxResponseListPlayers resp2 = JukeboxResponseListPlayers.parseFrom(data);
-    			Model.get().clearPlayers();
-    			Model.get().addAllPlayers(resp2.getHostnameList());
-    			break;
-    		case ListSubtitles:
-    			JukeboxResponseListSubtitles resp3 = JukeboxResponseListSubtitles.parseFrom(data);
-    			Model.get().clearSubtitles();
-    			Model.get().addAllSubtitles(resp3.getSubtitleList());
-    			break;
-    		case MarkSubtitle:
-    			break;
-    		case SkipBackwards:
-    			break;
-    		case SkipForward:
-    			break;
-    		case StartMovie:
-    			JukeboxResponseStartMovie resp4 = JukeboxResponseStartMovie.parseFrom(data);
-    			Model.get().clearSubtitles();
-    			Model.get().addAllSubtitles(resp4.getSubtitleList());
-    			break;
-    		case StartSubtitleIdentity:
-    			break;
-    		case StopMovie:
-    			break;
-    		case Wakeup:
-    			break;
-    		case ToggleFullscreen:
-    			break;
-    		case Suspend:
-    			break;	
-    		case Error:
-    			JukeboxResponseError err = JukeboxResponseError.parseFrom(data);
-    			Log.e("Jukebox", "Error occured when communicating with jukebox server");
-    			Log.e("Jukebox", err.getErrorMessage());
-    		}
-			
-		} catch (InvalidProtocolBufferException e) {
-			
-			e.printStackTrace();
-		}
-
-	}
-	private JukeboxRequest getRequest(JukeboxRequestType type, com.google.protobuf.GeneratedMessage message) {
-		return JukeboxRequest.newBuilder()
-			.setType(type)
-			.setArguments(message.toByteString())
-			.build();	
-	}
-	
-	private JukeboxResponse readResponse(InputStream is) {
-		try {		
-			DataInputStream ds = new DataInputStream(is);
-			int lengthOfMessage;
-			lengthOfMessage = ds.readInt();
-	
-			byte[] data = new byte[lengthOfMessage];
-	
-			int offset = 0;
-			int numRead = 0;
-			while (offset < lengthOfMessage && (numRead = is.read(data, offset, lengthOfMessage - offset)) >= 0) {
-				offset += numRead;
-			}
-			
-			return JukeboxResponse.parseFrom(data);
-			
-		} catch (IOException e) {
-			
-			e.printStackTrace();
-		}
-		
-		return null;
-	}
-	
 	private Bundle setResponse(Boolean success) {
 		Bundle b = new Bundle();
 		b.putBoolean("success", success);
@@ -447,5 +356,12 @@ public class JukeboxConnectionHandler implements Runnable {
 		b.putString("message", message);
 		
 		return b;
+	}
+
+	private Bundle checkResponse(RpcController controller) {
+		if (controller.failed())
+			return setResponse(false, controller.errorText());
+		else
+			return setResponse(true);
 	}
 }

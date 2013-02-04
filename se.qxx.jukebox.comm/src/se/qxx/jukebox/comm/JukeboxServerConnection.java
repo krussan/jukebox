@@ -1,3 +1,5 @@
+package se.qxx.jukebox.comm;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -6,15 +8,13 @@ import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.Socket;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequest;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponse;
 
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 
 public abstract class JukeboxServerConnection implements Runnable {
-
+	
 	private Socket client;
 	
 	protected enum LogLevel {
@@ -39,10 +39,11 @@ public abstract class JukeboxServerConnection implements Runnable {
 		this.client = client;
 	}
 	
+	/*
 	@Override
 	public void run() {
-		try {
-			Log(LogLevel.Debug, String.format("Connection made from %s", this.getClient().getInetAddress().toString()), Log.LogType.COMM);
+		try { 
+			Log(LogLevel.Debug, String.format("Connection made from %s", this.getClient().getInetAddress().toString()));
 			// read 4 bytes parsing the message length
 			InputStream is = this.getClient().getInputStream();
 			DataInputStream ds = new DataInputStream(is);
@@ -58,7 +59,7 @@ public abstract class JukeboxServerConnection implements Runnable {
 			CodedInputStream cis = CodedInputStream.newInstance(data);
 			JukeboxRequest req = JukeboxRequest.parseFrom(cis);
 			
-			Log(LogLevel.Debug,String.format("Request was of type :: %s", req.getType().toString()), Log.LogType.COMM);
+			Log(LogLevel.Debug,String.format("Request was of type :: %s", req.getType().toString()));
 			JukeboxResponse resp = handleRequest(req);
 						
 			if (resp != null) {
@@ -68,12 +69,16 @@ public abstract class JukeboxServerConnection implements Runnable {
 				
 				resp.writeTo(os);
 			}
+			
 
 		} catch (IOException e) {
-			Log(LogLevel.Error, "Error while reading request from client", Log.LogType.COMM, e);
+			Log(LogLevel.Error, "Error while reading request from client", e);
 		}
 	}
+
+			*/
 	
+	/*
 	private JukeboxResponse handleRequest(JukeboxRequest req) throws InvalidProtocolBufferException { 
 		try {
 			Method m = this.getClass().getMethod(req.getType().toString(), JukeboxRequest.class);
@@ -82,7 +87,7 @@ public abstract class JukeboxServerConnection implements Runnable {
 				m.invoke(this, req);
 			} catch (IllegalArgumentException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Log(LogLevel.Error, "Error while invoking ", e);
 			} catch (IllegalAccessException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -95,8 +100,11 @@ public abstract class JukeboxServerConnection implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
+			// TODO* Auto-generated catch block
 			e.printStackTrace();
 		}
+		return null;
 	}
+	
+	*/
 }

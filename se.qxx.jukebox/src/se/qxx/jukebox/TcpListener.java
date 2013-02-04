@@ -5,6 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
+import se.qxx.jukebox.comm.JukeboxRpcServer;
 import se.qxx.jukebox.settings.Settings;
 
 public class TcpListener implements Runnable {
@@ -16,33 +17,30 @@ public class TcpListener implements Runnable {
 	@Override
 	public void run() {
 		isRunning = true;
-		
-		try {
-
-			Util.waitForSettings();
-			
-			int port = Settings.get().getTcpListener().getPort().getValue();
-			ServerSocket socket;
-
-			socket = new ServerSocket(port);
-			socket.setSoTimeout(500);
-			
-			while (isRunning) {
-				try {
-					Socket client = socket.accept();
+		  
+		Util.waitForSettings();
 					
-					Thread t = new Thread(new TcpConnection(client));
-					t.start();
-				}
-				catch (SocketTimeoutException ex) {
-					// Loop just to be able to shutdown
-				}				
-			}			
-		} 
-		catch (IOException e) {
-			Log.Error("Error while establishing client socket", Log.LogType.COMM, e);
-			isRunning = false;
+		int port = Settings.get().getTcpListener().getPort().getValue();
+		JukeboxRpcServer server = new JukeboxRpcServer(port);
+  
+//			ServerSocket socket;
+//
+//			socket = new ServerSocket(port);
+//			socket.setSoTimeout(500);
+		
+		while (isRunning) {
+			try {
+				this.wait(1000);
+//					Socket client = socket.accept();
+//					
+//					Thread t = new Thread(new TcpConnection(client));
+//					t.start();
+			} catch (InterruptedException e) {
+				this.isRunning = false;
+			}				
 		}
+		
+		server.stopServer();
 	}
 	
 	public void stopListening() {

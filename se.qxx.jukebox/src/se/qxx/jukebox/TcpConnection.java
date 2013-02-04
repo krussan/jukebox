@@ -13,24 +13,11 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.Log.LogType;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequest;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGetTitle;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestIsPlaying;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListSubtitles;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestPauseMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSeek;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSetSubtitle;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStartMovie;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStopMovie;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSuspend;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestTime;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestToggleFullscreen;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestVRatio;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestWakeup;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponse;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseError;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseGetTitle;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseIsPlaying;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
@@ -38,7 +25,6 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListSubtitles;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseStartMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseTime;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestBlacklistMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
@@ -58,6 +44,11 @@ public class TcpConnection implements Runnable {
 		this._client = client;
 	}
 	
+	@Override
+	public void run() {
+	}
+	
+/*	
 	@Override
 	public void run() {
 		try {
@@ -526,5 +517,5 @@ public class TcpConnection implements Runnable {
 		}				
 	}
 	
-	
+	*/
 }
