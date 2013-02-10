@@ -5,7 +5,8 @@
 	<property name="jukebox.lib.dir" value="${jukebox.root.dir}/lib" />	
 	<property name="jukebox.solution.dir" value="${jukebox.root.dir}/trunk" />
 	<property name="jukebox.domain.src.dir" value="${jukebox.solution.dir}/se.qxx.jukebox.domain/src" />
-
+	<property name="jukebox.comm.src.dir" value="${jukebox.solution.dir}/se.qxx.jukebox.comm/src" />
+	
 	<property name="jukebox.deploy.server" value="ULTRA" />
 	<property name="jukebox.deploy.server.path" value="/c/media/Dev/src/jukebox" />
 	<property name="jukebox.deploy.server.path.apk" value="/c/media/Dev/src/jukebox-apk" />

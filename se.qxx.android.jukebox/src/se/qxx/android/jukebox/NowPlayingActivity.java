@@ -2,34 +2,85 @@ package se.qxx.android.jukebox;
 
 import org.apache.commons.lang3.StringUtils;
 
-import se.qxx.android.jukebox.comm.ConnectionWrapper;
-import se.qxx.android.jukebox.comm.JukeboxResponseListener;
+import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponse;
+import se.qxx.jukebox.domain.JukeboxDomain.Empty;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseGetTitle;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseIsPlaying;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseStartMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.RpcCallback;
 
 public class NowPlayingActivity extends JukeboxActivityBase 
-	implements OnSeekBarChangeListener, SeekerListener, JukeboxResponseListener {
+	implements OnSeekBarChangeListener, SeekerListener {
 
 	private Seeker seeker;
 	private boolean isManualSeeking = false;
+	private JukeboxConnectionHandler comm = new JukeboxConnectionHandler();
+
+	private class OnStatusComplete implements RpcCallback<JukeboxResponseIsPlaying> {
+		@Override
+		public void run(JukeboxResponseIsPlaying response) {
+			if (response.getIsPlaying()) {
+				comm.getTitle(JukeboxSettings.get().getCurrentMediaPlayer(), new OnGetTitleComplete());
+			}
+			else {
+				comm.startMovie(
+						JukeboxSettings.get().getCurrentMediaPlayer(),
+						Model.get().getCurrentMovie(), new OnStartMovieComplete());
+			}
+		}
+	}
+	
+	private class OnGetTitleComplete implements RpcCallback<JukeboxResponseGetTitle> {
+		@Override
+		public void run(JukeboxResponseGetTitle response) {
+			String playerFilename = response.getTitle();
+			Media md = matchCurrentFilenameAgainstMedia(playerFilename);
+			if (md != null) {
+				//initialize seeker and get subtitles if app has been reinitialized
+				Model.get().setCurrentMedia(md);
+				initializeSeeker();
+				
+				comm.listSubtitles(md);
+				
+				//Start seeker and get time asap as the movie is playing
+				seeker.start(true);
+			}
+			else {
+				comm.stopMovie(JukeboxSettings.get().getCurrentMediaPlayer(), new OnStopMovieComplete());
+			}
+		}
+	}
+
+	private class OnStartMovieComplete implements RpcCallback<JukeboxResponseStartMovie> {
+		@Override
+		public void run(JukeboxResponseStartMovie response) {
+			Model.get().setCurrentMedia(0);			
+			initializeSeeker();			
+			seeker.start();			
+			comm.listSubtitles(Model.get().getCurrentMedia());
+		}
+	}
+
+	private class OnStopMovieComplete implements RpcCallback<Empty> {
+		@Override
+		public void run(Empty arg0) {
+			comm.startMovie(JukeboxSettings.get().getCurrentMediaPlayer(), Model.get().getCurrentMovie(), new OnStartMovieComplete());
+		}		
+	}
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -81,9 +132,9 @@ public class NowPlayingActivity extends JukeboxActivityBase
 
 	    SeekBar sb = (SeekBar)findViewById(R.id.seekBarDuration);
 		sb.setOnSeekBarChangeListener(this);
-		
-		ConnectionWrapper.sendCommandWithResponseListener(this, "Checking status", JukeboxRequestType.IsPlaying);
-	    
+
+		comm.isPlaying(JukeboxSettings.get().getCurrentMediaPlayer(), new OnStatusComplete());
+			    
 //	    Model.get().addEventListener(this);
 	}
 	
@@ -107,8 +158,8 @@ public class NowPlayingActivity extends JukeboxActivityBase
 		final TextView tv = (TextView)findViewById(R.id.txtSeekIndicator);
 
 		int seconds = seekBar.getProgress();
-		ConnectionWrapper.sendCommandWithResponseListener(this, "Seeking...", JukeboxRequestType.Seek, seconds);
-		runOnUiThread(new UpdateSeekIndicator(seconds, tv, seekBar));		
+		
+		comm.seek(JukeboxSettings.get().getCurrentMediaPlayer(), seconds);
 		
 		this.isManualSeeking = false;
 	}
@@ -116,30 +167,22 @@ public class NowPlayingActivity extends JukeboxActivityBase
     public void onButtonClicked(View v) {
 		int id = v.getId();
 		GUITools.vibrate(28, this);
+		String player = JukeboxSettings.get().getCurrentMediaPlayer();
 		
 		switch (id) {
 			case R.id.btnPlay:
-				ConnectionWrapper.sendCommandWithResponseListener(this, "Starting movie...", JukeboxRequestType.StartMovie);
+				comm.startMovie(player, Model.get().getCurrentMovie(), new OnStartMovieComplete());
 				break;	
 			case R.id.btnFullscreen:
-				ConnectionWrapper.sendCommandWithProgressDialog(
-						this.getRootView().getContext(), 
-						"Toggling fullscreen...", 
-						JukeboxRequestType.ToggleFullscreen);
+				comm.toggleFullscreen(player);
 				break;
 			case R.id.btnPause:
 				seeker.toggle();
-				ConnectionWrapper.sendCommandWithProgressDialog(
-						this.getRootView().getContext(),
-						"Pausing...", 
-						JukeboxRequestType.PauseMovie);
+				comm.pauseMovie(player);
 				break;
 			case R.id.btnStop:
 				seeker.stop();
-				ConnectionWrapper.sendCommandWithProgressDialog(
-						this.getRootView().getContext(),
-						"Stopping...", 
-						JukeboxRequestType.StopMovie);
+				comm.stopMovie(player, null);
 				break;
 			case R.id.btnViewInfo:
 				String url = Model.get().getCurrentMovie().getImdbUrl();
@@ -185,77 +228,7 @@ public class NowPlayingActivity extends JukeboxActivityBase
 	    if (sb != null) 
 	    	sb.setMax(Model.get().getCurrentMedia().getMetaDuration());
 	}
-	
-	@Override
-	public void onResponseReceived(JukeboxResponse resp) {
-		if (resp.getType() == JukeboxRequestType.IsPlaying) {								
-			try {
-				boolean isPlaying = JukeboxResponseIsPlaying.parseFrom(resp.getArguments()).getIsPlaying();
-				if (isPlaying) {
-					ConnectionWrapper.sendCommandWithResponseListener(
-						this, 
-						"Checking current playing movie...", 
-						JukeboxRequestType.GetTitle);
-				}
-				else {
-					ConnectionWrapper.sendCommandWithResponseListener(
-						this, 
-						"Starting movie...", 
-						JukeboxRequestType.StartMovie);						
-				}
-			} catch (InvalidProtocolBufferException e) {
-				Log.e(getLocalClassName(), "Error while parsing response from IsPlaying", e);
-			}
-		}		
 		
-		if (resp.getType() == JukeboxRequestType.GetTitle) {
-			try {
-				String playerFilename = JukeboxResponseGetTitle.parseFrom(resp.getArguments()).getTitle();
-				Media md = matchCurrentFilenameAgainstMedia(playerFilename);
-				if (md != null) {
-					//initialize seeker and get subtitles if app has been reinitialized
-					Model.get().setCurrentMedia(md);
-					initializeSeeker();
-					ConnectionWrapper.sendCommandWithResponseListener(
-						this, 
-						"Getting subtitles", 
-						JukeboxRequestType.ListSubtitles);			
-					
-					//Start seeker and get time asap as the movie is playing
-					seeker.start(true);
-				}
-				else {
-					// stop movie and start new
-					ConnectionWrapper.sendCommandWithResponseListener(
-						this, 
-						"Stopping movie", 
-						JukeboxRequestType.StopMovie);
-				}
-				
-				
-			} catch (InvalidProtocolBufferException e) {
-				Log.e(getLocalClassName(), "Error while parsing response from GetTitle", e);
-			}
-		}
-		
-		if (resp.getType() == JukeboxRequestType.StartMovie) {
-			Model.get().setCurrentMedia(0);			
-			initializeSeeker();			
-			seeker.start();			
-			ConnectionWrapper.sendCommandWithResponseListener(
-				this, 
-				"Getting subtitles", 
-				JukeboxRequestType.ListSubtitles);
-		}
-
-		if (resp.getType() == JukeboxRequestType.StopMovie) {
-			ConnectionWrapper.sendCommandWithResponseListener(
-				this, 
-				"Starting movie", 
-				JukeboxRequestType.StartMovie);
-		}
-	}
-	
 	protected Media matchCurrentFilenameAgainstMedia(String playerFilename) {
 		for (Media md : Model.get().getCurrentMovie().getMediaList()) {
 			if (StringUtils.equalsIgnoreCase(playerFilename, md.getFilename())) {

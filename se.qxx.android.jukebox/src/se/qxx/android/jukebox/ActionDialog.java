@@ -1,10 +1,12 @@
 package se.qxx.android.jukebox;
 
-import se.qxx.android.jukebox.comm.ConnectionWrapper;
+import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
+import se.qxx.android.jukebox.comm.JukeboxConnectionProgressDialog;
 import se.qxx.android.jukebox.model.Model;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -33,22 +35,18 @@ public class ActionDialog implements OnClickListener{
 
 	@Override
 	public void onClick(DialogInterface dialog, int which) {
+		JukeboxConnectionHandler jh;
 		switch (which) {
 		case 0:
-			ConnectionWrapper.sendCommandWithProgressDialog(
-				this.context, 
-				"Blacklisting...", 
-				JukeboxRequestType.BlacklistMovie, 
-				this.currentMovie);
+			
+			jh = new JukeboxConnectionHandler(JukeboxConnectionProgressDialog.build(this.context, "Blacklisting..."));
+			jh.blacklist(this.currentMovie);			
 			
 			break;
 		case 1:
-			ConnectionWrapper.sendCommandWithProgressDialog(
-				this.context, 
-				"Toggling watched status...", 
-				JukeboxRequestType.ToggleWatched, 
-				this.currentMovie);
-			
+			jh = new JukeboxConnectionHandler(JukeboxConnectionProgressDialog.build(this.context, "Toggling watched status..."));
+			jh.toggleWatched(this.currentMovie);			
+						
 			break;
 		}
 	}

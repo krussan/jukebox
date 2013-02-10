@@ -30,7 +30,7 @@ public class TcpListener implements Runnable {
 		
 		while (isRunning) {
 			try {
-				this.wait(1000);
+				Thread.sleep(1000);
 //					Socket client = socket.accept();
 //					
 //					Thread t = new Thread(new TcpConnection(client));

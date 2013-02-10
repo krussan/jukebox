@@ -5,15 +5,12 @@ import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
-import se.qxx.android.jukebox.comm.JukeboxResponseListener;
 import se.qxx.android.jukebox.model.Model;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponse;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseTime;
 
-import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.RpcCallback;
 
-public class Seeker implements JukeboxResponseListener, Runnable {
+public class Seeker implements Runnable {
 
 	private Thread internalThread;
 	private boolean isRunning = false;
@@ -26,32 +23,21 @@ public class Seeker implements JukeboxResponseListener, Runnable {
 	public void stop() {
 		this.isRunning = false;
 	}
-	
+		
 	private void getTime() {
-       	JukeboxConnectionHandler h = new JukeboxConnectionHandler(this, JukeboxRequestType.Time);
-     	Thread t = new Thread(h);
-       	t.start();
-	}
-
-	@Override
-	public void onResponseReceived(JukeboxResponse resp) {
-		JukeboxRequestType type = resp.getType();
-		if (type == JukeboxRequestType.Time) {
-			try {
-				JukeboxResponseTime respTime = JukeboxResponseTime.parseFrom(resp.getArguments());
-				
+       	JukeboxConnectionHandler h = new JukeboxConnectionHandler();
+       	h.getTime(JukeboxSettings.get().getCurrentMediaPlayer(), new RpcCallback<JukeboxResponseTime>() {
+			@Override
+			public void run(JukeboxResponseTime response) {				
 				// The time command also returns the name of the currently playing file.
 				// If it differs from the model then set the current media
-				if (!StringUtils.equalsIgnoreCase(respTime.getFilename(), Model.get().getCurrentMedia().getFilename()))
-					Model.get().setCurrentMedia(respTime.getFilename());
+				if (!StringUtils.equalsIgnoreCase(response.getFilename(), Model.get().getCurrentMedia().getFilename()))
+					Model.get().setCurrentMedia(response.getFilename());
 				
-				if (this.listener != null)
-					this.listener.updateSeeker(respTime.getSeconds());
-				
-			} catch (InvalidProtocolBufferException e) {
+				if (listener != null)
+					listener.updateSeeker(response.getSeconds());				
 			}
-			
-		}
+		});
 	}
 
 	@Override

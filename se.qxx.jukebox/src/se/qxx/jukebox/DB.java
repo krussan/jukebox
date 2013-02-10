@@ -27,10 +27,10 @@ public class DB {
 			"rating", "director", "story", "identifier", "identifierRating", "watched"};
 	
 	private static String connectionString = "jdbc:sqlite:jukebox.db";
-	
+	 
 	private DB() {
 		
-	}
+	} 
 
 	public static void setDatabase(String databaseFilename) {
 		DB.connectionString = String.format("jdbc:sqlite:%s", databaseFilename);

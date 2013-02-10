@@ -4,12 +4,12 @@ import java.util.EventObject;
 import java.util.List;
 
 import se.qxx.android.jukebox.adapters.PlayerLayoutAdapter;
-import se.qxx.android.jukebox.comm.ConnectionWrapper;
+import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
+import se.qxx.android.jukebox.comm.JukeboxConnectionProgressDialog;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.jukebox.model.Model.ModelUpdatedEventListener;
 import se.qxx.android.jukebox.model.ModelUpdatedEvent;
 import se.qxx.android.jukebox.model.ModelUpdatedType;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -27,11 +27,9 @@ public class PlayerPickerActivity extends JukeboxActivityBase implements ModelUp
 
 	    setContentView(R.layout.playerpicker);
 	    Model.get().addEventListener(this);
-	    	    
-	    ConnectionWrapper.sendCommandWithProgressDialog(
-    		this.getCurrentContext(), 
-    		"Getting list of players", 
-    		JukeboxRequestType.ListPlayers);
+
+	    JukeboxConnectionHandler jh = new JukeboxConnectionHandler(JukeboxConnectionProgressDialog.build(this, "Getting list of players..."));
+	    jh.listPlayers();
     
 	    adapter = new PlayerLayoutAdapter(this);	    
 	    ListView listView = (ListView)findViewById(R.id.listPlayers);	    

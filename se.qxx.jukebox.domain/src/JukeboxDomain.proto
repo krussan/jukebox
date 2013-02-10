@@ -121,7 +121,7 @@ message JukeboxResponseListSubtitles {
 	repeated Subtitle subtitle = 1;
 }
 
-message JukeboxResponseStartMovie {
+message JukeboxResponseStartMovie { 
 	repeated Subtitle subtitle = 1;
 }
 

@@ -20,5 +20,13 @@
 			classpathref="jukebox.classpath"		    
 		    debug="false"
 	    />
-    </target>    
+		
+		<javac
+		    srcdir="${jukebox.comm.src.dir}"
+		    destdir="${out.classes.absolute.dir}"
+		    includeantruntime="false" 
+			classpathref="jukebox.classpath"		    
+		    debug="false"
+		/>		    
+    </target>  
 </project>

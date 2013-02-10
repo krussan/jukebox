@@ -1,13 +1,14 @@
 package se.qxx.android.jukebox;
 
 import se.qxx.android.jukebox.adapters.MediaSubsLayoutAdapter;
-import se.qxx.android.jukebox.comm.ConnectionWrapper;
+import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
+import se.qxx.android.jukebox.comm.JukeboxConnectionProgressDialog;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
@@ -43,7 +44,8 @@ public class SubSelectActivity extends JukeboxActivityBase implements OnItemClic
 		Logger.Log().d(String.format("Setting subtitle to %s", sub.getDescription()));
 		Model.get().setCurrentSubtitle(sub.getDescription());
 		
-		ConnectionWrapper.sendCommandWithProgressDialog(this, "Setting subtitle", JukeboxRequestType.SetSubtitle);
+		JukeboxConnectionHandler jh = new JukeboxConnectionHandler(JukeboxConnectionProgressDialog.build(this, "Setting subtitle ..."));
+		jh.setSubtitle(JukeboxSettings.get().getCurrentMediaPlayer(), Model.get().getCurrentMedia(), sub);
 	}
 
 	@Override
