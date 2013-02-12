@@ -28,8 +28,15 @@ public class PlayerPickerActivity extends JukeboxActivityBase implements ModelUp
 	    setContentView(R.layout.playerpicker);
 	    Model.get().addEventListener(this);
 
-	    JukeboxConnectionHandler jh = new JukeboxConnectionHandler(JukeboxConnectionProgressDialog.build(this, "Getting list of players..."));
-	    jh.listPlayers();
+	    final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(JukeboxConnectionProgressDialog.build(this, "Getting list of players..."));
+
+		Thread t = new Thread(new Runnable(){
+			@Override
+			public void run() {
+			    jh.listPlayers();
+			}
+		});
+		t.start();			
     
 	    adapter = new PlayerLayoutAdapter(this);	    
 	    ListView listView = (ListView)findViewById(R.id.listPlayers);	    

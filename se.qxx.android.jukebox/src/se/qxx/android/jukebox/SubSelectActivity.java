@@ -40,12 +40,18 @@ public class SubSelectActivity extends JukeboxActivityBase implements OnItemClic
 	
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-		Subtitle sub = (Subtitle)arg0.getItemAtPosition(arg2);	
+		final Subtitle sub = (Subtitle)arg0.getItemAtPosition(arg2);	
 		Logger.Log().d(String.format("Setting subtitle to %s", sub.getDescription()));
 		Model.get().setCurrentSubtitle(sub.getDescription());
 		
-		JukeboxConnectionHandler jh = new JukeboxConnectionHandler(JukeboxConnectionProgressDialog.build(this, "Setting subtitle ..."));
-		jh.setSubtitle(JukeboxSettings.get().getCurrentMediaPlayer(), Model.get().getCurrentMedia(), sub);
+		final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(JukeboxConnectionProgressDialog.build(this, "Setting subtitle ..."));
+		Thread t = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				jh.setSubtitle(JukeboxSettings.get().getCurrentMediaPlayer(), Model.get().getCurrentMedia(), sub);				
+			}
+		});
+		t.run();
 	}
 
 	@Override

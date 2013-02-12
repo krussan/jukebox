@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 
 import se.qxx.jukebox.comm.JukeboxRpcServer;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxService;
 import se.qxx.jukebox.settings.Settings;
 
 public class TcpListener implements Runnable {
@@ -23,6 +24,7 @@ public class TcpListener implements Runnable {
 		int port = Settings.get().getTcpListener().getPort().getValue();
 		JukeboxRpcServer server = new JukeboxRpcServer(port);
   
+		server.runServer(JukeboxRpcServerConnection.class);
 //			ServerSocket socket;
 //
 //			socket = new ServerSocket(port);

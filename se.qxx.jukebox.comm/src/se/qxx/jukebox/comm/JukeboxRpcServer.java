@@ -40,7 +40,7 @@ public class JukeboxRpcServer {
 	public RpcServer getServer() {
 		return server;
 	}
-	public void setService(RpcServer serverö) {
+	public void setService(RpcServer server) {
 		this.server = server;
 	}
 	
@@ -65,7 +65,7 @@ public class JukeboxRpcServer {
 		try {
 			this.setService(connection.newInstance());
 			server.registerService(this.getService());
-			server.startServer();
+			server.run();
 			
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block

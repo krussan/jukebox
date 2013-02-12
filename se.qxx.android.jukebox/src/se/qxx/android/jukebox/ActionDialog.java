@@ -35,19 +35,33 @@ public class ActionDialog implements OnClickListener{
 
 	@Override
 	public void onClick(DialogInterface dialog, int which) {
-		JukeboxConnectionHandler jh;
-		switch (which) {
+		final Movie m = this.currentMovie;
+		final int choice = which;
+		final Context c = this.context;
+		
+		
+		switch (choice) {
 		case 0:
+			final JukeboxConnectionHandler jh1 = new JukeboxConnectionHandler(JukeboxConnectionProgressDialog.build(c, "Blacklisting..."));
 			
-			jh = new JukeboxConnectionHandler(JukeboxConnectionProgressDialog.build(this.context, "Blacklisting..."));
-			jh.blacklist(this.currentMovie);			
-			
+			Thread t1 = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					jh1.blacklist(m);			
+				}
+			});
+			t1.start();
 			break;
 		case 1:
-			jh = new JukeboxConnectionHandler(JukeboxConnectionProgressDialog.build(this.context, "Toggling watched status..."));
-			jh.toggleWatched(this.currentMovie);			
-						
+			final JukeboxConnectionHandler jh2 = new JukeboxConnectionHandler(JukeboxConnectionProgressDialog.build(c, "Toggling watched status..."));
+			Thread t2 = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					jh2.toggleWatched(m);				
+				}
+			});			
+			t2.start();
 			break;
-		}
+		}				
 	}
 }

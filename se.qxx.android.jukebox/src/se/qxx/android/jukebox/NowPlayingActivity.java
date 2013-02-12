@@ -48,19 +48,31 @@ public class NowPlayingActivity extends JukeboxActivityBase
 		@Override
 		public void run(JukeboxResponseGetTitle response) {
 			String playerFilename = response.getTitle();
-			Media md = matchCurrentFilenameAgainstMedia(playerFilename);
+			final Media md = matchCurrentFilenameAgainstMedia(playerFilename);
 			if (md != null) {
 				//initialize seeker and get subtitles if app has been reinitialized
 				Model.get().setCurrentMedia(md);
 				initializeSeeker();
 				
-				comm.listSubtitles(md);
+				Thread t1 = new Thread(new Runnable(){
+					@Override
+					public void run() {
+						comm.listSubtitles(md);						
+					}
+				});
+				t1.start();
 				
 				//Start seeker and get time asap as the movie is playing
 				seeker.start(true);
 			}
 			else {
-				comm.stopMovie(JukeboxSettings.get().getCurrentMediaPlayer(), new OnStopMovieComplete());
+				Thread t2 = new Thread(new Runnable(){
+					@Override
+					public void run() {
+						comm.stopMovie(JukeboxSettings.get().getCurrentMediaPlayer(), new OnStopMovieComplete());
+					}
+				});
+				t2.start();
 			}
 		}
 	}
@@ -70,15 +82,27 @@ public class NowPlayingActivity extends JukeboxActivityBase
 		public void run(JukeboxResponseStartMovie response) {
 			Model.get().setCurrentMedia(0);			
 			initializeSeeker();			
-			seeker.start();			
-			comm.listSubtitles(Model.get().getCurrentMedia());
+			seeker.start();		
+			
+			Thread t = new Thread(new Runnable(){
+				@Override
+				public void run() {
+					comm.listSubtitles(Model.get().getCurrentMedia());
+				}
+			});
+			t.start();
 		}
 	}
 
 	private class OnStopMovieComplete implements RpcCallback<Empty> {
 		@Override
 		public void run(Empty arg0) {
-			comm.startMovie(JukeboxSettings.get().getCurrentMediaPlayer(), Model.get().getCurrentMovie(), new OnStartMovieComplete());
+			Thread t = new Thread(new Runnable(){
+				@Override
+				public void run() {
+					comm.startMovie(JukeboxSettings.get().getCurrentMediaPlayer(), Model.get().getCurrentMovie(), new OnStartMovieComplete());				}
+			});
+			t.start();			
 		}		
 	}
 	

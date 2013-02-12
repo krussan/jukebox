@@ -2,6 +2,8 @@ package se.qxx.android.jukebox;
 
 import java.util.EventObject;
 
+import org.apache.commons.lang3.StringUtils;
+
 import se.qxx.android.jukebox.adapters.MovieLayoutAdapter;
 import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
 import se.qxx.android.jukebox.comm.JukeboxConnectionProgressDialog;
@@ -11,6 +13,7 @@ import se.qxx.android.jukebox.model.ModelUpdatedEvent;
 import se.qxx.android.jukebox.model.ModelUpdatedType;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -124,31 +127,48 @@ public class JukeboxActivity extends JukeboxActivityBase
     
     private void onoff() {
     	//TODO: Check if computer is live.
-    	boolean isOnline = JukeboxSettings.get().isCurrentMediaPlayerOn();
-    	JukeboxConnectionHandler jh;
-    	if (isOnline) { 
-    		jh = new JukeboxConnectionHandler(JukeboxConnectionProgressDialog.build(this, "Suspending target media player..."));
-    		jh.suspend(JukeboxSettings.get().getCurrentMediaPlayer());
-		}
-    	else {
-    		jh = new JukeboxConnectionHandler(JukeboxConnectionProgressDialog.build(this, "Waking up..."));
-    		jh.wakeup(JukeboxSettings.get().getCurrentMediaPlayer());
-    	}
+    	final Context c = this;
+    	final boolean isOnline = JukeboxSettings.get().isCurrentMediaPlayerOn();
+    	final String currentMediaPlayer = JukeboxSettings.get().getCurrentMediaPlayer();
+    	
+    	final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
+    			JukeboxConnectionProgressDialog.build(c, 
+    					isOnline ? "Suspending target media player..." : "Waking up..."));
+    	
+    	Thread t = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				if (isOnline)
+		    		jh.suspend(currentMediaPlayer);
+		    	else 
+		    		jh.wakeup(currentMediaPlayer);
+			}
+    	});
+    	t.start();
     	
     	JukeboxSettings.get().setIsCurrentMediaPlayerOn(!isOnline);
     	setupOnOffButton();
 	}
 
 	public void connect() {
-		JukeboxConnectionHandler jh = new JukeboxConnectionHandler(JukeboxConnectionProgressDialog.build(this, "Getting list of media ..."));
-		jh.listMovies("");
+    	final Context c = this;
+		final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(JukeboxConnectionProgressDialog.build(c, "Getting list of media ..."));
+
+		Thread t = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				jh.listMovies("");
+			}
+			
+		});
+		t.start();
     }
     
 
 	@Override
 	public void handleModelUpdatedEventListener(EventObject e) {
 		ModelUpdatedEvent ev = (ModelUpdatedEvent)e;
-		
+
 		if (ev.getType() == ModelUpdatedType.Movies) {
 			runOnUiThread(modelResultUpdatedRunnable);
 		}
