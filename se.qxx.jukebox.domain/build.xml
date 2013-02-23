@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+    
+    <include file="../global_properties.xml" />
+    
+    <property name="build.dir" value="${jukebox.domain.dir}/build" />
+    <property name="classes.dir" value="${build.dir}/classes" />
+    <property name="jar.file" value="se.qxx.jukebox.domain.temp.jar" />
+    <property name="dao.dir" value="${jukebox.domain.src.dir}/se/qxx/jukebox/domain/dao" />
+    <target name="clean">
+    	<delete dir="${build.dir}" />
+    	<mkdir dir="${build.dir}" />
+    	
+    	<delete dir="${dao.dir}" />
+    	<mkdir dir="${dao.dir}" />
+    </target>
+    
+	<target name="protoc">
+	    <exec executable="${jukebox.protoc.comm}" dir="${jukebox.domain.src.dir}">
+	        <arg value="--java_out=." />
+	        <arg value="JukeboxDomain.proto" />
+	    </exec>
+	</target>
+    
+    <target name="build" depends="protoc,clean">
+		<mkdir dir="${classes.dir}" />
+		<javac 
+		    srcdir="${jukebox.domain.src.dir}" 
+		    destdir="${classes.dir}" 
+		    classpathref="jukebox.classpath" 
+		    includeantruntime="true" 
+		    debug="true"
+	    />
+		<javac 
+		    srcdir="${jukebox.solution.dir}/se.qxx.jukebox.domain.generator/src" 
+		    destdir="${classes.dir}" 
+		    classpathref="jukebox.classpath" 
+		    includeantruntime="true" 
+		    debug="true"
+	    />
+			
+    </target>
+    
+    <target name="tempjar" depends="build">
+		<jar destfile="${build.dir}/${jar.file}"
+			basedir="${classes.dir}">
+			<manifest>
+    			<attribute name="Built-By" value="${user.name}"/>
+			</manifest>
+ 		</jar>        
+ 		
+    </target>
+    
+    <target name="generateDAO" depends="tempjar">
+        <java classname="JukeboxDaoGenerator" fork="true">
+            <arg value="${jukebox.domain.src.dir}" />
+            <classpath>
+                <pathelement location="${build.dir}/${jar.file}" />
+                <pathelement location="${jukebox.lib.dir}/yellow.dao.generator-0.1.21.jar" />
+                <pathelement location="${jukebox.lib.dir}/freemarker.jar" />
+            </classpath>
+        </java>  
+    </target>
+</project>
