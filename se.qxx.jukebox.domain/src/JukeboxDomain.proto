@@ -46,6 +46,19 @@ message Movie {
 	optional Identifier identifier = 18;
 	optional int32 identifierRating = 19;
 	optional bool watched = 20;
+	
+	optional bool isTvEpisode = 21;
+	optional int32 episode = 22;
+	optional int64 firstAirDate = 23;
+	optional Season season = 24;
+}
+
+message Season {
+	required int32 ID = 1;
+	optional bytes image = 2;
+	optional string rating = 3;
+	optional string story = 4;
+	repeated string genre = 5;
 }
 
 message Subtitle {

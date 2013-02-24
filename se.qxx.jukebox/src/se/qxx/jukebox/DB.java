@@ -24,7 +24,12 @@ public class DB {
     
 	private final static String[] COLUMNS = {"ID", "title", "year",
 			"type", "format", "sound", "language", "groupName", "imdburl", "duration",
-			"rating", "director", "story", "identifier", "identifierRating", "watched"};
+			"rating", "director", "story", "identifier", "identifierRating", "watched",
+			"isTvEpisode", "episode", "firstAirDate", "_season_ID"};
+//    " isTvEpisode bool NOT NULL DEFAULT 0," +
+//	" episode int NULL, " +
+//    " firstAirDate date NULL, " +
+//	" _season_ID int NULL",
 	
 	private static String connectionString = "jdbc:sqlite:jukebox.db";
 	 
@@ -1055,6 +1060,10 @@ public class DB {
 		prep.setString(13, m.getIdentifier().toString());
 		prep.setInt(14, m.getIdentifierRating());
 		prep.setBoolean(15, m.getWatched());
+		prep.setBoolean(16, m.getIsTvEpisode());
+		prep.setInt(17, m.getEpisode());
+		prep.setLong(18, m.getFirstAirDate());
+		
 	}
 	
 	private static int getIdentity(Connection conn) throws SQLException {

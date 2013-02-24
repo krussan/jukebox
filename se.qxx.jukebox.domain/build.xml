@@ -52,12 +52,14 @@
     </target>
     
     <target name="generateDAO" depends="tempjar">
-        <java classname="JukeboxDaoGenerator" fork="true">
+        <echo message="Using ${build.dir}/${jar.file} ..." />
+        <java classname="se.qxx.jukebox.domain.generator.JukeboxDaoGenerator" fork="true">
             <arg value="${jukebox.domain.src.dir}" />
             <classpath>
                 <pathelement location="${build.dir}/${jar.file}" />
-                <pathelement location="${jukebox.lib.dir}/yellow.dao.generator-0.1.21.jar" />
+                <pathelement location="${jukebox.lib.dir}/yellow.dao.generator-0.1.27.jar" />
                 <pathelement location="${jukebox.lib.dir}/freemarker.jar" />
+                <pathelement location="${jukebox.lib.dir}/protobuf-2.4.1.jar" />
             </classpath>
         </java>  
     </target>

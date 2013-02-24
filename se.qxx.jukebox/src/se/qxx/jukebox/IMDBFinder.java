@@ -29,7 +29,7 @@ public class IMDBFinder {
 		String imdbUrl = m.getImdbUrl();
 
 		if (StringUtils.isEmpty(imdbUrl) || urlIsBlacklisted(imdbUrl, blacklistedIDs)) {	
-			return Search(m, blacklistedIDs);
+			return Search(m, blacklistedIDs, Settings.imdb().getSearchUrl());
 		}
 		else {
 			Log.Debug(String.format("IMDB url found."), LogType.IMDB);
@@ -39,6 +39,12 @@ public class IMDBFinder {
 		}
 	}
 	
+	/**
+	 * Checks if an IMDB url is among the blacklisted url:s
+	 * @param imdbUrl		 The Url to check
+	 * @param blacklistedIDs The list of blacklisted IMDB id's
+	 * @return
+	 */
 	private static boolean urlIsBlacklisted(String imdbUrl, List<String> blacklistedIDs) {
 		String imdbid = Util.getImdbIdFromUrl(imdbUrl);
 		if (!StringUtils.isEmpty(imdbid)) {	
@@ -52,7 +58,7 @@ public class IMDBFinder {
 		return false;
 	}
 
-	private synchronized static Movie Search(Movie m, List<String> blacklistedIDs) throws IOException {
+	private synchronized static Movie Search(Movie m, List<String> blacklistedIDs, String searchUrl) throws IOException {
         //http://www.imdb.com/find?s=all&q=the+decent
         // search for :
         // Titles (Exact Matches)
@@ -70,7 +76,7 @@ public class IMDBFinder {
 				Log.Debug(String.format("Waiting %s seconds", (nextSearch - currentTimeStamp) / 1000), LogType.IMDB);
 				Thread.sleep(nextSearch - currentTimeStamp);
 			}
-			WebResult webResult = getSearchResult(m);
+			WebResult webResult = getSearchResult(m, searchUrl);
 			
 			// Accomodate for that sometimes IMDB redirects you
 			// directly to the correct movie. (i.e. "Cleanskin")
@@ -93,10 +99,10 @@ public class IMDBFinder {
 		}
 	}
 
-	protected static WebResult getSearchResult(Movie m)
+	protected static WebResult getSearchResult(Movie m, String searchUrl)
 			throws UnsupportedEncodingException, IOException {
 		String urlParameters = java.net.URLEncoder.encode(m.getTitle(), "ISO-8859-1");
-		String urlString = Settings.imdb().getSearchUrl().replace("%%TITLE%%", urlParameters);
+		String urlString = searchUrl.replace("%%TITLE%%", urlParameters);
 		//String urlString = "http://www.imdb.com/find?s=tt&q=" + urlParameters;
 
 		Log.Debug(String.format("Making web request. Url :: %s", urlString), LogType.IMDB);

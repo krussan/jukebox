@@ -5,13 +5,23 @@ import se.qxx.jukebox.Version;
 public class Upgrade_0_10 implements IIncrimentalUpgrade {
 
 	static final String[] DbScripts = {
-		"CREATE TABLE tv_episodes (" +
-		"   _media_ID int NOT NULL REFERENCES media(ID)" +
-		" , filename varchar(500) NOT NULL" +
-		" , imdbid varchar(50) NOT NULL" +
-		" , episode int" +
-		" , title varchar(255)" +
-		")"		
+		"ALTER TABLE movie ADD " + 
+	    " isTvEpisode bool NOT NULL DEFAULT 0," +
+		" episode int NULL, " +
+	    " firstAirDate date NULL, " +
+		" _season_ID int NULL",
+
+		"CREATE TABLE Season (" +
+		" ID int NOT NULL PRIMARY KEY," +
+		" rating varchar(5)," +
+		" story varchar(1024)," +
+		")",
+		
+		"CREATE TABLE SeasonGenre (" +
+		"  _season_ID int NOT NULL CONSTRAINT FK_SeasonGenre_Season REFERENCES Seasion(ID)," +
+		"  _genre_ID int NOT NULL CONSTRAINT FK_SeasonGenre_Genre REFERENCES Genre(ID)" +
+		")"
+				
 //		"CREATE TABLE tv_seasons (" +
 //		"   ID int NOT NULL PRIMARY KEY," +
 //		" , 

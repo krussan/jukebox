@@ -64,6 +64,7 @@ public class JukeboxRpcServer {
 				
 		try {
 			this.setService(connection.newInstance());
+			
 			server.registerService(this.getService());
 			server.run();
 			
