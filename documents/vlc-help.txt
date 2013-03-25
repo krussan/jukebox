@@ -1,0 +1,384 @@
+Användning: vlc [flaggor] [ström] ...
+Du kan ange flera strömmar på kommandoraden.
+De kommer att köläggas i spellistan.
+Första objektet som anges kommer att spelas upp först.
+
+Flagghjälp:
+  --flagga  En global flagga som ställs in för längden på programmet.
+   -flagga  En enda bokstavsversion av en global --option.
+   :flagga  En flagga som endast gäller för strömmen direkt före den
+            och som åsidosätter tidigare inställningar.
+
+MRL-syntax för ström:
+  [[access][/demux]://]URL[@[titel][:kapitel][-[titel][:kapitel]]]
+  [:option=värde ...]
+
+  Många av de globala --flaggor kan även användas som MRL-specifika :flaggor.
+  Flera par av :flagga=värde kan anges.
+
+URL-syntax:
+  file:///sökväg/fil             Vanlig mediafil
+  http://värd[:port]/fil         HTTP URL
+  ftp://värd[:port]/fil          FTP URL
+  mms://värd[:port]/fil          MMS URL
+  screen://                      Skärmfångst
+  dvd://[enhet]                  DVD-enhet
+  vcd://[enhet]                  VCD-enhet
+  cdda://[enhet]                 Ljud-cd-enhet
+  udp://[[<källadress>]@[<bindadress>][:<bindport>]]
+                                 UDP-ström skickad av en strömningsserver
+  vlc://pause:<sekunder>         Pausa spellistan under en viss tid
+  vlc://quit                     Specialobjekt för att avsluta VLC
+
+Ingen matchande modul hittades. Använd --list eller --list-verbose för att lista tillgängliga moduler.
+
+ Ljud
+      --audio, --no-audio        Aktivera ljud(som standard aktiverad)
+      --volume=<heltal [0 .. 512]>
+                                 Standardljudvolym
+      --spdif, --no-spdif        Använd S/PDIF om tillgängligt(som standard
+                                 inaktiverad)
+      --force-dolby-surround={0 (Auto), 1 (På), 2 (Av)}
+                                 Tvinga identifiering av Dolby Surround
+      --audio-replay-gain-mode={none,track,album}
+                                 Replay gain mode
+      --audio-replay-gain-preamp=<float>
+                                 Replay preamp
+      --audio-replay-gain-default=<float>
+                                 Default replay gain
+      --audio-time-stretch, --no-audio-time-stretch
+                                 Enable time stretching audio(som standard
+                                 aktiverad)
+      --audio-filter=<sträng>   Ljudfilter
+      --audio-visual=<sträng>   Ljudvisualiseringar 
+
+ Video
+  -f, --fullscreen, --no-fullscreen
+                                 Videoutmatning i helskärm(som standard
+                                 inaktiverad)
+      --overlay, --no-overlay    Overlay-videoutmatning(som standard aktiverad)
+      --video-on-top, --no-video-on-top
+                                 Alltid överst(som standard inaktiverad)
+      --video-wallpaper, --no-video-wallpaper
+                                 Aktivera skrivbordsbakgrund(som standard
+                                 inaktiverad)
+      --video-title-show, --no-video-title-show
+                                 Visa mediatitel på video(som standard
+                                 aktiverad)
+      --video-title-timeout=<heltal [-2147483648 .. 2147483647]>
+                                 Visa videotitel i x millisekunder
+      --video-title-position={0 (Centrerad), 1 (Vänster), 2 (Höger), 4 (Överkant), 8 (Nederkant), 5 (Överkant-Vänster), 6 (Överkant-Höger), 9 (Nederkant-Vänster), 10 (Nederkant-Höger)}
+                                 Position för videotitel
+      --mouse-hide-timeout=<heltal [-2147483648 .. 2147483647]>
+                                 Dölj muspekare och helskärmskontroller
+                                 efter x millisekunder
+   Skärmbild:
+      --snapshot-path=<sträng>  Katalog för videoskärmbilder (eller filnamn)
+      --snapshot-prefix=<sträng>
+                                 Prefix för videoskärmbilder
+      --snapshot-format={png,jpg}
+                                 Format på videoskärmbilder
+      --snapshot-preview, --no-snapshot-preview
+                                 Visa förhandsgranskning av videoskärmbild(so
+                                 m standard aktiverad)
+      --snapshot-sequential, --no-snapshot-sequential
+                                 Använd sekvensiella nummer istället för
+                                 tidsstämplar(som standard inaktiverad)
+   Fönsteregenskaper:
+      --crop=<sträng>           Videobeskäring
+      --custom-crop-ratios=<sträng>
+                                 Custom crop ratios list
+      --aspect-ratio=<sträng>   Källans bildförhållande
+      --autoscale, --no-autoscale
+                                 Video Auto Scaling(som standard aktiverad)
+      --scale=<float>            Videoskalningsfaktor
+      --custom-aspect-ratios=<sträng>
+                                 Lista över anpassade bildförhållanden
+      --deinterlace={0 (Av), -1 (Automatisk), 1 (På)}
+                                 Avfläta
+      --deinterlace-mode={discard,blend,mean,bob,linear,x,yadif,yadif2x,phosphor,ivtc}
+                                 Avflätningsläge
+      --video-filter=<sträng>   Videofiltermodul
+      --video-splitter=<sträng> Video splitter module
+
+ Underbilder
+   Skärmtexter:
+      --osd, --no-osd            Skärmtexter(som standard aktiverad)
+   Undertexter:
+      --sub-file=<sträng>       Använd undertextfil
+      --sub-autodetect-file, --no-sub-autodetect-file
+                                 Identifiera undertextfiler automatiskt(som
+                                 standard aktiverad)
+   Overlays:
+      --sub-source=<sträng>     Subpictures source module
+      --sub-filter=<sträng>     Subpictures filter module
+   Spårinställningar:
+      --audio-language=<sträng> Ljudspråk
+      --sub-language=<sträng>   Undertextspråk
+      --preferred-resolution={-1 (Bästa tillgängliga), 1080 (Full HD (1080p)), 720 (HD (720p)), 576 (Standard Definition (576 eller 480 linjer)), 320 (Low definition (320 linjer))}
+                                 Föredragen videoupplösning
+   Uppspelningskontroll:
+      --input-repeat=<heltal [-2147483648 .. 2147483647]>
+                                 Inmatningsupprepningar
+      --input-fast-seek, --no-input-fast-seek
+                                 Fast seek(som standard inaktiverad)
+      --rate=<float>             Uppspelningshastighet
+   Standardenheter:
+      --dvd=<sträng>            Dvd-enhet
+      --vcd=<sträng>            Vcd-enhet
+      --cd-audio=<sträng>       Ljud-cd-enhet
+   Avancerat:
+      --input-title-format=<sträng>
+                                 Change title according to current media
+
+ Inmatning
+      --stream-filter=<sträng>  Stream filter module
+   Prestandainställningar:
+      --high-priority, --no-high-priority
+                                 Öka prioriteten för processen(som standard
+                                 inaktiverad)
+
+ Spellista
+  -Z, --random, --no-random      Spela filer slumpmässigt för alltid(som
+                                 standard inaktiverad)
+  -L, --loop, --no-loop          Upprepa alla(som standard inaktiverad)
+  -R, --repeat, --no-repeat      Upprepa aktuellt objekt(som standard
+                                 inaktiverad)
+      --play-and-exit, --no-play-and-exit
+                                 Spela upp och avsluta(som standard
+                                 inaktiverad)
+      --play-and-stop, --no-play-and-stop
+                                 Spela upp och stoppa(som standard inaktiverad)
+      --playlist-autostart, --no-playlist-autostart
+                                 Autostart(som standard aktiverad)
+      --media-library, --no-media-library
+                                 Använd mediabibliotek(som standard
+                                 inaktiverad)
+      --playlist-tree, --no-playlist-tree
+                                 Visa spellistträd(som standard inaktiverad)
+      --open=<sträng>           Standardström
+      --auto-preparse, --no-auto-preparse
+                                 Automatisk förtolkning av filer(som standard
+                                 aktiverad)
+      --album-art={0 (Endast manuell hämtning), 1 (När spåret börjar spelas), 2 (Så snart som spåret läggs till)}
+                                 Policy för omslagsbilder
+  -v, --verbose=<heltal [-2147483648 .. 2147483647]>
+                                 Informationsnivå (0,1,2)
+      --verbose-objects=<sträng>
+                                 Välj vilka objekt som ska skriva ut
+                                 felsökningsmeddelanden
+  -q, --quiet, --no-quiet        Var tyst(som standard inaktiverad)
+      --language={auto,en,ar,be,bg,bn,br,ca,ckb,cs,da,de,el,en_GB,es,et,eu,fa,fi,fr,ga,gd,gl,he,hr,hu,hy,id,is,it,ja,ka,kk,km,ko,lt,mn,mr,ms,nb,ne,nl,nn,oc,pa,pl,pt_BR,pt_PT,ro,ru,si,sk,sl,sr,sv,te,th,tr,uk,vi,wa,zh_CN,zh_TW}
+                                 Språk
+      --advanced, --no-advanced  Visa avancerade alternativ(som standard
+                                 inaktiverad)
+      --interact, --no-interact  Gränssnittsinteraktion(som standard
+                                 aktiverad)
+  -I, --intf=<sträng>           Gränssnittsmodul
+      --extraintf=<sträng>      Extra gränssnittsmoduler
+      --control=<sträng>        Kontrollgränssnitt
+
+ Snabbtangenter
+      --global-key-toggle-fullscreen=<sträng>
+                                 Helskärm
+      --key-toggle-fullscreen=<sträng>
+                                 Helskärm
+      --global-key-leave-fullscreen=<sträng>
+                                 Lämna helskärmsläget
+      --key-leave-fullscreen=<sträng>
+                                 Lämna helskärmsläget
+      --global-key-play-pause=<sträng>
+                                 Spela upp/Gör paus
+      --key-play-pause=<sträng> Spela upp/Gör paus
+      --global-key-faster=<sträng>
+                                 Snabbare
+      --key-faster=<sträng>     Snabbare
+      --global-key-slower=<sträng>
+                                 Långsammare
+      --key-slower=<sträng>     Långsammare
+      --global-key-rate-normal=<sträng>
+                                 Normal hastighet
+      --key-rate-normal=<sträng>
+                                 Normal hastighet
+      --global-key-rate-faster-fine=<sträng>
+                                 Snabbare (fin)
+      --key-rate-faster-fine=<sträng>
+                                 Snabbare (fin)
+      --global-key-rate-slower-fine=<sträng>
+                                 Långsammare (fin)
+      --key-rate-slower-fine=<sträng>
+                                 Långsammare (fin)
+      --global-key-next=<sträng>
+                                 Nästa
+      --key-next=<sträng>       Nästa
+      --global-key-prev=<sträng>
+                                 Föregående
+      --key-prev=<sträng>       Föregående
+      --global-key-stop=<sträng>
+                                 Stoppa
+      --key-stop=<sträng>       Stoppa
+      --global-key-jump-extrashort=<sträng>
+                                 Mycket kort hopp bakåt
+      --key-jump-extrashort=<sträng>
+                                 Mycket kort hopp bakåt
+      --global-key-jump+extrashort=<sträng>
+                                 Mycket kort hopp framåt
+      --key-jump+extrashort=<sträng>
+                                 Mycket kort hopp framåt
+      --global-key-jump-short=<sträng>
+                                 Kort hopp bakåt
+      --key-jump-short=<sträng> Kort hopp bakåt
+      --global-key-jump+short=<sträng>
+                                 Kort hopp framåt
+      --key-jump+short=<sträng> Kort hopp framåt
+      --global-key-jump-medium=<sträng>
+                                 Medellångt hopp bakåt
+      --key-jump-medium=<sträng>
+                                 Medellångt hopp bakåt
+      --global-key-jump+medium=<sträng>
+                                 Medellångt hopp framåt
+      --key-jump+medium=<sträng>
+                                 Medellångt hopp framåt
+      --global-key-jump-long=<sträng>
+                                 Långt hopp bakåt
+      --key-jump-long=<sträng>  Långt hopp bakåt
+      --global-key-jump+long=<sträng>
+                                 Långt hopp framåt
+      --key-jump+long=<sträng>  Långt hopp framåt
+      --global-key-frame-next=<sträng>
+                                 Nästa bildruta
+      --key-frame-next=<sträng> Nästa bildruta
+      --global-key-quit=<sträng>
+                                 Avsluta
+      --key-quit=<sträng>       Avsluta
+      --global-key-vol-up=<sträng>
+                                 Volym upp
+      --key-vol-up=<sträng>     Volym upp
+      --global-key-vol-down=<sträng>
+                                 Volym ned
+      --key-vol-down=<sträng>   Volym ned
+      --global-key-vol-mute=<sträng>
+                                 Tyst
+      --key-vol-mute=<sträng>   Tyst
+      --global-key-audio-track=<sträng>
+                                 Växla ljudspår
+      --key-audio-track=<sträng>
+                                 Växla ljudspår
+      --global-key-audiodevice-cycle=<sträng>
+                                 Växla mellan ljudenheter
+      --key-audiodevice-cycle=<sträng>
+                                 Växla mellan ljudenheter
+      --global-key-subtitle-track=<sträng>
+                                 Växla undertextspår
+      --key-subtitle-track=<sträng>
+                                 Växla undertextspår
+      --global-key-aspect-ratio=<sträng>
+                                 Växla källbildförhållande
+      --key-aspect-ratio=<sträng>
+                                 Växla källbildförhållande
+      --global-key-crop=<sträng>
+                                 Växla videobeskäring
+      --key-crop=<sträng>       Växla videobeskäring
+      --global-key-toggle-autoscale=<sträng>
+                                 Växla automatisk skalning
+      --key-toggle-autoscale=<sträng>
+                                 Växla automatisk skalning
+      --global-key-incr-scalefactor=<sträng>
+                                 Öka skalningsfaktorn
+      --key-incr-scalefactor=<sträng>
+                                 Öka skalningsfaktorn
+      --global-key-decr-scalefactor=<sträng>
+                                 Minska skalningsfaktorn
+      --key-decr-scalefactor=<sträng>
+                                 Minska skalningsfaktorn
+      --global-key-deinterlace=<sträng>
+                                 Växla avflätningslägen
+      --key-deinterlace=<sträng>
+                                 Växla avflätningslägen
+      --global-key-intf-show=<sträng>
+                                 Visa kontroller i helskärm
+      --key-intf-show=<sträng>  Visa kontroller i helskärm
+      --global-key-wallpaper=<sträng>
+                                 Växla skrivbordsbakgrundsläge i
+                                 videoutmatning
+      --key-wallpaper=<sträng>  Växla skrivbordsbakgrundsläge i
+                                 videoutmatning
+      --global-key-random=<sträng>
+                                 Slumpmässig
+      --key-random=<sträng>     Slumpmässig
+      --global-key-loop=<sträng>
+                                 Normal/Upprepa/Slinga
+      --key-loop=<sträng>       Normal/Upprepa/Slinga
+   Zoom:
+      --global-key-zoom-quarter=<sträng>
+                                 1:4 Kvarts
+      --key-zoom-quarter=<sträng>
+                                 1:4 Kvarts
+      --global-key-zoom-half=<sträng>
+                                 1:2 Halv
+      --key-zoom-half=<sträng>  1:2 Halv
+      --global-key-zoom-original=<sträng>
+                                 1:1 Original
+      --key-zoom-original=<sträng>
+                                 1:1 Original
+      --global-key-zoom-double=<sträng>
+                                 2:1 Dubbel
+      --key-zoom-double=<sträng>
+                                 2:1 Dubbel
+   Hoppstorlekar:
+      --extrashort-jump-size=<heltal [-2147483648 .. 2147483647]>
+                                 Mycket kort hopplängd
+      --short-jump-size=<heltal [-2147483648 .. 2147483647]>
+                                 Kort hopplängd
+      --medium-jump-size=<heltal [-2147483648 .. 2147483647]>
+                                 Medellång hopplängd
+      --long-jump-size=<heltal [-2147483648 .. 2147483647]>
+                                 Lång hopplängd
+      --bookmark1=<sträng>      Spellistbokmärke 1
+      --bookmark2=<sträng>      Spellistbokmärke 2
+      --bookmark3=<sträng>      Spellistbokmärke 3
+      --bookmark4=<sträng>      Spellistbokmärke 4
+      --bookmark5=<sträng>      Spellistbokmärke 5
+      --bookmark6=<sträng>      Spellistbokmärke 6
+      --bookmark7=<sträng>      Spellistbokmärke 7
+      --bookmark8=<sträng>      Spellistbokmärke 8
+      --bookmark9=<sträng>      Spellistbokmärke 9
+      --bookmark10=<sträng>     Spellistbokmärke 10
+  -h, --help, --no-help          skriv ut hjälp för VLC (kan kombineras med
+                                 --advanced och --help-verbose)(som standard
+                                 inaktiverad)
+  -H, --full-help, --no-full-help
+                                 Utökad hjälp för VLC och dess moduler(som
+                                 standard inaktiverad)
+      --longhelp, --no-longhelp  skriv ut hjälp för VLC och alla dess
+                                 moduler (kan kombineras med --advanced och
+                                 --help-verbose)(som standard inaktiverad)
+      --help-verbose, --no-help-verbose
+                                 fråga efter extra information när hjälp
+                                 visas(som standard inaktiverad)
+  -l, --list, --no-list          skriv ut en lista av tillgängliga
+                                 moduler(som standard inaktiverad)
+      --list-verbose, --no-list-verbose
+                                 skriv ut en lista över tillgängliga moduler
+                                 med extra detaljer(som standard inaktiverad)
+  -p, --module=<sträng>         print help on a specific module (can be
+                                 combined with --advanced and --help-verbose).
+                                 Prefix the module name with = for strict
+                                 matches.
+      --ignore-config, --no-ignore-config
+                                 inga konfigurationsalternativ kommer att
+                                 läsas in eller sparas till konfigurationsfile
+                                 n(som standard aktiverad)
+      --reset-config, --no-reset-config
+                                 nollställ aktuell konfiguration till
+                                 standardvärden(som standard inaktiverad)
+      --reset-plugins-cache, --no-reset-plugins-cache
+                                 nollställer aktuell mellanlagring av
+                                 insticksmoduler(som standard inaktiverad)
+      --version, --no-version    skriv ut versionsinformation(som standard
+                                 inaktiverad)
+      --config=<sträng>         använd alternativ konfigurationsfil
+
+Observera: lägg till --advanced till din kommandorad för att se avancerade flaggor.
+
+Använd "-H" för att få ytterligare hjälp.

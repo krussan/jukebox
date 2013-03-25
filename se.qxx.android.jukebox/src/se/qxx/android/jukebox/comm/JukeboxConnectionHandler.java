@@ -79,275 +79,398 @@ public class JukeboxConnectionHandler {
 	//--------------------------------------------------------------------------------------------------- RPC Calls
 	//----------------------------------------------------------------------------------------------------------------
 	
-	public void blacklist(Movie m) {
+	public void blacklist(final Movie m) {
 		final RpcController controller = new SocketRpcController();
-		JukeboxRequestMovieID request = JukeboxRequestMovieID.newBuilder().setMovieId(m.getID()).build();
-		this.getNonBlockingService().blacklist(controller, request, new RpcCallback<JukeboxDomain.Empty>() {
-			@Override
-			public void run(Empty arg0) {
-				onRequestComplete(controller);
-			}
-		});
-		
-	}
-	
-	public void startMovie(String playerName, Movie m, final RpcCallback<JukeboxResponseStartMovie> callback) {
-		final RpcController controller = new SocketRpcController();		
-		
-		JukeboxRequestStartMovie request = JukeboxRequestStartMovie.newBuilder()
-				.setPlayerName(playerName)  // JukeboxSettings.get().getCurrentMediaPlayer()
-				.setMovieId(m.getID()) // Model.get().getCurrentMovie().getID()
-				.build();		
+		final JukeboxService service = this.getNonBlockingService();
 
-		this.getNonBlockingService().startMovie(controller, request, new RpcCallback<JukeboxDomain.JukeboxResponseStartMovie>() {
-			@Override
-			public void run(JukeboxDomain.JukeboxResponseStartMovie response) {
-				Model.get().clearSubtitles();
-				Model.get().addAllSubtitles(response.getSubtitleList());				
-				onRequestComplete(controller);
-				if (callback != null) 
-					callback.run(response);
-			}
-		});
-
-	}
-	
-	public void stopMovie(String playerName, final RpcCallback<Empty> callback) {
-		final RpcController controller = new SocketRpcController();
-		
-		JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
-				.setPlayerName(playerName)
-				.build();
-
-		this.getNonBlockingService().stopMovie(controller, request, new RpcCallback<JukeboxDomain.Empty>() {
-			@Override
-			public void run(Empty arg0) {
-				onRequestComplete(controller);
+		Thread t = new Thread() {
+			public void run() {
+				JukeboxRequestMovieID request = JukeboxRequestMovieID.newBuilder().setMovieId(m.getID()).build();
+				service.blacklist(controller, request, new RpcCallback<JukeboxDomain.Empty>() {
+					@Override
+					public void run(Empty arg0) {
+						onRequestComplete(controller);
+					}
+				});
 				
-				if (callback != null) 				
-					callback.run(arg0);
 			}
-		});
+		};
+		t.start();
+		
 		
 	}
 	
-	public void pauseMovie(String playerName) {
+	public void startMovie(final String playerName, final Movie m, final RpcCallback<JukeboxResponseStartMovie> callback) {
 		final RpcController controller = new SocketRpcController();
-		
-		JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
-				.setPlayerName(playerName)
-				.build();
+		final JukeboxService service = this.getNonBlockingService();
 
-		this.getNonBlockingService().pauseMovie(controller, request, new RpcCallback<JukeboxDomain.Empty>() {
-			@Override
-			public void run(Empty arg0) {
-				onRequestComplete(controller);
+		Thread t = new Thread() {
+			public void run() {
+				JukeboxRequestStartMovie request = JukeboxRequestStartMovie.newBuilder()
+						.setPlayerName(playerName)  // JukeboxSettings.get().getCurrentMediaPlayer()
+						.setMovieId(m.getID()) // Model.get().getCurrentMovie().getID()
+						.build();		
+
+				service.startMovie(controller, request, new RpcCallback<JukeboxDomain.JukeboxResponseStartMovie>() {
+					@Override
+					public void run(JukeboxDomain.JukeboxResponseStartMovie response) {
+						Model.get().clearSubtitles();
+						Model.get().addAllSubtitles(response.getSubtitleList());				
+						onRequestComplete(controller);
+						if (callback != null) 
+							callback.run(response);
+					}
+				});				
 			}
-		});
+		};
+		t.start();
+		
+		
+
+	}
+	
+	public void stopMovie(final String playerName, final RpcCallback<Empty> callback) {
+		final RpcController controller = new SocketRpcController();
+		final JukeboxService service = this.getNonBlockingService();
+		
+		Thread t = new Thread() {
+			public void run() {
+				JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
+						.setPlayerName(playerName)
+						.build();
+
+				service.stopMovie(controller, request, new RpcCallback<JukeboxDomain.Empty>() {
+					@Override
+					public void run(Empty arg0) {
+						onRequestComplete(controller);
+						
+						if (callback != null) 				
+							callback.run(arg0);
+					}
+				});				
+			}
+		};
+		t.start();
+		
+		
+		
+	}
+	
+	public void pauseMovie(final String playerName) {
+		final RpcController controller = new SocketRpcController();
+		final JukeboxService service = this.getNonBlockingService();
+		
+		Thread t = new Thread() {
+			public void run() {
+				JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
+						.setPlayerName(playerName)
+						.build();
+
+				service.pauseMovie(controller, request, new RpcCallback<JukeboxDomain.Empty>() {
+					@Override
+					public void run(Empty arg0) {
+						onRequestComplete(controller);
+					}
+				});
+			}
+		};
+		t.start();
+		
+		
 		
 	}
 	
 	public void listMovies(String searchString) {
 		final RpcController controller = new SocketRpcController();
+		final JukeboxService service = this.getNonBlockingService();
 		
-		JukeboxRequestListMovies request = JukeboxRequestListMovies.newBuilder()
-				.setSearchString("")
-				.build();
-
-		this.getNonBlockingService().listMovies(controller, request, new RpcCallback<JukeboxDomain.JukeboxResponseListMovies>() {
-			@Override
-			public void run(JukeboxResponseListMovies response) {
-	  			Model.get().clearMovies();
-				Model.get().addAllMovies(response.getMoviesList());
-				Model.get().setInitialized(true);
-				onRequestComplete(controller);
+		Thread t = new Thread() {
+			public void run() {
+		
+				JukeboxRequestListMovies request = JukeboxRequestListMovies.newBuilder()
+						.setSearchString("")
+						.build();
+		
+				try {
+					service.listMovies(controller, request, new RpcCallback<JukeboxDomain.JukeboxResponseListMovies>() {
+						@Override
+						public void run(JukeboxResponseListMovies response) {
+				  			Model.get().clearMovies();
+							Model.get().addAllMovies(response.getMoviesList());
+							Model.get().setInitialized(true);
+							onRequestComplete(controller);
+						}
+					});
+				}
+				catch (Exception e) {
+					onRequestComplete(controller);
+				}
+				
 			}
-		});
+		};
+		t.start();
 		
 	}
 	
-	public void wakeup(String playerName) {
+	public void wakeup(final String playerName) {
 		final RpcController controller = new SocketRpcController();
+		final JukeboxService service = this.getNonBlockingService();
 		
-		JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
-				.setPlayerName(playerName)
-				.build();
+		Thread t = new Thread() {
+			public void run() {
+				JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
+						.setPlayerName(playerName)
+						.build();
 
-		this.getNonBlockingService().wakeup(controller, request, new RpcCallback<JukeboxDomain.Empty>() {
-			@Override
-			public void run(Empty arg0) {
-				onRequestComplete(controller);
+				service.wakeup(controller, request, new RpcCallback<JukeboxDomain.Empty>() {
+					@Override
+					public void run(Empty arg0) {
+						onRequestComplete(controller);
+					}
+				});				
 			}
-		});
+		};
+		t.start();
+		
 		
 	}
 
-	public void toggleFullscreen(String playerName) {
+	public void toggleFullscreen(final String playerName) {
 		final RpcController controller = new SocketRpcController();
+		final JukeboxService service = this.getNonBlockingService();
 		
-		JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
-				.setPlayerName(playerName)
-				.build();
+		Thread t = new Thread() {
+			public void run() {
+				JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
+						.setPlayerName(playerName)
+						.build();
 
-		this.getNonBlockingService().toggleFullscreen(controller, request, new RpcCallback<JukeboxDomain.Empty>() {
-			@Override
-			public void run(Empty arg0) {
-				onRequestComplete(controller);
+				service.toggleFullscreen(controller, request, new RpcCallback<JukeboxDomain.Empty>() {
+					@Override
+					public void run(Empty arg0) {
+						onRequestComplete(controller);
+					}
+				});
 			}
-		});
+		};
+		t.start();
+		
 		
 	}
 
-	public void isPlaying(String playerName, final RpcCallback<JukeboxResponseIsPlaying> callback) {
+	public void isPlaying(final String playerName, final RpcCallback<JukeboxResponseIsPlaying> callback) {
+		final JukeboxService service = this.getNonBlockingService();
 		final RpcController controller = new SocketRpcController();
 		
-		JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
-				.setPlayerName(playerName)
-				.build();
-		
-		this.getNonBlockingService().isPlaying(controller, request, new RpcCallback<JukeboxDomain.JukeboxResponseIsPlaying>() {
-			@Override
-			public void run(JukeboxResponseIsPlaying response) {
-				onRequestComplete(controller);
+		Thread t = new Thread() {
+			public void run() {
 				
-				if (callback != null) 				
-					callback.run(response);
-			}
-		});
-		
-	}
-
-	public void getTime(String playerName, final RpcCallback<JukeboxResponseTime> callback) {
-		final RpcController controller = new SocketRpcController();
-		
-		JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
-				.setPlayerName(playerName)
-				.build();
-		
-		this.getNonBlockingService().getTime(controller, request, new RpcCallback<JukeboxDomain.JukeboxResponseTime>() {
-			@Override
-			public void run(JukeboxResponseTime response) {
-				onRequestComplete(controller);
+				JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
+						.setPlayerName(playerName)
+						.build();
 				
-				if (callback != null) 
-					callback.run(response);
+				service.isPlaying(controller, request, new RpcCallback<JukeboxDomain.JukeboxResponseIsPlaying>() {
+					@Override
+					public void run(JukeboxResponseIsPlaying response) {
+						onRequestComplete(controller);
+						
+						if (callback != null) 				
+							callback.run(response);
+					}
+				});				
 			}
-		});
-
+		};
+		t.start();
+		
+		
 	}
 
-	public void getTitle(String playerName, final RpcCallback<JukeboxResponseGetTitle> callback) {
+	public void getTime(final String playerName, final RpcCallback<JukeboxResponseTime> callback) {
 		final RpcController controller = new SocketRpcController();
+		final JukeboxService service = this.getNonBlockingService();
 		
-		JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
-				.setPlayerName(playerName)
-				.build();
-		
-		this.getNonBlockingService().getTitle(controller, request, new RpcCallback<JukeboxDomain.JukeboxResponseGetTitle>() {
-			@Override
-			public void run(JukeboxResponseGetTitle response) {
-				onRequestComplete(controller);
+		Thread t = new Thread() {
+			public void run() {
+				JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
+						.setPlayerName(playerName)
+						.build();
 				
-				if (callback != null) 				
-					callback.run(response);
+				service.getTime(controller, request, new RpcCallback<JukeboxDomain.JukeboxResponseTime>() {
+					@Override
+					public void run(JukeboxResponseTime response) {
+						onRequestComplete(controller);
+						
+						if (callback != null) 
+							callback.run(response);
+					}
+				});
 			}
-		});
+		};
+		t.start();		
 
 	}
 
-	public void suspend(String playerName) {
+	public void getTitle(final String playerName, final RpcCallback<JukeboxResponseGetTitle> callback) {
 		final RpcController controller = new SocketRpcController();
+		final JukeboxService service = this.getNonBlockingService();
 		
-		JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
-				.setPlayerName(playerName)
-				.build();
-		
-		this.getNonBlockingService().suspend(controller, request, new RpcCallback<JukeboxDomain.Empty>() {
-			@Override
-			public void run(Empty arg0) {
-				onRequestComplete(controller);
+		Thread t = new Thread() {
+			public void run() {
+				JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
+						.setPlayerName(playerName)
+						.build();
+				
+				service.getTitle(controller, request, new RpcCallback<JukeboxDomain.JukeboxResponseGetTitle>() {
+					@Override
+					public void run(JukeboxResponseGetTitle response) {
+						onRequestComplete(controller);
+						
+						if (callback != null) 				
+							callback.run(response);
+					}
+				});				
 			}
-		});
+		};
+		t.start();
+		
+
+
+	}
+
+	public void suspend(final String playerName) {
+		final RpcController controller = new SocketRpcController();
+		final JukeboxService service = this.getNonBlockingService();
+		
+		Thread t = new Thread() {
+			public void run() {
+				JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
+						.setPlayerName(playerName)
+						.build();
+				
+				service.suspend(controller, request, new RpcCallback<JukeboxDomain.Empty>() {
+					@Override
+					public void run(Empty arg0) {
+						onRequestComplete(controller);
+					}
+				});				
+			}
+		};
+		t.start();
 
 	}	
 	
 	public void listPlayers() {
 		final RpcController controller = new SocketRpcController();
-
-		this.getNonBlockingService().listPlayers(controller, Empty.getDefaultInstance(), new RpcCallback<JukeboxDomain.JukeboxResponseListPlayers>() {			
-			@Override
-			public void run(JukeboxResponseListPlayers response) {
-				Model.get().clearPlayers();
-				Model.get().addAllPlayers(response.getHostnameList());				
-				onRequestComplete(controller);
+		final JukeboxService service = this.getNonBlockingService();
+		
+		Thread t = new Thread() {
+			public void run() {
+				service.listPlayers(controller, Empty.getDefaultInstance(), new RpcCallback<JukeboxDomain.JukeboxResponseListPlayers>() {			
+					@Override
+					public void run(JukeboxResponseListPlayers response) {
+						Model.get().clearPlayers();
+						Model.get().addAllPlayers(response.getHostnameList());				
+						onRequestComplete(controller);
+					}
+				});
 			}
-		});
+		};
+		t.start();
+
 		
 		
 	}
 	
-	public void listSubtitles(Media md) {
+	public void listSubtitles(final Media md) {
 		final RpcController controller = new SocketRpcController();
+		final JukeboxService service = this.getNonBlockingService();
 		
-		JukeboxRequestListSubtitles request = JukeboxRequestListSubtitles.newBuilder()
-				.setMediaId(md.getID())
-				.build();
+		Thread t = new Thread() {
+			public void run() {
+				JukeboxRequestListSubtitles request = JukeboxRequestListSubtitles.newBuilder()
+						.setMediaId(md.getID())
+						.build();
 
-		this.getNonBlockingService().listSubtitles(controller, request, new RpcCallback<JukeboxDomain.JukeboxResponseListSubtitles>() {	
-			@Override
-			public void run(JukeboxResponseListSubtitles response) {
-				Model.get().clearSubtitles();
-				Model.get().addAllSubtitles(response.getSubtitleList());				
-				onRequestComplete(controller);
+				service.listSubtitles(controller, request, new RpcCallback<JukeboxDomain.JukeboxResponseListSubtitles>() {	
+					@Override
+					public void run(JukeboxResponseListSubtitles response) {
+						Model.get().clearSubtitles();
+						Model.get().addAllSubtitles(response.getSubtitleList());				
+						onRequestComplete(controller);
+					}
+				});				
 			}
-		});
+		};
+		t.start();
+		
 
 	}
 	
-	public void seek(String playerName, int seconds) {
+	public void seek(final String playerName,final int seconds) {
 		final RpcController controller = new SocketRpcController();
+		final JukeboxService service = this.getNonBlockingService();
 		
-		JukeboxRequestSeek request = JukeboxRequestSeek.newBuilder()
-				.setPlayerName(playerName)
-				.setSeconds(seconds)
-				.build();
-		
-		this.getNonBlockingService().seek(controller, request, new RpcCallback<JukeboxDomain.Empty>() {
-			@Override
-			public void run(Empty arg0) {
-				onRequestComplete(controller);
+		Thread t = new Thread() {
+			public void run() {
+				JukeboxRequestSeek request = JukeboxRequestSeek.newBuilder()
+						.setPlayerName(playerName)
+						.setSeconds(seconds)
+						.build();
+				
+				service.seek(controller, request, new RpcCallback<JukeboxDomain.Empty>() {
+					@Override
+					public void run(Empty arg0) {
+						onRequestComplete(controller);
+					}
+				});
 			}
-		});
+		};
+		t.start();
 
 	}
 	
-	public void setSubtitle(String playerName, Media md, Subtitle subtitle) {
+	public void setSubtitle(final String playerName, final Media md, final Subtitle subtitle) {
 		final RpcController controller = new SocketRpcController();
+		final JukeboxService service = this.getNonBlockingService();
 		
-		JukeboxRequestSetSubtitle request = JukeboxRequestSetSubtitle.newBuilder()
-				.setPlayerName(JukeboxSettings.get().getCurrentMediaPlayer())
-				.setMediaID(md.getID())
-				.setSubtitleDescription(subtitle.getDescription())
-				.build();		
-		
-		this.getNonBlockingService().setSubtitle(controller, request, new RpcCallback<JukeboxDomain.Empty>() {
-			@Override
-			public void run(Empty response) { 
-				onRequestComplete(controller);
+		Thread t = new Thread() {
+			public void run() {
+				JukeboxRequestSetSubtitle request = JukeboxRequestSetSubtitle.newBuilder()
+						.setPlayerName(JukeboxSettings.get().getCurrentMediaPlayer())
+						.setMediaID(md.getID())
+						.setSubtitleDescription(subtitle.getDescription())
+						.build();		
+				
+				service.setSubtitle(controller, request, new RpcCallback<JukeboxDomain.Empty>() {
+					@Override
+					public void run(Empty response) { 
+						onRequestComplete(controller);
+					}
+				});
 			}
-		});
+		};
+		t.start();
+
 
 	}
 
-	public void toggleWatched(Movie m) {
+	public void toggleWatched(final Movie m) {
 		final RpcController controller = new SocketRpcController();
-		JukeboxRequestMovieID request = JukeboxRequestMovieID.newBuilder().setMovieId(m.getID()).build();
-		this.getNonBlockingService().toggleWatched(controller, request, new RpcCallback<JukeboxDomain.Empty>() {
-			@Override
-			public void run(Empty arg0) {
-				onRequestComplete(controller);
+		final JukeboxService service = this.getNonBlockingService();
+
+		Thread t = new Thread() {
+			public void run() {
+				JukeboxRequestMovieID request = JukeboxRequestMovieID.newBuilder().setMovieId(m.getID()).build();
+				service.toggleWatched(controller, request, new RpcCallback<JukeboxDomain.Empty>() {
+					@Override
+					public void run(Empty arg0) {
+						onRequestComplete(controller);
+					}
+				});
 			}
-		});
+		};
+		t.start();
+		
 
 	}
 

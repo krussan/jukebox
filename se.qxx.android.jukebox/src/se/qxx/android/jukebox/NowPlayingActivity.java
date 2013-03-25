@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
+import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain.Empty;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseGetTitle;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseIsPlaying;
@@ -33,10 +34,13 @@ public class NowPlayingActivity extends JukeboxActivityBase
 	private class OnStatusComplete implements RpcCallback<JukeboxResponseIsPlaying> {
 		@Override
 		public void run(JukeboxResponseIsPlaying response) {
+			Logger.Log().d("Response --- IsPlaying");
 			if (response.getIsPlaying()) {
+				Logger.Log().d("Request --- GetTitle");
 				comm.getTitle(JukeboxSettings.get().getCurrentMediaPlayer(), new OnGetTitleComplete());
 			}
 			else {
+				Logger.Log().d("Request --- StartMovie");
 				comm.startMovie(
 						JukeboxSettings.get().getCurrentMediaPlayer(),
 						Model.get().getCurrentMovie(), new OnStartMovieComplete());
@@ -47,6 +51,7 @@ public class NowPlayingActivity extends JukeboxActivityBase
 	private class OnGetTitleComplete implements RpcCallback<JukeboxResponseGetTitle> {
 		@Override
 		public void run(JukeboxResponseGetTitle response) {
+			Logger.Log().d("Response --- GetTitle");
 			String playerFilename = response.getTitle();
 			final Media md = matchCurrentFilenameAgainstMedia(playerFilename);
 			if (md != null) {
@@ -57,6 +62,7 @@ public class NowPlayingActivity extends JukeboxActivityBase
 				Thread t1 = new Thread(new Runnable(){
 					@Override
 					public void run() {
+						Logger.Log().d("Request --- ListSubtitles");
 						comm.listSubtitles(md);						
 					}
 				});
@@ -69,6 +75,7 @@ public class NowPlayingActivity extends JukeboxActivityBase
 				Thread t2 = new Thread(new Runnable(){
 					@Override
 					public void run() {
+						Logger.Log().d("Request --- StopMovie");
 						comm.stopMovie(JukeboxSettings.get().getCurrentMediaPlayer(), new OnStopMovieComplete());
 					}
 				});
@@ -80,6 +87,7 @@ public class NowPlayingActivity extends JukeboxActivityBase
 	private class OnStartMovieComplete implements RpcCallback<JukeboxResponseStartMovie> {
 		@Override
 		public void run(JukeboxResponseStartMovie response) {
+			Logger.Log().d("Response --- StartMovie");
 			Model.get().setCurrentMedia(0);			
 			initializeSeeker();			
 			seeker.start();		
@@ -87,6 +95,7 @@ public class NowPlayingActivity extends JukeboxActivityBase
 			Thread t = new Thread(new Runnable(){
 				@Override
 				public void run() {
+					Logger.Log().d("Request --- ListSubtitles");
 					comm.listSubtitles(Model.get().getCurrentMedia());
 				}
 			});
@@ -97,9 +106,12 @@ public class NowPlayingActivity extends JukeboxActivityBase
 	private class OnStopMovieComplete implements RpcCallback<Empty> {
 		@Override
 		public void run(Empty arg0) {
+			Logger.Log().d("Response --- StopMovie");
+
 			Thread t = new Thread(new Runnable(){
 				@Override
 				public void run() {
+					Logger.Log().d("Request --- StartMovie");				
 					comm.startMovie(JukeboxSettings.get().getCurrentMediaPlayer(), Model.get().getCurrentMovie(), new OnStartMovieComplete());				}
 			});
 			t.start();			
@@ -137,29 +149,35 @@ public class NowPlayingActivity extends JukeboxActivityBase
 	};
 		
 	private void initializeView() {
-	    Movie m = Model.get().getCurrentMovie();
-	    seeker = new Seeker(this);
-	    View rootView = this.getRootView();
-	    
-	    if (!m.getImage().isEmpty()) {
-	    	Bitmap bm = GUITools.getBitmapFromByteArray(m.getImage().toByteArray());
-//	    	DisplayMetrics metrics = GUITools.getDisplayMetrics(this);
-	    	Bitmap scaledImage = GUITools.scaleImage(300, bm, rootView.getContext());
-	    	GUITools.setImageOnImageView(R.id.imgNowPlaying, scaledImage, rootView);	
-	    }
-
-	    GUITools.setTextOnTextview(R.id.lblNowPlayingTitle, m.getTitle(), rootView);
-	    
-//		MovieMediaLayoutAdapter adapter = new MovieMediaLayoutAdapter(this, m); 
-//		ListView v = (ListView)findViewById(R.id.listViewFilename);
-//		v.setAdapter(adapter);
-
-	    SeekBar sb = (SeekBar)findViewById(R.id.seekBarDuration);
-		sb.setOnSeekBarChangeListener(this);
-
-		comm.isPlaying(JukeboxSettings.get().getCurrentMediaPlayer(), new OnStatusComplete());
-			    
-//	    Model.get().addEventListener(this);
+		try {
+		    Movie m = Model.get().getCurrentMovie();
+		    seeker = new Seeker(this);
+		    View rootView = this.getRootView();
+		    
+		    if (!m.getImage().isEmpty()) {
+		    	Bitmap bm = GUITools.getBitmapFromByteArray(m.getImage().toByteArray());
+	//	    	DisplayMetrics metrics = GUITools.getDisplayMetrics(this);
+		    	Bitmap scaledImage = GUITools.scaleImage(300, bm, rootView.getContext());
+		    	GUITools.setImageOnImageView(R.id.imgNowPlaying, scaledImage, rootView);	
+		    }
+	
+		    GUITools.setTextOnTextview(R.id.lblNowPlayingTitle, m.getTitle(), rootView);
+		    
+	//		MovieMediaLayoutAdapter adapter = new MovieMediaLayoutAdapter(this, m); 
+	//		ListView v = (ListView)findViewById(R.id.listViewFilename);
+	//		v.setAdapter(adapter);
+	
+		    SeekBar sb = (SeekBar)findViewById(R.id.seekBarDuration);
+			sb.setOnSeekBarChangeListener(this);
+	
+			Logger.Log().d("Request -- IsPlaying");
+			comm.isPlaying(JukeboxSettings.get().getCurrentMediaPlayer(), new OnStatusComplete());
+				    
+	//	    Model.get().addEventListener(this);
+		}
+		catch (Exception e) {
+			Logger.Log().e("Unable to initialize NowPlayingActivity", e);
+		}
 	}
 	
 
@@ -183,6 +201,7 @@ public class NowPlayingActivity extends JukeboxActivityBase
 
 		int seconds = seekBar.getProgress();
 		
+		Logger.Log().d("Request --- Seek");
 		comm.seek(JukeboxSettings.get().getCurrentMediaPlayer(), seconds);
 		
 		this.isManualSeeking = false;
@@ -195,16 +214,20 @@ public class NowPlayingActivity extends JukeboxActivityBase
 		
 		switch (id) {
 			case R.id.btnPlay:
+				Logger.Log().d("Request --- StartMovie");
 				comm.startMovie(player, Model.get().getCurrentMovie(), new OnStartMovieComplete());
 				break;	
 			case R.id.btnFullscreen:
+				Logger.Log().d("Request --- ToggleFullScreen");
 				comm.toggleFullscreen(player);
 				break;
 			case R.id.btnPause:
+				Logger.Log().d("Request --- Pause");
 				seeker.toggle();
 				comm.pauseMovie(player);
 				break;
 			case R.id.btnStop:
+				Logger.Log().d("Request --- StopMove");
 				seeker.stop();
 				comm.stopMovie(player, null);
 				break;

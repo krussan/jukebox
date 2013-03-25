@@ -57,7 +57,7 @@
             <arg value="${jukebox.domain.src.dir}" />
             <classpath>
                 <pathelement location="${build.dir}/${jar.file}" />
-                <pathelement location="${jukebox.lib.dir}/yellow.dao.generator-0.1.58.jar" />
+                <pathelement location="${jukebox.lib.dir}/yellow.dao.generator-0.1.77.jar" />
                 <pathelement location="${jukebox.lib.dir}/freemarker.jar" />
                 <pathelement location="${jukebox.lib.dir}/protobuf-2.4.1.jar" />
             </classpath>

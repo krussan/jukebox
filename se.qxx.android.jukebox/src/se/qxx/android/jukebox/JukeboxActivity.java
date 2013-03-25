@@ -2,8 +2,6 @@ package se.qxx.android.jukebox;
 
 import java.util.EventObject;
 
-import org.apache.commons.lang3.StringUtils;
-
 import se.qxx.android.jukebox.adapters.MovieLayoutAdapter;
 import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
 import se.qxx.android.jukebox.comm.JukeboxConnectionProgressDialog;
@@ -16,10 +14,9 @@ import se.qxx.android.tools.Logger;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
@@ -75,28 +72,28 @@ public class JukeboxActivity extends JukeboxActivityBase
 	    } 
 	}
 
-	@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-    	
-    	//super.onCreateOptionsMenu(menu);
-    	MenuInflater inflater = getMenuInflater();
-    	inflater.inflate(R.menu.mainmenu, menu);
-    	
-    	return true;
-    }
+//	@Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//    	
+//    	//super.onCreateOptionsMenu(menu);
+//    	MenuInflater inflater = getMenuInflater();
+//    	inflater.inflate(R.menu.mainmenu, menu);
+//    	
+//    	return true;
+//    }
     
-    @Override
-    public boolean onOptionsItemSelected(android.view.MenuItem item) {
-    	switch (item.getItemId()) {
-    	case R.id.preferences:
-    		//Toast.makeText(this, "You selected the preferences option", Toast.LENGTH_LONG).show();
-    		Intent i = new Intent(this, JukeboxPreferenceActivity.class);
-    		startActivity(i);
-			break;
-    	}
-    	
-    	return true;
-    };
+//    @Override
+//    public boolean onOptionsItemSelected(android.view.MenuItem item) {
+//    	switch (item.getItemId()) {
+//    	case R.id.preferences:
+//    		//Toast.makeText(this, "You selected the preferences option", Toast.LENGTH_LONG).show();
+//    		Intent i = new Intent(this, JukeboxPreferenceActivity.class);
+//    		startActivity(i);
+//			break;
+//    	}
+//    	
+//    	return true;
+//    };
     
     public void onButtonClicked(View v) {
 		int id = v.getId();
@@ -118,6 +115,10 @@ public class JukeboxActivity extends JukeboxActivityBase
 		case R.id.btnOn:
 		case R.id.btnOff:
 			onoff();
+			break;
+		case R.id.btnPreferences:
+    		Intent intentPreferences = new Intent(this, JukeboxPreferenceActivity.class);
+    		startActivity(intentPreferences);
 			break;
 		default:
 			break;
@@ -149,19 +150,30 @@ public class JukeboxActivity extends JukeboxActivityBase
     	JukeboxSettings.get().setIsCurrentMediaPlayerOn(!isOnline);
     	setupOnOffButton();
 	}
+    
+
+	public void showMessage(final Context c, final String message)
+	{
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				Toast.makeText(c, message, Toast.LENGTH_SHORT).show();
+			}
+		});
+	}
 
 	public void connect() {
     	final Context c = this;
 		final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(JukeboxConnectionProgressDialog.build(c, "Getting list of media ..."));
-
-		Thread t = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				jh.listMovies("");
-			}
+		
+		try {
+			jh.listMovies("");
+		}
+		catch (Exception e) {
+			showMessage(c, "Connection failed. Check settings ...");
 			
-		});
-		t.start();
+		}
+
     }
     
 
