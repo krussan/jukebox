@@ -2,20 +2,30 @@ package se.qxx.jukebox;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie.Builder;
+import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.imdb.Imdb;
+import se.qxx.jukebox.settings.imdb.Imdb.EpisodePatterns.EpisodePattern;
 import se.qxx.jukebox.settings.imdb.Imdb.SearchPatterns.SearchResultPattern;
 import se.qxx.jukebox.settings.imdb.SearchPatternComparer;
 
@@ -90,10 +100,16 @@ public class IMDBFinder {
 				Log.Info(String.format("IMDB :: %s is NOT redirected to movie", m.getTitle()), LogType.IMDB);				
 				rec = findMovieInSearchResults(m, webResult.getResult(), blacklistedIDs);			
 			}
-
+			
 			setNextSearchTimer();
 			
-			return extractMovieInfo(m, rec);
+
+			Movie mainMovie = extractMovieInfo(m, rec);
+
+			if (mainMovie.getIsTvEpisode()) {
+				mainMovie = getTvEpisodeInfo(mainMovie, rec);
+			}
+			return mainMovie;
 		} catch (InterruptedException e) {
 			return m;
 		}
@@ -199,7 +215,7 @@ public class IMDBFinder {
 						, p.getGroupRecordYear()
 						, blacklistedIDs);
 				
-				if  (rec!=null)
+				if (rec != null && (!p.isTvPattern() || (p.isTvPattern() && m.getIsTvEpisode())))
 					break;
 			}
 		}
@@ -330,5 +346,83 @@ public class IMDBFinder {
 
 		return ret;
 		
-	}	
+	}
+	
+	private static Movie getTvEpisodeInfo(Movie m, IMDBRecord rec) throws NumberFormatException, IOException, ParseException {
+		Movie newMovie;
+		
+		// mainMovie contains the overall info about the series
+		// get the page referencing the wanted season
+		if (m.getSeason().getSeasonNumber() > 0) {
+			String seasonUrl = getSeasonUrl(m.getSeason().getSeasonNumber(), rec.getAllSeasonUrls());
+
+			// extract episode info from that page
+			IMDBEpisode ep = getEpisodeUrl(seasonUrl, m.getEpisode());
+			
+			// extract movie info from episode
+			IMDBRecord episodeRec = IMDBRecord.get(ep.getUrl());
+			
+			newMovie = extractMovieInfo(m, episodeRec);
+
+			// transfer main movie properties to the season object
+			Season s = Season.newBuilder(m.getSeason())
+					.addAllGenre(m.getGenreList())
+					.setImage(m.getImage())
+					.setRating(m.getRating())
+					.setStory(m.getStory())
+					.build();
+			
+			// build 
+			newMovie = Movie.newBuilder(newMovie)
+					.setSeason(s)
+					.setEpisode(ep.getEpisodeNumber())
+					.setFirstAirDate(ep.getFirstAirDate().getTime())
+					.setEpisodeTitle(ep.getTitle())
+					.build();
+			
+			return newMovie;
+		}
+		else {
+			Log.Debug(String.format("%s appears to be a tv episode but no season found", m.getMedia(0).getFilename()), LogType.IMDB);
+		}
+		
+
+		
+
+		
+	}
+
+	private static IMDBEpisode getEpisodeUrl(String url, int episode) throws IOException, NumberFormatException, ParseException {
+		WebResult result = WebRetriever.getWebResult(url);
+		
+		for (EpisodePattern p : Settings.imdb().getEpisodePatterns().getEpisodePattern()) {
+			Pattern pattern = Pattern.compile(p.getRegex(), Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
+			Matcher matcher = pattern.matcher(result.getResult());
+			while(matcher.find()){
+				IMDBEpisode ep = new IMDBEpisode(
+					matcher.group(p.getUrlGroup())
+					, Integer.parseInt(matcher.group(p.getEpisodeGroup()))
+					, matcher.group(p.getTitleGroup())
+					, DateUtils.parseDate(matcher.group(p.getAirDateGroup()), new String[] {"MMM. dd, yyyy", "yyyy-MM-dd"}));
+						
+				if (ep.getEpisodeNumber() == episode) {
+					return ep;
+				}
+			}
+		}
+		
+		return null;
+	}
+
+	private static String getSeasonUrl(int seasonNumber, List<String> seasonUrls) {
+		for(String url : seasonUrls) {
+			Log.Debug(String.format("Testing episode url %s", url), LogType.IMDB);
+			if (StringUtils.contains(url, String.format("episodes?season=%s", seasonNumber))) {
+				return url;
+			}
+		}
+		
+		return StringUtils.EMPTY;
+	}
+	
 }

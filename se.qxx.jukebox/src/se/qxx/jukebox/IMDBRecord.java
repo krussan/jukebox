@@ -26,6 +26,7 @@ public class IMDBRecord {
 	private String story = "";
 	private byte[] image = null;
 	private String title = "";
+	private List<String> seasons = new ArrayList<String>();
 	
 	private IMDBRecord() {
 	}
@@ -100,6 +101,10 @@ public class IMDBRecord {
 						break;		
 					case YEAR:
 						this.setYear(Integer.parseInt(unescapedValue));
+						break;
+					case SEASONS:
+						// add seasons url to record
+						this.seasons.add(StringUtils.trim(m.group(infoPattern.getGroup())));
 						break;
 					}
 				}
@@ -238,5 +243,9 @@ public class IMDBRecord {
 
 	private void setTitle(String title) {
 		this.title = title;
+	}
+	
+	public List<String> getAllSeasonUrls() {
+		return this.seasons;
 	}
 }

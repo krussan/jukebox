@@ -6,7 +6,8 @@
     <xs:element name="imdb">
     	<xs:complexType>
     		<xs:sequence>
-                <xs:element name="settings" maxOccurs="1" minOccurs="1">
+    			<xs:element name="settings" maxOccurs="1"
+    				minOccurs="1">
     				<xs:complexType>
     					<xs:attribute name="sleepSecondsMin"
     						type="xs:int" use="required">
@@ -14,84 +15,139 @@
     					<xs:attribute name="sleepSecondsMax"
     						type="xs:int" use="required">
     					</xs:attribute>
-    					<xs:attribute name="debug"
-    						type="xs:boolean" default="false">
+    					<xs:attribute name="debug" type="xs:boolean"
+    						default="false">
     					</xs:attribute>
     				</xs:complexType>
-                </xs:element>
-                <xs:element name="title" maxOccurs="1" minOccurs="1">
+    			</xs:element>
+    			<xs:element name="title" maxOccurs="1" minOccurs="1">
     				<xs:complexType>
     					<xs:sequence>
-    						<xs:element name="titleResultPattern" maxOccurs="1" minOccurs="0">
+    						<xs:element name="titleResultPattern"
+    							maxOccurs="1" minOccurs="0">
     							<xs:complexType>
     								<xs:sequence>
-    									<xs:element name="blockPattern" type="xs:string">
+    									<xs:element name="blockPattern"
+    										type="xs:string">
     									</xs:element>
-    									<xs:element name="recordPattern" type="xs:string">
+    									<xs:element name="recordPattern"
+    										type="xs:string">
     									</xs:element>
     								</xs:sequence>
-    								<xs:attribute name="groupBlock" type="xs:int">
+    								<xs:attribute name="groupBlock"
+    									type="xs:int">
     								</xs:attribute>
-    								<xs:attribute name="groupRecordTitle" type="xs:int">
+    								<xs:attribute
+    									name="groupRecordTitle" type="xs:int">
     								</xs:attribute>
-    								<xs:attribute name="groupRecordCountry" type="xs:int">
+    								<xs:attribute
+    									name="groupRecordCountry" type="xs:int">
     								</xs:attribute>
     							</xs:complexType>
     						</xs:element>
     					</xs:sequence>
-    					<xs:attribute name="preferredLanguage" type="xs:string">
+    					<xs:attribute name="preferredLanguage"
+    						type="xs:string">
     					</xs:attribute>
-    					<xs:attribute name="useOriginalIfExists" type="xs:boolean">
+    					<xs:attribute name="useOriginalIfExists"
+    						type="xs:boolean">
     					</xs:attribute>
     				</xs:complexType>
     			</xs:element>
-                <xs:element name="searchUrl" type="xs:string" maxOccurs="1" minOccurs="1"></xs:element>
-    			<xs:element name="searchPatterns" maxOccurs="1" minOccurs="0">
+    			<xs:element name="searchUrl" type="xs:string"
+    				maxOccurs="1" minOccurs="1">
+    			</xs:element>
+    			<xs:element name="searchPatterns" maxOccurs="1"
+    				minOccurs="0">
     				<xs:complexType>
     					<xs:sequence>
-    						<xs:element name="searchResultPattern" maxOccurs="unbounded" minOccurs="0">
+    						<xs:element name="searchResultPattern"
+    							maxOccurs="unbounded" minOccurs="0">
     							<xs:complexType>
     								<xs:sequence>
-    									<xs:element name="blockPattern" type="xs:string">
+    									<xs:element name="blockPattern"
+    										type="xs:string">
     									</xs:element>
-    									<xs:element name="recordPattern" type="xs:string">
+    									<xs:element name="recordPattern"
+    										type="xs:string">
     									</xs:element>
     								</xs:sequence>
-    								<xs:attribute name="name" type="xs:string">
+    								<xs:attribute name="name"
+    									type="xs:string">
     								</xs:attribute>
-    								<xs:attribute name="enabled" type="xs:boolean" use="required">
+    								<xs:attribute name="enabled"
+    									type="xs:boolean" use="required">
     								</xs:attribute>
-    								<xs:attribute name="priority" type="xs:int" use="required">
+    								<xs:attribute name="priority"
+    									type="xs:int" use="required">
     								</xs:attribute>
-    								<xs:attribute name="groupBlock" type="xs:int" use="required">
+    								<xs:attribute name="groupBlock"
+    									type="xs:int" use="required">
     								</xs:attribute>
-    								<xs:attribute name="groupRecordUrl" type="xs:int" use="required">
+    								<xs:attribute name="groupRecordUrl"
+    									type="xs:int" use="required">
     								</xs:attribute>
-    								<xs:attribute name="groupRecordYear" type="xs:int" use="required">
+    								<xs:attribute name="groupRecordYear"
+    									type="xs:int" use="required">
+    								</xs:attribute>
+    								<xs:attribute name="tvPattern"
+    									type="xs:boolean" use="required">
     								</xs:attribute>
     							</xs:complexType>
     						</xs:element>
     					</xs:sequence>
     				</xs:complexType>
     			</xs:element>
-    			<xs:element name="infoPatterns" maxOccurs="1" minOccurs="0">
+    			<xs:element name="infoPatterns" maxOccurs="1"
+    				minOccurs="0">
     				<xs:complexType>
     					<xs:sequence>
-    						<xs:element name="infoPattern" maxOccurs="unbounded" minOccurs="0">
+    						<xs:element name="infoPattern"
+    							maxOccurs="unbounded" minOccurs="0">
     							<xs:complexType>
     								<xs:sequence>
-    									<xs:element name="regex" type="xs:string">
+    									<xs:element name="regex"
+    										type="xs:string">
     									</xs:element>
     								</xs:sequence>
-    								<xs:attribute name="type" type="InfoPatternType">
+    								<xs:attribute name="type"
+    									type="InfoPatternType">
     								</xs:attribute>
-    								<xs:attribute name="group" type="xs:int">
+    								<xs:attribute name="group"
+    									type="xs:int">
     								</xs:attribute>
     							</xs:complexType>
     						</xs:element>
     					</xs:sequence>
     				</xs:complexType>
     			</xs:element>
+    			<xs:element name="episodePatterns" maxOccurs="1" minOccurs="0">
+    				<xs:complexType>
+    					<xs:sequence>
+    						<xs:element name="episodePattern"
+    							maxOccurs="unbounded" minOccurs="0">
+                                <xs:complexType>
+                                	<xs:sequence>
+                                		<xs:element name="regex"
+                                			type="xs:string" minOccurs="1">
+                                		</xs:element>
+                                	</xs:sequence>
+                                	<xs:attribute name="episodeGroup"
+                                		type="xs:int" use="required">
+                                	</xs:attribute>
+                                	<xs:attribute name="airDateGroup"
+                                		type="xs:int" use="required">
+                                	</xs:attribute>
+                                	<xs:attribute name="urlGroup"
+                                		type="xs:int" use="required">
+                                	</xs:attribute>
+                                	<xs:attribute name="titleGroup"
+                                		type="xs:int" use="required">
+                                	</xs:attribute>
+                                </xs:complexType>
+    						</xs:element>
+    					</xs:sequence>
+    				</xs:complexType></xs:element>
     		</xs:sequence>
     	</xs:complexType></xs:element>
 
@@ -105,7 +161,7 @@
     		<xs:enumeration value="genres" />
     		<xs:enumeration value="duration" />
     		<xs:enumeration value="director" />
-    		
+    		<xs:enumeration value="seasons" />
     	</xs:restriction>
     </xs:simpleType>
 </xs:schema>

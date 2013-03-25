@@ -51,14 +51,24 @@ message Movie {
 	optional int32 episode = 22;
 	optional int64 firstAirDate = 23;
 	optional Season season = 24;
+	optional string episodeTitle = 25;
+}
+
+message Episode {
+	required int32 ID = 1;
+	required int32 episodeNumber = 2;
+	repeated Media media = 3;
+	optional string title = 4;
+	
 }
 
 message Season {
 	required int32 ID = 1;
-	optional bytes image = 2;
-	optional string rating = 3;
-	optional string story = 4;
-	repeated string genre = 5;
+	required int32 seasonNumber = 2;
+	optional bytes image = 3;
+	optional string rating = 4;
+	optional string story = 5;
+	repeated string genre = 6;
 }
 
 message Subtitle {
