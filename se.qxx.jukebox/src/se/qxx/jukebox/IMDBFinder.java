@@ -34,10 +34,10 @@ import com.google.protobuf.ByteString;
 public class IMDBFinder {
 	private static long nextSearch = 0;
 	
-	public synchronized static Movie Get(Movie m, List<String> blacklistedIDs) throws IOException {
+	public synchronized static Movie Get(Movie m, List<String> blacklistedIDs) throws IOException, NumberFormatException, ParseException {
 		Log.Debug(String.format("Starting search on title :: %s (%s)", m.getTitle(), m.getYear()), LogType.IMDB);
 		String imdbUrl = m.getImdbUrl();
-
+ 
 		if (StringUtils.isEmpty(imdbUrl) || urlIsBlacklisted(imdbUrl, blacklistedIDs)) {	
 			return Search(m, blacklistedIDs, Settings.imdb().getSearchUrl());
 		}
@@ -68,20 +68,11 @@ public class IMDBFinder {
 		return false;
 	}
 
-	private synchronized static Movie Search(Movie m, List<String> blacklistedIDs, String searchUrl) throws IOException {
-        //http://www.imdb.com/find?s=all&q=the+decent
-        // search for :
-        // Titles (Exact Matches)
-        // Popular Titles               <-- This is the one
-        // Titles (Partial Matches)
-        // Titles (Approx Matches)
-        // find first href after that
-
-        // Titles\s\(Exact\sMatches\).*?\<a\s*href\s*=\s*["|'](?<url>.*?)["|']
-        // Popular\sTitles.*?\<a\s*href\s*=\s*["|'](?<url>.*?)["|']
-	
+	private synchronized static Movie Search(Movie m, List<String> blacklistedIDs, String searchUrl) throws IOException, NumberFormatException, ParseException {
 		long currentTimeStamp = Util.getCurrentTimestamp();
+		
 		try {
+			// wait a while to avoid hammering
 			if (currentTimeStamp < nextSearch) {
 				Log.Debug(String.format("Waiting %s seconds", (nextSearch - currentTimeStamp) / 1000), LogType.IMDB);
 				Thread.sleep(nextSearch - currentTimeStamp);
@@ -103,12 +94,12 @@ public class IMDBFinder {
 			
 			setNextSearchTimer();
 			
-
 			Movie mainMovie = extractMovieInfo(m, rec);
 
 			if (mainMovie.getIsTvEpisode()) {
 				mainMovie = getTvEpisodeInfo(mainMovie, rec);
 			}
+			
 			return mainMovie;
 		} catch (InterruptedException e) {
 			return m;
@@ -204,19 +195,23 @@ public class IMDBFinder {
 		IMDBRecord rec = null;
 		for (SearchResultPattern p : patterns) {
 			if (p.isEnabled()) {
-				Log.Debug(String.format("Using pattern :: %s", p.getName()), LogType.IMDB);
-				
-				rec = findUrl(m
-						, text
-						, StringUtils.trim(p.getBlockPattern())
-						, p.getGroupBlock()
-						, StringUtils.trim(p.getRecordPattern())
-						, p.getGroupRecordUrl()
-						, p.getGroupRecordYear()
-						, blacklistedIDs);
-				
-				if (rec != null && (!p.isTvPattern() || (p.isTvPattern() && m.getIsTvEpisode())))
-					break;
+				if (!m.getIsTvEpisode() || (m.getIsTvEpisode() && p.isTvPattern()))
+				{
+					Log.Debug(String.format("Using pattern :: %s", p.getName()), LogType.IMDB);
+					
+					rec = findUrl(
+							  m
+							, text
+							, StringUtils.trim(p.getBlockPattern())
+							, p.getGroupBlock()
+							, StringUtils.trim(p.getRecordPattern())
+							, p.getGroupRecordUrl()
+							, p.getGroupRecordYear()
+							, blacklistedIDs);
+					
+					if (rec != null)
+						break;
+				}
 			}
 		}
 		
@@ -386,10 +381,7 @@ public class IMDBFinder {
 			Log.Debug(String.format("%s appears to be a tv episode but no season found", m.getMedia(0).getFilename()), LogType.IMDB);
 		}
 		
-
-		
-
-		
+		return m;
 	}
 
 	private static IMDBEpisode getEpisodeUrl(String url, int episode) throws IOException, NumberFormatException, ParseException {

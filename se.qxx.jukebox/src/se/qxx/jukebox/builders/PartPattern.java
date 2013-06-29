@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.settings.Settings;
+import se.qxx.jukebox.settings.JukeboxListenerSettings.StringSplitters.Episodes.Pattern.Groups.Group;
 
 /**
  * Test if the filename is part of a set of media. i.e. CD1, CD2
@@ -21,7 +22,10 @@ public class PartPattern {
 	private int part = 1;
 	private int partIndexInFilename = -1;
 	private String prefixFilename;
-	
+	private int season;
+	private int episode;
+	private boolean tvEpisode = false;
+
 	public String getResultingFilename() {
 		return resultingFilename;
 	}
@@ -47,7 +51,33 @@ public class PartPattern {
 		this.prefixFilename = prefixFilename;
 	}
 	
+	public int getSeason() {
+		return season;
+	}
+	private void setSeason(int season) {
+		this.season = season;
+	}
+	public int getEpisode() {
+		return episode;
+	}
+	private void setEpisode(int episode) {
+		this.episode = episode;
+	}
+	
+	public boolean isTvEpisode() {
+		return tvEpisode;
+	}
+	private void setIsTvEpisode(boolean tvEpisode) {
+		this.tvEpisode = tvEpisode;
+	}	
+	
 	public PartPattern(String filename) {
+		this.setResultingFilename(filename);
+		parseParts(this.getResultingFilename());
+		parseTvEpisode(this.getResultingFilename());		
+	}
+	
+	private void parseParts(String filename) {
 		String partPattern = StringUtils.trim(Settings.get().getStringSplitters().getParts().getPartPattern().getRegex());
 		int partGroup = Settings.get().getStringSplitters().getParts().getPartPattern().getGroupPart();
 		
@@ -68,11 +98,34 @@ public class PartPattern {
 			resultingFilename = m.replaceFirst("");			
 		}
 		
-		this.parse(filename, resultingFilename, partIdentifier, partIndex);
-		
+		this.parsePartPattern(filename, resultingFilename, partIdentifier, partIndex);		
 	}
 	
-	private void parse(String originalFilename, String resultingFilename, String partIdentifier, int partIndex) {
+	private void parseTvEpisode(String filename) {
+		for(se.qxx.jukebox.settings.JukeboxListenerSettings.StringSplitters.Episodes.Pattern p 
+				: Settings.get().getStringSplitters().getEpisodes().getPattern()) {
+
+			Pattern regexPattern = Pattern.compile(StringUtils.trim(p.getRegex()), Pattern.CASE_INSENSITIVE);
+			Matcher matcher = regexPattern.matcher(filename);
+			
+			
+			if (matcher.matches()) {
+				for(Group g : p.getGroups().getGroup()) {
+					if (StringUtils.equalsIgnoreCase("season", g.getProperty()))
+						this.setSeason(Integer.parseInt(matcher.group(g.getId())));
+					if (StringUtils.equalsIgnoreCase("episode", g.getProperty()))
+						this.setEpisode(Integer.parseInt(matcher.group(g.getId())));
+				}
+				
+				this.setIsTvEpisode(true);
+				
+				this.setResultingFilename(matcher.replaceFirst(StringUtils.EMPTY));
+				break;
+			}
+		}		
+	}
+	
+	private void parsePartPattern(String originalFilename, String resultingFilename, String partIdentifier, int partIndex) {
 		this.setResultingFilename(resultingFilename);		
 		this.setPrefixFilename(originalFilename);
 		if (!StringUtils.isEmpty(partIdentifier)) {

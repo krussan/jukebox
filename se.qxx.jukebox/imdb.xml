@@ -130,7 +130,7 @@
             <regex><![CDATA[<span\s*itemprop="ratingValue"\s*>((\d\.\d)|(\d\d)|(\d\d\.\d)|(\d\d\.\d\d))]]></regex>
 		</infoPattern>            
         <infoPattern type="genres" group="1">
-            <regex><![CDATA[href="/genre/[^"]*"\s*>(.*?)</a>]]></regex>
+            <regex><![CDATA[<span\s*class=\"itemprop\"\s*itemprop=\"genre\">(.*?)</span>]]></regex>
 		</infoPattern>            
         <infoPattern type="duration" group="1">
             <regex><![CDATA[<time\s*itemprop="duration".*?>(\d{1,3})\s*min</time>]]></regex>

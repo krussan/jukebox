@@ -85,36 +85,20 @@ public class MovieIdentifier implements Runnable {
 			Log.Info(String.format("Ignoring %s as this appears to be a sample", filename), LogType.FIND);
 		}
 		else {
-			if (isTvEpisode(filename)) {
-				Log.Info(String.format("Ignoring %s as this appears to be a TV episode", filename), LogType.FIND);
+			
+			Movie m = MovieBuilder.identifyMovie(path, filename);
+					
+			if (m != null) {
+				matchMovieWithDatabase(m, filename);
 			}
 			else {
-				Movie m = MovieBuilder.identifyMovie(path, filename);
-						
-				if (m != null) {
-					matchMovieWithDatabase(m, filename);
-				}
-				else {
-					Log.Info(String.format("Failed to identity movie with filename :: %s", f.getName()), Log.LogType.FIND);
-				}
+				Log.Info(String.format("Failed to identity movie with filename :: %s", f.getName()), Log.LogType.FIND);
 			}
+			
 		}		
 	}
 	
-	private boolean isTvEpisode(String filename) {
-		for(se.qxx.jukebox.settings.JukeboxListenerSettings.StringSplitters.Episodes.Pattern p 
-				: Settings.get().getStringSplitters().getEpisodes().getPattern()) {
 
-			Pattern regexPattern = Pattern.compile(StringUtils.trim(p.getRegex()), Pattern.CASE_INSENSITIVE);
-			Matcher matcher = regexPattern.matcher(filename);
-			
-			if (matcher.find())
-				return true;
-			
-		}
-		
-		return false;
-	}
 	
 	/**
 	 * Checks if the media present in a movie exists in database.
