@@ -1,4 +1,5 @@
 import java.awt.Canvas;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.MediaTracker;
@@ -36,7 +37,8 @@ public class ImageCanvas extends Canvas {
     }
 
     public void paint(Graphics g) {
-    	g.drawImage(image, 0,0, this);
+    	Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+    	g.drawImage(image, 0, 0, (int)d.getWidth(), (int)d.getHeight(), this);
     }
-
+    
 }
