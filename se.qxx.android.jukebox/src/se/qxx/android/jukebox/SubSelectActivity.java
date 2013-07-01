@@ -1,14 +1,13 @@
 package se.qxx.android.jukebox;
 
 import se.qxx.android.jukebox.adapters.MediaSubsLayoutAdapter;
-import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
-import se.qxx.android.jukebox.comm.JukeboxConnectionProgressDialog;
+import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
+import se.qxx.android.jukebox.JukeboxConnectionProgressDialog;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;

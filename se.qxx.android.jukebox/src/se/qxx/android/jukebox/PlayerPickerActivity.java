@@ -3,9 +3,12 @@ package se.qxx.android.jukebox;
 import java.util.EventObject;
 import java.util.List;
 
+import com.google.protobuf.RpcCallback;
+
 import se.qxx.android.jukebox.adapters.PlayerLayoutAdapter;
-import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
-import se.qxx.android.jukebox.comm.JukeboxConnectionProgressDialog;
+import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers;
+import se.qxx.android.jukebox.JukeboxConnectionProgressDialog;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.jukebox.model.Model.ModelUpdatedEventListener;
 import se.qxx.android.jukebox.model.ModelUpdatedEvent;
@@ -33,7 +36,13 @@ public class PlayerPickerActivity extends JukeboxActivityBase implements ModelUp
 		Thread t = new Thread(new Runnable(){
 			@Override
 			public void run() {
-			    jh.listPlayers();
+			    jh.listPlayers(new RpcCallback<JukeboxResponseListPlayers>() {
+					@Override
+					public void run(JukeboxResponseListPlayers response) {
+						Model.get().clearPlayers();
+						Model.get().addAllPlayers(response.getHostnameList());							    							
+					}
+				});
 			}
 		});
 		t.start();			

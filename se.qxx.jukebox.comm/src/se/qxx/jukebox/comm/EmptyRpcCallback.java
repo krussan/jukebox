@@ -1,4 +1,4 @@
-package se.qxx.android.jukebox.comm;
+package se.qxx.jukebox.comm;
 
 import com.google.protobuf.RpcCallback;
 

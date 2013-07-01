@@ -2,15 +2,18 @@ package se.qxx.android.jukebox;
 
 import java.util.EventObject;
 
+import com.google.protobuf.RpcCallback;
+
 import se.qxx.android.jukebox.adapters.MovieLayoutAdapter;
-import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
-import se.qxx.android.jukebox.comm.JukeboxConnectionProgressDialog;
+import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
+import se.qxx.android.jukebox.JukeboxConnectionProgressDialog;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.jukebox.model.Model.ModelUpdatedEventListener;
 import se.qxx.android.jukebox.model.ModelUpdatedEvent;
 import se.qxx.android.jukebox.model.ModelUpdatedType;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -167,7 +170,16 @@ public class JukeboxActivity extends JukeboxActivityBase
 		final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(JukeboxConnectionProgressDialog.build(c, "Getting list of media ..."));
 		
 		try {
-			jh.listMovies("");
+			jh.listMovies("", new RpcCallback<JukeboxResponseListMovies>() {
+
+				@Override
+				public void run(JukeboxResponseListMovies response) {
+		  			Model.get().clearMovies();
+					Model.get().addAllMovies(response.getMoviesList());
+					Model.get().setInitialized(true);								
+				}
+			
+			});
 		}
 		catch (Exception e) {
 			showMessage(c, "Connection failed. Check settings ...");

@@ -4,7 +4,7 @@ import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
 
-import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
+import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseTime;
 
@@ -25,7 +25,10 @@ public class Seeker implements Runnable {
 	}
 		
 	private void getTime() {
-       	JukeboxConnectionHandler h = new JukeboxConnectionHandler();
+       	JukeboxConnectionHandler h = new JukeboxConnectionHandler(
+       			JukeboxSettings.get().getServerIpAddress()
+       			, JukeboxSettings.get().getServerPort());
+       	
        	h.getTime(JukeboxSettings.get().getCurrentMediaPlayer(), new RpcCallback<JukeboxResponseTime>() {
 			@Override
 			public void run(JukeboxResponseTime response) {				

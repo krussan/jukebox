@@ -188,3 +188,4 @@ service JukeboxService {
 	rpc Suspend(JukeboxRequestGeneral) returns (Empty);		
 }
  
+ 

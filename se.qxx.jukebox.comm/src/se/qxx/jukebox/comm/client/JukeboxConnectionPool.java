@@ -1,9 +1,8 @@
-package se.qxx.android.jukebox.comm;
+package se.qxx.jukebox.comm.client;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import se.qxx.android.jukebox.JukeboxSettings;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxService;
 
 import com.google.protobuf.RpcChannel;
@@ -15,6 +14,24 @@ public class JukeboxConnectionPool {
 
 	private static JukeboxConnectionPool instance;
 
+	public String getServerIPaddress() {
+		return serverIPaddress;
+	}
+
+	public void setServerIPaddress(String serverIPaddress) {
+		this.serverIPaddress = serverIPaddress;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+	private String serverIPaddress;
+	private int port;
 	private JukeboxService service;
 	
 	public JukeboxService getNonBlockingService() {
@@ -26,7 +43,12 @@ public class JukeboxConnectionPool {
 	}	
 
 	private JukeboxConnectionPool() {
-		setupNonBlockingService();
+	}
+	
+	public static void setup(String serverIPaddress, int port){
+		JukeboxConnectionPool.get().setServerIPaddress(serverIPaddress);
+		JukeboxConnectionPool.get().setPort(port);
+		JukeboxConnectionPool.get().setupNonBlockingService();
 	}
 
 	public static JukeboxConnectionPool get() {
@@ -40,8 +62,8 @@ public class JukeboxConnectionPool {
 		ExecutorService threadPool = Executors.newFixedThreadPool(1);
 		
 		RpcConnectionFactory connectionFactory = SocketRpcConnectionFactories.createRpcConnectionFactory(
-    			JukeboxSettings.get().getServerIpAddress(), 
-    			JukeboxSettings.get().getServerPort());
+				this.getServerIPaddress(), 
+    			this.getPort());
     			
 		RpcChannel channel = RpcChannels.newRpcChannel(connectionFactory, threadPool);
 		

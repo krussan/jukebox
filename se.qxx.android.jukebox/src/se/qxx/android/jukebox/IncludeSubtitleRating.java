@@ -3,7 +3,6 @@ package se.qxx.android.jukebox;
 import se.qxx.android.tools.GUITools;
 import se.qxx.jukebox.domain.JukeboxDomain.Rating;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
-import android.app.Activity;
 import android.view.View;
 
 public class IncludeSubtitleRating extends JukeboxActivityBase {

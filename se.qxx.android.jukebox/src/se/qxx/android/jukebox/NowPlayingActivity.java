@@ -2,7 +2,7 @@ package se.qxx.android.jukebox;
 
 import org.apache.commons.lang3.StringUtils;
 
-import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
+import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
@@ -29,7 +29,7 @@ public class NowPlayingActivity extends JukeboxActivityBase
 
 	private Seeker seeker;
 	private boolean isManualSeeking = false;
-	private JukeboxConnectionHandler comm = new JukeboxConnectionHandler();
+	private JukeboxConnectionHandler comm;
 
 	private class OnStatusComplete implements RpcCallback<JukeboxResponseIsPlaying> {
 		@Override
@@ -63,7 +63,7 @@ public class NowPlayingActivity extends JukeboxActivityBase
 					@Override
 					public void run() {
 						Logger.Log().d("Request --- ListSubtitles");
-						comm.listSubtitles(md);						
+						comm.listSubtitles(md, new OnListSubtitlesCompleteHandler());				
 					}
 				});
 				t1.start();
@@ -88,6 +88,9 @@ public class NowPlayingActivity extends JukeboxActivityBase
 		@Override
 		public void run(JukeboxResponseStartMovie response) {
 			Logger.Log().d("Response --- StartMovie");
+			Model.get().clearSubtitles();
+			Model.get().addAllSubtitles(response.getSubtitleList());	
+			
 			Model.get().setCurrentMedia(0);			
 			initializeSeeker();			
 			seeker.start();		
@@ -96,7 +99,7 @@ public class NowPlayingActivity extends JukeboxActivityBase
 				@Override
 				public void run() {
 					Logger.Log().d("Request --- ListSubtitles");
-					comm.listSubtitles(Model.get().getCurrentMedia());
+					comm.listSubtitles(Model.get().getCurrentMedia(), new OnListSubtitlesCompleteHandler());
 				}
 			});
 			t.start();
@@ -122,9 +125,12 @@ public class NowPlayingActivity extends JukeboxActivityBase
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		comm = new JukeboxConnectionHandler(JukeboxSettings.get().getServerIpAddress(), JukeboxSettings.get().getServerPort());
         setContentView(R.layout.nowplaying);
         
         initializeView();
+        
+        
     }
 	
 	@Override 
