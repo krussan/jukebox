@@ -1,16 +1,479 @@
-import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.MediaTracker;
 import java.awt.Toolkit;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Timer;
+import javax.swing.ImageIcon;
+import javax.swing.JPanel;
 
 
-public class Carousel extends Canvas {
-
+public class Carousel extends JPanel implements Runnable, MouseListener, MouseMotionListener  {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -7407282266243315770L;
+	private static final long serialVersionUID = -5859498040090776572L;
+	private Thread animator;
+	private Thread rotater;
+	
+	private final int DELAY = 1;
+	
+	MediaTracker tracker;
+	
+	private CarouselImage[] images;
+	
+	private double currentRotation = 1.0;
+	private int currentPhotoIndex = 0;
+	private boolean mouseMoved = false;
+	private int lastMouseX = 0;
+	
+	double velocity = 10;
+	RotationTimer timer = new RotationTimer();
 
-	public Carousel() {
-		//initialize();
+	double acceleration = .998;
+	double velocityThreshold = .00002;
+	
+	private Image backgroundImg;
+	
+	public Carousel(String backgroundImage, String[] imageNames) {
+		setBackground(Color.BLACK);
+        setDoubleBuffered(true);
+        this.images = new CarouselImage[imageNames.length];
+        this.addMouseMotionListener(this);
+        
+        tracker = new MediaTracker(this);
+        
+        backgroundImg = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource(backgroundImage));
+		
+        for (int i=0;i<images.length;i++) {
+            CarouselImage ii = new CarouselImage(this.getClass().getResource(imageNames[i]));
+            Image image = ii.getImage();       
+            tracker.addImage(image, 1);
+            images[i] = ii;
+        }
+	}
+	
+    public void addNotify() {
+        super.addNotify();
+        animator = new Thread(this);
+        animator.start();
+        rotater = new Thread(timer);
+        rotater.start();
+        
+    }
+    
+    public void paint(Graphics g) {
+        super.paint(g);
+    	Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+    	g.drawImage(backgroundImg, 0, 0, (int)d.getWidth(), (int)d.getHeight(), this);
+
+        CarouselImage copy[] = Arrays.copyOf(this.images, this.images.length);
+		Arrays.sort(copy);
+		
+		for (int i=0; i<copy.length; i++)
+			copy[i].paint(g);
+		
+        Toolkit.getDefaultToolkit().sync();
+        g.dispose();
+    }
+    
+    public void cycle() {
+		placeImages();
+//    	Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+//
+//        if (y >= d.getHeight() - star.getHeight(this) || y <= 0)
+//    		directionY = -1 * directionY;
+//        
+//        if (x >= d.getWidth() - star.getWidth(this) || x <= 0)
+//        	directionX = -1 * directionX;
+//
+//        
+//    		
+//        x += directionX;
+//        y += directionY;
+//
+    }
+    
+	private void placeImages() {
+		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+		
+		// The size of the container the holds the images.
+		double containerWidth = d.getWidth();
+		double containerHeight = d.getHeight();
+
+		// The base dimensions for each image. Images are scaled from these base
+		// dimensions.
+		double boxHeight = containerHeight * 3.0 / 8.0;
+		double boxWidth = boxHeight * 1.2;
+		
+		// The radius of the ellipse that the images are set around.
+		double xRadius = (containerWidth - boxWidth) / 2.0;
+		double yRadius = boxHeight / 5.0;
+		
+		// A factor for achieving the spiral affect. The greater this value, the
+		// more pronounced the spiral effect.
+		double spiralSpread = yRadius * .5;
+
+		// The fraction that the images are offset from a whole number rotation.
+		// This value will be between -0.5 and 0.5.
+		double decimalOffset = currentRotation - Math.round(currentRotation);
+		
+		// The angle (in radians) that the images are offset from the base
+		// positions. Base positions are 0*, 45*, 90*, 135*, etc. This value
+		// will be between -22.5* and 22.5*.
+		double angleOffset = -(decimalOffset * ((Math.PI) / 4));
+
+		for (int i = 0; i < images.length; i++) {
+//			Image image = images[i + preLoadSize];
+			
+			// The actual angle of the given image from the front.
+			double angle = ((i * Math.PI) / 4) + angleOffset;
+			
+			// These are the simple x and y coordinates of the angel in a unit
+			// circle. We flipped some of the signs and dimensions around
+			// because our coordinate plane is a little turned around.
+			double x = -Math.sin(angle);
+			double y = -Math.cos(angle);
+			
+			// The factor by which to scale the image (i.e. make it smaller or
+			// larger). This is based solely on the 'y' coordinate.
+			images[i].setScale(Math.abs(Math.pow(2, y-1)));
+			
+			// set the zindex so that images in the front appear on top of
+			// images behind.
+			int zindex = (int) (y * 10) + 10;
+			images[i].setzIndex(zindex);
+
+			// set the size of the image. The aspect ratio of the image is
+			// maintained as the image is scaled so that it fits inside the
+			// correct "box" dimensions.
+			
+			///images[i].sizeToBounds((int) (scale * boxWidth), (int) (scale * boxHeight));
+
+			// The x coordinate is obtained by simply scaling the unit-circle x
+			// coordinate to fit the container.
+			int xcoord = (int) Math.round((x * xRadius) + (containerWidth - images[i].getIconWidth()) / 2.0);
+			images[i].setX(xcoord);
+			
+			// The y coordinate is similarly calculated, except that the spiral
+			// factor is also added. Basically, the farther the image is around
+			// the circle, the farther down it is shifted to give the spiral
+			// effect.
+			int ycoord = (int) Math.round((y * yRadius) + containerHeight - boxHeight - yRadius - images[i].getIconHeight()
+					/ 2.0 - Math.round(spiralSpread * (i - 4 - decimalOffset)));
+			images[i].setY(ycoord);
+			//imagePanel.setWidgetPosition(image, xcoord, ycoord);
+			
+			// Finally, fade out the images that are at the very back. Make sure
+			// the rest have full opacity.
+			if (i == 0) {
+				images[i].setAlpha(.5f - (float)decimalOffset);
+			} else if (i == this.images.length - 1) {
+				images[i].setAlpha(.5f + (float)decimalOffset);
+			} else {
+				images[i].setAlpha(1.0f);
+			}
+		}
+	}    
+    
+	@Override
+	public void run() {
+		long beforeTime, timeDiff, sleep;
+		try {
+			tracker.waitForID(1);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			return;
+		}
+		
+        beforeTime = System.currentTimeMillis();
+
+        while (true) {
+
+            cycle();
+            repaint();
+
+            timeDiff = System.currentTimeMillis() - beforeTime;
+            sleep = DELAY - timeDiff;
+
+            if (sleep < 0)
+                sleep = 2;
+            try {
+                Thread.sleep(sleep);
+            } catch (InterruptedException e) {
+                System.out.println("interrupted");
+            }
+
+            beforeTime = System.currentTimeMillis();
+        }		
+	}
+
+	private class RotationTimer implements Runnable {
+		private boolean enabled = false;
+		
+		public void run() {
+			long timeDiff, sleep;
+			long lastTime =  System.currentTimeMillis();
+			while (true) {
+				long currentTime = System.currentTimeMillis();
+				int ticks = (int) (currentTime - lastTime);
+				
+				if (this.isEnabled()) {
+					if (acceleration == 1.0) {
+						setRotation(currentRotation + ticks * velocity);
+					} else {
+						double newVelocity = velocity * Math.pow(acceleration, ticks * 3);
+						if (Math.abs(newVelocity) < velocityThreshold) {
+							setRotation(currentRotation + distanceFromStartingVelocity(velocity, acceleration, velocityThreshold));
+							setVelocity(0.0);
+						} else {
+							setRotation(currentRotation + distanceForXTicks(velocity, acceleration, ticks));
+							setVelocity(newVelocity);
+						}
+					}
+				}
+				timeDiff = System.currentTimeMillis() - lastTime;
+	            sleep = DELAY - timeDiff;
+
+	            if (sleep < 0)
+	                sleep = 2;
+	            try {
+	                Thread.sleep(sleep);
+	            } catch (InterruptedException e) {
+	                System.out.println("interrupted");
+	            }
+	            
+				lastTime = currentTime;
+	            
+			}
+		}
+		
+		public void enable() {
+			this.setEnabled(true);
+		}
+		
+		public void disable() {
+			this.setEnabled(false);
+		}
+
+		public boolean isEnabled() {
+			return enabled;
+		}
+
+		private void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+	}
+	
+	/**
+	 * Set the speed for the carousel to rotate.
+	 */
+	public void setVelocity(double velocity) {
+		this.velocity = velocity;
+		if (Math.abs(velocity) < velocityThreshold) {
+			if (timer.isEnabled()) 
+				timer.disable();
+			
+			this.velocity = 0;
+		} else if (!timer.isEnabled()) {
+			timer.enable();
+		}
+	}
+	
+	public double getVelocity() {
+		return velocity;
+	}
+
+	/**
+	 * The current rotational position of the carousel. Rotation is based on
+	 * indices in the photo list. So if the 3rd photo in the list is in the
+	 * front of the carousel, currentRotation will be 2.0 (indicies are 0
+	 * based).
+	 */
+	public double getRotation() {
+		return currentRotation;
+	}
+
+	/**
+	 * The current rotational position of the carousel. Rotation is based on
+	 * indices in the photo list. So if the 3rd photo in the list is in the
+	 * front of the carousel, currentRotation will be 2.0 (indicies are 0
+	 * based).
+	 */
+	public void setRotation(double value) {
+		int pi = getPhotoIndex();
+		currentRotation = modulus(value, this.images.length);
+		setCurrentPhotoIndex((int) Math.round(currentRotation));
+//		if (pi != getPhotoIndex()) {
+//			PhotoToFrontEvent event = new PhotoToFrontEvent();
+//			event.setPhoto(photos.get(getPhotoIndex()));
+//			event.setPhotoIndex(getPhotoIndex());
+//			fireEvent(event);
+//		}
+		placeImages();
+	}
+	
+	public int getPhotoIndex() {
+		return currentPhotoIndex;
+	}
+	
+	private void setCurrentPhotoIndex(int photoIndex) {
+		int size = this.images.length;
+		
+		if (this.currentPhotoIndex == photoIndex)
+			return;
+		
+		photoIndex = modulus(photoIndex, size);
+		
+		if (this.currentPhotoIndex == photoIndex) {
+			return;
+		} else {
+			int shiftOffset = photoIndex - this.currentPhotoIndex;
+			if (shiftOffset < -(size / 2)) {
+				shiftOffset += size;
+			} else if (shiftOffset > (size / 2)) {
+				shiftOffset -= size;
+			}
+			if (shiftOffset > 0) {
+				// Next
+				// Creating temp array of images to hold shifted images
+				CarouselImage[] temps = new CarouselImage[shiftOffset];
+				for (int j = 0; j < temps.length; j++) {
+					temps[j] = images[j];
+				}
+				for (int i = 0; i < images.length - (shiftOffset); i++) {
+					images[i] = images[i + (shiftOffset)];
+				}
+				// update from large array
+				for (int k = 0; k < temps.length; k++) {
+					int pIndex = photoIndex - 4 + size - shiftOffset + k;
+					pIndex = modulus(pIndex, size);
+					images[k + images.length - shiftOffset] = temps[k];
+//					temps[k].setUrl(photos.get(pIndex).getUrl());
+				}
+			} else if (shiftOffset < 0) {
+				shiftOffset *= -1;
+				// Prev
+				CarouselImage[] temps = new CarouselImage[shiftOffset];
+				for (int j = 0; j < temps.length; j++) {
+					temps[j] = images[j + images.length - shiftOffset];
+				}
+				for (int i = images.length - 1; i >= shiftOffset; i--) {
+					images[i] = images[i - shiftOffset];
+				}
+				// update from large array
+				for (int k = 0; k < temps.length; k++) {
+					int pIndex = photoIndex - 4 + k;
+					pIndex = modulus(pIndex, size);
+					images[k] = temps[k];
+					//temps[k].setUrl(photos.get(pIndex).getUrl());
+				}
+			}
+			
+//			for (int i = 0; i < preLoadSize; i++) {
+//				images[i].getElement().getStyle().setProperty("display", "none");
+//				images[images.length - i - 1].getElement().getStyle().setProperty("display", "none");
+//			}
+			
+//			for (int i = 0; i < carouselSize; i++) {
+//				images[i + preLoadSize].getElement().getStyle().setProperty("display", "");
+//			}
+			
+			this.currentPhotoIndex = photoIndex;
+		}
+	}
+	
+
+	
+	private double distanceFromStartingVelocity(double velocity, double acceleration, double finalVelocity) {
+		if (velocity < 0)
+			finalVelocity = -finalVelocity;
+		return (finalVelocity - velocity) / Math.log(acceleration);
+	}
+	
+	private double distanceForXTicks(double velocity, double acceleration, int ticks) {
+		return velocity * (Math.pow(acceleration, ticks) - 1) / Math.log(acceleration);
+	}
+	
+	private int modulus(int a, int b){
+		if(a < 0) {
+			a = a % b;
+			if (a < 0)
+				a += b;
+			return a;
+		} else if (a == 0) {
+			return 0;
+		}
+		return a % b;
+	}
+	
+	private double modulus (double a, int b){
+		if (a == 0.0)
+			return 0.0;
+		
+		a = a - b * (((int) a) / b);
+		if (a < 0.0)
+			a += b;
+		
+		return a;
+	}
+	
+	
+	
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent me) {
+		int pointX = me.getPoint().x;
+		System.out.println(lastMouseX - pointX);
+		double newVelocity = (double)lastMouseX - (double)pointX;
+		if (lastMouseX > 0 )
+			this.setVelocity(newVelocity / 100);
+		
+		lastMouseX = pointX;
+		
 	}
 
 }

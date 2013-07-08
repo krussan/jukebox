@@ -14,7 +14,8 @@ public class ImageCanvas extends Canvas {
 	Image image;
 
 	public ImageCanvas(String name) {
-		image = Toolkit.getDefaultToolkit().getImage(name);
+		URL imgUrl = getClass().getResource(name);
+		image = Toolkit.getDefaultToolkit().getImage(imgUrl);
 		initialize();
 	}
   
