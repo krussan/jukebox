@@ -1,3 +1,4 @@
+package se.qxx.jukebox.front;
 import java.awt.AlphaComposite;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -42,9 +43,16 @@ public class CarouselImage extends ImageIcon implements Comparable<CarouselImage
 
 	public CarouselImage(URL imageUrl) {
 		super(imageUrl);
-		
+	}
+
+	public CarouselImage(Image image) {
+		super(image);
 	}
 	
+	public CarouselImage(byte[] imageData) {
+		super(imageData);
+	}
+
 	public void paint(Graphics g) {
         Graphics2D g2d = (Graphics2D)g;
 		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));

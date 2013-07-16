@@ -1,3 +1,5 @@
+package se.qxx.jukebox.front;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -5,9 +7,12 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Timer;
@@ -15,7 +20,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 
-public class Carousel extends JPanel implements Runnable, MouseListener, MouseMotionListener  {
+public class Carousel extends JPanel implements Runnable, MouseListener, MouseMotionListener, KeyListener  {
 	/**
 	 * 
 	 */
@@ -42,26 +47,60 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 	
 	private Image backgroundImg;
 	
+	protected Carousel(String backgroundImage, int size) {
+		init(size);
+		loadBackground(tracker, backgroundImage);
+	}
+	
 	public Carousel(String backgroundImage, String[] imageNames) {
+		init(imageNames.length);
+        loadBackground(tracker, backgroundImage);
+		loadImages(tracker, imageNames);
+	}
+	
+	public Carousel(String backgroundImage, ArrayList<CarouselImage> images) {
+		init(images.size());
+        loadBackground(tracker, backgroundImage);
+		loadImages(tracker, images);
+	}
+
+	protected void init(int size) {
 		setBackground(Color.BLACK);
         setDoubleBuffered(true);
-        this.images = new CarouselImage[imageNames.length];
+        this.images = new CarouselImage[size];
         this.addMouseMotionListener(this);
-        
-        tracker = new MediaTracker(this);
-        
+        this.addKeyListener(this);
+        this.tracker = new MediaTracker(this);
+	}
+	
+	protected void loadBackground(MediaTracker trac, String backgroundImage) {
+		tracker = new MediaTracker(this);
         backgroundImg = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource(backgroundImage));
-		
-        for (int i=0;i<images.length;i++) {
+        trac.addImage(backgroundImg, 1);
+	}
+	
+
+	protected void loadImages(MediaTracker trac, String[] imageNames) {
+        for (int i=0;i<imageNames.length;i++) {
             CarouselImage ii = new CarouselImage(this.getClass().getResource(imageNames[i]));
             Image image = ii.getImage();       
-            tracker.addImage(image, 1);
+            trac.addImage(image, 1);
             images[i] = ii;
-        }
+        }		
+	}
+	
+	protected void loadImages(MediaTracker trac,  ArrayList<CarouselImage> imageArray) {
+        for (int i=0;i<imageArray.size();i++) {
+            CarouselImage ii = imageArray.get(i);
+            Image image = ii.getImage();       
+            trac.addImage(image, 1);
+            images[i] = ii;
+        }		
 	}
 	
     public void addNotify() {
         super.addNotify();
+        requestFocus();
         animator = new Thread(this);
         animator.start();
         rotater = new Thread(timer);
@@ -173,13 +212,14 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 			
 			// Finally, fade out the images that are at the very back. Make sure
 			// the rest have full opacity.
-			if (i == 0) {
-				images[i].setAlpha(.5f - (float)decimalOffset);
-			} else if (i == this.images.length - 1) {
-				images[i].setAlpha(.5f + (float)decimalOffset);
-			} else {
-				images[i].setAlpha(1.0f);
-			}
+//			if (i == 0) {
+//				images[i].setAlpha(.5f - (float)decimalOffset);
+//			} else if (i == this.images.length - 1) {
+//				images[i].setAlpha(.5f + (float)decimalOffset);
+//			} else {
+//				images[i].setAlpha(1.0f);
+//			}
+			images[i].setAlpha((1.0f - (float)Math.abs(x)));
 		}
 	}    
     
@@ -473,6 +513,30 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 			this.setVelocity(newVelocity / 100);
 		
 		lastMouseX = pointX;
+		
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		// TODO Auto-generated method stub
+		if (e.getKeyCode() == KeyEvent.VK_LEFT)
+//			this.setCurrentPhotoIndex(this.currentPhotoIndex - 1);
+			this.setVelocity(-0.01);
+		else if (e.getKeyCode() == KeyEvent.VK_RIGHT)
+//			this.setCurrentPhotoIndex(this.currentPhotoIndex + 1);
+			this.setVelocity(0.01);
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
 		
 	}
 
