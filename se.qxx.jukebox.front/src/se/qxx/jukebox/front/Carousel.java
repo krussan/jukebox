@@ -1,7 +1,9 @@
 package se.qxx.jukebox.front;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -34,6 +36,8 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 	
 	private CarouselImage[] images;
 	
+	private final long KEY_DELAY = 500;
+	
 	private double currentRotation = 1.0;
 	private int currentPhotoIndex = 0;
 	private boolean mouseMoved = false;
@@ -46,7 +50,21 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 	double velocityThreshold = .00002;
 	
 	private Image backgroundImg;
+	protected Dimension windowDimension;
 	
+    double containerWidth;
+    double containerHeight;
+    double boxHeight;
+    double boxWidth;
+    double xRadius;
+    double yRadius;
+    double spiralSpread;
+    double logPosition;
+    double logDistance;
+    
+    long keyTimer = 0;
+    private int direction = 0;
+        	
 	protected Carousel(String backgroundImage, int size) {
 		init(size);
 		loadBackground(tracker, backgroundImage);
@@ -110,17 +128,39 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
     
     public void paint(Graphics g) {
         super.paint(g);
-    	Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-    	g.drawImage(backgroundImg, 0, 0, (int)d.getWidth(), (int)d.getHeight(), this);
-
         CarouselImage copy[] = Arrays.copyOf(this.images, this.images.length);
-		Arrays.sort(copy);
-		
-		for (int i=0; i<copy.length; i++)
-			copy[i].paint(g);
-		
+        try {
+	        Arrays.sort(copy);
+        }
+        catch (Exception e) {
+        	JukeboxFront.log.error(e);
+        }
+        
+    	try {
+	    	g.drawImage(backgroundImg, 0, 0, (int)windowDimension.getWidth(), (int)windowDimension.getHeight(), this);
+	
+			
+			for (int i=0; i<copy.length; i++)
+				copy[i].paint(g);
+			
+	        Graphics2D g2d = (Graphics2D)g;
+			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+			
+			g.setColor(Color.WHITE);
+			g.drawString(String.format("currentIndex :: %s",  this.currentPhotoIndex), 20, 20);	
+			g.drawString(String.format("currentRotation :: %s",  this.currentRotation), 20, 35);
+			g.drawString(String.format("logPosition :: %s",  this.logPosition), 20, 50);
+			g.drawString(String.format("logDistance :: %s",  this.logDistance), 20, 65);
+			g.drawString(String.format("acceleration :: %s",  acceleration), 20, 80);
+			g.drawString(String.format("velocity :: %s",  velocity), 20, 95);
+			g.drawString(String.format("currentZIndex :: %s", images[this.currentPhotoIndex].getzIndex()), 20, 110);			
+    	}
+    	catch (Exception e) {
+    		JukeboxFront.log.error("Error in paint method", e);
+    		System.exit(-1);
+		}
         Toolkit.getDefaultToolkit().sync();
-        g.dispose();
+    	
     }
     
     public void cycle() {
@@ -139,27 +179,33 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 //        y += directionY;
 //
     }
+
     
-	private void placeImages() {
-		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+    private void initializeWindowSize() {
+    	windowDimension = Toolkit.getDefaultToolkit().getScreenSize();
 		
 		// The size of the container the holds the images.
-		double containerWidth = d.getWidth();
-		double containerHeight = d.getHeight();
+		containerWidth = windowDimension.getWidth();
+		containerHeight = windowDimension.getHeight();
 
 		// The base dimensions for each image. Images are scaled from these base
 		// dimensions.
-		double boxHeight = containerHeight * 3.0 / 8.0;
-		double boxWidth = boxHeight * 1.2;
+		boxHeight = containerHeight * 3.0 / 8.0;
+		boxWidth = boxHeight * 1.2;
 		
 		// The radius of the ellipse that the images are set around.
-		double xRadius = (containerWidth - boxWidth) / 2.0;
-		double yRadius = boxHeight / 5.0;
+		xRadius = (containerWidth - boxWidth) / 2.0;
+		yRadius = boxHeight / 5.0;
 		
 		// A factor for achieving the spiral affect. The greater this value, the
 		// more pronounced the spiral effect.
-		double spiralSpread = yRadius * .5;
+		spiralSpread = yRadius * .5;    	
+    }
 
+	private void placeImages() {
+		if (windowDimension == null)
+			initializeWindowSize();
+		
 		// The fraction that the images are offset from a whole number rotation.
 		// This value will be between -0.5 and 0.5.
 		double decimalOffset = currentRotation - Math.round(currentRotation);
@@ -183,7 +229,8 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 			
 			// The factor by which to scale the image (i.e. make it smaller or
 			// larger). This is based solely on the 'y' coordinate.
-			images[i].setScale(Math.abs(Math.pow(2, y-1)));
+			double scale = Math.abs(Math.pow(2, y-1));
+			images[i].setScale(scale);
 			
 			// set the zindex so that images in the front appear on top of
 			// images behind.
@@ -205,13 +252,52 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 			// factor is also added. Basically, the farther the image is around
 			// the circle, the farther down it is shifted to give the spiral
 			// effect.
+			float spiralFactor = Math.round(spiralSpread * (i - 4 - decimalOffset));
+			//float spiralFactor = Math.round((i - 4 - decimalOffset));
 			int ycoord = (int) Math.round((y * yRadius) + containerHeight - boxHeight - yRadius - images[i].getIconHeight()
-					/ 2.0 - Math.round(spiralSpread * (i - 4 - decimalOffset)));
+					/ 2.0 - spiralFactor) - 200;
 			images[i].setY(ycoord);
 			//imagePanel.setWidgetPosition(image, xcoord, ycoord);
 			
 			// Finally, fade out the images that are at the very back. Make sure
 			// the rest have full opacity.
+			images[i].setAlpha(.5f - (float)decimalOffset);
+			
+			int pi = this.getCurrentIndex();
+			
+			float alpha;
+			
+			int distanceFromCurrent = Math.abs(pi - i);
+			
+			alpha = (float)Math.pow(scale, 3.0d);
+	
+
+//			JukeboxFront.log.debug(String.format("Index:: %s spiralFactor :: %s boxHeight :: %s", i, spiralFactor, boxHeight));
+			
+			if (scale > 0.3 && Math.abs(spiralFactor) > boxHeight * 1/3 )
+				images[i].setVisible(false);
+			else
+				images[i].setVisible(true);
+			
+//			if (distanceFromCurrent > 3)
+//				images[i].setVisible(false);
+//			else
+//				images[i].setVisible(true);
+//			
+//			if (pi == i)
+//				alpha = 1.0f;
+//			else if ( distanceFromCurrent > 5)
+//				alpha = 1.0f - (float)Math.log(1 + Math.abs(5 - Math.max(0, pi - i)) / 5);
+////				alpha = 0.5f;
+//			else
+//				alpha = 0.0f;
+			
+			images[i].setAlpha(alpha);
+//			if (i != pi)
+//				images[i].setAlpha(0);
+//			else
+//				images[i].setAlpha(1.0f);
+			
 //			if (i == 0) {
 //				images[i].setAlpha(.5f - (float)decimalOffset);
 //			} else if (i == this.images.length - 1) {
@@ -219,7 +305,10 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 //			} else {
 //				images[i].setAlpha(1.0f);
 //			}
-			images[i].setAlpha((1.0f - (float)Math.abs(x)));
+//			if (decimalOffset >= 0)
+//				images[i].setAlpha((1.0f - (float)Math.abs(x)));
+//			else
+//				images[i].setAlpha(0);
 		}
 	}    
     
@@ -270,7 +359,10 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 					if (acceleration == 1.0) {
 						setRotation(currentRotation + ticks * velocity);
 					} else {
-						double newVelocity = velocity * Math.pow(acceleration, ticks * 3);
+						double newVelocity = velocity;
+						if (!keyIsDown())
+							newVelocity *= Math.pow(acceleration, ticks);
+						
 						if (Math.abs(newVelocity) < velocityThreshold) {
 							setRotation(currentRotation + distanceFromStartingVelocity(velocity, acceleration, velocityThreshold));
 							setVelocity(0.0);
@@ -507,10 +599,10 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 	@Override
 	public void mouseMoved(MouseEvent me) {
 		int pointX = me.getPoint().x;
-		System.out.println(lastMouseX - pointX);
-		double newVelocity = (double)lastMouseX - (double)pointX;
+
+		double newVelocity = ((double)lastMouseX - (double)pointX) / 3.0;
 		if (lastMouseX > 0 )
-			this.setVelocity(newVelocity / 100);
+			this.setVelocity(newVelocity / 50);
 		
 		lastMouseX = pointX;
 		
@@ -518,20 +610,29 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		// TODO Auto-generated method stub
+		direction = 0;
 		if (e.getKeyCode() == KeyEvent.VK_LEFT)
-//			this.setCurrentPhotoIndex(this.currentPhotoIndex - 1);
-			this.setVelocity(-0.01);
+			prev();
 		else if (e.getKeyCode() == KeyEvent.VK_RIGHT)
-//			this.setCurrentPhotoIndex(this.currentPhotoIndex + 1);
-			this.setVelocity(0.01);
+			next();
+		else if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
+			System.exit(0);
+		else if (e.getKeyCode() == KeyEvent.VK_I)
+			rotateTo(this.images.length - 4);
 		
+		if (keyTimer == 0)
+			keyTimer =  System.currentTimeMillis();		
 	}
-
+	
 	@Override
 	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
 		
+		if (direction != 0) {
+			keyTimer = 0;
+			rotateTo(this.currentPhotoIndex + direction);
+		}
+		
+		keyTimer = 0;
 	}
 
 	@Override
@@ -539,5 +640,77 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 		// TODO Auto-generated method stub
 		
 	}
+
+	/**
+	 * Start an animated rotation to the given position. Position is based on
+	 * indices in the photo list. So to rotate to the 3rd photo in the list,
+	 * pass 2.0 (indicies are 0 based) as the position.
+	 */
+	public void rotateTo(double position) {
+		if (!this.keyIsDown()) {
+			logPosition = position;
+			if (acceleration >= 1.0) {
+				setRotation(position);
+				return;
+			}
+			
+			int size = this.images.length;
+			
+			double distance = modulus(position, size) - currentRotation;
+			if (distance > size / 2) {
+				distance -= size;
+			} else if (distance < size / -2) {
+				distance += size;
+			}
+			logDistance = distance;
+			
+			setVelocity(velocityForDistance(distance, acceleration, velocityThreshold));
+		}
+		else {
+			setVelocity(getVelocity() * 1.05d);
+		}
+	}
+	
+
+	public static double velocityForDistance(double distance, double acceleration, double finalVelocity) {
+		if (distance < 0)
+			finalVelocity = -finalVelocity;
+		return finalVelocity - distance * Math.log(acceleration);
+	}
+	
+	/**
+	 * Start an animated rotation to the previous photo.
+	 */
+	public void prev() {
+		direction = -1;
+		rotateTo(getPhotoIndex() - 1.0);
+	}
+
+	/**
+	 * Start an animated rotation to the next photo.
+	 */
+	public void next() {
+		direction = 1;
+		rotateTo(getPhotoIndex() + 1.0);
+	}
+	
+	public int getCurrentIndex() {
+		return (this.currentPhotoIndex + 4) % this.images.length;
+	}
+	
+	private boolean keyIsDown() {
+		boolean isKeyInitialized = System.currentTimeMillis() - keyTimer < KEY_DELAY;
+		if (keyTimer != 0 || isKeyInitialized)
+			return true;
+		else
+			return false;
+//		return keyTimer == 0 && ;
+//		if (keyTimer == 0)
+//			return false;
+//		else 
+//			return System.currentTimeMillis() - keyTimer < KEY_DELAY;
+//		return keyTimer != 0 && ;
+	}
+
 
 }
