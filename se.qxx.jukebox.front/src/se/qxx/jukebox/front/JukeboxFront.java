@@ -22,12 +22,18 @@ import com.sun.jna.NativeLibrary;
 
 import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
+import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.front.model.Model;
 import uk.co.caprica.vlcj.binding.LibVlc;
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
-public class JukeboxFront {
+public class JukeboxFront extends JFrame implements MovieStatusListener {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1556370601254211254L;
+	
 	private EmbeddedMediaPlayerComponent mediaPlayerComponent;
 	private static final int SERVER_PORT = 2152;
 	private static final String SERVER_IP_ADDRESS = "192.168.1.120";
@@ -35,8 +41,13 @@ public class JukeboxFront {
 	
 	public static Logger log;
 	private CountDownLatch waiter = new CountDownLatch(1);
+		
+	MovieCarousel mainCarousel;
+	JukeboxMediaPlayer player = new JukeboxMediaPlayer();
 	
 	public JukeboxFront() {
+		super("Jukebox Front");
+		
 		String workingDir = System.getProperty("user.dir");
 		System.out.println(workingDir);
 		initLogging();
@@ -75,7 +86,8 @@ public class JukeboxFront {
 	    BackDrop bd = new BackDrop();
 	    bd.setLayout(new BorderLayout());
 	    
-	    int size = Model.get().getMovies().size();
+	    player.initialize(this);
+//	    int size = Model.get().getMovies().size();
 //	    String[] imageUrls = new String[size];
 //	    for (int i=0;i<size;i++) 
 //	    	imageUrls[i] = String.format("/res/test/movie%s.jpg", i);
@@ -84,17 +96,17 @@ public class JukeboxFront {
 	    	log.info("Querying jukebox server for movies");
 			waiter.await();
 			
-		    Carousel cl = new MovieCarousel("/res/xperiencebg.jpg", Model.get().getMovies());
+			mainCarousel = new MovieCarousel("/res/xperiencebg.jpg", Model.get().getMovies());
+			mainCarousel.setMovieStatusListener(this);
 		    bd.setLayout(new BorderLayout());
-
 	    	
-		    final JFrame frame = new JFrame("Jukebox Front");	
+		    //frame = new JFrame("Jukebox Front");	
 		    //GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow(frame);
-		    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		    frame.setContentPane(cl);
-		    frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-		    frame.setUndecorated(true);
-		    frame.setVisible(true);			
+		    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		    this.setContentPane(mainCarousel);
+		    this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		    this.setUndecorated(true);
+		    this.setVisible(true);			
 		} catch (InterruptedException e) {
 			System.exit(-1);
 		}
@@ -127,5 +139,25 @@ public class JukeboxFront {
 	private void initLogging() {
 		PropertyConfigurator.configure(LOG4J_PROPS);
 		this.log = Logger.getLogger(this.getClass());
+	}
+
+	@Override
+	public void stop() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void play(Movie m) {
+		// TODO Auto-generated method stub
+		changePanel(player);
+		player.start(m);
+	}
+	
+	private void changePanel(JPanel panel) {
+	    getContentPane().removeAll();
+	    this.setContentPane(panel);
+	    getContentPane().doLayout();
+	    update(getGraphics());		
 	}
 }

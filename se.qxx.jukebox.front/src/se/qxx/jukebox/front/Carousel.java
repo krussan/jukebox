@@ -64,6 +64,8 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
     
     long keyTimer = 0;
     private int direction = 0;
+    
+
         	
 	protected Carousel(String backgroundImage, int size) {
 		init(size);
@@ -146,14 +148,14 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 	        Graphics2D g2d = (Graphics2D)g;
 			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
 			
-			g.setColor(Color.WHITE);
-			g.drawString(String.format("currentIndex :: %s",  this.currentPhotoIndex), 20, 20);	
-			g.drawString(String.format("currentRotation :: %s",  this.currentRotation), 20, 35);
-			g.drawString(String.format("logPosition :: %s",  this.logPosition), 20, 50);
-			g.drawString(String.format("logDistance :: %s",  this.logDistance), 20, 65);
-			g.drawString(String.format("acceleration :: %s",  acceleration), 20, 80);
-			g.drawString(String.format("velocity :: %s",  velocity), 20, 95);
-			g.drawString(String.format("currentZIndex :: %s", images[this.currentPhotoIndex].getzIndex()), 20, 110);			
+//			g.setColor(Color.WHITE);
+//			g.drawString(String.format("currentIndex :: %s",  this.currentPhotoIndex), 20, 20);	
+//			g.drawString(String.format("currentRotation :: %s",  this.currentRotation), 20, 35);
+//			g.drawString(String.format("logPosition :: %s",  this.logPosition), 20, 50);
+//			g.drawString(String.format("logDistance :: %s",  this.logDistance), 20, 65);
+//			g.drawString(String.format("acceleration :: %s",  acceleration), 20, 80);
+//			g.drawString(String.format("velocity :: %s",  velocity), 20, 95);
+//			g.drawString(String.format("currentZIndex :: %s", images[this.currentPhotoIndex].getzIndex()), 20, 110);			
     	}
     	catch (Exception e) {
     		JukeboxFront.log.error("Error in paint method", e);
@@ -618,7 +620,7 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 		else if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
 			System.exit(0);
 		else if (e.getKeyCode() == KeyEvent.VK_I)
-			rotateTo(this.images.length - 4);
+			rotateTo(0.0f);
 		
 		if (keyTimer == 0)
 			keyTimer =  System.currentTimeMillis();		
@@ -711,6 +713,8 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 //			return System.currentTimeMillis() - keyTimer < KEY_DELAY;
 //		return keyTimer != 0 && ;
 	}
+
+
 
 
 }

@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,8 @@ public class MovieCarousel extends Carousel {
 	 * 
 	 */
 	private static final long serialVersionUID = 311298267035861868L;
-
+    private MovieStatusListener listener;
+    
 	public MovieCarousel(String backgroundImage, List<Movie> movies) {
 		super(backgroundImage, movies.size());
 		
@@ -34,9 +36,9 @@ public class MovieCarousel extends Carousel {
 		}
 		
 		loadImages(tracker, images);
-		
-		
 	}
+	
+	
 	
 
     public void paint(Graphics g) {
@@ -49,5 +51,19 @@ public class MovieCarousel extends Carousel {
     	info.paint(g);
 
     }
+    
+	public void setMovieStatusListener(MovieStatusListener movieStatusListener) {
+		this.listener = movieStatusListener;
+	}
 	
+	@Override
+	public void keyPressed(KeyEvent e) {
+		super.keyPressed(e);
+		
+		if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+			Movie m = Model.get().getMovie(super.getCurrentIndex());
+			if (this.listener != null)
+				this.listener.play(m);
+		}
+	}
 }
