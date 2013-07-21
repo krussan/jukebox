@@ -123,7 +123,7 @@ public class InfoBox extends Canvas {
 				curY += lineHeight;
 				curX = x;
 			}
-
+			
 			g.drawString(word, curX, curY);
 
 			// Move over to the right for next word.

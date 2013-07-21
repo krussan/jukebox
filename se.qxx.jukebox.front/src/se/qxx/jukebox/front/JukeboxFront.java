@@ -43,7 +43,7 @@ public class JukeboxFront extends JFrame implements MovieStatusListener {
 	private CountDownLatch waiter = new CountDownLatch(1);
 		
 	MovieCarousel mainCarousel;
-	JukeboxMediaPlayer player = new JukeboxMediaPlayer();
+	JukeboxMediaPlayer player;
 	
 	public JukeboxFront() {
 		super("Jukebox Front");
@@ -76,16 +76,17 @@ public class JukeboxFront extends JFrame implements MovieStatusListener {
 	}
 
 	private void setupMain() {
-	    ImageCanvas c = new ImageCanvas("/res/xperiencebg.jpg");
-	    c.setBackground(Color.black);
+//	    ImageCanvas c = new ImageCanvas("/res/xperiencebg.jpg");
+//	    c.setBackground(Color.black);
 	    
-	    JPanel p = new JPanel();
-	    p.setLayout(new BorderLayout());
-	    p.add(c, BorderLayout.CENTER);
+//	    JPanel p = new JPanel();
+//	    p.setLayout(new BorderLayout());
+//	    p.add(c, BorderLayout.CENTER);
 	    
-	    BackDrop bd = new BackDrop();
-	    bd.setLayout(new BorderLayout());
-	    
+//	    BackDrop bd = new BackDrop();
+//	    bd.setLayout(new BorderLayout());
+    
+	    player = new JukeboxMediaPlayer();
 	    player.initialize(this);
 //	    int size = Model.get().getMovies().size();
 //	    String[] imageUrls = new String[size];
@@ -98,7 +99,6 @@ public class JukeboxFront extends JFrame implements MovieStatusListener {
 			
 			mainCarousel = new MovieCarousel("/res/xperiencebg.jpg", Model.get().getMovies());
 			mainCarousel.setMovieStatusListener(this);
-		    bd.setLayout(new BorderLayout());
 	    	
 		    //frame = new JFrame("Jukebox Front");	
 		    //GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow(frame);
@@ -151,13 +151,14 @@ public class JukeboxFront extends JFrame implements MovieStatusListener {
 	public void play(Movie m) {
 		// TODO Auto-generated method stub
 		changePanel(player);
+		player.initialize(this);
 		player.start(m);
 	}
 	
 	private void changePanel(JPanel panel) {
-	    getContentPane().removeAll();
-	    this.setContentPane(panel);
-	    getContentPane().doLayout();
-	    update(getGraphics());		
+		this.getContentPane().removeAll();
+		this.setContentPane(panel);
+		this.validate();
+		this.repaint();
 	}
 }
