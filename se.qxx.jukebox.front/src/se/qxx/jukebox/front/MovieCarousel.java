@@ -59,11 +59,6 @@ public class MovieCarousel extends Carousel {
 	@Override
 	public void keyPressed(KeyEvent e) {
 		super.keyPressed(e);
-		
-		if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-			Movie m = Model.get().getMovie(super.getCurrentIndex());
-			if (this.listener != null)
-				this.listener.play(m);
-		}
 	}
+
 }

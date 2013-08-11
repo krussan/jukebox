@@ -1,10 +1,7 @@
 package se.qxx.jukebox.front;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Image;
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.concurrent.CountDownLatch;
 
 import javax.swing.JFrame;
@@ -27,14 +24,14 @@ import se.qxx.jukebox.front.model.Model;
 import uk.co.caprica.vlcj.binding.LibVlc;
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
-public class JukeboxFront extends JFrame implements MovieStatusListener {
+
+public class JukeboxFront extends JFrame implements MovieStatusListener, KeyListener {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -1556370601254211254L;
 	
-	private EmbeddedMediaPlayerComponent mediaPlayerComponent;
 	private static final int SERVER_PORT = 2152;
 	private static final String SERVER_IP_ADDRESS = "192.168.1.120";
 	private static final String LOG4J_PROPS = "log4j.prop";
@@ -86,8 +83,9 @@ public class JukeboxFront extends JFrame implements MovieStatusListener {
 //	    BackDrop bd = new BackDrop();
 //	    bd.setLayout(new BorderLayout());
     
-	    player = new JukeboxMediaPlayer();
-	    player.initialize(this);
+	    player = new JukeboxMediaPlayer(this);
+	    player.addKeyListener(this);
+	    
 //	    int size = Model.get().getMovies().size();
 //	    String[] imageUrls = new String[size];
 //	    for (int i=0;i<size;i++) 
@@ -99,6 +97,7 @@ public class JukeboxFront extends JFrame implements MovieStatusListener {
 			
 			mainCarousel = new MovieCarousel("/res/xperiencebg.jpg", Model.get().getMovies());
 			mainCarousel.setMovieStatusListener(this);
+			mainCarousel.addKeyListener(this);
 	    	
 		    //frame = new JFrame("Jukebox Front");	
 		    //GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow(frame);
@@ -106,7 +105,8 @@ public class JukeboxFront extends JFrame implements MovieStatusListener {
 		    this.setContentPane(mainCarousel);
 		    this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		    this.setUndecorated(true);
-		    this.setVisible(true);			
+		    this.setVisible(true);
+		    this.addKeyListener(this);
 		} catch (InterruptedException e) {
 			System.exit(-1);
 		}
@@ -143,22 +143,66 @@ public class JukeboxFront extends JFrame implements MovieStatusListener {
 
 	@Override
 	public void stop() {
-		// TODO Auto-generated method stub
-		
+		player.stop();
+		changePanel(mainCarousel);
 	}
 
 	@Override
-	public void play(Movie m) {
+	public void play(String filename) {
 		// TODO Auto-generated method stub
 		changePanel(player);
-		player.initialize(this);
-		player.start(m);
+//		player.initialize(this);
+
+		try {
+			if (!player.start(filename)) {
+				this.stop();
+			}
+		}
+		catch (Exception e) {
+			JukeboxFront.log.error("Error when starting video", e);
+			changePanel(player);
+		}		
 	}
-	
 	private void changePanel(JPanel panel) {
 		this.getContentPane().removeAll();
 		this.setContentPane(panel);
 		this.validate();
 		this.repaint();
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		if (player.isPlaying()) {
+			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+				this.stop();
+			}					
+		}
+		else {
+			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+				Movie m = Model.get().getMovie(mainCarousel.getCurrentIndex());
+				
+				JukeboxFront.log.info(m.getMedia(0).getFilename());
+				String filepath = m.getMedia(0).getFilepath().replace("/c/media/BitTorrent", "");
+				if (filepath.startsWith("/"))
+					filepath = filepath.substring(1);
+				
+				String filename = String.format("\\\\ULTRA\\media\\BitTorrent\\%s\\%s", filepath, m.getMedia(0).getFilename());
+				
+				this.play(filename);
+			}			
+		}
+			
+	}
+	
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

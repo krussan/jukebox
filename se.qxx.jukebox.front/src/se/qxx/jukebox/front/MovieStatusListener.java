@@ -4,5 +4,5 @@ import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 
 public interface MovieStatusListener {
 	public void stop();
-	public void play(Movie m);
+	public void play(String filename);
 }

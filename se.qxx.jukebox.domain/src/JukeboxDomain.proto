@@ -127,6 +127,22 @@ message JukeboxRequestSetSubtitle {
 	required string subtitleDescription = 3;
 }
 
+//---------------------------------------------------------------------------------------
+//--------------------------------------------------------------- JukeboxFront Requests
+//---------------------------------------------------------------------------------------
+
+message JukeboxFrontStartMovie {
+	required string mrl = 1;
+	optional string subFile = 2;
+}
+
+message JukeboxFrontSeek {
+	required int32 seconds = 1;
+}
+
+message JukeboxFrontSetSubtitle {
+	required string subFile = 1;
+}
 
 //---------------------------------------------------------------------------------------
 //----------------------------------------------------------------------- Responses
@@ -189,3 +205,13 @@ service JukeboxService {
 }
  
  
+service JukeboxFrontService {
+	rpc StartMovie(JukeboxFrontStartMovie) returns (Empty);
+	rpc StopMovie(Empty) returns (Empty);
+	rpc PauseMovie(Empty) returns (Empty);
+	rpc Seek(JukeboxFrontSeek) returns (Empty);
+	rpc SwitchVRatio(Empty) returns (Empty);
+	rpc GetTime(Empty) returns (JukeboxResponseTime);
+	rpc isPlaying(Empty) returns (JukeboxResponseIsPlaying);
+	rpc GetTitle(Empty) returns (JukeboxResponseGetTitle);
+}
