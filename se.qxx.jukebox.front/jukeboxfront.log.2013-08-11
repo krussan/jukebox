@@ -1,0 +1,1069 @@
+2013-08-11 22:25:26,188 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Querying jukebox server for movies
+2013-08-11 22:25:31,236 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 22:25:35,475 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - \\ULTRA\media\BitTorrent\Chronicle.2012.DC.720p.BluRay.x264-REFiNED\refined-chronicle-720p.mkv
+2013-08-11 22:25:57,555 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Querying jukebox server for movies
+2013-08-11 22:26:04,716 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - \\ULTRA\media\BitTorrent\\The-Lost-Coast-Tapes-2012-DVDRIP-Xvid-BHRG.avi
+2013-08-11 23:10:07,883 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Querying jukebox server for movies
+2013-08-11 23:10:13,120 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Batman.Under.The.Red.Hood.2010.720p.XviD.AC3-ViSiON.avi
+2013-08-11 23:10:13,139 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - \\ULTRA\media\BitTorrent\\Batman.Under.The.Red.Hood.2010.720p.XviD.AC3-ViSiON.avi
+2013-08-11 23:15:27,427 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Querying jukebox server for movies
+2013-08-11 23:15:45,348 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Red Dog [2011] 720p BRRip.x264.DXVA-ZoNe.mp4
+2013-08-11 23:15:45,367 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - \\ULTRA\media\BitTorrent\Red Dog [2011] 720p BRRip.x264.DXVA-ZoNe\Red Dog [2011] 720p BRRip.x264.DXVA-ZoNe.mp4
+2013-08-11 23:23:04,585 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Querying jukebox server for movies
+2013-08-11 23:23:17,915 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:23:53,565 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Querying jukebox server for movies
+2013-08-11 23:23:57,986 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:24:22,318 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:24:28,215 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:24:28,375 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:26:23,547 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Querying jukebox server for movies
+2013-08-11 23:26:27,616 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:26:34,253 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Cowboys and Aliens 720p.mkv
+2013-08-11 23:26:36,110 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Cowboys and Aliens 720p.mkv
+2013-08-11 23:26:38,530 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:26:39,806 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Killing.Them.Softly.2012.DVDRIP.V2.XViD-RESiSTANCE.avi
+2013-08-11 23:26:40,215 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Killing.Them.Softly.2012.DVDRIP.V2.XViD-RESiSTANCE.avi
+2013-08-11 23:26:40,345 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Killing.Them.Softly.2012.DVDRIP.V2.XViD-RESiSTANCE.avi
+2013-08-11 23:26:58,822 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Querying jukebox server for movies
+2013-08-11 23:27:04,098 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:27:06,868 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:27:19,903 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Shelter 1080p.mkv
+2013-08-11 23:27:39,112 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Querying jukebox server for movies
+2013-08-11 23:27:59,657 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Querying jukebox server for movies
+2013-08-11 23:28:02,111 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:28:39,413 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Querying jukebox server for movies
+2013-08-11 23:29:09,245 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Querying jukebox server for movies
+2013-08-11 23:29:15,317 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - A.C.A.B. - All Cops Are Bastards.mkv
+2013-08-11 23:29:15,336 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - \\ULTRA\media\BitTorrent\\A.C.A.B. - All Cops Are Bastards.mkv
+2013-08-11 23:31:22,234 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Querying jukebox server for movies
+2013-08-11 23:31:37,690 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Sick-Boy-2011-BDRip-XViD-PLAYNOW.avi
+2013-08-11 23:31:37,722 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - \\ULTRA\media\BitTorrent\\Sick-Boy-2011-BDRip-XViD-PLAYNOW.avi
+2013-08-11 23:31:52,545 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:31:52,749 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:31:52,930 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:31:54,332 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:32:13,646 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Querying jukebox server for movies
+2013-08-11 23:32:19,219 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - alli-alvh-xvid-cd1.avi
+2013-08-11 23:32:19,238 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - \\ULTRA\media\BitTorrent\Abraham.Lincoln.Vampire.Hunter.2012.DVDRip.XviD-ALLiANCE/CD1\alli-alvh-xvid-cd1.avi
+2013-08-11 23:32:30,525 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Querying jukebox server for movies
+2013-08-11 23:32:41,295 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - l-ontheroad-cd1.xvid.avi
+2013-08-11 23:32:41,314 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - \\ULTRA\media\BitTorrent\On The Road 2012\l-ontheroad-cd1.xvid.avi
+2013-08-11 23:34:12,077 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Querying jukebox server for movies
+2013-08-11 23:34:17,353 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Batman.Under.The.Red.Hood.2010.720p.XviD.AC3-ViSiON.avi
+2013-08-11 23:34:17,372 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - \\ULTRA\media\BitTorrent\\Batman.Under.The.Red.Hood.2010.720p.XviD.AC3-ViSiON.avi
+2013-08-11 23:34:46,652 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Querying jukebox server for movies
+2013-08-11 23:34:51,871 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - A.C.A.B. - All Cops Are Bastards.mkv
+2013-08-11 23:34:51,890 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - \\ULTRA\media\BitTorrent\\A.C.A.B. - All Cops Are Bastards.mkv
+2013-08-11 23:35:10,906 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Querying jukebox server for movies
+2013-08-11 23:35:24,991 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:35:25,082 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:35:25,096 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:35:25,100 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:35:25,197 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:35:25,339 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:35:25,404 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:35:25,491 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:35:25,529 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:35:25,591 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:35:25,669 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:35:25,772 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:35:25,998 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:35:26,010 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:35:26,245 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:35:26,395 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:35:30,722 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:35:38,073 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Red Dog [2011] 720p BRRip.x264.DXVA-ZoNe.mp4
+2013-08-11 23:35:38,095 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - \\ULTRA\media\BitTorrent\Red Dog [2011] 720p BRRip.x264.DXVA-ZoNe\Red Dog [2011] 720p BRRip.x264.DXVA-ZoNe.mp4
+2013-08-11 23:36:04,639 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:05,880 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:06,062 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:06,773 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:06,846 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:07,091 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:07,188 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:07,254 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:08,808 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:08,949 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:09,233 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:09,306 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:13,887 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:13,923 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:13,996 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:14,130 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:14,156 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:14,188 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:14,368 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:14,396 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:14,468 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:14,563 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:14,585 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:14,656 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:14,833 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:14,891 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:14,907 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:14,992 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:15,006 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:15,226 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:15,234 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:15,257 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:15,309 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:15,459 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:16,335 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:36:19,757 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - The Big Year 2011 EXTENDED 720p BRRip x264 AAC-26K.mp4
+2013-08-11 23:36:19,773 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - \\ULTRA\media\BitTorrent\The Big Year 2011 EXTENDED 720p BRRip x264 AAC-26K\The Big Year 2011 EXTENDED 720p BRRip x264 AAC-26K.mp4
+2013-08-11 23:37:10,322 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:10,352 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:10,359 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:10,390 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:10,400 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:10,406 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:10,440 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:10,454 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:10,462 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:10,534 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:10,561 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:10,584 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:10,629 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:10,675 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:10,695 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:10,698 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:10,728 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:10,772 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:10,823 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:10,827 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:10,862 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:10,878 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:10,898 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:10,920 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:10,930 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:10,940 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,011 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,053 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,056 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,096 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,160 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,179 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,187 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,231 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,270 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,332 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,362 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,378 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,385 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,392 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,395 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,399 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,402 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,405 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,412 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,424 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,467 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,473 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,498 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,502 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,505 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,520 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,524 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,528 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,540 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,544 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,551 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,585 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,597 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,634 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,637 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,647 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,656 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,667 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,673 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,683 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,693 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,699 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,702 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,718 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,725 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,744 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,747 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,750 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,932 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:11,941 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:12,350 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:12,468 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:12,511 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:12,566 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:12,717 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:13,329 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:13,673 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:13,718 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:13,722 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:13,729 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:13,827 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:14,065 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:14,119 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:14,156 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:14,278 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:14,363 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:14,388 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:14,502 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:14,590 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:14,634 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:14,671 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:14,675 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:14,752 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:14,781 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:14,814 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:14,885 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:14,983 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:15,029 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:15,170 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:15,267 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:15,270 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:15,275 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:15,417 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:15,698 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:15,778 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:16,185 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:16,262 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:16,500 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:16,607 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:16,617 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:16,664 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:16,698 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:17,164 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:17,221 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:17,414 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:17,492 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:17,538 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:17,547 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:17,559 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:17,565 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:17,798 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:17,876 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:17,903 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:25,073 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:25,431 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:25,492 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:25,509 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:25,687 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:25,693 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:25,810 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:25,814 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:25,869 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:25,956 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:26,027 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:26,049 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:26,055 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:26,091 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:26,190 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:26,217 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:26,220 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:26,612 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:26,624 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:26,732 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:26,741 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:26,751 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:26,893 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:26,915 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:27,234 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:27,301 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:27,382 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:27,660 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:27,688 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:27,788 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:27,952 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:27,965 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:27,971 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:28,308 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:28,509 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:28,584 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:28,678 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:28,769 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:28,834 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:28,879 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:28,919 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:29,000 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:29,019 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:29,028 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:29,050 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:29,174 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:29,177 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:29,190 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:29,193 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:29,204 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:29,404 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:29,427 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:29,650 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:29,665 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:29,700 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:29,704 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:29,839 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:29,903 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:29,929 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:30,027 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:30,057 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:30,095 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:30,178 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:30,388 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:30,409 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:30,508 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:30,772 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:30,853 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:30,856 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:30,866 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:31,089 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:31,406 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:31,436 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:31,446 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:31,450 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:31,483 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:31,525 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:31,583 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:31,638 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:31,770 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:31,796 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:32,011 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:32,076 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:32,135 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:32,154 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:32,182 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:32,378 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:32,422 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:32,490 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:32,633 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:32,642 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:32,785 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:32,807 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:33,134 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:33,144 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:33,284 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:33,368 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:33,383 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:33,390 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:33,640 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:33,668 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:34,027 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:34,436 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:34,762 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:34,898 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:34,971 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:35,005 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:37,029 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Revolutionary.Road[2008]DVDRip.h264.aac.ac3pt.mkv
+2013-08-11 23:37:37,044 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - \\ULTRA\media\BitTorrent\\Revolutionary.Road[2008]DVDRip.h264.aac.ac3pt.mkv
+2013-08-11 23:37:42,322 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:42,558 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:42,789 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:42,845 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:42,907 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:43,172 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:43,272 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:43,349 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:43,456 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:44,090 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:44,175 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:44,432 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:44,530 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:44,546 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:44,613 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:44,945 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:45,441 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:46,066 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:46,088 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:46,155 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:46,239 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:46,252 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:46,264 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:46,293 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:46,296 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:46,320 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:46,338 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:46,381 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:46,390 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:46,410 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:46,665 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:46,699 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:46,777 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:46,812 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:46,864 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:47,243 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:47,247 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:47,250 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:47,331 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:47,389 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:47,459 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:47,522 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:47,643 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:47,730 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:47,759 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:47,826 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:47,875 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:47,925 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:47,939 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:47,986 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:48,007 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:48,074 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:48,122 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:48,174 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:48,184 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:48,219 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:48,223 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:48,393 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:48,480 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:48,507 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:48,535 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:48,541 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:48,615 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:48,636 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:48,679 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:48,689 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:48,744 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:48,773 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:48,789 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:48,845 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:48,857 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:48,894 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:48,929 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:48,951 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:48,965 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:48,972 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:49,013 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:49,026 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:49,073 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:49,101 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:49,136 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:49,199 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:49,218 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:49,222 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:49,240 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:49,336 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:49,355 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:49,377 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:49,407 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:49,507 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:49,529 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:49,656 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:49,659 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:49,669 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:49,679 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:49,701 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:49,819 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:49,906 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:49,952 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:49,964 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:50,029 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:50,126 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:50,141 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:50,179 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:50,213 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:50,219 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:50,251 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:50,465 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:50,581 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:50,606 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:50,622 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:50,658 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:50,677 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:50,684 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:50,687 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:50,697 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:53,341 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - The Expendables 2 [2012] XviD BRRiP - ETRG.avi
+2013-08-11 23:37:53,357 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - \\ULTRA\media\BitTorrent\The Expendables 2 [2012] XviD BRRiP - ETRG\The Expendables 2 [2012] XviD BRRiP - ETRG.avi
+2013-08-11 23:37:59,061 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:59,116 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:59,150 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:59,229 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:59,364 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:59,392 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:59,424 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:59,452 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:59,462 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:59,471 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:59,556 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:59,631 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:59,647 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:59,740 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:59,747 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:59,775 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:59,917 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:59,956 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:59,989 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:37:59,992 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:00,041 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:00,094 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:00,106 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:00,109 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:00,118 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:00,167 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:00,202 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:00,237 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:00,240 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:00,312 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:00,331 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:00,505 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:00,544 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:00,597 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:00,603 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:00,727 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:00,926 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:00,957 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:00,968 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:00,972 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:01,040 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:01,073 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:01,116 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:01,361 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:01,445 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:01,467 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:01,477 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:01,552 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:01,661 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:01,670 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:01,758 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:01,770 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:01,792 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:01,844 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:01,863 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:01,894 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:01,900 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:01,907 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:01,911 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:02,038 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:02,200 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:02,266 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:02,282 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:02,301 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:02,369 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:02,375 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:02,381 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:02,392 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:02,455 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:02,496 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:02,524 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:02,558 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:02,570 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:02,593 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:02,596 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:02,644 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:02,670 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:02,685 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:02,701 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:02,829 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:02,840 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:02,843 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:02,874 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:02,927 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:02,933 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:02,939 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:02,986 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:03,008 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:03,048 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:03,099 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:03,103 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:03,109 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:03,300 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:03,369 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:03,379 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:03,382 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:03,392 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:03,414 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:03,430 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:03,434 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:03,466 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:03,491 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:03,495 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:03,534 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:03,543 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:03,568 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:03,630 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:03,682 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:03,708 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:03,921 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:03,931 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:03,949 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:03,959 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:03,991 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:04,026 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:04,179 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:04,206 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:04,210 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:04,276 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:04,385 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:04,388 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:04,397 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:04,403 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:04,488 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:04,507 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:04,591 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:04,627 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:04,685 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:04,730 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:04,739 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:04,748 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:04,767 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:04,805 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:04,865 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:05,014 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:05,021 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:05,161 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:05,256 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:05,281 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:05,294 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:05,418 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:05,530 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:05,547 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:05,585 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:05,617 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:05,807 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:05,827 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:05,850 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:05,874 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:05,891 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:05,903 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:05,917 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:05,955 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:06,000 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:06,109 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:06,115 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:06,142 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:06,166 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:06,334 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:06,527 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:06,562 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:06,633 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:06,667 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:06,673 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:07,617 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:07,954 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:08,091 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:08,133 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:08,198 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:08,219 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:08,294 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:08,313 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:08,348 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:08,394 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:08,515 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:08,518 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:08,562 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:08,630 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:08,640 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:08,643 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:08,665 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:08,671 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:08,692 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:08,708 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:08,876 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:08,941 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:09,013 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:09,024 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:09,071 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:09,074 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:09,097 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:09,106 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:09,129 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:09,190 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:09,204 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:09,207 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:09,248 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:09,256 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:09,296 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:09,321 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:09,379 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:09,397 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:09,428 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:09,456 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:09,477 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:09,507 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:09,598 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:09,644 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:09,746 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:09,769 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:09,799 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:09,865 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:09,953 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:10,023 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:10,081 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:10,087 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:10,230 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:10,601 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:10,734 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:10,905 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:11,028 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:11,084 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:11,096 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:11,107 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:11,133 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:11,136 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:11,240 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:11,243 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:11,289 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:11,332 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:11,367 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:11,524 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:12,134 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:12,651 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:12,727 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:12,730 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:12,744 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:12,800 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:12,860 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:12,930 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:12,987 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:13,198 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:13,286 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:13,315 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:13,409 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:13,456 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:13,470 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:13,559 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:13,577 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:13,599 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:13,641 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:13,772 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:13,877 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:13,957 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:14,031 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:14,212 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:14,261 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:14,291 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:14,324 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:14,369 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:14,426 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:14,680 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:14,876 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:15,028 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:15,058 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:15,190 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:15,283 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:15,331 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:15,348 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:15,384 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:15,407 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:15,533 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:15,552 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:15,565 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:15,572 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:15,650 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:15,720 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:15,729 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:15,740 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:15,855 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:15,915 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:15,963 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:15,967 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:15,979 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:16,017 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:16,025 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:16,037 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:16,053 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:16,056 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:16,139 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:16,226 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:16,278 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:16,422 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:16,443 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:16,539 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:16,583 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:16,609 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:16,623 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:16,629 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:16,643 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:16,646 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:16,649 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:16,879 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:16,907 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:17,175 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:17,184 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:17,209 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:17,281 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:17,301 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:17,407 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:17,422 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:17,445 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:17,527 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:17,548 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:17,593 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:17,604 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:17,607 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:17,610 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:17,613 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:17,711 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:17,844 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:17,854 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:17,950 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:17,965 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:18,176 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:18,212 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:18,261 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:18,275 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:18,288 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:18,313 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:18,427 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:18,435 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:18,475 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:18,575 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:18,671 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:18,690 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:18,788 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:18,838 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:19,019 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:19,041 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:19,121 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:19,207 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:19,415 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:19,428 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:19,587 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:19,808 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:19,847 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:20,336 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:20,339 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:20,429 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:20,441 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:20,550 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:20,564 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:20,574 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:20,639 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:20,684 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:20,978 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:21,015 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:21,436 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:21,470 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:21,487 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:21,492 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:21,496 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:21,521 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:21,590 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:21,593 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:21,744 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:21,747 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:21,827 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:21,910 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:21,928 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:21,974 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:22,174 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:22,194 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:22,227 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:22,332 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:22,479 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:22,780 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:22,784 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:22,793 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:22,845 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:22,862 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:22,928 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:22,956 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:23,003 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:23,061 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:23,079 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:23,147 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:23,292 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:23,354 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:23,404 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:23,458 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:23,518 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:23,543 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:23,636 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:23,661 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:23,676 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:23,779 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:23,921 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:23,959 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:23,969 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:24,048 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:24,194 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:24,219 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:24,232 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:24,298 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:24,355 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:38:38,441 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - 12 Pippi håller avskedskalas.avi
+2013-08-11 23:38:38,852 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - \\ULTRA\media\BitTorrent\Incomplete/pippi alla avsnitt +2 filmer\12 Pippi håller avskedskalas.avi
+2013-08-11 23:38:53,335 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Querying jukebox server for movies
+2013-08-11 23:39:05,753 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Batman.Year.One.2011.1080p.mkv
+2013-08-11 23:39:05,772 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - \\ULTRA\media\BitTorrent\\Batman.Year.One.2011.1080p.mkv
+2013-08-11 23:40:05,597 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Cleanskin 2012 DVDRip XviD AC3 - TODE.avi
+2013-08-11 23:40:05,610 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - \\ULTRA\media\BitTorrent\\Cleanskin 2012 DVDRip XviD AC3 - TODE.avi
+2013-08-11 23:45:51,706 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Querying jukebox server for movies
+2013-08-11 23:46:00,077 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Batman.Under.The.Red.Hood.2010.720p.XviD.AC3-ViSiON.avi
+2013-08-11 23:46:00,081 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - \\ULTRA\media\BitTorrent\\Batman.Under.The.Red.Hood.2010.720p.XviD.AC3-ViSiON.avi
+2013-08-11 23:46:30,934 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Querying jukebox server for movies
+2013-08-11 23:46:33,761 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:46:39,545 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - A.C.A.B. - All Cops Are Bastards.mkv
+2013-08-11 23:46:39,550 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - \\ULTRA\media\BitTorrent\\A.C.A.B. - All Cops Are Bastards.mkv
+2013-08-11 23:49:36,554 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Querying jukebox server for movies
+2013-08-11 23:49:39,204 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:49:42,148 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - The-Lost-Coast-Tapes-2012-DVDRIP-Xvid-BHRG.avi
+2013-08-11 23:49:42,154 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - \\ULTRA\media\BitTorrent\\The-Lost-Coast-Tapes-2012-DVDRIP-Xvid-BHRG.avi
+2013-08-11 23:50:41,631 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Querying jukebox server for movies
+2013-08-11 23:50:48,594 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - A.C.A.B. - All Cops Are Bastards.mkv
+2013-08-11 23:50:48,598 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - \\ULTRA\media\BitTorrent\\A.C.A.B. - All Cops Are Bastards.mkv
+2013-08-11 23:50:58,527 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - refined-chronicle-720p.mkv
+2013-08-11 23:50:58,529 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - \\ULTRA\media\BitTorrent\Chronicle.2012.DC.720p.BluRay.x264-REFiNED\refined-chronicle-720p.mkv
+2013-08-11 23:50:58,531 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - Error when starting video
+java.lang.IllegalStateException: The video surface component must be displayable
+	at uk.co.caprica.vlcj.player.embedded.videosurface.CanvasVideoSurface.attach(CanvasVideoSurface.java:75)
+	at uk.co.caprica.vlcj.player.embedded.DefaultEmbeddedMediaPlayer.attachVideoSurface(DefaultEmbeddedMediaPlayer.java:156)
+	at uk.co.caprica.vlcj.player.embedded.DefaultEmbeddedMediaPlayer.onBeforePlay(DefaultEmbeddedMediaPlayer.java:315)
+	at uk.co.caprica.vlcj.player.DefaultMediaPlayer.play(DefaultMediaPlayer.java:684)
+	at uk.co.caprica.vlcj.player.MediaPlayerLatch.play(MediaPlayerLatch.java:87)
+	at uk.co.caprica.vlcj.player.DefaultMediaPlayer.startMedia(DefaultMediaPlayer.java:225)
+	at se.qxx.jukebox.front.JukeboxMediaPlayer.start(JukeboxMediaPlayer.java:70)
+	at se.qxx.jukebox.front.JukeboxFront.play(JukeboxFront.java:157)
+	at se.qxx.jukebox.front.JukeboxFront.keyPressed(JukeboxFront.java:189)
+	at java.awt.AWTEventMulticaster.keyPressed(Unknown Source)
+	at java.awt.Component.processKeyEvent(Unknown Source)
+	at javax.swing.JComponent.processKeyEvent(Unknown Source)
+	at java.awt.Component.processEvent(Unknown Source)
+	at java.awt.Container.processEvent(Unknown Source)
+	at java.awt.Component.dispatchEventImpl(Unknown Source)
+	at java.awt.Container.dispatchEventImpl(Unknown Source)
+	at java.awt.Component.dispatchEvent(Unknown Source)
+	at java.awt.KeyboardFocusManager.redispatchEvent(Unknown Source)
+	at java.awt.DefaultKeyboardFocusManager.dispatchKeyEvent(Unknown Source)
+	at java.awt.DefaultKeyboardFocusManager.preDispatchKeyEvent(Unknown Source)
+	at java.awt.DefaultKeyboardFocusManager.typeAheadAssertions(Unknown Source)
+	at java.awt.DefaultKeyboardFocusManager.dispatchEvent(Unknown Source)
+	at java.awt.Component.dispatchEventImpl(Unknown Source)
+	at java.awt.Container.dispatchEventImpl(Unknown Source)
+	at java.awt.Window.dispatchEventImpl(Unknown Source)
+	at java.awt.Component.dispatchEvent(Unknown Source)
+	at java.awt.EventQueue.dispatchEventImpl(Unknown Source)
+	at java.awt.EventQueue.access$200(Unknown Source)
+	at java.awt.EventQueue$3.run(Unknown Source)
+	at java.awt.EventQueue$3.run(Unknown Source)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.security.ProtectionDomain$1.doIntersectionPrivilege(Unknown Source)
+	at java.security.ProtectionDomain$1.doIntersectionPrivilege(Unknown Source)
+	at java.awt.EventQueue$4.run(Unknown Source)
+	at java.awt.EventQueue$4.run(Unknown Source)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.security.ProtectionDomain$1.doIntersectionPrivilege(Unknown Source)
+	at java.awt.EventQueue.dispatchEvent(Unknown Source)
+	at java.awt.EventDispatchThread.pumpOneEventForFilters(Unknown Source)
+	at java.awt.EventDispatchThread.pumpEventsForFilter(Unknown Source)
+	at java.awt.EventDispatchThread.pumpEventsForHierarchy(Unknown Source)
+	at java.awt.EventDispatchThread.pumpEvents(Unknown Source)
+	at java.awt.EventDispatchThread.pumpEvents(Unknown Source)
+	at java.awt.EventDispatchThread.run(Unknown Source)
+2013-08-11 23:51:12,647 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Querying jukebox server for movies
+2013-08-11 23:51:20,294 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - 07 Den första snön.avi
+2013-08-11 23:51:20,299 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - \\ULTRA\media\BitTorrent\Incomplete/pippi alla avsnitt +2 filmer\07 Den första snön.avi
+2013-08-11 23:51:52,658 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Querying jukebox server for movies
+2013-08-11 23:52:00,865 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - def-5050-xvid.avi
+2013-08-11 23:52:00,870 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - \\ULTRA\media\BitTorrent\50 50 BDRip XviD-DEFACED\def-5050-xvid.avi
+2013-08-11 23:52:56,695 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Querying jukebox server for movies
+2013-08-11 23:53:03,395 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - 10 Pippis ballongfärd.avi
+2013-08-11 23:53:03,400 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - \\ULTRA\media\BitTorrent\Incomplete/pippi alla avsnitt +2 filmer\10 Pippis ballongfärd.avi
+2013-08-11 23:53:20,740 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Querying jukebox server for movies
+2013-08-11 23:53:30,476 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - A.C.A.B. - All Cops Are Bastards.mkv
+2013-08-11 23:53:30,481 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - \\ULTRA\media\BitTorrent\\A.C.A.B. - All Cops Are Bastards.mkv
+2013-08-11 23:53:42,995 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:53:43,033 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:53:43,089 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:53:43,131 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:53:43,199 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:53:43,219 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:53:43,316 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:53:43,336 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:53:43,428 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:53:46,782 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - java.lang.IllegalArgumentException: Comparison method violates its general contract!
+2013-08-11 23:53:51,738 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - 13 Pippi går ombord.avi
+2013-08-11 23:53:51,740 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - \\ULTRA\media\BitTorrent\Incomplete/pippi alla avsnitt +2 filmer\13 Pippi går ombord.avi
+2013-08-11 23:53:51,746 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - Error when starting video
+java.lang.IllegalStateException: The video surface component must be displayable
+	at uk.co.caprica.vlcj.player.embedded.videosurface.CanvasVideoSurface.attach(CanvasVideoSurface.java:75)
+	at uk.co.caprica.vlcj.player.embedded.DefaultEmbeddedMediaPlayer.attachVideoSurface(DefaultEmbeddedMediaPlayer.java:156)
+	at uk.co.caprica.vlcj.player.embedded.DefaultEmbeddedMediaPlayer.onBeforePlay(DefaultEmbeddedMediaPlayer.java:315)
+	at uk.co.caprica.vlcj.player.DefaultMediaPlayer.play(DefaultMediaPlayer.java:684)
+	at uk.co.caprica.vlcj.player.MediaPlayerLatch.play(MediaPlayerLatch.java:87)
+	at uk.co.caprica.vlcj.player.DefaultMediaPlayer.startMedia(DefaultMediaPlayer.java:225)
+	at se.qxx.jukebox.front.JukeboxMediaPlayer.start(JukeboxMediaPlayer.java:70)
+	at se.qxx.jukebox.front.JukeboxFront.play(JukeboxFront.java:157)
+	at se.qxx.jukebox.front.JukeboxFront.keyPressed(JukeboxFront.java:190)
+	at java.awt.AWTEventMulticaster.keyPressed(Unknown Source)
+	at java.awt.Component.processKeyEvent(Unknown Source)
+	at javax.swing.JComponent.processKeyEvent(Unknown Source)
+	at java.awt.Component.processEvent(Unknown Source)
+	at java.awt.Container.processEvent(Unknown Source)
+	at java.awt.Component.dispatchEventImpl(Unknown Source)
+	at java.awt.Container.dispatchEventImpl(Unknown Source)
+	at java.awt.Component.dispatchEvent(Unknown Source)
+	at java.awt.KeyboardFocusManager.redispatchEvent(Unknown Source)
+	at java.awt.DefaultKeyboardFocusManager.dispatchKeyEvent(Unknown Source)
+	at java.awt.DefaultKeyboardFocusManager.preDispatchKeyEvent(Unknown Source)
+	at java.awt.DefaultKeyboardFocusManager.typeAheadAssertions(Unknown Source)
+	at java.awt.DefaultKeyboardFocusManager.dispatchEvent(Unknown Source)
+	at java.awt.Component.dispatchEventImpl(Unknown Source)
+	at java.awt.Container.dispatchEventImpl(Unknown Source)
+	at java.awt.Window.dispatchEventImpl(Unknown Source)
+	at java.awt.Component.dispatchEvent(Unknown Source)
+	at java.awt.EventQueue.dispatchEventImpl(Unknown Source)
+	at java.awt.EventQueue.access$200(Unknown Source)
+	at java.awt.EventQueue$3.run(Unknown Source)
+	at java.awt.EventQueue$3.run(Unknown Source)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.security.ProtectionDomain$1.doIntersectionPrivilege(Unknown Source)
+	at java.security.ProtectionDomain$1.doIntersectionPrivilege(Unknown Source)
+	at java.awt.EventQueue$4.run(Unknown Source)
+	at java.awt.EventQueue$4.run(Unknown Source)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.security.ProtectionDomain$1.doIntersectionPrivilege(Unknown Source)
+	at java.awt.EventQueue.dispatchEvent(Unknown Source)
+	at java.awt.EventDispatchThread.pumpOneEventForFilters(Unknown Source)
+	at java.awt.EventDispatchThread.pumpEventsForFilter(Unknown Source)
+	at java.awt.EventDispatchThread.pumpEventsForHierarchy(Unknown Source)
+	at java.awt.EventDispatchThread.pumpEvents(Unknown Source)
+	at java.awt.EventDispatchThread.pumpEvents(Unknown Source)
+	at java.awt.EventDispatchThread.run(Unknown Source)
+2013-08-11 23:54:12,344 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Querying jukebox server for movies
+2013-08-11 23:54:18,058 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - 05 Pippi har födelsedagskalas och får inbrott.avi
+2013-08-11 23:54:18,063 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - \\ULTRA\media\BitTorrent\Incomplete/pippi alla avsnitt +2 filmer\05 Pippi har födelsedagskalas och får inbrott.avi
+2013-08-11 23:55:09,546 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - Querying jukebox server for movies
+2013-08-11 23:55:13,544 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - 05 Pippi har födelsedagskalas och får inbrott.avi
+2013-08-11 23:55:13,549 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - \\ULTRA\media\BitTorrent\Incomplete/pippi alla avsnitt +2 filmer\05 Pippi har födelsedagskalas och får inbrott.avi
+2013-08-11 23:55:14,270 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - 05 Pippi har födelsedagskalas och får inbrott.avi
+2013-08-11 23:55:14,272 [AWT-EventQueue-0] INFO  se.qxx.jukebox.front.JukeboxFront - \\ULTRA\media\BitTorrent\Incomplete/pippi alla avsnitt +2 filmer\05 Pippi har födelsedagskalas och får inbrott.avi
+2013-08-11 23:55:14,276 [AWT-EventQueue-0] ERROR se.qxx.jukebox.front.JukeboxFront - Error when starting video
+java.lang.IllegalStateException: The video surface component must be displayable
+	at uk.co.caprica.vlcj.player.embedded.videosurface.CanvasVideoSurface.attach(CanvasVideoSurface.java:75)
+	at uk.co.caprica.vlcj.player.embedded.DefaultEmbeddedMediaPlayer.attachVideoSurface(DefaultEmbeddedMediaPlayer.java:156)
+	at uk.co.caprica.vlcj.player.embedded.DefaultEmbeddedMediaPlayer.onBeforePlay(DefaultEmbeddedMediaPlayer.java:315)
+	at uk.co.caprica.vlcj.player.DefaultMediaPlayer.play(DefaultMediaPlayer.java:684)
+	at uk.co.caprica.vlcj.player.MediaPlayerLatch.play(MediaPlayerLatch.java:87)
+	at uk.co.caprica.vlcj.player.DefaultMediaPlayer.startMedia(DefaultMediaPlayer.java:225)
+	at se.qxx.jukebox.front.JukeboxMediaPlayer.start(JukeboxMediaPlayer.java:70)
+	at se.qxx.jukebox.front.JukeboxFront.play(JukeboxFront.java:157)
+	at se.qxx.jukebox.front.JukeboxFront.keyPressed(JukeboxFront.java:191)
+	at java.awt.AWTEventMulticaster.keyPressed(Unknown Source)
+	at java.awt.Component.processKeyEvent(Unknown Source)
+	at javax.swing.JComponent.processKeyEvent(Unknown Source)
+	at java.awt.Component.processEvent(Unknown Source)
+	at java.awt.Container.processEvent(Unknown Source)
+	at java.awt.Component.dispatchEventImpl(Unknown Source)
+	at java.awt.Container.dispatchEventImpl(Unknown Source)
+	at java.awt.Component.dispatchEvent(Unknown Source)
+	at java.awt.KeyboardFocusManager.redispatchEvent(Unknown Source)
+	at java.awt.DefaultKeyboardFocusManager.dispatchKeyEvent(Unknown Source)
+	at java.awt.DefaultKeyboardFocusManager.preDispatchKeyEvent(Unknown Source)
+	at java.awt.DefaultKeyboardFocusManager.typeAheadAssertions(Unknown Source)
+	at java.awt.DefaultKeyboardFocusManager.dispatchEvent(Unknown Source)
+	at java.awt.Component.dispatchEventImpl(Unknown Source)
+	at java.awt.Container.dispatchEventImpl(Unknown Source)
+	at java.awt.Window.dispatchEventImpl(Unknown Source)
+	at java.awt.Component.dispatchEvent(Unknown Source)
+	at java.awt.EventQueue.dispatchEventImpl(Unknown Source)
+	at java.awt.EventQueue.access$200(Unknown Source)
+	at java.awt.EventQueue$3.run(Unknown Source)
+	at java.awt.EventQueue$3.run(Unknown Source)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.security.ProtectionDomain$1.doIntersectionPrivilege(Unknown Source)
+	at java.security.ProtectionDomain$1.doIntersectionPrivilege(Unknown Source)
+	at java.awt.EventQueue$4.run(Unknown Source)
+	at java.awt.EventQueue$4.run(Unknown Source)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.security.ProtectionDomain$1.doIntersectionPrivilege(Unknown Source)
+	at java.awt.EventQueue.dispatchEvent(Unknown Source)
+	at java.awt.EventDispatchThread.pumpOneEventForFilters(Unknown Source)
+	at java.awt.EventDispatchThread.pumpEventsForFilter(Unknown Source)
+	at java.awt.EventDispatchThread.pumpEventsForHierarchy(Unknown Source)
+	at java.awt.EventDispatchThread.pumpEvents(Unknown Source)
+	at java.awt.EventDispatchThread.pumpEvents(Unknown Source)
+	at java.awt.EventDispatchThread.run(Unknown Source)

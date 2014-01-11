@@ -2,10 +2,10 @@
 <JukeboxListenerSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="JukeboxSettings.xsd">
   <catalogs>
     <catalog includeSubdirectories="true" path="/c/media/BitTorrent">
-      <vlcpaths>
-      	<vlcpath player="vlc_main" path="file:///media/ultra/BitTorrent" />
-      	<vlcpath player="black_hell" path="file:///Z:/BitTorrent" />
-      </vlcpaths>
+      <localPaths>
+      	<path player="vlc_main" path="file:///media/ultra/BitTorrent" />
+      	<path player="black_hell_front" path="file:///Z:/BitTorrent" />
+      </localPaths>
       <extensions>
         <extension value="avi"/>
         <extension value="mkv"/>
@@ -96,6 +96,15 @@
                 <![CDATA[(\d{1,2})[.|_|\s|-]*sezon[.|_|\s|-]*(\d{1,2})[.|_|\s|-]*seriya]]>
             </regex>
         </pattern>
+         <pattern>
+            <groups>
+                <group property="season" id="1" />
+                <group property="episode" id="2" />
+            </groups>
+            <regex>
+                <![CDATA[Season[.|_|\s|-]*(\d{1,2})[.|_|\s|-]*Episode[.|_|\s|-]*(\d{1,2})]]>
+            </regex>
+        </pattern>
     </episodes>
   	<splitter>
   	    <groups>
@@ -151,7 +160,7 @@
   <tcpListener>
     <port value="2152"/>
   </tcpListener>
-  <vlc>
+  <players>
   	<server 
   	    name="vlc_main"
   		host="192.168.1.130" 
@@ -159,18 +168,20 @@
   		port="2150"
   		subsPath="file:///media/ultra/Subs"
   		macAddress="00-17-42-BE-FC-36"
-  		hibernatorPort="2148"  		
+  		hibernatorPort="2148"  	
+  		type="VLC"	
  	/>	
    	<server 
-  	    name="black_hell"
+  	    name="black_hell_front"
   		host="192.168.1.100" 
   		broadcastAddress="192.168.1.255"
-  		port="2150"
+  		port="2156"
   		subsPath="file:///Z:/Subs"
   		macAddress="00-1E-8C-1F-94-ED"
-  		hibernatorPort="2148"  		
+  		hibernatorPort="2148"
+  		type="JukeboxFront"  		
  	/>		
-  </vlc>
+  </players>
   <logs>
   	<log type="file" filename="/c/media/Dev/src/jukebox/jukebox.log" level="DEBUG" logs="MAIN" />
   	<log type="file" filename="/c/media/Dev/src/jukebox/subtitle.log" level="DEBUG" logs="SUBS" />

@@ -118,6 +118,7 @@ public class PartPattern {
 				}
 				
 				this.setIsTvEpisode(true);
+				Log.Debug(String.format("MovieBuilder :: This file appears to be part of a tv series. Season :: %s Episode :: %s", this.getSeason(), this.getEpisode()), LogType.FIND);
 				
 				this.setResultingFilename(matcher.replaceFirst(StringUtils.EMPTY));
 				break;

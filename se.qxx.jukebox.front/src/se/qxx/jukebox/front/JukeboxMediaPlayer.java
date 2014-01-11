@@ -2,19 +2,9 @@ package se.qxx.jukebox.front;
 import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.Charset;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import org.apache.commons.lang3.StringUtils;
-
-import se.qxx.jukebox.domain.JukeboxDomain.Movie;
-import se.qxx.jukebox.front.model.Model;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.embedded.DefaultFullScreenStrategy;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;

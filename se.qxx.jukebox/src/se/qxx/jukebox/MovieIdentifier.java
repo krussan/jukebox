@@ -1,6 +1,7 @@
 package se.qxx.jukebox;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -197,7 +198,7 @@ public class MovieIdentifier implements Runnable {
 			if (!StringUtils.isEmpty(m.getImdbUrl()))
 				Log.Info(String.format("IMDB link found for :: %s", m.getTitle()), LogType.FIND);
 		}
-		catch (IOException e) {
+		catch (IOException | NumberFormatException | ParseException e) {
 			Log.Error("Error occured when finding IMDB link", Log.LogType.FIND, e);
 		}
 		

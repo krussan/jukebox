@@ -23,95 +23,94 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-
-
-public class JukeboxActivity extends JukeboxActivityBase
-	implements ModelUpdatedEventListener, OnItemClickListener, OnItemLongClickListener {
+ 
+public class JukeboxActivity extends JukeboxActivityBase implements
+		ModelUpdatedEventListener, OnItemClickListener, OnItemLongClickListener {
 	private MovieLayoutAdapter _jukeboxMovieLayoutAdapter;
-	
-    private Runnable modelResultUpdatedRunnable = new Runnable() {
 
-        @Override
-        public void run() {
-            _jukeboxMovieLayoutAdapter.notifyDataSetChanged();
-        }
-    };
-    	
-    /** Called when the activity is first created. */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
-        JukeboxSettings.init(this);
-        
-		ListView v = (ListView)findViewById(R.id.listView1);
+	private Runnable modelResultUpdatedRunnable = new Runnable() {
+
+		@Override
+		public void run() {
+			_jukeboxMovieLayoutAdapter.notifyDataSetChanged();
+		}
+	};
+
+	/** Called when the activity is first created. */
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.main);
+		JukeboxSettings.init(this);
+
+		ListView v = (ListView) findViewById(R.id.listView1);
 		v.setOnItemClickListener(this);
 		v.setOnItemLongClickListener(this);
-		
-		_jukeboxMovieLayoutAdapter = new MovieLayoutAdapter(this); 
+
+		_jukeboxMovieLayoutAdapter = new MovieLayoutAdapter(this);
 		v.setAdapter(_jukeboxMovieLayoutAdapter);
-		
+
 		Model.get().addEventListener(this);
-		
+
 		setupOnOffButton();
 
 		if (!Model.get().isInitialized())
 			connect();
 		else
-			runOnUiThread(modelResultUpdatedRunnable);		
-		
-    }
+			runOnUiThread(modelResultUpdatedRunnable);
 
-    private void setupOnOffButton() {
-        View rootView = this.getRootView();
-    	
-	    if (JukeboxSettings.get().isCurrentMediaPlayerOn()) {
-	    	GUITools.showView(R.id.btnOff, rootView);
-	    	GUITools.hideView(R.id.btnOn, rootView);
-	    }
-	    else {
-	    	GUITools.showView(R.id.btnOn, rootView);
-	    	GUITools.hideView(R.id.btnOff, rootView);	    	
-	    } 
 	}
 
-//	@Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//    	
-//    	//super.onCreateOptionsMenu(menu);
-//    	MenuInflater inflater = getMenuInflater();
-//    	inflater.inflate(R.menu.mainmenu, menu);
-//    	
-//    	return true;
-//    }
-    
-//    @Override
-//    public boolean onOptionsItemSelected(android.view.MenuItem item) {
-//    	switch (item.getItemId()) {
-//    	case R.id.preferences:
-//    		//Toast.makeText(this, "You selected the preferences option", Toast.LENGTH_LONG).show();
-//    		Intent i = new Intent(this, JukeboxPreferenceActivity.class);
-//    		startActivity(i);
-//			break;
-//    	}
-//    	
-//    	return true;
-//    };
-    
-    public void onButtonClicked(View v) {
+	private void setupOnOffButton() {
+		View rootView = this.getRootView();
+
+		if (JukeboxSettings.get().isCurrentMediaPlayerOn()) {
+			GUITools.showView(R.id.btnOff, rootView);
+			GUITools.hideView(R.id.btnOn, rootView);
+		} else {
+			GUITools.showView(R.id.btnOn, rootView);
+			GUITools.hideView(R.id.btnOff, rootView);
+		}
+	}
+
+	// @Override
+	// public boolean onCreateOptionsMenu(Menu menu) {
+	//
+	// //super.onCreateOptionsMenu(menu);
+	// MenuInflater inflater = getMenuInflater();
+	// inflater.inflate(R.menu.mainmenu, menu);
+	//
+	// return true;
+	// }
+
+	// @Override
+	// public boolean onOptionsItemSelected(android.view.MenuItem item) {
+	// switch (item.getItemId()) {
+	// case R.id.preferences:
+	// //Toast.makeText(this, "You selected the preferences option",
+	// Toast.LENGTH_LONG).show();
+	// Intent i = new Intent(this, JukeboxPreferenceActivity.class);
+	// startActivity(i);
+	// break;
+	// }
+	//
+	// return true;
+	// };
+
+	public void onButtonClicked(View v) {
 		int id = v.getId();
 		GUITools.vibrate(28, this);
-		
+
 		switch (id) {
 		case R.id.btnRefresh:
-	    	Logger.Log().i("onConnectClicked");
+			Logger.Log().i("onConnectClicked");
 
-	    	Model.get().clearMovies();
+			Model.get().clearMovies();
 			connect();
 			break;
 		case R.id.btnSelectMediaPlayer:
 			Logger.Log().i("selectMediaPlayerClicked");
-			
+
 			Intent i = new Intent(this, PlayerPickerActivity.class);
 			startActivity(i);
 			break;
@@ -120,43 +119,46 @@ public class JukeboxActivity extends JukeboxActivityBase
 			onoff();
 			break;
 		case R.id.btnPreferences:
-    		Intent intentPreferences = new Intent(this, JukeboxPreferenceActivity.class);
-    		startActivity(intentPreferences);
+			Intent intentPreferences = new Intent(this,
+					JukeboxPreferenceActivity.class);
+			startActivity(intentPreferences);
 			break;
 		default:
 			break;
-		
+
 		}
-    }
-    
-    private void onoff() {
-    	//TODO: Check if computer is live.
-    	final Context c = this;
-    	final boolean isOnline = JukeboxSettings.get().isCurrentMediaPlayerOn();
-    	final String currentMediaPlayer = JukeboxSettings.get().getCurrentMediaPlayer();
-    	
-    	final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
-    			JukeboxConnectionProgressDialog.build(c, 
-    					isOnline ? "Suspending target media player..." : "Waking up..."));
-    	
-    	Thread t = new Thread(new Runnable() {
+	}
+
+	private void onoff() {
+		// TODO: Check if computer is live.
+		final Context c = this;
+		final boolean isOnline = JukeboxSettings.get().isCurrentMediaPlayerOn();
+		final String currentMediaPlayer = JukeboxSettings.get()
+				.getCurrentMediaPlayer();
+
+		final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
+				JukeboxSettings.get().getServerIpAddress(), 
+				JukeboxSettings.get().getServerPort(),				
+				JukeboxConnectionProgressDialog.build(c,
+						isOnline ? "Suspending target media player..."
+								: "Waking up..."));
+
+		Thread t = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				if (isOnline)
-		    		jh.suspend(currentMediaPlayer);
-		    	else 
-		    		jh.wakeup(currentMediaPlayer);
+					jh.suspend(currentMediaPlayer);
+				else
+					jh.wakeup(currentMediaPlayer);
 			}
-    	});
-    	t.start();
-    	
-    	JukeboxSettings.get().setIsCurrentMediaPlayerOn(!isOnline);
-    	setupOnOffButton();
-	}
-    
+		});
+		t.start();
 
-	public void showMessage(final Context c, final String message)
-	{
+		JukeboxSettings.get().setIsCurrentMediaPlayerOn(!isOnline);
+		setupOnOffButton();
+	}
+
+	public void showMessage(final Context c, final String message) {
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -166,32 +168,34 @@ public class JukeboxActivity extends JukeboxActivityBase
 	}
 
 	public void connect() {
-    	final Context c = this;
-		final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(JukeboxConnectionProgressDialog.build(c, "Getting list of media ..."));
-		
+		final Context c = this;
+		final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
+				JukeboxSettings.get().getServerIpAddress(), 
+				JukeboxSettings.get().getServerPort(),				
+				JukeboxConnectionProgressDialog.build(c,
+						"Getting list of media ..."));
+
 		try {
 			jh.listMovies("", new RpcCallback<JukeboxResponseListMovies>() {
 
 				@Override
 				public void run(JukeboxResponseListMovies response) {
-		  			Model.get().clearMovies();
+					Model.get().clearMovies();
 					Model.get().addAllMovies(response.getMoviesList());
-					Model.get().setInitialized(true);								
+					Model.get().setInitialized(true);
 				}
-			
+
 			});
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			showMessage(c, "Connection failed. Check settings ...");
-			
+
 		}
 
-    }
-    
+	}
 
 	@Override
 	public void handleModelUpdatedEventListener(EventObject e) {
-		ModelUpdatedEvent ev = (ModelUpdatedEvent)e;
+		ModelUpdatedEvent ev = (ModelUpdatedEvent) e;
 
 		if (ev.getType() == ModelUpdatedType.Movies) {
 			runOnUiThread(modelResultUpdatedRunnable);
@@ -206,10 +210,11 @@ public class JukeboxActivity extends JukeboxActivityBase
 	}
 
 	@Override
-	public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+	public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int arg2,
+			long arg3) {
 		ActionDialog d = new ActionDialog(this, Model.get().getMovie(arg2));
 		d.show();
 		return false;
 	}
-	
+
 }

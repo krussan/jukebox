@@ -1,0 +1,3 @@
+- Fix communication. Something rotten
+- Switch to token builder?
+- Check and maybe fix imdb finder. 0 records retreived?

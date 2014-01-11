@@ -43,7 +43,10 @@ public class SubSelectActivity extends JukeboxActivityBase implements OnItemClic
 		Logger.Log().d(String.format("Setting subtitle to %s", sub.getDescription()));
 		Model.get().setCurrentSubtitle(sub.getDescription());
 		
-		final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(JukeboxConnectionProgressDialog.build(this, "Setting subtitle ..."));
+		final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
+				JukeboxSettings.get().getServerIpAddress(), 
+				JukeboxSettings.get().getServerPort(),				
+				JukeboxConnectionProgressDialog.build(this, "Setting subtitle ..."));
 		Thread t = new Thread(new Runnable() {
 			@Override
 			public void run() {

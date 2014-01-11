@@ -33,44 +33,10 @@ public class JukeboxConnectionHandler {
 		JukeboxConnectionPool.setup(serverIPaddress, port);
 	}
 	
-	public JukeboxConnectionHandler(JukeboxResponseListener listener) {
+	public JukeboxConnectionHandler(String serverIPaddress, int port, JukeboxResponseListener listener) {
+		JukeboxConnectionPool.setup(serverIPaddress, port);		
 		this.setListener(listener);
 	}
-
-	private JukeboxService getNonBlockingService() {
-		return JukeboxConnectionPool.get().getNonBlockingService();
-	}
-
-//	public static void sendCommandWithProgressDialog(Context context, String message, JukeboxRequestType type, Object... args) {
-//		ConnectionWrapper.sendCommandWithProgressDialog(context, new OnDismissListener() {
-//			@Override
-//			public void onDismiss(DialogInterface dialog) {}
-//		}, message, type, args);
-//	}	  
-//	
-//	public static void sendCommandWithProgressDialog(Context context, OnDismissListener listener, String message, JukeboxRequestType type, Object... args) {
-//       	ProgressDialog d = ProgressDialog.show(context, "Jukebox", message);
-//
-//       	if (listener != null)
-//       		d.setOnDismissListener(listener);
-//       	
-//       	JukeboxConnectionHandler h = new JukeboxConnectionHandler(new ProgressDialogHandler(context, d), type, args);
-//       	Thread t = new Thread(h);
-//       	t.start();						
-//	}
-//	
-//	public static void sendCommandWithResponseListener(final JukeboxResponseListener listener, String message, JukeboxRequestType type, Object... args) {
-//       	JukeboxConnectionHandler h = new JukeboxConnectionHandler(listener, type, args);
-//       	Thread t = new Thread(h);
-//       	t.start();						
-//	}	
-
-//	public JukeboxConnectionHandler getInstance() {
-//		if (this.instance == null)
-//			this.instance = new ConnectionWrapper();
-//		
-//		return this.instance;
-//	}
 	
 	//----------------------------------------------------------------------------------------------------------------
 	//--------------------------------------------------------------------------------------------------- RPC Calls
@@ -78,10 +44,11 @@ public class JukeboxConnectionHandler {
 	
 	public void blacklist(final Movie m) {
 		final RpcController controller = new SocketRpcController();
-		final JukeboxService service = this.getNonBlockingService();
 
 		Thread t = new Thread() {
 			public void run() {
+				JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
+				
 				JukeboxRequestMovieID request = JukeboxRequestMovieID.newBuilder().setMovieId(m.getID()).build();
 				service.blacklist(controller, request, new RpcCallback<JukeboxDomain.Empty>() {
 					@Override
@@ -99,10 +66,11 @@ public class JukeboxConnectionHandler {
 	
 	public void startMovie(final String playerName, final Movie m, final RpcCallback<JukeboxResponseStartMovie> callback) {
 		final RpcController controller = new SocketRpcController();
-		final JukeboxService service = this.getNonBlockingService();
 
 		Thread t = new Thread() {
 			public void run() {
+				JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();				
+				
 				JukeboxRequestStartMovie request = JukeboxRequestStartMovie.newBuilder()
 						.setPlayerName(playerName)  // JukeboxSettings.get().getCurrentMediaPlayer()
 						.setMovieId(m.getID()) // Model.get().getCurrentMovie().getID()
@@ -126,10 +94,11 @@ public class JukeboxConnectionHandler {
 	
 	public void stopMovie(final String playerName, final RpcCallback<Empty> callback) {
 		final RpcController controller = new SocketRpcController();
-		final JukeboxService service = this.getNonBlockingService();
 		
 		Thread t = new Thread() {
 			public void run() {
+				JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
+				
 				JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
 						.setPlayerName(playerName)
 						.build();
@@ -153,10 +122,11 @@ public class JukeboxConnectionHandler {
 	
 	public void pauseMovie(final String playerName) {
 		final RpcController controller = new SocketRpcController();
-		final JukeboxService service = this.getNonBlockingService();
 		
 		Thread t = new Thread() {
 			public void run() {
+				JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
+				
 				JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
 						.setPlayerName(playerName)
 						.build();
@@ -177,11 +147,11 @@ public class JukeboxConnectionHandler {
 	
 	public void listMovies(String searchString, final RpcCallback<JukeboxResponseListMovies> callback) {
 		final RpcController controller = new SocketRpcController();
-		final JukeboxService service = this.getNonBlockingService();
-		
+
 		Thread t = new Thread() {
 			public void run() {
-		
+				JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
+		 
 				JukeboxRequestListMovies request = JukeboxRequestListMovies.newBuilder()
 						.setSearchString("")
 						.build();
@@ -209,10 +179,11 @@ public class JukeboxConnectionHandler {
 	
 	public void wakeup(final String playerName) {
 		final RpcController controller = new SocketRpcController();
-		final JukeboxService service = this.getNonBlockingService();
 		
 		Thread t = new Thread() {
 			public void run() {
+				JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
+				
 				JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
 						.setPlayerName(playerName)
 						.build();
@@ -232,10 +203,11 @@ public class JukeboxConnectionHandler {
 
 	public void toggleFullscreen(final String playerName) {
 		final RpcController controller = new SocketRpcController();
-		final JukeboxService service = this.getNonBlockingService();
-		
+
 		Thread t = new Thread() {
 			public void run() {
+				JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
+				
 				JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
 						.setPlayerName(playerName)
 						.build();
@@ -254,11 +226,11 @@ public class JukeboxConnectionHandler {
 	}
 
 	public void isPlaying(final String playerName, final RpcCallback<JukeboxResponseIsPlaying> callback) {
-		final JukeboxService service = this.getNonBlockingService();
 		final RpcController controller = new SocketRpcController();
 		
 		Thread t = new Thread() {
 			public void run() {
+				JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
 				
 				JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
 						.setPlayerName(playerName)
@@ -282,10 +254,11 @@ public class JukeboxConnectionHandler {
 
 	public void getTime(final String playerName, final RpcCallback<JukeboxResponseTime> callback) {
 		final RpcController controller = new SocketRpcController();
-		final JukeboxService service = this.getNonBlockingService();
-		
+
 		Thread t = new Thread() {
 			public void run() {
+				JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
+				
 				JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
 						.setPlayerName(playerName)
 						.build();
@@ -307,10 +280,11 @@ public class JukeboxConnectionHandler {
 
 	public void getTitle(final String playerName, final RpcCallback<JukeboxResponseGetTitle> callback) {
 		final RpcController controller = new SocketRpcController();
-		final JukeboxService service = this.getNonBlockingService();
-		
+
 		Thread t = new Thread() {
 			public void run() {
+				JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
+				
 				JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
 						.setPlayerName(playerName)
 						.build();
@@ -334,10 +308,11 @@ public class JukeboxConnectionHandler {
 
 	public void suspend(final String playerName) {
 		final RpcController controller = new SocketRpcController();
-		final JukeboxService service = this.getNonBlockingService();
 		
 		Thread t = new Thread() {
 			public void run() {
+				JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
+				
 				JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
 						.setPlayerName(playerName)
 						.build();
@@ -356,10 +331,11 @@ public class JukeboxConnectionHandler {
 	
 	public void listPlayers(final RpcCallback<JukeboxResponseListPlayers> callback) {
 		final RpcController controller = new SocketRpcController();
-		final JukeboxService service = this.getNonBlockingService();
-		
+
 		Thread t = new Thread() {
 			public void run() {
+				JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
+				
 				service.listPlayers(controller, Empty.getDefaultInstance(), new RpcCallback<JukeboxDomain.JukeboxResponseListPlayers>() {			
 					@Override
 					public void run(JukeboxResponseListPlayers response) {
@@ -380,10 +356,11 @@ public class JukeboxConnectionHandler {
 	
 	public void listSubtitles(final Media md, final RpcCallback<JukeboxResponseListSubtitles> callback) {
 		final RpcController controller = new SocketRpcController();
-		final JukeboxService service = this.getNonBlockingService();
-		
+
 		Thread t = new Thread() {
 			public void run() {
+				JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
+				
 				JukeboxRequestListSubtitles request = JukeboxRequestListSubtitles.newBuilder()
 						.setMediaId(md.getID())
 						.build();
@@ -406,10 +383,11 @@ public class JukeboxConnectionHandler {
 	
 	public void seek(final String playerName,final int seconds) {
 		final RpcController controller = new SocketRpcController();
-		final JukeboxService service = this.getNonBlockingService();
 		
 		Thread t = new Thread() {
-			public void run() {
+			public void run() {			
+				JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
+				
 				JukeboxRequestSeek request = JukeboxRequestSeek.newBuilder()
 						.setPlayerName(playerName)
 						.setSeconds(seconds)
@@ -429,10 +407,11 @@ public class JukeboxConnectionHandler {
 	
 	public void setSubtitle(final String playerName, final Media md, final Subtitle subtitle) {
 		final RpcController controller = new SocketRpcController();
-		final JukeboxService service = this.getNonBlockingService();
-		
+
 		Thread t = new Thread() {
 			public void run() {
+				JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
+				
 				JukeboxRequestSetSubtitle request = JukeboxRequestSetSubtitle.newBuilder()
 						.setPlayerName(playerName)
 						.setMediaID(md.getID())
@@ -454,10 +433,11 @@ public class JukeboxConnectionHandler {
 
 	public void toggleWatched(final Movie m) {
 		final RpcController controller = new SocketRpcController();
-		final JukeboxService service = this.getNonBlockingService();
 
 		Thread t = new Thread() {
 			public void run() {
+				JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
+				
 				JukeboxRequestMovieID request = JukeboxRequestMovieID.newBuilder().setMovieId(m.getID()).build();
 				service.toggleWatched(controller, request, new RpcCallback<JukeboxDomain.Empty>() {
 					@Override

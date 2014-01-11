@@ -26,7 +26,7 @@ public class FrontSettings {
 	}
 	
 	public static FrontSettings get() {
-		if (_instance != null)
+		if (_instance == null)
 			_instance = new FrontSettings();
 		
 		return _instance;

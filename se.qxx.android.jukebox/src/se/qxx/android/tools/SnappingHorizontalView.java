@@ -1,4 +1,4 @@
-	package se.qxx.android.tools;
+package se.qxx.android.tools;
 
 import java.util.ArrayList;
 
@@ -21,21 +21,21 @@ public class SnappingHorizontalView<T> extends HorizontalScrollView {
     public SnappingHorizontalView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         
-        setup();
+        setup(context);
     }
  
     public SnappingHorizontalView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setup();
+        setup(context);
     }
  
     public SnappingHorizontalView(Context context) {
         super(context);
-        setup();
+        setup(context);
     }
 
-    private void setup() {
-    	mGestureDetector = new GestureDetector(new MyGestureDetector());
+    private void setup(Context context) {
+    	mGestureDetector = new GestureDetector(context, new MyGestureDetector());
     }
     
     @Override

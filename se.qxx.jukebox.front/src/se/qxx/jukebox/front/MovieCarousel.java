@@ -1,16 +1,10 @@
 package se.qxx.jukebox.front;
 
-import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.ImageIcon;
 
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.front.model.Model;

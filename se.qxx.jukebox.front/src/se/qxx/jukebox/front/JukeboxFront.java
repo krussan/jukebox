@@ -20,6 +20,7 @@ import com.sun.jna.NativeLibrary;
 import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.front.comm.TcpListener;
 import se.qxx.jukebox.front.model.Model;
 import uk.co.caprica.vlcj.binding.LibVlc;
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
@@ -38,7 +39,8 @@ public class JukeboxFront extends JFrame implements MovieStatusListener, KeyList
 	
 	public static Logger log;
 	private CountDownLatch waiter = new CountDownLatch(1);
-		
+	private TcpListener _listener;
+	
 	MovieCarousel mainCarousel;
 	JukeboxMediaPlayer player;
 	
@@ -50,7 +52,7 @@ public class JukeboxFront extends JFrame implements MovieStatusListener, KeyList
 		initLogging();
 		connect();
 		setupMain();
-	
+		setupListening();
 		//testEmbeddedPlayer();
 		//testFullscreen();		
 	}
@@ -59,7 +61,7 @@ public class JukeboxFront extends JFrame implements MovieStatusListener, KeyList
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
 		NativeLibrary.addSearchPath(
-                RuntimeUtil.getLibVlcLibraryName(), "D:/Dev/svn/jukebox/lib/native/win");
+                RuntimeUtil.getLibVlcLibraryName(), "D:/Dev/svn/jukebox/lib/native/win_x64");
  
  	    Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
 
@@ -163,6 +165,7 @@ public class JukeboxFront extends JFrame implements MovieStatusListener, KeyList
 			changePanel(player);
 		}		
 	}
+	
 	private void changePanel(JPanel panel) {
 		this.getContentPane().removeAll();
 		this.setContentPane(panel);
@@ -193,6 +196,26 @@ public class JukeboxFront extends JFrame implements MovieStatusListener, KeyList
 		}
 			
 	}
+	
+	private void setupListening() {
+		try {
+			_listener = new TcpListener();
+			Thread t = new Thread(_listener);
+			t.start();
+		}
+		catch (Exception e) {
+			
+		}
+	}
+	
+	private void stopListening() {
+		try {
+			_listener.stopListening();
+		}
+		catch (Exception e) {
+			
+		}
+	}		
 	
 	@Override
 	public void keyReleased(KeyEvent e) {

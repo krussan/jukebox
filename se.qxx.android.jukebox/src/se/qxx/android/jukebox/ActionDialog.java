@@ -38,7 +38,10 @@ public class ActionDialog implements OnClickListener{
 		
 		switch (choice) {
 		case 0:
-			final JukeboxConnectionHandler jh1 = new JukeboxConnectionHandler(JukeboxConnectionProgressDialog.build(c, "Blacklisting..."));
+			final JukeboxConnectionHandler jh1 = new JukeboxConnectionHandler(
+					JukeboxSettings.get().getServerIpAddress(), 
+					JukeboxSettings.get().getServerPort(),
+					JukeboxConnectionProgressDialog.build(c, "Blacklisting..."));
 			
 			Thread t1 = new Thread(new Runnable() {
 				@Override
@@ -49,7 +52,10 @@ public class ActionDialog implements OnClickListener{
 			t1.start();
 			break;
 		case 1:
-			final JukeboxConnectionHandler jh2 = new JukeboxConnectionHandler(JukeboxConnectionProgressDialog.build(c, "Toggling watched status..."));
+			final JukeboxConnectionHandler jh2 = new JukeboxConnectionHandler(
+					JukeboxSettings.get().getServerIpAddress(), 
+					JukeboxSettings.get().getServerPort(),
+					JukeboxConnectionProgressDialog.build(c, "Toggling watched status..."));
 			Thread t2 = new Thread(new Runnable() {
 				@Override
 				public void run() {

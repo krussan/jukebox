@@ -1,15 +1,11 @@
 package se.qxx.jukebox.vlc;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import se.qxx.jukebox.DB;
 import se.qxx.jukebox.HibernatorClientConnection;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.WakeOnLan;
@@ -19,20 +15,19 @@ import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
-import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog.Vlcpaths.Vlcpath;
-import se.qxx.jukebox.settings.JukeboxListenerSettings.Vlc.Server;
+import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog.LocalPaths.Path;
+import se.qxx.jukebox.settings.JukeboxListenerSettings.Players.Server;
 import se.qxx.jukebox.settings.Settings;
 
-public class VLCDistributor {
+public class Distributor {
 
-	private final int COMMAND_DELAY = 3000;
-	private static VLCDistributor _instance;
+	private static Distributor _instance;
 	private Hashtable<String, VLCConnection> connectors;
 
 	/**
 	 * Private constructor for the VLC Distributor.
 	 */
-	private VLCDistributor() {
+	private Distributor() {
 		this.connectors = new Hashtable<String, VLCConnection>();
 	}
 	
@@ -40,9 +35,9 @@ public class VLCDistributor {
 	 * Public getter for the singleton VLC Distributor object
 	 * @return The VLC Distributor
 	 */
-	public static VLCDistributor get() {
+	public static Distributor get() {
 		if (_instance == null)
-			_instance = new VLCDistributor();
+			_instance = new Distributor();
 		
 		return _instance;
 	}
@@ -53,7 +48,7 @@ public class VLCDistributor {
 	 */
 	public List<String> listPlayers() {
 		List<String> list = new ArrayList<String>();
-		for (Server s : Settings.get().getVlc().getServer()) {
+		for (Server s : Settings.get().getPlayers().getServer()) {
 			list.add(s.getName());
 		}
 		return list;
@@ -85,7 +80,7 @@ public class VLCDistributor {
 				for (Catalog c : Settings.get().getCatalogs().getCatalog()) {
 					Log.Debug(String.format("Comparing %s with %s", c.getPath(), filepath), Log.LogType.COMM);
 					if (filepath.startsWith(c.getPath())) {
-						Vlcpath vlcPath = findVlcPath(c, hostName);
+						Path vlcPath = findLocalPath(c, hostName);
 						if (vlcPath != null) {
 							String filename = filepath.replace(c.getPath(), vlcPath.getPath()) + "/" + md.getFilename();
 							String finalSubFilename = subFilename;
@@ -318,10 +313,10 @@ public class VLCDistributor {
 		return false;
 	}	
 
-	private se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog.Vlcpaths.Vlcpath findVlcPath(Catalog c, String hostName) {
+	private Path findLocalPath(Catalog c, String hostName) {
 		Log.Debug(String.format("Finding %s in %s", hostName, c.getPath()), Log.LogType.COMM);
-		Log.Debug(String.format("Number of vlc's :: %s", c.getVlcpaths().getVlcpath().size()), Log.LogType.COMM);
-		for (Vlcpath p : c.getVlcpaths().getVlcpath()){
+		Log.Debug(String.format("Number of vlc's :: %s", c.getLocalPaths().getPath().size()), Log.LogType.COMM);
+		for (Path p : c.getLocalPaths().getPath()){
 			Log.Debug(String.format("vlc player name :: %s", p.getPlayer()), Log.LogType.COMM);	
 			if (p.getPlayer().equals(hostName)) 
 				return p;
@@ -360,7 +355,7 @@ public class VLCDistributor {
 	
 	
 	private Server findServerInSettings(String hostName) throws VLCConnectionNotFoundException {
-		for (Server s : Settings.get().getVlc().getServer()) {
+		for (Server s : Settings.get().getPlayers().getServer()) {
 			if (s.getName().equals(hostName)) 
 				return s;
 		}

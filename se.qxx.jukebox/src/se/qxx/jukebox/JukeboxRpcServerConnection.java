@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.protobuf.RpcCallback;
 import com.google.protobuf.RpcController;
 
+import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Empty;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGeneral;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
@@ -29,29 +30,31 @@ import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.settings.Settings;
-import se.qxx.jukebox.settings.JukeboxListenerSettings.Vlc.Server;
+import se.qxx.jukebox.settings.JukeboxListenerSettings.Players.Server;
 import se.qxx.jukebox.vlc.VLCConnectionNotFoundException;
-import se.qxx.jukebox.vlc.VLCDistributor;
+import se.qxx.jukebox.vlc.Distributor;
 
 public class JukeboxRpcServerConnection extends JukeboxService {
 
-	@Override
+	@Override 
 	public void listMovies(RpcController controller,
 			JukeboxRequestListMovies request,
 			RpcCallback<JukeboxResponseListMovies> done) {
 
+		Log.Debug("ListMovies", LogType.COMM);
+		
 		String searchString = request.getSearchString();
 		List<Movie> list = DB.searchMoviesByTitle(searchString);
 		JukeboxResponseListMovies lm = JukeboxResponseListMovies.newBuilder().addAllMovies(list).build();
 		done.run(lm);
 	}
-
+ 
 	@Override
 	public void listPlayers(RpcController controller, Empty request,
 			RpcCallback<JukeboxResponseListPlayers> done) {
 
 		Collection<String> hostnames = new ArrayList<String>();
-		for (Server s : Settings.get().getVlc().getServer()) {
+		for (Server s : Settings.get().getPlayers().getServer()) {
 			hostnames.add(s.getName());
 		}
 		
@@ -69,7 +72,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		
 		try {
 			Movie m = DB.getMovie(request.getMovieId());
-			if (VLCDistributor.get().startMovie(request.getPlayerName(), m)) {
+			if (Distributor.get().startMovie(request.getPlayerName(), m)) {
 				List<Subtitle> subs = m.getMedia(0).getSubsList();
 				
 				JukeboxResponseStartMovie ls = JukeboxResponseStartMovie.newBuilder()
@@ -94,7 +97,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		Log.Debug(String.format("Stopping movie on player %s", request.getPlayerName()), Log.LogType.COMM);
 		
 		try {
-			if (VLCDistributor.get().stopMovie(request.getPlayerName()))
+			if (Distributor.get().stopMovie(request.getPlayerName()))
 				done.run(Empty.newBuilder().build());
 			else
 				controller.setFailed("Error occured when connecting to target media player"); 
@@ -112,7 +115,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		Log.Debug(String.format("Pausing movie on player %s", request.getPlayerName()), Log.LogType.COMM);
 		
 		try {
-			if (VLCDistributor.get().pauseMovie(request.getPlayerName()))
+			if (Distributor.get().pauseMovie(request.getPlayerName()))
 				done.run(Empty.newBuilder().build());
 			else
 				controller.setFailed("Error occured when connecting to target media player"); 
@@ -129,7 +132,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		Log.Debug(String.format("Seeking on player %s to %s seconds", request.getPlayerName(), request.getSeconds()), Log.LogType.COMM);
 		
 		try {
-			if (VLCDistributor.get().seek(request.getPlayerName(), request.getSeconds()))
+			if (Distributor.get().seek(request.getPlayerName(), request.getSeconds()))
 				done.run(Empty.newBuilder().build());
 			else
 				controller.setFailed("Error occured when connecting to target media player"); 
@@ -145,7 +148,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		Log.Debug(String.format("Toggling vratio on %s...", request.getPlayerName()), Log.LogType.COMM);
 		
 		try {
-			if (VLCDistributor.get().toggleVRatio(request.getPlayerName()))
+			if (Distributor.get().toggleVRatio(request.getPlayerName()))
 				done.run(Empty.newBuilder().build());
 			else
 				controller.setFailed("Error occured when connecting to target media player"); 
@@ -162,7 +165,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		Log.Debug(String.format("Getting time on %s...", request.getPlayerName()), Log.LogType.COMM);
 		
 		try {
-			String response = VLCDistributor.get().getTime(request.getPlayerName());
+			String response = Distributor.get().getTime(request.getPlayerName());
 			if (response.equals(StringUtils.EMPTY))
 				controller.setFailed("Error occured when connecting to target media player"); 
 			else {
@@ -192,7 +195,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		Log.Debug(String.format("Getting is playing status on %s...", request.getPlayerName()), Log.LogType.COMM);
 		
 		try {
-			boolean isPlaying = VLCDistributor.get().isPlaying(request.getPlayerName());
+			boolean isPlaying = Distributor.get().isPlaying(request.getPlayerName());
 
 			JukeboxResponseIsPlaying r = JukeboxResponseIsPlaying.newBuilder().setIsPlaying(isPlaying).build();	
 			done.run(r);				
@@ -260,7 +263,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		
 		try {
 			if (subTrack != null) {
-				if (VLCDistributor.get().restartWithSubtitle(
+				if (Distributor.get().restartWithSubtitle(
 						request.getPlayerName(), 
 						m, 
 						subTrack.getFilename(), 
@@ -286,7 +289,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		Log.Debug(String.format("Waking up player %s", request.getPlayerName()), Log.LogType.COMM);
 		
 		try {
-			if (VLCDistributor.get().wakeup(request.getPlayerName()))		
+			if (Distributor.get().wakeup(request.getPlayerName()))		
 				done.run(Empty.newBuilder().build());
 			else
 				controller.setFailed("Could not wake up computer. Error while connecting.");
@@ -304,7 +307,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		Log.Debug(String.format("Suspending computer with player %s...", request.getPlayerName()), Log.LogType.COMM);
 		
 		try {
-			if (VLCDistributor.get().suspend(request.getPlayerName()))
+			if (Distributor.get().suspend(request.getPlayerName()))
 				done.run(Empty.newBuilder().build());
 			else
 				controller.setFailed("Error occured when connecting to target control service"); 
@@ -322,7 +325,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		Log.Debug(String.format("Toggling fullscreen...", request.getPlayerName()), Log.LogType.COMM);
 		
 		try {
-			if (VLCDistributor.get().toggleFullscreen(request.getPlayerName()))
+			if (Distributor.get().toggleFullscreen(request.getPlayerName()))
 				done.run(Empty.newBuilder().build());
 			else
 				controller.setFailed("Error occured when connecting to target media player"); 
@@ -342,10 +345,10 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		}
 		return null;
 	}	
-	
+	 
 	private String getTitleFilename(String playerName) {
 		try {
-			return StringUtils.trim(VLCDistributor.get().getTitle(playerName));
+			return StringUtils.trim(Distributor.get().getTitle(playerName));
 		} catch (VLCConnectionNotFoundException e) {
 			return StringUtils.EMPTY; 			
 		}		

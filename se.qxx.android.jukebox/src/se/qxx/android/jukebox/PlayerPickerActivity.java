@@ -31,7 +31,10 @@ public class PlayerPickerActivity extends JukeboxActivityBase implements ModelUp
 	    setContentView(R.layout.playerpicker);
 	    Model.get().addEventListener(this);
 
-	    final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(JukeboxConnectionProgressDialog.build(this, "Getting list of players..."));
+	    final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
+				JukeboxSettings.get().getServerIpAddress(), 
+				JukeboxSettings.get().getServerPort(),	    		
+	    		JukeboxConnectionProgressDialog.build(this, "Getting list of players..."));
 
 		Thread t = new Thread(new Runnable(){
 			@Override
