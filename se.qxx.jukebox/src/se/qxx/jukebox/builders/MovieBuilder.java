@@ -81,7 +81,10 @@ public abstract class MovieBuilder {
 						.setFilepath(filepath)
 						.build();
 				
-				Season s = Season.newBuilder().setSeasonNumber(pp.getSeason()).build();
+				Season s = Season.newBuilder()
+						.setID(-1)
+						.setSeasonNumber(pp.getSeason())
+						.build();
 				
 				Movie.Builder builder = Movie.newBuilder(m)
 						.setIsTvEpisode(pp.isTvEpisode())

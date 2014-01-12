@@ -54,14 +54,6 @@ message Movie {
 	optional string episodeTitle = 25;
 }
 
-message Episode {
-	required int32 ID = 1;
-	required int32 episodeNumber = 2;
-	repeated Media media = 3;
-	optional string title = 4;
-	
-}
-
 message Season {
 	required int32 ID = 1;
 	required int32 seasonNumber = 2;

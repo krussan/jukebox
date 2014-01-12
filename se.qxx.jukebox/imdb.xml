@@ -138,9 +138,9 @@
         <infoPattern type="director" group="1">
             <regex><![CDATA[itemprop="director"\s*>(.*?)</a>]]></regex>
 		</infoPattern>
-		<infoPatterion type="seasons" group="1">
+		<infoPattern type="seasons" group="1">
 		    <regex><![CDATA[\/title/tt\d{1,10}/episodes\?season=\d{1,2}]]></regex>
-		</infoPatterion>            
+		</infoPattern>            
     </infoPatterns>
     <episodePatterns>
         <episodePattern episodeGroup="1" airDateGroup="2" urlGroup="3" titleGroup="4">
