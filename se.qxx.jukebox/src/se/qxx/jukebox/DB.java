@@ -16,6 +16,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie.Builder;
 import se.qxx.jukebox.domain.JukeboxDomain.Rating;
+import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 
 import com.google.protobuf.ByteString;
@@ -25,7 +26,7 @@ public class DB {
 	private final static String[] COLUMNS = {"ID", "title", "year",
 			"type", "format", "sound", "language", "groupName", "imdburl", "duration",
 			"rating", "director", "story", "identifier", "identifierRating", "watched",
-			"isTvEpisode", "episode", "firstAirDate", "_season_ID"};
+			"isTvEpisode", "episode", "firstAirDate", "episodeTitle"};
 //    " isTvEpisode bool NOT NULL DEFAULT 0," +
 //	" episode int NULL, " +
 //    " firstAirDate date NULL, " +
@@ -244,7 +245,8 @@ public class DB {
 	
 			addMovieGenres(m.getGenreList(), i, conn);
 			addMovieMedia(m.getMediaList(), i, conn);
-			addImage(i, ImageType.Poster, m.getImage().toByteArray(), conn);
+			addMovieImage(i, ImageType.Poster, m.getImage().toByteArray(), conn);
+			addSeason(m.getSeason(), i, conn);
 			
 			Movie mm = Movie.newBuilder(m).setID(i).build();
 			
@@ -264,6 +266,7 @@ public class DB {
 			DB.disconnect(conn);
 		}
 	}
+
 
 	protected synchronized static void addMovieGenres(List<String> genres, int movieID, Connection conn) throws SQLException {
 		PreparedStatement prep;
@@ -368,8 +371,15 @@ public class DB {
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Images
 	//---------------------------------------------------------------------------------------
+	private synchronized static void addMovieImage(int movieID, ImageType imageType, byte[] data, Connection conn) throws SQLException {
+		addImage(movieID, "MovieImage", "_movie_ID", imageType, data, conn);
+	}
 	
-	private synchronized static void addImage(int movieID, ImageType imageType, byte[] data, Connection conn) throws SQLException {
+	private synchronized static void addSeasonImage(int seasonID, ImageType imageType, byte[] data, Connection conn) throws SQLException {
+		addImage(seasonID, "SeasonImage", "_season_ID", imageType, data, conn);
+	}
+	
+	private synchronized static void addImage(int ID, String tableName, String id_column, ImageType imageType, byte[] data, Connection conn) throws SQLException {
 		if (data.length > 0) {
 			PreparedStatement prep = conn.prepareStatement(
 				" INSERT INTO BlobData (data) VALUES (?)");
@@ -380,9 +390,9 @@ public class DB {
 			int id = getIdentity(conn);
 			
 			prep = conn.prepareStatement(
-				" INSERT INTO MovieImage (_movie_id, _blob_id, imageType) VALUES (?, ?, ?)");
+				" INSERT INTO " + tableName + " (" + id_column + ", _blob_id, imageType) VALUES (?, ?, ?)");
 			
-			prep.setInt(1, movieID);
+			prep.setInt(1, ID);
 			prep.setInt(2, id);
 			prep.setString(3, imageType.toString());
 					
@@ -390,15 +400,24 @@ public class DB {
 		}
 	}
 	
-	private synchronized static byte[] getImageData(int movieID, ImageType imageType, Connection conn) throws SQLException {
+	private synchronized static byte[] getMovieImage(int movieID, ImageType imageType, Connection conn) throws SQLException {
+		return getImageData(movieID, "MovieImage", "_movie_ID", imageType, conn);
+	}
+	
+	private synchronized static byte[] getSeasonImage(int seasonID, ImageType imageType, Connection conn) throws SQLException {
+		return getImageData(seasonID, "SeasonImage", "_season_ID", imageType, conn);
+	}
+	
+	private synchronized static byte[] getImageData(int ID, String tableName, String id_column, ImageType imageType, Connection conn) throws SQLException {
 		byte[] data = null;
 		PreparedStatement prep = conn.prepareStatement(
 		   " SELECT B.data" +
-		   " FROM MovieImage MI" +
+		   " FROM " + tableName + " A" +
 		   " INNER JOIN BlobData B ON MI._blob_id = B.id " +
-		   " WHERE MI._movie_id = ?");
+		   " WHERE A." + id_column + " = ? AND A.imageType = ?");
 		
-		prep.setInt(1, movieID);
+		prep.setInt(1, ID);
+		prep.setString(2, imageType.toString());
 		
 		ResultSet rs = prep.executeQuery();
 		
@@ -406,7 +425,7 @@ public class DB {
 			data = rs.getBytes("data");
 		
 		return data;
-	}
+	}	
 
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Genres
@@ -455,6 +474,26 @@ public class DB {
 		
 		return list;
 	}
+	
+	private static List<String> getSeasonGenres(int seasonid, Connection conn) throws SQLException {
+		List<String> list = new ArrayList<String>();
+		
+		PreparedStatement prep = conn.prepareStatement(
+			" SELECT G.genreName " +
+		    " FROM SeasonGenre SG" +
+			" INNER JOIN Genre G ON SG._genre_ID = G.ID" +
+			" WHERE SG._season_ID = ?");
+		
+		prep.setInt(1, seasonid);
+		
+		ResultSet rs = prep.executeQuery();
+		
+		while (rs.next()) 
+			list.add(rs.getString("genreName"));
+		
+		return list;
+	}
+	
 
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Media
@@ -953,10 +992,11 @@ public class DB {
 
 	private synchronized static Movie extractMovie(ResultSet rs, Connection conn) throws SQLException {
 		int id = rs.getInt("ID");
-		byte[] imageData = getImageData(id, ImageType.Poster, conn);
+		byte[] imageData = getMovieImage(id, ImageType.Poster, conn);
 				
 		List<String> genres = getGenres(id, conn);
 		List<Media> media = getMedia(id, conn);
+		Season season = getSeason(id, conn);
 		
 		Builder builder = Movie.newBuilder()
 				.setID(id)
@@ -976,7 +1016,11 @@ public class DB {
 				.setIdentifier(Identifier.valueOf(rs.getString("identifier")))
 				.setIdentifierRating(rs.getInt("identifierRating"))
 				.addAllGenre(genres)
-				.setWatched(rs.getBoolean("watched"));
+				.setWatched(rs.getBoolean("watched"))
+				.setIsTvEpisode(rs.getBoolean("isTvEpisode"))
+				.setEpisode(rs.getInt("episode"))
+				.setFirstAirDate(rs.getLong("firstAirDate"))
+				.setSeason(season);				
 		
 		if (imageData != null)
 			builder = builder.setImage(ByteString.copyFrom(imageData));
@@ -1063,7 +1107,7 @@ public class DB {
 		prep.setBoolean(16, m.getIsTvEpisode());
 		prep.setInt(17, m.getEpisode());
 		prep.setLong(18, m.getFirstAirDate());
-		
+		prep.setString(19, m.getEpisodeTitle());		
 	}
 	
 	private static int getIdentity(Connection conn) throws SQLException {
@@ -1109,6 +1153,62 @@ public class DB {
 				StringUtils.repeat("?", ",", COLUMNS.length - 1));
 	}
 	
+	
+	//---------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------ Season
+	//---------------------------------------------------------------------------------------
+
+	private static void addSeason(Season season, int movieid, Connection conn) {
+		String statement = "INSERT INTO Season (seasonNumber, rating, story) VALUES (?, ?, ?)"; 
+		PreparedStatement prep = conn.prepareStatement(statement);
+		
+		prep.setInt(1, season.getSeasonNumber());
+		prep.setString(2, season.getRating());
+		prep.setString(3, season.getStory());
+		
+		prep.execute();
+		
+		int seasonid = getIdentity(conn);
+		
+		return i;		
+	}
+	
+	private static Season getSeason(int id, Connection conn) throws SQLException {
+		PreparedStatement prep = conn.prepareStatement(
+			" SELECT S.ID, S.rating, S.story, S.seasonNumber " +
+			" FROM Season S" +
+			" WHERE S.ID = ?");
+		
+		prep.setInt(1, id);
+		ResultSet rs = prep.executeQuery();
+		
+		Season s = null;
+		if (rs.next())
+			s = extractSeason(rs, conn);
+			
+		return s;
+	}
+	
+	protected synchronized static Season extractSeason(ResultSet rs, Connection conn)
+			throws SQLException {
+		int seasonid = rs.getInt("ID");
+		
+		List<String> genres = getSeasonGenres(seasonid, conn);
+		byte[] imageData = getSeasonImage(seasonid, ImageType.Poster, conn);
+		
+		se.qxx.jukebox.domain.JukeboxDomain.Season.Builder b = se.qxx.jukebox.domain.JukeboxDomain.Season.newBuilder()
+				.setID(seasonid)
+				.setSeasonNumber(rs.getInt("seasonNumber"))
+				.setRating(rs.getString("rating"))
+				.setStory(rs.getString("story"))
+				.addAllGenre(genres);
+		
+		if (imageData != null)
+			b = b.setImage(ByteString.copyFrom(imageData));
+		
+		return b.build();
+	}
+	
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Purge
 	//---------------------------------------------------------------------------------------
@@ -1122,6 +1222,8 @@ public class DB {
 			"DELETE FROM subtitleQueue",
 			"DELETE FROM Genre",
 			"DELETE FROM MovieGenre",
+			"DELETE FROM Season",
+			"DELETE FROM SeasonGenre",
 			"DELETE FROM Media",
 			"DELETE FROM Movie"
 		};

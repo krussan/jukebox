@@ -13,14 +13,21 @@ public class Upgrade_0_10 implements IIncrimentalUpgrade {
 
 		"CREATE TABLE Season (" +
 		" ID int NOT NULL PRIMARY KEY," +
-		" rating varchar(5)," +
-		" story varchar(1024)," +
+		" seasonNumber int NULL" +
+		" rating varchar(5) NULL," +
+		" story varchar(1024) NULL," +
 		")",
 		
 		"CREATE TABLE SeasonGenre (" +
 		"  _season_ID int NOT NULL CONSTRAINT FK_SeasonGenre_Season REFERENCES Seasion(ID)," +
 		"  _genre_ID int NOT NULL CONSTRAINT FK_SeasonGenre_Genre REFERENCES Genre(ID)" +
-		")"
+		")",
+		
+		"CREATE TABLE SeasonImage (" +
+		"  _season_ID int NOT NULL CONSTRAINT FK_SeasonImage_Season REFERENCES Seasion(ID)," +
+		"  _blob_id int NOT NULL  CONSTRAINT FK_SeasonImage_BlobDaa REFERENCES BlobData(ID)" +
+		"  imageType varchar(50) NOT NULL" +
+		")"		
 				
 //		"CREATE TABLE tv_seasons (" +
 //		"   ID int NOT NULL PRIMARY KEY," +
