@@ -33,11 +33,12 @@ public class Jukebox {
 		System.out.println("");
 		System.out.println("Jukebox starter - run.sh");
 		System.out.println("");
-		System.out.println("   run.sh [-ds] [-di] [-dt] [--purge] [--help]");
+		System.out.println("   run.sh [-ds] [-di] [-dt] [-dm] [--purge] [--help]");
 		System.out.println("");
 		System.out.println("\t-ds\tDisable subtitle downloader");
 		System.out.println("\t-di\tDisable imdb identifier");
 		System.out.println("\t-dt\tDisable tcp listener");
+		System.out.println("\t-dt\tDisable media info library");
 		System.out.println("\t--purge\tPurges all content from database and exit");
 		System.out.println("\t--purgeSubs\tPurges all subtitles and queue from database");
 		System.out.println("\t--help\tDisplays this help");

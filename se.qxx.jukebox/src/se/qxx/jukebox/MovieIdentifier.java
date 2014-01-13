@@ -145,11 +145,14 @@ public class MovieIdentifier implements Runnable {
 			movie = getImdbInformation(movie);
 
 		// Get media information from MediaInfo library
-		Media md = MediaMetadata.addMediaMetadata(media);
-		movie = Movie.newBuilder(movie)
-				.clearMedia()
-				.addMedia(md)
-				.build();
+		if (Arguments.get().isMediaInfoEnabled()) {
+			Media md = MediaMetadata.addMediaMetadata(media);
+
+			movie = Movie.newBuilder(movie)
+					.clearMedia()
+					.addMedia(md)
+					.build();
+		}
 		
 		movie = DB.addMovie(movie);
 		
@@ -173,7 +176,8 @@ public class MovieIdentifier implements Runnable {
 		}
 		else {
 			// Add media metadata
-			media = MediaMetadata.addMediaMetadata(media);
+			if (Arguments.get().isMediaInfoEnabled())
+				media = MediaMetadata.addMediaMetadata(media);
 
 			// If movie exist but not the media then add the media
 			DB.addMedia(movie.getID(), media);

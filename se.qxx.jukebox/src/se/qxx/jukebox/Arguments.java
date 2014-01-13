@@ -8,6 +8,7 @@ public class Arguments {
 	private boolean subtitleDownloaderEnabled = true;
 	private boolean tcpListenerEnabled = true;
 	private boolean imdbIdentitifierEnabled = true;
+	private boolean mediaInfoEnabled = true;
 	private boolean purgeMode = false;
 	private boolean helpRequested = false;
 	private boolean purgeSubtitles = false;
@@ -37,6 +38,15 @@ public class Arguments {
 	public void setTcpListenerEnabled(boolean tcpListenerEnabled) {
 		this.tcpListenerEnabled = tcpListenerEnabled;
 	}
+	
+	public boolean isMediaInfoEnabled() {
+		return mediaInfoEnabled;
+	}
+
+	public void setMediaInfoEnabled(boolean mediaInfoEnabled) {
+		this.mediaInfoEnabled = mediaInfoEnabled;
+	}
+
 
 	private Arguments() {
 		
@@ -55,7 +65,10 @@ public class Arguments {
 		
 		if (arguments.contains("-di"))
 			_instance.setImdbIdentifierEnabled(false);
-		
+
+		if (arguments.contains("-dm"))
+			_instance.setMediaInfoEnabled(false);
+
 		if (arguments.contains("--purge"))
 			_instance.setPurgeMode(true);
 		
