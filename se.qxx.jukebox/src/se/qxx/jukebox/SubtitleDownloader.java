@@ -228,26 +228,30 @@ public class SubtitleDownloader implements Runnable {
 		filter.addExtension("srt");
 		filter.addExtension("sub");
 		filter.addExtension("idx");
+
+		File path = new File(subsPath);
 		
-		List<File> list =  Util.getFileListing(new File(subsPath), filter);
-		
-		for (File subFile : list) {
-			String subFilename = subFile.getAbsolutePath();
-			Log.Debug(String.format("INITSUBS :: Initializing subtitles for %s", subFilename), LogType.SUBS);
-			String mediaName = FilenameUtils.getBaseName(subFile.getParentFile().getAbsolutePath());
-			Media md = DB.getMediaByStartOfFilename(mediaName);
+		if (path.exists()) {
+			List<File> list =  Util.getFileListing(path, filter);
 			
-			if (md != null) {
-				Log.Debug(String.format("INITSUBS :: Movie Found :: %s", md.getFilename()), LogType.SUBS);
-				if (!DB.subFileExistsInDB(subFilename)) {
-					Log.Debug(String.format("INITSUBS :: Sub not found ... Adding %s", subFilename), LogType.SUBS);
-					
-					DB.addSubtitle(md, subFilename, StringUtils.EMPTY, Rating.NotMatched, Language.Unknown.toString());
+			for (File subFile : list) {
+				String subFilename = subFile.getAbsolutePath();
+				Log.Debug(String.format("INITSUBS :: Initializing subtitles for %s", subFilename), LogType.SUBS);
+				String mediaName = FilenameUtils.getBaseName(subFile.getParentFile().getAbsolutePath());
+				Media md = DB.getMediaByStartOfFilename(mediaName);
+				
+				if (md != null) {
+					Log.Debug(String.format("INITSUBS :: Movie Found :: %s", md.getFilename()), LogType.SUBS);
+					if (!DB.subFileExistsInDB(subFilename)) {
+						Log.Debug(String.format("INITSUBS :: Sub not found ... Adding %s", subFilename), LogType.SUBS);
+						
+						DB.addSubtitle(md, subFilename, StringUtils.EMPTY, Rating.NotMatched, Language.Unknown.toString());
+					}
 				}
 			}
+			
+			writeSubsXmlFile();
 		}
-		
-		writeSubsXmlFile();
 	}
 	
 	/**

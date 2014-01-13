@@ -12,6 +12,17 @@
         <extension value="mp4"/>
       </extensions>
     </catalog>
+    <catalog includeSubdirectories="true" path="F:/jukeboxDev">
+      <localPaths>
+      	<path player="vlc_main" path="file:///media/ultra/BitTorrent" />
+      	<path player="black_hell_front" path="file:///Z:/BitTorrent" />
+      </localPaths>
+      <extensions>
+        <extension value="avi"/>
+        <extension value="mkv"/>
+        <extension value="mp4"/>
+      </extensions>
+    </catalog>    
   </catalogs>
   <subFinders subsPath="/c/media/Subs" threadWaitSeconds="25">
     <subFinder class="se.qxx.jukebox.subtitles.UndertexterSe">
@@ -105,6 +116,14 @@
                 <![CDATA[Season[.|_|\s|-]*(\d{1,2})[.|_|\s|-]*Episode[.|_|\s|-]*(\d{1,2})]]>
             </regex>
         </pattern>
+         <pattern>
+            <groups>
+                <group property="episode" id="1" />
+            </groups>
+            <regex>
+                <![CDATA[^(\d{1,2})]]>
+            </regex>
+        </pattern>        
     </episodes>
   	<splitter>
   	    <groups>
@@ -183,11 +202,11 @@
  	/>		
   </players>
   <logs>
-  	<log type="file" filename="/c/media/Dev/src/jukebox/jukebox.log" level="DEBUG" logs="MAIN" />
-  	<log type="file" filename="/c/media/Dev/src/jukebox/subtitle.log" level="DEBUG" logs="SUBS" />
-  	<log type="file" filename="/c/media/Dev/src/jukebox/watcher.log" level="DEBUG" logs="FIND" />
-  	<log type="file" filename="/c/media/Dev/src/jukebox/comm.log" level="DEBUG" logs="COMM" />
-  	<log type="file" filename="/c/media/Dev/src/jukebox/upgrade.log" level="DEBUG" logs="UPGRADE" />
-  	<log type="file" filename="/c/media/Dev/src/jukebox/imdb.log" level="DEBUG" logs="IMDB" />	
+  	<log type="file" filename="jukebox.log" level="DEBUG" logs="MAIN" />
+  	<log type="file" filename="subtitle.log" level="DEBUG" logs="SUBS" />
+  	<log type="file" filename="watcher.log" level="DEBUG" logs="FIND" />
+  	<log type="file" filename="comm.log" level="DEBUG" logs="COMM" />
+  	<log type="file" filename="upgrade.log" level="DEBUG" logs="UPGRADE" />
+  	<log type="file" filename="imdb.log" level="DEBUG" logs="IMDB" />	
   </logs>  
 </JukeboxListenerSettings>

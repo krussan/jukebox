@@ -1,5 +1,6 @@
 package se.qxx.jukebox;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -56,6 +57,7 @@ public class Main implements Runnable, INotifyClient
 		catch (Exception e) {
 			System.out.println("An error occured on main thread::");
 			System.out.println(e.toString());
+			e.printStackTrace();
 		}
 	}
 	
@@ -86,15 +88,19 @@ public class Main implements Runnable, INotifyClient
 		ff.addExtensions(Util.getExtensions());
 		
 		for (Catalog c : Settings.get().getCatalogs().getCatalog()) {
-			FileSystemWatcher f = new FileSystemWatcher(c.getPath(), ff, true, false);
+			File path = new File(c.getPath());
 			
-			Log.Debug(String.format("Starting listening on :: %s", c.getPath()), Log.LogType.FIND);
+			if (path.exists()) {
+				FileSystemWatcher f = new FileSystemWatcher(c.getPath(), ff, true, false);
 			
-			f.registerClient(h);
-			f.setSleepTime(500);
-			f.startListening();
+				Log.Debug(String.format("Starting listening on :: %s", c.getPath()), Log.LogType.FIND);
 			
-			watchers.add(f);
+				f.registerClient(h);
+				f.setSleepTime(500);
+				f.startListening();
+			
+				watchers.add(f);
+			}
 		}
 	}
 	

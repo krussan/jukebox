@@ -105,7 +105,7 @@ public class PartPattern {
 		for(se.qxx.jukebox.settings.JukeboxListenerSettings.StringSplitters.Episodes.Pattern p 
 				: Settings.get().getStringSplitters().getEpisodes().getPattern()) {
 
-			Pattern regexPattern = Pattern.compile(StringUtils.trim(p.getRegex()), Pattern.CASE_INSENSITIVE);
+			Pattern regexPattern = Pattern.compile(StringUtils.trim(p.getRegex()), Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 			Matcher matcher = regexPattern.matcher(filename);
 			
 			

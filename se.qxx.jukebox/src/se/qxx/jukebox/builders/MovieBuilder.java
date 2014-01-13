@@ -8,7 +8,6 @@ import se.qxx.jukebox.Util;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
-import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Builders.Builder;
 import se.qxx.jukebox.settings.Settings;
 
@@ -80,16 +79,11 @@ public abstract class MovieBuilder {
 						.setFilename(filename)
 						.setFilepath(filepath)
 						.build();
-				
-				Season s = Season.newBuilder()
-						.setID(-1)
-						.setSeasonNumber(pp.getSeason())
-						.build();
-				
+								
 				Movie.Builder builder = Movie.newBuilder(m)
 						.setIsTvEpisode(pp.isTvEpisode())
 						.setEpisode(pp.getEpisode())
-						.setSeason(s)
+						.setSeason(pp.getSeason())
 						.addMedia(md);
 
 				// If a Imdb Link has been found in one of the builders

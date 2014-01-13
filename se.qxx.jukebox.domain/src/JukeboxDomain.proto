@@ -48,19 +48,10 @@ message Movie {
 	optional bool watched = 20;
 	
 	optional bool isTvEpisode = 21;
-	optional int32 episode = 22;
-	optional int64 firstAirDate = 23;
-	optional Season season = 24;
+	optional int32 season = 22;
+	optional int32 episode = 23;
+	optional int64 firstAirDate = 24;
 	optional string episodeTitle = 25;
-}
-
-message Season {
-	required int32 ID = 1;
-	required int32 seasonNumber = 2;
-	optional bytes image = 3;
-	optional string rating = 4;
-	optional string story = 5;
-	repeated string genre = 6;
 }
 
 message Subtitle {

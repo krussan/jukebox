@@ -48,7 +48,7 @@
 	    	<![CDATA[<table class="findList">(.*?)</table>]]>
 		</blockPattern>
  		<recordPattern>
- 		    <![CDATA[<a\s*href="([^"]*?)"[^>]*>[^<]+?</a>\s*\((\d{4})[^\)]*?\)]]>
+ 		    <![CDATA[<td\s*class="result_text">\s*<a\s*href="([^"]*?)"[^>]*>[^<]+?</a>.*?(\d{4}).*?</td>]]>
 		</recordPattern>
      </searchResultPattern>
         
@@ -115,16 +115,16 @@
     </searchPatterns>
     <infoPatterns>
         <infoPattern type="title" group="1">
-            <regex><![CDATA[<h1[^>]*?itemprop="name"[^>]*?>(.*?)<]]></regex>
+            <regex><![CDATA[<h1.*?itemprop="name".*?>(.*?)<]]></regex>
         </infoPattern>
         <infoPattern type="poster" group="1">
-            <regex><![CDATA[<img\s*src="([^"]*)"[^>]*?alt="[^"]*Poster]]></regex>
+            <regex><![CDATA[<img.*?alt="[^"]*Poster".*?src="([^"]*)"]]></regex>
 		</infoPattern>            
         <infoPattern type="story" group="1">
             <regex><![CDATA[<p\s*itemprop="description">(.*?)</p>]]></regex>
 		</infoPattern>            
         <infoPattern type="year" group="1">
-            <regex><![CDATA[<a\s*href="/year/(\d{4})/">]]></regex>
+            <regex><![CDATA[<a.*?href="/year/(\d{4})/[^"]*?"]]></regex>
 		</infoPattern>            
         <infoPattern type="rating" group="1">
             <regex><![CDATA[<span\s*itemprop="ratingValue"\s*>((\d\.\d)|(\d\d)|(\d\d\.\d)|(\d\d\.\d\d))]]></regex>
@@ -133,10 +133,10 @@
             <regex><![CDATA[<span\s*class=\"itemprop\"\s*itemprop=\"genre\">(.*?)</span>]]></regex>
 		</infoPattern>            
         <infoPattern type="duration" group="1">
-            <regex><![CDATA[<time\s*itemprop="duration".*?>(\d{1,3})\s*min</time>]]></regex>
+            <regex><![CDATA[<time.*?itemprop="duration".*?>.*?(\d{1,3})\s*min.*?</time>]]></regex>
 		</infoPattern>            
         <infoPattern type="director" group="1">
-            <regex><![CDATA[itemprop="director"\s*>(.*?)</a>]]></regex>
+            <regex><![CDATA[<div.*?itemprop="director".*?>.*?<span.*?itemprop="name".*?>(.*?)<]]></regex>
 		</infoPattern>
 		<infoPattern type="seasons" group="1">
 		    <regex><![CDATA[\/title/tt\d{1,10}/episodes\?season=\d{1,2}]]></regex>

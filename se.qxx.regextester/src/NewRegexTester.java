@@ -5,6 +5,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
+import javax.swing.ScrollPaneConstants;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -17,15 +18,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.JButton;
 import javax.swing.JTextArea;
 import javax.swing.table.AbstractTableModel;
-
-import com.google.code.regexp.NamedMatcher;
-import com.google.code.regexp.NamedPattern;
-
 
 public class NewRegexTester implements ActionListener {
 
@@ -34,7 +32,6 @@ public class NewRegexTester implements ActionListener {
 	JTextArea txtRegex = new JTextArea();
 	JTextArea txtInput = new JTextArea();
 	JTable table = new JTable();
-	JScrollPane scrollPane = new JScrollPane();
 	
 	private JFrame frmRegextester;
 
@@ -70,16 +67,17 @@ public class NewRegexTester implements ActionListener {
 		frmRegextester.setSize(1024, 768);
 		frmRegextester.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
+		// -------------------------------------------- Bottom panel
 		JPanel panel = new JPanel();
 		frmRegextester.getContentPane().add(panel, BorderLayout.SOUTH);
 		panel.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
-		
-		
+			
 		panel.add(btnExecute);
 		btnExecute.addActionListener(this);
 		panel.add(btnExit);
 		btnExit.addActionListener(this);
 		
+		// -------------------------------------------- Left panel		
 		JPanel panel_1 = new JPanel();
 		frmRegextester.getContentPane().add(panel_1, BorderLayout.CENTER);
 		panel_1.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
@@ -90,20 +88,23 @@ public class NewRegexTester implements ActionListener {
 		//scrollPane.add(txtRegex);
 		panel_1.add(txtRegex);
 		
-		JPanel panel_2 = new JPanel();
-		frmRegextester.getContentPane().add(panel_2, BorderLayout.EAST);
+
+		JScrollPane pnlBottomLeft = new JScrollPane(txtInput, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		pnlBottomLeft.setPreferredSize(new Dimension(600, 400));
+		panel_1.add(pnlBottomLeft);
 		
-		table.setPreferredSize(new Dimension(300, 800));
-		panel_2.add(table);
-		Hashtable<String, String> ht = new Hashtable<String, String>();
-		
+		// -------------------------------------------- Right panel				
+		Hashtable<String, String> ht = new Hashtable<String, String>();		
 		ht.put("Test", "A2");
 		ht.put("Test2", "B3");
-		
-		txtInput.setPreferredSize(new Dimension(600, 400));
-		panel_1.add(txtInput);
-	
 		table.setModel(new HashtableModel(ht));
+		
+		JScrollPane pnlRight = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		pnlRight.setPreferredSize(new Dimension(300, 800));
+
+		frmRegextester.getContentPane().add(pnlRight, BorderLayout.EAST);
+		
+
 	}
 	
 
@@ -123,28 +124,31 @@ public class NewRegexTester implements ActionListener {
 		String pattern = txtRegex.getText().trim();
 		pattern = pattern.replace("\\\\", "\\");
 		
-		NamedPattern p = NamedPattern.compile(pattern, Pattern.CASE_INSENSITIVE);
-		NamedMatcher m = p.matcher(txtInput.getText());
+		Pattern p = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+		Matcher m = p.matcher(txtInput.getText());
 
 		Hashtable<String, String> ht = new Hashtable<String, String>();
-		
-		for (String groupName : p.groupNames()) {
-			if (m.matches() && m.group(groupName) != null && m.group(groupName).length() > 0) {
-				ht.put(groupName, m.group(groupName));
-			}
-			else
-			{
-				ht.put(String.valueOf(ht.size()), "N/A");
-			}
 
-		}
-		for (int i = 0; i < m.groupCount(); i++) {
-			try {
-				ht.put(String.valueOf(i), m.group(i));
+		int mc = 1;
+		while(m.find()) {
+			ht.put(String.format("Match::%s%s::", "000".substring(3 - String.valueOf(mc).length()), mc), m.group());
+			for (int i = 0; i <= m.groupCount(); i++) {
+				try {
+					ht.put(
+						String.format(
+							"Match::%s%s::%s%s", 
+							"000".substring(3 - String.valueOf(mc).length()), 
+							mc,
+							"000".substring(3 - String.valueOf(i).length()),
+							i)
+						, m.group(i));
+				}
+				catch (Exception e) {
+					System.out.println(e.toString());
+				}
 			}
-			catch (Exception e) {
-				System.out.println(e.toString());
-			}
+			
+			mc++;
 		}
 		
 		table.setModel(new HashtableModel(ht));
@@ -159,8 +163,7 @@ public class NewRegexTester implements ActionListener {
 		private List<SimpleEntry<String, String>> list = new ArrayList<SimpleEntry<String,String>>();
 		
 		public HashtableModel(Hashtable<String, String> ht) {
-			ArrayList<String> keyList = new ArrayList<String>();
-			keyList.addAll(Collections.list(ht.keys()));
+			ArrayList<String> keyList = new ArrayList<String>(ht.keySet());
 			Collections.sort(keyList);
 			
 			for(String key : keyList) {

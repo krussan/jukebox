@@ -7,7 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.Log.LogType;
@@ -16,17 +18,18 @@ import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie.Builder;
 import se.qxx.jukebox.domain.JukeboxDomain.Rating;
-import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 
 import com.google.protobuf.ByteString;
+import com.google.protobuf.Descriptors.FieldDescriptor;
+import com.google.protobuf.WireFormat.JavaType;
 
 public class DB {
     
 	private final static String[] COLUMNS = {"ID", "title", "year",
 			"type", "format", "sound", "language", "groupName", "imdburl", "duration",
 			"rating", "director", "story", "identifier", "identifierRating", "watched",
-			"isTvEpisode", "episode", "firstAirDate", "episodeTitle"};
+			"isTvEpisode", "season", "episode", "firstAirDate", "episodeTitle"};
 //    " isTvEpisode bool NOT NULL DEFAULT 0," +
 //	" episode int NULL, " +
 //    " firstAirDate date NULL, " +
@@ -246,7 +249,7 @@ public class DB {
 			addMovieGenres(m.getGenreList(), i, conn);
 			addMovieMedia(m.getMediaList(), i, conn);
 			addMovieImage(i, ImageType.Poster, m.getImage().toByteArray(), conn);
-			addSeason(m.getSeason(), i, conn);
+//			addSeason(m.getSeason(), i, conn);
 			
 			Movie mm = Movie.newBuilder(m).setID(i).build();
 			
@@ -268,21 +271,7 @@ public class DB {
 	}
 
 
-	protected synchronized static void addMovieGenres(List<String> genres, int movieID, Connection conn) throws SQLException {
-		PreparedStatement prep;
-		for(String genre : genres) {
-			int genreID = getGenreID(genre, conn);
-			if (genreID == -1)
-				genreID = addGenre(genre, conn);
-			
-			String statement = "INSERT INTO MovieGenre (_movie_ID, _genre_ID) VALUES (?, ?)"; 
-			prep = conn.prepareStatement(statement);
-			prep.setInt(1, movieID);
-			prep.setInt(2, genreID);
-			
-			prep.execute();
-		}
-	}
+
 	
 	protected synchronized static void addMovieMedia(List<Media> medias, int movieID, Connection conn) throws SQLException {
 		for(Media media : medias) {			
@@ -375,9 +364,9 @@ public class DB {
 		addImage(movieID, "MovieImage", "_movie_ID", imageType, data, conn);
 	}
 	
-	private synchronized static void addSeasonImage(int seasonID, ImageType imageType, byte[] data, Connection conn) throws SQLException {
-		addImage(seasonID, "SeasonImage", "_season_ID", imageType, data, conn);
-	}
+//	private synchronized static void addSeasonImage(int seasonID, ImageType imageType, byte[] data, Connection conn) throws SQLException {
+//		addImage(seasonID, "SeasonImage", "_season_ID", imageType, data, conn);
+//	}
 	
 	private synchronized static void addImage(int ID, String tableName, String id_column, ImageType imageType, byte[] data, Connection conn) throws SQLException {
 		if (data.length > 0) {
@@ -404,9 +393,9 @@ public class DB {
 		return getImageData(movieID, "MovieImage", "_movie_ID", imageType, conn);
 	}
 	
-	private synchronized static byte[] getSeasonImage(int seasonID, ImageType imageType, Connection conn) throws SQLException {
-		return getImageData(seasonID, "SeasonImage", "_season_ID", imageType, conn);
-	}
+//	private synchronized static byte[] getSeasonImage(int seasonID, ImageType imageType, Connection conn) throws SQLException {
+//		return getImageData(seasonID, "SeasonImage", "_season_ID", imageType, conn);
+//	}
 	
 	private synchronized static byte[] getImageData(int ID, String tableName, String id_column, ImageType imageType, Connection conn) throws SQLException {
 		byte[] data = null;
@@ -443,6 +432,30 @@ public class DB {
 		return i;
 	}
 	
+	protected synchronized static void addMovieGenres(List<String> genres, int movieID, Connection conn) throws SQLException {
+		addGenres(movieID, "MovieGenres", "_movie_ID", genres, conn);
+	}
+
+	protected synchronized static void addSeasonGenres(List<String> genres, int seasonID, Connection conn) throws SQLException {
+		addGenres(seasonID, "SeasonGenres", "_season_ID", genres, conn);
+	}
+	
+	protected synchronized static void addGenres(int ID, String tableName, String id_column, List<String> genres, Connection conn) throws SQLException {
+		PreparedStatement prep;
+		for(String genre : genres) {
+			int genreID = getGenreID(genre, conn);
+			if (genreID == -1)
+				genreID = addGenre(genre, conn);
+			
+			String statement = "INSERT INTO " + tableName + " (" + id_column + ", _genre_ID) VALUES (?, ?)"; 
+			prep = conn.prepareStatement(statement);
+			prep.setInt(1, ID);
+			prep.setInt(2, genreID);
+			
+			prep.execute();
+		}
+	}	
+	
 	private synchronized static int getGenreID(String genre, Connection conn) throws SQLException {
 		PreparedStatement prep = conn.prepareStatement(
 				"SELECT ID, genreName FROM Genre WHERE genreName = ?");
@@ -475,7 +488,7 @@ public class DB {
 		return list;
 	}
 	
-	private static List<String> getSeasonGenres(int seasonid, Connection conn) throws SQLException {
+/*	private static List<String> getSeasonGenres(int seasonid, Connection conn) throws SQLException {
 		List<String> list = new ArrayList<String>();
 		
 		PreparedStatement prep = conn.prepareStatement(
@@ -493,7 +506,7 @@ public class DB {
 		
 		return list;
 	}
-	
+*/	
 
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Media
@@ -996,36 +1009,57 @@ public class DB {
 				
 		List<String> genres = getGenres(id, conn);
 		List<Media> media = getMedia(id, conn);
-		Season season = getSeason(id, conn);
+//		Season season = getSeason(id, conn);
 		
 		Builder builder = Movie.newBuilder()
 				.setID(id)
 				.addAllMedia(media)
-				.setTitle(rs.getString("title"))
-				.setYear(rs.getInt("year"))
-				.setType(rs.getString("type"))
-				.setFormat(rs.getString("format"))
-				.setSound(rs.getString("sound"))
-				.setLanguage(rs.getString("language"))
-				.setGroup(rs.getString("groupName"))
-				.setImdbUrl(rs.getString("imdburl"))
-				.setDuration(rs.getInt("duration"))
-				.setRating(rs.getString("rating"))
-				.setDirector(rs.getString("director"))
-				.setStory(rs.getString("story"))
-				.setIdentifier(Identifier.valueOf(rs.getString("identifier")))
-				.setIdentifierRating(rs.getInt("identifierRating"))
-				.addAllGenre(genres)
-				.setWatched(rs.getBoolean("watched"))
-				.setIsTvEpisode(rs.getBoolean("isTvEpisode"))
-				.setEpisode(rs.getInt("episode"))
-				.setFirstAirDate(rs.getLong("firstAirDate"))
-				.setSeason(season);				
+				.addAllGenre(genres);
+		
+		// Add simple entities
+		builder = mapResultSet(builder, rs);
+				
+//				.setTitle(rs.getString("title"))
+//				.setYear(rs.getInt("year"))
+//				.setType(rs.getString("type"))
+//				.setFormat(rs.getString("format"))
+//				.setSound(rs.getString("sound"))
+//				.setLanguage(rs.getString("language"))
+//				.setGroup(rs.getString("groupName"))
+//				.setImdbUrl(rs.getString("imdburl"))
+//				.setDuration(rs.getInt("duration"))
+//				.setRating(rs.getString("rating"))
+//				.setDirector(rs.getString("director"))
+//				.setStory(rs.getString("story"))
+//				.setIdentifier(Identifier.valueOf(rs.getString("identifier")))
+//				.setIdentifierRating(rs.getInt("identifierRating"))
+//				.setWatched(rs.getBoolean("watched"))
+//				.setIsTvEpisode(rs.getBoolean("isTvEpisode"))
+//				.setEpisode(rs.getInt("episode"))
+//				.setFirstAirDate(rs.getLong("firstAirDate"))
+//				.setSeason(rs.getInt("season"))
+//				.setEpisodeTitle(rs.getString("episodeTitle"));
+//				.setSeason(season);	
+		
+
 		
 		if (imageData != null)
 			builder = builder.setImage(ByteString.copyFrom(imageData));
 		
 		return builder.build();
+	}
+	
+	private synchronized static Builder mapResultSet(Builder b, ResultSet rs) throws SQLException {
+		Map<FieldDescriptor, Object> fields = b.getAllFields();
+		for(FieldDescriptor field : fields.keySet()) {
+			String fieldName = field.getName();
+			if (ArrayUtils.contains(COLUMNS, fieldName)) {
+				Log.Debug(String.format("DB :: Setting field %s", fieldName), LogType.MAIN);
+				b.setField(field, rs.getObject(fieldName));
+			}
+		}		
+		
+		return b;
 	}
 
 	private synchronized static Subtitle extractSubtitle(ResultSet rs, Connection conn) throws SQLException {		
@@ -1143,9 +1177,9 @@ public class DB {
 		} 
 	}
 
-	private static String getUpdateStatement() {
-		return String.format("UPDATE Movie SET %s = ?", getColumnList("", false, " = ?,"));
-	}	
+//	private static String getUpdateStatement() {
+//		return String.format("UPDATE Movie SET %s = ?", getColumnList("", false, " = ?,"));
+//	}	
 		
 	private static String getInsertStatement() {
 		return String.format("INSERT INTO Movie (%s) VALUES (%s)",
@@ -1157,8 +1191,8 @@ public class DB {
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Season
 	//---------------------------------------------------------------------------------------
-
-	private static void addSeason(Season season, int movieid, Connection conn) {
+/*
+	private static int addSeason(Season season, int movieid, Connection conn) throws SQLException {
 		String statement = "INSERT INTO Season (seasonNumber, rating, story) VALUES (?, ?, ?)"; 
 		PreparedStatement prep = conn.prepareStatement(statement);
 		
@@ -1170,7 +1204,15 @@ public class DB {
 		
 		int seasonid = getIdentity(conn);
 		
-		return i;		
+		addSeasonGenres(season.getGenreList(), seasonid, conn);
+		
+		statement = "UPDATE Movie SET _season_ID = ? WHERE ID = ?";
+		prep = conn.prepareStatement(statement);
+		
+		prep.setInt(1, seasonid);
+		prep.setInt(2, movieid);
+	
+		return seasonid;		
 	}
 	
 	private static Season getSeason(int id, Connection conn) throws SQLException {
@@ -1208,7 +1250,7 @@ public class DB {
 		
 		return b.build();
 	}
-	
+*/	
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Purge
 	//---------------------------------------------------------------------------------------

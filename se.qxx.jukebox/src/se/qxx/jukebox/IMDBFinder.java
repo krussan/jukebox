@@ -22,7 +22,6 @@ import org.apache.commons.lang3.time.DateUtils;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie.Builder;
-import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.imdb.Imdb;
 import se.qxx.jukebox.settings.imdb.Imdb.EpisodePatterns.EpisodePattern;
@@ -195,7 +194,7 @@ public class IMDBFinder {
 		IMDBRecord rec = null;
 		for (SearchResultPattern p : patterns) {
 			if (p.isEnabled()) {
-				if (!m.getIsTvEpisode() || (m.getIsTvEpisode() && p.isTvPattern()))
+				if ((m.getIsTvEpisode() && p.isTvPattern()) || (!m.getIsTvEpisode() && !p.isTvPattern()))
 				{
 					Log.Debug(String.format("Using pattern :: %s", p.getName()), LogType.IMDB);
 					
@@ -348,8 +347,8 @@ public class IMDBFinder {
 		
 		// mainMovie contains the overall info about the series
 		// get the page referencing the wanted season
-		if (m.getSeason().getSeasonNumber() > 0) {
-			String seasonUrl = getSeasonUrl(m.getSeason().getSeasonNumber(), rec.getAllSeasonUrls());
+		if (m.getSeason() > 0) {
+			String seasonUrl = getSeasonUrl(m.getSeason(), rec.getAllSeasonUrls());
 
 			// extract episode info from that page
 			IMDBEpisode ep = getEpisodeUrl(seasonUrl, m.getEpisode());
@@ -360,19 +359,19 @@ public class IMDBFinder {
 			newMovie = extractMovieInfo(m, episodeRec);
 
 			// transfer main movie properties to the season object
-			Season s = Season.newBuilder(m.getSeason())
-					.addAllGenre(m.getGenreList())
-					.setImage(m.getImage())
-					.setRating(m.getRating())
-					.setStory(m.getStory())
-					.build();
+//			Season s = Season.newBuilder(m.getSeason())
+//					.addAllGenre(m.getGenreList())
+//					.setImage(m.getImage())
+//					.setRating(m.getRating())
+//					.setStory(m.getStory())
+//					.build();
 			
 			// build 
 			newMovie = Movie.newBuilder(newMovie)
-					.setSeason(s)
+//					.setSeason(s)
 					.setEpisode(ep.getEpisodeNumber())
 					.setFirstAirDate(ep.getFirstAirDate().getTime())
-					.setEpisodeTitle(ep.getTitle())
+					.setEpisodeTitle(ep.getTitle())			
 					.build();
 			
 			return newMovie;
