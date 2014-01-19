@@ -433,11 +433,11 @@ public class DB {
 	}
 	
 	protected synchronized static void addMovieGenres(List<String> genres, int movieID, Connection conn) throws SQLException {
-		addGenres(movieID, "MovieGenres", "_movie_ID", genres, conn);
+		addGenres(movieID, "MovieGenre", "_movie_ID", genres, conn);
 	}
 
 	protected synchronized static void addSeasonGenres(List<String> genres, int seasonID, Connection conn) throws SQLException {
-		addGenres(seasonID, "SeasonGenres", "_season_ID", genres, conn);
+		addGenres(seasonID, "SeasonGenre", "_season_ID", genres, conn);
 	}
 	
 	protected synchronized static void addGenres(int ID, String tableName, String id_column, List<String> genres, Connection conn) throws SQLException {
