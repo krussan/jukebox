@@ -402,7 +402,7 @@ public class DB {
 		PreparedStatement prep = conn.prepareStatement(
 		   " SELECT B.data" +
 		   " FROM " + tableName + " A" +
-		   " INNER JOIN BlobData B ON MI._blob_id = B.id " +
+		   " INNER JOIN BlobData B ON A._blob_id = B.id " +
 		   " WHERE A." + id_column + " = ? AND A.imageType = ?");
 		
 		prep.setInt(1, ID);
@@ -1050,12 +1050,23 @@ public class DB {
 	}
 	
 	private synchronized static Builder mapResultSet(Builder b, ResultSet rs) throws SQLException {
-		Map<FieldDescriptor, Object> fields = b.getAllFields();
-		for(FieldDescriptor field : fields.keySet()) {
+		List<FieldDescriptor> fields = Builder.getDescriptor().getFields();
+		for(FieldDescriptor field : fields) {
 			String fieldName = field.getName();
+			String fieldNameRep = fieldName.replace("_", "").replace(".","");
+
+			for (String s : COLUMNS) {
+				String sRep = s.replace("_", "").replace(".","");
+				if (StringUtils.equalsIgnoreCase(sRep, fieldNameRep)) {
+					b.setField(field, rs.getObject(fieldName));
+					break;
+				}
+					
+			}
+			
 			if (ArrayUtils.contains(COLUMNS, fieldName)) {
 				Log.Debug(String.format("DB :: Setting field %s", fieldName), LogType.MAIN);
-				b.setField(field, rs.getObject(fieldName));
+				
 			}
 		}		
 		
