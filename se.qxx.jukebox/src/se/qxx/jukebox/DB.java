@@ -1,11 +1,14 @@
 package se.qxx.jukebox;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +24,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Rating;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 
 import com.google.protobuf.ByteString;
+import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.WireFormat.JavaType;
 
@@ -1134,13 +1138,15 @@ public class DB {
 	}
 
 	private synchronized static void addArguments(PreparedStatement prep, Movie m) throws SQLException {
+		Descriptor d = Movie.Builder.getDescriptor();
+		
 		prep.setString(1, m.getTitle());
 		prep.setInt(2, m.getYear());
 		prep.setString(3, m.getType());
 		prep.setString(4, m.getFormat());
 		prep.setString(5, m.getSound());
 		prep.setString(6, m.getLanguage());
-		prep.setString(7, m.getGroup());
+		prep.setString(7, m.getGroupName());
 		prep.setString(8, m.getImdbUrl());
 		prep.setInt(9, m.getDuration());
 		prep.setString(10, m.getRating());

@@ -92,7 +92,7 @@ public class FilenameBuilder extends MovieBuilder {
 				.setFormat(format)
 				.setSound(sound)
 				.setLanguage(language)
-				.setGroup(group)
+				.setGroupName(group)
 				.setIdentifier(Identifier.Filename)
 				.setIdentifierRating(Math.round(100 * maxGroupMatch / groupsToCheck.size()))
 				.build();

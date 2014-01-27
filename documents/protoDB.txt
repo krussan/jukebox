@@ -1,0 +1,32 @@
+AAA
+---
+BBB xxx
+repeated CCC yyy
+basic zzz
+repeated basic ooo
+
+---------------------------
+
+AAA stores as
+ID
+_BBB_ID -> BBB table
+(repeated CCC stores as many-to-many)
+zzz
+(repeated basic ooo stores as separate table with link to AAA: _AAA_ID)
+
+1. SetupDatabase
+   
+2. Save object AAA
+	- Analyse object to throw error on circular references
+	- Get object fields and type maps
+	- Construct graph of list
+		- AAA (cannot begin with this one as there exits links to other objects)
+		- (for each underlying object OR repeated basic type)
+		   - Save object(BBB, object) recursive call
+		   - Save objectList(List<CCC>, list) 
+				- Save objct(CCC, object) (iterates)
+		   - Save object(List<basic>, list)
+		   
+3. Get object AAA
+    - Analyse object to throw error on circular references
+	

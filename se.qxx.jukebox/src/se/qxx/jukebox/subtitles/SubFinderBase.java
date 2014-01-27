@@ -75,8 +75,8 @@ public abstract class SubFinderBase {
 			return Rating.ExactMatch;
 		
 		if (subMovie != null) {
-			String group = m.getGroup();
-			String subGroup = subMovie.getGroup();
+			String group = m.getGroupName();
+			String subGroup = subMovie.getGroupName();
 			
 			if (subGroup != null) {
 				if (StringUtils.equalsIgnoreCase(subGroup, group) && !StringUtils.isEmpty(subGroup)) {

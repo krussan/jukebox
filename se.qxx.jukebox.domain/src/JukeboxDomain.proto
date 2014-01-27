@@ -15,7 +15,7 @@ enum Identifier {
 
 enum Rating {
 	NotMatched = 1;
-	ProbableMatch = 2;
+	ProbabaleMatch = 2;
 	PositiveMatch = 3;
 	ExactMatch = 4;
 	SubsExist = 5;
@@ -34,7 +34,7 @@ message Movie {
 	optional string format = 6;
 	optional string sound = 7;
 	optional string language = 8;
-	optional string group = 9;
+	optional string groupName = 9;
 	optional string imdb_url = 10;
 	optional string imdb_id = 11;	
 	optional int32 duration = 12;
