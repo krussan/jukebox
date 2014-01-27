@@ -1,0 +1,38 @@
+package se.qxx.protodb.test;
+
+option java_package = "se.qxx.protodb.test";
+option java_generic_services = true;
+
+//---------------------------------------------------------------------------------------
+//----------------------------------------------------------------------- Enumerations
+//---------------------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------------------
+//----------------------------------------------------------------------- Objects
+//---------------------------------------------------------------------------------------
+message SimpleTest {
+  optional double dd = 1;
+  optional float ff = 2;
+  optional int32 is = 3;
+  optional int64 il = 4;
+  optional bool bb = 5;  
+  optional string ss = 6;
+  optional bytes by = 7;
+}
+
+message SimpleTwo {
+  optional string title = 1;
+  optional string director = 2;
+}
+
+message ObjectOne {
+  optional SimpleTest testOne = 1;
+  optional int32 oois = 3;
+}
+
+message ObjectTwo {
+  optional SimpleTest testOne = 1;
+  optional ObjectOne testTwo = 2;
+  optional int32 otis = 3;
+}
+
