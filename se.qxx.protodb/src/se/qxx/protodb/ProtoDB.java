@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
+import com.google.protobuf.Descriptors.FieldDescriptor.JavaType;
 import com.google.protobuf.MessageOrBuilder;
 import com.google.protobuf.AbstractMessage.Builder;
 import com.google.protobuf.Descriptors.FieldDescriptor;
@@ -227,25 +228,41 @@ public class ProtoDB {
 	private void setupDatabase(MessageOrBuilder b, Connection conn) throws SQLException {
 		ProtoDBScanner scanner = new ProtoDBScanner(b);
 		
+		// setup all sub objects
 		for(FieldDescriptor field : scanner.getObjectFields()) {
-			String fieldName = field.getName();
-			Object o = b.getField(field);
+//			String fieldName = field.getName();
+//			Object o = b.getField(field);
 			
-			if (o instanceof MessageOrBuilder && !field.isRepeated()) {
-				setupDatabase((MessageOrBuilder)o, conn);
+			if (field.getJavaType() == JavaType.MESSAGE && !field.isRepeated()) {
+				setupDatabase((MessageOrBuilder)b.getField(field), conn);
 			}
-		}	
-		
-		if (!tableExist(scanner.getObjectName(), conn)) {
-			String sql = scanner.getCreateStatement();
-			PreparedStatement prep = conn.prepareStatement(sql);
+		}
 			
-			prep.execute();			
+		// setup this object
+		if (!tableExist(scanner.getObjectName(), conn)) {
+			executeStatement(scanner.getCreateStatement(), conn);
 		}
 		
+		// setup all repeated fields as many-to-many relations
+		for(FieldDescriptor field : scanner.getRepeatedObjectFields()) {
+			if (field.getJavaType() == JavaType.MESSAGE && field.isRepeated()) {
+				MessageOrBuilder b2 = (MessageOrBuilder)b.getField(field);
+				
+				// create other object
+				setupDatabase(b2, conn);
+				
+				// create link table
+				executeStatement(scanner.getLinkCreateStatement(b2), conn);
+			}
+		}
 
 	}
 	
+	private void executeStatement(String sql, Connection conn) throws SQLException {
+		PreparedStatement prep = conn.prepareStatement(sql);
+		prep.execute();			
+	}
+
 	public int save(MessageOrBuilder b) {
 		Connection conn = null;
 		int id = -1;

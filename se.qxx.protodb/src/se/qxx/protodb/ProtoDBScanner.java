@@ -1,5 +1,6 @@
 package se.qxx.protodb;
 
+import java.lang.reflect.ParameterizedType;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -11,9 +12,12 @@ import java.util.List;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor.JavaType;
+import com.google.protobuf.GeneratedMessage;
 import com.google.protobuf.MessageOrBuilder;
 import com.google.protobuf.Descriptors.FieldDescriptor;
+import com.google.protobuf.RepeatedFieldBuilder;
 
 public class ProtoDBScanner {
 
@@ -40,32 +44,52 @@ public class ProtoDBScanner {
 		this.scan(b);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void scan(MessageOrBuilder b) {
 			
 		this.setObjectName(StringUtils.capitalize(b.getDescriptorForType().getName()));
 
 		List<FieldDescriptor> fields = b.getDescriptorForType().getFields();
 		for(FieldDescriptor field : fields) {
-			Object o = b.getField(field);
-			ProtoDBScanner dbInternal = null;
-			
-			if (o instanceof MessageOrBuilder) {
-				MessageOrBuilder target = (MessageOrBuilder)this.getMessage().getField(field);
-				dbInternal = new ProtoDBScanner(target);			
-			}
+//			Object o = b.getField(field);
+//			ProtoDBScanner dbInternal = null;
+			JavaType jType = field.getJavaType();
 			
 			if (field.isRepeated())
 			{
-				if (o instanceof MessageOrBuilder) {
-					this.addRepeatedObjectField(field);		
-					this.addRepeatedObjectFieldTarget(dbInternal.getObjectName());
+				
+//				java.lang.reflect.Field = (RepeatedMessage) this.getMessage().getField(field)
+//				ParameterizedType targetType = (ParameterizedType) target.get
+				Descriptor desc = field.getContainingType();
+				Class<?> cls;
+				Object obj;
+				
+				try {
+					String clazzName = desc.getFullName();
+					cls = Class.forName(clazzName);
+					obj = cls.newInstance();
+				
+					if (obj instanceof GeneratedMessage) {
+							MessageOrBuilder target = (MessageOrBuilder)this.getMessage().getField(field);
+							ProtoDBScanner dbInternal = new ProtoDBScanner(target);			
+						
+							this.addRepeatedObjectField(field);		
+							this.addRepeatedObjectFieldTarget(dbInternal.getObjectName());
+					}
+					else {
+						this.addRepeatedBasicField(field);
+					}	
+				} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-				else {
-					this.addRepeatedBasicField(field);
-				}
+
 			}
 			else {
-				if (o instanceof MessageOrBuilder) {
+				if (jType == JavaType.MESSAGE) {
+					MessageOrBuilder target = (MessageOrBuilder)this.getMessage().getField(field);
+					ProtoDBScanner dbInternal = new ProtoDBScanner(target);			
+					
 					this.addObjectField(field);
 					this.addObjectFieldTarget(dbInternal.getObjectName());
 				}				
@@ -132,6 +156,19 @@ public class ProtoDBScanner {
 		
 		return sql;
 	}
+	
+	public String getLinkCreateStatement(MessageOrBuilder other) {
+		ProtoDBScanner scanner = new ProtoDBScanner(other);
+		return String.format("CREATE TABLE %s%s ("
+				+ "_" + this.getObjectName().toLowerCase() + "_ID INT NOT NULL REFERENCES %s (ID),"
+				+ "_" + scanner.getObjectName().toLowerCase() + "_ID INT NOT NULL REFERENCES %s (ID)"
+				+ ")", 
+				this.getObjectName(), 
+				scanner.getObjectName(),
+				this.getObjectName(),
+				scanner.getObjectName());
+		
+	}	
 	
 	private String getDBType(FieldDescriptor field) {
 		JavaType jType = field.getJavaType();

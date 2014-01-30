@@ -36,3 +36,7 @@ message ObjectTwo {
   optional int32 otis = 3;
 }
 
+message RepObjectOne {
+  repeated SimpleTwo list_of_objects = 1;
+  required int32 happycamper = 2;
+}

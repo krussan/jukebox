@@ -13,7 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import se.qxx.protodb.ProtoDB;
-import se.qxx.protodb.test.Testdomain.SimpleTest;
+import se.qxx.protodb.test.TestDomain.SimpleTest;
 
 public class TestSetup {
 
@@ -29,6 +29,12 @@ public class TestSetup {
 	private final String[] OBJECTTWO_FIELD_NAMES = {"ID", "_testone_ID", "_testtwo_ID", "otis"};
 	private final String[] OBJECTTWO_FIELD_TYPES = {"INT", "INT", "INT", "INT"};
 
+	private final String[] REPOBJECTONE_FIELD_NAMES = {"ID", "_testone_ID", "_testtwo_ID", "otis"};
+	private final String[] REPOBJECTONE_FIELD_TYPES = {"INT", "INT", "INT", "INT"};
+
+	private final String[] REPOBJECTONE_LINK_FIELD_NAMES = {"ID", "happycamper"};
+	private final String[] REPOBJECTONE_LINK_FIELD_TYPES = {"INT", "INT"};
+	
 	@Before
 	public void Setup() {
 		
@@ -36,14 +42,13 @@ public class TestSetup {
 		f.delete();
 		
 	    db = new ProtoDB(DATABASE_FILE);
-		
 	}
 	
 
 	@Test
 	public void TestSimple() {
 		
-		Testdomain.SimpleTest t = Testdomain.SimpleTest.newBuilder().build();
+		TestDomain.SimpleTest t = TestDomain.SimpleTest.newBuilder().build();
 		
 		try {
 			db.setupDatabase(t);
@@ -61,7 +66,7 @@ public class TestSetup {
 
 	@Test
 	public void TestObjectOne() {
-		Testdomain.ObjectOne t = Testdomain.ObjectOne.newBuilder().build();
+		TestDomain.ObjectOne t = TestDomain.ObjectOne.newBuilder().build();
 
 		try {
 			db.setupDatabase(t);
@@ -78,7 +83,7 @@ public class TestSetup {
 	@Test
 	public void TestObjectTwo() {
 		// test boolean
-		Testdomain.ObjectTwo t = Testdomain.ObjectTwo.newBuilder().build();
+		TestDomain.ObjectTwo t = TestDomain.ObjectTwo.newBuilder().build();
 
 		try {
 			db.setupDatabase(t);
@@ -93,7 +98,26 @@ public class TestSetup {
 		}
 		
 		// test if database structure is the one we want
-	}		
+	}	
+	
+	@Test
+	public void TestRepObjectOne() {
+		TestDomain.RepObjectOne t = TestDomain.RepObjectOne.newBuilder()
+				.setHappycamper(42)
+				.build();
+		try {
+			db.setupDatabase(t);
+			
+			testTableStructure(db, "SimpleTest", SIMPLE_FIELD_NAMES, SIMPLE_FIELD_TYPES);
+			testTableStructure(db, "RepObjectOne", REPOBJECTONE_FIELD_NAMES, REPOBJECTONE_FIELD_TYPES);			
+			testTableStructure(db, "RepObjectOneSimpleTest", REPOBJECTONE_LINK_FIELD_NAMES, REPOBJECTONE_LINK_FIELD_TYPES);
+			
+		} catch (SQLException | ClassNotFoundException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+
+	}
 	
 	private void testTableStructure(
 			ProtoDB db,
