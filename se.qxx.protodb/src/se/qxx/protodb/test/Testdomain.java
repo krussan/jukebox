@@ -59,12 +59,12 @@ public final class TestDomain {
     
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_TestDomain_SimpleTest_descriptor;
+      return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_SimpleTest_descriptor;
     }
     
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_TestDomain_SimpleTest_fieldAccessorTable;
+      return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_SimpleTest_fieldAccessorTable;
     }
     
     private int bitField0_;
@@ -336,12 +336,12 @@ public final class TestDomain {
        implements se.qxx.protodb.test.TestDomain.SimpleTestOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_TestDomain_SimpleTest_descriptor;
+        return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_SimpleTest_descriptor;
       }
       
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_TestDomain_SimpleTest_fieldAccessorTable;
+        return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_SimpleTest_fieldAccessorTable;
       }
       
       // Construct using se.qxx.protodb.test.TestDomain.SimpleTest.newBuilder()
@@ -717,7 +717,7 @@ public final class TestDomain {
         return this;
       }
       
-      // @@protoc_insertion_point(builder_scope:se.qxx.protodb.test.TestDomain.SimpleTest)
+      // @@protoc_insertion_point(builder_scope:se.qxx.protodb.test.SimpleTest)
     }
     
     static {
@@ -725,7 +725,7 @@ public final class TestDomain {
       defaultInstance.initFields();
     }
     
-    // @@protoc_insertion_point(class_scope:se.qxx.protodb.test.TestDomain.SimpleTest)
+    // @@protoc_insertion_point(class_scope:se.qxx.protodb.test.SimpleTest)
   }
   
   public interface SimpleTwoOrBuilder
@@ -759,12 +759,12 @@ public final class TestDomain {
     
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_TestDomain_SimpleTwo_descriptor;
+      return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_SimpleTwo_descriptor;
     }
     
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_TestDomain_SimpleTwo_fieldAccessorTable;
+      return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_SimpleTwo_fieldAccessorTable;
     }
     
     private int bitField0_;
@@ -968,12 +968,12 @@ public final class TestDomain {
        implements se.qxx.protodb.test.TestDomain.SimpleTwoOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_TestDomain_SimpleTwo_descriptor;
+        return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_SimpleTwo_descriptor;
       }
       
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_TestDomain_SimpleTwo_fieldAccessorTable;
+        return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_SimpleTwo_fieldAccessorTable;
       }
       
       // Construct using se.qxx.protodb.test.TestDomain.SimpleTwo.newBuilder()
@@ -1186,7 +1186,7 @@ public final class TestDomain {
         onChanged();
       }
       
-      // @@protoc_insertion_point(builder_scope:se.qxx.protodb.test.TestDomain.SimpleTwo)
+      // @@protoc_insertion_point(builder_scope:se.qxx.protodb.test.SimpleTwo)
     }
     
     static {
@@ -1194,13 +1194,13 @@ public final class TestDomain {
       defaultInstance.initFields();
     }
     
-    // @@protoc_insertion_point(class_scope:se.qxx.protodb.test.TestDomain.SimpleTwo)
+    // @@protoc_insertion_point(class_scope:se.qxx.protodb.test.SimpleTwo)
   }
   
   public interface ObjectOneOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // optional .se.qxx.protodb.test.TestDomain.SimpleTest testOne = 1;
+    // optional .se.qxx.protodb.test.SimpleTest testOne = 1;
     boolean hasTestOne();
     se.qxx.protodb.test.TestDomain.SimpleTest getTestOne();
     se.qxx.protodb.test.TestDomain.SimpleTestOrBuilder getTestOneOrBuilder();
@@ -1229,16 +1229,16 @@ public final class TestDomain {
     
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_TestDomain_ObjectOne_descriptor;
+      return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_ObjectOne_descriptor;
     }
     
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_TestDomain_ObjectOne_fieldAccessorTable;
+      return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_ObjectOne_fieldAccessorTable;
     }
     
     private int bitField0_;
-    // optional .se.qxx.protodb.test.TestDomain.SimpleTest testOne = 1;
+    // optional .se.qxx.protodb.test.SimpleTest testOne = 1;
     public static final int TESTONE_FIELD_NUMBER = 1;
     private se.qxx.protodb.test.TestDomain.SimpleTest testOne_;
     public boolean hasTestOne() {
@@ -1397,12 +1397,12 @@ public final class TestDomain {
        implements se.qxx.protodb.test.TestDomain.ObjectOneOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_TestDomain_ObjectOne_descriptor;
+        return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_ObjectOne_descriptor;
       }
       
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_TestDomain_ObjectOne_fieldAccessorTable;
+        return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_ObjectOne_fieldAccessorTable;
       }
       
       // Construct using se.qxx.protodb.test.TestDomain.ObjectOne.newBuilder()
@@ -1556,7 +1556,7 @@ public final class TestDomain {
       
       private int bitField0_;
       
-      // optional .se.qxx.protodb.test.TestDomain.SimpleTest testOne = 1;
+      // optional .se.qxx.protodb.test.SimpleTest testOne = 1;
       private se.qxx.protodb.test.TestDomain.SimpleTest testOne_ = se.qxx.protodb.test.TestDomain.SimpleTest.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
           se.qxx.protodb.test.TestDomain.SimpleTest, se.qxx.protodb.test.TestDomain.SimpleTest.Builder, se.qxx.protodb.test.TestDomain.SimpleTestOrBuilder> testOneBuilder_;
@@ -1667,7 +1667,7 @@ public final class TestDomain {
         return this;
       }
       
-      // @@protoc_insertion_point(builder_scope:se.qxx.protodb.test.TestDomain.ObjectOne)
+      // @@protoc_insertion_point(builder_scope:se.qxx.protodb.test.ObjectOne)
     }
     
     static {
@@ -1675,18 +1675,18 @@ public final class TestDomain {
       defaultInstance.initFields();
     }
     
-    // @@protoc_insertion_point(class_scope:se.qxx.protodb.test.TestDomain.ObjectOne)
+    // @@protoc_insertion_point(class_scope:se.qxx.protodb.test.ObjectOne)
   }
   
   public interface ObjectTwoOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // optional .se.qxx.protodb.test.TestDomain.SimpleTest testOne = 1;
+    // optional .se.qxx.protodb.test.SimpleTest testOne = 1;
     boolean hasTestOne();
     se.qxx.protodb.test.TestDomain.SimpleTest getTestOne();
     se.qxx.protodb.test.TestDomain.SimpleTestOrBuilder getTestOneOrBuilder();
     
-    // optional .se.qxx.protodb.test.TestDomain.ObjectOne testTwo = 2;
+    // optional .se.qxx.protodb.test.ObjectOne testTwo = 2;
     boolean hasTestTwo();
     se.qxx.protodb.test.TestDomain.ObjectOne getTestTwo();
     se.qxx.protodb.test.TestDomain.ObjectOneOrBuilder getTestTwoOrBuilder();
@@ -1715,16 +1715,16 @@ public final class TestDomain {
     
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_TestDomain_ObjectTwo_descriptor;
+      return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_ObjectTwo_descriptor;
     }
     
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_TestDomain_ObjectTwo_fieldAccessorTable;
+      return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_ObjectTwo_fieldAccessorTable;
     }
     
     private int bitField0_;
-    // optional .se.qxx.protodb.test.TestDomain.SimpleTest testOne = 1;
+    // optional .se.qxx.protodb.test.SimpleTest testOne = 1;
     public static final int TESTONE_FIELD_NUMBER = 1;
     private se.qxx.protodb.test.TestDomain.SimpleTest testOne_;
     public boolean hasTestOne() {
@@ -1737,7 +1737,7 @@ public final class TestDomain {
       return testOne_;
     }
     
-    // optional .se.qxx.protodb.test.TestDomain.ObjectOne testTwo = 2;
+    // optional .se.qxx.protodb.test.ObjectOne testTwo = 2;
     public static final int TESTTWO_FIELD_NUMBER = 2;
     private se.qxx.protodb.test.TestDomain.ObjectOne testTwo_;
     public boolean hasTestTwo() {
@@ -1904,12 +1904,12 @@ public final class TestDomain {
        implements se.qxx.protodb.test.TestDomain.ObjectTwoOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_TestDomain_ObjectTwo_descriptor;
+        return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_ObjectTwo_descriptor;
       }
       
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_TestDomain_ObjectTwo_fieldAccessorTable;
+        return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_ObjectTwo_fieldAccessorTable;
       }
       
       // Construct using se.qxx.protodb.test.TestDomain.ObjectTwo.newBuilder()
@@ -2090,7 +2090,7 @@ public final class TestDomain {
       
       private int bitField0_;
       
-      // optional .se.qxx.protodb.test.TestDomain.SimpleTest testOne = 1;
+      // optional .se.qxx.protodb.test.SimpleTest testOne = 1;
       private se.qxx.protodb.test.TestDomain.SimpleTest testOne_ = se.qxx.protodb.test.TestDomain.SimpleTest.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
           se.qxx.protodb.test.TestDomain.SimpleTest, se.qxx.protodb.test.TestDomain.SimpleTest.Builder, se.qxx.protodb.test.TestDomain.SimpleTestOrBuilder> testOneBuilder_;
@@ -2180,7 +2180,7 @@ public final class TestDomain {
         return testOneBuilder_;
       }
       
-      // optional .se.qxx.protodb.test.TestDomain.ObjectOne testTwo = 2;
+      // optional .se.qxx.protodb.test.ObjectOne testTwo = 2;
       private se.qxx.protodb.test.TestDomain.ObjectOne testTwo_ = se.qxx.protodb.test.TestDomain.ObjectOne.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
           se.qxx.protodb.test.TestDomain.ObjectOne, se.qxx.protodb.test.TestDomain.ObjectOne.Builder, se.qxx.protodb.test.TestDomain.ObjectOneOrBuilder> testTwoBuilder_;
@@ -2291,7 +2291,7 @@ public final class TestDomain {
         return this;
       }
       
-      // @@protoc_insertion_point(builder_scope:se.qxx.protodb.test.TestDomain.ObjectTwo)
+      // @@protoc_insertion_point(builder_scope:se.qxx.protodb.test.ObjectTwo)
     }
     
     static {
@@ -2299,13 +2299,13 @@ public final class TestDomain {
       defaultInstance.initFields();
     }
     
-    // @@protoc_insertion_point(class_scope:se.qxx.protodb.test.TestDomain.ObjectTwo)
+    // @@protoc_insertion_point(class_scope:se.qxx.protodb.test.ObjectTwo)
   }
   
   public interface RepObjectOneOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // repeated .se.qxx.protodb.test.TestDomain.SimpleTwo list_of_objects = 1;
+    // repeated .se.qxx.protodb.test.SimpleTwo list_of_objects = 1;
     java.util.List<se.qxx.protodb.test.TestDomain.SimpleTwo> 
         getListOfObjectsList();
     se.qxx.protodb.test.TestDomain.SimpleTwo getListOfObjects(int index);
@@ -2339,16 +2339,16 @@ public final class TestDomain {
     
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_TestDomain_RepObjectOne_descriptor;
+      return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_RepObjectOne_descriptor;
     }
     
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_TestDomain_RepObjectOne_fieldAccessorTable;
+      return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_RepObjectOne_fieldAccessorTable;
     }
     
     private int bitField0_;
-    // repeated .se.qxx.protodb.test.TestDomain.SimpleTwo list_of_objects = 1;
+    // repeated .se.qxx.protodb.test.SimpleTwo list_of_objects = 1;
     public static final int LIST_OF_OBJECTS_FIELD_NUMBER = 1;
     private java.util.List<se.qxx.protodb.test.TestDomain.SimpleTwo> listOfObjects_;
     public java.util.List<se.qxx.protodb.test.TestDomain.SimpleTwo> getListOfObjectsList() {
@@ -2519,12 +2519,12 @@ public final class TestDomain {
        implements se.qxx.protodb.test.TestDomain.RepObjectOneOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_TestDomain_RepObjectOne_descriptor;
+        return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_RepObjectOne_descriptor;
       }
       
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_TestDomain_RepObjectOne_fieldAccessorTable;
+        return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_RepObjectOne_fieldAccessorTable;
       }
       
       // Construct using se.qxx.protodb.test.TestDomain.RepObjectOne.newBuilder()
@@ -2703,7 +2703,7 @@ public final class TestDomain {
       
       private int bitField0_;
       
-      // repeated .se.qxx.protodb.test.TestDomain.SimpleTwo list_of_objects = 1;
+      // repeated .se.qxx.protodb.test.SimpleTwo list_of_objects = 1;
       private java.util.List<se.qxx.protodb.test.TestDomain.SimpleTwo> listOfObjects_ =
         java.util.Collections.emptyList();
       private void ensureListOfObjectsIsMutable() {
@@ -2910,7 +2910,7 @@ public final class TestDomain {
         return this;
       }
       
-      // @@protoc_insertion_point(builder_scope:se.qxx.protodb.test.TestDomain.RepObjectOne)
+      // @@protoc_insertion_point(builder_scope:se.qxx.protodb.test.RepObjectOne)
     }
     
     static {
@@ -2918,34 +2918,34 @@ public final class TestDomain {
       defaultInstance.initFields();
     }
     
-    // @@protoc_insertion_point(class_scope:se.qxx.protodb.test.TestDomain.RepObjectOne)
+    // @@protoc_insertion_point(class_scope:se.qxx.protodb.test.RepObjectOne)
   }
   
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_se_qxx_protodb_test_TestDomain_SimpleTest_descriptor;
+    internal_static_se_qxx_protodb_test_SimpleTest_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_se_qxx_protodb_test_TestDomain_SimpleTest_fieldAccessorTable;
+      internal_static_se_qxx_protodb_test_SimpleTest_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_se_qxx_protodb_test_TestDomain_SimpleTwo_descriptor;
+    internal_static_se_qxx_protodb_test_SimpleTwo_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_se_qxx_protodb_test_TestDomain_SimpleTwo_fieldAccessorTable;
+      internal_static_se_qxx_protodb_test_SimpleTwo_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_se_qxx_protodb_test_TestDomain_ObjectOne_descriptor;
+    internal_static_se_qxx_protodb_test_ObjectOne_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_se_qxx_protodb_test_TestDomain_ObjectOne_fieldAccessorTable;
+      internal_static_se_qxx_protodb_test_ObjectOne_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_se_qxx_protodb_test_TestDomain_ObjectTwo_descriptor;
+    internal_static_se_qxx_protodb_test_ObjectTwo_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_se_qxx_protodb_test_TestDomain_ObjectTwo_fieldAccessorTable;
+      internal_static_se_qxx_protodb_test_ObjectTwo_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_se_qxx_protodb_test_TestDomain_RepObjectOne_descriptor;
+    internal_static_se_qxx_protodb_test_RepObjectOne_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_se_qxx_protodb_test_TestDomain_RepObjectOne_fieldAccessorTable;
+      internal_static_se_qxx_protodb_test_RepObjectOne_fieldAccessorTable;
   
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -2955,64 +2955,62 @@ public final class TestDomain {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\020TestDomain.proto\022\036se.qxx.protodb.test." +
-      "TestDomain\"`\n\nSimpleTest\022\n\n\002dd\030\001 \001(\001\022\n\n\002" +
-      "ff\030\002 \001(\002\022\n\n\002is\030\003 \001(\005\022\n\n\002il\030\004 \001(\003\022\n\n\002bb\030\005" +
-      " \001(\010\022\n\n\002ss\030\006 \001(\t\022\n\n\002by\030\007 \001(\014\",\n\tSimpleTw" +
-      "o\022\r\n\005title\030\001 \001(\t\022\020\n\010director\030\002 \001(\t\"V\n\tOb" +
-      "jectOne\022;\n\007testOne\030\001 \001(\0132*.se.qxx.protod" +
-      "b.test.TestDomain.SimpleTest\022\014\n\004oois\030\003 \001" +
-      "(\005\"\222\001\n\tObjectTwo\022;\n\007testOne\030\001 \001(\0132*.se.q" +
-      "xx.protodb.test.TestDomain.SimpleTest\022:\n" +
-      "\007testTwo\030\002 \001(\0132).se.qxx.protodb.test.Tes",
-      "tDomain.ObjectOne\022\014\n\004otis\030\003 \001(\005\"g\n\014RepOb" +
-      "jectOne\022B\n\017list_of_objects\030\001 \003(\0132).se.qx" +
-      "x.protodb.test.TestDomain.SimpleTwo\022\023\n\013h" +
-      "appycamper\030\002 \002(\005B\030\n\023se.qxx.protodb.test\210" +
-      "\001\001"
+      "\n\020TestDomain.proto\022\023se.qxx.protodb.test\"" +
+      "`\n\nSimpleTest\022\n\n\002dd\030\001 \001(\001\022\n\n\002ff\030\002 \001(\002\022\n\n" +
+      "\002is\030\003 \001(\005\022\n\n\002il\030\004 \001(\003\022\n\n\002bb\030\005 \001(\010\022\n\n\002ss\030" +
+      "\006 \001(\t\022\n\n\002by\030\007 \001(\014\",\n\tSimpleTwo\022\r\n\005title\030" +
+      "\001 \001(\t\022\020\n\010director\030\002 \001(\t\"K\n\tObjectOne\0220\n\007" +
+      "testOne\030\001 \001(\0132\037.se.qxx.protodb.test.Simp" +
+      "leTest\022\014\n\004oois\030\003 \001(\005\"|\n\tObjectTwo\0220\n\007tes" +
+      "tOne\030\001 \001(\0132\037.se.qxx.protodb.test.SimpleT" +
+      "est\022/\n\007testTwo\030\002 \001(\0132\036.se.qxx.protodb.te" +
+      "st.ObjectOne\022\014\n\004otis\030\003 \001(\005\"\\\n\014RepObjectO",
+      "ne\0227\n\017list_of_objects\030\001 \003(\0132\036.se.qxx.pro" +
+      "todb.test.SimpleTwo\022\023\n\013happycamper\030\002 \002(\005" +
+      "B\030\n\023se.qxx.protodb.test\210\001\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
         public com.google.protobuf.ExtensionRegistry assignDescriptors(
             com.google.protobuf.Descriptors.FileDescriptor root) {
           descriptor = root;
-          internal_static_se_qxx_protodb_test_TestDomain_SimpleTest_descriptor =
+          internal_static_se_qxx_protodb_test_SimpleTest_descriptor =
             getDescriptor().getMessageTypes().get(0);
-          internal_static_se_qxx_protodb_test_TestDomain_SimpleTest_fieldAccessorTable = new
+          internal_static_se_qxx_protodb_test_SimpleTest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_se_qxx_protodb_test_TestDomain_SimpleTest_descriptor,
+              internal_static_se_qxx_protodb_test_SimpleTest_descriptor,
               new java.lang.String[] { "Dd", "Ff", "Is", "Il", "Bb", "Ss", "By", },
               se.qxx.protodb.test.TestDomain.SimpleTest.class,
               se.qxx.protodb.test.TestDomain.SimpleTest.Builder.class);
-          internal_static_se_qxx_protodb_test_TestDomain_SimpleTwo_descriptor =
+          internal_static_se_qxx_protodb_test_SimpleTwo_descriptor =
             getDescriptor().getMessageTypes().get(1);
-          internal_static_se_qxx_protodb_test_TestDomain_SimpleTwo_fieldAccessorTable = new
+          internal_static_se_qxx_protodb_test_SimpleTwo_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_se_qxx_protodb_test_TestDomain_SimpleTwo_descriptor,
+              internal_static_se_qxx_protodb_test_SimpleTwo_descriptor,
               new java.lang.String[] { "Title", "Director", },
               se.qxx.protodb.test.TestDomain.SimpleTwo.class,
               se.qxx.protodb.test.TestDomain.SimpleTwo.Builder.class);
-          internal_static_se_qxx_protodb_test_TestDomain_ObjectOne_descriptor =
+          internal_static_se_qxx_protodb_test_ObjectOne_descriptor =
             getDescriptor().getMessageTypes().get(2);
-          internal_static_se_qxx_protodb_test_TestDomain_ObjectOne_fieldAccessorTable = new
+          internal_static_se_qxx_protodb_test_ObjectOne_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_se_qxx_protodb_test_TestDomain_ObjectOne_descriptor,
+              internal_static_se_qxx_protodb_test_ObjectOne_descriptor,
               new java.lang.String[] { "TestOne", "Oois", },
               se.qxx.protodb.test.TestDomain.ObjectOne.class,
               se.qxx.protodb.test.TestDomain.ObjectOne.Builder.class);
-          internal_static_se_qxx_protodb_test_TestDomain_ObjectTwo_descriptor =
+          internal_static_se_qxx_protodb_test_ObjectTwo_descriptor =
             getDescriptor().getMessageTypes().get(3);
-          internal_static_se_qxx_protodb_test_TestDomain_ObjectTwo_fieldAccessorTable = new
+          internal_static_se_qxx_protodb_test_ObjectTwo_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_se_qxx_protodb_test_TestDomain_ObjectTwo_descriptor,
+              internal_static_se_qxx_protodb_test_ObjectTwo_descriptor,
               new java.lang.String[] { "TestOne", "TestTwo", "Otis", },
               se.qxx.protodb.test.TestDomain.ObjectTwo.class,
               se.qxx.protodb.test.TestDomain.ObjectTwo.Builder.class);
-          internal_static_se_qxx_protodb_test_TestDomain_RepObjectOne_descriptor =
+          internal_static_se_qxx_protodb_test_RepObjectOne_descriptor =
             getDescriptor().getMessageTypes().get(4);
-          internal_static_se_qxx_protodb_test_TestDomain_RepObjectOne_fieldAccessorTable = new
+          internal_static_se_qxx_protodb_test_RepObjectOne_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_se_qxx_protodb_test_TestDomain_RepObjectOne_descriptor,
+              internal_static_se_qxx_protodb_test_RepObjectOne_descriptor,
               new java.lang.String[] { "ListOfObjects", "Happycamper", },
               se.qxx.protodb.test.TestDomain.RepObjectOne.class,
               se.qxx.protodb.test.TestDomain.RepObjectOne.Builder.class);

@@ -12,6 +12,9 @@ import java.util.List;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.protobuf.AbstractMessage.Builder;
+import com.google.protobuf.DescriptorProtos.DescriptorProto;
+import com.google.protobuf.DescriptorProtos.FileDescriptorProto;
 import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor.JavaType;
 import com.google.protobuf.GeneratedMessage;
@@ -60,28 +63,37 @@ public class ProtoDBScanner {
 				
 //				java.lang.reflect.Field = (RepeatedMessage) this.getMessage().getField(field)
 //				ParameterizedType targetType = (ParameterizedType) target.get
-				Descriptor desc = field.getContainingType();
-				Class<?> cls;
-				Object obj;
+//				Descriptor desc = field.getContainingType();
+//				Class<?> cls;
+//				Object obj;
 				
-				try {
-					String clazzName = desc.getFullName();
-					cls = Class.forName(clazzName);
-					obj = cls.newInstance();
+//				Object o = this.getMessage().getField(field);
+//				Class<?> c = o.getClass();
+//					final Class<?> type = (Class<?>) ((ParameterizedType) c
+//                            .getGenericSuperclass()).getActualTypeArguments()[0];
+//					Descriptor dd = field.getContainingType();
+//					Descriptor ee = field.getExtensionScope();
+				Descriptor mt = field.getMessageType();
+//					Class<?> mtC = mt.getClass();
+//					Descriptor mtCT = mt.getContainingType();
+//					RepeatedFieldBuilder<?, ?, ?> rfb = (RepeatedFieldBuilder<?, ?, ?>)((MessageOrBuilder)this.getMessage().getField(field));
+//					Object t = field.getDefaultValue();
+				MessageOrBuilder bb = ((MessageOrBuilder)mt.getOptions().newBuilderForType());
 				
-					if (obj instanceof GeneratedMessage) {
-							MessageOrBuilder target = (MessageOrBuilder)this.getMessage().getField(field);
-							ProtoDBScanner dbInternal = new ProtoDBScanner(target);			
-						
-							this.addRepeatedObjectField(field);		
-							this.addRepeatedObjectFieldTarget(dbInternal.getObjectName());
-					}
-					else {
-						this.addRepeatedBasicField(field);
-					}	
-				} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+//					String clazzName = desc.getFullName();
+//					cls = Class.forName(clazzName);
+//					obj = cls.newInstance();
+				
+				
+				if (bb instanceof GeneratedMessage) {
+						MessageOrBuilder target = (MessageOrBuilder)this.getMessage().getField(field);
+						ProtoDBScanner dbInternal = new ProtoDBScanner(target);			
+					
+						this.addRepeatedObjectField(field);		
+						this.addRepeatedObjectFieldTarget(dbInternal.getObjectName());
+				}
+				else {
+					this.addRepeatedBasicField(field);
 				}
 
 			}
