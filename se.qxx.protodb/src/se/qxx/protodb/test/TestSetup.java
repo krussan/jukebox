@@ -29,11 +29,20 @@ public class TestSetup {
 	private final String[] OBJECTTWO_FIELD_NAMES = {"ID", "_testone_ID", "_testtwo_ID", "otis"};
 	private final String[] OBJECTTWO_FIELD_TYPES = {"INT", "INT", "INT", "INT"};
 
-	private final String[] REPOBJECTONE_FIELD_NAMES = {"ID", "_testone_ID", "_testtwo_ID", "otis"};
-	private final String[] REPOBJECTONE_FIELD_TYPES = {"INT", "INT", "INT", "INT"};
+	private final String[] REPOBJECTONE_FIELD_NAMES = {"ID", "happycamper"};
+	private final String[] REPOBJECTONE_FIELD_TYPES = {"INT", "INT"};
 
-	private final String[] REPOBJECTONE_LINK_FIELD_NAMES = {"ID", "happycamper"};
+	private final String[] REPOBJECTONE_LINK_FIELD_NAMES = {"_repobjectone_ID", "_simpletwo_ID"};
 	private final String[] REPOBJECTONE_LINK_FIELD_TYPES = {"INT", "INT"};
+
+	private final String[] SIMPLETWO_FIELD_NAMES = {"ID", "title", "director"};
+	private final String[] SIMPLETWO_FIELD_TYPES = {"INT", "TEXT", "TEXT"};
+
+	private final String[] REPSIMPLELIST_FIELD_NAMES = {"ID", "happycamper"};
+	private final String[] REPSIMPLELIST_FIELD_TYPES = {"INT", "INT"};
+	
+	private final String[] REPSIMPLELIST_LISTOFSTRINGS_FIELD_NAMES = {"_repsimplelist_ID", "value"};
+	private final String[] REPSIMPLELIST_LISTOFSTRINGS_FIELD_TYPES = {"INT", "TEXT"};
 	
 	@Before
 	public void Setup() {
@@ -98,7 +107,7 @@ public class TestSetup {
 		}
 		
 		// test if database structure is the one we want
-	}	
+	}
 	
 	@Test
 	public void TestRepObjectOne() {
@@ -108,9 +117,9 @@ public class TestSetup {
 		try {
 			db.setupDatabase(t);
 			
-			testTableStructure(db, "SimpleTest", SIMPLE_FIELD_NAMES, SIMPLE_FIELD_TYPES);
+			testTableStructure(db, "SimpleTwo", SIMPLETWO_FIELD_NAMES, SIMPLETWO_FIELD_TYPES);
 			testTableStructure(db, "RepObjectOne", REPOBJECTONE_FIELD_NAMES, REPOBJECTONE_FIELD_TYPES);			
-			testTableStructure(db, "RepObjectOneSimpleTest", REPOBJECTONE_LINK_FIELD_NAMES, REPOBJECTONE_LINK_FIELD_TYPES);
+			testTableStructure(db, "RepObjectOneSimpleTwo_ListOfObjects", REPOBJECTONE_LINK_FIELD_NAMES, REPOBJECTONE_LINK_FIELD_TYPES);
 			
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
@@ -119,11 +128,31 @@ public class TestSetup {
 
 	}
 	
+	@Test
+	public void TestRepSimpleList() {
+		TestDomain.RepSimpleList t = TestDomain.RepSimpleList.newBuilder()
+				.setHappycamper(44)
+				.build();
+		
+		try {
+			db.setupDatabase(t);
+			
+			testTableStructure(db, "RepSimpleList", REPSIMPLELIST_FIELD_NAMES, REPSIMPLELIST_FIELD_TYPES);
+			testTableStructure(db, "RepSimpleList_ListOfStrings", REPSIMPLELIST_LISTOFSTRINGS_FIELD_NAMES, REPSIMPLELIST_LISTOFSTRINGS_FIELD_TYPES);			
+			
+		} catch (SQLException | ClassNotFoundException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+		
+	}
+	
 	private void testTableStructure(
 			ProtoDB db,
 			String expectedTableName,
 			String[] fieldNames, 
-			String[] fieldTypes) throws ClassNotFoundException, SQLException {
+			String[] fieldTypes) throws ClassNotFoundException {
+		try {
 		List<Pair<String, String>> cols = db.retreiveColumns(expectedTableName);
 		
 		int c = 0;		
@@ -133,7 +162,11 @@ public class TestSetup {
 				fail(String.format("Unexpected field :: %s type :: %s. Expected %s :: %s",
 						col.getLeft(), col.getRight(),
 						fieldNames[c], fieldTypes[c]));
-			c++;
+				c++;
+			}
+		}
+		catch (SQLException e) {
+			fail(String.format("Table %s failed the test. Probably because it does not exist. Msg :: %s", expectedTableName, e.getMessage()));
 		}
 	}	
 	

@@ -1,7 +1,9 @@
 package se.qxx.protodb;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
+import java.rmi.UnexpectedException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -20,8 +22,10 @@ import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.protobuf.Descriptors.FieldDescriptor.JavaType;
+import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.MessageOrBuilder;
 import com.google.protobuf.AbstractMessage.Builder;
+import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor;
 
 public class ProtoDB {
@@ -224,6 +228,7 @@ public class ProtoDB {
 	 * Purges the database from all tables and sets up the whole database structure from
 	 * one given protobuf class.
 	 * @throws SQLException 
+	 * @throws UnexpectedException 
 	 */
 	private void setupDatabase(MessageOrBuilder b, Connection conn) throws SQLException {
 		ProtoDBScanner scanner = new ProtoDBScanner(b);
@@ -245,15 +250,23 @@ public class ProtoDB {
 		
 		// setup all repeated fields as many-to-many relations
 		for(FieldDescriptor field : scanner.getRepeatedObjectFields()) {
-			if (field.getJavaType() == JavaType.MESSAGE && field.isRepeated()) {
-				MessageOrBuilder b2 = (MessageOrBuilder)b.getField(field);
+			Descriptor mt = field.getMessageType();
+			DynamicMessage mg = DynamicMessage.getDefaultInstance(mt);
+			if (mg instanceof MessageOrBuilder) {
+				MessageOrBuilder b2 = (MessageOrBuilder)mg;
 				
 				// create other object
 				setupDatabase(b2, conn);
 				
 				// create link table
-				executeStatement(scanner.getLinkCreateStatement(b2), conn);
+				ProtoDBScanner other = new ProtoDBScanner(b2);
+				if (!tableExist(scanner.getLinkTableName(other, field.getName()), conn))
+					executeStatement(scanner.getLinkCreateStatement(other, field.getName()), conn);
 			}
+		}
+		
+		for (FieldDescriptor field : scanner.getRepeatedBasicFields()) {
+			executeStatement(scanner.getBasicLinkCreateStatement(field), conn);
 		}
 
 	}
@@ -293,30 +306,90 @@ public class ProtoDB {
 	private int save(MessageOrBuilder b, Connection conn) throws SQLException {
 		ProtoDBScanner scanner = new ProtoDBScanner(b);
 
+		//TODO: check for existence. Delete if present!
 		// getObjectFields
 		// getBasicFields
 		// getRepeatedObjectFields
 		// getRepeatedBasicFIelds
-		
+
 		// save underlying objects
 		for(FieldDescriptor field : scanner.getObjectFields()) {
 			String fieldName = field.getName();
 			Object o = b.getField(field);
 
-			if (o instanceof MessageOrBuilder && !field.isRepeated()) {
-				int id = save((MessageOrBuilder)o);
-				scanner.addObjectID(fieldName, id);
+			if (field.getJavaType() == JavaType.MESSAGE && !field.isRepeated()) {
+				int objectID = save((MessageOrBuilder)o);
+				scanner.addObjectID(fieldName, objectID);
 			}
 		}		
-
+		
 		// save this object
-		int id = saveThisObject(b, scanner, conn);
+		int thisID = saveThisObject(b, scanner, conn);
 		
 		// save underlying repeated objects
+		for(FieldDescriptor field : scanner.getRepeatedObjectFields()) {
+			// for each repeated field get insert statement according to _this_ID, _other_ID
+			int fieldCount = b.getRepeatedFieldCount(field);
+			for (int i=0;i<fieldCount;i++) {
+				Object mg = b.getRepeatedField(field, i);
+				if (mg instanceof MessageOrBuilder) {
+					MessageOrBuilder b2 = (MessageOrBuilder)mg;
+					
+					// save other object
+					int otherID = save(b2, conn);
+					
+					// save link table
+					saveLinkObject(b2, scanner, field, thisID, otherID, conn);
+				}
+			}
+		}
 		
 		// save underlying repeated basic types
+		for (FieldDescriptor field : scanner.getRepeatedBasicFields()) {
+			int fieldCount = b.getRepeatedFieldCount(field);
+			for (int i=0;i<fieldCount;i++) {
+				Object value = b.getRepeatedField(field, i);
+				saveLinkBasic(scanner, thisID, field, value, conn);
+			}			
+		}
+		
+		return thisID;
+	}
 
-		return -1;
+	protected void saveLinkBasic(ProtoDBScanner scanner
+			, int thisID
+			, FieldDescriptor field
+			, Object value
+			, Connection conn)
+			throws SQLException {
+		
+		
+		PreparedStatement prep = 
+			scanner.compileLinkBasicArguments(
+				scanner.getBasicLinkCreateStatement(field)
+					, thisID
+					, field.getJavaType()
+					, value
+					, conn);
+		
+		prep.execute();
+	}
+
+	
+	private void saveLinkObject(MessageOrBuilder b2
+			, ProtoDBScanner scanner
+			, FieldDescriptor field
+			, int thisID
+			, int otherID
+			, Connection conn) throws SQLException {
+		ProtoDBScanner other = new ProtoDBScanner(b2);
+		scanner.getLinkTableInsertStatement(other, field.getName());
+		
+		PreparedStatement prep = conn.prepareStatement(scanner.getLinkTableInsertStatement(other, field.getName()));
+		prep.setInt(1, thisID);
+		prep.setInt(2, otherID);
+		
+		prep.execute();
 	}
 	
 	private int saveThisObject(MessageOrBuilder b, ProtoDBScanner scanner, Connection conn) throws SQLException {

@@ -2302,6 +2302,463 @@ public final class TestDomain {
     // @@protoc_insertion_point(class_scope:se.qxx.protodb.test.ObjectTwo)
   }
   
+  public interface RepSimpleListOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // repeated string list_of_strings = 1;
+    java.util.List<String> getListOfStringsList();
+    int getListOfStringsCount();
+    String getListOfStrings(int index);
+    
+    // required int32 happycamper = 2;
+    boolean hasHappycamper();
+    int getHappycamper();
+  }
+  public static final class RepSimpleList extends
+      com.google.protobuf.GeneratedMessage
+      implements RepSimpleListOrBuilder {
+    // Use RepSimpleList.newBuilder() to construct.
+    private RepSimpleList(Builder builder) {
+      super(builder);
+    }
+    private RepSimpleList(boolean noInit) {}
+    
+    private static final RepSimpleList defaultInstance;
+    public static RepSimpleList getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public RepSimpleList getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_RepSimpleList_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_RepSimpleList_fieldAccessorTable;
+    }
+    
+    private int bitField0_;
+    // repeated string list_of_strings = 1;
+    public static final int LIST_OF_STRINGS_FIELD_NUMBER = 1;
+    private com.google.protobuf.LazyStringList listOfStrings_;
+    public java.util.List<String>
+        getListOfStringsList() {
+      return listOfStrings_;
+    }
+    public int getListOfStringsCount() {
+      return listOfStrings_.size();
+    }
+    public String getListOfStrings(int index) {
+      return listOfStrings_.get(index);
+    }
+    
+    // required int32 happycamper = 2;
+    public static final int HAPPYCAMPER_FIELD_NUMBER = 2;
+    private int happycamper_;
+    public boolean hasHappycamper() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public int getHappycamper() {
+      return happycamper_;
+    }
+    
+    private void initFields() {
+      listOfStrings_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      happycamper_ = 0;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (!hasHappycamper()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      for (int i = 0; i < listOfStrings_.size(); i++) {
+        output.writeBytes(1, listOfStrings_.getByteString(i));
+      }
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeInt32(2, happycamper_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      {
+        int dataSize = 0;
+        for (int i = 0; i < listOfStrings_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeBytesSizeNoTag(listOfStrings_.getByteString(i));
+        }
+        size += dataSize;
+        size += 1 * getListOfStringsList().size();
+      }
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(2, happycamper_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    public static se.qxx.protodb.test.TestDomain.RepSimpleList parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static se.qxx.protodb.test.TestDomain.RepSimpleList parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static se.qxx.protodb.test.TestDomain.RepSimpleList parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static se.qxx.protodb.test.TestDomain.RepSimpleList parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static se.qxx.protodb.test.TestDomain.RepSimpleList parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static se.qxx.protodb.test.TestDomain.RepSimpleList parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static se.qxx.protodb.test.TestDomain.RepSimpleList parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static se.qxx.protodb.test.TestDomain.RepSimpleList parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static se.qxx.protodb.test.TestDomain.RepSimpleList parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static se.qxx.protodb.test.TestDomain.RepSimpleList parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(se.qxx.protodb.test.TestDomain.RepSimpleList prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements se.qxx.protodb.test.TestDomain.RepSimpleListOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_RepSimpleList_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_RepSimpleList_fieldAccessorTable;
+      }
+      
+      // Construct using se.qxx.protodb.test.TestDomain.RepSimpleList.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        listOfStrings_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        happycamper_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return se.qxx.protodb.test.TestDomain.RepSimpleList.getDescriptor();
+      }
+      
+      public se.qxx.protodb.test.TestDomain.RepSimpleList getDefaultInstanceForType() {
+        return se.qxx.protodb.test.TestDomain.RepSimpleList.getDefaultInstance();
+      }
+      
+      public se.qxx.protodb.test.TestDomain.RepSimpleList build() {
+        se.qxx.protodb.test.TestDomain.RepSimpleList result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private se.qxx.protodb.test.TestDomain.RepSimpleList buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        se.qxx.protodb.test.TestDomain.RepSimpleList result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public se.qxx.protodb.test.TestDomain.RepSimpleList buildPartial() {
+        se.qxx.protodb.test.TestDomain.RepSimpleList result = new se.qxx.protodb.test.TestDomain.RepSimpleList(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          listOfStrings_ = new com.google.protobuf.UnmodifiableLazyStringList(
+              listOfStrings_);
+          bitField0_ = (bitField0_ & ~0x00000001);
+        }
+        result.listOfStrings_ = listOfStrings_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.happycamper_ = happycamper_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof se.qxx.protodb.test.TestDomain.RepSimpleList) {
+          return mergeFrom((se.qxx.protodb.test.TestDomain.RepSimpleList)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(se.qxx.protodb.test.TestDomain.RepSimpleList other) {
+        if (other == se.qxx.protodb.test.TestDomain.RepSimpleList.getDefaultInstance()) return this;
+        if (!other.listOfStrings_.isEmpty()) {
+          if (listOfStrings_.isEmpty()) {
+            listOfStrings_ = other.listOfStrings_;
+            bitField0_ = (bitField0_ & ~0x00000001);
+          } else {
+            ensureListOfStringsIsMutable();
+            listOfStrings_.addAll(other.listOfStrings_);
+          }
+          onChanged();
+        }
+        if (other.hasHappycamper()) {
+          setHappycamper(other.getHappycamper());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        if (!hasHappycamper()) {
+          
+          return false;
+        }
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+            case 10: {
+              ensureListOfStringsIsMutable();
+              listOfStrings_.add(input.readBytes());
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              happycamper_ = input.readInt32();
+              break;
+            }
+          }
+        }
+      }
+      
+      private int bitField0_;
+      
+      // repeated string list_of_strings = 1;
+      private com.google.protobuf.LazyStringList listOfStrings_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private void ensureListOfStringsIsMutable() {
+        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+          listOfStrings_ = new com.google.protobuf.LazyStringArrayList(listOfStrings_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+      public java.util.List<String>
+          getListOfStringsList() {
+        return java.util.Collections.unmodifiableList(listOfStrings_);
+      }
+      public int getListOfStringsCount() {
+        return listOfStrings_.size();
+      }
+      public String getListOfStrings(int index) {
+        return listOfStrings_.get(index);
+      }
+      public Builder setListOfStrings(
+          int index, String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureListOfStringsIsMutable();
+        listOfStrings_.set(index, value);
+        onChanged();
+        return this;
+      }
+      public Builder addListOfStrings(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureListOfStringsIsMutable();
+        listOfStrings_.add(value);
+        onChanged();
+        return this;
+      }
+      public Builder addAllListOfStrings(
+          java.lang.Iterable<String> values) {
+        ensureListOfStringsIsMutable();
+        super.addAll(values, listOfStrings_);
+        onChanged();
+        return this;
+      }
+      public Builder clearListOfStrings() {
+        listOfStrings_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        onChanged();
+        return this;
+      }
+      void addListOfStrings(com.google.protobuf.ByteString value) {
+        ensureListOfStringsIsMutable();
+        listOfStrings_.add(value);
+        onChanged();
+      }
+      
+      // required int32 happycamper = 2;
+      private int happycamper_ ;
+      public boolean hasHappycamper() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public int getHappycamper() {
+        return happycamper_;
+      }
+      public Builder setHappycamper(int value) {
+        bitField0_ |= 0x00000002;
+        happycamper_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearHappycamper() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        happycamper_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // @@protoc_insertion_point(builder_scope:se.qxx.protodb.test.RepSimpleList)
+    }
+    
+    static {
+      defaultInstance = new RepSimpleList(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:se.qxx.protodb.test.RepSimpleList)
+  }
+  
   public interface RepObjectOneOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
@@ -2942,6 +3399,11 @@ public final class TestDomain {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_se_qxx_protodb_test_ObjectTwo_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_se_qxx_protodb_test_RepSimpleList_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_se_qxx_protodb_test_RepSimpleList_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_se_qxx_protodb_test_RepObjectOne_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -2964,10 +3426,12 @@ public final class TestDomain {
       "leTest\022\014\n\004oois\030\003 \001(\005\"|\n\tObjectTwo\0220\n\007tes" +
       "tOne\030\001 \001(\0132\037.se.qxx.protodb.test.SimpleT" +
       "est\022/\n\007testTwo\030\002 \001(\0132\036.se.qxx.protodb.te" +
-      "st.ObjectOne\022\014\n\004otis\030\003 \001(\005\"\\\n\014RepObjectO",
-      "ne\0227\n\017list_of_objects\030\001 \003(\0132\036.se.qxx.pro" +
-      "todb.test.SimpleTwo\022\023\n\013happycamper\030\002 \002(\005" +
-      "B\030\n\023se.qxx.protodb.test\210\001\001"
+      "st.ObjectOne\022\014\n\004otis\030\003 \001(\005\"=\n\rRepSimpleL",
+      "ist\022\027\n\017list_of_strings\030\001 \003(\t\022\023\n\013happycam" +
+      "per\030\002 \002(\005\"\\\n\014RepObjectOne\0227\n\017list_of_obj" +
+      "ects\030\001 \003(\0132\036.se.qxx.protodb.test.SimpleT" +
+      "wo\022\023\n\013happycamper\030\002 \002(\005B\030\n\023se.qxx.protod" +
+      "b.test\210\001\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -3006,8 +3470,16 @@ public final class TestDomain {
               new java.lang.String[] { "TestOne", "TestTwo", "Otis", },
               se.qxx.protodb.test.TestDomain.ObjectTwo.class,
               se.qxx.protodb.test.TestDomain.ObjectTwo.Builder.class);
-          internal_static_se_qxx_protodb_test_RepObjectOne_descriptor =
+          internal_static_se_qxx_protodb_test_RepSimpleList_descriptor =
             getDescriptor().getMessageTypes().get(4);
+          internal_static_se_qxx_protodb_test_RepSimpleList_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_se_qxx_protodb_test_RepSimpleList_descriptor,
+              new java.lang.String[] { "ListOfStrings", "Happycamper", },
+              se.qxx.protodb.test.TestDomain.RepSimpleList.class,
+              se.qxx.protodb.test.TestDomain.RepSimpleList.Builder.class);
+          internal_static_se_qxx_protodb_test_RepObjectOne_descriptor =
+            getDescriptor().getMessageTypes().get(5);
           internal_static_se_qxx_protodb_test_RepObjectOne_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_se_qxx_protodb_test_RepObjectOne_descriptor,

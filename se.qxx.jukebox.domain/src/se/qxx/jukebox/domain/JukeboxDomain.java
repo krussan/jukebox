@@ -83,7 +83,7 @@ public final class JukeboxDomain {
   public enum Rating
       implements com.google.protobuf.ProtocolMessageEnum {
     NotMatched(0, 1),
-    ProbabaleMatch(1, 2),
+    ProbableMatch(1, 2),
     PositiveMatch(2, 3),
     ExactMatch(3, 4),
     SubsExist(4, 5),
@@ -101,7 +101,7 @@ public final class JukeboxDomain {
     public static Rating valueOf(int value) {
       switch (value) {
         case 1: return NotMatched;
-        case 2: return ProbabaleMatch;
+        case 2: return ProbableMatch;
         case 3: return PositiveMatch;
         case 4: return ExactMatch;
         case 5: return SubsExist;
@@ -135,7 +135,7 @@ public final class JukeboxDomain {
     }
     
     private static final Rating[] VALUES = {
-      NotMatched, ProbabaleMatch, PositiveMatch, ExactMatch, SubsExist, 
+      NotMatched, ProbableMatch, PositiveMatch, ExactMatch, SubsExist, 
     };
     
     public static Rating valueOf(
