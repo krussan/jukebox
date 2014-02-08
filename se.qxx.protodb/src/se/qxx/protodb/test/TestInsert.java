@@ -29,6 +29,8 @@ public class TestInsert {
 	
 	@Test
 	public void TestSimple() {
+		TestDomain.SimpleTest.getDescriptor();
+		
 		TestDomain.SimpleTest t = TestDomain.SimpleTest.newBuilder()
 				.setBb(false)
 				.setBy(ByteString.copyFrom(new byte[] {5,8,6}))
@@ -42,9 +44,9 @@ public class TestInsert {
 		try {
 			db.setupDatabase(t);
 
-			PreparedStatement prep = "SELECT * FROM SimpleTest";
-			
-			testTableStructure(db, "SimpleTest", SIMPLE_FIELD_NAMES, SIMPLE_FIELD_TYPES);
+//			PreparedStatement prep = "SELECT * FROM SimpleTest";
+//			
+//			testTableStructure(db, "SimpleTest", SIMPLE_FIELD_NAMES, SIMPLE_FIELD_TYPES);
 
 			
 		} catch (SQLException | ClassNotFoundException e) {

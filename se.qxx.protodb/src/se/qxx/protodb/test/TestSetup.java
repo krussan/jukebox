@@ -21,28 +21,28 @@ public class TestSetup {
 	
 	private final String DATABASE_FILE = "protodb_test.db";
 	private final String[] SIMPLE_FIELD_NAMES = {"ID", "dd", "ff", "is", "il", "bb", "ss", "by"};
-	private final String[] SIMPLE_FIELD_TYPES = {"INT", "DOUBLE", "FLOAT", "INT", "BIGINT", "BOOLEAN", "TEXT", "TEXT"};
+	private final String[] SIMPLE_FIELD_TYPES = {"INTEGER", "DOUBLE", "FLOAT", "INTEGER", "BIGINT", "BOOLEAN", "TEXT", "TEXT"};
 
 	private final String[] OBJECTONE_FIELD_NAMES = {"ID", "_testone_ID", "oois"};
-	private final String[] OBJECTONE_FIELD_TYPES = {"INT", "INT", "INT"};
+	private final String[] OBJECTONE_FIELD_TYPES = {"INTEGER", "INTEGER", "INTEGER"};
 
 	private final String[] OBJECTTWO_FIELD_NAMES = {"ID", "_testone_ID", "_testtwo_ID", "otis"};
-	private final String[] OBJECTTWO_FIELD_TYPES = {"INT", "INT", "INT", "INT"};
+	private final String[] OBJECTTWO_FIELD_TYPES = {"INTEGER", "INTEGER", "INTEGER", "INTEGER"};
 
 	private final String[] REPOBJECTONE_FIELD_NAMES = {"ID", "happycamper"};
-	private final String[] REPOBJECTONE_FIELD_TYPES = {"INT", "INT"};
+	private final String[] REPOBJECTONE_FIELD_TYPES = {"INTEGER", "INTEGER"};
 
 	private final String[] REPOBJECTONE_LINK_FIELD_NAMES = {"_repobjectone_ID", "_simpletwo_ID"};
-	private final String[] REPOBJECTONE_LINK_FIELD_TYPES = {"INT", "INT"};
+	private final String[] REPOBJECTONE_LINK_FIELD_TYPES = {"INTEGER", "INTEGER"};
 
 	private final String[] SIMPLETWO_FIELD_NAMES = {"ID", "title", "director"};
-	private final String[] SIMPLETWO_FIELD_TYPES = {"INT", "TEXT", "TEXT"};
+	private final String[] SIMPLETWO_FIELD_TYPES = {"INTEGER", "TEXT", "TEXT"};
 
 	private final String[] REPSIMPLELIST_FIELD_NAMES = {"ID", "happycamper"};
-	private final String[] REPSIMPLELIST_FIELD_TYPES = {"INT", "INT"};
+	private final String[] REPSIMPLELIST_FIELD_TYPES = {"INTEGER", "INTEGER"};
 	
 	private final String[] REPSIMPLELIST_LISTOFSTRINGS_FIELD_NAMES = {"_repsimplelist_ID", "value"};
-	private final String[] REPSIMPLELIST_LISTOFSTRINGS_FIELD_TYPES = {"INT", "TEXT"};
+	private final String[] REPSIMPLELIST_LISTOFSTRINGS_FIELD_TYPES = {"INTEGER", "TEXT"};
 	
 	@Before
 	public void Setup() {

@@ -1,8 +1,6 @@
 package se.qxx.protodb;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Type;
-import java.math.BigInteger;
 import java.rmi.UnexpectedException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,27 +8,25 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.protobuf.Descriptors.FieldDescriptor.JavaType;
 import com.google.protobuf.DynamicMessage;
+import com.google.protobuf.Message.Builder;
 import com.google.protobuf.MessageOrBuilder;
-import com.google.protobuf.AbstractMessage.Builder;
 import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor;
 
 public class ProtoDB {
 	private String connectionString = "jdbc:sqlite:jukebox.db";
 
+	/**********************************************************************************
+	 ************************************************************************  PROPS
+	 **********************************************************************************
+	 */
 
 	private String getConnectionString() {
 		return connectionString;
@@ -39,7 +35,12 @@ public class ProtoDB {
 	private void setConnectionString(String connectionString) {
 		this.connectionString = connectionString;
 	}
+
 	
+	/**********************************************************************************
+	 ******************************************************************** CONSTRUCTORS
+	 **********************************************************************************
+	 */
 	
 	protected ProtoDB() {
 	}
@@ -47,7 +48,7 @@ public class ProtoDB {
 	public ProtoDB(String databaseFilename) {
 		this.setDatabase(databaseFilename);
 	}	
-	
+
 //	protected List<String> getColumnList(Connection conn) throws SQLException {
 //		List<String> ret = this.getColumns();
 //		if (ret == null || ret.size() == 0)
@@ -55,7 +56,8 @@ public class ProtoDB {
 //		
 //		return this.getColumns();
 //	}
-	
+
+
 	public List<Pair<String, String>> retreiveColumns(String table) throws SQLException, ClassNotFoundException {
 		List<Pair<String, String>> ret = new ArrayList<Pair<String, String>>();
 		
@@ -81,80 +83,108 @@ public class ProtoDB {
 		return ret;
 	}
 	
+	/***
+	 * Database function for retrieving column information 
+	 * @param table
+	 * @param conn
+	 * @return
+	 * @throws SQLException
+	 */
 	private ResultSet retreiveColumns(String table, Connection conn) throws SQLException {
 		PreparedStatement prep = conn.prepareStatement(String.format("PRAGMA table_info('%s')", table));
 		
 		return prep.executeQuery();
 	}
-	
-	protected void setupColumns(String table, Connection conn) throws SQLException {
-		ResultSet rs = retreiveColumns(table, conn);
-		
-		Map<String, Type> map = new HashMap<String, Type>();
-		List<String> ret = new ArrayList<String>();
 
-		while (rs.next()) {
-			ret.add(rs.getString("name"));
-			
-			String columnName = rs.getString("name");
-			String type = rs.getString("type");
-			
-			Class<?> c = String.class;
-			if (StringUtils.equalsIgnoreCase(type, "BOOL"))
-				c = Boolean.class;
-			if (StringUtils.equalsIgnoreCase(type, "BOOLEAN"))
-				c = Boolean.class;			
-			else if (StringUtils.equalsIgnoreCase(type, "DATE"))
-				c = Date.class;
-			else if (StringUtils.equalsIgnoreCase(type, "DATETIME"))
-				c = Date.class;			
-			else if (StringUtils.equalsIgnoreCase(type, "INT"))
-				c = Integer.class;
-			else if (StringUtils.equalsIgnoreCase(type, "INTEGER"))
-				c = Integer.class;
-			else if (StringUtils.equalsIgnoreCase(type, "TINYINT"))
-				c = Integer.class;
-			else if (StringUtils.equalsIgnoreCase(type, "SMALLINT"))
-				c = Integer.class;
-			else if (StringUtils.equalsIgnoreCase(type, "MEDIUMINT"))
-				c = Integer.class;
-			else if (StringUtils.equalsIgnoreCase(type, "BIGINT"))
-				c = BigInteger.class;
-			else if (StringUtils.equalsIgnoreCase(type, "UNSIGNED BIG INT"))
-				c = BigInteger.class;
-			else if (StringUtils.equalsIgnoreCase(type, "INT2"))
-				c = Integer.class;
-			else if (StringUtils.equalsIgnoreCase(type, "INT8"))
-				c = Integer.class;	
-			else if (StringUtils.equalsIgnoreCase(type, "BLOB"))
-				c = Byte.class;
-			else if (StringUtils.equalsIgnoreCase(type, "REAL"))
-				c = Float.class;
-			else if (StringUtils.equalsIgnoreCase(type, "DOUBLE"))
-				c = Double.class;
-			else if (StringUtils.equalsIgnoreCase(type, "DOUBLE PRECISION"))
-				c = Double.class;
-			else if (StringUtils.equalsIgnoreCase(type, "FLOAT"))
-				c = Float.class;
-			else if (StringUtils.equalsIgnoreCase(type, "NUMERIC"))
-				c = Float.class;
-			else if (StringUtils.startsWithIgnoreCase(type, "NUMERIC"))
-				c = Float.class;
-			else if (StringUtils.startsWithIgnoreCase(type, "DECIMAL"))
-				c = Float.class;
-						
-			map.put(columnName, c);
-		}
+//	/***
+//	 * Creates a list of table columns mapped to a java type
+//	 * @param table
+//	 * @param conn
+//	 * @throws SQLException
+//	 */
+//	protected void setupColumns(String table, Connection conn) throws SQLException {
+//		ResultSet rs = retreiveColumns(table, conn);
+//		
+//		Map<String, Type> map = new HashMap<String, Type>();
+//		List<String> ret = new ArrayList<String>();
+//
+//		while (rs.next()) {
+//			ret.add(rs.getString("name"));
+//			
+//			String columnName = rs.getString("name");
+//			String type = rs.getString("type");
+//			
+//			Class<?> c = String.class;
+//			if (StringUtils.equalsIgnoreCase(type, "BOOL"))
+//				c = Boolean.class;
+//			if (StringUtils.equalsIgnoreCase(type, "BOOLEAN"))
+//				c = Boolean.class;			
+//			else if (StringUtils.equalsIgnoreCase(type, "DATE"))
+//				c = Date.class;
+//			else if (StringUtils.equalsIgnoreCase(type, "DATETIME"))
+//				c = Date.class;			
+//			else if (StringUtils.equalsIgnoreCase(type, "INT"))
+//				c = Integer.class;
+//			else if (StringUtils.equalsIgnoreCase(type, "INTEGER"))
+//				c = Integer.class;
+//			else if (StringUtils.equalsIgnoreCase(type, "TINYINT"))
+//				c = Integer.class;
+//			else if (StringUtils.equalsIgnoreCase(type, "SMALLINT"))
+//				c = Integer.class;
+//			else if (StringUtils.equalsIgnoreCase(type, "MEDIUMINT"))
+//				c = Integer.class;
+//			else if (StringUtils.equalsIgnoreCase(type, "BIGINT"))
+//				c = BigInteger.class;
+//			else if (StringUtils.equalsIgnoreCase(type, "UNSIGNED BIG INT"))
+//				c = BigInteger.class;
+//			else if (StringUtils.equalsIgnoreCase(type, "INT2"))
+//				c = Integer.class;
+//			else if (StringUtils.equalsIgnoreCase(type, "INT8"))
+//				c = Integer.class;	
+//			else if (StringUtils.equalsIgnoreCase(type, "BLOB"))
+//				c = Byte.class;
+//			else if (StringUtils.equalsIgnoreCase(type, "REAL"))
+//				c = Float.class;
+//			else if (StringUtils.equalsIgnoreCase(type, "DOUBLE"))
+//				c = Double.class;
+//			else if (StringUtils.equalsIgnoreCase(type, "DOUBLE PRECISION"))
+//				c = Double.class;
+//			else if (StringUtils.equalsIgnoreCase(type, "FLOAT"))
+//				c = Float.class;
+//			else if (StringUtils.equalsIgnoreCase(type, "NUMERIC"))
+//				c = Float.class;
+//			else if (StringUtils.startsWithIgnoreCase(type, "NUMERIC"))
+//				c = Float.class;
+//			else if (StringUtils.startsWithIgnoreCase(type, "DECIMAL"))
+//				c = Float.class;
+//						
+//			map.put(columnName, c);
+//		}
+//	
+////		this.setColumnMap(map);
+////		this.setColumns(ret);
+//	}
+
+	/**********************************************************************************
+	 ************************************************************************  INIT
+	 **********************************************************************************
+	 */
 	
-//		this.setColumnMap(map);
-//		this.setColumns(ret);
-	}
-	
+	/***
+	 * Initializes a database connection (SQLite)
+	 * @return
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 */
 	protected Connection initialize() throws ClassNotFoundException, SQLException {
 		Class.forName("org.sqlite.JDBC");
 	    return DriverManager.getConnection(this.getConnectionString());				
 	}
 	
+	/***
+	 * Disconnects the database and the conneciton object
+	 * @param conn
+	 */
 	private void disconnect(Connection conn) {
 		try {
 			if (conn != null)
@@ -162,7 +192,11 @@ public class ProtoDB {
 		} catch (SQLException e) {
 		}
 	}
-	
+
+	/***
+	 * Internal function for setting the database connection string
+	 * @param databaseFilename
+	 */
 	private void setDatabase(String databaseFilename) {
 		this.setConnectionString(String.format("jdbc:sqlite:%s", databaseFilename));
 	}
@@ -187,7 +221,19 @@ public class ProtoDB {
 //		return b;
 //	}
 //	
-	
+
+	/**********************************************************************************
+	 ************************************************************************  SETUP
+	 **********************************************************************************
+	 */
+
+	/***
+	 * Purges the database from all tables and sets up the whole database structure from
+	 * one given protobuf class.
+	 * @param b
+	 * @throws SQLException
+	 * @throws ClassNotFoundException
+	 */
 	public void setupDatabase(MessageOrBuilder b) throws SQLException,ClassNotFoundException {
 		Connection conn = null;
 		
@@ -211,19 +257,7 @@ public class ProtoDB {
 		}
 	}
 	
-	private boolean tableExist(String tableName, Connection conn) throws SQLException {
-		PreparedStatement prep = conn.prepareStatement("SELECT COUNT(1) FROM sqlite_master WHERE type='table' AND name=?");
-		prep.setString(1, tableName);
-		
-		boolean b = false;
-		ResultSet rs = prep.executeQuery();
-		if (rs.next())
-			if (rs.getInt(1)==1)
-				b = true;
-		
-		return b;
-		
-	}
+	
 	/**
 	 * Purges the database from all tables and sets up the whole database structure from
 	 * one given protobuf class.
@@ -275,7 +309,131 @@ public class ProtoDB {
 		PreparedStatement prep = conn.prepareStatement(sql);
 		prep.execute();			
 	}
+	
+	/**********************************************************************************
+	 ************************************************************************  GET
+	 **********************************************************************************
+	 */
 
+	/***
+	 * 
+	 * @param <T>
+	 * @param id
+	 * @param desc
+	 * @return
+	 * @throws SQLException 
+	 * @throws ClassNotFoundException 
+	 */
+	@SuppressWarnings("unchecked")
+	public DynamicMessage get(int id, Descriptor desc) throws ClassNotFoundException, SQLException{
+		Connection conn = null;
+		DynamicMessage msg = null;
+		
+		try {
+			conn = this.initialize();
+			
+			msg = get(id, desc, conn);
+			
+		}
+		finally {
+			this.disconnect(conn);
+		}		
+		
+		return msg;
+	}
+	/***
+	 * 
+	 * @param id
+	 * @return
+	 * @throws SQLException 
+	 */
+	private DynamicMessage get(int id, Descriptor desc, Connection conn) throws SQLException{		
+		DynamicMessage d = DynamicMessage.getDefaultInstance(desc);
+		ProtoDBScanner scanner = new ProtoDBScanner(d);
+		
+		Builder b = d.newBuilderForType();
+		
+		// populate list of sub objects
+		for (FieldDescriptor field : scanner.getRepeatedObjectFields()) {
+			getLinkObject(id, b, scanner, field, conn);
+		}
+
+		// populate list of basic types
+		for (FieldDescriptor field : scanner.getRepeatedBasicFields()) {
+			PreparedStatement prep = conn.prepareStatement(scanner.getBasicLinkTableSelectStatement(field));
+			ResultSet rs = prep.executeQuery();
+			
+			while (rs.next()) {
+				b.addRepeatedField(field, rs.getObject("value"));
+			}
+			rs.close();
+		}		
+						
+		PreparedStatement prep = conn.prepareStatement(scanner.getSelectStatement(id));
+		prep.setInt(1, id);
+		
+		ResultSet rs = prep.executeQuery();
+		while(rs.next()) {
+			// populate object fields
+			for (FieldDescriptor field : scanner.getObjectFields()) {
+				int otherID = rs.getInt(scanner.getObjectFieldName(field));
+				MessageOrBuilder otherMsg = get(otherID, field.getContainingType(), conn);
+				b.setField(field, otherMsg);
+			}
+			
+			// populate basic fields			
+			for (FieldDescriptor field : scanner.getBasicFields()) {
+				Object o = rs.getObject(field.getName().toLowerCase());
+				b.setField(field, o);
+			}			
+		}
+		return (DynamicMessage) b.build();
+	}
+
+	protected void getLinkObject(int id
+			, Builder b
+			, ProtoDBScanner scanner			
+			, FieldDescriptor field
+			, Connection conn)
+			throws SQLException {
+		
+		Descriptor mt = field.getMessageType();
+		DynamicMessage mg = DynamicMessage.getDefaultInstance(mt);
+		
+		if (mg instanceof MessageOrBuilder) {
+			MessageOrBuilder b2 = (MessageOrBuilder)mg;
+			ProtoDBScanner other = new ProtoDBScanner(b2);
+		
+			if (field.isRepeated()) {
+				// get select statement for link table
+				PreparedStatement prep = conn.prepareStatement(scanner.getLinkTableSelectStatement(other, field.getName()));
+				prep.setInt(1, id);
+				
+				ResultSet rs = prep.executeQuery();
+				
+				while(rs.next()) {
+					// get sub objects
+					MessageOrBuilder otherMsg = get(rs.getInt("ID"), mt, conn);
+					b.addRepeatedField(field, otherMsg);
+				}
+				
+				rs.close();
+			}
+		}
+	}
+
+	/**********************************************************************************
+	 ************************************************************************  SAVE
+	 **********************************************************************************
+	 */
+
+
+
+	/***
+	 * Saves a protobuf class to database.
+	 * @param b
+	 * @return
+	 */
 	public int save(MessageOrBuilder b) {
 		Connection conn = null;
 		int id = -1;
@@ -302,7 +460,14 @@ public class ProtoDB {
 		return id;
 
 	}
-	
+
+	/***
+	 * Internal save function. Saves a protobuf class to database.
+	 * @param b
+	 * @param conn
+	 * @return
+	 * @throws SQLException
+	 */
 	private int save(MessageOrBuilder b, Connection conn) throws SQLException {
 		ProtoDBScanner scanner = new ProtoDBScanner(b);
 
@@ -355,7 +520,16 @@ public class ProtoDB {
 		
 		return thisID;
 	}
-
+	
+	/***
+	 * Saves a repeated list of basic types to link table
+	 * @param scanner
+	 * @param thisID
+	 * @param field
+	 * @param value
+	 * @param conn
+	 * @throws SQLException
+	 */
 	protected void saveLinkBasic(ProtoDBScanner scanner
 			, int thisID
 			, FieldDescriptor field
@@ -375,7 +549,16 @@ public class ProtoDB {
 		prep.execute();
 	}
 
-	
+	/***
+	 * Saves a repeated list of objects to link table (many-to-many)
+	 * @param b2
+	 * @param scanner
+	 * @param field
+	 * @param thisID
+	 * @param otherID
+	 * @param conn
+	 * @throws SQLException
+	 */
 	private void saveLinkObject(MessageOrBuilder b2
 			, ProtoDBScanner scanner
 			, FieldDescriptor field
@@ -392,6 +575,14 @@ public class ProtoDB {
 		prep.execute();
 	}
 	
+	/***
+	 * Saves the original object (without references to other objects or lists)
+	 * @param b
+	 * @param scanner
+	 * @param conn
+	 * @return
+	 * @throws SQLException
+	 */
 	private int saveThisObject(MessageOrBuilder b, ProtoDBScanner scanner, Connection conn) throws SQLException {
 		// getInsertStatement
 		String sql = scanner.getInsertStatement();
@@ -405,6 +596,18 @@ public class ProtoDB {
 		return getIdentity(conn);
 	}
 
+	/**********************************************************************************
+	 ************************************************************************  HELPERS
+	 **********************************************************************************
+	 */
+
+
+	/***
+	 * Internal function to get the latest inserted row ID
+	 * @param conn
+	 * @return
+	 * @throws SQLException
+	 */
 	private static int getIdentity(Connection conn) throws SQLException {
 		PreparedStatement prep = conn.prepareStatement("SELECT last_insert_rowid()");
 		ResultSet rs = prep.executeQuery();
@@ -414,4 +617,27 @@ public class ProtoDB {
 		else
 			return -1;
 	}
+	
+	
+	/***
+	 * Internal function to check if table exists
+	 * @param tableName
+	 * @param conn
+	 * @return
+	 * @throws SQLException
+	 */
+	private boolean tableExist(String tableName, Connection conn) throws SQLException {
+		PreparedStatement prep = conn.prepareStatement("SELECT COUNT(1) FROM sqlite_master WHERE type='table' AND name=?");
+		prep.setString(1, tableName);
+		
+		boolean b = false;
+		ResultSet rs = prep.executeQuery();
+		if (rs.next())
+			if (rs.getInt(1)==1)
+				b = true;
+		
+		return b;
+		
+	}
+	
 }

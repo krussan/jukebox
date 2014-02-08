@@ -1,28 +1,21 @@
 package se.qxx.protodb;
 
-import java.lang.reflect.ParameterizedType;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.google.protobuf.AbstractMessage.Builder;
-import com.google.protobuf.DescriptorProtos.DescriptorProto;
-import com.google.protobuf.DescriptorProtos.FileDescriptorProto;
 import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor.JavaType;
 import com.google.protobuf.DynamicMessage;
-import com.google.protobuf.GeneratedMessage;
-import com.google.protobuf.Message;
 import com.google.protobuf.MessageOrBuilder;
 import com.google.protobuf.Descriptors.FieldDescriptor;
-import com.google.protobuf.RepeatedFieldBuilder;
 
 public class ProtoDBScanner {
 
@@ -102,11 +95,11 @@ public class ProtoDBScanner {
 				
 	}
 
-	protected String getBasicFieldName(FieldDescriptor field) {
+	public String getBasicFieldName(FieldDescriptor field) {
 		return field.getName().toLowerCase();
 	}
 
-	protected String getObjectFieldName(FieldDescriptor field) {
+	public String getObjectFieldName(FieldDescriptor field) {
 		return "_" + getBasicFieldName(field) + "_ID";
 	}
 
@@ -145,7 +138,7 @@ public class ProtoDBScanner {
 			
 			cols.add(String.format("[%s] %s %s REFERENCES %s (ID)",
 					getObjectFieldName(field), 
-					"INT", 
+					"INTEGER", 
 					field.isOptional() ? "NULL" : "NOT NULL",
 					target));
 		}
@@ -158,8 +151,8 @@ public class ProtoDBScanner {
 		}
 		
 		
-		sql += "(ID int PRIMARY KEY NOT NULL, " + StringUtils.join(cols, ",") + ")";
-		
+		sql += "(ID INTEGER PRIMARY KEY AUTOINCREMENT, " + StringUtils.join(cols, ",") + ")";
+		;
 		return sql;
 	}
 	
@@ -173,8 +166,8 @@ public class ProtoDBScanner {
 	
 	public String getLinkCreateStatement(ProtoDBScanner other, String fieldName) {
 		return String.format("CREATE TABLE %s ("
-				+ "_" + this.getObjectName().toLowerCase() + "_ID INT NOT NULL REFERENCES %s (ID),"
-				+ "_" + other.getObjectName().toLowerCase() + "_ID INT NOT NULL REFERENCES %s (ID)"
+				+ "_" + this.getObjectName().toLowerCase() + "_ID INTEGER NOT NULL REFERENCES %s (ID),"
+				+ "_" + other.getObjectName().toLowerCase() + "_ID INTEGER NOT NULL REFERENCES %s (ID)"
 				+ ")", 
 				this.getLinkTableName(other, fieldName), 
 				this.getObjectName(),
@@ -185,7 +178,7 @@ public class ProtoDBScanner {
 	
 	public String getBasicLinkCreateStatement(FieldDescriptor field) {
 		return String.format("CREATE TABLE %s ("
-				+ "_" + this.getObjectName().toLowerCase() + "_ID INT NOT NULL REFERENCES %s (ID),"
+				+ "_" + this.getObjectName().toLowerCase() + "_ID INTEGER NOT NULL REFERENCES %s (ID),"
 				+ "value %s NOT NULL"
 				+ ")", 
 				this.getBasicLinkTableName(field), 
@@ -193,6 +186,24 @@ public class ProtoDBScanner {
 				this.getDBType(field));
 		
 	}	
+	
+	public String getSelectStatement(int id) {
+		return "SELECT " + StringUtils.join(this.getFieldNames(), ",") 
+			+ " FROM " + this.getObjectName()
+			+ " WHERE ID = ?";
+	}	
+	
+	public String getLinkTableSelectStatement(ProtoDBScanner other, String fieldName) {
+		return " SELECT A._" + other.getObjectName().toLowerCase() + "_ID AS ID"
+			+  " FROM " + this.getLinkTableName(other, fieldName) + " A"
+			+  " WHERE A._" + this.getObjectName().toLowerCase() + "_ID = ?";
+	}
+	
+	public String getBasicLinkTableSelectStatement(FieldDescriptor field) {
+		return " SELECT value FROM " + this.getBasicLinkTableName(field)
+			+  " WHERE _" + this.getObjectName().toLowerCase() + "_ID = ?";
+	}	
+	
 	
 	private String getDBType(FieldDescriptor field) {
 		JavaType jType = field.getJavaType();
@@ -206,7 +217,7 @@ public class ProtoDBScanner {
 		else if (jType == JavaType.FLOAT)
 			type = "FLOAT";
 		else if (jType == JavaType.INT)
-			type = "INT";
+			type = "INTEGER";
 		else if (jType == JavaType.LONG)
 			type = "BIGINT";
 		else
@@ -335,5 +346,8 @@ public class ProtoDBScanner {
 	private void setMessage(MessageOrBuilder message) {
 		this.message = message;
 	}
-	
+
+
+
+
 }
