@@ -510,6 +510,13 @@ public class ProtoDB {
 			
 			conn.commit();
 		}
+		catch (SQLException e) {			
+			try {
+				conn.rollback();
+			} catch (SQLException sqlEx) {}
+			
+			throw e;
+		}		
 		finally {
 			this.disconnect(conn);
 		}
@@ -531,6 +538,8 @@ public class ProtoDB {
 
 		//TODO: check for existence. UPDATE if present!
 		
+		Boolean objectExist = checkExisting(scanner, conn);
+		
 		// getObjectFields
 		// getBasicFields
 		// getRepeatedObjectFields
@@ -542,7 +551,7 @@ public class ProtoDB {
 			Object o = b.getField(field);
 
 			if (field.getJavaType() == JavaType.MESSAGE && !field.isRepeated()) {
-				int objectID = save((MessageOrBuilder)o);
+				int objectID = save((MessageOrBuilder)o, conn);
 				scanner.addObjectID(fieldName, objectID);
 			}
 		}		
@@ -589,6 +598,21 @@ public class ProtoDB {
 		return thisID;
 	}
 	
+	private Boolean checkExisting(ProtoDBScanner scanner, Connection conn) throws SQLException {
+		PreparedStatement prep = conn.prepareStatement("SELECT COUNT(*) FROM " + scanner.getObjectName() + " WHERE ID = ?");
+		Object o = scanner.getMessage().getField(scanner.getIdField());
+		prep.setInt(1, (int)o);
+		
+		ResultSet rs = prep.executeQuery();
+		Boolean exists = false;
+		if (rs.next())
+			exists = rs.getInt(1) > 0;
+			
+		rs.close();
+		prep.close();
+		return exists;
+	}
+
 	private int saveBlob(byte[] data, Connection conn) throws SQLException {
 		PreparedStatement prep = conn.prepareStatement("INSERT INTO BlobData (data) VALUES (?)");
 		prep.setBytes(1, data);

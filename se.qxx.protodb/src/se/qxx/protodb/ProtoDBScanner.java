@@ -388,7 +388,7 @@ public class ProtoDBScanner {
 		this.objectName = objectName;
 	}
 	
-	private MessageOrBuilder getMessage() {
+	public MessageOrBuilder getMessage() {
 		return message;
 	}
 
