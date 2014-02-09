@@ -12,6 +12,8 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.protobuf.Descriptors.Descriptor;
+import com.google.protobuf.Descriptors.EnumDescriptor;
+import com.google.protobuf.Descriptors.EnumValueDescriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor.JavaType;
 import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.MessageOrBuilder;
@@ -43,7 +45,7 @@ public class ProtoDBScanner {
 		this.setMessage(b);
 		this.scan(b);
 	}
-
+	
 	private void scan(MessageOrBuilder b) {
 			
 		this.setObjectName(StringUtils.capitalize(b.getDescriptorForType().getName()));
@@ -59,17 +61,11 @@ public class ProtoDBScanner {
 			
 			if (field.isRepeated())
 			{
-				if (jType == JavaType.MESSAGE) {
-					Descriptor mt = field.getMessageType();
-					DynamicMessage mg = DynamicMessage.getDefaultInstance(mt);
-				
-					if (mg instanceof MessageOrBuilder) {
-						MessageOrBuilder target = (MessageOrBuilder)mg;
-						ProtoDBScanner dbInternal = new ProtoDBScanner(target);			
-
-						this.addRepeatedObjectField(field);		
-						this.addRepeatedObjectFieldTarget(dbInternal.getObjectName());
-					}
+				if (jType == JavaType.MESSAGE) 
+					this.addRepeatedObjectField(field);		
+				else if (jType == JavaType.ENUM) {
+//					EnumValueDescriptor target = (EnumValueDescriptor)this.getMessage().getField(field);
+					this.addRepeatedObjectField(field);
 				}
 				else {
 					this.addRepeatedBasicField(field);
@@ -84,6 +80,13 @@ public class ProtoDBScanner {
 					this.addObjectField(field);
 					this.addObjectFieldTarget(dbInternal.getObjectName());
 				}			
+				else if (jType == JavaType.ENUM){
+					EnumValueDescriptor target = (EnumValueDescriptor)this.getMessage().getField(field);
+					//ProtoDBScanner dbInternal = new ProtoDBScanner(target);			
+					
+					this.addObjectField(field);
+					this.addObjectFieldTarget(target.getName());					
+				}
 				else if (jType == JavaType.BYTE_STRING)  {
 					this.addBlobField(field);
 				}
@@ -104,8 +107,6 @@ public class ProtoDBScanner {
 	}
 
 	public String getSaveStatement(Boolean objectExists) {
-		
-	
 		String sql = StringUtils.EMPTY;
 		
 		if (!objectExists) {
@@ -230,6 +231,17 @@ public class ProtoDBScanner {
 		
 	}
 	
+	public String getEnumLinkTableName(FieldDescriptor field) {
+		return this.getObjectName() + field.getEnumType().getName() + "_" + StringUtils.capitalize(field.getName().replace("_", ""));
+	}
+	
+	public String getEnumLinkCreateStatement(FieldDescriptor field) {
+		return "CREATE TABLE " + getEnumLinkTableName(field) + "("
+				+ "_" + this.getObjectName().toLowerCase() + "_ID INTEGER NOT NULL REFERENCES " + this.getObjectName() + " (ID),"
+				+ "_" + field.getEnumType().getName().toLowerCase() + "_ID INTEGER NOT NULL REFERENCES " + field.getEnumType().getName() + " (ID)"
+				+ ")"; 
+	}
+	
 	
 	public String getBasicLinkCreateStatement(FieldDescriptor field) {
 		return String.format("CREATE TABLE %s ("
@@ -276,6 +288,7 @@ public class ProtoDBScanner {
 	private String getDBType(FieldDescriptor field) {
 		JavaType jType = field.getJavaType();
 		String type = "TEXT";
+
 		if (jType == JavaType.BOOLEAN)
 			type = "BOOLEAN";
 		else if (jType == JavaType.DOUBLE)
@@ -389,13 +402,13 @@ public class ProtoDBScanner {
 		this.objectFieldTargets.add(target);
 	}
 	
-	public List<String> getRepeatedObjectFieldTargets() {
-		return repeatedObjectFieldTargets;
-	}
-
-	public void addRepeatedObjectFieldTarget(String target) {
-		this.repeatedObjectFieldTargets.add(target);
-	}	
+//	public List<String> getRepeatedObjectFieldTargets() {
+//		return repeatedObjectFieldTargets;
+//	}
+//
+//	public void addRepeatedObjectFieldTarget(String target) {
+//		this.repeatedObjectFieldTargets.add(target);
+//	}	
 	
 
 	public List<FieldDescriptor> getBasicFields() {

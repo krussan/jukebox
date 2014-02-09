@@ -1,6 +1,5 @@
 package se.qxx.protodb;
 
-import java.lang.reflect.Field;
 import java.rmi.UnexpectedException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,20 +9,21 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import se.qxx.protodb.exceptions.IDFieldNotFoundException;
 
 import com.google.protobuf.ByteString;
+import com.google.protobuf.Descriptors.EnumValueDescriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor.JavaType;
 import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.Message.Builder;
 import com.google.protobuf.MessageOrBuilder;
 import com.google.protobuf.Descriptors.Descriptor;
+import com.google.protobuf.Descriptors.EnumDescriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor;
-
-import se.qxx.protodb.exceptions.IDFieldNotFoundException;
 
 public class ProtoDB {
 	private String connectionString = "jdbc:sqlite:jukebox.db";
@@ -287,8 +287,12 @@ public class ProtoDB {
 		
 		// setup all sub objects
 		for(FieldDescriptor field : scanner.getObjectFields()) {
-			if (field.getJavaType() == JavaType.MESSAGE && !field.isRepeated()) {
-				setupDatabase((MessageOrBuilder)b.getField(field), conn);
+			if (!field.isRepeated()) {
+				if (field.getJavaType() == JavaType.MESSAGE)
+					setupDatabase((MessageOrBuilder)b.getField(field), conn);
+				else if (field.getJavaType() == JavaType.ENUM){
+					setupDatabase(field.getEnumType(), conn);
+				}
 			}
 		}
 		
@@ -303,18 +307,30 @@ public class ProtoDB {
 		
 		// setup all repeated fields as many-to-many relations
 		for(FieldDescriptor field : scanner.getRepeatedObjectFields()) {
-			Descriptor mt = field.getMessageType();
-			DynamicMessage mg = DynamicMessage.getDefaultInstance(mt);
-			if (mg instanceof MessageOrBuilder) {
-				MessageOrBuilder b2 = (MessageOrBuilder)mg;
+			if (field.getJavaType() == JavaType.MESSAGE) {
+				Descriptor mt = field.getMessageType();
+				DynamicMessage mg = DynamicMessage.getDefaultInstance(mt);
+				if (mg instanceof MessageOrBuilder) {
+					MessageOrBuilder b2 = (MessageOrBuilder)mg;
+					
+					// create other object
+					setupDatabase(b2, conn);
+					
+					// create link table
+					ProtoDBScanner other = new ProtoDBScanner(b2);
+					if (!tableExist(scanner.getLinkTableName(other, field.getName()), conn))
+						executeStatement(scanner.getLinkCreateStatement(other, field.getName()), conn);
+				}
+			}
+			else if (field.getJavaType() == JavaType.ENUM) {
+				setupDatabase(field.getEnumType(), conn);
 				
-				// create other object
-				setupDatabase(b2, conn);
+				if (!tableExist(scanner.getEnumLinkTableName(field), conn)) {
+					PreparedStatement prep = conn.prepareStatement(
+						scanner.getEnumLinkCreateStatement(field));
 				
-				// create link table
-				ProtoDBScanner other = new ProtoDBScanner(b2);
-				if (!tableExist(scanner.getLinkTableName(other, field.getName()), conn))
-					executeStatement(scanner.getLinkCreateStatement(other, field.getName()), conn);
+					prep.execute();
+				}
 			}
 		}
 		
@@ -324,6 +340,26 @@ public class ProtoDB {
 
 	}
 	
+	private void setupDatabase(EnumDescriptor fieldName, Connection conn) throws SQLException {
+		String tableName = StringUtils.capitalize(fieldName.getName());
+		if (!tableExist(tableName, conn)) {
+			String sql = "CREATE TABLE " + tableName + "(" 
+					+ "ID INTEGER PRIMARY KEY AUTOINCREMENT,"
+					+ "value TEXT NOT NULL)";
+			
+			PreparedStatement prep = conn.prepareStatement(sql);
+			prep.execute();
+			
+			for (EnumValueDescriptor value : fieldName.getValues()) {
+				sql = "INSERT INTO " + tableName + " (value) VALUES (?)";
+				prep = conn.prepareStatement(sql);
+				prep.setString(1, value.getName());
+				
+				prep.execute();
+			}
+		}
+	}
+
 	private void setupBlobdata(Connection conn) throws SQLException {
 		if (!tableExist("BlobData", conn))
 			executeStatement("CREATE TABLE BlobData (ID INTEGER PRIMARY KEY AUTOINCREMENT, data BLOB)", conn);

@@ -8,6 +8,84 @@ public final class TestDomain {
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {
   }
+  public enum Rating
+      implements com.google.protobuf.ProtocolMessageEnum {
+    NotMatched(0, 1),
+    ProbableMatch(1, 2),
+    PositiveMatch(2, 3),
+    ExactMatch(3, 4),
+    SubsExist(4, 5),
+    ;
+    
+    public static final int NotMatched_VALUE = 1;
+    public static final int ProbableMatch_VALUE = 2;
+    public static final int PositiveMatch_VALUE = 3;
+    public static final int ExactMatch_VALUE = 4;
+    public static final int SubsExist_VALUE = 5;
+    
+    
+    public final int getNumber() { return value; }
+    
+    public static Rating valueOf(int value) {
+      switch (value) {
+        case 1: return NotMatched;
+        case 2: return ProbableMatch;
+        case 3: return PositiveMatch;
+        case 4: return ExactMatch;
+        case 5: return SubsExist;
+        default: return null;
+      }
+    }
+    
+    public static com.google.protobuf.Internal.EnumLiteMap<Rating>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static com.google.protobuf.Internal.EnumLiteMap<Rating>
+        internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<Rating>() {
+            public Rating findValueByNumber(int number) {
+              return Rating.valueOf(number);
+            }
+          };
+    
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      return getDescriptor().getValues().get(index);
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return se.qxx.protodb.test.TestDomain.getDescriptor().getEnumTypes().get(0);
+    }
+    
+    private static final Rating[] VALUES = {
+      NotMatched, ProbableMatch, PositiveMatch, ExactMatch, SubsExist, 
+    };
+    
+    public static Rating valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      return VALUES[desc.getIndex()];
+    }
+    
+    private final int index;
+    private final int value;
+    
+    private Rating(int index, int value) {
+      this.index = index;
+      this.value = value;
+    }
+    
+    // @@protoc_insertion_point(enum_scope:se.qxx.protodb.test.Rating)
+  }
+  
   public interface SimpleTestOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
@@ -3816,6 +3894,1178 @@ public final class TestDomain {
     // @@protoc_insertion_point(class_scope:se.qxx.protodb.test.RepObjectOne)
   }
   
+  public interface EnumOneOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // required int32 ID = 1;
+    boolean hasID();
+    int getID();
+    
+    // optional string title = 2;
+    boolean hasTitle();
+    String getTitle();
+    
+    // required .se.qxx.protodb.test.Rating rating = 3;
+    boolean hasRating();
+    se.qxx.protodb.test.TestDomain.Rating getRating();
+  }
+  public static final class EnumOne extends
+      com.google.protobuf.GeneratedMessage
+      implements EnumOneOrBuilder {
+    // Use EnumOne.newBuilder() to construct.
+    private EnumOne(Builder builder) {
+      super(builder);
+    }
+    private EnumOne(boolean noInit) {}
+    
+    private static final EnumOne defaultInstance;
+    public static EnumOne getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public EnumOne getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_EnumOne_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_EnumOne_fieldAccessorTable;
+    }
+    
+    private int bitField0_;
+    // required int32 ID = 1;
+    public static final int ID_FIELD_NUMBER = 1;
+    private int iD_;
+    public boolean hasID() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public int getID() {
+      return iD_;
+    }
+    
+    // optional string title = 2;
+    public static final int TITLE_FIELD_NUMBER = 2;
+    private java.lang.Object title_;
+    public boolean hasTitle() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public String getTitle() {
+      java.lang.Object ref = title_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          title_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getTitleBytes() {
+      java.lang.Object ref = title_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        title_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
+    // required .se.qxx.protodb.test.Rating rating = 3;
+    public static final int RATING_FIELD_NUMBER = 3;
+    private se.qxx.protodb.test.TestDomain.Rating rating_;
+    public boolean hasRating() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public se.qxx.protodb.test.TestDomain.Rating getRating() {
+      return rating_;
+    }
+    
+    private void initFields() {
+      iD_ = 0;
+      title_ = "";
+      rating_ = se.qxx.protodb.test.TestDomain.Rating.NotMatched;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (!hasID()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasRating()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeInt32(1, iD_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBytes(2, getTitleBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeEnum(3, rating_.getNumber());
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, iD_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, getTitleBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(3, rating_.getNumber());
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    public static se.qxx.protodb.test.TestDomain.EnumOne parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static se.qxx.protodb.test.TestDomain.EnumOne parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static se.qxx.protodb.test.TestDomain.EnumOne parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static se.qxx.protodb.test.TestDomain.EnumOne parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static se.qxx.protodb.test.TestDomain.EnumOne parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static se.qxx.protodb.test.TestDomain.EnumOne parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static se.qxx.protodb.test.TestDomain.EnumOne parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static se.qxx.protodb.test.TestDomain.EnumOne parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static se.qxx.protodb.test.TestDomain.EnumOne parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static se.qxx.protodb.test.TestDomain.EnumOne parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(se.qxx.protodb.test.TestDomain.EnumOne prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements se.qxx.protodb.test.TestDomain.EnumOneOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_EnumOne_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_EnumOne_fieldAccessorTable;
+      }
+      
+      // Construct using se.qxx.protodb.test.TestDomain.EnumOne.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        iD_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        title_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
+        rating_ = se.qxx.protodb.test.TestDomain.Rating.NotMatched;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return se.qxx.protodb.test.TestDomain.EnumOne.getDescriptor();
+      }
+      
+      public se.qxx.protodb.test.TestDomain.EnumOne getDefaultInstanceForType() {
+        return se.qxx.protodb.test.TestDomain.EnumOne.getDefaultInstance();
+      }
+      
+      public se.qxx.protodb.test.TestDomain.EnumOne build() {
+        se.qxx.protodb.test.TestDomain.EnumOne result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private se.qxx.protodb.test.TestDomain.EnumOne buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        se.qxx.protodb.test.TestDomain.EnumOne result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public se.qxx.protodb.test.TestDomain.EnumOne buildPartial() {
+        se.qxx.protodb.test.TestDomain.EnumOne result = new se.qxx.protodb.test.TestDomain.EnumOne(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.iD_ = iD_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.title_ = title_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.rating_ = rating_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof se.qxx.protodb.test.TestDomain.EnumOne) {
+          return mergeFrom((se.qxx.protodb.test.TestDomain.EnumOne)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(se.qxx.protodb.test.TestDomain.EnumOne other) {
+        if (other == se.qxx.protodb.test.TestDomain.EnumOne.getDefaultInstance()) return this;
+        if (other.hasID()) {
+          setID(other.getID());
+        }
+        if (other.hasTitle()) {
+          setTitle(other.getTitle());
+        }
+        if (other.hasRating()) {
+          setRating(other.getRating());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        if (!hasID()) {
+          
+          return false;
+        }
+        if (!hasRating()) {
+          
+          return false;
+        }
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              iD_ = input.readInt32();
+              break;
+            }
+            case 18: {
+              bitField0_ |= 0x00000002;
+              title_ = input.readBytes();
+              break;
+            }
+            case 24: {
+              int rawValue = input.readEnum();
+              se.qxx.protodb.test.TestDomain.Rating value = se.qxx.protodb.test.TestDomain.Rating.valueOf(rawValue);
+              if (value == null) {
+                unknownFields.mergeVarintField(3, rawValue);
+              } else {
+                bitField0_ |= 0x00000004;
+                rating_ = value;
+              }
+              break;
+            }
+          }
+        }
+      }
+      
+      private int bitField0_;
+      
+      // required int32 ID = 1;
+      private int iD_ ;
+      public boolean hasID() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public int getID() {
+        return iD_;
+      }
+      public Builder setID(int value) {
+        bitField0_ |= 0x00000001;
+        iD_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearID() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        iD_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // optional string title = 2;
+      private java.lang.Object title_ = "";
+      public boolean hasTitle() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public String getTitle() {
+        java.lang.Object ref = title_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          title_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setTitle(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        title_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearTitle() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        title_ = getDefaultInstance().getTitle();
+        onChanged();
+        return this;
+      }
+      void setTitle(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000002;
+        title_ = value;
+        onChanged();
+      }
+      
+      // required .se.qxx.protodb.test.Rating rating = 3;
+      private se.qxx.protodb.test.TestDomain.Rating rating_ = se.qxx.protodb.test.TestDomain.Rating.NotMatched;
+      public boolean hasRating() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public se.qxx.protodb.test.TestDomain.Rating getRating() {
+        return rating_;
+      }
+      public Builder setRating(se.qxx.protodb.test.TestDomain.Rating value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000004;
+        rating_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearRating() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        rating_ = se.qxx.protodb.test.TestDomain.Rating.NotMatched;
+        onChanged();
+        return this;
+      }
+      
+      // @@protoc_insertion_point(builder_scope:se.qxx.protodb.test.EnumOne)
+    }
+    
+    static {
+      defaultInstance = new EnumOne(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:se.qxx.protodb.test.EnumOne)
+  }
+  
+  public interface EnumOneListOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // required int32 ID = 1;
+    boolean hasID();
+    int getID();
+    
+    // optional string title = 2;
+    boolean hasTitle();
+    String getTitle();
+    
+    // repeated .se.qxx.protodb.test.Rating list_of_ratings = 3;
+    java.util.List<se.qxx.protodb.test.TestDomain.Rating> getListOfRatingsList();
+    int getListOfRatingsCount();
+    se.qxx.protodb.test.TestDomain.Rating getListOfRatings(int index);
+    
+    // optional string producer = 4;
+    boolean hasProducer();
+    String getProducer();
+  }
+  public static final class EnumOneList extends
+      com.google.protobuf.GeneratedMessage
+      implements EnumOneListOrBuilder {
+    // Use EnumOneList.newBuilder() to construct.
+    private EnumOneList(Builder builder) {
+      super(builder);
+    }
+    private EnumOneList(boolean noInit) {}
+    
+    private static final EnumOneList defaultInstance;
+    public static EnumOneList getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public EnumOneList getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_EnumOneList_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_EnumOneList_fieldAccessorTable;
+    }
+    
+    private int bitField0_;
+    // required int32 ID = 1;
+    public static final int ID_FIELD_NUMBER = 1;
+    private int iD_;
+    public boolean hasID() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public int getID() {
+      return iD_;
+    }
+    
+    // optional string title = 2;
+    public static final int TITLE_FIELD_NUMBER = 2;
+    private java.lang.Object title_;
+    public boolean hasTitle() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public String getTitle() {
+      java.lang.Object ref = title_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          title_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getTitleBytes() {
+      java.lang.Object ref = title_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        title_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
+    // repeated .se.qxx.protodb.test.Rating list_of_ratings = 3;
+    public static final int LIST_OF_RATINGS_FIELD_NUMBER = 3;
+    private java.util.List<se.qxx.protodb.test.TestDomain.Rating> listOfRatings_;
+    public java.util.List<se.qxx.protodb.test.TestDomain.Rating> getListOfRatingsList() {
+      return listOfRatings_;
+    }
+    public int getListOfRatingsCount() {
+      return listOfRatings_.size();
+    }
+    public se.qxx.protodb.test.TestDomain.Rating getListOfRatings(int index) {
+      return listOfRatings_.get(index);
+    }
+    
+    // optional string producer = 4;
+    public static final int PRODUCER_FIELD_NUMBER = 4;
+    private java.lang.Object producer_;
+    public boolean hasProducer() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public String getProducer() {
+      java.lang.Object ref = producer_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          producer_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getProducerBytes() {
+      java.lang.Object ref = producer_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        producer_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
+    private void initFields() {
+      iD_ = 0;
+      title_ = "";
+      listOfRatings_ = java.util.Collections.emptyList();
+      producer_ = "";
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (!hasID()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeInt32(1, iD_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBytes(2, getTitleBytes());
+      }
+      for (int i = 0; i < listOfRatings_.size(); i++) {
+        output.writeEnum(3, listOfRatings_.get(i).getNumber());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeBytes(4, getProducerBytes());
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, iD_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, getTitleBytes());
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < listOfRatings_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeEnumSizeNoTag(listOfRatings_.get(i).getNumber());
+        }
+        size += dataSize;
+        size += 1 * listOfRatings_.size();
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(4, getProducerBytes());
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    public static se.qxx.protodb.test.TestDomain.EnumOneList parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static se.qxx.protodb.test.TestDomain.EnumOneList parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static se.qxx.protodb.test.TestDomain.EnumOneList parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static se.qxx.protodb.test.TestDomain.EnumOneList parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static se.qxx.protodb.test.TestDomain.EnumOneList parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static se.qxx.protodb.test.TestDomain.EnumOneList parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static se.qxx.protodb.test.TestDomain.EnumOneList parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static se.qxx.protodb.test.TestDomain.EnumOneList parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static se.qxx.protodb.test.TestDomain.EnumOneList parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static se.qxx.protodb.test.TestDomain.EnumOneList parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(se.qxx.protodb.test.TestDomain.EnumOneList prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements se.qxx.protodb.test.TestDomain.EnumOneListOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_EnumOneList_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return se.qxx.protodb.test.TestDomain.internal_static_se_qxx_protodb_test_EnumOneList_fieldAccessorTable;
+      }
+      
+      // Construct using se.qxx.protodb.test.TestDomain.EnumOneList.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        iD_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        title_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
+        listOfRatings_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000004);
+        producer_ = "";
+        bitField0_ = (bitField0_ & ~0x00000008);
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return se.qxx.protodb.test.TestDomain.EnumOneList.getDescriptor();
+      }
+      
+      public se.qxx.protodb.test.TestDomain.EnumOneList getDefaultInstanceForType() {
+        return se.qxx.protodb.test.TestDomain.EnumOneList.getDefaultInstance();
+      }
+      
+      public se.qxx.protodb.test.TestDomain.EnumOneList build() {
+        se.qxx.protodb.test.TestDomain.EnumOneList result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private se.qxx.protodb.test.TestDomain.EnumOneList buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        se.qxx.protodb.test.TestDomain.EnumOneList result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public se.qxx.protodb.test.TestDomain.EnumOneList buildPartial() {
+        se.qxx.protodb.test.TestDomain.EnumOneList result = new se.qxx.protodb.test.TestDomain.EnumOneList(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.iD_ = iD_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.title_ = title_;
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          listOfRatings_ = java.util.Collections.unmodifiableList(listOfRatings_);
+          bitField0_ = (bitField0_ & ~0x00000004);
+        }
+        result.listOfRatings_ = listOfRatings_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.producer_ = producer_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof se.qxx.protodb.test.TestDomain.EnumOneList) {
+          return mergeFrom((se.qxx.protodb.test.TestDomain.EnumOneList)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(se.qxx.protodb.test.TestDomain.EnumOneList other) {
+        if (other == se.qxx.protodb.test.TestDomain.EnumOneList.getDefaultInstance()) return this;
+        if (other.hasID()) {
+          setID(other.getID());
+        }
+        if (other.hasTitle()) {
+          setTitle(other.getTitle());
+        }
+        if (!other.listOfRatings_.isEmpty()) {
+          if (listOfRatings_.isEmpty()) {
+            listOfRatings_ = other.listOfRatings_;
+            bitField0_ = (bitField0_ & ~0x00000004);
+          } else {
+            ensureListOfRatingsIsMutable();
+            listOfRatings_.addAll(other.listOfRatings_);
+          }
+          onChanged();
+        }
+        if (other.hasProducer()) {
+          setProducer(other.getProducer());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        if (!hasID()) {
+          
+          return false;
+        }
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              iD_ = input.readInt32();
+              break;
+            }
+            case 18: {
+              bitField0_ |= 0x00000002;
+              title_ = input.readBytes();
+              break;
+            }
+            case 24: {
+              int rawValue = input.readEnum();
+              se.qxx.protodb.test.TestDomain.Rating value = se.qxx.protodb.test.TestDomain.Rating.valueOf(rawValue);
+              if (value == null) {
+                unknownFields.mergeVarintField(3, rawValue);
+              } else {
+                addListOfRatings(value);
+              }
+              break;
+            }
+            case 26: {
+              int length = input.readRawVarint32();
+              int oldLimit = input.pushLimit(length);
+              while(input.getBytesUntilLimit() > 0) {
+                int rawValue = input.readEnum();
+                se.qxx.protodb.test.TestDomain.Rating value = se.qxx.protodb.test.TestDomain.Rating.valueOf(rawValue);
+                if (value == null) {
+                  unknownFields.mergeVarintField(3, rawValue);
+                } else {
+                  addListOfRatings(value);
+                }
+              }
+              input.popLimit(oldLimit);
+              break;
+            }
+            case 34: {
+              bitField0_ |= 0x00000008;
+              producer_ = input.readBytes();
+              break;
+            }
+          }
+        }
+      }
+      
+      private int bitField0_;
+      
+      // required int32 ID = 1;
+      private int iD_ ;
+      public boolean hasID() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public int getID() {
+        return iD_;
+      }
+      public Builder setID(int value) {
+        bitField0_ |= 0x00000001;
+        iD_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearID() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        iD_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // optional string title = 2;
+      private java.lang.Object title_ = "";
+      public boolean hasTitle() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public String getTitle() {
+        java.lang.Object ref = title_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          title_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setTitle(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        title_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearTitle() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        title_ = getDefaultInstance().getTitle();
+        onChanged();
+        return this;
+      }
+      void setTitle(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000002;
+        title_ = value;
+        onChanged();
+      }
+      
+      // repeated .se.qxx.protodb.test.Rating list_of_ratings = 3;
+      private java.util.List<se.qxx.protodb.test.TestDomain.Rating> listOfRatings_ =
+        java.util.Collections.emptyList();
+      private void ensureListOfRatingsIsMutable() {
+        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+          listOfRatings_ = new java.util.ArrayList<se.qxx.protodb.test.TestDomain.Rating>(listOfRatings_);
+          bitField0_ |= 0x00000004;
+        }
+      }
+      public java.util.List<se.qxx.protodb.test.TestDomain.Rating> getListOfRatingsList() {
+        return java.util.Collections.unmodifiableList(listOfRatings_);
+      }
+      public int getListOfRatingsCount() {
+        return listOfRatings_.size();
+      }
+      public se.qxx.protodb.test.TestDomain.Rating getListOfRatings(int index) {
+        return listOfRatings_.get(index);
+      }
+      public Builder setListOfRatings(
+          int index, se.qxx.protodb.test.TestDomain.Rating value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureListOfRatingsIsMutable();
+        listOfRatings_.set(index, value);
+        onChanged();
+        return this;
+      }
+      public Builder addListOfRatings(se.qxx.protodb.test.TestDomain.Rating value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureListOfRatingsIsMutable();
+        listOfRatings_.add(value);
+        onChanged();
+        return this;
+      }
+      public Builder addAllListOfRatings(
+          java.lang.Iterable<? extends se.qxx.protodb.test.TestDomain.Rating> values) {
+        ensureListOfRatingsIsMutable();
+        super.addAll(values, listOfRatings_);
+        onChanged();
+        return this;
+      }
+      public Builder clearListOfRatings() {
+        listOfRatings_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000004);
+        onChanged();
+        return this;
+      }
+      
+      // optional string producer = 4;
+      private java.lang.Object producer_ = "";
+      public boolean hasProducer() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      public String getProducer() {
+        java.lang.Object ref = producer_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          producer_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setProducer(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        producer_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearProducer() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        producer_ = getDefaultInstance().getProducer();
+        onChanged();
+        return this;
+      }
+      void setProducer(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000008;
+        producer_ = value;
+        onChanged();
+      }
+      
+      // @@protoc_insertion_point(builder_scope:se.qxx.protodb.test.EnumOneList)
+    }
+    
+    static {
+      defaultInstance = new EnumOneList(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:se.qxx.protodb.test.EnumOneList)
+  }
+  
   private static com.google.protobuf.Descriptors.Descriptor
     internal_static_se_qxx_protodb_test_SimpleTest_descriptor;
   private static
@@ -3846,6 +5096,16 @@ public final class TestDomain {
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_se_qxx_protodb_test_RepObjectOne_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_se_qxx_protodb_test_EnumOne_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_se_qxx_protodb_test_EnumOne_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_se_qxx_protodb_test_EnumOneList_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_se_qxx_protodb_test_EnumOneList_fieldAccessorTable;
   
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -3870,8 +5130,15 @@ public final class TestDomain {
       "ngs\030\002 \003(\t\022\023\n\013happycamper\030\003 \002(\005\"h\n\014RepObj" +
       "ectOne\022\n\n\002ID\030\001 \002(\005\0227\n\017list_of_objects\030\002 " +
       "\003(\0132\036.se.qxx.protodb.test.SimpleTwo\022\023\n\013h" +
-      "appycamper\030\003 \002(\005B\030\n\023se.qxx.protodb.test\210" +
-      "\001\001"
+      "appycamper\030\003 \002(\005\"Q\n\007EnumOne\022\n\n\002ID\030\001 \002(\005\022" +
+      "\r\n\005title\030\002 \001(\t\022+\n\006rating\030\003 \002(\0162\033.se.qxx." +
+      "protodb.test.Rating\"p\n\013EnumOneList\022\n\n\002ID" +
+      "\030\001 \002(\005\022\r\n\005title\030\002 \001(\t\0224\n\017list_of_ratings" +
+      "\030\003 \003(\0162\033.se.qxx.protodb.test.Rating\022\020\n\010p",
+      "roducer\030\004 \001(\t*]\n\006Rating\022\016\n\nNotMatched\020\001\022" +
+      "\021\n\rProbableMatch\020\002\022\021\n\rPositiveMatch\020\003\022\016\n" +
+      "\nExactMatch\020\004\022\r\n\tSubsExist\020\005B\030\n\023se.qxx.p" +
+      "rotodb.test\210\001\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -3926,6 +5193,22 @@ public final class TestDomain {
               new java.lang.String[] { "ID", "ListOfObjects", "Happycamper", },
               se.qxx.protodb.test.TestDomain.RepObjectOne.class,
               se.qxx.protodb.test.TestDomain.RepObjectOne.Builder.class);
+          internal_static_se_qxx_protodb_test_EnumOne_descriptor =
+            getDescriptor().getMessageTypes().get(6);
+          internal_static_se_qxx_protodb_test_EnumOne_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_se_qxx_protodb_test_EnumOne_descriptor,
+              new java.lang.String[] { "ID", "Title", "Rating", },
+              se.qxx.protodb.test.TestDomain.EnumOne.class,
+              se.qxx.protodb.test.TestDomain.EnumOne.Builder.class);
+          internal_static_se_qxx_protodb_test_EnumOneList_descriptor =
+            getDescriptor().getMessageTypes().get(7);
+          internal_static_se_qxx_protodb_test_EnumOneList_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_se_qxx_protodb_test_EnumOneList_descriptor,
+              new java.lang.String[] { "ID", "Title", "ListOfRatings", "Producer", },
+              se.qxx.protodb.test.TestDomain.EnumOneList.class,
+              se.qxx.protodb.test.TestDomain.EnumOneList.Builder.class);
           return null;
         }
       };

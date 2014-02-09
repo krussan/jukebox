@@ -51,3 +51,24 @@ message RepObjectOne {
   repeated SimpleTwo list_of_objects = 2;
   required int32 happycamper = 3;
 }
+
+enum Rating {
+	NotMatched = 1;
+	ProbableMatch = 2;
+	PositiveMatch = 3;
+	ExactMatch = 4;
+	SubsExist = 5;
+}
+
+message EnumOne {
+	required int32 ID = 1;
+	optional string title = 2;
+	required Rating rating = 3;
+}
+
+message EnumOneList {
+	required int32 ID = 1;
+	optional string title = 2;
+	repeated Rating list_of_ratings = 3;
+	optional string producer = 4;
+}

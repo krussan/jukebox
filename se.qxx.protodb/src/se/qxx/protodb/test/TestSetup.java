@@ -14,6 +14,7 @@ import org.junit.Test;
 
 import se.qxx.protodb.ProtoDB;
 import se.qxx.protodb.exceptions.IDFieldNotFoundException;
+import se.qxx.protodb.test.TestDomain.Rating;
 import se.qxx.protodb.test.TestDomain.SimpleTest;
 
 public class TestSetup {
@@ -47,6 +48,18 @@ public class TestSetup {
 
 	private final String[] BLOBDATA_FIELD_NAMES = {"ID", "data"};
 	private final String[] BLOBDATA_FIELD_TYPES = {"INTEGER", "BLOB"};
+
+	private final String[] ENUMONE_FIELD_NAMES = {"ID", "_rating_ID", "title"};
+	private final String[] ENUMONE_FIELD_TYPES = {"INTEGER", "INTEGER", "TEXT"};
+	
+	private final String[] RATING_FIELD_NAMES = {"ID", "value"};
+	private final String[] RATING_FIELD_TYPES = {"INTEGER", "TEXT"};
+
+	private final String[] ENUMONELIST_FIELD_NAMES = {"ID", "title", "producer"};
+	private final String[] ENUMONELIST_FIELD_TYPES = {"INTEGER", "TEXT", "TEXT"};
+	
+	private final String[] ENUMONELIST_LINK_FIELD_NAMES = {"_enumonelist_ID", "_rating_ID"};
+	private final String[] ENUMONELIST_LINK_FIELD_TYPES = {"INTEGER", "INTEGER"};
 
 	@Before
 	public void Setup() {
@@ -153,6 +166,50 @@ public class TestSetup {
 		}
 		
 	}
+
+	@Test
+	public void TestEnumOne() {
+		TestDomain.EnumOne t = TestDomain.EnumOne.newBuilder()
+				.setID(-1)
+				.setTitle("ThisIsAnEnumTitle")
+				.setRating(Rating.SubsExist)
+				.build();
+		
+		try {
+			db.setupDatabase(t);
+			
+			testTableStructure(db, "EnumOne", ENUMONE_FIELD_NAMES, ENUMONE_FIELD_TYPES);
+			testTableStructure(db, "Rating", RATING_FIELD_NAMES, RATING_FIELD_TYPES);			
+			
+		} catch (SQLException | ClassNotFoundException | IDFieldNotFoundException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+
+	}
+	
+	@Test
+	public void TestEnumOneList() {
+		TestDomain.EnumOneList t = TestDomain.EnumOneList.newBuilder()
+				.setID(-1)
+				.setTitle("ThisIsAnEnumListTitle")
+				.build();
+		
+		try {
+			db.setupDatabase(t);
+			
+			testTableStructure(db, "EnumOneList", ENUMONELIST_FIELD_NAMES, ENUMONELIST_FIELD_TYPES);
+			testTableStructure(db, "Rating", RATING_FIELD_NAMES, RATING_FIELD_TYPES);			
+			testTableStructure(db, "EnumOneListRating_ListOfRatings", ENUMONELIST_LINK_FIELD_NAMES, ENUMONELIST_LINK_FIELD_TYPES);
+			
+		} catch (SQLException | ClassNotFoundException | IDFieldNotFoundException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+
+	}
+		
+	
 	
 	private void testTableStructure(
 			ProtoDB db,
@@ -176,5 +233,6 @@ public class TestSetup {
 			fail(String.format("Table %s failed the test. Probably because it does not exist. Msg :: %s", expectedTableName, e.getMessage()));
 		}
 	}	
+	
 	
 }
