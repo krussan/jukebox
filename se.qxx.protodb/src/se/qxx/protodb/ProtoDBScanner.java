@@ -42,7 +42,6 @@ public class ProtoDBScanner {
 		this.scan(b);
 	}
 
-	@SuppressWarnings("unchecked")
 	private void scan(MessageOrBuilder b) {
 			
 		this.setObjectName(StringUtils.capitalize(b.getDescriptorForType().getName()));
@@ -105,14 +104,19 @@ public class ProtoDBScanner {
 
 	public String getInsertStatement() {
 		
-		String[] params = new String[this.getFieldNames().size()];
+		List<String> cols = new ArrayList<String>();
+		for (String fieldName : this.getFieldNames()) 
+			if (!fieldName.equalsIgnoreCase("ID"))
+				cols.add(String.format("[%s]", fieldName));
+		
+		String[] params = new String[cols.size()];
 		Arrays.fill(params, "?");
 		
 		String sql = String.format(
 				"INSERT INTO %s (%s) VALUES (%s)",
 				this.getObjectName(),
-				StringUtils.join(this.getFieldNames(), ","),
-				params);
+				StringUtils.join(cols, ","),
+				StringUtils.join(params, ","));
 		
 		return sql;
 	}
@@ -144,7 +148,8 @@ public class ProtoDBScanner {
 		}
 		
 		for(FieldDescriptor field : this.getBasicFields()) {
-			cols.add(String.format("[%s] %s %s", 
+			if (!field.getName().equalsIgnoreCase("ID"))
+				cols.add(String.format("[%s] %s %s", 
 					getBasicFieldName(field), 
 					getDBType(field), 
 					field.isOptional() ? "NULL" : "NOT NULL"));
@@ -246,7 +251,8 @@ public class ProtoDBScanner {
 		}
 		
 		for(FieldDescriptor field : this.getBasicFields())
-			this.compileArgument(++c, prep, field.getJavaType(), b.getField(field));			
+			if (!field.getName().equalsIgnoreCase("ID"))
+				this.compileArgument(++c, prep, field.getJavaType(), b.getField(field));			
 		
 		return prep;
 	}

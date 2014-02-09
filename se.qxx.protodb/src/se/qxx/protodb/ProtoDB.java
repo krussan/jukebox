@@ -13,12 +13,15 @@ import java.util.List;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
+import se.qxx.protodb.exceptions.IDFieldNotFoundException;
+
 import com.google.protobuf.Descriptors.FieldDescriptor.JavaType;
 import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.Message.Builder;
 import com.google.protobuf.MessageOrBuilder;
 import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor;
+import se.qxx.protodb.exceptions.IDFieldNotFoundException;
 
 public class ProtoDB {
 	private String connectionString = "jdbc:sqlite:jukebox.db";
@@ -233,8 +236,9 @@ public class ProtoDB {
 	 * @param b
 	 * @throws SQLException
 	 * @throws ClassNotFoundException
+	 * @throws IDFieldNotFoundException 
 	 */
-	public void setupDatabase(MessageOrBuilder b) throws SQLException,ClassNotFoundException {
+	public void setupDatabase(MessageOrBuilder b) throws SQLException,ClassNotFoundException, IDFieldNotFoundException {
 		Connection conn = null;
 		
 		try {
@@ -262,16 +266,25 @@ public class ProtoDB {
 	 * Purges the database from all tables and sets up the whole database structure from
 	 * one given protobuf class.
 	 * @throws SQLException 
+	 * @throws IDFieldNotFoundException 
 	 * @throws UnexpectedException 
 	 */
-	private void setupDatabase(MessageOrBuilder b, Connection conn) throws SQLException {
+	private void setupDatabase(MessageOrBuilder b, Connection conn) throws SQLException, IDFieldNotFoundException {
 		ProtoDBScanner scanner = new ProtoDBScanner(b);
+		
+		// check fields for ID field - this has to be present
+		Boolean idFieldFound = false;
+		for (FieldDescriptor field : scanner.getBasicFields()) {
+			if (field.getName().equalsIgnoreCase("ID") 
+					&& field.getJavaType() == JavaType.INT
+					&& field.isRequired())
+				idFieldFound = true;
+		}
+		if (!idFieldFound)
+			throw new IDFieldNotFoundException(scanner.getObjectName());
 		
 		// setup all sub objects
 		for(FieldDescriptor field : scanner.getObjectFields()) {
-//			String fieldName = field.getName();
-//			Object o = b.getField(field);
-			
 			if (field.getJavaType() == JavaType.MESSAGE && !field.isRepeated()) {
 				setupDatabase((MessageOrBuilder)b.getField(field), conn);
 			}
@@ -324,7 +337,6 @@ public class ProtoDB {
 	 * @throws SQLException 
 	 * @throws ClassNotFoundException 
 	 */
-	@SuppressWarnings("unchecked")
 	public DynamicMessage get(int id, Descriptor desc) throws ClassNotFoundException, SQLException{
 		Connection conn = null;
 		DynamicMessage msg = null;
@@ -351,7 +363,7 @@ public class ProtoDB {
 		DynamicMessage d = DynamicMessage.getDefaultInstance(desc);
 		ProtoDBScanner scanner = new ProtoDBScanner(d);
 		
-		Builder b = d.newBuilderForType();
+		Builder b = DynamicMessage.newBuilder(desc);
 		
 		// populate list of sub objects
 		for (FieldDescriptor field : scanner.getRepeatedObjectFields()) {

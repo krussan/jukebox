@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import se.qxx.protodb.ProtoDB;
+import se.qxx.protodb.exceptions.IDFieldNotFoundException;
 import se.qxx.protodb.test.TestDomain.SimpleTest;
 
 public class TestSetup {
@@ -57,7 +58,7 @@ public class TestSetup {
 	@Test
 	public void TestSimple() {
 		
-		TestDomain.SimpleTest t = TestDomain.SimpleTest.newBuilder().build();
+		TestDomain.SimpleTest t = TestDomain.SimpleTest.newBuilder().setID(1).build();
 		
 		try {
 			db.setupDatabase(t);
@@ -66,7 +67,7 @@ public class TestSetup {
 			testTableStructure(db, "SimpleTest", SIMPLE_FIELD_NAMES, SIMPLE_FIELD_TYPES);
 
 			
-		} catch (SQLException | ClassNotFoundException e) {
+		} catch (SQLException | ClassNotFoundException | IDFieldNotFoundException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -75,7 +76,7 @@ public class TestSetup {
 
 	@Test
 	public void TestObjectOne() {
-		TestDomain.ObjectOne t = TestDomain.ObjectOne.newBuilder().build();
+		TestDomain.ObjectOne t = TestDomain.ObjectOne.newBuilder().setID(1).build();
 
 		try {
 			db.setupDatabase(t);
@@ -83,7 +84,7 @@ public class TestSetup {
 			testTableStructure(db, "ObjectOne", OBJECTONE_FIELD_NAMES, OBJECTONE_FIELD_TYPES);
 			testTableStructure(db, "SimpleTest", SIMPLE_FIELD_NAMES, SIMPLE_FIELD_TYPES);
 			
-		} catch (SQLException | ClassNotFoundException e) {
+		} catch (SQLException | ClassNotFoundException | IDFieldNotFoundException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -92,7 +93,7 @@ public class TestSetup {
 	@Test
 	public void TestObjectTwo() {
 		// test boolean
-		TestDomain.ObjectTwo t = TestDomain.ObjectTwo.newBuilder().build();
+		TestDomain.ObjectTwo t = TestDomain.ObjectTwo.newBuilder().setID(1).build();
 
 		try {
 			db.setupDatabase(t);
@@ -101,7 +102,7 @@ public class TestSetup {
 			testTableStructure(db, "ObjectOne", OBJECTONE_FIELD_NAMES, OBJECTONE_FIELD_TYPES);
 			testTableStructure(db, "SimpleTest", SIMPLE_FIELD_NAMES, SIMPLE_FIELD_TYPES);
 			
-		} catch (SQLException | ClassNotFoundException e) {
+		} catch (SQLException | ClassNotFoundException | IDFieldNotFoundException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -112,6 +113,7 @@ public class TestSetup {
 	@Test
 	public void TestRepObjectOne() {
 		TestDomain.RepObjectOne t = TestDomain.RepObjectOne.newBuilder()
+				.setID(1)
 				.setHappycamper(42)
 				.build();
 		try {
@@ -121,7 +123,7 @@ public class TestSetup {
 			testTableStructure(db, "RepObjectOne", REPOBJECTONE_FIELD_NAMES, REPOBJECTONE_FIELD_TYPES);			
 			testTableStructure(db, "RepObjectOneSimpleTwo_ListOfObjects", REPOBJECTONE_LINK_FIELD_NAMES, REPOBJECTONE_LINK_FIELD_TYPES);
 			
-		} catch (SQLException | ClassNotFoundException e) {
+		} catch (SQLException | ClassNotFoundException | IDFieldNotFoundException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -131,6 +133,7 @@ public class TestSetup {
 	@Test
 	public void TestRepSimpleList() {
 		TestDomain.RepSimpleList t = TestDomain.RepSimpleList.newBuilder()
+				.setID(1)
 				.setHappycamper(44)
 				.build();
 		
@@ -140,7 +143,7 @@ public class TestSetup {
 			testTableStructure(db, "RepSimpleList", REPSIMPLELIST_FIELD_NAMES, REPSIMPLELIST_FIELD_TYPES);
 			testTableStructure(db, "RepSimpleList_ListOfStrings", REPSIMPLELIST_LISTOFSTRINGS_FIELD_NAMES, REPSIMPLELIST_LISTOFSTRINGS_FIELD_TYPES);			
 			
-		} catch (SQLException | ClassNotFoundException e) {
+		} catch (SQLException | ClassNotFoundException | IDFieldNotFoundException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}

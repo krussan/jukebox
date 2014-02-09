@@ -21,11 +21,7 @@ public class TestSelect {
 	private final String DATABASE_FILE = "protodb_select_test.db";
 	
 	@Before
-	public void Setup() {
-		
-		File f = new File(DATABASE_FILE);
-		f.delete();
-		
+	public void Setup() {		
 	    db = new ProtoDB(DATABASE_FILE);
 	}
 	

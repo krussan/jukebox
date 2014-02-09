@@ -11,31 +11,35 @@ public final class TestDomain {
   public interface SimpleTestOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // optional double dd = 1;
+    // required int32 ID = 1;
+    boolean hasID();
+    int getID();
+    
+    // optional double dd = 2;
     boolean hasDd();
     double getDd();
     
-    // optional float ff = 2;
+    // optional float ff = 3;
     boolean hasFf();
     float getFf();
     
-    // optional int32 is = 3;
+    // optional int32 is = 4;
     boolean hasIs();
     int getIs();
     
-    // optional int64 il = 4;
+    // optional int64 il = 5;
     boolean hasIl();
     long getIl();
     
-    // optional bool bb = 5;
+    // optional bool bb = 6;
     boolean hasBb();
     boolean getBb();
     
-    // optional string ss = 6;
+    // optional string ss = 7;
     boolean hasSs();
     String getSs();
     
-    // optional bytes by = 7;
+    // optional bytes by = 8;
     boolean hasBy();
     com.google.protobuf.ByteString getBy();
   }
@@ -68,61 +72,71 @@ public final class TestDomain {
     }
     
     private int bitField0_;
-    // optional double dd = 1;
-    public static final int DD_FIELD_NUMBER = 1;
+    // required int32 ID = 1;
+    public static final int ID_FIELD_NUMBER = 1;
+    private int iD_;
+    public boolean hasID() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public int getID() {
+      return iD_;
+    }
+    
+    // optional double dd = 2;
+    public static final int DD_FIELD_NUMBER = 2;
     private double dd_;
     public boolean hasDd() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
+      return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     public double getDd() {
       return dd_;
     }
     
-    // optional float ff = 2;
-    public static final int FF_FIELD_NUMBER = 2;
+    // optional float ff = 3;
+    public static final int FF_FIELD_NUMBER = 3;
     private float ff_;
     public boolean hasFf() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
+      return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     public float getFf() {
       return ff_;
     }
     
-    // optional int32 is = 3;
-    public static final int IS_FIELD_NUMBER = 3;
+    // optional int32 is = 4;
+    public static final int IS_FIELD_NUMBER = 4;
     private int is_;
     public boolean hasIs() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
+      return ((bitField0_ & 0x00000008) == 0x00000008);
     }
     public int getIs() {
       return is_;
     }
     
-    // optional int64 il = 4;
-    public static final int IL_FIELD_NUMBER = 4;
+    // optional int64 il = 5;
+    public static final int IL_FIELD_NUMBER = 5;
     private long il_;
     public boolean hasIl() {
-      return ((bitField0_ & 0x00000008) == 0x00000008);
+      return ((bitField0_ & 0x00000010) == 0x00000010);
     }
     public long getIl() {
       return il_;
     }
     
-    // optional bool bb = 5;
-    public static final int BB_FIELD_NUMBER = 5;
+    // optional bool bb = 6;
+    public static final int BB_FIELD_NUMBER = 6;
     private boolean bb_;
     public boolean hasBb() {
-      return ((bitField0_ & 0x00000010) == 0x00000010);
+      return ((bitField0_ & 0x00000020) == 0x00000020);
     }
     public boolean getBb() {
       return bb_;
     }
     
-    // optional string ss = 6;
-    public static final int SS_FIELD_NUMBER = 6;
+    // optional string ss = 7;
+    public static final int SS_FIELD_NUMBER = 7;
     private java.lang.Object ss_;
     public boolean hasSs() {
-      return ((bitField0_ & 0x00000020) == 0x00000020);
+      return ((bitField0_ & 0x00000040) == 0x00000040);
     }
     public String getSs() {
       java.lang.Object ref = ss_;
@@ -150,17 +164,18 @@ public final class TestDomain {
       }
     }
     
-    // optional bytes by = 7;
-    public static final int BY_FIELD_NUMBER = 7;
+    // optional bytes by = 8;
+    public static final int BY_FIELD_NUMBER = 8;
     private com.google.protobuf.ByteString by_;
     public boolean hasBy() {
-      return ((bitField0_ & 0x00000040) == 0x00000040);
+      return ((bitField0_ & 0x00000080) == 0x00000080);
     }
     public com.google.protobuf.ByteString getBy() {
       return by_;
     }
     
     private void initFields() {
+      iD_ = 0;
       dd_ = 0D;
       ff_ = 0F;
       is_ = 0;
@@ -174,6 +189,10 @@ public final class TestDomain {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
       
+      if (!hasID()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -182,25 +201,28 @@ public final class TestDomain {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeDouble(1, dd_);
+        output.writeInt32(1, iD_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeFloat(2, ff_);
+        output.writeDouble(2, dd_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeInt32(3, is_);
+        output.writeFloat(3, ff_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeInt64(4, il_);
+        output.writeInt32(4, is_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        output.writeBool(5, bb_);
+        output.writeInt64(5, il_);
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
-        output.writeBytes(6, getSsBytes());
+        output.writeBool(6, bb_);
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
-        output.writeBytes(7, by_);
+        output.writeBytes(7, getSsBytes());
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        output.writeBytes(8, by_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -213,31 +235,35 @@ public final class TestDomain {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(1, dd_);
+          .computeInt32Size(1, iD_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeFloatSize(2, ff_);
+          .computeDoubleSize(2, dd_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(3, is_);
+          .computeFloatSize(3, ff_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(4, il_);
+          .computeInt32Size(4, is_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(5, bb_);
+          .computeInt64Size(5, il_);
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(6, getSsBytes());
+          .computeBoolSize(6, bb_);
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(7, by_);
+          .computeBytesSize(7, getSsBytes());
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(8, by_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -363,20 +389,22 @@ public final class TestDomain {
       
       public Builder clear() {
         super.clear();
-        dd_ = 0D;
+        iD_ = 0;
         bitField0_ = (bitField0_ & ~0x00000001);
-        ff_ = 0F;
+        dd_ = 0D;
         bitField0_ = (bitField0_ & ~0x00000002);
-        is_ = 0;
+        ff_ = 0F;
         bitField0_ = (bitField0_ & ~0x00000004);
-        il_ = 0L;
+        is_ = 0;
         bitField0_ = (bitField0_ & ~0x00000008);
-        bb_ = false;
+        il_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000010);
-        ss_ = "";
+        bb_ = false;
         bitField0_ = (bitField0_ & ~0x00000020);
-        by_ = com.google.protobuf.ByteString.EMPTY;
+        ss_ = "";
         bitField0_ = (bitField0_ & ~0x00000040);
+        by_ = com.google.protobuf.ByteString.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000080);
         return this;
       }
       
@@ -418,29 +446,33 @@ public final class TestDomain {
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
           to_bitField0_ |= 0x00000001;
         }
-        result.dd_ = dd_;
+        result.iD_ = iD_;
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
         }
-        result.ff_ = ff_;
+        result.dd_ = dd_;
         if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
           to_bitField0_ |= 0x00000004;
         }
-        result.is_ = is_;
+        result.ff_ = ff_;
         if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
           to_bitField0_ |= 0x00000008;
         }
-        result.il_ = il_;
+        result.is_ = is_;
         if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
           to_bitField0_ |= 0x00000010;
         }
-        result.bb_ = bb_;
+        result.il_ = il_;
         if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
           to_bitField0_ |= 0x00000020;
         }
-        result.ss_ = ss_;
+        result.bb_ = bb_;
         if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
           to_bitField0_ |= 0x00000040;
+        }
+        result.ss_ = ss_;
+        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+          to_bitField0_ |= 0x00000080;
         }
         result.by_ = by_;
         result.bitField0_ = to_bitField0_;
@@ -459,6 +491,9 @@ public final class TestDomain {
       
       public Builder mergeFrom(se.qxx.protodb.test.TestDomain.SimpleTest other) {
         if (other == se.qxx.protodb.test.TestDomain.SimpleTest.getDefaultInstance()) return this;
+        if (other.hasID()) {
+          setID(other.getID());
+        }
         if (other.hasDd()) {
           setDd(other.getDd());
         }
@@ -485,6 +520,10 @@ public final class TestDomain {
       }
       
       public final boolean isInitialized() {
+        if (!hasID()) {
+          
+          return false;
+        }
         return true;
       }
       
@@ -511,38 +550,43 @@ public final class TestDomain {
               }
               break;
             }
-            case 9: {
+            case 8: {
               bitField0_ |= 0x00000001;
+              iD_ = input.readInt32();
+              break;
+            }
+            case 17: {
+              bitField0_ |= 0x00000002;
               dd_ = input.readDouble();
               break;
             }
-            case 21: {
-              bitField0_ |= 0x00000002;
-              ff_ = input.readFloat();
-              break;
-            }
-            case 24: {
+            case 29: {
               bitField0_ |= 0x00000004;
-              is_ = input.readInt32();
+              ff_ = input.readFloat();
               break;
             }
             case 32: {
               bitField0_ |= 0x00000008;
-              il_ = input.readInt64();
+              is_ = input.readInt32();
               break;
             }
             case 40: {
               bitField0_ |= 0x00000010;
-              bb_ = input.readBool();
+              il_ = input.readInt64();
               break;
             }
-            case 50: {
+            case 48: {
               bitField0_ |= 0x00000020;
-              ss_ = input.readBytes();
+              bb_ = input.readBool();
               break;
             }
             case 58: {
               bitField0_ |= 0x00000040;
+              ss_ = input.readBytes();
+              break;
+            }
+            case 66: {
+              bitField0_ |= 0x00000080;
               by_ = input.readBytes();
               break;
             }
@@ -552,115 +596,136 @@ public final class TestDomain {
       
       private int bitField0_;
       
-      // optional double dd = 1;
+      // required int32 ID = 1;
+      private int iD_ ;
+      public boolean hasID() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public int getID() {
+        return iD_;
+      }
+      public Builder setID(int value) {
+        bitField0_ |= 0x00000001;
+        iD_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearID() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        iD_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // optional double dd = 2;
       private double dd_ ;
       public boolean hasDd() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
+        return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       public double getDd() {
         return dd_;
       }
       public Builder setDd(double value) {
-        bitField0_ |= 0x00000001;
+        bitField0_ |= 0x00000002;
         dd_ = value;
         onChanged();
         return this;
       }
       public Builder clearDd() {
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = (bitField0_ & ~0x00000002);
         dd_ = 0D;
         onChanged();
         return this;
       }
       
-      // optional float ff = 2;
+      // optional float ff = 3;
       private float ff_ ;
       public boolean hasFf() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       public float getFf() {
         return ff_;
       }
       public Builder setFf(float value) {
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         ff_ = value;
         onChanged();
         return this;
       }
       public Builder clearFf() {
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000004);
         ff_ = 0F;
         onChanged();
         return this;
       }
       
-      // optional int32 is = 3;
+      // optional int32 is = 4;
       private int is_ ;
       public boolean hasIs() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
+        return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       public int getIs() {
         return is_;
       }
       public Builder setIs(int value) {
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000008;
         is_ = value;
         onChanged();
         return this;
       }
       public Builder clearIs() {
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000008);
         is_ = 0;
         onChanged();
         return this;
       }
       
-      // optional int64 il = 4;
+      // optional int64 il = 5;
       private long il_ ;
       public boolean hasIl() {
-        return ((bitField0_ & 0x00000008) == 0x00000008);
+        return ((bitField0_ & 0x00000010) == 0x00000010);
       }
       public long getIl() {
         return il_;
       }
       public Builder setIl(long value) {
-        bitField0_ |= 0x00000008;
+        bitField0_ |= 0x00000010;
         il_ = value;
         onChanged();
         return this;
       }
       public Builder clearIl() {
-        bitField0_ = (bitField0_ & ~0x00000008);
+        bitField0_ = (bitField0_ & ~0x00000010);
         il_ = 0L;
         onChanged();
         return this;
       }
       
-      // optional bool bb = 5;
+      // optional bool bb = 6;
       private boolean bb_ ;
       public boolean hasBb() {
-        return ((bitField0_ & 0x00000010) == 0x00000010);
+        return ((bitField0_ & 0x00000020) == 0x00000020);
       }
       public boolean getBb() {
         return bb_;
       }
       public Builder setBb(boolean value) {
-        bitField0_ |= 0x00000010;
+        bitField0_ |= 0x00000020;
         bb_ = value;
         onChanged();
         return this;
       }
       public Builder clearBb() {
-        bitField0_ = (bitField0_ & ~0x00000010);
+        bitField0_ = (bitField0_ & ~0x00000020);
         bb_ = false;
         onChanged();
         return this;
       }
       
-      // optional string ss = 6;
+      // optional string ss = 7;
       private java.lang.Object ss_ = "";
       public boolean hasSs() {
-        return ((bitField0_ & 0x00000020) == 0x00000020);
+        return ((bitField0_ & 0x00000040) == 0x00000040);
       }
       public String getSs() {
         java.lang.Object ref = ss_;
@@ -676,27 +741,27 @@ public final class TestDomain {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000020;
+  bitField0_ |= 0x00000040;
         ss_ = value;
         onChanged();
         return this;
       }
       public Builder clearSs() {
-        bitField0_ = (bitField0_ & ~0x00000020);
+        bitField0_ = (bitField0_ & ~0x00000040);
         ss_ = getDefaultInstance().getSs();
         onChanged();
         return this;
       }
       void setSs(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000020;
+        bitField0_ |= 0x00000040;
         ss_ = value;
         onChanged();
       }
       
-      // optional bytes by = 7;
+      // optional bytes by = 8;
       private com.google.protobuf.ByteString by_ = com.google.protobuf.ByteString.EMPTY;
       public boolean hasBy() {
-        return ((bitField0_ & 0x00000040) == 0x00000040);
+        return ((bitField0_ & 0x00000080) == 0x00000080);
       }
       public com.google.protobuf.ByteString getBy() {
         return by_;
@@ -705,13 +770,13 @@ public final class TestDomain {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000040;
+  bitField0_ |= 0x00000080;
         by_ = value;
         onChanged();
         return this;
       }
       public Builder clearBy() {
-        bitField0_ = (bitField0_ & ~0x00000040);
+        bitField0_ = (bitField0_ & ~0x00000080);
         by_ = getDefaultInstance().getBy();
         onChanged();
         return this;
@@ -731,11 +796,15 @@ public final class TestDomain {
   public interface SimpleTwoOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // optional string title = 1;
+    // required int32 ID = 1;
+    boolean hasID();
+    int getID();
+    
+    // optional string title = 2;
     boolean hasTitle();
     String getTitle();
     
-    // optional string director = 2;
+    // optional string director = 3;
     boolean hasDirector();
     String getDirector();
   }
@@ -768,11 +837,21 @@ public final class TestDomain {
     }
     
     private int bitField0_;
-    // optional string title = 1;
-    public static final int TITLE_FIELD_NUMBER = 1;
+    // required int32 ID = 1;
+    public static final int ID_FIELD_NUMBER = 1;
+    private int iD_;
+    public boolean hasID() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public int getID() {
+      return iD_;
+    }
+    
+    // optional string title = 2;
+    public static final int TITLE_FIELD_NUMBER = 2;
     private java.lang.Object title_;
     public boolean hasTitle() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
+      return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     public String getTitle() {
       java.lang.Object ref = title_;
@@ -800,11 +879,11 @@ public final class TestDomain {
       }
     }
     
-    // optional string director = 2;
-    public static final int DIRECTOR_FIELD_NUMBER = 2;
+    // optional string director = 3;
+    public static final int DIRECTOR_FIELD_NUMBER = 3;
     private java.lang.Object director_;
     public boolean hasDirector() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
+      return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     public String getDirector() {
       java.lang.Object ref = director_;
@@ -833,6 +912,7 @@ public final class TestDomain {
     }
     
     private void initFields() {
+      iD_ = 0;
       title_ = "";
       director_ = "";
     }
@@ -841,6 +921,10 @@ public final class TestDomain {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
       
+      if (!hasID()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -849,10 +933,13 @@ public final class TestDomain {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, getTitleBytes());
+        output.writeInt32(1, iD_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeBytes(2, getDirectorBytes());
+        output.writeBytes(2, getTitleBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeBytes(3, getDirectorBytes());
       }
       getUnknownFields().writeTo(output);
     }
@@ -865,11 +952,15 @@ public final class TestDomain {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getTitleBytes());
+          .computeInt32Size(1, iD_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(2, getDirectorBytes());
+          .computeBytesSize(2, getTitleBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(3, getDirectorBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -995,10 +1086,12 @@ public final class TestDomain {
       
       public Builder clear() {
         super.clear();
-        title_ = "";
+        iD_ = 0;
         bitField0_ = (bitField0_ & ~0x00000001);
-        director_ = "";
+        title_ = "";
         bitField0_ = (bitField0_ & ~0x00000002);
+        director_ = "";
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
       
@@ -1040,9 +1133,13 @@ public final class TestDomain {
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
           to_bitField0_ |= 0x00000001;
         }
-        result.title_ = title_;
+        result.iD_ = iD_;
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
+        }
+        result.title_ = title_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
         }
         result.director_ = director_;
         result.bitField0_ = to_bitField0_;
@@ -1061,6 +1158,9 @@ public final class TestDomain {
       
       public Builder mergeFrom(se.qxx.protodb.test.TestDomain.SimpleTwo other) {
         if (other == se.qxx.protodb.test.TestDomain.SimpleTwo.getDefaultInstance()) return this;
+        if (other.hasID()) {
+          setID(other.getID());
+        }
         if (other.hasTitle()) {
           setTitle(other.getTitle());
         }
@@ -1072,6 +1172,10 @@ public final class TestDomain {
       }
       
       public final boolean isInitialized() {
+        if (!hasID()) {
+          
+          return false;
+        }
         return true;
       }
       
@@ -1098,13 +1202,18 @@ public final class TestDomain {
               }
               break;
             }
-            case 10: {
+            case 8: {
               bitField0_ |= 0x00000001;
-              title_ = input.readBytes();
+              iD_ = input.readInt32();
               break;
             }
             case 18: {
               bitField0_ |= 0x00000002;
+              title_ = input.readBytes();
+              break;
+            }
+            case 26: {
+              bitField0_ |= 0x00000004;
               director_ = input.readBytes();
               break;
             }
@@ -1114,10 +1223,31 @@ public final class TestDomain {
       
       private int bitField0_;
       
-      // optional string title = 1;
+      // required int32 ID = 1;
+      private int iD_ ;
+      public boolean hasID() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public int getID() {
+        return iD_;
+      }
+      public Builder setID(int value) {
+        bitField0_ |= 0x00000001;
+        iD_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearID() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        iD_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // optional string title = 2;
       private java.lang.Object title_ = "";
       public boolean hasTitle() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
+        return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       public String getTitle() {
         java.lang.Object ref = title_;
@@ -1133,27 +1263,27 @@ public final class TestDomain {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000001;
+  bitField0_ |= 0x00000002;
         title_ = value;
         onChanged();
         return this;
       }
       public Builder clearTitle() {
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = (bitField0_ & ~0x00000002);
         title_ = getDefaultInstance().getTitle();
         onChanged();
         return this;
       }
       void setTitle(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000001;
+        bitField0_ |= 0x00000002;
         title_ = value;
         onChanged();
       }
       
-      // optional string director = 2;
+      // optional string director = 3;
       private java.lang.Object director_ = "";
       public boolean hasDirector() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       public String getDirector() {
         java.lang.Object ref = director_;
@@ -1169,19 +1299,19 @@ public final class TestDomain {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000002;
+  bitField0_ |= 0x00000004;
         director_ = value;
         onChanged();
         return this;
       }
       public Builder clearDirector() {
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000004);
         director_ = getDefaultInstance().getDirector();
         onChanged();
         return this;
       }
       void setDirector(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         director_ = value;
         onChanged();
       }
@@ -1200,7 +1330,11 @@ public final class TestDomain {
   public interface ObjectOneOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // optional .se.qxx.protodb.test.SimpleTest testOne = 1;
+    // required int32 ID = 1;
+    boolean hasID();
+    int getID();
+    
+    // optional .se.qxx.protodb.test.SimpleTest testOne = 2;
     boolean hasTestOne();
     se.qxx.protodb.test.TestDomain.SimpleTest getTestOne();
     se.qxx.protodb.test.TestDomain.SimpleTestOrBuilder getTestOneOrBuilder();
@@ -1238,11 +1372,21 @@ public final class TestDomain {
     }
     
     private int bitField0_;
-    // optional .se.qxx.protodb.test.SimpleTest testOne = 1;
-    public static final int TESTONE_FIELD_NUMBER = 1;
+    // required int32 ID = 1;
+    public static final int ID_FIELD_NUMBER = 1;
+    private int iD_;
+    public boolean hasID() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public int getID() {
+      return iD_;
+    }
+    
+    // optional .se.qxx.protodb.test.SimpleTest testOne = 2;
+    public static final int TESTONE_FIELD_NUMBER = 2;
     private se.qxx.protodb.test.TestDomain.SimpleTest testOne_;
     public boolean hasTestOne() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
+      return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     public se.qxx.protodb.test.TestDomain.SimpleTest getTestOne() {
       return testOne_;
@@ -1255,13 +1399,14 @@ public final class TestDomain {
     public static final int OOIS_FIELD_NUMBER = 3;
     private int oois_;
     public boolean hasOois() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
+      return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     public int getOois() {
       return oois_;
     }
     
     private void initFields() {
+      iD_ = 0;
       testOne_ = se.qxx.protodb.test.TestDomain.SimpleTest.getDefaultInstance();
       oois_ = 0;
     }
@@ -1270,6 +1415,16 @@ public final class TestDomain {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
       
+      if (!hasID()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (hasTestOne()) {
+        if (!getTestOne().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -1278,9 +1433,12 @@ public final class TestDomain {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeMessage(1, testOne_);
+        output.writeInt32(1, iD_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeMessage(2, testOne_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
         output.writeInt32(3, oois_);
       }
       getUnknownFields().writeTo(output);
@@ -1294,9 +1452,13 @@ public final class TestDomain {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(1, testOne_);
+          .computeInt32Size(1, iD_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, testOne_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(3, oois_);
       }
@@ -1425,14 +1587,16 @@ public final class TestDomain {
       
       public Builder clear() {
         super.clear();
+        iD_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
         if (testOneBuilder_ == null) {
           testOne_ = se.qxx.protodb.test.TestDomain.SimpleTest.getDefaultInstance();
         } else {
           testOneBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000001);
-        oois_ = 0;
         bitField0_ = (bitField0_ & ~0x00000002);
+        oois_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
       
@@ -1474,13 +1638,17 @@ public final class TestDomain {
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
           to_bitField0_ |= 0x00000001;
         }
+        result.iD_ = iD_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
         if (testOneBuilder_ == null) {
           result.testOne_ = testOne_;
         } else {
           result.testOne_ = testOneBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
         }
         result.oois_ = oois_;
         result.bitField0_ = to_bitField0_;
@@ -1499,6 +1667,9 @@ public final class TestDomain {
       
       public Builder mergeFrom(se.qxx.protodb.test.TestDomain.ObjectOne other) {
         if (other == se.qxx.protodb.test.TestDomain.ObjectOne.getDefaultInstance()) return this;
+        if (other.hasID()) {
+          setID(other.getID());
+        }
         if (other.hasTestOne()) {
           mergeTestOne(other.getTestOne());
         }
@@ -1510,6 +1681,16 @@ public final class TestDomain {
       }
       
       public final boolean isInitialized() {
+        if (!hasID()) {
+          
+          return false;
+        }
+        if (hasTestOne()) {
+          if (!getTestOne().isInitialized()) {
+            
+            return false;
+          }
+        }
         return true;
       }
       
@@ -1536,7 +1717,12 @@ public final class TestDomain {
               }
               break;
             }
-            case 10: {
+            case 8: {
+              bitField0_ |= 0x00000001;
+              iD_ = input.readInt32();
+              break;
+            }
+            case 18: {
               se.qxx.protodb.test.TestDomain.SimpleTest.Builder subBuilder = se.qxx.protodb.test.TestDomain.SimpleTest.newBuilder();
               if (hasTestOne()) {
                 subBuilder.mergeFrom(getTestOne());
@@ -1546,7 +1732,7 @@ public final class TestDomain {
               break;
             }
             case 24: {
-              bitField0_ |= 0x00000002;
+              bitField0_ |= 0x00000004;
               oois_ = input.readInt32();
               break;
             }
@@ -1556,12 +1742,33 @@ public final class TestDomain {
       
       private int bitField0_;
       
-      // optional .se.qxx.protodb.test.SimpleTest testOne = 1;
+      // required int32 ID = 1;
+      private int iD_ ;
+      public boolean hasID() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public int getID() {
+        return iD_;
+      }
+      public Builder setID(int value) {
+        bitField0_ |= 0x00000001;
+        iD_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearID() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        iD_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // optional .se.qxx.protodb.test.SimpleTest testOne = 2;
       private se.qxx.protodb.test.TestDomain.SimpleTest testOne_ = se.qxx.protodb.test.TestDomain.SimpleTest.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
           se.qxx.protodb.test.TestDomain.SimpleTest, se.qxx.protodb.test.TestDomain.SimpleTest.Builder, se.qxx.protodb.test.TestDomain.SimpleTestOrBuilder> testOneBuilder_;
       public boolean hasTestOne() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
+        return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       public se.qxx.protodb.test.TestDomain.SimpleTest getTestOne() {
         if (testOneBuilder_ == null) {
@@ -1580,7 +1787,7 @@ public final class TestDomain {
         } else {
           testOneBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00000001;
+        bitField0_ |= 0x00000002;
         return this;
       }
       public Builder setTestOne(
@@ -1591,12 +1798,12 @@ public final class TestDomain {
         } else {
           testOneBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00000001;
+        bitField0_ |= 0x00000002;
         return this;
       }
       public Builder mergeTestOne(se.qxx.protodb.test.TestDomain.SimpleTest value) {
         if (testOneBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) == 0x00000001) &&
+          if (((bitField0_ & 0x00000002) == 0x00000002) &&
               testOne_ != se.qxx.protodb.test.TestDomain.SimpleTest.getDefaultInstance()) {
             testOne_ =
               se.qxx.protodb.test.TestDomain.SimpleTest.newBuilder(testOne_).mergeFrom(value).buildPartial();
@@ -1607,7 +1814,7 @@ public final class TestDomain {
         } else {
           testOneBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000001;
+        bitField0_ |= 0x00000002;
         return this;
       }
       public Builder clearTestOne() {
@@ -1617,11 +1824,11 @@ public final class TestDomain {
         } else {
           testOneBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
       public se.qxx.protodb.test.TestDomain.SimpleTest.Builder getTestOneBuilder() {
-        bitField0_ |= 0x00000001;
+        bitField0_ |= 0x00000002;
         onChanged();
         return getTestOneFieldBuilder().getBuilder();
       }
@@ -1649,19 +1856,19 @@ public final class TestDomain {
       // optional int32 oois = 3;
       private int oois_ ;
       public boolean hasOois() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       public int getOois() {
         return oois_;
       }
       public Builder setOois(int value) {
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         oois_ = value;
         onChanged();
         return this;
       }
       public Builder clearOois() {
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000004);
         oois_ = 0;
         onChanged();
         return this;
@@ -1681,17 +1888,21 @@ public final class TestDomain {
   public interface ObjectTwoOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // optional .se.qxx.protodb.test.SimpleTest testOne = 1;
+    // required int32 ID = 1;
+    boolean hasID();
+    int getID();
+    
+    // optional .se.qxx.protodb.test.SimpleTest testOne = 2;
     boolean hasTestOne();
     se.qxx.protodb.test.TestDomain.SimpleTest getTestOne();
     se.qxx.protodb.test.TestDomain.SimpleTestOrBuilder getTestOneOrBuilder();
     
-    // optional .se.qxx.protodb.test.ObjectOne testTwo = 2;
+    // optional .se.qxx.protodb.test.ObjectOne testTwo = 3;
     boolean hasTestTwo();
     se.qxx.protodb.test.TestDomain.ObjectOne getTestTwo();
     se.qxx.protodb.test.TestDomain.ObjectOneOrBuilder getTestTwoOrBuilder();
     
-    // optional int32 otis = 3;
+    // optional int32 otis = 4;
     boolean hasOtis();
     int getOtis();
   }
@@ -1724,11 +1935,21 @@ public final class TestDomain {
     }
     
     private int bitField0_;
-    // optional .se.qxx.protodb.test.SimpleTest testOne = 1;
-    public static final int TESTONE_FIELD_NUMBER = 1;
+    // required int32 ID = 1;
+    public static final int ID_FIELD_NUMBER = 1;
+    private int iD_;
+    public boolean hasID() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public int getID() {
+      return iD_;
+    }
+    
+    // optional .se.qxx.protodb.test.SimpleTest testOne = 2;
+    public static final int TESTONE_FIELD_NUMBER = 2;
     private se.qxx.protodb.test.TestDomain.SimpleTest testOne_;
     public boolean hasTestOne() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
+      return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     public se.qxx.protodb.test.TestDomain.SimpleTest getTestOne() {
       return testOne_;
@@ -1737,11 +1958,11 @@ public final class TestDomain {
       return testOne_;
     }
     
-    // optional .se.qxx.protodb.test.ObjectOne testTwo = 2;
-    public static final int TESTTWO_FIELD_NUMBER = 2;
+    // optional .se.qxx.protodb.test.ObjectOne testTwo = 3;
+    public static final int TESTTWO_FIELD_NUMBER = 3;
     private se.qxx.protodb.test.TestDomain.ObjectOne testTwo_;
     public boolean hasTestTwo() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
+      return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     public se.qxx.protodb.test.TestDomain.ObjectOne getTestTwo() {
       return testTwo_;
@@ -1750,17 +1971,18 @@ public final class TestDomain {
       return testTwo_;
     }
     
-    // optional int32 otis = 3;
-    public static final int OTIS_FIELD_NUMBER = 3;
+    // optional int32 otis = 4;
+    public static final int OTIS_FIELD_NUMBER = 4;
     private int otis_;
     public boolean hasOtis() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
+      return ((bitField0_ & 0x00000008) == 0x00000008);
     }
     public int getOtis() {
       return otis_;
     }
     
     private void initFields() {
+      iD_ = 0;
       testOne_ = se.qxx.protodb.test.TestDomain.SimpleTest.getDefaultInstance();
       testTwo_ = se.qxx.protodb.test.TestDomain.ObjectOne.getDefaultInstance();
       otis_ = 0;
@@ -1770,6 +1992,22 @@ public final class TestDomain {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
       
+      if (!hasID()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (hasTestOne()) {
+        if (!getTestOne().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (hasTestTwo()) {
+        if (!getTestTwo().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -1778,13 +2016,16 @@ public final class TestDomain {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeMessage(1, testOne_);
+        output.writeInt32(1, iD_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeMessage(2, testTwo_);
+        output.writeMessage(2, testOne_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeInt32(3, otis_);
+        output.writeMessage(3, testTwo_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeInt32(4, otis_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -1797,15 +2038,19 @@ public final class TestDomain {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(1, testOne_);
+          .computeInt32Size(1, iD_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, testTwo_);
+          .computeMessageSize(2, testOne_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(3, otis_);
+          .computeMessageSize(3, testTwo_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(4, otis_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -1933,20 +2178,22 @@ public final class TestDomain {
       
       public Builder clear() {
         super.clear();
+        iD_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
         if (testOneBuilder_ == null) {
           testOne_ = se.qxx.protodb.test.TestDomain.SimpleTest.getDefaultInstance();
         } else {
           testOneBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = (bitField0_ & ~0x00000002);
         if (testTwoBuilder_ == null) {
           testTwo_ = se.qxx.protodb.test.TestDomain.ObjectOne.getDefaultInstance();
         } else {
           testTwoBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000002);
-        otis_ = 0;
         bitField0_ = (bitField0_ & ~0x00000004);
+        otis_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
       
@@ -1988,21 +2235,25 @@ public final class TestDomain {
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
           to_bitField0_ |= 0x00000001;
         }
+        result.iD_ = iD_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
         if (testOneBuilder_ == null) {
           result.testOne_ = testOne_;
         } else {
           result.testOne_ = testOneBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
         }
         if (testTwoBuilder_ == null) {
           result.testTwo_ = testTwo_;
         } else {
           result.testTwo_ = testTwoBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x00000004;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
         }
         result.otis_ = otis_;
         result.bitField0_ = to_bitField0_;
@@ -2021,6 +2272,9 @@ public final class TestDomain {
       
       public Builder mergeFrom(se.qxx.protodb.test.TestDomain.ObjectTwo other) {
         if (other == se.qxx.protodb.test.TestDomain.ObjectTwo.getDefaultInstance()) return this;
+        if (other.hasID()) {
+          setID(other.getID());
+        }
         if (other.hasTestOne()) {
           mergeTestOne(other.getTestOne());
         }
@@ -2035,6 +2289,22 @@ public final class TestDomain {
       }
       
       public final boolean isInitialized() {
+        if (!hasID()) {
+          
+          return false;
+        }
+        if (hasTestOne()) {
+          if (!getTestOne().isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (hasTestTwo()) {
+          if (!getTestTwo().isInitialized()) {
+            
+            return false;
+          }
+        }
         return true;
       }
       
@@ -2061,7 +2331,12 @@ public final class TestDomain {
               }
               break;
             }
-            case 10: {
+            case 8: {
+              bitField0_ |= 0x00000001;
+              iD_ = input.readInt32();
+              break;
+            }
+            case 18: {
               se.qxx.protodb.test.TestDomain.SimpleTest.Builder subBuilder = se.qxx.protodb.test.TestDomain.SimpleTest.newBuilder();
               if (hasTestOne()) {
                 subBuilder.mergeFrom(getTestOne());
@@ -2070,7 +2345,7 @@ public final class TestDomain {
               setTestOne(subBuilder.buildPartial());
               break;
             }
-            case 18: {
+            case 26: {
               se.qxx.protodb.test.TestDomain.ObjectOne.Builder subBuilder = se.qxx.protodb.test.TestDomain.ObjectOne.newBuilder();
               if (hasTestTwo()) {
                 subBuilder.mergeFrom(getTestTwo());
@@ -2079,8 +2354,8 @@ public final class TestDomain {
               setTestTwo(subBuilder.buildPartial());
               break;
             }
-            case 24: {
-              bitField0_ |= 0x00000004;
+            case 32: {
+              bitField0_ |= 0x00000008;
               otis_ = input.readInt32();
               break;
             }
@@ -2090,12 +2365,33 @@ public final class TestDomain {
       
       private int bitField0_;
       
-      // optional .se.qxx.protodb.test.SimpleTest testOne = 1;
+      // required int32 ID = 1;
+      private int iD_ ;
+      public boolean hasID() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public int getID() {
+        return iD_;
+      }
+      public Builder setID(int value) {
+        bitField0_ |= 0x00000001;
+        iD_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearID() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        iD_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // optional .se.qxx.protodb.test.SimpleTest testOne = 2;
       private se.qxx.protodb.test.TestDomain.SimpleTest testOne_ = se.qxx.protodb.test.TestDomain.SimpleTest.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
           se.qxx.protodb.test.TestDomain.SimpleTest, se.qxx.protodb.test.TestDomain.SimpleTest.Builder, se.qxx.protodb.test.TestDomain.SimpleTestOrBuilder> testOneBuilder_;
       public boolean hasTestOne() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
+        return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       public se.qxx.protodb.test.TestDomain.SimpleTest getTestOne() {
         if (testOneBuilder_ == null) {
@@ -2114,7 +2410,7 @@ public final class TestDomain {
         } else {
           testOneBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00000001;
+        bitField0_ |= 0x00000002;
         return this;
       }
       public Builder setTestOne(
@@ -2125,12 +2421,12 @@ public final class TestDomain {
         } else {
           testOneBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00000001;
+        bitField0_ |= 0x00000002;
         return this;
       }
       public Builder mergeTestOne(se.qxx.protodb.test.TestDomain.SimpleTest value) {
         if (testOneBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) == 0x00000001) &&
+          if (((bitField0_ & 0x00000002) == 0x00000002) &&
               testOne_ != se.qxx.protodb.test.TestDomain.SimpleTest.getDefaultInstance()) {
             testOne_ =
               se.qxx.protodb.test.TestDomain.SimpleTest.newBuilder(testOne_).mergeFrom(value).buildPartial();
@@ -2141,7 +2437,7 @@ public final class TestDomain {
         } else {
           testOneBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000001;
+        bitField0_ |= 0x00000002;
         return this;
       }
       public Builder clearTestOne() {
@@ -2151,11 +2447,11 @@ public final class TestDomain {
         } else {
           testOneBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
       public se.qxx.protodb.test.TestDomain.SimpleTest.Builder getTestOneBuilder() {
-        bitField0_ |= 0x00000001;
+        bitField0_ |= 0x00000002;
         onChanged();
         return getTestOneFieldBuilder().getBuilder();
       }
@@ -2180,12 +2476,12 @@ public final class TestDomain {
         return testOneBuilder_;
       }
       
-      // optional .se.qxx.protodb.test.ObjectOne testTwo = 2;
+      // optional .se.qxx.protodb.test.ObjectOne testTwo = 3;
       private se.qxx.protodb.test.TestDomain.ObjectOne testTwo_ = se.qxx.protodb.test.TestDomain.ObjectOne.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
           se.qxx.protodb.test.TestDomain.ObjectOne, se.qxx.protodb.test.TestDomain.ObjectOne.Builder, se.qxx.protodb.test.TestDomain.ObjectOneOrBuilder> testTwoBuilder_;
       public boolean hasTestTwo() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       public se.qxx.protodb.test.TestDomain.ObjectOne getTestTwo() {
         if (testTwoBuilder_ == null) {
@@ -2204,7 +2500,7 @@ public final class TestDomain {
         } else {
           testTwoBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         return this;
       }
       public Builder setTestTwo(
@@ -2215,12 +2511,12 @@ public final class TestDomain {
         } else {
           testTwoBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         return this;
       }
       public Builder mergeTestTwo(se.qxx.protodb.test.TestDomain.ObjectOne value) {
         if (testTwoBuilder_ == null) {
-          if (((bitField0_ & 0x00000002) == 0x00000002) &&
+          if (((bitField0_ & 0x00000004) == 0x00000004) &&
               testTwo_ != se.qxx.protodb.test.TestDomain.ObjectOne.getDefaultInstance()) {
             testTwo_ =
               se.qxx.protodb.test.TestDomain.ObjectOne.newBuilder(testTwo_).mergeFrom(value).buildPartial();
@@ -2231,7 +2527,7 @@ public final class TestDomain {
         } else {
           testTwoBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         return this;
       }
       public Builder clearTestTwo() {
@@ -2241,11 +2537,11 @@ public final class TestDomain {
         } else {
           testTwoBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
       public se.qxx.protodb.test.TestDomain.ObjectOne.Builder getTestTwoBuilder() {
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         onChanged();
         return getTestTwoFieldBuilder().getBuilder();
       }
@@ -2270,22 +2566,22 @@ public final class TestDomain {
         return testTwoBuilder_;
       }
       
-      // optional int32 otis = 3;
+      // optional int32 otis = 4;
       private int otis_ ;
       public boolean hasOtis() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
+        return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       public int getOtis() {
         return otis_;
       }
       public Builder setOtis(int value) {
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000008;
         otis_ = value;
         onChanged();
         return this;
       }
       public Builder clearOtis() {
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000008);
         otis_ = 0;
         onChanged();
         return this;
@@ -2305,12 +2601,16 @@ public final class TestDomain {
   public interface RepSimpleListOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // repeated string list_of_strings = 1;
+    // required int32 ID = 1;
+    boolean hasID();
+    int getID();
+    
+    // repeated string list_of_strings = 2;
     java.util.List<String> getListOfStringsList();
     int getListOfStringsCount();
     String getListOfStrings(int index);
     
-    // required int32 happycamper = 2;
+    // required int32 happycamper = 3;
     boolean hasHappycamper();
     int getHappycamper();
   }
@@ -2343,8 +2643,18 @@ public final class TestDomain {
     }
     
     private int bitField0_;
-    // repeated string list_of_strings = 1;
-    public static final int LIST_OF_STRINGS_FIELD_NUMBER = 1;
+    // required int32 ID = 1;
+    public static final int ID_FIELD_NUMBER = 1;
+    private int iD_;
+    public boolean hasID() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public int getID() {
+      return iD_;
+    }
+    
+    // repeated string list_of_strings = 2;
+    public static final int LIST_OF_STRINGS_FIELD_NUMBER = 2;
     private com.google.protobuf.LazyStringList listOfStrings_;
     public java.util.List<String>
         getListOfStringsList() {
@@ -2357,17 +2667,18 @@ public final class TestDomain {
       return listOfStrings_.get(index);
     }
     
-    // required int32 happycamper = 2;
-    public static final int HAPPYCAMPER_FIELD_NUMBER = 2;
+    // required int32 happycamper = 3;
+    public static final int HAPPYCAMPER_FIELD_NUMBER = 3;
     private int happycamper_;
     public boolean hasHappycamper() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
+      return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     public int getHappycamper() {
       return happycamper_;
     }
     
     private void initFields() {
+      iD_ = 0;
       listOfStrings_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       happycamper_ = 0;
     }
@@ -2376,6 +2687,10 @@ public final class TestDomain {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
       
+      if (!hasID()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       if (!hasHappycamper()) {
         memoizedIsInitialized = 0;
         return false;
@@ -2387,11 +2702,14 @@ public final class TestDomain {
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
-      for (int i = 0; i < listOfStrings_.size(); i++) {
-        output.writeBytes(1, listOfStrings_.getByteString(i));
-      }
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeInt32(2, happycamper_);
+        output.writeInt32(1, iD_);
+      }
+      for (int i = 0; i < listOfStrings_.size(); i++) {
+        output.writeBytes(2, listOfStrings_.getByteString(i));
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeInt32(3, happycamper_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -2402,6 +2720,10 @@ public final class TestDomain {
       if (size != -1) return size;
     
       size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, iD_);
+      }
       {
         int dataSize = 0;
         for (int i = 0; i < listOfStrings_.size(); i++) {
@@ -2411,9 +2733,9 @@ public final class TestDomain {
         size += dataSize;
         size += 1 * getListOfStringsList().size();
       }
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(2, happycamper_);
+          .computeInt32Size(3, happycamper_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -2539,10 +2861,12 @@ public final class TestDomain {
       
       public Builder clear() {
         super.clear();
-        listOfStrings_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        iD_ = 0;
         bitField0_ = (bitField0_ & ~0x00000001);
-        happycamper_ = 0;
+        listOfStrings_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000002);
+        happycamper_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
       
@@ -2581,14 +2905,18 @@ public final class TestDomain {
         se.qxx.protodb.test.TestDomain.RepSimpleList result = new se.qxx.protodb.test.TestDomain.RepSimpleList(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
-        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.iD_ = iD_;
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
           listOfStrings_ = new com.google.protobuf.UnmodifiableLazyStringList(
               listOfStrings_);
-          bitField0_ = (bitField0_ & ~0x00000001);
+          bitField0_ = (bitField0_ & ~0x00000002);
         }
         result.listOfStrings_ = listOfStrings_;
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000001;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000002;
         }
         result.happycamper_ = happycamper_;
         result.bitField0_ = to_bitField0_;
@@ -2607,10 +2935,13 @@ public final class TestDomain {
       
       public Builder mergeFrom(se.qxx.protodb.test.TestDomain.RepSimpleList other) {
         if (other == se.qxx.protodb.test.TestDomain.RepSimpleList.getDefaultInstance()) return this;
+        if (other.hasID()) {
+          setID(other.getID());
+        }
         if (!other.listOfStrings_.isEmpty()) {
           if (listOfStrings_.isEmpty()) {
             listOfStrings_ = other.listOfStrings_;
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ = (bitField0_ & ~0x00000002);
           } else {
             ensureListOfStringsIsMutable();
             listOfStrings_.addAll(other.listOfStrings_);
@@ -2625,6 +2956,10 @@ public final class TestDomain {
       }
       
       public final boolean isInitialized() {
+        if (!hasID()) {
+          
+          return false;
+        }
         if (!hasHappycamper()) {
           
           return false;
@@ -2655,13 +2990,18 @@ public final class TestDomain {
               }
               break;
             }
-            case 10: {
+            case 8: {
+              bitField0_ |= 0x00000001;
+              iD_ = input.readInt32();
+              break;
+            }
+            case 18: {
               ensureListOfStringsIsMutable();
               listOfStrings_.add(input.readBytes());
               break;
             }
-            case 16: {
-              bitField0_ |= 0x00000002;
+            case 24: {
+              bitField0_ |= 0x00000004;
               happycamper_ = input.readInt32();
               break;
             }
@@ -2671,12 +3011,33 @@ public final class TestDomain {
       
       private int bitField0_;
       
-      // repeated string list_of_strings = 1;
+      // required int32 ID = 1;
+      private int iD_ ;
+      public boolean hasID() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public int getID() {
+        return iD_;
+      }
+      public Builder setID(int value) {
+        bitField0_ |= 0x00000001;
+        iD_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearID() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        iD_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // repeated string list_of_strings = 2;
       private com.google.protobuf.LazyStringList listOfStrings_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       private void ensureListOfStringsIsMutable() {
-        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
           listOfStrings_ = new com.google.protobuf.LazyStringArrayList(listOfStrings_);
-          bitField0_ |= 0x00000001;
+          bitField0_ |= 0x00000002;
          }
       }
       public java.util.List<String>
@@ -2717,7 +3078,7 @@ public final class TestDomain {
       }
       public Builder clearListOfStrings() {
         listOfStrings_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
@@ -2727,22 +3088,22 @@ public final class TestDomain {
         onChanged();
       }
       
-      // required int32 happycamper = 2;
+      // required int32 happycamper = 3;
       private int happycamper_ ;
       public boolean hasHappycamper() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       public int getHappycamper() {
         return happycamper_;
       }
       public Builder setHappycamper(int value) {
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         happycamper_ = value;
         onChanged();
         return this;
       }
       public Builder clearHappycamper() {
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000004);
         happycamper_ = 0;
         onChanged();
         return this;
@@ -2762,7 +3123,11 @@ public final class TestDomain {
   public interface RepObjectOneOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // repeated .se.qxx.protodb.test.SimpleTwo list_of_objects = 1;
+    // required int32 ID = 1;
+    boolean hasID();
+    int getID();
+    
+    // repeated .se.qxx.protodb.test.SimpleTwo list_of_objects = 2;
     java.util.List<se.qxx.protodb.test.TestDomain.SimpleTwo> 
         getListOfObjectsList();
     se.qxx.protodb.test.TestDomain.SimpleTwo getListOfObjects(int index);
@@ -2772,7 +3137,7 @@ public final class TestDomain {
     se.qxx.protodb.test.TestDomain.SimpleTwoOrBuilder getListOfObjectsOrBuilder(
         int index);
     
-    // required int32 happycamper = 2;
+    // required int32 happycamper = 3;
     boolean hasHappycamper();
     int getHappycamper();
   }
@@ -2805,8 +3170,18 @@ public final class TestDomain {
     }
     
     private int bitField0_;
-    // repeated .se.qxx.protodb.test.SimpleTwo list_of_objects = 1;
-    public static final int LIST_OF_OBJECTS_FIELD_NUMBER = 1;
+    // required int32 ID = 1;
+    public static final int ID_FIELD_NUMBER = 1;
+    private int iD_;
+    public boolean hasID() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public int getID() {
+      return iD_;
+    }
+    
+    // repeated .se.qxx.protodb.test.SimpleTwo list_of_objects = 2;
+    public static final int LIST_OF_OBJECTS_FIELD_NUMBER = 2;
     private java.util.List<se.qxx.protodb.test.TestDomain.SimpleTwo> listOfObjects_;
     public java.util.List<se.qxx.protodb.test.TestDomain.SimpleTwo> getListOfObjectsList() {
       return listOfObjects_;
@@ -2826,17 +3201,18 @@ public final class TestDomain {
       return listOfObjects_.get(index);
     }
     
-    // required int32 happycamper = 2;
-    public static final int HAPPYCAMPER_FIELD_NUMBER = 2;
+    // required int32 happycamper = 3;
+    public static final int HAPPYCAMPER_FIELD_NUMBER = 3;
     private int happycamper_;
     public boolean hasHappycamper() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
+      return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     public int getHappycamper() {
       return happycamper_;
     }
     
     private void initFields() {
+      iD_ = 0;
       listOfObjects_ = java.util.Collections.emptyList();
       happycamper_ = 0;
     }
@@ -2845,9 +3221,19 @@ public final class TestDomain {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
       
+      if (!hasID()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       if (!hasHappycamper()) {
         memoizedIsInitialized = 0;
         return false;
+      }
+      for (int i = 0; i < getListOfObjectsCount(); i++) {
+        if (!getListOfObjects(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
       }
       memoizedIsInitialized = 1;
       return true;
@@ -2856,11 +3242,14 @@ public final class TestDomain {
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
-      for (int i = 0; i < listOfObjects_.size(); i++) {
-        output.writeMessage(1, listOfObjects_.get(i));
-      }
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeInt32(2, happycamper_);
+        output.writeInt32(1, iD_);
+      }
+      for (int i = 0; i < listOfObjects_.size(); i++) {
+        output.writeMessage(2, listOfObjects_.get(i));
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeInt32(3, happycamper_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -2871,13 +3260,17 @@ public final class TestDomain {
       if (size != -1) return size;
     
       size = 0;
-      for (int i = 0; i < listOfObjects_.size(); i++) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(1, listOfObjects_.get(i));
-      }
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(2, happycamper_);
+          .computeInt32Size(1, iD_);
+      }
+      for (int i = 0; i < listOfObjects_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, listOfObjects_.get(i));
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(3, happycamper_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -3004,14 +3397,16 @@ public final class TestDomain {
       
       public Builder clear() {
         super.clear();
+        iD_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
         if (listOfObjectsBuilder_ == null) {
           listOfObjects_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
+          bitField0_ = (bitField0_ & ~0x00000002);
         } else {
           listOfObjectsBuilder_.clear();
         }
         happycamper_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
       
@@ -3050,17 +3445,21 @@ public final class TestDomain {
         se.qxx.protodb.test.TestDomain.RepObjectOne result = new se.qxx.protodb.test.TestDomain.RepObjectOne(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.iD_ = iD_;
         if (listOfObjectsBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          if (((bitField0_ & 0x00000002) == 0x00000002)) {
             listOfObjects_ = java.util.Collections.unmodifiableList(listOfObjects_);
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ = (bitField0_ & ~0x00000002);
           }
           result.listOfObjects_ = listOfObjects_;
         } else {
           result.listOfObjects_ = listOfObjectsBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000001;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000002;
         }
         result.happycamper_ = happycamper_;
         result.bitField0_ = to_bitField0_;
@@ -3079,11 +3478,14 @@ public final class TestDomain {
       
       public Builder mergeFrom(se.qxx.protodb.test.TestDomain.RepObjectOne other) {
         if (other == se.qxx.protodb.test.TestDomain.RepObjectOne.getDefaultInstance()) return this;
+        if (other.hasID()) {
+          setID(other.getID());
+        }
         if (listOfObjectsBuilder_ == null) {
           if (!other.listOfObjects_.isEmpty()) {
             if (listOfObjects_.isEmpty()) {
               listOfObjects_ = other.listOfObjects_;
-              bitField0_ = (bitField0_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00000002);
             } else {
               ensureListOfObjectsIsMutable();
               listOfObjects_.addAll(other.listOfObjects_);
@@ -3096,7 +3498,7 @@ public final class TestDomain {
               listOfObjectsBuilder_.dispose();
               listOfObjectsBuilder_ = null;
               listOfObjects_ = other.listOfObjects_;
-              bitField0_ = (bitField0_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00000002);
               listOfObjectsBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                    getListOfObjectsFieldBuilder() : null;
@@ -3113,9 +3515,19 @@ public final class TestDomain {
       }
       
       public final boolean isInitialized() {
+        if (!hasID()) {
+          
+          return false;
+        }
         if (!hasHappycamper()) {
           
           return false;
+        }
+        for (int i = 0; i < getListOfObjectsCount(); i++) {
+          if (!getListOfObjects(i).isInitialized()) {
+            
+            return false;
+          }
         }
         return true;
       }
@@ -3143,14 +3555,19 @@ public final class TestDomain {
               }
               break;
             }
-            case 10: {
+            case 8: {
+              bitField0_ |= 0x00000001;
+              iD_ = input.readInt32();
+              break;
+            }
+            case 18: {
               se.qxx.protodb.test.TestDomain.SimpleTwo.Builder subBuilder = se.qxx.protodb.test.TestDomain.SimpleTwo.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addListOfObjects(subBuilder.buildPartial());
               break;
             }
-            case 16: {
-              bitField0_ |= 0x00000002;
+            case 24: {
+              bitField0_ |= 0x00000004;
               happycamper_ = input.readInt32();
               break;
             }
@@ -3160,13 +3577,34 @@ public final class TestDomain {
       
       private int bitField0_;
       
-      // repeated .se.qxx.protodb.test.SimpleTwo list_of_objects = 1;
+      // required int32 ID = 1;
+      private int iD_ ;
+      public boolean hasID() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public int getID() {
+        return iD_;
+      }
+      public Builder setID(int value) {
+        bitField0_ |= 0x00000001;
+        iD_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearID() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        iD_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // repeated .se.qxx.protodb.test.SimpleTwo list_of_objects = 2;
       private java.util.List<se.qxx.protodb.test.TestDomain.SimpleTwo> listOfObjects_ =
         java.util.Collections.emptyList();
       private void ensureListOfObjectsIsMutable() {
-        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
           listOfObjects_ = new java.util.ArrayList<se.qxx.protodb.test.TestDomain.SimpleTwo>(listOfObjects_);
-          bitField0_ |= 0x00000001;
+          bitField0_ |= 0x00000002;
          }
       }
       
@@ -3282,7 +3720,7 @@ public final class TestDomain {
       public Builder clearListOfObjects() {
         if (listOfObjectsBuilder_ == null) {
           listOfObjects_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
+          bitField0_ = (bitField0_ & ~0x00000002);
           onChanged();
         } else {
           listOfObjectsBuilder_.clear();
@@ -3338,7 +3776,7 @@ public final class TestDomain {
           listOfObjectsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
               se.qxx.protodb.test.TestDomain.SimpleTwo, se.qxx.protodb.test.TestDomain.SimpleTwo.Builder, se.qxx.protodb.test.TestDomain.SimpleTwoOrBuilder>(
                   listOfObjects_,
-                  ((bitField0_ & 0x00000001) == 0x00000001),
+                  ((bitField0_ & 0x00000002) == 0x00000002),
                   getParentForChildren(),
                   isClean());
           listOfObjects_ = null;
@@ -3346,22 +3784,22 @@ public final class TestDomain {
         return listOfObjectsBuilder_;
       }
       
-      // required int32 happycamper = 2;
+      // required int32 happycamper = 3;
       private int happycamper_ ;
       public boolean hasHappycamper() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       public int getHappycamper() {
         return happycamper_;
       }
       public Builder setHappycamper(int value) {
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         happycamper_ = value;
         onChanged();
         return this;
       }
       public Builder clearHappycamper() {
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000004);
         happycamper_ = 0;
         onChanged();
         return this;
@@ -3418,20 +3856,22 @@ public final class TestDomain {
   static {
     java.lang.String[] descriptorData = {
       "\n\020TestDomain.proto\022\023se.qxx.protodb.test\"" +
-      "`\n\nSimpleTest\022\n\n\002dd\030\001 \001(\001\022\n\n\002ff\030\002 \001(\002\022\n\n" +
-      "\002is\030\003 \001(\005\022\n\n\002il\030\004 \001(\003\022\n\n\002bb\030\005 \001(\010\022\n\n\002ss\030" +
-      "\006 \001(\t\022\n\n\002by\030\007 \001(\014\",\n\tSimpleTwo\022\r\n\005title\030" +
-      "\001 \001(\t\022\020\n\010director\030\002 \001(\t\"K\n\tObjectOne\0220\n\007" +
-      "testOne\030\001 \001(\0132\037.se.qxx.protodb.test.Simp" +
-      "leTest\022\014\n\004oois\030\003 \001(\005\"|\n\tObjectTwo\0220\n\007tes" +
-      "tOne\030\001 \001(\0132\037.se.qxx.protodb.test.SimpleT" +
-      "est\022/\n\007testTwo\030\002 \001(\0132\036.se.qxx.protodb.te" +
-      "st.ObjectOne\022\014\n\004otis\030\003 \001(\005\"=\n\rRepSimpleL",
-      "ist\022\027\n\017list_of_strings\030\001 \003(\t\022\023\n\013happycam" +
-      "per\030\002 \002(\005\"\\\n\014RepObjectOne\0227\n\017list_of_obj" +
-      "ects\030\001 \003(\0132\036.se.qxx.protodb.test.SimpleT" +
-      "wo\022\023\n\013happycamper\030\002 \002(\005B\030\n\023se.qxx.protod" +
-      "b.test\210\001\001"
+      "l\n\nSimpleTest\022\n\n\002ID\030\001 \002(\005\022\n\n\002dd\030\002 \001(\001\022\n\n" +
+      "\002ff\030\003 \001(\002\022\n\n\002is\030\004 \001(\005\022\n\n\002il\030\005 \001(\003\022\n\n\002bb\030" +
+      "\006 \001(\010\022\n\n\002ss\030\007 \001(\t\022\n\n\002by\030\010 \001(\014\"8\n\tSimpleT" +
+      "wo\022\n\n\002ID\030\001 \002(\005\022\r\n\005title\030\002 \001(\t\022\020\n\010directo" +
+      "r\030\003 \001(\t\"W\n\tObjectOne\022\n\n\002ID\030\001 \002(\005\0220\n\007test" +
+      "One\030\002 \001(\0132\037.se.qxx.protodb.test.SimpleTe" +
+      "st\022\014\n\004oois\030\003 \001(\005\"\210\001\n\tObjectTwo\022\n\n\002ID\030\001 \002" +
+      "(\005\0220\n\007testOne\030\002 \001(\0132\037.se.qxx.protodb.tes" +
+      "t.SimpleTest\022/\n\007testTwo\030\003 \001(\0132\036.se.qxx.p",
+      "rotodb.test.ObjectOne\022\014\n\004otis\030\004 \001(\005\"I\n\rR" +
+      "epSimpleList\022\n\n\002ID\030\001 \002(\005\022\027\n\017list_of_stri" +
+      "ngs\030\002 \003(\t\022\023\n\013happycamper\030\003 \002(\005\"h\n\014RepObj" +
+      "ectOne\022\n\n\002ID\030\001 \002(\005\0227\n\017list_of_objects\030\002 " +
+      "\003(\0132\036.se.qxx.protodb.test.SimpleTwo\022\023\n\013h" +
+      "appycamper\030\003 \002(\005B\030\n\023se.qxx.protodb.test\210" +
+      "\001\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -3443,7 +3883,7 @@ public final class TestDomain {
           internal_static_se_qxx_protodb_test_SimpleTest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_se_qxx_protodb_test_SimpleTest_descriptor,
-              new java.lang.String[] { "Dd", "Ff", "Is", "Il", "Bb", "Ss", "By", },
+              new java.lang.String[] { "ID", "Dd", "Ff", "Is", "Il", "Bb", "Ss", "By", },
               se.qxx.protodb.test.TestDomain.SimpleTest.class,
               se.qxx.protodb.test.TestDomain.SimpleTest.Builder.class);
           internal_static_se_qxx_protodb_test_SimpleTwo_descriptor =
@@ -3451,7 +3891,7 @@ public final class TestDomain {
           internal_static_se_qxx_protodb_test_SimpleTwo_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_se_qxx_protodb_test_SimpleTwo_descriptor,
-              new java.lang.String[] { "Title", "Director", },
+              new java.lang.String[] { "ID", "Title", "Director", },
               se.qxx.protodb.test.TestDomain.SimpleTwo.class,
               se.qxx.protodb.test.TestDomain.SimpleTwo.Builder.class);
           internal_static_se_qxx_protodb_test_ObjectOne_descriptor =
@@ -3459,7 +3899,7 @@ public final class TestDomain {
           internal_static_se_qxx_protodb_test_ObjectOne_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_se_qxx_protodb_test_ObjectOne_descriptor,
-              new java.lang.String[] { "TestOne", "Oois", },
+              new java.lang.String[] { "ID", "TestOne", "Oois", },
               se.qxx.protodb.test.TestDomain.ObjectOne.class,
               se.qxx.protodb.test.TestDomain.ObjectOne.Builder.class);
           internal_static_se_qxx_protodb_test_ObjectTwo_descriptor =
@@ -3467,7 +3907,7 @@ public final class TestDomain {
           internal_static_se_qxx_protodb_test_ObjectTwo_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_se_qxx_protodb_test_ObjectTwo_descriptor,
-              new java.lang.String[] { "TestOne", "TestTwo", "Otis", },
+              new java.lang.String[] { "ID", "TestOne", "TestTwo", "Otis", },
               se.qxx.protodb.test.TestDomain.ObjectTwo.class,
               se.qxx.protodb.test.TestDomain.ObjectTwo.Builder.class);
           internal_static_se_qxx_protodb_test_RepSimpleList_descriptor =
@@ -3475,7 +3915,7 @@ public final class TestDomain {
           internal_static_se_qxx_protodb_test_RepSimpleList_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_se_qxx_protodb_test_RepSimpleList_descriptor,
-              new java.lang.String[] { "ListOfStrings", "Happycamper", },
+              new java.lang.String[] { "ID", "ListOfStrings", "Happycamper", },
               se.qxx.protodb.test.TestDomain.RepSimpleList.class,
               se.qxx.protodb.test.TestDomain.RepSimpleList.Builder.class);
           internal_static_se_qxx_protodb_test_RepObjectOne_descriptor =
@@ -3483,7 +3923,7 @@ public final class TestDomain {
           internal_static_se_qxx_protodb_test_RepObjectOne_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_se_qxx_protodb_test_RepObjectOne_descriptor,
-              new java.lang.String[] { "ListOfObjects", "Happycamper", },
+              new java.lang.String[] { "ID", "ListOfObjects", "Happycamper", },
               se.qxx.protodb.test.TestDomain.RepObjectOne.class,
               se.qxx.protodb.test.TestDomain.RepObjectOne.Builder.class);
           return null;

@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import se.qxx.protodb.ProtoDB;
+import se.qxx.protodb.exceptions.IDFieldNotFoundException;
 
 import com.google.protobuf.ByteString;
 
@@ -32,6 +33,7 @@ public class TestInsert {
 		TestDomain.SimpleTest.getDescriptor();
 		
 		TestDomain.SimpleTest t = TestDomain.SimpleTest.newBuilder()
+				.setID(-1)
 				.setBb(false)
 				.setBy(ByteString.copyFrom(new byte[] {5,8,6}))
 				.setDd(1467802579378.62352352)
@@ -43,13 +45,18 @@ public class TestInsert {
 		
 		try {
 			db.setupDatabase(t);
+			
+			int id = db.save(t);
 
+			// check to see if the save was successful (ID should be greater than 0)
+			assertNotEquals(id, -1);
+			
 //			PreparedStatement prep = "SELECT * FROM SimpleTest";
 //			
 //			testTableStructure(db, "SimpleTest", SIMPLE_FIELD_NAMES, SIMPLE_FIELD_TYPES);
 
 			
-		} catch (SQLException | ClassNotFoundException e) {
+		} catch (SQLException | ClassNotFoundException | IDFieldNotFoundException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}

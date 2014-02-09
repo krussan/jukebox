@@ -11,37 +11,43 @@ option java_generic_services = true;
 //----------------------------------------------------------------------- Objects
 //---------------------------------------------------------------------------------------
 message SimpleTest {
-  optional double dd = 1;
-  optional float ff = 2;
-  optional int32 is = 3;
-  optional int64 il = 4;
-  optional bool bb = 5;  
-  optional string ss = 6;
-  optional bytes by = 7;
+  required int32 ID = 1;
+  optional double dd = 2;
+  optional float ff = 3;
+  optional int32 is = 4;
+  optional int64 il = 5;
+  optional bool bb = 6;  
+  optional string ss = 7;
+  optional bytes by = 8;
 }
 
 message SimpleTwo {
-  optional string title = 1;
-  optional string director = 2;
+  required int32 ID = 1;
+  optional string title = 2;
+  optional string director = 3;
 }
 
 message ObjectOne {
-  optional SimpleTest testOne = 1;
+  required int32 ID = 1;
+  optional SimpleTest testOne = 2;
   optional int32 oois = 3;
 }
 
 message ObjectTwo {
-  optional SimpleTest testOne = 1;
-  optional ObjectOne testTwo = 2;
-  optional int32 otis = 3;
+  required int32 ID = 1;
+  optional SimpleTest testOne = 2;
+  optional ObjectOne testTwo = 3;
+  optional int32 otis = 4;
 }
 
 message RepSimpleList {
-  repeated string list_of_strings = 1;
-  required int32 happycamper = 2;
+  required int32 ID = 1;
+  repeated string list_of_strings = 2;
+  required int32 happycamper = 3;
 }
 
 message RepObjectOne {
-  repeated SimpleTwo list_of_objects = 1;
-  required int32 happycamper = 2;
+  required int32 ID = 1;
+  repeated SimpleTwo list_of_objects = 2;
+  required int32 happycamper = 3;
 }
