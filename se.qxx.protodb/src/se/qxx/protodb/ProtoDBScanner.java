@@ -103,19 +103,34 @@ public class ProtoDBScanner {
 		return "_" + getBasicFieldName(field) + "_ID";
 	}
 
-	public String getInsertStatement() {
+	public String getSaveStatement(Boolean objectExists) {
 		
-		List<String> cols = getQuotedColumns();
+	
+		String sql = StringUtils.EMPTY;
 		
-		String[] params = new String[cols.size()];
-		Arrays.fill(params, "?");
-		
-		String sql = String.format(
+		if (!objectExists) {
+			List<String> cols = getQuotedColumns();
+			String[] params = new String[cols.size()];
+			Arrays.fill(params, "?");
+			
+			sql = String.format(
 				"INSERT INTO %s (%s) VALUES (%s)",
 				this.getObjectName(),
 				StringUtils.join(cols, ","),
 				StringUtils.join(params, ","));
-		
+		}
+		else {
+			List<String> cols = getQuotedColumns();
+			String updateCols = StringUtils.EMPTY;
+			for (String col : cols) 
+				updateCols += col + "=?,";
+			updateCols = updateCols.substring(0, updateCols.length() -1);
+					
+			sql = String.format(
+				"UPDATE %s SET %s WHERE ID = ?",
+				this.getObjectName(),
+				updateCols);
+		}
 		return sql;
 	}
 
@@ -145,6 +160,19 @@ public class ProtoDBScanner {
 				+ "_" + this.getObjectName().toLowerCase() + "_ID,"
 				+ "_" + other.getObjectName().toLowerCase() + "_ID"				
 				+ ") VALUES (?, ?)");
+		
+		return sql;
+	}	
+	
+	public String getLinkTableDeleteStatement(ProtoDBScanner other, String fieldName) {
+		String sql = "DELETE FROM " + this.getLinkTableName(other, fieldName)
+				+ " WHERE _" + this.getObjectName().toLowerCase() + "_ID = ?";
+		return sql;
+	}
+	
+	public String getBasicLinkTableDeleteStatement(FieldDescriptor field) {
+		String sql = "DELETE FROM " + this.getBasicLinkTableName(field)
+				+ " WHERE _" + this.getObjectName().toLowerCase() + "_ID = ?";
 		
 		return sql;
 	}	
@@ -233,6 +261,17 @@ public class ProtoDBScanner {
 			+  " WHERE _" + this.getObjectName().toLowerCase() + "_ID = ?";
 	}	
 	
+
+	public String getBasicLinkInsertStatement(FieldDescriptor field) {
+		return String.format("INSERT INTO %s ("
+				+ "_" + this.getObjectName().toLowerCase() + "_ID,"
+				+ "value)"
+				+ " VALUES (?,?)",
+				this.getBasicLinkTableName(field));		
+	}
+
+	
+	
 	
 	private String getDBType(FieldDescriptor field) {
 		JavaType jType = field.getJavaType();
@@ -265,7 +304,7 @@ public class ProtoDBScanner {
 		return prep;
 	}
 
-	public PreparedStatement compileArguments(MessageOrBuilder b, String sql, Connection conn) throws SQLException {
+	public PreparedStatement compileArguments(MessageOrBuilder b, String sql, Boolean objectExists, Connection conn) throws SQLException {
 		PreparedStatement prep = conn.prepareStatement(sql);
 
 		int c = 0;
@@ -280,6 +319,9 @@ public class ProtoDBScanner {
 		for(FieldDescriptor field : this.getBasicFields())
 			if (!field.getName().equalsIgnoreCase("ID"))
 				this.compileArgument(++c, prep, field.getJavaType(), b.getField(field));			
+		
+		if (objectExists)
+			prep.setInt(++c, this.getIdValue());
 		
 		return prep;
 	}
@@ -403,7 +445,11 @@ public class ProtoDBScanner {
 	private void setIdField(FieldDescriptor idField) {
 		this.idField = idField;
 	}
-
+	
+	public int getIdValue() {
+		Object o = this.getMessage().getField(this.getIdField());
+		return (int)o;
+	}
 
 
 }

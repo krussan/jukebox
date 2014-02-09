@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -74,6 +75,41 @@ public class TestInsert {
 		}
 	}
 	
+	@Test
+	public void TestRepSimpleList() {		
+		TestDomain.RepSimpleList t = TestDomain.RepSimpleList.newBuilder()
+				.setID(-1)
+				.setHappycamper(789)
+				.addAllListOfStrings(Arrays.asList(new String[] {"simple", "types", "are", "fun"}))
+				.build();
+		
+		try {
+			db.setupDatabase(t);
+			
+			int id = db.save(t);
+
+			// check to see if the save was successful (ID should be greater than 0)
+			assertNotEquals(id, -1);
+			
+			DynamicMessage dm = db.get(id, TestDomain.RepSimpleList.getDescriptor());
+			TestDomain.RepSimpleList st = TestDomain.RepSimpleList.parseFrom(dm.toByteString());
+			
+			assertEquals(t.getHappycamper(), st.getHappycamper());
+			assertArrayEquals(
+				t.getListOfStringsList().toArray(new String[] {}), 
+				st.getListOfStringsList().toArray(new String[] {}));
+			
+//			PreparedStatement prep = "SELECT * FROM SimpleTest";
+//			
+//			testTableStructure(db, "SimpleTest", SIMPLE_FIELD_NAMES, SIMPLE_FIELD_TYPES);
+
+			
+		} catch (SQLException | ClassNotFoundException | IDFieldNotFoundException | InvalidProtocolBufferException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+	}
+		
 
 	@Test
 	public void TestObjectOne() {
@@ -115,6 +151,54 @@ public class TestInsert {
 
 			
 			assertNotEquals(id, -1);
+			
+		} catch (SQLException | ClassNotFoundException | IDFieldNotFoundException | InvalidProtocolBufferException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+	}	
+	
+	@Test
+	public void TestSimpleUpdate() {		
+		TestDomain.SimpleTest t = TestDomain.SimpleTest.newBuilder()
+				.setID(-1)
+				.setBb(false)
+				.setBy(ByteString.copyFrom(new byte[] {5,8,6}))
+				.setDd(1467802579378.62352352)
+				.setFf((float) 555444333.213)
+				.setIl(999999998)
+				.setIs(999999998)
+				.setSs("ThisIsATest")
+				.build();
+		
+		try {
+			db.setupDatabase(t);
+			
+			int id1 = db.save(t);
+			// check to see if the save was successful (ID should be greater than 0)
+			assertNotEquals(id1, -1);
+			
+			t = TestDomain.SimpleTest.newBuilder(t).setSs("ThisIsTheUpdateTest").setID(id1).build();
+			
+			int id2 = db.save(t);
+			assertNotEquals(id2, -1);			
+			assertEquals(id1, id2);
+		
+			DynamicMessage dm = db.get(id2, TestDomain.SimpleTest.getDescriptor());
+			TestDomain.SimpleTest st = TestDomain.SimpleTest.parseFrom(dm.toByteString());
+			
+			assertEquals(t.getBb(), st.getBb());
+			assertEquals(t.getDd(), st.getDd(), 0.0);
+			assertEquals(t.getFf(), st.getFf(), 0.0);
+			assertEquals(t.getIl(), st.getIl());
+			assertEquals(t.getIs(), st.getIs());
+			assertEquals(t.getSs(), st.getSs());
+			assertArrayEquals(t.getBy().toByteArray(), st.getBy().toByteArray());
+			
+//			PreparedStatement prep = "SELECT * FROM SimpleTest";
+//			
+//			testTableStructure(db, "SimpleTest", SIMPLE_FIELD_NAMES, SIMPLE_FIELD_TYPES);
+
 			
 		} catch (SQLException | ClassNotFoundException | IDFieldNotFoundException | InvalidProtocolBufferException e) {
 			e.printStackTrace();

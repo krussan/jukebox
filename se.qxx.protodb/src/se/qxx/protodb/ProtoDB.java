@@ -384,6 +384,8 @@ public class ProtoDB {
 		// populate list of basic types
 		for (FieldDescriptor field : scanner.getRepeatedBasicFields()) {
 			PreparedStatement prep = conn.prepareStatement(scanner.getBasicLinkTableSelectStatement(field));
+			prep.setInt(1, id);
+			
 			ResultSet rs = prep.executeQuery();
 			
 			while (rs.next()) {
@@ -535,9 +537,8 @@ public class ProtoDB {
 	 */
 	private int save(MessageOrBuilder b, Connection conn) throws SQLException, ClassNotFoundException {
 		ProtoDBScanner scanner = new ProtoDBScanner(b);
-
-		//TODO: check for existence. UPDATE if present!
 		
+		//TODO: check for existence. UPDATE if present!
 		Boolean objectExist = checkExisting(scanner, conn);
 		
 		// getObjectFields
@@ -555,7 +556,11 @@ public class ProtoDB {
 				scanner.addObjectID(fieldName, objectID);
 			}
 		}		
-		 
+
+		// delete blobs
+		if (objectExist)
+			deleteBlobs(scanner, conn);
+
 		// save blobs
 		for(FieldDescriptor field : scanner.getBlobFields()) {
 			String fieldName = field.getName();
@@ -563,10 +568,11 @@ public class ProtoDB {
 			ByteString bs = (ByteString)b.getField(field);
 			int blobID = saveBlob(bs.toByteArray(), conn);
 			scanner.addBlobID(fieldName, blobID);
-		}
+		}		
 		
 		// save this object
-		int thisID = saveThisObject(b, scanner, conn);
+		int thisID = saveThisObject(b, scanner, objectExist, conn);
+		
 		
 		// save underlying repeated objects
 		for(FieldDescriptor field : scanner.getRepeatedObjectFields()) {
@@ -576,32 +582,67 @@ public class ProtoDB {
 				Object mg = b.getRepeatedField(field, i);
 				if (mg instanceof MessageOrBuilder) {
 					MessageOrBuilder b2 = (MessageOrBuilder)mg;
+					ProtoDBScanner other = new ProtoDBScanner(b2);
 					
 					// save other object
 					int otherID = save(b2, conn);
 					
+					// delete from link table
+					deleteLinkObject(scanner, other, field, conn);
+					
 					// save link table
-					saveLinkObject(b2, scanner, field, thisID, otherID, conn);
+					saveLinkObject(scanner, other, field, thisID, otherID, conn);
 				}
 			}
 		}
 		
 		// save underlying repeated basic types
 		for (FieldDescriptor field : scanner.getRepeatedBasicFields()) {
+			// delete from link table
+			deleteBasicLinkObject(scanner, field, conn);
+			
+			// add each value to link table
 			int fieldCount = b.getRepeatedFieldCount(field);
 			for (int i=0;i<fieldCount;i++) {
 				Object value = b.getRepeatedField(field, i);
 				saveLinkBasic(scanner, thisID, field, value, conn);
 			}			
 		}
-		
+				
 		return thisID;
 	}
 	
+	private void deleteBasicLinkObject(ProtoDBScanner scanner, FieldDescriptor field, Connection conn) throws SQLException {
+		PreparedStatement prep = conn.prepareStatement(scanner.getBasicLinkTableDeleteStatement(field));
+		prep.setInt(1, scanner.getIdValue());
+		
+		prep.execute();
+	}
+
+	private void deleteLinkObject(ProtoDBScanner scanner, 
+			ProtoDBScanner other,
+			FieldDescriptor field,
+			Connection conn) throws SQLException {
+		PreparedStatement prep = conn.prepareStatement(scanner.getLinkTableDeleteStatement(other, field.getName()));
+		prep.setInt(1, scanner.getIdValue());
+		
+		prep.execute();
+	}
+
+	private void deleteBlobs(ProtoDBScanner scanner, Connection conn) throws SQLException {
+		for (FieldDescriptor field : scanner.getBlobFields()) {
+			String sql = "DELETE FROM BlobData WHERE ID IN (SELECT " + scanner.getObjectFieldName(field) + " FROM " + scanner.getObjectName() + " WHERE ID = ?)";
+			PreparedStatement prep = conn.prepareStatement(sql);
+			prep.setInt(1, scanner.getIdValue());
+			
+			prep.execute();
+		}
+		
+	}
+
 	private Boolean checkExisting(ProtoDBScanner scanner, Connection conn) throws SQLException {
 		PreparedStatement prep = conn.prepareStatement("SELECT COUNT(*) FROM " + scanner.getObjectName() + " WHERE ID = ?");
-		Object o = scanner.getMessage().getField(scanner.getIdField());
-		prep.setInt(1, (int)o);
+		prep.setInt(1, scanner.getIdValue());
 		
 		ResultSet rs = prep.executeQuery();
 		Boolean exists = false;
@@ -640,7 +681,7 @@ public class ProtoDB {
 		
 		PreparedStatement prep = 
 			scanner.compileLinkBasicArguments(
-				scanner.getBasicLinkCreateStatement(field)
+				scanner.getBasicLinkInsertStatement(field)
 					, thisID
 					, field.getJavaType()
 					, value
@@ -659,13 +700,13 @@ public class ProtoDB {
 	 * @param conn
 	 * @throws SQLException
 	 */
-	private void saveLinkObject(MessageOrBuilder b2
-			, ProtoDBScanner scanner
+	private void saveLinkObject(
+			  ProtoDBScanner scanner
+			, ProtoDBScanner other
 			, FieldDescriptor field
 			, int thisID
 			, int otherID
 			, Connection conn) throws SQLException {
-		ProtoDBScanner other = new ProtoDBScanner(b2);
 		scanner.getLinkTableInsertStatement(other, field.getName());
 		
 		PreparedStatement prep = conn.prepareStatement(scanner.getLinkTableInsertStatement(other, field.getName()));
@@ -683,17 +724,23 @@ public class ProtoDB {
 	 * @return
 	 * @throws SQLException
 	 */
-	private int saveThisObject(MessageOrBuilder b, ProtoDBScanner scanner, Connection conn) throws SQLException {
+	private int saveThisObject(MessageOrBuilder b, ProtoDBScanner scanner, Boolean objectExist, Connection conn) throws SQLException {
 		// getInsertStatement
-		String sql = scanner.getInsertStatement();
+		String sql = scanner.getSaveStatement(objectExist);
 		
 		// prepareStatement
-		PreparedStatement prep = scanner.compileArguments(b, sql, conn);
+		PreparedStatement prep = scanner.compileArguments(b, sql, objectExist, conn);
 		
 		// execute
 		prep.execute();
 		
-		return getIdentity(conn);
+		int id = -1;
+		if (objectExist)
+			id = scanner.getIdValue();
+		else
+			id = getIdentity(conn);
+		
+		return id;
 	}
 
 	/**********************************************************************************
