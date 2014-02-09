@@ -15,7 +15,7 @@ enum Identifier {
 
 enum Rating {
 	NotMatched = 1;
-	ProbabaleMatch = 2;
+	ProbableMatch = 2;
 	PositiveMatch = 3;
 	ExactMatch = 4;
 	SubsExist = 5;
