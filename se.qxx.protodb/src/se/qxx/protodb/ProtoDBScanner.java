@@ -30,13 +30,15 @@ public class ProtoDBScanner {
 	
 	private List<FieldDescriptor> basicFields = new ArrayList<FieldDescriptor>();
 	private List<FieldDescriptor> repeatedBasicFields = new ArrayList<FieldDescriptor>();
-	private HashMap<String, Integer> objectIDs = new HashMap<String,Integer>();
 	
-	private List<String> fieldNames = new ArrayList<String>();
-	// getObjectFields
-	// getBasicFields
-	// getRepeatedObjectFields
-	// getRepeatedBasicFIelds
+	private List<FieldDescriptor> blobFields  = new ArrayList<FieldDescriptor>();
+	
+	FieldDescriptor idField = null;
+	
+
+	private HashMap<String, Integer> objectIDs = new HashMap<String,Integer>();
+	private HashMap<String, Integer> blobIDs = new HashMap<String,Integer>();
+
 	public ProtoDBScanner(MessageOrBuilder b) {
 		this.setMessage(b);
 		this.scan(b);
@@ -51,6 +53,9 @@ public class ProtoDBScanner {
 //			Object o = b.getField(field);
 //			ProtoDBScanner dbInternal = null;
 			JavaType jType = field.getJavaType();
+			
+			if (field.getName().equalsIgnoreCase("ID"))
+				this.setIdField(field);
 			
 			if (field.isRepeated())
 			{
@@ -78,20 +83,16 @@ public class ProtoDBScanner {
 					
 					this.addObjectField(field);
 					this.addObjectFieldTarget(dbInternal.getObjectName());
-				}				
+				}			
+				else if (jType == JavaType.BYTE_STRING)  {
+					this.addBlobField(field);
+				}
 				else {
 					this.addBasicField(field);
 				}
 			}
 		}		
 		
-		for(FieldDescriptor field : this.getObjectFields()) {
-			fieldNames.add(getObjectFieldName(field));
-		}
-		for(FieldDescriptor field : this.getBasicFields()) {
-			fieldNames.add(getBasicFieldName(field));
-		}
-				
 	}
 
 	public String getBasicFieldName(FieldDescriptor field) {
@@ -104,10 +105,7 @@ public class ProtoDBScanner {
 
 	public String getInsertStatement() {
 		
-		List<String> cols = new ArrayList<String>();
-		for (String fieldName : this.getFieldNames()) 
-			if (!fieldName.equalsIgnoreCase("ID"))
-				cols.add(String.format("[%s]", fieldName));
+		List<String> cols = getQuotedColumns();
 		
 		String[] params = new String[cols.size()];
 		Arrays.fill(params, "?");
@@ -119,6 +117,25 @@ public class ProtoDBScanner {
 				StringUtils.join(params, ","));
 		
 		return sql;
+	}
+
+	protected List<String> getQuotedColumns() {
+		List<String> cols = new ArrayList<String>();
+		for (FieldDescriptor field : this.getObjectFields()) {
+			cols.add(String.format("[%s]", getObjectFieldName(field)));
+		}
+		
+		for (FieldDescriptor field : this.getBlobFields()) {
+			cols.add(String.format("[%s]", getObjectFieldName(field)));
+		}
+		
+		for (FieldDescriptor field : this.getBasicFields()) {
+			String fieldName = field.getName();
+			if (!fieldName.equalsIgnoreCase("ID"))
+				cols.add(String.format("[%s]", fieldName));
+		}
+		
+		return cols;
 	}
 	
 	public String getLinkTableInsertStatement(ProtoDBScanner other, String fieldName) {
@@ -140,11 +157,16 @@ public class ProtoDBScanner {
 			FieldDescriptor field = this.getObjectFields().get(i);
 			String target = this.getObjectFieldTargets().get(i);
 			
-			cols.add(String.format("[%s] %s %s REFERENCES %s (ID)",
+			cols.add(String.format("[%s] INTEGER %s REFERENCES %s (ID)",
 					getObjectFieldName(field), 
-					"INTEGER", 
 					field.isOptional() ? "NULL" : "NOT NULL",
 					target));
+		}
+		
+		for (FieldDescriptor field : this.getBlobFields()) {
+			cols.add(String.format("[%s] INTEGER %s REFERENCES BlobData (ID)",
+					getObjectFieldName(field), 
+					field.isOptional() ? "NULL" : "NOT NULL"));
 		}
 		
 		for(FieldDescriptor field : this.getBasicFields()) {
@@ -193,7 +215,9 @@ public class ProtoDBScanner {
 	}	
 	
 	public String getSelectStatement(int id) {
-		return "SELECT " + StringUtils.join(this.getFieldNames(), ",") 
+		List<String> cols = getQuotedColumns();
+		
+		return "SELECT " + StringUtils.join(cols, ",") 
 			+ " FROM " + this.getObjectName()
 			+ " WHERE ID = ?";
 	}	
@@ -246,8 +270,11 @@ public class ProtoDBScanner {
 
 		int c = 0;
 		for(FieldDescriptor field : this.getObjectFields()) {
-			int id = this.getObjectID(field.getName());
-			prep.setInt(++c, id);
+			prep.setInt(++c, this.getObjectID(field.getName()));
+		}
+		
+		for (FieldDescriptor field : this.getBlobFields()) {
+			prep.setInt(++c, this.getBlobID(field.getName()));
 		}
 		
 		for(FieldDescriptor field : this.getBasicFields())
@@ -275,9 +302,9 @@ public class ProtoDBScanner {
 			
 	}
 
-	public List<String> getFieldNames() {
-		return fieldNames;
-	}
+//	public List<String> getFieldNames() {
+//		return fieldNames;
+//	}
 
 	public Integer getObjectID(String fieldName) {
 		return objectIDs.get(fieldName);
@@ -286,6 +313,15 @@ public class ProtoDBScanner {
 	public void addObjectID(String fieldName, int id) {
 		this.objectIDs.put(fieldName, id);
 	}
+	
+	public Integer getBlobID(String fieldName) {
+		return blobIDs.get(fieldName);
+	}
+
+	public void addBlobID(String fieldName, int id) {
+		this.blobIDs.put(fieldName, id);
+	}
+	
 
 	public List<FieldDescriptor> getObjectFields() {
 		return objectFields;
@@ -295,6 +331,13 @@ public class ProtoDBScanner {
 		this.objectFields.add(field);
 	}
 	
+	public List<FieldDescriptor> getBlobFields() {
+		return blobFields;
+	}
+
+	public void addBlobField(FieldDescriptor field) {
+		this.blobFields.add(field);
+	}	
 
 	public List<String> getObjectFieldTargets() {
 		return objectFieldTargets;
@@ -353,6 +396,13 @@ public class ProtoDBScanner {
 		this.message = message;
 	}
 
+	public FieldDescriptor getIdField() {
+		return idField;
+	}
+
+	private void setIdField(FieldDescriptor idField) {
+		this.idField = idField;
+	}
 
 
 

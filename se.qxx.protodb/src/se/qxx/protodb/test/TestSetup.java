@@ -21,8 +21,8 @@ public class TestSetup {
 	ProtoDB db = null;
 	
 	private final String DATABASE_FILE = "protodb_test.db";
-	private final String[] SIMPLE_FIELD_NAMES = {"ID", "dd", "ff", "is", "il", "bb", "ss", "by"};
-	private final String[] SIMPLE_FIELD_TYPES = {"INTEGER", "DOUBLE", "FLOAT", "INTEGER", "BIGINT", "BOOLEAN", "TEXT", "TEXT"};
+	private final String[] SIMPLE_FIELD_NAMES = {"ID", "_by_ID", "dd", "ff", "is", "il", "bb", "ss"};
+	private final String[] SIMPLE_FIELD_TYPES = {"INTEGER", "INTEGER", "DOUBLE", "FLOAT", "INTEGER", "BIGINT", "BOOLEAN", "TEXT"};
 
 	private final String[] OBJECTONE_FIELD_NAMES = {"ID", "_testone_ID", "oois"};
 	private final String[] OBJECTONE_FIELD_TYPES = {"INTEGER", "INTEGER", "INTEGER"};
@@ -44,7 +44,10 @@ public class TestSetup {
 	
 	private final String[] REPSIMPLELIST_LISTOFSTRINGS_FIELD_NAMES = {"_repsimplelist_ID", "value"};
 	private final String[] REPSIMPLELIST_LISTOFSTRINGS_FIELD_TYPES = {"INTEGER", "TEXT"};
-	
+
+	private final String[] BLOBDATA_FIELD_NAMES = {"ID", "data"};
+	private final String[] BLOBDATA_FIELD_TYPES = {"INTEGER", "BLOB"};
+
 	@Before
 	public void Setup() {
 		
@@ -65,6 +68,7 @@ public class TestSetup {
 
 			// test if database structure is the one we want
 			testTableStructure(db, "SimpleTest", SIMPLE_FIELD_NAMES, SIMPLE_FIELD_TYPES);
+			testTableStructure(db, "BlobData", BLOBDATA_FIELD_NAMES, BLOBDATA_FIELD_TYPES);
 
 			
 		} catch (SQLException | ClassNotFoundException | IDFieldNotFoundException e) {

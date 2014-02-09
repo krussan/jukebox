@@ -15,12 +15,14 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import se.qxx.protodb.exceptions.IDFieldNotFoundException;
 
+import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors.FieldDescriptor.JavaType;
 import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.Message.Builder;
 import com.google.protobuf.MessageOrBuilder;
 import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor;
+
 import se.qxx.protodb.exceptions.IDFieldNotFoundException;
 
 public class ProtoDB {
@@ -289,6 +291,10 @@ public class ProtoDB {
 				setupDatabase((MessageOrBuilder)b.getField(field), conn);
 			}
 		}
+		
+		// setup blob data if blobs exist
+		if (scanner.getBlobFields().size() > 0)
+			setupBlobdata(conn);
 			
 		// setup this object
 		if (!tableExist(scanner.getObjectName(), conn)) {
@@ -318,6 +324,11 @@ public class ProtoDB {
 
 	}
 	
+	private void setupBlobdata(Connection conn) throws SQLException {
+		if (!tableExist("BlobData", conn))
+			executeStatement("CREATE TABLE BlobData (ID INTEGER PRIMARY KEY AUTOINCREMENT, data BLOB)", conn);
+	}
+
 	private void executeStatement(String sql, Connection conn) throws SQLException {
 		PreparedStatement prep = conn.prepareStatement(sql);
 		prep.execute();			
@@ -384,22 +395,61 @@ public class ProtoDB {
 		PreparedStatement prep = conn.prepareStatement(scanner.getSelectStatement(id));
 		prep.setInt(1, id);
 		
+		b.setField(scanner.getIdField(), id);
+		
 		ResultSet rs = prep.executeQuery();
 		while(rs.next()) {
 			// populate object fields
 			for (FieldDescriptor field : scanner.getObjectFields()) {
 				int otherID = rs.getInt(scanner.getObjectFieldName(field));
-				MessageOrBuilder otherMsg = get(otherID, field.getContainingType(), conn);
+				MessageOrBuilder otherMsg = get(otherID, field.getMessageType(), conn);
 				b.setField(field, otherMsg);
+			}
+			
+			// populate blobs
+			for (FieldDescriptor field : scanner.getBlobFields()) {
+				int otherID = rs.getInt(scanner.getObjectFieldName(field));
+				byte[] data = getBlob(otherID, conn);
+				b.setField(field, ByteString.copyFrom(data));
 			}
 			
 			// populate basic fields			
 			for (FieldDescriptor field : scanner.getBasicFields()) {
-				Object o = rs.getObject(field.getName().toLowerCase());
-				b.setField(field, o);
+				if (field.getName().equalsIgnoreCase("ID")) {
+					b.setField(field, id);
+				}
+				else {
+					Object o = rs.getObject(field.getName().toLowerCase());
+					if (field.getJavaType() == JavaType.FLOAT)
+						b.setField(field, ((Double)o).floatValue());
+					else if (field.getJavaType() == JavaType.LONG)
+						b.setField(field, ((Integer)o).longValue());
+					else if (field.getJavaType() == JavaType.BOOLEAN )
+						b.setField(field, ((Integer)o).intValue() == 1 ? true : false);
+					else
+						b.setField(field, o);
+					
+					
+					;
+				}
 			}			
 		}
 		return (DynamicMessage) b.build();
+	}
+
+	private byte[] getBlob(int otherID, Connection conn) throws SQLException {
+		PreparedStatement prep = conn.prepareStatement("SELECT data FROM BlobData WHERE ID = ?");
+		prep.setInt(1, otherID);
+		byte[] data = null;
+		
+		ResultSet rs = prep.executeQuery();
+		while(rs.next()){
+			data = rs.getBytes("data");
+		}
+		rs.close();
+
+		
+		return data;
 	}
 
 	protected void getLinkObject(int id
@@ -445,8 +495,10 @@ public class ProtoDB {
 	 * Saves a protobuf class to database.
 	 * @param b
 	 * @return
+	 * @throws SQLException 
+	 * @throws ClassNotFoundException 
 	 */
-	public int save(MessageOrBuilder b) {
+	public int save(MessageOrBuilder b) throws ClassNotFoundException, SQLException {
 		Connection conn = null;
 		int id = -1;
 		
@@ -457,13 +509,6 @@ public class ProtoDB {
 			id = this.save(b, conn);
 			
 			conn.commit();
-		}
-		catch (Exception e) {			
-			try {
-				conn.rollback();
-			} catch (SQLException sqlEx) {}
-			
-			return -1;
 		}
 		finally {
 			this.disconnect(conn);
@@ -479,11 +524,13 @@ public class ProtoDB {
 	 * @param conn
 	 * @return
 	 * @throws SQLException
+	 * @throws ClassNotFoundException 
 	 */
-	private int save(MessageOrBuilder b, Connection conn) throws SQLException {
+	private int save(MessageOrBuilder b, Connection conn) throws SQLException, ClassNotFoundException {
 		ProtoDBScanner scanner = new ProtoDBScanner(b);
 
-		//TODO: check for existence. Delete if present!
+		//TODO: check for existence. UPDATE if present!
+		
 		// getObjectFields
 		// getBasicFields
 		// getRepeatedObjectFields
@@ -499,6 +546,15 @@ public class ProtoDB {
 				scanner.addObjectID(fieldName, objectID);
 			}
 		}		
+		 
+		// save blobs
+		for(FieldDescriptor field : scanner.getBlobFields()) {
+			String fieldName = field.getName();
+			
+			ByteString bs = (ByteString)b.getField(field);
+			int blobID = saveBlob(bs.toByteArray(), conn);
+			scanner.addBlobID(fieldName, blobID);
+		}
 		
 		// save this object
 		int thisID = saveThisObject(b, scanner, conn);
@@ -533,6 +589,14 @@ public class ProtoDB {
 		return thisID;
 	}
 	
+	private int saveBlob(byte[] data, Connection conn) throws SQLException {
+		PreparedStatement prep = conn.prepareStatement("INSERT INTO BlobData (data) VALUES (?)");
+		prep.setBytes(1, data);
+		prep.execute();
+		
+		return getIdentity(conn);
+	}
+
 	/***
 	 * Saves a repeated list of basic types to link table
 	 * @param scanner
