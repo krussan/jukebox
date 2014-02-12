@@ -262,6 +262,13 @@ public class ProtoDBScanner {
 			+ " WHERE ID = ?";
 	}	
 	
+	public String getSearchStatement(FieldDescriptor field, Boolean isLikeFilter) {
+		return "SELECT ID " 
+			+ " FROM " + this.getObjectName()
+			+ " WHERE " + this.getBasicFieldName(field)
+			+ (isLikeFilter ? " LIKE ? " : " = ?");
+	}		
+	
 	public String getLinkTableSelectStatement(ProtoDBScanner other, String fieldName) {
 		return " SELECT A._" + other.getObjectName().toLowerCase() + "_ID AS ID"
 			+  " FROM " + this.getLinkTableName(other, fieldName) + " A"

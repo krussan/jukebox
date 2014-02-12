@@ -14,6 +14,7 @@ import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import se.qxx.protodb.exceptions.IDFieldNotFoundException;
+import se.qxx.protodb.exceptions.SearchFieldNotFoundException;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors.EnumValueDescriptor;
@@ -574,7 +575,7 @@ public class ProtoDB {
 	private int save(MessageOrBuilder b, Connection conn) throws SQLException, ClassNotFoundException {
 		ProtoDBScanner scanner = new ProtoDBScanner(b);
 		
-		//TODO: check for existence. UPDATE if present!
+		//check for existence. UPDATE if present!
 		Boolean objectExist = checkExisting(scanner, conn);
 		
 		// getObjectFields
@@ -780,10 +781,77 @@ public class ProtoDB {
 	}
 
 	/**********************************************************************************
-	 ************************************************************************  HELPERS
+	 ************************************************************************  SEARCH
 	 **********************************************************************************
 	 */
 
+	/***
+	 * 
+	 * @param desc
+	 * @param fieldName
+	 * @param searchFor
+	 * @param isLikeOperator
+	 * @return
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 * @throws SearchFieldNotFoundException 
+	 */
+	public List<DynamicMessage> find(Descriptor desc, String fieldName, Object searchFor, Boolean isLikeOperator) throws ClassNotFoundException, SQLException, SearchFieldNotFoundException {
+		// if field is repeated -> search link objects
+		Connection conn = null;
+		List<DynamicMessage> result = new ArrayList<DynamicMessage>();
+		
+		try {
+			conn = this.initialize();
+			
+			result = this.find(desc, fieldName, searchFor, isLikeOperator, conn);
+			
+		}
+		finally {
+			this.disconnect(conn);
+		}
+		
+		return result;		
+	}
+	
+	private List<DynamicMessage> find(Descriptor desc, String fieldName, Object searchFor, Boolean isLikeFilter, Connection conn) throws SearchFieldNotFoundException, SQLException, ClassNotFoundException {
+		List<DynamicMessage> result = new ArrayList<DynamicMessage>();
+		DynamicMessage dm = DynamicMessage.getDefaultInstance(desc);
+		ProtoDBScanner scanner = new ProtoDBScanner(dm);
+		
+		FieldDescriptor matchingField = null;
+
+		//TODO: Split fieldName on dot (.) to be able to search sub objects
+		for (FieldDescriptor field : scanner.getBasicFields()) {
+			if (field.getName().equalsIgnoreCase(fieldName)) {
+				matchingField = field;
+				break;
+			}
+		}
+		if (matchingField == null)
+			throw new SearchFieldNotFoundException(fieldName, scanner.getObjectName());
+		
+		PreparedStatement prep = conn.prepareStatement(scanner.getSearchStatement(matchingField, isLikeFilter));
+		prep.setObject(1, searchFor);
+		
+		ResultSet rs = prep.executeQuery();
+		List<Integer> ids = new ArrayList<Integer>();
+		while (rs.next()) {
+			ids.add(rs.getInt(1));
+		}
+		
+		for (int i : ids) {
+			result.add(this.get(i, desc));
+		}
+		
+		return result;
+	}
+
+	
+	/**********************************************************************************
+	 ************************************************************************  HELPERS
+	 **********************************************************************************
+	 */
 
 	/***
 	 * Internal function to get the latest inserted row ID
