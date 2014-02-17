@@ -5,17 +5,13 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.EnumDescriptor;
-import com.google.protobuf.Descriptors.EnumValueDescriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor.JavaType;
-import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.MessageOrBuilder;
 import com.google.protobuf.Descriptors.FieldDescriptor;
 
@@ -80,12 +76,9 @@ public class ProtoDBScanner {
 					this.addObjectField(field);
 					this.addObjectFieldTarget(dbInternal.getObjectName());
 				}			
-				else if (jType == JavaType.ENUM){
-					EnumValueDescriptor target = (EnumValueDescriptor)this.getMessage().getField(field);
-					//ProtoDBScanner dbInternal = new ProtoDBScanner(target);			
-					
+				else if (jType == JavaType.ENUM){					
 					this.addObjectField(field);
-					this.addObjectFieldTarget(target.getName());					
+					this.addObjectFieldTarget(field.getEnumType().getName());					
 				}
 				else if (jType == JavaType.BYTE_STRING)  {
 					this.addBlobField(field);
@@ -267,7 +260,20 @@ public class ProtoDBScanner {
 			+ " FROM " + this.getObjectName()
 			+ " WHERE " + this.getBasicFieldName(field)
 			+ (isLikeFilter ? " LIKE ? " : " = ?");
-	}		
+	}
+	
+	public String getSearchStatementSubObject(FieldDescriptor field, List<Integer> subObjectIDs) {
+		return "SELECT ID " 
+			+ " FROM " + this.getObjectName()
+			+ " WHERE " + this.getObjectFieldName(field) 
+			+ " IN (" + StringUtils.join(subObjectIDs, ",") + ")";
+	}	
+	
+	public String getSearchStatement(EnumDescriptor field) {
+		return "SELECT ID"
+				+ " FROM " + StringUtils.capitalize(field.getName())
+				+ " WHERE value = ?";
+	}			
 	
 	public String getLinkTableSelectStatement(ProtoDBScanner other, String fieldName) {
 		return " SELECT A._" + other.getObjectName().toLowerCase() + "_ID AS ID"

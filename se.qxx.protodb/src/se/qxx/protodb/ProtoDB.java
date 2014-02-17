@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -814,30 +815,110 @@ public class ProtoDB {
 		FieldDescriptor matchingField = null;
 
 		//TODO: Split fieldName on dot (.) to be able to search sub objects
-		for (FieldDescriptor field : scanner.getBasicFields()) {
-			if (field.getName().equalsIgnoreCase(fieldName)) {
-				matchingField = field;
-				break;
+		// fieldName should then be on the form <object>.[<object>...].fieldName
+		String[] fieldParts = StringUtils.split(fieldName, ".");
+		PreparedStatement prep = null;
+		
+		if (fieldParts.length == 1) {
+			for (FieldDescriptor field : scanner.getBasicFields()) {
+				if (field.getName().equalsIgnoreCase(fieldName)) {
+					matchingField = field;
+					break;
+				}
 			}
+			
+			if (matchingField == null)
+				throw new SearchFieldNotFoundException(fieldName, scanner.getObjectName());
+			
+			prep = conn.prepareStatement(scanner.getSearchStatement(matchingField, isLikeFilter));
+			prep.setObject(1, searchFor);
+
+			//TODO: check repeated basic fields
 		}
-		if (matchingField == null)
-			throw new SearchFieldNotFoundException(fieldName, scanner.getObjectName());
-		
-		PreparedStatement prep = conn.prepareStatement(scanner.getSearchStatement(matchingField, isLikeFilter));
-		prep.setObject(1, searchFor);
-		
-		ResultSet rs = prep.executeQuery();
-		List<Integer> ids = new ArrayList<Integer>();
-		while (rs.next()) {
-			ids.add(rs.getInt(1));
+		else {
+			// object fields
+			for (FieldDescriptor field : scanner.getObjectFields()) {
+				if (field.getName().equalsIgnoreCase(fieldParts[0])) {
+					matchingField = field;
+					
+					List<DynamicMessage> matchingSubObjects = null;
+					List<Integer> ids = new ArrayList<Integer>();
+					if (field.getJavaType() == JavaType.MESSAGE) {
+						matchingSubObjects = 
+							find(field.getMessageType(),
+								StringUtils.join(ArrayUtils.subarray(fieldParts, 1, fieldParts.length), "."),
+								searchFor,
+								isLikeFilter,
+								conn);
+						
+						for (DynamicMessage m : matchingSubObjects)
+							for (FieldDescriptor f : m.getDescriptorForType().getFields())
+								if (f.getName().equalsIgnoreCase("ID"))
+									ids.add((int)m.getField(f));
+						
+					}
+					else if (field.getJavaType() == JavaType.ENUM) {
+						ids =
+							find(field.getEnumType(),
+								scanner,
+								StringUtils.join(ArrayUtils.subarray(fieldParts, 1, fieldParts.length), "."),
+								searchFor,
+								conn);
+					}
+					
+					// get all messages of this type that have matching sub objects
+					prep = conn.prepareStatement(scanner.getSearchStatementSubObject(field, ids));
+				}
+			}
+			
+			if (matchingField == null)
+				throw new SearchFieldNotFoundException(fieldName, scanner.getObjectName());
+			
+			//object.fieldName
 		}
-		
-		for (int i : ids) {
-			result.add(this.get(i, desc));
+			
+		if (prep != null) {
+			ResultSet rs = prep.executeQuery();
+			List<Integer> ids = new ArrayList<Integer>();
+			while (rs.next()) {
+				ids.add(rs.getInt(1));
+			}
+			
+			for (int i : ids) {
+				result.add(this.get(i, desc));
+			}
 		}
 		
 		return result;
 	}
+	
+
+	private List<Integer> find(
+			EnumDescriptor enumType, 
+			ProtoDBScanner scanner,
+			String fieldName,
+			Object searchFor, 
+			Connection conn) throws SearchFieldNotFoundException, SQLException {
+		
+		List<Integer> ids = new ArrayList<Integer>();
+		String[] fieldParts = StringUtils.split(fieldName, ".");
+		if (fieldParts.length == 1) {
+			PreparedStatement prep = conn.prepareStatement(scanner.getSearchStatement(enumType));
+			prep.setString(1, searchFor.toString());
+
+			ResultSet rs = prep.executeQuery();
+			
+			while (rs.next()) {
+				ids.add(rs.getInt(1));
+			}
+			rs.close();
+		}
+		else {
+			throw new SearchFieldNotFoundException(fieldName, enumType.toString());
+		}
+		return ids;
+	}
+	
 
 	
 	//---------------------------------------------------------------------------------

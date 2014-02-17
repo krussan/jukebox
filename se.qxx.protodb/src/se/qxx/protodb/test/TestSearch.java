@@ -85,4 +85,37 @@ public class TestSearch {
 			fail(e.getMessage());
 		}
 	}
+	
+	@Test
+	public void TestSearchObjectExact() {	
+		try {
+			//TODO: WHERE clause on Boolean does not appear to work?
+			List<DynamicMessage> result =
+				db.find(
+					TestDomain.ObjectOne.getDescriptor(), 
+					"testOne.bb", 
+					1, 
+					false);
+			
+			// we should get one single result..
+			assertEquals(1, result.size());
+		
+			TestDomain.RepObjectOne b = TestDomain.RepObjectOne.parseFrom(result.get(0).toByteString());
+			
+			TestDomain.SimpleTwo o1 = b.getListOfObjects(0);
+			assertEquals("thisIsATitle", o1.getTitle());
+			assertEquals("madeByThisDirector", o1.getDirector());
+			
+			TestDomain.SimpleTwo o2 = b.getListOfObjects(1);
+			assertEquals("thisIsAlsoATitle", o2.getTitle());
+			assertEquals("madeByAnotherDirector", o2.getDirector());
+			
+//			PreparedStatement prep = "SELECT * FROM SimpleTest";
+//			
+//			testTableStructure(db, "SimpleTest", SIMPLE_FIELD_NAMES, SIMPLE_FIELD_TYPES);
+		} catch (SQLException | ClassNotFoundException | InvalidProtocolBufferException | SearchFieldNotFoundException  e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+	}	
 }
