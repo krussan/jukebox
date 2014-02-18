@@ -192,30 +192,20 @@ public class DB {
 	}
 
 	public synchronized static Movie getMovie(int id) {
-		Connection conn = null;
-		String statement = String.format("%s WHERE ID = ?", getSelectStatement());
-
 		try {
-			conn = DB.initialize();
-
-			PreparedStatement prep = conn.prepareStatement(statement);
-					
-			prep.setInt(1, id);
-				
-			ResultSet rs = prep.executeQuery();
-			if (rs.next())
-				return extractMovie(rs, conn);
-			else
-				return null;
-
+			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			DynamicMessage m = db.get(id, Movie.getDescriptor());
+			
+			if (m!=null)
+				return Movie.parseFrom(m.toByteString());
+		
 		} catch (Exception e) {
 			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
-			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
 			
-			return null;
-		}finally {
-			DB.disconnect(conn);
+			
 		}
+		
+		return null;
 	}
 	
 //	public synchronized static void updateMovie(Movie m) {
@@ -241,41 +231,18 @@ public class DB {
 //	}
 
 	public synchronized static Movie addMovie(Movie m) {
-		Connection conn = null;
-		String statement = getInsertStatement();
-		
 		try {
-			conn = DB.initialize();
-			conn.setAutoCommit(false);
+			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
 			
-			PreparedStatement prep = conn.prepareStatement(statement);
-			
-			addArguments(prep, m);
-			prep.execute();
-			
-			int i = getIdentity(conn);
-	
-			addMovieGenres(m.getGenreList(), i, conn);
-			addMovieMedia(m.getMediaList(), i, conn);
-			addMovieImage(i, ImageType.Poster, m.getImage().toByteArray(), conn);
-//			addSeason(m.getSeason(), i, conn);
-			
-			Movie mm = Movie.newBuilder(m).setID(i).build();
-			
-			conn.commit();
+			int id = db.save(m);
+			Movie mm = Movie.newBuilder(m).setID(id).build();
 			
 			return mm;
 		}
 		catch (Exception e) {
 			Log.Error("Failed to store movie to DB", Log.LogType.MAIN, e);
-			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
 			
-			try {
-				conn.rollback();
-			} catch (SQLException sqlEx) {}
 			return null;
-		}finally {
-			DB.disconnect(conn);
 		}
 	}
 

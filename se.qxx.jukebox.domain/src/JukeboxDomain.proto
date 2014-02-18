@@ -24,7 +24,6 @@ enum Rating {
 //---------------------------------------------------------------------------------------
 //----------------------------------------------------------------------- Objects
 //---------------------------------------------------------------------------------------
-
 message Movie {
 	required int32 ID = 1;
 	repeated Media media = 2;	
@@ -52,14 +51,19 @@ message Movie {
 	optional int32 episode = 23;
 	optional int64 firstAirDate = 24;
 	optional string episodeTitle = 25;
+	
+	optional int64 subtitleQueuedAt = 26;
+	optional int64 subtitleRetreivedAt = 27;
+	optional int64 subtitleRetreiveResult = 28;
 }
 
 message Subtitle {
-	required string filename = 1;
-	required string description = 2;
-	required Rating rating = 3;
-	required int32 mediaIndex = 4;
-	required string language = 5;
+	required int32 ID = 1;
+	required string filename = 2;
+	required string description = 3;
+	required Rating rating = 4;
+	required int32 mediaIndex = 5;
+	required string language = 6;
 }
 
 message Media {
@@ -69,7 +73,8 @@ message Media {
 	required string filepath = 4;
 	optional int32 metaDuration = 5;
 	optional string metaFramerate = 6;
-	repeated Subtitle subs = 7;		
+	repeated Subtitle subs = 7;
+	repeated string blacklist = 8;		
 }
 
 //---------------------------------------------------------------------------------------
