@@ -59,17 +59,18 @@ public class Jukebox {
 
 	private static void startMainThread()  {
 		try {
-			
-			if (!Upgrader.upgradeRequired()) {
-				System.out.println("No upgrade required... continuing...");
-				Thread t = new Thread(new Main());
-				t.start();
-				
-				t.join();
-			}
-			else {
-				System.out.println("Upgrade required");
-				Upgrader.performUpgrade();
+			if (DB.setupDatabase()) {
+				if (!Upgrader.upgradeRequired()) {
+					System.out.println("No upgrade required... continuing...");
+					Thread t = new Thread(new Main());
+					t.start();
+					
+					t.join();
+				}
+				else {
+					System.out.println("Upgrade required");
+					Upgrader.performUpgrade();
+				}
 			}
 		}
 		catch (Exception e) {

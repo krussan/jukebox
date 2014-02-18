@@ -446,7 +446,9 @@ public class ProtoDB {
 			for (FieldDescriptor field : scanner.getBlobFields()) {
 				int otherID = rs.getInt(scanner.getObjectFieldName(field));
 				byte[] data = getBlob(otherID, conn);
-				b.setField(field, ByteString.copyFrom(data));
+				
+				if (data != null)
+					b.setField(field, ByteString.copyFrom(data));
 			}
 			
 			// populate basic fields			
@@ -461,7 +463,7 @@ public class ProtoDB {
 					else if (field.getJavaType() == JavaType.LONG)
 						b.setField(field, ((Integer)o).longValue());
 					else if (field.getJavaType() == JavaType.BOOLEAN )
-						b.setField(field, ((Integer)o).intValue() == 1 ? true : false);
+						b.setField(field, ((String)o).equals("Y") ? true : false);
 					else
 						b.setField(field, o);
 					
@@ -831,7 +833,10 @@ public class ProtoDB {
 				throw new SearchFieldNotFoundException(fieldName, scanner.getObjectName());
 			
 			prep = conn.prepareStatement(scanner.getSearchStatement(matchingField, isLikeFilter));
-			prep.setObject(1, searchFor);
+			if (matchingField.getJavaType() == JavaType.BOOLEAN)
+				prep.setString(1, (Boolean)searchFor ? "Y": "N");
+			else
+				prep.setObject(1, searchFor);
 
 			//TODO: check repeated basic fields
 		}
@@ -885,7 +890,7 @@ public class ProtoDB {
 			}
 			
 			for (int i : ids) {
-				result.add(this.get(i, desc));
+				result.add(this.get(i, desc, conn));
 			}
 		}
 		

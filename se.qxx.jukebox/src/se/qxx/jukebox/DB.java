@@ -16,37 +16,51 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Identifier;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie.Builder;
 import se.qxx.jukebox.domain.JukeboxDomain.Rating;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
+import se.qxx.protodb.ProtoDB;
+import se.qxx.protodb.exceptions.IDFieldNotFoundException;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor;
+import com.google.protobuf.DynamicMessage;
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.WireFormat.JavaType;
 
 public class DB {
     
-	private final static String[] COLUMNS = {"ID", "title", "year",
-			"type", "format", "sound", "language", "groupName", "imdburl", "duration",
-			"rating", "director", "story", "identifier", "identifierRating", "watched",
-			"isTvEpisode", "season", "episode", "firstAirDate", "episodeTitle"};
+//	private final static String[] COLUMNS = {"ID", "title", "year",
+//			"type", "format", "sound", "language", "groupName", "imdburl", "duration",
+//			"rating", "director", "story", "identifier", "identifierRating", "watched",
+//			"isTvEpisode", "season", "episode", "firstAirDate", "episodeTitle"};
 //    " isTvEpisode bool NOT NULL DEFAULT 0," +
 //	" episode int NULL, " +
 //    " firstAirDate date NULL, " +
 //	" _season_ID int NULL",
 	
 	private static String connectionString = "jdbc:sqlite:jukebox.db";
-	 
+	private static String databaseFilename = "jukebox_proto.db";
+	
 	private DB() {
 		
 	} 
 
+	private static String getDatabaseFilename() {
+		return databaseFilename;
+	}
+
+	private static void setDatabaseFilename(String databaseFilename) {
+		DB.databaseFilename = databaseFilename;
+	}
+
 	public static void setDatabase(String databaseFilename) {
-		DB.connectionString = String.format("jdbc:sqlite:%s", databaseFilename);
+		setDatabaseFilename(databaseFilename);
 	}
 	
 	//---------------------------------------------------------------------------------------
@@ -54,30 +68,29 @@ public class DB {
 	//---------------------------------------------------------------------------------------
 	
 	public synchronized static ArrayList<Movie> searchMoviesByTitle(String searchString) {
-		Connection conn = null;
-		String statement = String.format("%s WHERE title LIKE ?", getSelectStatement());
-
 		try {
-			conn = DB.initialize();
-	
-			PreparedStatement prep = conn.prepareStatement(statement);
-			prep.setString(1, "%" + searchString + "%");
+			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			List<DynamicMessage> result =
+				db.find(JukeboxDomain.Movie.getDescriptor(), 
+					"title", 
+					"%" + searchString + "%", 
+					true);
 			
-			ResultSet rs = prep.executeQuery();
-			ArrayList<Movie> result = new ArrayList<Movie>();
-			while (rs.next()) {
-				result.add(extractMovie(rs, conn));
-			}
-					
-			return result;
+			
+			return parseDynamicListToMovie(result);
 		}
 		catch (Exception e) {
 			Log.Error("Failed to retrieve movie listing from DB", Log.LogType.MAIN, e);
-			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
 			return new ArrayList<Movie>();
-		}finally {
-			DB.disconnect(conn);
 		}
+	}
+
+	protected static ArrayList<Movie> parseDynamicListToMovie(
+			List<DynamicMessage> result) throws InvalidProtocolBufferException {
+		ArrayList<Movie> movieResult = new ArrayList<Movie>();
+		for (DynamicMessage m : result)
+			movieResult.add(Movie.parseFrom(m.toByteString()));
+		return movieResult;
 	}
 
 	//---------------------------------------------------------------------------------------
@@ -122,38 +135,30 @@ public class DB {
 		ret = StringUtils.replace(ret, "_", "\\_");
 		return ret;
 	}
+	
 	public synchronized static Movie getMovieByStartOfMediaFilename(String startOfMediaFilename) {
-		Connection conn = null;
 		String searchString = replaceSearchString(startOfMediaFilename) + "%";
 		
 		Log.Debug(String.format("DB :: Database search string :: %s", searchString), LogType.MAIN);
-		
-		String statement = String.format(
-				" SELECT %s " +
-				" FROM Media MD" +
-				" INNER JOIN Movie M ON MD._movie_ID = M.ID" +
-				" WHERE MD.filename LIKE ? ESCAPE '\\'"
-				, getColumnList("M", true, ","));
-		
-		try {
-			conn = DB.initialize();
-
-			PreparedStatement prep = conn.prepareStatement(statement);
-			prep.setString(1, searchString);
 				
-			ResultSet rs = prep.executeQuery();
-			if (rs.next())
-				return extractMovie(rs, conn);
+		try {
+			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			List<DynamicMessage> result =
+				db.find(JukeboxDomain.Movie.getDescriptor(), 
+					"media.filename", 
+					searchString, 
+					true);
+			
+			if (result.size() > 0)
+				return parseDynamicListToMovie(result).get(0);
 			else
 				return null;
-
+			
 		} catch (Exception e) {
 			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
-			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
+//			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
 			
 			return null;
-		}finally {
-			DB.disconnect(conn);
 		}
 	}
 
@@ -1007,75 +1012,75 @@ public class DB {
 	//------------------------------------------------------------------------ Helpers
 	//---------------------------------------------------------------------------------------
 
-	private synchronized static Movie extractMovie(ResultSet rs, Connection conn) throws SQLException {
-		int id = rs.getInt("ID");
-		byte[] imageData = getMovieImage(id, ImageType.Poster, conn);
-				
-		List<String> genres = getGenres(id, conn);
-		List<Media> media = getMedia(id, conn);
-//		Season season = getSeason(id, conn);
-		
-		Builder builder = Movie.newBuilder()
-				.setID(id)
-				.addAllMedia(media)
-				.addAllGenre(genres);
-		
-		// Add simple entities
-		builder = mapResultSet(builder, rs);
-				
-//				.setTitle(rs.getString("title"))
-//				.setYear(rs.getInt("year"))
-//				.setType(rs.getString("type"))
-//				.setFormat(rs.getString("format"))
-//				.setSound(rs.getString("sound"))
-//				.setLanguage(rs.getString("language"))
-//				.setGroup(rs.getString("groupName"))
-//				.setImdbUrl(rs.getString("imdburl"))
-//				.setDuration(rs.getInt("duration"))
-//				.setRating(rs.getString("rating"))
-//				.setDirector(rs.getString("director"))
-//				.setStory(rs.getString("story"))
-//				.setIdentifier(Identifier.valueOf(rs.getString("identifier")))
-//				.setIdentifierRating(rs.getInt("identifierRating"))
-//				.setWatched(rs.getBoolean("watched"))
-//				.setIsTvEpisode(rs.getBoolean("isTvEpisode"))
-//				.setEpisode(rs.getInt("episode"))
-//				.setFirstAirDate(rs.getLong("firstAirDate"))
-//				.setSeason(rs.getInt("season"))
-//				.setEpisodeTitle(rs.getString("episodeTitle"));
-//				.setSeason(season);	
-		
-
-		
-		if (imageData != null)
-			builder = builder.setImage(ByteString.copyFrom(imageData));
-		
-		return builder.build();
-	}
+//	private synchronized static Movie extractMovie(ResultSet rs, Connection conn) throws SQLException {
+//		int id = rs.getInt("ID");
+//		byte[] imageData = getMovieImage(id, ImageType.Poster, conn);
+//				
+//		List<String> genres = getGenres(id, conn);
+//		List<Media> media = getMedia(id, conn);
+////		Season season = getSeason(id, conn);
+//		
+//		Builder builder = Movie.newBuilder()
+//				.setID(id)
+//				.addAllMedia(media)
+//				.addAllGenre(genres);
+//		
+//		// Add simple entities
+//		builder = mapResultSet(builder, rs);
+//				
+////				.setTitle(rs.getString("title"))
+////				.setYear(rs.getInt("year"))
+////				.setType(rs.getString("type"))
+////				.setFormat(rs.getString("format"))
+////				.setSound(rs.getString("sound"))
+////				.setLanguage(rs.getString("language"))
+////				.setGroup(rs.getString("groupName"))
+////				.setImdbUrl(rs.getString("imdburl"))
+////				.setDuration(rs.getInt("duration"))
+////				.setRating(rs.getString("rating"))
+////				.setDirector(rs.getString("director"))
+////				.setStory(rs.getString("story"))
+////				.setIdentifier(Identifier.valueOf(rs.getString("identifier")))
+////				.setIdentifierRating(rs.getInt("identifierRating"))
+////				.setWatched(rs.getBoolean("watched"))
+////				.setIsTvEpisode(rs.getBoolean("isTvEpisode"))
+////				.setEpisode(rs.getInt("episode"))
+////				.setFirstAirDate(rs.getLong("firstAirDate"))
+////				.setSeason(rs.getInt("season"))
+////				.setEpisodeTitle(rs.getString("episodeTitle"));
+////				.setSeason(season);	
+//		
+//
+//		
+//		if (imageData != null)
+//			builder = builder.setImage(ByteString.copyFrom(imageData));
+//		
+//		return builder.build();
+//	}
 	
-	private synchronized static Builder mapResultSet(Builder b, ResultSet rs) throws SQLException {
-		List<FieldDescriptor> fields = Builder.getDescriptor().getFields();
-		for(FieldDescriptor field : fields) {
-			String fieldName = field.getName();
-			String fieldNameRep = fieldName.replace("_", "").replace(".","");
-
-			for (String s : COLUMNS) {
-				String sRep = s.replace("_", "").replace(".","");
-				if (StringUtils.equalsIgnoreCase(sRep, fieldNameRep)) {
-					b.setField(field, rs.getObject(fieldName));
-					break;
-				}
-					
-			}
-			
-			if (ArrayUtils.contains(COLUMNS, fieldName)) {
-				Log.Debug(String.format("DB :: Setting field %s", fieldName), LogType.MAIN);
-				
-			}
-		}		
-		
-		return b;
-	}
+//	private synchronized static Builder mapResultSet(Builder b, ResultSet rs) throws SQLException {
+//		List<FieldDescriptor> fields = Builder.getDescriptor().getFields();
+//		for(FieldDescriptor field : fields) {
+//			String fieldName = field.getName();
+//			String fieldNameRep = fieldName.replace("_", "").replace(".","");
+//
+//			for (String s : COLUMNS) {
+//				String sRep = s.replace("_", "").replace(".","");
+//				if (StringUtils.equalsIgnoreCase(sRep, fieldNameRep)) {
+//					b.setField(field, rs.getObject(fieldName));
+//					break;
+//				}
+//					
+//			}
+//			
+//			if (ArrayUtils.contains(COLUMNS, fieldName)) {
+//				Log.Debug(String.format("DB :: Setting field %s", fieldName), LogType.MAIN);
+//				
+//			}
+//		}		
+//		
+//		return b;
+//	}
 
 	private synchronized static Subtitle extractSubtitle(ResultSet rs, Connection conn) throws SQLException {		
 		return Subtitle.newBuilder()
@@ -1171,39 +1176,39 @@ public class DB {
 			return -1;
 	}
 	
-	private static String getSelectStatement() {
-		return String.format("SELECT %s FROM Movie", getColumnList("", true, ","));
-	}
+//	private static String getSelectStatement() {
+//		return String.format("SELECT %s FROM Movie", getColumnList("", true, ","));
+//	}
 	
-	private static String getColumnList(String alias, boolean includeIdColumn, String separator) {
-		String prefix = StringUtils.EMPTY;
-		if (!StringUtils.isEmpty(alias))
-			prefix = alias + ".";
-
-		if (!includeIdColumn) {
-			List<String> updateColumns = new ArrayList<String>();
-			
-			for (String column : COLUMNS)
-				if (!StringUtils.equalsIgnoreCase("ID", column))
-					updateColumns.add(column);
-			
-			return prefix + StringUtils.join(updateColumns, separator + prefix) ;			
-		}
-		else {
-			return prefix + StringUtils.join(COLUMNS, separator + prefix);			
-		} 
-	}
+//	private static String getColumnList(String alias, boolean includeIdColumn, String separator) {
+//		String prefix = StringUtils.EMPTY;
+//		if (!StringUtils.isEmpty(alias))
+//			prefix = alias + ".";
+//
+//		if (!includeIdColumn) {
+//			List<String> updateColumns = new ArrayList<String>();
+//			
+//			for (String column : COLUMNS)
+//				if (!StringUtils.equalsIgnoreCase("ID", column))
+//					updateColumns.add(column);
+//			
+//			return prefix + StringUtils.join(updateColumns, separator + prefix) ;			
+//		}
+//		else {
+//			return prefix + StringUtils.join(COLUMNS, separator + prefix);			
+//		} 
+//	}
 
 //	private static String getUpdateStatement() {
 //		return String.format("UPDATE Movie SET %s = ?", getColumnList("", false, " = ?,"));
 //	}	
 		
-	private static String getInsertStatement() {
-		return String.format("INSERT INTO Movie (%s) VALUES (%s)",
-				getColumnList("", false, ","),
-				StringUtils.repeat("?", ",", COLUMNS.length - 1));
-	}
-	
+//	private static String getInsertStatement() {
+//		return String.format("INSERT INTO Movie (%s) VALUES (%s)",
+//				getColumnList("", false, ","),
+//				StringUtils.repeat("?", ",", COLUMNS.length - 1));
+//	}
+//	
 	
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Season
@@ -1330,6 +1335,20 @@ public class DB {
 		finally {
 			DB.disconnect(conn);
 		}		
+	}
+
+	public static boolean setupDatabase() {
+		try {
+			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());			
+			db.setupDatabase(Movie.getDefaultInstance());
+			
+			return true;
+		} catch (ClassNotFoundException | SQLException
+				| IDFieldNotFoundException e) {
+			Log.Error("Failed to setup database", Log.LogType.MAIN, e);
+		}
+		
+		return false;
 	}
 	
 }

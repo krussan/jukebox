@@ -15,5 +15,6 @@
 	<classpathentry kind="lib" path="D:/Dev/svn/jukebox/lib/commons-exec-1.1.jar"/>
 	<classpathentry kind="lib" path="D:/Dev/svn/jukebox/lib/junit-4.10.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/se.qxx.jukebox.comm"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/se.qxx.protodb"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

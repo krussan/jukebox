@@ -87,28 +87,29 @@ public class TestSearch {
 	}
 	
 	@Test
-	public void TestSearchObjectExact() {	
+	public void TestSearchObjectExactBoolean() {	
 		try {
 			//TODO: WHERE clause on Boolean does not appear to work?
 			List<DynamicMessage> result =
 				db.find(
 					TestDomain.ObjectOne.getDescriptor(), 
 					"testOne.bb", 
-					1, 
+					true, 
 					false);
 			
 			// we should get one single result..
 			assertEquals(1, result.size());
 		
-			TestDomain.RepObjectOne b = TestDomain.RepObjectOne.parseFrom(result.get(0).toByteString());
+			TestDomain.ObjectOne b = TestDomain.ObjectOne.parseFrom(result.get(0).toByteString());
+			assertEquals(b.getOois(), 986);
 			
-			TestDomain.SimpleTwo o1 = b.getListOfObjects(0);
-			assertEquals("thisIsATitle", o1.getTitle());
-			assertEquals("madeByThisDirector", o1.getDirector());
-			
-			TestDomain.SimpleTwo o2 = b.getListOfObjects(1);
-			assertEquals("thisIsAlsoATitle", o2.getTitle());
-			assertEquals("madeByAnotherDirector", o2.getDirector());
+			TestDomain.SimpleTest o1 = b.getTestOne();
+			assertEquals(o1.getBb(), true);
+			assertEquals(o1.getDd(), 1467802579378.62, 0.0);
+			assertEquals(o1.getFf(), (float)555444333.213, 0.0);
+			assertEquals(o1.getIs(), 999999998);
+			assertEquals(o1.getIl(), 999999998);
+			assertEquals(o1.getSs(), "ThisIsATrueTest");
 			
 //			PreparedStatement prep = "SELECT * FROM SimpleTest";
 //			
