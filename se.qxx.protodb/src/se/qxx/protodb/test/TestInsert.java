@@ -53,6 +53,7 @@ public class TestInsert {
 			// check to see if the save was successful (ID should be greater than 0)
 			assertNotEquals(id, -1);
 			
+			
 			DynamicMessage dm = db.get(id, TestDomain.SimpleTest.getDescriptor());
 			TestDomain.SimpleTest st = TestDomain.SimpleTest.parseFrom(dm.toByteString());
 			
@@ -158,6 +159,12 @@ public class TestInsert {
 		}
 	}	
 	
+	private void assertNotEquals(int a, int b) {
+		String msg = String.format("Expected not to be actual. %s == %s", a, b);
+		assertFalse(msg, a == b);
+	}
+
+
 	@Test
 	public void TestSimpleUpdate() {		
 		TestDomain.SimpleTest t = TestDomain.SimpleTest.newBuilder()

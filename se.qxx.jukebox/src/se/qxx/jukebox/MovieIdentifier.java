@@ -154,7 +154,7 @@ public class MovieIdentifier implements Runnable {
 					.build();
 		}
 		
-		movie = DB.addMovie(movie);
+		movie = DB.save(movie);
 		
 		SubtitleDownloader.get().addMovie(movie);
 	}
@@ -170,7 +170,7 @@ public class MovieIdentifier implements Runnable {
 		// Check if media exists
 		if (mediaExists(movie, media)) {
 			// Check if movie has subs. If not then add it to the subtitle queue.
-			if (!DB.hasSubtitles(movie)) {
+			if (hasSubtitles(movie)) {
 				SubtitleDownloader.get().addMovie(movie);
 			}							
 		}
@@ -180,7 +180,7 @@ public class MovieIdentifier implements Runnable {
 				media = MediaMetadata.addMediaMetadata(media);
 
 			// If movie exist but not the media then add the media
-			DB.addMedia(movie.getID(), media);
+			DB.save(Movie.newBuilder(movie).addMedia(media).build());
 		}
 	}
 	
@@ -208,5 +208,13 @@ public class MovieIdentifier implements Runnable {
 		
 		return m;
 	}
-	
+
+	private boolean hasSubtitles(Movie m) {
+		for(Media md : m.getMediaList()) {
+			if (md.getSubsCount() > 0)
+				return true;
+		}
+		
+		return false;
+	}
 }

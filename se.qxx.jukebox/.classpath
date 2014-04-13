@@ -7,14 +7,14 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="D:/Dev/svn/jukebox/lib/protobuf-2.4.1.jar"/>
-	<classpathentry kind="lib" path="D:/Dev/svn/jukebox/lib/sqlite-jdbc-3.7.2.jar"/>
-	<classpathentry kind="lib" path="D:/Dev/svn/jukebox/lib/jna.jar"/>
-	<classpathentry kind="lib" path="D:/Dev/svn/jukebox/lib/commons-lang3-3.1.jar"/>
-	<classpathentry kind="lib" path="D:/Dev/svn/jukebox/lib/commons-io-2.4.jar"/>
-	<classpathentry kind="lib" path="D:/Dev/svn/jukebox/lib/commons-exec-1.1.jar"/>
-	<classpathentry kind="lib" path="D:/Dev/svn/jukebox/lib/junit-4.10.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/se.qxx.jukebox.comm"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/se.qxx.protodb"/>
+	<classpathentry kind="lib" path="/home/ubuntu/workspace/jukebox/lib/commons-exec-1.1.jar"/>
+	<classpathentry kind="lib" path="/home/ubuntu/workspace/jukebox/lib/commons-io-2.4.jar"/>
+	<classpathentry kind="lib" path="/home/ubuntu/workspace/jukebox/lib/commons-lang3-3.1.jar"/>
+	<classpathentry kind="lib" path="/home/ubuntu/workspace/jukebox/lib/jna.jar"/>
+	<classpathentry kind="lib" path="/home/ubuntu/workspace/jukebox/lib/junit-4.10.jar"/>
+	<classpathentry kind="lib" path="/home/ubuntu/workspace/jukebox/lib/protobuf-2.4.1.jar"/>
+	<classpathentry kind="lib" path="/home/ubuntu/workspace/jukebox/lib/sqlite-jdbc-3.7.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
