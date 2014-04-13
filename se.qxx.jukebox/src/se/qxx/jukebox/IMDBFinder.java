@@ -20,6 +20,7 @@ import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 
 import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie.Builder;
 import se.qxx.jukebox.settings.Settings;
@@ -33,12 +34,12 @@ import com.google.protobuf.ByteString;
 public class IMDBFinder {
 	private static long nextSearch = 0;
 	
-	public synchronized static Movie Get(Movie m, List<String> blacklistedIDs) throws IOException, NumberFormatException, ParseException {
+	public synchronized static Movie Get(Movie m) throws IOException, NumberFormatException, ParseException {
 		Log.Debug(String.format("Starting search on title :: %s (%s)", m.getTitle(), m.getYear()), LogType.IMDB);
 		String imdbUrl = m.getImdbUrl();
  
-		if (StringUtils.isEmpty(imdbUrl) || urlIsBlacklisted(imdbUrl, blacklistedIDs)) {	
-			return Search(m, blacklistedIDs, Settings.imdb().getSearchUrl());
+		if (StringUtils.isEmpty(imdbUrl) || urlIsBlacklisted(imdbUrl, m)) {	
+			return Search(m, Settings.imdb().getSearchUrl());
 		}
 		else {
 			Log.Debug(String.format("IMDB url found."), LogType.IMDB);
@@ -54,12 +55,14 @@ public class IMDBFinder {
 	 * @param blacklistedIDs The list of blacklisted IMDB id's
 	 * @return
 	 */
-	private static boolean urlIsBlacklisted(String imdbUrl, List<String> blacklistedIDs) {
+	private static boolean urlIsBlacklisted(String imdbUrl, Movie m) {
 		String imdbid = Util.getImdbIdFromUrl(imdbUrl);
 		if (!StringUtils.isEmpty(imdbid)) {	
-			for (String entry : blacklistedIDs) {	
-				if (StringUtils.equalsIgnoreCase(imdbid, entry)) {
-					return true;
+			for (Media md : m.getMediaList()) {
+				for (String entry : md.getBlacklistList()) {	
+					if (StringUtils.equalsIgnoreCase(imdbid, entry)) {
+						return true;
+					}
 				}
 			}
 		}
@@ -67,7 +70,7 @@ public class IMDBFinder {
 		return false;
 	}
 
-	private synchronized static Movie Search(Movie m, List<String> blacklistedIDs, String searchUrl) throws IOException, NumberFormatException, ParseException {
+	private synchronized static Movie Search(Movie m, String searchUrl) throws IOException, NumberFormatException, ParseException {
 		long currentTimeStamp = Util.getCurrentTimestamp();
 		
 		try {
@@ -88,7 +91,7 @@ public class IMDBFinder {
 			}
 			else {				
 				Log.Info(String.format("IMDB :: %s is NOT redirected to movie", m.getTitle()), LogType.IMDB);				
-				rec = findMovieInSearchResults(m, webResult.getResult(), blacklistedIDs);			
+				rec = findMovieInSearchResults(m, webResult.getResult());			
 			}
 			
 			setNextSearchTimer();
@@ -187,7 +190,7 @@ public class IMDBFinder {
 		return title;
 	}
 
-	private static IMDBRecord findMovieInSearchResults(Movie m, String text, List<String> blacklistedIDs) {
+	private static IMDBRecord findMovieInSearchResults(Movie m, String text) {
 		List<SearchResultPattern> patterns = Settings.imdb().getSearchPatterns().getSearchResultPattern();
 		
 		Collections.sort(patterns, new SearchPatternComparer());
@@ -205,8 +208,7 @@ public class IMDBFinder {
 							, p.getGroupBlock()
 							, StringUtils.trim(p.getRecordPattern())
 							, p.getGroupRecordUrl()
-							, p.getGroupRecordYear()
-							, blacklistedIDs);
+							, p.getGroupRecordYear());
 					
 					if (rec != null)
 						break;
@@ -231,8 +233,7 @@ public class IMDBFinder {
 			int patternGroupForBlock,
 			String patternForRecord,
 			int urlGroup,
-			int yearGroup, 
-			List<String> blacklistedIDs) {
+			int yearGroup) {
 		
 		//TODO: Also match by length of movie
 		try {
@@ -251,7 +252,7 @@ public class IMDBFinder {
 				IMDBRecord rec = new IMDBRecord(url, year);
 				
 				// Check if movie was blacklisted. If it was get the next record matching
-				if (!urlIsBlacklisted(url, blacklistedIDs) && testResult(movie, rec))
+				if (!urlIsBlacklisted(url, movie) && testResult(movie, rec))
 				{
 					// if year and title matches then continue to the URL and extract information about the movie.
 					rec = IMDBRecord.get(url);

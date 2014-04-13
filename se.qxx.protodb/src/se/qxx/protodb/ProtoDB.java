@@ -674,10 +674,9 @@ public class ProtoDB {
 			prep.setInt(1, scanner.getIdValue());
 			
 			prep.execute();
-		}
-		
+		}		
 	}
-
+	
 	private Boolean checkExisting(ProtoDBScanner scanner, Connection conn) throws SQLException {
 		PreparedStatement prep = conn.prepareStatement("SELECT COUNT(*) FROM " + scanner.getObjectName() + " WHERE ID = ?");
 		prep.setInt(1, scanner.getIdValue());
@@ -779,6 +778,91 @@ public class ProtoDB {
 			id = getIdentity(conn);
 		
 		return id;
+	}
+
+	//---------------------------------------------------------------------------------
+	//----------------------------------------------------------------------  DELETE
+	//---------------------------------------------------------------------------------
+
+	/***
+	 * Deletes a protobuf class to database.
+	 * @param b
+	 * @return
+	 * @throws SQLException 
+	 * @throws ClassNotFoundException 
+	 */
+	public void delete(MessageOrBuilder b) throws ClassNotFoundException, SQLException {
+		Connection conn = null;
+		
+		try {
+			conn = this.initialize();
+			conn.setAutoCommit(false);
+			
+			this.delete(b, conn);
+			
+			conn.commit();
+		}
+		catch (SQLException e) {			
+			try {
+				conn.rollback();
+			} catch (SQLException sqlEx) {}
+			
+			throw e;
+		}		
+		finally {
+			this.disconnect(conn);
+		}
+		
+
+
+	}
+
+	/***
+	 * Internal delete function. Deletes protobuf class from database.
+	 * @param b
+	 * @param conn
+	 * @return
+	 * @throws SQLException
+	 * @throws ClassNotFoundException 
+	 */
+	private void delete(MessageOrBuilder b, Connection conn) throws SQLException, ClassNotFoundException {
+		ProtoDBScanner scanner = new ProtoDBScanner(b);
+				
+		// delete underlying objects
+		for(FieldDescriptor field : scanner.getObjectFields()) {
+			Object o = b.getField(field);
+
+			if (field.getJavaType() == JavaType.MESSAGE && !field.isRepeated()) {
+				delete((MessageOrBuilder)o, conn);
+			}
+		}		
+
+		deleteBlobs(scanner, conn);
+		
+		// delete underlying repeated objects
+		for(FieldDescriptor field : scanner.getRepeatedObjectFields()) {
+			int fieldCount = b.getRepeatedFieldCount(field);
+			for (int i=0;i<fieldCount;i++) {
+				Object mg = b.getRepeatedField(field, i);
+				if (mg instanceof MessageOrBuilder) {
+					MessageOrBuilder b2 = (MessageOrBuilder)mg;
+					ProtoDBScanner other = new ProtoDBScanner(b2);
+					
+					// delete other object
+					delete(b2, conn);
+					
+					// delete from link table
+					deleteLinkObject(scanner, other, field, conn);
+				}
+			}
+		}
+		
+		// delete underlying repeated basic types
+		for (FieldDescriptor field : scanner.getRepeatedBasicFields()) {
+			// delete from link table
+			deleteBasicLinkObject(scanner, field, conn);			
+		}
+				
 	}
 
 	//---------------------------------------------------------------------------------

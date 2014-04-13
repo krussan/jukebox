@@ -1251,31 +1251,20 @@ public class DB {
 		}
 	}
 
-//	public synchronized static boolean purgeSubs() {
-//		Connection conn = null;
-//		String[] statements = new String[] {
-//			"DELETE FROM subtitles",
-//			"DELETE FROM subtitleQueue"
-//		};
-//		
-//		try {
-//			conn = DB.initialize();
-//		
-//			for (String stmt : statements) {
-//				PreparedStatement prep = conn.prepareStatement(stmt);
-//				prep.execute();				
-//			}
-//			
-//			return true;
-//		}
-//		catch (Exception e) {
-//			Log.Error("Purge of subtitles failed", LogType.MAIN, e);
-//			return false;
-//		}
-//		finally {
-//			DB.disconnect(conn);
-//		}		
-//	}
+	
+	public synchronized static boolean purgeSubs() {		
+		try {
+			
+			return true;
+		}
+		catch (Exception e) {
+			Log.Error("Purge of subtitles failed", LogType.MAIN, e);
+			return false;
+		}
+		finally {
+			DB.disconnect(conn);
+		}		
+	}
 
 	public static boolean setupDatabase() {
 		try {

@@ -196,8 +196,7 @@ public class MovieIdentifier implements Runnable {
 	private Movie getImdbInformation(Movie m) {
 		//find imdb link
 		try {
-			List<String> blacklist = DB.getBlacklist(m);
-			m = IMDBFinder.Get(m, blacklist);
+			m = IMDBFinder.Get(m);
 			
 			if (!StringUtils.isEmpty(m.getImdbUrl()))
 				Log.Info(String.format("IMDB link found for :: %s", m.getTitle()), LogType.FIND);
