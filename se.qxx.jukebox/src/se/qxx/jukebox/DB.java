@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,8 @@ import se.qxx.jukebox.domain.JukeboxDomain.Rating;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.protodb.ProtoDB;
 import se.qxx.protodb.exceptions.IDFieldNotFoundException;
+import se.qxx.protodb.exceptions.SearchFieldNotFoundException;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors.Descriptor;
@@ -68,7 +71,7 @@ public class DB {
 	//------------------------------------------------------------------------ Search
 	//---------------------------------------------------------------------------------------
 	
-	public synchronized static ArrayList<Movie> searchMoviesByTitle(String searchString) {
+	public synchronized static List<Movie> searchMoviesByTitle(String searchString) {
 		try {
 			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
 			List<DynamicMessage> result =
@@ -86,11 +89,19 @@ public class DB {
 		}
 	}
 
-	protected static ArrayList<Movie> parseDynamicListToMovie(
+	protected static List<Movie> parseDynamicListToMovie(
 			List<DynamicMessage> result) throws InvalidProtocolBufferException {
-		ArrayList<Movie> movieResult = new ArrayList<Movie>();
+		List<Movie> movieResult = new ArrayList<Movie>();
 		for (DynamicMessage m : result)
 			movieResult.add(Movie.parseFrom(m.toByteString()));
+		return movieResult;
+	}
+	
+	protected static List<Media> parseDynamicListToMedia(
+			List<DynamicMessage> result) throws InvalidProtocolBufferException {
+		List<Media> movieResult = new ArrayList<Media>();
+		for (DynamicMessage m : result)
+			movieResult.add(Media.parseFrom(m.toByteString()));
 		return movieResult;
 	}
 
@@ -695,29 +706,20 @@ public class DB {
 //			return false;
 //	}
 //
-//	public synchronized static void addMovieToSubtitleQueue(Movie m) {
-//		Connection conn = null;
-//		String statement = 
-//				"insert into subtitleQueue " +
-//				"(queuedAt, _movie_ID, result)" +
-//				"values" +
-//				"(datetime(), ?, 0)";				
-//		try {
-//			conn = DB.initialize();
-//			PreparedStatement prep = conn.prepareStatement(statement);
-//			
-//			prep.setInt(1, m.getID());
-//			prep.execute();
-//	
-//		}
-//		catch (Exception e) {
-//			Log.Error("Failed to store movie to DB", Log.LogType.MAIN, e);
-//			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
-//			
-//		}finally {
-//			DB.disconnect(conn);
-//		}
-//	}
+	public synchronized static void addMovieToSubtitleQueue(Movie m) {
+		try {
+			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+
+			db.save(Movie.newBuilder(m).setSubtitleQueuedAt(getCurrentUnixTimestamp()).build());
+		}
+		catch (Exception e) {
+			Log.Error("Failed to store movie to DB", Log.LogType.MAIN, e);
+		}
+	}
+	
+	public static long getCurrentUnixTimestamp() {
+		return System.currentTimeMillis() / 1000L;
+	}
 //
 //	public synchronized static void setSubtitleDownloaded(Movie m, int result) {
 //		Connection conn = null;
@@ -755,37 +757,22 @@ public class DB {
 //	}
 //
 //	
-//	public synchronized static ArrayList<Movie> getSubtitleQueue() {
-//		Connection conn = null;
-//		String statement = 
-//				String.format("SELECT %s %s %s %s",
-//						getColumnList("M", true, ","),
-//						"FROM movie AS M",
-//						"INNER JOIN subtitleQueue SQ ON SQ._movie_ID = M.ID",
-//						"WHERE retreivedAt IS NULL AND result = 0");
-//				
-//		try {
-//			conn = DB.initialize();
-//	
-//			PreparedStatement prep = conn.prepareStatement(statement);
-//			
-//			ResultSet rs = prep.executeQuery();
-//			ArrayList<Movie> result = new ArrayList<Movie>();
-//			while (rs.next()) {
-//				result.add(extractMovie(rs, conn));
-//			}
-//					
-//			return result;
-//		}
-//		catch (Exception e) {
-//			Log.Error("Failed to retrieve movie listing from DB", Log.LogType.MAIN, e);
-//			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
-//			
-//			return new ArrayList<Movie>();
-//		}finally {
-//			DB.disconnect(conn);
-//		}
-//	}
+	public synchronized static ArrayList<Movie> getSubtitleQueue() {
+		try {
+			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			List<DynamicMessage> result =
+				db.find(JukeboxDomain.Movie.getDescriptor(), 
+					"subtitleRetreiveResult", 
+					0, 
+					false);
+			
+			return parseDynamicListToMovie(result);
+		}
+		catch (Exception e) {
+			Log.Error("Failed to retrieve movie listing from DB", Log.LogType.MAIN, e);
+			return new ArrayList<Movie>();
+		}
+	}
 //	
 //	public synchronized static ArrayList<Subtitle> getSubtitles(Media media) {
 //		Connection conn = null;
@@ -1252,18 +1239,16 @@ public class DB {
 	}
 
 	
-	public synchronized static boolean purgeSubs() {		
-		try {
-			
-			return true;
-		}
-		catch (Exception e) {
-			Log.Error("Purge of subtitles failed", LogType.MAIN, e);
-			return false;
-		}
-		finally {
-			DB.disconnect(conn);
-		}		
+	public synchronized static boolean purgeSubs() {
+		throw new NotImplementedException();
+		
+//		try {
+//			
+//		}
+//		catch (Exception e) {
+//			Log.Error("Purge of subtitles failed", LogType.MAIN, e);
+//			return false;
+//		}
 	}
 
 	public static boolean setupDatabase() {
@@ -1278,6 +1263,66 @@ public class DB {
 		}
 		
 		return false;
+	}
+
+	public static Media getMediaById(int mediaId) {
+		try {
+			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());			
+			DynamicMessage m = db.get(mediaId, Media.getDescriptor());
+			
+			return Media.parseFrom(m.toByteString());
+		} catch (ClassNotFoundException | SQLException
+				| InvalidProtocolBufferException e) {
+			Log.Error(String.format("Failed to get media %s", mediaId), Log.LogType.MAIN, e);
+		}
+		
+		return null;		
+	}
+
+	public static Media getMediaByStartOfFilename(String mediaFilename) {
+		try {
+			String searchString = replaceSearchString(mediaFilename) + "%";
+			
+			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			List<DynamicMessage> result =
+				db.find(JukeboxDomain.Movie.getDescriptor(), 
+					"filename", 
+					searchString, 
+					true);
+			
+			List<Media> mediaList = parseDynamicListToMedia(result);
+			if (mediaList.size() > 0)
+				return mediaList.get(0);
+			
+		} catch (ClassNotFoundException | SQLException
+				| InvalidProtocolBufferException | SearchFieldNotFoundException e) {
+			Log.Error(String.format("Failed to get media %s", mediaFilename), Log.LogType.MAIN, e);
+		}
+		
+		return null;
+	}
+	
+	public static Media subFileExistsInDB(String mediaFilename) {
+		try {
+			String searchString = replaceSearchString(mediaFilename) + "%";
+			
+			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			List<DynamicMessage> result =
+				db.find(JukeboxDomain.Movie.getDescriptor(), 
+					"filename", 
+					searchString, 
+					true);
+			
+			List<Media> mediaList = parseDynamicListToMedia(result);
+			if (mediaList.size() > 0)
+				return mediaList.get(0);
+			
+		} catch (ClassNotFoundException | SQLException
+				| InvalidProtocolBufferException | SearchFieldNotFoundException e) {
+			Log.Error(String.format("Failed to get media %s", mediaFilename), Log.LogType.MAIN, e);
+		}
+		
+		return null;
 	}
 	
 }

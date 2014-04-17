@@ -233,11 +233,11 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 
 		Log.Debug(String.format("Getting list of subtitles for media ID :: %s", request.getMediaId()), Log.LogType.COMM);
 
+		
 		Media media = DB.getMediaById(request.getMediaId());		
-		List<Subtitle> subs = DB.getSubtitles(media);
 	
 		JukeboxResponseListSubtitles ls = JukeboxResponseListSubtitles.newBuilder()
-				.addAllSubtitle(subs)
+				.addAllSubtitle(media.getSubsList())
 				.build();
 					
 		done.run(ls);
@@ -251,13 +251,13 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		
 		Media md = DB.getMediaById(request.getMediaID());
 		Movie m = DB.getMovieByStartOfMediaFilename(md.getFilename());		
-		List<Subtitle> subs = DB.getSubtitles(md);
+//		List<Subtitle> subs = DB.getSubtitles(md);
 		
 		
 		// It appears that VLC RC interface only reads the first sub-file option specified
 		// in the command sent. Thus we need to clear playlist and restart video each time we
 		// change the subtitle track.
-		Subtitle subTrack = getSubtitleTrack(request.getSubtitleDescription(), subs);
+		Subtitle subTrack = getSubtitleTrack(request.getSubtitleDescription(), md.getSubsList());
 		
 		//VLCDistributor.restart()
 		
@@ -277,7 +277,6 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			}
 		} catch (VLCConnectionNotFoundException e) {
 			controller.setFailed("Error occured when connecting to target media player"); 
-			
 		}		
 		
 	}

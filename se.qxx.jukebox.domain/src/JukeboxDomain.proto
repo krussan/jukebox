@@ -54,7 +54,7 @@ message Movie {
 	
 	optional int64 subtitleQueuedAt = 26;
 	optional int64 subtitleRetreivedAt = 27;
-	optional int64 subtitleRetreiveResult = 28;
+	required int16 subtitleRetreiveResult = 28;
 }
 
 message Subtitle {

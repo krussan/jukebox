@@ -98,7 +98,11 @@ public class SubtitleDownloader implements Runnable {
 						Log.Error("Error when downloading subtitles", Log.LogType.SUBS, e);
 						result = -1;
 					} finally {
-						DB.setSubtitleDownloaded(m, result);
+						
+						DB.save(Movie.newBuilder(m)
+							.setSubtitleRetreivedAt(DB.getCurrentUnixTimestamp())
+							.setSubtitleRetreiveResult(result)
+							.build());
 					}
 				}
 				
