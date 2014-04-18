@@ -82,6 +82,13 @@
 		    debug="true"
 	    />
 		<javac 
+		    srcdir="${protodb.src.dir}" 
+		    destdir="${classes.dir}" 
+		    classpathref="jukebox.classpath" 
+		    includeantruntime="true" 
+		    debug="true"
+	    />		
+		<javac 
 		    srcdir="${main.src.dir}" 
 		    destdir="${classes.dir}" 
 		    classpathref="jukebox.classpath" 
@@ -176,8 +183,10 @@
 		<scp 
 			file="${main.dir}/jukebox.db" 
 			todir="${jukebox.deploy.path}" 
-			trust="true" 
-			keyfile="${jukebox.key.file}"			
+			trust="true"
+			username="${jukebox.deploy.user}" 
+			keyfile="${jukebox.key.file}"
+			passphrase="${jukebox.key.file.pass}"		
 		/>		
 	</target>
 	
@@ -188,7 +197,9 @@
 	        host="${jukebox.deploy.server}"
 	        username="${jukebox.deploy.user}"
 	        failonerror="false"
-	        command="cd /c/media/Dev/src/jukebox;./stop.sh;" />
+	        command="cd /c/media/Dev/src/jukebox;./stop.sh;" 
+	        passphrase="${jukebox.key.file.pass}"
+        />
 	    	    
 	    <sshexec
 	        trust="true"
@@ -196,12 +207,16 @@
 	        host="${jukebox.deploy.server}"
 	        username="${jukebox.deploy.user}"
 	        failonerror="false" 
-	        command="rm ${jukebox.deploy.server.path}/*.jar" />
+	        command="rm ${jukebox.deploy.server.path}/*.jar" 
+	        passphrase="${jukebox.key.file.pass}"
+        />
 	    
 		<scp 
 			todir="${jukebox.deploy.path}" 
 			trust="true"
+			username="${jukebox.deploy.user}"
 			keyfile="${jukebox.key.file}"
+			passphrase="${jukebox.key.file.pass}"
 		>
 			<fileset dir="${build.dir}">
 				<include name="*" />
@@ -213,7 +228,9 @@
 			file="${build.dir}/${jar.file}" 
 			todir="${jukebox.deploy.path}" 
 			trust="true"
+			username="${jukebox.deploy.user}"
 			keyfile="${jukebox.key.file}"
+			passphrase="${jukebox.key.file.pass}"
 		>
 			<fileset dir="${jukebox.lib.dir}">
 				<include name="*.jar"/>

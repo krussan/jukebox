@@ -9,10 +9,10 @@ public class Jukebox {
 	 */
 	public static void main(String[] args) {
 		Arguments.initialize(args);
-		
+		 
 		if (Arguments.get().isHelpRequested()) {
-			displayHelp();
-			return;
+			displayHelp(); 
+			return; 
 		}
 		
 		if (Arguments.get().isPurgeMode()) {
@@ -21,7 +21,9 @@ public class Jukebox {
 		}
 		
 		if (Arguments.get().isPurgeSubtitles()) {
-			purgeSubs();
+//			purgeSubs();
+			System.out.println("Purging of subtitles has been removed. Will maybe be implemented in the future...");
+			System.out.println("Exiting....");			
 			return;
 		}
 					
@@ -51,11 +53,11 @@ public class Jukebox {
 		System.out.println("Done !");
 	}
 
-	private static void purgeSubs() {
-		System.out.println("Purging subtitles from database ....");
-		DB.purgeSubs();
-		System.out.println("Done !");
-	}
+//	private static void purgeSubs() {
+//		System.out.println("Purging subtitles from database ....");
+//		DB.purgeSubs();
+//		System.out.println("Done !");
+//	}
 
 	private static void startMainThread()  {
 		try {

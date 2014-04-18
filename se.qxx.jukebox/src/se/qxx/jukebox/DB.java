@@ -28,7 +28,6 @@ import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.protodb.ProtoDB;
 import se.qxx.protodb.exceptions.IDFieldNotFoundException;
 import se.qxx.protodb.exceptions.SearchFieldNotFoundException;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors.Descriptor;
@@ -258,6 +257,21 @@ public class DB {
 		}
 	}
 
+	public synchronized static Media save(Media md) {
+		try {
+			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			
+			int id = db.save(md);
+			Media mdm = Media.newBuilder(md).setID(id).build();
+			
+			return mdm;
+		}
+		catch (Exception e) {
+			Log.Error("Failed to store media to DB", Log.LogType.MAIN, e);
+			
+			return null;
+		}
+	}
 
 
 //	
@@ -757,7 +771,7 @@ public class DB {
 //	}
 //
 //	
-	public synchronized static ArrayList<Movie> getSubtitleQueue() {
+	public synchronized static List<Movie> getSubtitleQueue() {
 		try {
 			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
 			List<DynamicMessage> result =
@@ -1239,8 +1253,8 @@ public class DB {
 	}
 
 	
-	public synchronized static boolean purgeSubs() {
-		throw new NotImplementedException();
+//	public synchronized static boolean purgeSubs() {
+//		throw new NotImplementedException();
 		
 //		try {
 //			
@@ -1249,7 +1263,7 @@ public class DB {
 //			Log.Error("Purge of subtitles failed", LogType.MAIN, e);
 //			return false;
 //		}
-	}
+//}
 
 	public static boolean setupDatabase() {
 		try {
@@ -1302,24 +1316,24 @@ public class DB {
 		return null;
 	}
 	
-	public static Media subFileExistsInDB(String mediaFilename) {
+	public static Movie getMovieBySubfilename(String subsFilename) {
 		try {
-			String searchString = replaceSearchString(mediaFilename) + "%";
+			String searchString = replaceSearchString(subsFilename) + "%";
 			
 			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
 			List<DynamicMessage> result =
-				db.find(JukeboxDomain.Movie.getDescriptor(), 
-					"filename", 
+				db.find(JukeboxDomain.Media.getDescriptor(), 
+					"media.subs.filename", 
 					searchString, 
 					true);
 			
-			List<Media> mediaList = parseDynamicListToMedia(result);
-			if (mediaList.size() > 0)
-				return mediaList.get(0);
+			List<Movie> movieList = parseDynamicListToMovie(result);
+			if (movieList.size() > 0)
+				return movieList.get(0);
 			
 		} catch (ClassNotFoundException | SQLException
 				| InvalidProtocolBufferException | SearchFieldNotFoundException e) {
-			Log.Error(String.format("Failed to get media %s", mediaFilename), Log.LogType.MAIN, e);
+			Log.Error(String.format("Failed to get movie with subs filename %s", subsFilename), Log.LogType.MAIN, e);
 		}
 		
 		return null;

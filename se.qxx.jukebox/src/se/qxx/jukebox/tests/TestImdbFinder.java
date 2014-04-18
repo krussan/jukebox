@@ -18,7 +18,7 @@ public class TestImdbFinder {
 					.setID(-1)
 					.setTitle(args[0])
 					.build();
-			Movie mm = IMDBFinder.Get(m, new ArrayList<String>());
+			Movie mm = IMDBFinder.Get(m);
 			
 			System.out.println(mm);
 		}

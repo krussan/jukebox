@@ -33,7 +33,7 @@ public class NFOScanner {
 	
 	private final char[] separators = {':', '['};
 	
-	private final String acceptedCharacters = "abcdefghijklmnopqrstuvwxyzÂ‰ˆABCDEFGHIJKLMNOPQRSTUVWXYZ≈ƒ÷1234567890./\\-_\"\'()[]%$+-*/: ";
+	private final String acceptedCharacters = "abcdefghijklmnopqrstuvwxyz√•√§√∂ABCDEFGHIJKLMNOPQRSTUVWXYZ√•√§√∂1234567890./\\-_\"\'()[]%$+-*/: ";
 	private File nfoFile;
 
 	public File getNfoFile() {

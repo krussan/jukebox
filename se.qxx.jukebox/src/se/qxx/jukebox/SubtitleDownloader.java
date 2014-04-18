@@ -74,7 +74,7 @@ public class SubtitleDownloader implements Runnable {
 		subsPath = Settings.get().getSubFinders().getSubsPath();
 		subsXmlFilename = String.format("%s/%s", FilenameUtils.normalize(subsPath), "subs.xml");
 		
-		initializeSubsDatabase();
+//		initializeSubsDatabase();
 
 		mainLoop();
 		// this.wait();
@@ -91,7 +91,7 @@ public class SubtitleDownloader implements Runnable {
 					try {
 						if (m != null) {
 							getSubtitles(m);
-							writeSubsXmlFile();
+//							writeSubsXmlFile();
 							result = 1;
 						}
 					} catch (Exception e) {
@@ -124,10 +124,10 @@ public class SubtitleDownloader implements Runnable {
 	   If an unclean purge has been performed then there could be subs in the directory
 	   but not in the database		
 	*/
-	private void initializeSubsDatabase() {
-		if (!initSubsDatabaseFromXmlFile())
-			initSubsDatabaseFromDisk();
-	}
+//	private void initializeSubsDatabase() {
+//		if (!initSubsDatabaseFromXmlFile())
+//			initSubsDatabaseFromDisk();
+//	}
 	
 	/**
 	 * Initialize subs database by scanning the subs xml file.
@@ -136,20 +136,20 @@ public class SubtitleDownloader implements Runnable {
 	 * could be movies that have not been identified yet
 	 * @return true if subs database has been initialized from xml file
 	 */
-	private boolean initSubsDatabaseFromXmlFile() {
-		try {				
-			Subs subs = getSubsFile();
-			if (subs != null) {
-				if (saveXmlFileToSubsDatabase(subs));
-					return true;
-			}
-		}
-		catch (Exception e) {
-			Log.Error("Error occured when parsing subs Xml file", LogType.SUBS, e);
-		}
-		
-		return false;		
-	}
+//	private boolean initSubsDatabaseFromXmlFile() {
+//		try {				
+//			Subs subs = getSubsFile();
+//			if (subs != null) {
+//				if (saveXmlFileToSubsDatabase(subs));
+//					return true;
+//			}
+//		}
+//		catch (Exception e) {
+//			Log.Error("Error occured when parsing subs Xml file", LogType.SUBS, e);
+//		}
+//		
+//		return false;		
+//	}
 	
 	/**
 	 * Saves a subs xml file to database.
@@ -158,37 +158,40 @@ public class SubtitleDownloader implements Runnable {
 	 * @param subs The parsed subs xml file
 	 * @return True if all entries has been saved to database.
 	 */
-	private boolean saveXmlFileToSubsDatabase(Subs subs) {
-		Log.Debug("INITSUBS_XML :: Saving subs xml file to database", LogType.SUBS);
-		
-		try {
-			for (se.qxx.jukebox.subtitles.Subs.Movie movie : subs.getMovie()) {
-				String movieFilename = movie.getFilename();
-				for (se.qxx.jukebox.subtitles.Subs.Movie.Sub sub : movie.getSub()) {
-					Media md = DB.getMediaByStartOfFilename(movieFilename);
-					if (md != null) {
-						String subsFilename = String.format("%s/%s/%s", subsPath, movieFilename, sub.getFilename());
-
-						if (!DB.subFileExistsInDB(subsFilename)) {
-							Rating r = Rating.valueOf(sub.getRating());
-							Log.Debug(String.format("INITSUBS_XML :: Adding to subs database :: %s", sub.getFilename()), LogType.SUBS);
-							DB.addSubtitle(md, subsFilename, sub.getDescription(), r, sub.getLanguage());
-						}
-						else {
-							Log.Debug(String.format("INITSUBS_XML :: Sub exists in DB :: %s", sub.getFilename()), LogType.SUBS);							
-						}
-					}
-				}
-			}
-			
-			return true;
-		}
-		catch (Exception e) {
-			Log.Error("Error occured when parsing subs Xml file", LogType.SUBS, e);			
-		}
-		
-		return false;
-	}
+//	private boolean saveXmlFileToSubsDatabase(Subs subs) {
+//		Log.Debug("INITSUBS_XML :: Saving subs xml file to database", LogType.SUBS);
+//		
+//		try {
+//			for (se.qxx.jukebox.subtitles.Subs.Movie movie : subs.getMovie()) {
+//				String movieFilename = movie.getFilename();
+//				for (se.qxx.jukebox.subtitles.Subs.Movie.Sub sub : movie.getSub()) {
+//					Media md = DB.getMediaByStartOfFilename(movieFilename);
+//					if (md != null) {
+//						String subsFilename = String.format("%s/%s/%s", subsPath, movieFilename, sub.getFilename());
+//
+//						Movie m = DB.getMovieBySubfilename(subsFilename);
+//						
+//						if (m == null) {
+//								
+//							Rating r = Rating.valueOf(sub.getRating());
+//							Log.Debug(String.format("INITSUBS_XML :: Adding to subs database :: %s", sub.getFilename()), LogType.SUBS);
+//							DB.addSubtitle(md, subsFilename, sub.getDescription(), r, sub.getLanguage());
+//						}
+//						else {
+//							Log.Debug(String.format("INITSUBS_XML :: Sub exists in DB :: %s", sub.getFilename()), LogType.SUBS);							
+//						}
+//					}
+//				}
+//			}
+//			
+//			return true;
+//		}
+//		catch (Exception e) {
+//			Log.Error("Error occured when parsing subs Xml file", LogType.SUBS, e);			
+//		}
+//		
+//		return false;
+//	}
 
 	/**
 	 * Parses the subs xml file into an object structure.
@@ -246,15 +249,32 @@ public class SubtitleDownloader implements Runnable {
 				
 				if (md != null) {
 					Log.Debug(String.format("INITSUBS :: Movie Found :: %s", md.getFilename()), LogType.SUBS);
-					if (!DB.subFileExistsInDB(subFilename)) {
+					
+					boolean found = false;
+					for (Subtitle sub : md.getSubsList()) {
+						if (StringUtils.equalsIgnoreCase(sub.getFilename(), subFilename)) {
+							found = true;
+							break;
+						}
+					}
+					
+					if (!found){
 						Log.Debug(String.format("INITSUBS :: Sub not found ... Adding %s", subFilename), LogType.SUBS);
+												
+						DB.save(
+							Media.newBuilder(md).addSubs(
+								Subtitle.newBuilder()
+								.setFilename(subFilename)
+								.setRating(Rating.NotMatched)
+								.build())
+							.build());
 						
-						DB.addSubtitle(md, subFilename, StringUtils.EMPTY, Rating.NotMatched, Language.Unknown.toString());
+//						DB.addSubtitle(md, subFilename, StringUtils.EMPTY, Rating.NotMatched, Language.Unknown.toString());						
 					}
 				}
 			}
 			
-			writeSubsXmlFile();
+//			writeSubsXmlFile();
 		}
 	}
 	
@@ -263,67 +283,67 @@ public class SubtitleDownloader implements Runnable {
 	 * Leaves existing entries in the xml file that do not match an existing movie as these
 	 * could be movies that have not been identified yet
 	 */
-	private void writeSubsXmlFile() {
-		try {
-			
-			//TODO: <HIGH> This needs to actually MERGE the information in xml file
-			// and that in the database. Otherwise we will start deleting entries old entries that don't
-			// yet have a movie reference
-						
-			DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = dbfac.newDocumentBuilder();
-			Document doc = docBuilder.newDocument();
-
-			Element subs = doc.createElement("subs");
-			
-			List<Movie> movies = DB.searchMoviesByTitle(StringUtils.EMPTY);
-			for (Movie m : movies) {
-				for (Media md : m.getMediaList()) {
-					Element movie = doc.createElement("movie");
-					movie.getAttributes().setNamedItem(getAttribute(doc, "filename", FilenameUtils.getBaseName(md.getFilename())));
-					
-					List<Subtitle> subtitles = DB.getSubtitles(md);
-					for (Subtitle s : subtitles) {
-						String subsFilename = FilenameUtils.getName(s.getFilename());
-						Element sub = doc.createElement("sub");
-						NamedNodeMap attrs = sub.getAttributes();
-						attrs.setNamedItem(getAttribute(doc, "filename", subsFilename));
-						attrs.setNamedItem(getAttribute(doc, "description", s.getDescription()));
-						attrs.setNamedItem(getAttribute(doc, "rating", s.getRating().toString()));
-						
-						movie.appendChild(sub);
-					}
-					
-					if (subtitles.size() > 0)
-						subs.appendChild(movie);
-				}
-			}
-			
-			
-			Subs subsFile = getSubsFile();
-			
-			if (subsFile != null) {
-				for (se.qxx.jukebox.subtitles.Subs.Movie subsMovie : subsFile.getMovie()) {
-					Media md = DB.getMediaByStartOfFilename(subsMovie.getFilename());
-					if (md == null) {
-						Log.Debug(String.format("SUBS :: Adding subs to xml file even if movie does not exist yet :: %s", subsMovie.getFilename()), LogType.SUBS);
-	
-						JAXBContext c = JAXBContext.newInstance(se.qxx.jukebox.subtitles.Subs.Movie.class);
-						Marshaller m = c.createMarshaller();
-					
-						m.marshal(subsMovie, subs);
-					}
-				}
-	
-				doc.appendChild(subs);
-			}
-			
-			Log.Debug(String.format("SUBS :: Writing xml file :: %s", subsXmlFilename), LogType.SUBS);
-			writeXmlDocument(doc, subsXmlFilename);
-		} catch (Exception e) {
-			Log.Error("Error when writing xml to file", LogType.SUBS, e);
-		}
-	}
+//	private void writeSubsXmlFile() {
+//		try {
+//			
+//			//TODO: <HIGH> This needs to actually MERGE the information in xml file
+//			// and that in the database. Otherwise we will start deleting entries old entries that don't
+//			// yet have a movie reference
+//						
+//			DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
+//			DocumentBuilder docBuilder = dbfac.newDocumentBuilder();
+//			Document doc = docBuilder.newDocument();
+//
+//			Element subs = doc.createElement("subs");
+//			
+//			List<Movie> movies = DB.searchMoviesByTitle(StringUtils.EMPTY);
+//			for (Movie m : movies) {
+//				for (Media md : m.getMediaList()) {
+//					Element movie = doc.createElement("movie");
+//					movie.getAttributes().setNamedItem(getAttribute(doc, "filename", FilenameUtils.getBaseName(md.getFilename())));
+//					
+//					List<Subtitle> subtitles = DB.getSubtitles(md);
+//					for (Subtitle s : subtitles) {
+//						String subsFilename = FilenameUtils.getName(s.getFilename());
+//						Element sub = doc.createElement("sub");
+//						NamedNodeMap attrs = sub.getAttributes();
+//						attrs.setNamedItem(getAttribute(doc, "filename", subsFilename));
+//						attrs.setNamedItem(getAttribute(doc, "description", s.getDescription()));
+//						attrs.setNamedItem(getAttribute(doc, "rating", s.getRating().toString()));
+//						
+//						movie.appendChild(sub);
+//					}
+//					
+//					if (subtitles.size() > 0)
+//						subs.appendChild(movie);
+//				}
+//			}
+//			
+//			
+//			Subs subsFile = getSubsFile();
+//			
+//			if (subsFile != null) {
+//				for (se.qxx.jukebox.subtitles.Subs.Movie subsMovie : subsFile.getMovie()) {
+//					Media md = DB.getMediaByStartOfFilename(subsMovie.getFilename());
+//					if (md == null) {
+//						Log.Debug(String.format("SUBS :: Adding subs to xml file even if movie does not exist yet :: %s", subsMovie.getFilename()), LogType.SUBS);
+//	
+//						JAXBContext c = JAXBContext.newInstance(se.qxx.jukebox.subtitles.Subs.Movie.class);
+//						Marshaller m = c.createMarshaller();
+//					
+//						m.marshal(subsMovie, subs);
+//					}
+//				}
+//	
+//				doc.appendChild(subs);
+//			}
+//			
+//			Log.Debug(String.format("SUBS :: Writing xml file :: %s", subsXmlFilename), LogType.SUBS);
+//			writeXmlDocument(doc, subsXmlFilename);
+//		} catch (Exception e) {
+//			Log.Error("Error when writing xml to file", LogType.SUBS, e);
+//		}
+//	}
 	
 	/**
 	 * Helper method for writing xml document to file.
@@ -530,7 +550,17 @@ public class SubtitleDownloader implements Runnable {
 							c++;
 			
 							// store filename of sub in database
-							DB.addSubtitle(md, filename, subfile.getDescription(), subfile.getRating(), subfile.getLanguage().toString());
+							DB.save(
+								Media.newBuilder(md).addSubs(
+									Subtitle.newBuilder()
+										.setFilename(filename)
+										.setDescription(subfile.getDescription())
+										.setRating(subfile.getRating())
+										.setLanguage(subfile.getLanguage().toString())
+										.build())
+									.build());
+								
+//							DB.addSubtitle(md, filename, subfile.getDescription(), subfile.getRating(), subfile.getLanguage().toString());
 							
 						}
 						else {

@@ -7,6 +7,7 @@
 	<property name="jukebox.domain.dir" value="${jukebox.solution.dir}/se.qxx.jukebox.domain" />
 	<property name="jukebox.domain.src.dir" value="${jukebox.domain.dir}/src" />	
 	<property name="jukebox.comm.src.dir" value="${jukebox.solution.dir}/se.qxx.jukebox.comm/src" />
+	<property name="protodb.src.dir" value="${jukebox.solution.dir}/se.qxx.protodb/src" />
 	
 	<property name="jukebox.deploy.server" value="ULTRA" />
 	<property name="jukebox.deploy.server.path" value="/c/media/Dev/src/jukebox" />

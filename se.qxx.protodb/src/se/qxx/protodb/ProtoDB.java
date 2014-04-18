@@ -965,8 +965,24 @@ public class ProtoDB {
 				}
 			}
 			
-			if (matchingField == null)
-				throw new SearchFieldNotFoundException(fieldName, scanner.getObjectName());
+			if (matchingField == null) {
+				//TODO: check repeated fields
+				for (FieldDescriptor f : scanner.getRepeatedObjectFields()) {
+					//find sub objects that match the criteria
+					//find main objects that contain the sub objects (ID-wise)
+					List<DynamicMessage> dmObjects = find(f.getContainingType()
+						, StringUtils.join(ArrayUtils.subarray(fieldParts, 1, fieldParts.length), ".")
+						, searchFor
+						, isLikeFilter
+						, conn);
+					
+					
+				}
+				
+				if (matchingField == null)
+					throw new SearchFieldNotFoundException(fieldName, scanner.getObjectName());
+				
+			}
 			
 			//object.fieldName
 		}
