@@ -398,7 +398,8 @@ public class ProtoDB {
 		
 		return msg;
 	}
-	/***
+
+ 	/***
 	 * 
 	 * @param id
 	 * @return
@@ -426,9 +427,12 @@ public class ProtoDB {
 				b.addRepeatedField(field, rs.getObject("value"));
 			}
 			rs.close();
-		}		
-						
-		PreparedStatement prep = conn.prepareStatement(scanner.getSelectStatement(id));
+		}			
+		
+		
+		PreparedStatement prep = conn.prepareStatement(
+				scanner.getSelectStatement(id));
+		
 		prep.setInt(1, id);
 		
 		b.setField(scanner.getIdField(), id);
@@ -969,12 +973,26 @@ public class ProtoDB {
 				//TODO: check repeated fields
 				for (FieldDescriptor f : scanner.getRepeatedObjectFields()) {
 					//find sub objects that match the criteria
-					//find main objects that contain the sub objects (ID-wise)
-					List<DynamicMessage> dmObjects = find(f.getContainingType()
-						, StringUtils.join(ArrayUtils.subarray(fieldParts, 1, fieldParts.length), ".")
-						, searchFor
-						, isLikeFilter
-						, conn);
+					if (f.getName().equalsIgnoreCase(fieldParts[0])) {
+						List<DynamicMessage> dmObjects = find(f.getMessageType()
+								, StringUtils.join(ArrayUtils.subarray(fieldParts, 1, fieldParts.length), ".")
+								, searchFor
+								, isLikeFilter
+								, conn);
+						
+						// find id:s of obejcts
+						List<Integer> ids = new ArrayList<Integer>();
+						for (DynamicMessage dmpart : dmObjects) {
+							for (FieldDescriptor idfield : dmpart.getDescriptorForType().getFields()) {
+								if (idfield.getName().equalsIgnoreCase("ID")) {
+									ids.add((int)dmpart.getField(idfield));
+								}
+							}
+						}
+						
+						//find main objects that contain the sub objects (ID-wise)
+						
+					}
 					
 					
 				}

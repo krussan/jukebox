@@ -118,5 +118,32 @@ public class TestSearch {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
+	}
+	
+	@Test
+	public void TestSearchRepeatedObjectsq() {	
+		try {
+			//TODO: WHERE clause on Boolean does not appear to work?
+			List<DynamicMessage> result =
+				db.find(
+					TestDomain.RepObjectOne.getDescriptor(), 
+					"list_of_objects.director", 
+					"madeByThisDirector", 
+					false);
+			
+			// we should get one single result..
+			assertEquals(1, result.size());
+		
+			TestDomain.RepObjectOne b = TestDomain.RepObjectOne.parseFrom(result.get(0).toByteString());
+			assertEquals(b.getHappycamper(), 3);
+			
+//			PreparedStatement prep = "SELECT * FROM SimpleTest";
+//			
+//			testTableStructure(db, "SimpleTest", SIMPLE_FIELD_NAMES, SIMPLE_FIELD_TYPES);
+		} catch (SQLException | ClassNotFoundException | InvalidProtocolBufferException | SearchFieldNotFoundException  e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
 	}	
+	
 }
