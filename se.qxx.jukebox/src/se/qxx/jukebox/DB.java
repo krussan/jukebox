@@ -1267,8 +1267,11 @@ public class DB {
 
 	public static boolean setupDatabase() {
 		try {
-			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());			
-			db.setupDatabase(Movie.getDefaultInstance());
+			File f = new File(DB.getDatabaseFilename());
+			if (!f.exists()) {
+				ProtoDB db = new ProtoDB(DB.getDatabaseFilename());			
+				db.setupDatabase(Movie.getDefaultInstance());
+			}
 			
 			return true;
 		} catch (ClassNotFoundException | SQLException

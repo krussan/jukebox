@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -269,6 +271,13 @@ public class ProtoDBScanner {
 			+ " IN (" + StringUtils.join(subObjectIDs, ",") + ")";
 	}	
 	
+	public String getSearchStatementLinkObject(FieldDescriptor field, ProtoDBScanner other, List<Integer> subObjectIDs) {
+		return " SELECT A._" + this.getObjectName().toLowerCase() + "_ID AS ID"
+				+  " FROM " + this.getLinkTableName(other, field.getName()) + " A"
+				+  " WHERE A._" + other.getObjectName().toLowerCase() + "_ID "
+				+  " IN (" + StringUtils.join(subObjectIDs, ",") + ")";
+	}
+	
 	public String getSearchStatement(EnumDescriptor field) {
 		return "SELECT ID"
 				+ " FROM " + StringUtils.capitalize(field.getName())
@@ -332,19 +341,28 @@ public class ProtoDBScanner {
 
 	public PreparedStatement compileArguments(MessageOrBuilder b, String sql, Boolean objectExists, Connection conn) throws SQLException {
 		PreparedStatement prep = conn.prepareStatement(sql);
-
+		
 		int c = 0;
 		for(FieldDescriptor field : this.getObjectFields()) {
-			prep.setInt(++c, this.getObjectID(field.getName()));
+			Integer objectID = this.getObjectID(field.getName());
+			if (objectID == null)
+				throw new IllegalArgumentException(String.format("Failed to compile arguments. Reference ID for field %s not found",  field.getName()));
+			
+			prep.setInt(++c, objectID);
 		}
 		
 		for (FieldDescriptor field : this.getBlobFields()) {
+			Integer objectID = this.getBlobID(field.getName());
+			if (objectID == null)
+				throw new IllegalArgumentException(String.format("Failed to compile arguments. Blob ID for field %s not found",  field.getName()));
+			
 			prep.setInt(++c, this.getBlobID(field.getName()));
 		}
 		
-		for(FieldDescriptor field : this.getBasicFields())
+		for(FieldDescriptor field : this.getBasicFields()) {
 			if (!field.getName().equalsIgnoreCase("ID"))
 				this.compileArgument(++c, prep, field.getJavaType(), b.getField(field));			
+		}
 		
 		if (objectExists)
 			prep.setInt(++c, this.getIdValue());

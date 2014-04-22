@@ -211,6 +211,17 @@
 	        passphrase="${jukebox.key.file.pass}"
         />
 	    
+	    <sshexec
+	        trust="true"
+	        keyfile="${jukebox.key.file}"
+	        host="${jukebox.deploy.server}"
+	        username="${jukebox.deploy.user}"
+	        failonerror="false" 
+	        command="rm ${jukebox.deploy.server.path}/*.log" 
+	        passphrase="${jukebox.key.file.pass}"
+        />
+	    
+	    
 		<scp 
 			todir="${jukebox.deploy.path}" 
 			trust="true"

@@ -211,6 +211,32 @@ public class TestInsert {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
+	}
+	
+	@Test
+	public void TestEnumOne() {
+		TestDomain.EnumOne t = TestDomain.EnumOne.newBuilder()
+			.setID(-1)
+			.setRating(TestDomain.Rating.PositiveMatch)
+			.setTitle("ThisIsAnEnumTitle")
+			.build();
+		
+		try {
+			db.setupDatabase(t);
+			
+			int id = db.save(t);	
+			
+			DynamicMessage dm = db.get(id, TestDomain.EnumOne.getDescriptor());
+			TestDomain.EnumOne oo = TestDomain.EnumOne.parseFrom(dm.toByteString());
+			
+			assertEquals(t.getRating().toString(), oo.getRating().toString());
+			assertEquals(t.getTitle(), oo.getTitle());
+			assertNotEquals(id, -1);
+						
+		} catch (SQLException | ClassNotFoundException | IDFieldNotFoundException | InvalidProtocolBufferException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}		
 	}	
 
 }

@@ -442,8 +442,14 @@ public class ProtoDB {
 			// populate object fields
 			for (FieldDescriptor field : scanner.getObjectFields()) {
 				int otherID = rs.getInt(scanner.getObjectFieldName(field));
-				MessageOrBuilder otherMsg = get(otherID, field.getMessageType(), conn);
-				b.setField(field, otherMsg);
+				
+				if (field.getJavaType() == JavaType.MESSAGE) {
+					MessageOrBuilder otherMsg = get(otherID, field.getMessageType(), conn);
+					b.setField(field, otherMsg);
+				}
+				else if (field.getJavaType() == JavaType.ENUM){
+					b.setField(field, field.getEnumType().findValueByNumber(otherID));
+				}
 			}
 			
 			// populate blobs
@@ -597,7 +603,12 @@ public class ProtoDB {
 				int objectID = save((MessageOrBuilder)o, conn);
 				scanner.addObjectID(fieldName, objectID);
 			}
-		}		
+			else if (field.getJavaType() == JavaType.ENUM && !field.isRepeated()) {
+				int enumID = saveEnum(field, ((EnumValueDescriptor)o).getName(), conn);
+				scanner.addObjectID(fieldName, enumID);
+			}
+		}
+		
 
 		// delete blobs
 		if (objectExist)
@@ -701,6 +712,18 @@ public class ProtoDB {
 		prep.execute();
 		
 		return getIdentity(conn);
+	}
+	
+	private int saveEnum(FieldDescriptor field, String value, Connection conn) throws SQLException {
+		PreparedStatement prep = conn.prepareStatement("SELECT ID FROM " + field.getName() + " WHERE value = ?");
+		prep.setString(1, value);
+		ResultSet rs = prep.executeQuery();
+		
+		if (rs.next())
+			return rs.getInt(1);
+		else
+			return -1;
+		
 	}
 
 	/***
@@ -974,27 +997,35 @@ public class ProtoDB {
 				for (FieldDescriptor f : scanner.getRepeatedObjectFields()) {
 					//find sub objects that match the criteria
 					if (f.getName().equalsIgnoreCase(fieldParts[0])) {
+						matchingField = f;
 						List<DynamicMessage> dmObjects = find(f.getMessageType()
 								, StringUtils.join(ArrayUtils.subarray(fieldParts, 1, fieldParts.length), ".")
 								, searchFor
 								, isLikeFilter
 								, conn);
 						
-						// find id:s of obejcts
-						List<Integer> ids = new ArrayList<Integer>();
-						for (DynamicMessage dmpart : dmObjects) {
-							for (FieldDescriptor idfield : dmpart.getDescriptorForType().getFields()) {
-								if (idfield.getName().equalsIgnoreCase("ID")) {
-									ids.add((int)dmpart.getField(idfield));
+						if (dmObjects.size() > 0) {
+							List<Integer> ids = new ArrayList<Integer>();
+							FieldDescriptor idField = f.getMessageType().findFieldByName("ID");
+							if (idField != null) 
+								for (DynamicMessage dmpart : dmObjects)
+									ids.add((int)dmpart.getField(idField));
+							
+							
+							// find id:s of obejcts
+							for (DynamicMessage dmpart : dmObjects) {
+								for (FieldDescriptor idfield : dmpart.getDescriptorForType().getFields()) {
+									if (idfield.getName().equalsIgnoreCase("ID")) {
+										ids.add((int)dmpart.getField(idfield));
+									}
 								}
 							}
+							
+							//find main objects that contain the sub objects (ID-wise)
+							ProtoDBScanner other = new ProtoDBScanner(dmObjects.get(0));
+							prep = conn.prepareStatement(scanner.getSearchStatementLinkObject(f, other, ids));
 						}
-						
-						//find main objects that contain the sub objects (ID-wise)
-						
 					}
-					
-					
 				}
 				
 				if (matchingField == null)
