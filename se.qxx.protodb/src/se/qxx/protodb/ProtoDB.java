@@ -21,6 +21,7 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors.EnumValueDescriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor.JavaType;
 import com.google.protobuf.DynamicMessage;
+import com.google.protobuf.Message;
 import com.google.protobuf.Message.Builder;
 import com.google.protobuf.MessageOrBuilder;
 import com.google.protobuf.Descriptors.Descriptor;
@@ -583,7 +584,11 @@ public class ProtoDB {
 	 * @throws SQLException
 	 * @throws ClassNotFoundException 
 	 */
-	private int save(MessageOrBuilder b, Connection conn) throws SQLException, ClassNotFoundException {
+	private int save(Message b, Connection conn) throws SQLException, ClassNotFoundException {
+		//TODO: We need to set the ID property of each object
+		// without this subsequent calls to save will corrupt the database.
+		
+		Builder mainBuilder = DynamicMessage.newBuilder(b);
 		ProtoDBScanner scanner = new ProtoDBScanner(b);
 		
 		//check for existence. UPDATE if present!
@@ -598,10 +603,16 @@ public class ProtoDB {
 		for(FieldDescriptor field : scanner.getObjectFields()) {
 			String fieldName = field.getName();
 			Object o = b.getField(field);
-
+			
 			if (field.getJavaType() == JavaType.MESSAGE && !field.isRepeated()) {
-				int objectID = save((MessageOrBuilder)o, conn);
+				ProtoDBScanner other = new ProtoDBScanner((Message)o);
+				Builder subBuilder = DynamicMessage.newBuilder((Message)o);
+				
+				int objectID = save((Message)o, conn);				
 				scanner.addObjectID(fieldName, objectID);
+				subBuilder.setField(other.getIdField(), objectID);
+				mainBuilder.setField(field, subBuilder.build());
+				
 			}
 			else if (field.getJavaType() == JavaType.ENUM && !field.isRepeated()) {
 				int enumID = saveEnum(field, ((EnumValueDescriptor)o).getName(), conn);
@@ -932,7 +943,7 @@ public class ProtoDB {
 		
 		FieldDescriptor matchingField = null;
 
-		//TODO: Split fieldName on dot (.) to be able to search sub objects
+		// Split fieldName on dot (.) to be able to search sub objects
 		// fieldName should then be on the form <object>.[<object>...].fieldName
 		String[] fieldParts = StringUtils.split(fieldName, ".");
 		PreparedStatement prep = null;
@@ -993,7 +1004,7 @@ public class ProtoDB {
 			}
 			
 			if (matchingField == null) {
-				//TODO: check repeated fields
+				// check repeated fields
 				for (FieldDescriptor f : scanner.getRepeatedObjectFields()) {
 					//find sub objects that match the criteria
 					if (f.getName().equalsIgnoreCase(fieldParts[0])) {
