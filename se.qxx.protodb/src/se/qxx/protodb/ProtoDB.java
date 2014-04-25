@@ -9,6 +9,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.soap.MessageFactory;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
@@ -383,9 +385,9 @@ public class ProtoDB {
 	 * @throws SQLException 
 	 * @throws ClassNotFoundException 
 	 */
-	public DynamicMessage get(int id, Descriptor desc) throws ClassNotFoundException, SQLException{
+	public T<extends Message> T get(int id, Descriptor desc) throws ClassNotFoundException, SQLException{
 		Connection conn = null;
-		DynamicMessage msg = null;
+		T msg = null;
 		
 		try {
 			conn = this.initialize();
@@ -406,11 +408,12 @@ public class ProtoDB {
 	 * @return
 	 * @throws SQLException 
 	 */
-	private DynamicMessage get(int id, Descriptor desc, Connection conn) throws SQLException{		
-		DynamicMessage d = DynamicMessage.getDefaultInstance(desc);
-		ProtoDBScanner scanner = new ProtoDBScanner(d);
+	private <T extends Message> T get(int id, T instance, Connection conn) throws SQLException{
+		Builder b = instance.newBuilderForType();
 		
-		Builder b = DynamicMessage.newBuilder(desc);
+		//DynamicMessage d = DynamicMessage.getDefaultInstance(desc);
+		ProtoDBScanner scanner = new ProtoDBScanner(instance);
+		
 		
 		// populate list of sub objects
 		for (FieldDescriptor field : scanner.getRepeatedObjectFields()) {
@@ -545,19 +548,20 @@ public class ProtoDB {
 	/***
 	 * Saves a protobuf class to database.
 	 * @param b
+	 * @return 
 	 * @return
 	 * @throws SQLException 
 	 * @throws ClassNotFoundException 
 	 */
-	public int save(MessageOrBuilder b) throws ClassNotFoundException, SQLException {
+	public <T extends Message> T save(T b) throws ClassNotFoundException, SQLException {
 		Connection conn = null;
-		int id = -1;
+		T nb;
 		
 		try {
 			conn = this.initialize();
 			conn.setAutoCommit(false);
 			
-			id = this.save(b, conn);
+			nb = this.save(b, conn);
 			
 			conn.commit();
 		}
@@ -572,7 +576,7 @@ public class ProtoDB {
 			this.disconnect(conn);
 		}
 		
-		return id;
+		return nb;
 
 	}
 
@@ -580,15 +584,17 @@ public class ProtoDB {
 	 * Internal save function. Saves a protobuf class to database.
 	 * @param b
 	 * @param conn
+	 * @return 
 	 * @return
 	 * @throws SQLException
 	 * @throws ClassNotFoundException 
 	 */
-	private int save(Message b, Connection conn) throws SQLException, ClassNotFoundException {
+	private <T extends Message> T save(T b, Connection conn) throws SQLException, ClassNotFoundException {
 		//TODO: We need to set the ID property of each object
 		// without this subsequent calls to save will corrupt the database.
-		
-		Builder mainBuilder = DynamicMessage.newBuilder(b);
+
+		// create a new builder to store the new object
+		Builder mainBuilder = b.newBuilderForType();
 		ProtoDBScanner scanner = new ProtoDBScanner(b);
 		
 		//check for existence. UPDATE if present!
@@ -598,7 +604,7 @@ public class ProtoDB {
 		// getBasicFields
 		// getRepeatedObjectFields
 		// getRepeatedBasicFIelds
-
+		
 		// save underlying objects
 		for(FieldDescriptor field : scanner.getObjectFields()) {
 			String fieldName = field.getName();
@@ -606,16 +612,16 @@ public class ProtoDB {
 			
 			if (field.getJavaType() == JavaType.MESSAGE && !field.isRepeated()) {
 				ProtoDBScanner other = new ProtoDBScanner((Message)o);
-				Builder subBuilder = DynamicMessage.newBuilder((Message)o);
+				Message ob = save((Message)o, conn);				
+				scanner.addObjectID(fieldName, (int)ob.getField(other.getIdField()));
 				
-				int objectID = save((Message)o, conn);				
-				scanner.addObjectID(fieldName, objectID);
-				subBuilder.setField(other.getIdField(), objectID);
-				mainBuilder.setField(field, subBuilder.build());
+				//subBuilder.setField(other.getIdField(), objectID);
+				mainBuilder.setField(field, ob);
 				
 			}
 			else if (field.getJavaType() == JavaType.ENUM && !field.isRepeated()) {
 				int enumID = saveEnum(field, ((EnumValueDescriptor)o).getName(), conn);
+				mainBuilder.setField(field, ((EnumValueDescriptor)o));
 				scanner.addObjectID(fieldName, enumID);
 			}
 		}
@@ -632,11 +638,12 @@ public class ProtoDB {
 			ByteString bs = (ByteString)b.getField(field);
 			int blobID = saveBlob(bs.toByteArray(), conn);
 			scanner.addBlobID(fieldName, blobID);
+			mainBuilder.setField(field, bs);
 		}		
 		
 		// save this object
 		int thisID = saveThisObject(b, scanner, objectExist, conn);
-		
+		mainBuilder.setField(scanner.getIdField(), thisID);
 		
 		// save underlying repeated objects
 		for(FieldDescriptor field : scanner.getRepeatedObjectFields()) {
@@ -644,18 +651,21 @@ public class ProtoDB {
 			int fieldCount = b.getRepeatedFieldCount(field);
 			for (int i=0;i<fieldCount;i++) {
 				Object mg = b.getRepeatedField(field, i);
-				if (mg instanceof MessageOrBuilder) {
-					MessageOrBuilder b2 = (MessageOrBuilder)mg;
+				if (mg instanceof Message) {
+					Message b2 = (Message)mg;
 					ProtoDBScanner other = new ProtoDBScanner(b2);
 					
 					// save other object
-					int otherID = save(b2, conn);
+					Message ob = save(b2, conn);
 					
 					// delete from link table
 					deleteLinkObject(scanner, other, field, conn);
 					
 					// save link table
+					int otherID = (int)ob.getField(other.getIdField());
 					saveLinkObject(scanner, other, field, thisID, otherID, conn);
+					
+					mainBuilder.setRepeatedField(field, i, ob);
 				}
 			}
 		}
@@ -670,10 +680,11 @@ public class ProtoDB {
 			for (int i=0;i<fieldCount;i++) {
 				Object value = b.getRepeatedField(field, i);
 				saveLinkBasic(scanner, thisID, field, value, conn);
+				mainBuilder.setRepeatedField(field, i, value);
 			}			
 		}
 				
-		return thisID;
+		return (T)mainBuilder.build();
 	}
 	
 	private void deleteBasicLinkObject(ProtoDBScanner scanner, FieldDescriptor field, Connection conn) throws SQLException {

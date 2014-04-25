@@ -48,13 +48,13 @@ public class TestInsert {
 		try {
 			db.setupDatabase(t);
 			
-			int id = db.save(t);
+			TestDomain.SimpleTest tt = db.save(t);
 
 			// check to see if the save was successful (ID should be greater than 0)
-			assertNotEquals(id, -1);
+			assertNotEquals(tt.getID(), -1);
 			
 			
-			DynamicMessage dm = db.get(id, TestDomain.SimpleTest.getDescriptor());
+			DynamicMessage dm = db.get(tt.getID(), TestDomain.SimpleTest.getDescriptor());
 			TestDomain.SimpleTest st = TestDomain.SimpleTest.parseFrom(dm.toByteString());
 			
 			assertEquals(t.getBb(), st.getBb());
@@ -87,12 +87,12 @@ public class TestInsert {
 		try {
 			db.setupDatabase(t);
 			
-			int id = db.save(t);
+			TestDomain.RepSimpleList tt = db.save(t);
 
 			// check to see if the save was successful (ID should be greater than 0)
-			assertNotEquals(id, -1);
+			assertNotEquals(tt.getID(), -1);
 			
-			DynamicMessage dm = db.get(id, TestDomain.RepSimpleList.getDescriptor());
+			DynamicMessage dm = db.get(tt.getID(), TestDomain.RepSimpleList.getDescriptor());
 			TestDomain.RepSimpleList st = TestDomain.RepSimpleList.parseFrom(dm.toByteString());
 			
 			assertEquals(t.getHappycamper(), st.getHappycamper());
@@ -133,10 +133,11 @@ public class TestInsert {
 		try {
 			db.setupDatabase(t);
 			
-			int id = db.save(t);
+			TestDomain.ObjectOne ttt = db.save(t);
 			
+			assertNotEquals(ttt.getID(), -1);
 			
-			DynamicMessage dm = db.get(id, TestDomain.ObjectOne.getDescriptor());
+			DynamicMessage dm = db.get(ttt.getID(), TestDomain.ObjectOne.getDescriptor());
 			TestDomain.ObjectOne oo = TestDomain.ObjectOne.parseFrom(dm.toByteString());
 			TestDomain.SimpleTest st = oo.getTestOne();
 			
@@ -150,8 +151,6 @@ public class TestInsert {
 			assertEquals(tt.getSs(), st.getSs());
 			assertArrayEquals(tt.getBy().toByteArray(), st.getBy().toByteArray());
 
-			
-			assertNotEquals(id, -1);
 			
 		} catch (SQLException | ClassNotFoundException | IDFieldNotFoundException | InvalidProtocolBufferException e) {
 			e.printStackTrace();
@@ -181,17 +180,19 @@ public class TestInsert {
 		try {
 			db.setupDatabase(t);
 			
-			int id1 = db.save(t);
+			TestDomain.SimpleTest tt = db.save(t);
 			// check to see if the save was successful (ID should be greater than 0)
-			assertNotEquals(id1, -1);
+			assertNotEquals(tt.getID(), -1);
 			
-			t = TestDomain.SimpleTest.newBuilder(t).setSs("ThisIsTheUpdateTest").setID(id1).build();
+			tt = TestDomain.SimpleTest.newBuilder(tt)
+				.setSs("ThisIsTheUpdateTest")
+				.build();
 			
-			int id2 = db.save(t);
-			assertNotEquals(id2, -1);			
-			assertEquals(id1, id2);
+			TestDomain.SimpleTest t2 = db.save(tt);
+			assertNotEquals(t2.getID(), -1);			
+			assertEquals(tt.getID(), t2.getID());
 		
-			DynamicMessage dm = db.get(id2, TestDomain.SimpleTest.getDescriptor());
+			DynamicMessage dm = db.get(t2.getID(), TestDomain.SimpleTest.getDescriptor());
 			TestDomain.SimpleTest st = TestDomain.SimpleTest.parseFrom(dm.toByteString());
 			
 			assertEquals(t.getBb(), st.getBb());
@@ -224,14 +225,16 @@ public class TestInsert {
 		try {
 			db.setupDatabase(t);
 			
-			int id = db.save(t);	
+			TestDomain.EnumOne oo = db.save(t);
+			//int id = db.save(t);	
 			
-			DynamicMessage dm = db.get(id, TestDomain.EnumOne.getDescriptor());
-			TestDomain.EnumOne oo = TestDomain.EnumOne.parseFrom(dm.toByteString());
+			assertNotEquals(t.getID(), -1);
+			
+			DynamicMessage dm = db.get(t.getID(), TestDomain.EnumOne.getDescriptor());
+			TestDomain.EnumOne pp = TestDomain.EnumOne.parseFrom(dm.toByteString());
 			
 			assertEquals(t.getRating().toString(), oo.getRating().toString());
 			assertEquals(t.getTitle(), oo.getTitle());
-			assertNotEquals(id, -1);
 						
 		} catch (SQLException | ClassNotFoundException | IDFieldNotFoundException | InvalidProtocolBufferException e) {
 			e.printStackTrace();
