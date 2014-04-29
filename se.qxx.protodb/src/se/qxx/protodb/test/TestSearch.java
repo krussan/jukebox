@@ -31,9 +31,9 @@ public class TestSearch {
 	@Test
 	public void TestSearchExact() {	
 		try {
-			List<DynamicMessage> result =
+			List<TestDomain.SimpleTwo> result =
 				db.find(
-					TestDomain.SimpleTwo.getDescriptor(), 
+					TestDomain.SimpleTwo.getDefaultInstance(), 
 					"director", 
 					"madeByAnotherDirector", 
 					false);
@@ -41,7 +41,7 @@ public class TestSearch {
 			// we should get one single result..
 			assertEquals(1, result.size());
 		
-			TestDomain.SimpleTwo b = TestDomain.SimpleTwo.parseFrom(result.get(0).toByteString());
+			TestDomain.SimpleTwo b = result.get(0);
 
 			assertEquals("thisIsAlsoATitle", b.getTitle());
 			assertEquals("madeByAnotherDirector", b.getDirector());
@@ -49,7 +49,7 @@ public class TestSearch {
 //			PreparedStatement prep = "SELECT * FROM SimpleTest";
 //			
 //			testTableStructure(db, "SimpleTest", SIMPLE_FIELD_NAMES, SIMPLE_FIELD_TYPES);
-		} catch (SQLException | ClassNotFoundException | InvalidProtocolBufferException | SearchFieldNotFoundException  e) {
+		} catch (SQLException | ClassNotFoundException | SearchFieldNotFoundException  e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -59,9 +59,9 @@ public class TestSearch {
 	@Test
 	public void TestSearchLike() {	
 		try {
-			List<DynamicMessage> result =
+			List<TestDomain.SimpleTwo> result =
 				db.find(
-					TestDomain.SimpleTwo.getDescriptor(), 
+					TestDomain.SimpleTwo.getDefaultInstance(), 
 					"director", 
 					"madeBy%", 
 					true);
@@ -69,18 +69,18 @@ public class TestSearch {
 			// we should get one single result..
 			assertEquals(2, result.size());
 		
-			TestDomain.SimpleTwo o1 = TestDomain.SimpleTwo.parseFrom(result.get(0).toByteString());
+			TestDomain.SimpleTwo o1 = result.get(0);
 			assertEquals("thisIsATitle", o1.getTitle());
 			assertEquals("madeByThisDirector", o1.getDirector());
 			
-			TestDomain.SimpleTwo o2 = TestDomain.SimpleTwo.parseFrom(result.get(1).toByteString());
+			TestDomain.SimpleTwo o2 = result.get(1);
 			assertEquals("thisIsAlsoATitle", o2.getTitle());
 			assertEquals("madeByAnotherDirector", o2.getDirector());
 			
 //			PreparedStatement prep = "SELECT * FROM SimpleTest";
 //			
 //			testTableStructure(db, "SimpleTest", SIMPLE_FIELD_NAMES, SIMPLE_FIELD_TYPES);
-		} catch (SQLException | ClassNotFoundException | InvalidProtocolBufferException | SearchFieldNotFoundException  e) {
+		} catch (SQLException | ClassNotFoundException | SearchFieldNotFoundException  e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -90,9 +90,9 @@ public class TestSearch {
 	public void TestSearchObjectExactBoolean() {	
 		try {
 			//TODO: WHERE clause on Boolean does not appear to work?
-			List<DynamicMessage> result =
+			List<TestDomain.ObjectOne> result =
 				db.find(
-					TestDomain.ObjectOne.getDescriptor(), 
+					TestDomain.ObjectOne.getDefaultInstance(), 
 					"testOne.bb", 
 					true, 
 					false);
@@ -100,7 +100,7 @@ public class TestSearch {
 			// we should get one single result..
 			assertEquals(1, result.size());
 		
-			TestDomain.ObjectOne b = TestDomain.ObjectOne.parseFrom(result.get(0).toByteString());
+			TestDomain.ObjectOne b = result.get(0);
 			assertEquals(b.getOois(), 986);
 			
 			TestDomain.SimpleTest o1 = b.getTestOne();
@@ -114,7 +114,7 @@ public class TestSearch {
 //			PreparedStatement prep = "SELECT * FROM SimpleTest";
 //			
 //			testTableStructure(db, "SimpleTest", SIMPLE_FIELD_NAMES, SIMPLE_FIELD_TYPES);
-		} catch (SQLException | ClassNotFoundException | InvalidProtocolBufferException | SearchFieldNotFoundException  e) {
+		} catch (SQLException | ClassNotFoundException | SearchFieldNotFoundException  e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -123,9 +123,9 @@ public class TestSearch {
 	@Test
 	public void TestSearchRepeatedObjects() {	
 		try {
-			List<DynamicMessage> result =
+			List<TestDomain.RepObjectOne> result =
 				db.find(
-					TestDomain.RepObjectOne.getDescriptor(), 
+					TestDomain.RepObjectOne.getDefaultInstance(), 
 					"list_of_objects.director", 
 					"madeByThisDirector", 
 					false);
@@ -133,10 +133,10 @@ public class TestSearch {
 			// we should get one single result..
 			assertEquals(1, result.size());
 		
-			TestDomain.RepObjectOne b = TestDomain.RepObjectOne.parseFrom(result.get(0).toByteString());
+			TestDomain.RepObjectOne b = result.get(0);
 			assertEquals(b.getHappycamper(), 3);
 			
-		} catch (SQLException | ClassNotFoundException | InvalidProtocolBufferException | SearchFieldNotFoundException  e) {
+		} catch (SQLException | ClassNotFoundException | SearchFieldNotFoundException  e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}

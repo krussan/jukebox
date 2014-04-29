@@ -28,8 +28,7 @@ public class TestSelect {
 	@Test
 	public void TestSimple() {	
 		try {
-			DynamicMessage dm = db.get(1, TestDomain.RepObjectOne.getDescriptor());
-			TestDomain.RepObjectOne b = TestDomain.RepObjectOne.parseFrom(dm.toByteString());
+			TestDomain.RepObjectOne b = db.get(1, TestDomain.RepObjectOne.getDefaultInstance());
 
 			// happyCamper should be 3
 			assertEquals(3, b.getHappycamper());
@@ -48,7 +47,7 @@ public class TestSelect {
 //			PreparedStatement prep = "SELECT * FROM SimpleTest";
 //			
 //			testTableStructure(db, "SimpleTest", SIMPLE_FIELD_NAMES, SIMPLE_FIELD_TYPES);
-		} catch (SQLException | ClassNotFoundException | InvalidProtocolBufferException  e) {
+		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}

@@ -385,14 +385,14 @@ public class ProtoDB {
 	 * @throws SQLException 
 	 * @throws ClassNotFoundException 
 	 */
-	public T<extends Message> T get(int id, Descriptor desc) throws ClassNotFoundException, SQLException{
+	public <T extends Message> T get(int id, T instance) throws ClassNotFoundException, SQLException{
 		Connection conn = null;
 		T msg = null;
 		
 		try {
 			conn = this.initialize();
 			
-			msg = get(id, desc, conn);
+			msg = get(id, instance, conn);
 			
 		}
 		finally {
@@ -408,6 +408,7 @@ public class ProtoDB {
 	 * @return
 	 * @throws SQLException 
 	 */
+	@SuppressWarnings("unchecked")
 	private <T extends Message> T get(int id, T instance, Connection conn) throws SQLException{
 		Builder b = instance.newBuilderForType();
 		
@@ -448,7 +449,8 @@ public class ProtoDB {
 				int otherID = rs.getInt(scanner.getObjectFieldName(field));
 				
 				if (field.getJavaType() == JavaType.MESSAGE) {
-					MessageOrBuilder otherMsg = get(otherID, field.getMessageType(), conn);
+					DynamicMessage innerInstance = DynamicMessage.getDefaultInstance(field.getMessageType());
+					DynamicMessage otherMsg = get(otherID, innerInstance, conn);
 					b.setField(field, otherMsg);
 				}
 				else if (field.getJavaType() == JavaType.ENUM){
@@ -491,7 +493,7 @@ public class ProtoDB {
 				}
 			}			
 		}
-		return (DynamicMessage) b.build();
+		return (T) b.build();
 	}
 
 	private byte[] getBlob(int otherID, Connection conn) throws SQLException {
@@ -532,7 +534,7 @@ public class ProtoDB {
 				
 				while(rs.next()) {
 					// get sub objects
-					MessageOrBuilder otherMsg = get(rs.getInt("ID"), mt, conn);
+					DynamicMessage otherMsg = get(rs.getInt("ID"), mg, conn);
 					b.addRepeatedField(field, otherMsg);
 				}
 				
@@ -589,6 +591,7 @@ public class ProtoDB {
 	 * @throws SQLException
 	 * @throws ClassNotFoundException 
 	 */
+	@SuppressWarnings("unchecked")
 	private <T extends Message> T save(T b, Connection conn) throws SQLException, ClassNotFoundException {
 		//TODO: We need to set the ID property of each object
 		// without this subsequent calls to save will corrupt the database.
@@ -645,6 +648,11 @@ public class ProtoDB {
 		int thisID = saveThisObject(b, scanner, objectExist, conn);
 		mainBuilder.setField(scanner.getIdField(), thisID);
 		
+		// populate basic fields in return message
+		for(FieldDescriptor field : scanner.getBasicFields())
+			if (!field.getName().equalsIgnoreCase("ID"))
+				mainBuilder.setField(field, b.getField(field));
+		
 		// save underlying repeated objects
 		for(FieldDescriptor field : scanner.getRepeatedObjectFields()) {
 			// for each repeated field get insert statement according to _this_ID, _other_ID
@@ -665,7 +673,7 @@ public class ProtoDB {
 					int otherID = (int)ob.getField(other.getIdField());
 					saveLinkObject(scanner, other, field, thisID, otherID, conn);
 					
-					mainBuilder.setRepeatedField(field, i, ob);
+					mainBuilder.addRepeatedField(field, ob);
 				}
 			}
 		}
@@ -680,7 +688,7 @@ public class ProtoDB {
 			for (int i=0;i<fieldCount;i++) {
 				Object value = b.getRepeatedField(field, i);
 				saveLinkBasic(scanner, thisID, field, value, conn);
-				mainBuilder.setRepeatedField(field, i, value);
+				mainBuilder.addRepeatedField(field, value);
 			}			
 		}
 				
@@ -929,15 +937,15 @@ public class ProtoDB {
 	 * @throws SQLException
 	 * @throws SearchFieldNotFoundException 
 	 */
-	public List<DynamicMessage> find(Descriptor desc, String fieldName, Object searchFor, Boolean isLikeOperator) throws ClassNotFoundException, SQLException, SearchFieldNotFoundException {
+	public <T extends Message> List<T> find(T instance, String fieldName, Object searchFor, Boolean isLikeOperator) throws ClassNotFoundException, SQLException, SearchFieldNotFoundException {
 		// if field is repeated -> search link objects
 		Connection conn = null;
-		List<DynamicMessage> result = new ArrayList<DynamicMessage>();
+		List<T> result = new ArrayList<T>();
 		
 		try {
 			conn = this.initialize();
 			
-			result = this.find(desc, fieldName, searchFor, isLikeOperator, conn);
+			result = this.find(instance, fieldName, searchFor, isLikeOperator, conn);
 			
 		}
 		finally {
@@ -947,10 +955,10 @@ public class ProtoDB {
 		return result;		
 	}
 	
-	private List<DynamicMessage> find(Descriptor desc, String fieldName, Object searchFor, Boolean isLikeFilter, Connection conn) throws SearchFieldNotFoundException, SQLException, ClassNotFoundException {
-		List<DynamicMessage> result = new ArrayList<DynamicMessage>();
-		DynamicMessage dm = DynamicMessage.getDefaultInstance(desc);
-		ProtoDBScanner scanner = new ProtoDBScanner(dm);
+	private <T extends Message> List<T> find(T instance, String fieldName, Object searchFor, Boolean isLikeFilter, Connection conn) throws SearchFieldNotFoundException, SQLException, ClassNotFoundException {
+		List<T> result = new ArrayList<T>();
+//		DynamicMessage dm = DynamicMessage.getDefaultInstance(desc);
+		ProtoDBScanner scanner = new ProtoDBScanner(instance);
 		
 		FieldDescriptor matchingField = null;
 
@@ -987,8 +995,9 @@ public class ProtoDB {
 					List<DynamicMessage> matchingSubObjects = null;
 					List<Integer> ids = new ArrayList<Integer>();
 					if (field.getJavaType() == JavaType.MESSAGE) {
+						DynamicMessage innerInstance = DynamicMessage.getDefaultInstance(field.getMessageType());
 						matchingSubObjects = 
-							find(field.getMessageType(),
+							find(innerInstance,
 								StringUtils.join(ArrayUtils.subarray(fieldParts, 1, fieldParts.length), "."),
 								searchFor,
 								isLikeFilter,
@@ -1020,7 +1029,7 @@ public class ProtoDB {
 					//find sub objects that match the criteria
 					if (f.getName().equalsIgnoreCase(fieldParts[0])) {
 						matchingField = f;
-						List<DynamicMessage> dmObjects = find(f.getMessageType()
+						List<DynamicMessage> dmObjects = find(DynamicMessage.getDefaultInstance(f.getMessageType())
 								, StringUtils.join(ArrayUtils.subarray(fieldParts, 1, fieldParts.length), ".")
 								, searchFor
 								, isLikeFilter
@@ -1035,13 +1044,13 @@ public class ProtoDB {
 							
 							
 							// find id:s of obejcts
-							for (DynamicMessage dmpart : dmObjects) {
-								for (FieldDescriptor idfield : dmpart.getDescriptorForType().getFields()) {
-									if (idfield.getName().equalsIgnoreCase("ID")) {
-										ids.add((int)dmpart.getField(idfield));
-									}
-								}
-							}
+//							for (DynamicMessage dmpart : dmObjects) {
+//								for (FieldDescriptor idfield : dmpart.getDescriptorForType().getFields()) {
+//									if (idfield.getName().equalsIgnoreCase("ID")) {
+//										ids.add((int)dmpart.getField(idfield));
+//									}
+//								}
+//							}
 							
 							//find main objects that contain the sub objects (ID-wise)
 							ProtoDBScanner other = new ProtoDBScanner(dmObjects.get(0));
@@ -1066,7 +1075,7 @@ public class ProtoDB {
 			}
 			
 			for (int i : ids) {
-				result.add(this.get(i, desc, conn));
+				result.add(this.get(i, instance, conn));
 			}
 		}
 		

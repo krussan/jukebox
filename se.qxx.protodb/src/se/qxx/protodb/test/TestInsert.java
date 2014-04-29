@@ -54,15 +54,14 @@ public class TestInsert {
 			assertNotEquals(tt.getID(), -1);
 			
 			
-			DynamicMessage dm = db.get(tt.getID(), TestDomain.SimpleTest.getDescriptor());
-			TestDomain.SimpleTest st = TestDomain.SimpleTest.parseFrom(dm.toByteString());
+			TestDomain.SimpleTest st = db.get(tt.getID(), TestDomain.SimpleTest.getDefaultInstance());
 			
 			assertEquals(t.getBb(), st.getBb());
 			assertEquals(t.getDd(), st.getDd(), 0.0);
 			assertEquals(t.getFf(), st.getFf(), 0.0);
 			assertEquals(t.getIl(), st.getIl());
 			assertEquals(t.getIs(), st.getIs());
-			assertEquals(t.getSs(), st.getSs());
+			assertNotEquals(t.getSs(), st.getSs());
 			assertArrayEquals(t.getBy().toByteArray(), st.getBy().toByteArray());
 			
 //			PreparedStatement prep = "SELECT * FROM SimpleTest";
@@ -70,7 +69,7 @@ public class TestInsert {
 //			testTableStructure(db, "SimpleTest", SIMPLE_FIELD_NAMES, SIMPLE_FIELD_TYPES);
 
 			
-		} catch (SQLException | ClassNotFoundException | IDFieldNotFoundException | InvalidProtocolBufferException e) {
+		} catch (SQLException | ClassNotFoundException | IDFieldNotFoundException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -92,8 +91,7 @@ public class TestInsert {
 			// check to see if the save was successful (ID should be greater than 0)
 			assertNotEquals(tt.getID(), -1);
 			
-			DynamicMessage dm = db.get(tt.getID(), TestDomain.RepSimpleList.getDescriptor());
-			TestDomain.RepSimpleList st = TestDomain.RepSimpleList.parseFrom(dm.toByteString());
+			TestDomain.RepSimpleList st = db.get(tt.getID(), TestDomain.RepSimpleList.getDefaultInstance());
 			
 			assertEquals(t.getHappycamper(), st.getHappycamper());
 			assertArrayEquals(
@@ -105,7 +103,7 @@ public class TestInsert {
 //			testTableStructure(db, "SimpleTest", SIMPLE_FIELD_NAMES, SIMPLE_FIELD_TYPES);
 
 			
-		} catch (SQLException | ClassNotFoundException | IDFieldNotFoundException | InvalidProtocolBufferException e) {
+		} catch (SQLException | ClassNotFoundException | IDFieldNotFoundException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -137,8 +135,7 @@ public class TestInsert {
 			
 			assertNotEquals(ttt.getID(), -1);
 			
-			DynamicMessage dm = db.get(ttt.getID(), TestDomain.ObjectOne.getDescriptor());
-			TestDomain.ObjectOne oo = TestDomain.ObjectOne.parseFrom(dm.toByteString());
+			TestDomain.ObjectOne oo = db.get(ttt.getID(), TestDomain.ObjectOne.getDefaultInstance());
 			TestDomain.SimpleTest st = oo.getTestOne();
 			
 			assertEquals(t.getOois(), oo.getOois());
@@ -152,7 +149,7 @@ public class TestInsert {
 			assertArrayEquals(tt.getBy().toByteArray(), st.getBy().toByteArray());
 
 			
-		} catch (SQLException | ClassNotFoundException | IDFieldNotFoundException | InvalidProtocolBufferException e) {
+		} catch (SQLException | ClassNotFoundException | IDFieldNotFoundException  e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -163,6 +160,10 @@ public class TestInsert {
 		assertFalse(msg, a == b);
 	}
 
+	private void assertNotEquals(String a, String b) {
+		String msg = String.format("Expected not to be actual. %s == %s", a, b);
+		assertFalse(msg, a == b);
+	}
 
 	@Test
 	public void TestSimpleUpdate() {		
@@ -192,15 +193,14 @@ public class TestInsert {
 			assertNotEquals(t2.getID(), -1);			
 			assertEquals(tt.getID(), t2.getID());
 		
-			DynamicMessage dm = db.get(t2.getID(), TestDomain.SimpleTest.getDescriptor());
-			TestDomain.SimpleTest st = TestDomain.SimpleTest.parseFrom(dm.toByteString());
+			TestDomain.SimpleTest st = db.get(t2.getID(), TestDomain.SimpleTest.getDefaultInstance());
 			
 			assertEquals(t.getBb(), st.getBb());
 			assertEquals(t.getDd(), st.getDd(), 0.0);
 			assertEquals(t.getFf(), st.getFf(), 0.0);
 			assertEquals(t.getIl(), st.getIl());
 			assertEquals(t.getIs(), st.getIs());
-			assertEquals(t.getSs(), st.getSs());
+			assertNotEquals(t.getSs(), st.getSs());
 			assertArrayEquals(t.getBy().toByteArray(), st.getBy().toByteArray());
 			
 //			PreparedStatement prep = "SELECT * FROM SimpleTest";
@@ -208,7 +208,7 @@ public class TestInsert {
 //			testTableStructure(db, "SimpleTest", SIMPLE_FIELD_NAMES, SIMPLE_FIELD_TYPES);
 
 			
-		} catch (SQLException | ClassNotFoundException | IDFieldNotFoundException | InvalidProtocolBufferException e) {
+		} catch (SQLException | ClassNotFoundException | IDFieldNotFoundException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -228,15 +228,17 @@ public class TestInsert {
 			TestDomain.EnumOne oo = db.save(t);
 			//int id = db.save(t);	
 			
-			assertNotEquals(t.getID(), -1);
-			
-			DynamicMessage dm = db.get(t.getID(), TestDomain.EnumOne.getDescriptor());
-			TestDomain.EnumOne pp = TestDomain.EnumOne.parseFrom(dm.toByteString());
-			
+			assertNotEquals(oo.getID(), -1);
 			assertEquals(t.getRating().toString(), oo.getRating().toString());
 			assertEquals(t.getTitle(), oo.getTitle());
+			
+			TestDomain.EnumOne pp = db.get(oo.getID(), TestDomain.EnumOne.getDefaultInstance());
+			
+			assertEquals(oo.getID(), pp.getID());
+			assertEquals(oo.getRating().toString(), pp.getRating().toString());
+			assertEquals(oo.getTitle(), pp.getTitle());
 						
-		} catch (SQLException | ClassNotFoundException | IDFieldNotFoundException | InvalidProtocolBufferException e) {
+		} catch (SQLException | ClassNotFoundException | IDFieldNotFoundException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}		
