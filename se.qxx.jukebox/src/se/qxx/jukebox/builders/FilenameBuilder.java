@@ -41,7 +41,7 @@ public class FilenameBuilder extends MovieBuilder {
 			//ignoring some keywords specified in xml
 			String strIgnorePattern = splitter.getIgnore().trim();
 			String fileNameWithoutIgnore = Util.replaceIgnorePattern(fileNameToMatch, strIgnorePattern);
-	
+						
 			Log.Info(String.format("FilenameBuilder filename to match :: %s", fileNameWithoutIgnore), LogType.FIND);
 			
 			

@@ -93,23 +93,27 @@ public class PartPattern {
 		if (m.find()) {
 			partIndex = m.start(partGroup);
 			partIdentifier = m.group(partGroup);
-			Log.Debug(String.format("MovieBuilder :: This file appears to be a part %s of a movie :: %s", partIdentifier, filename), LogType.FIND);
+			Log.Debug(String.format("PartPattern :: This file appears to be a part %s of a movie :: %s", partIdentifier, filename), LogType.FIND);
 			
-			resultingFilename = m.replaceFirst("");			
+			resultingFilename = m.replaceFirst(StringUtils.EMPTY);			
 		}
 		
 		this.parsePartPattern(filename, resultingFilename, partIdentifier, partIndex);		
 	}
 	
 	private void parseTvEpisode(String filename) {
+		Log.Debug(String.format("PartPattern :: running tv epsiode check on %s", filename), LogType.FIND);
 		for(se.qxx.jukebox.settings.JukeboxListenerSettings.StringSplitters.Episodes.Pattern p 
 				: Settings.get().getStringSplitters().getEpisodes().getPattern()) {
 
 			Pattern regexPattern = Pattern.compile(StringUtils.trim(p.getRegex()), Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 			Matcher matcher = regexPattern.matcher(filename);
 			
+			Log.Debug(String.format("PartPattern :: checking tv episode pattern %s", regexPattern.pattern()), LogType.FIND);
 			
-			if (matcher.matches()) {
+			// Apparently the matcher function matches the WHOLE regex
+			// we need the find function here
+			if (matcher.find()) {
 				for(Group g : p.getGroups().getGroup()) {
 					if (StringUtils.equalsIgnoreCase("season", g.getProperty()))
 						this.setSeason(Integer.parseInt(matcher.group(g.getId())));
@@ -118,7 +122,12 @@ public class PartPattern {
 				}
 				
 				this.setIsTvEpisode(true);
-				Log.Debug(String.format("MovieBuilder :: This file appears to be part of a tv series. Season :: %s Episode :: %s", this.getSeason(), this.getEpisode()), LogType.FIND);
+				Log.Debug(String.format("PartPattern :: This file appears to be part of a tv series. Season :: %s Episode :: %s", this.getSeason(), this.getEpisode()), LogType.FIND);
+				
+				int seasonMatch = matcher.start();
+				//remove last part of filename (the part after S00E00
+				//String resultingFilename = matcher.replaceFirst(StringUtils.EMPTY);
+				//resultingFilename = resultingFilename.substring(1, seasonMatch - 1);
 				
 				this.setResultingFilename(matcher.replaceFirst(StringUtils.EMPTY));
 				break;

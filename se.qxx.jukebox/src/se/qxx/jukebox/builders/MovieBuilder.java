@@ -79,13 +79,13 @@ public abstract class MovieBuilder {
 						.setFilename(filename)
 						.setFilepath(filepath)
 						.build();
-								
+
 				Movie.Builder builder = Movie.newBuilder(m)
 						.setIsTvEpisode(pp.isTvEpisode())
 						.setEpisode(pp.getEpisode())
 						.setSeason(pp.getSeason())
 						.addMedia(md);
-
+				
 				// If a Imdb Link has been found in one of the builders
 				// then merge it into this one
 				if (!StringUtils.isEmpty(imdbUrl))
