@@ -361,6 +361,10 @@ public class IMDBFinder {
 			
 			newMovie = extractMovieInfo(m, episodeRec);
 
+			// Keep the title from the original movie.
+			// That should point to the Series title
+			newMovie = Movie.newBuilder(newMovie).setTitle(m.getTitle()).build();
+			
 			// transfer main movie properties to the season object
 //			Season s = Season.newBuilder(m.getSeason())
 //					.addAllGenre(m.getGenreList())
