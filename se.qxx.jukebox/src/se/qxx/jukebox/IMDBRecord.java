@@ -104,7 +104,13 @@ public class IMDBRecord {
 						break;
 					case SEASONS:
 						// add seasons url to record
-						this.seasons.add(StringUtils.trim(m.group(infoPattern.getGroup())));
+						this.seasons.add(String.format("http://www.imdb.com%s", value));					
+						while (m.find()) {
+							value = StringUtils.trim(m.group(infoPattern.getGroup()));
+							
+							this.seasons.add(String.format("http://www.imdb.com%s", value));
+						}
+						
 						break;
 					}
 				}

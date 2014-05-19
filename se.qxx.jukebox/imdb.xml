@@ -139,12 +139,18 @@
             <regex><![CDATA[<div.*?itemprop="director".*?>.*?<span.*?itemprop="name".*?>(.*?)<]]></regex>
 		</infoPattern>
 		<infoPattern type="seasons" group="1">
-		    <regex><![CDATA[\/title/tt\d{1,10}/episodes\?season=\d{1,2}]]></regex>
+		    <regex><![CDATA[(\/title/tt\d{1,10}/episodes\?season=\d{1,2})]]></regex>
 		</infoPattern>            
     </infoPatterns>
     <episodePatterns>
         <episodePattern episodeGroup="1" airDateGroup="2" urlGroup="3" titleGroup="4">
-            <regex><![CDATA[<meta\s*itemprop="episodeNumber"\s*?content="(\d{1,2})"/>.*?<div\s*class="airdate">([^<]*?)</div>.*?<a.*?href="(.*?)"[^>]*?>([^<]*?)</a>]]></regex>
+            <regex><![CDATA[<meta\s*itemprop="episodeNumber"\s*?content="(\d{1,2})"/>.*?<div\s*class="airdate">\s*([^<]*?)\s*</div>.*?<a.*?href="(.*?)"[^>]*?>([^<]*?)</a>]]></regex>
         </episodePattern>
     </episodePatterns>
+    
+    <datePatterns>
+        <pattern><![CDATA[dd MMM. yyyy]]></pattern>
+        <pattern><![CDATA[MMM. dd, yyyy]]></pattern>
+        <pattern><![CDATA[yyyy-MM-dd]]></pattern>
+    </datePatterns>
 </imdb>

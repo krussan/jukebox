@@ -121,30 +121,40 @@
     					</xs:sequence>
     				</xs:complexType>
     			</xs:element>
-    			<xs:element name="episodePatterns" maxOccurs="1" minOccurs="0">
+    			<xs:element name="episodePatterns" maxOccurs="1"
+    				minOccurs="0">
     				<xs:complexType>
     					<xs:sequence>
     						<xs:element name="episodePattern"
     							maxOccurs="unbounded" minOccurs="0">
-                                <xs:complexType>
-                                	<xs:sequence>
-                                		<xs:element name="regex"
-                                			type="xs:string" minOccurs="1">
-                                		</xs:element>
-                                	</xs:sequence>
-                                	<xs:attribute name="episodeGroup"
-                                		type="xs:int" use="required">
-                                	</xs:attribute>
-                                	<xs:attribute name="airDateGroup"
-                                		type="xs:int" use="required">
-                                	</xs:attribute>
-                                	<xs:attribute name="urlGroup"
-                                		type="xs:int" use="required">
-                                	</xs:attribute>
-                                	<xs:attribute name="titleGroup"
-                                		type="xs:int" use="required">
-                                	</xs:attribute>
-                                </xs:complexType>
+    							<xs:complexType>
+    								<xs:sequence>
+    									<xs:element name="regex"
+    										type="xs:string" minOccurs="1">
+    									</xs:element>
+    								</xs:sequence>
+    								<xs:attribute name="episodeGroup"
+    									type="xs:int" use="required">
+    								</xs:attribute>
+    								<xs:attribute name="airDateGroup"
+    									type="xs:int" use="required">
+    								</xs:attribute>
+    								<xs:attribute name="urlGroup"
+    									type="xs:int" use="required">
+    								</xs:attribute>
+    								<xs:attribute name="titleGroup"
+    									type="xs:int" use="required">
+    								</xs:attribute>
+    							</xs:complexType>
+    						</xs:element>
+    					</xs:sequence>
+    				</xs:complexType>
+    			</xs:element>
+    			<xs:element name="datePatterns" maxOccurs="1" minOccurs="0">
+    				<xs:complexType>
+    					<xs:sequence>
+    						<xs:element name="pattern"
+    							type="xs:string" maxOccurs="unbounded" minOccurs="0">
     						</xs:element>
     					</xs:sequence>
     				</xs:complexType></xs:element>

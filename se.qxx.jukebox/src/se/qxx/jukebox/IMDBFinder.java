@@ -346,6 +346,8 @@ public class IMDBFinder {
 	private static Movie getTvEpisodeInfo(Movie m, IMDBRecord rec) throws NumberFormatException, IOException, ParseException {
 		Movie newMovie;
 		
+		Log.Debug(String.format("Finding TV Epsiode info for %s. Season :: %s, Episode :: %s", m.getTitle(), m.getSeason(), m.getEpisode()), LogType.IMDB);
+		
 		// mainMovie contains the overall info about the series
 		// get the page referencing the wanted season
 		if (m.getSeason() > 0) {
@@ -395,7 +397,8 @@ public class IMDBFinder {
 					matcher.group(p.getUrlGroup())
 					, Integer.parseInt(matcher.group(p.getEpisodeGroup()))
 					, matcher.group(p.getTitleGroup())
-					, DateUtils.parseDate(matcher.group(p.getAirDateGroup()), new String[] {"MMM. dd, yyyy", "yyyy-MM-dd"}));
+					, DateUtils.parseDate(matcher.group(p.getAirDateGroup()), 
+							Settings.imdb().getDatePatterns().getPattern().toArray(new String[]{})));
 						
 				if (ep.getEpisodeNumber() == episode) {
 					return ep;
@@ -416,5 +419,5 @@ public class IMDBFinder {
 		
 		return StringUtils.EMPTY;
 	}
-	
+
 }
