@@ -476,8 +476,10 @@ public class ProtoDB {
 					Object o = rs.getObject(field.getName().toLowerCase());
 					if (field.getJavaType() == JavaType.FLOAT)
 						b.setField(field, ((Double)o).floatValue());
+					else if (field.getJavaType() == JavaType.INT)
+						b.setField(field, ((Integer)o).intValue());
 					else if (field.getJavaType() == JavaType.LONG)
-						b.setField(field, ((Integer)o).longValue());
+						b.setField(field, ((Long)o).longValue());
 					else if (field.getJavaType() == JavaType.BOOLEAN ) {
 						if (o instanceof Integer) 
 							b.setField(field, ((int)o) == 1 ? true : false);

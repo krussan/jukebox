@@ -264,6 +264,10 @@ public class SubtitleDownloader implements Runnable {
 						DB.save(
 							Media.newBuilder(md).addSubs(
 								Subtitle.newBuilder()
+								.setID(-1)
+								.setDescription("")
+								.setMediaIndex(0)
+								.setLanguage("Default")
 								.setFilename(subFilename)
 								.setRating(Rating.NotMatched)
 								.build())
@@ -553,6 +557,8 @@ public class SubtitleDownloader implements Runnable {
 							DB.save(
 								Media.newBuilder(md).addSubs(
 									Subtitle.newBuilder()
+										.setID(-1)
+										.setMediaIndex(0)
 										.setFilename(filename)
 										.setDescription(subfile.getDescription())
 										.setRating(subfile.getRating())
