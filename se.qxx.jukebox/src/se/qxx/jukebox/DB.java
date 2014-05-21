@@ -149,7 +149,7 @@ public class DB {
 		String searchString = replaceSearchString(startOfMediaFilename) + "%";
 		
 		Log.Debug(String.format("DB :: Database search string :: %s", searchString), LogType.MAIN);
-				
+				 
 		try {
 			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
 			List<Movie> result =
@@ -162,7 +162,6 @@ public class DB {
 				return result.get(0);
 			else
 				return null;
-			
 		} catch (Exception e) {
 			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
 //			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);

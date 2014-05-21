@@ -261,7 +261,7 @@ public class ProtoDBScanner {
 		return "SELECT ID " 
 			+ " FROM " + this.getObjectName()
 			+ " WHERE " + this.getBasicFieldName(field)
-			+ (isLikeFilter ? " LIKE ? " : " = ?");
+			+ (isLikeFilter ? " LIKE ? ESCAPE '\'" : " = ?");
 	}
 	
 	public String getSearchStatementSubObject(FieldDescriptor field, List<Integer> subObjectIDs) {
