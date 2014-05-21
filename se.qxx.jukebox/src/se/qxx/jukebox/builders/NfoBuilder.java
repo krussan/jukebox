@@ -101,6 +101,7 @@ public class NfoBuilder extends MovieBuilder {
 						.setIdentifier(Identifier.NFO)
 						.setIdentifierRating(idRating)
 						.setImdbUrl(imdbUrl)
+						.setSubtitleRetreiveResult(0)
 						.build();
 				
 			}

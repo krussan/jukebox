@@ -46,7 +46,8 @@ public class MediaMetadata {
 	    if (MI.Open(fullFilePath)>0) {
 	    	try {
 			    String duration = MI.Get(MediaInfo.StreamKind.General, 0, "Duration");
-			    durationMs = Long.parseLong(duration);
+			    if (StringUtils.isNumeric(duration))
+			    	durationMs = Long.parseLong(duration);
 			    frameRate = MI.Get(MediaInfo.StreamKind.Video, 0, "FrameRate");		    
 	    	}
 	    	catch (Exception e) {
