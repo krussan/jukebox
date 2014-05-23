@@ -131,7 +131,6 @@ public class JukeboxActivity extends JukeboxActivityBase implements
 
 	private void onoff() {
 		// TODO: Check if computer is live.
-		final Context c = this;
 		final boolean isOnline = JukeboxSettings.get().isCurrentMediaPlayerOn();
 		final String currentMediaPlayer = JukeboxSettings.get()
 				.getCurrentMediaPlayer();
@@ -139,7 +138,7 @@ public class JukeboxActivity extends JukeboxActivityBase implements
 		final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
 				JukeboxSettings.get().getServerIpAddress(), 
 				JukeboxSettings.get().getServerPort(),				
-				JukeboxConnectionProgressDialog.build(c,
+				JukeboxConnectionProgressDialog.build(this,
 						isOnline ? "Suspending target media player..."
 								: "Waking up..."));
 
@@ -168,11 +167,10 @@ public class JukeboxActivity extends JukeboxActivityBase implements
 	}
 
 	public void connect() {
-		final Context c = this;
 		final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
 				JukeboxSettings.get().getServerIpAddress(), 
 				JukeboxSettings.get().getServerPort(),				
-				JukeboxConnectionProgressDialog.build(c,
+				JukeboxConnectionProgressDialog.build(this,
 						"Getting list of media ..."));
 
 		try {
@@ -187,7 +185,7 @@ public class JukeboxActivity extends JukeboxActivityBase implements
 
 			});
 		} catch (Exception e) {
-			showMessage(c, "Connection failed. Check settings ...");
+			showMessage(this, "Connection failed. Check settings ...");
 
 		}
 

@@ -1,4 +1,22 @@
+Jukebox issues
+--------------
+
 - Fix communication. Something rotten
 - Switch to token builder?
 - Check and maybe fix imdb finder. 0 records retreived?
 - Fix <span> tags in IMDB finder for genre
+x - ProtoDB. ORM-mapping tool. One tool to rule them all?
+x - Correctly identify TV episodes
+- Fix subtitles for TV episodes
+- Refactor TV episodes. Today the identification process is all over the place.
+- Update Android App to ProtoDB protocol.
+- Update communication system to ProtoDB protocol.
+- Fix token builder for TV episodes
+x - RPC server is shutting down immediately. Why is that? - Gaah. Yes it will shutdown immediately if there is another process running which is occupying the port. With no error actually. Grr.
+- Make the TV Series appear on another screen in android app.
+
+Environent Issues
+-----------------
+x - Fix a way to debug Android App
+- Fix "Install new software bug in Eclipse"
+
