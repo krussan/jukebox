@@ -4,7 +4,7 @@ public class Version {
 	private int major;
 	private int minor;
 	
-	private static final String CURRENT_VERSION = "0.10";
+	private static final String CURRENT_VERSION = "0.11";
 	
 	public Version() {
 		parseVersion(CURRENT_VERSION);
@@ -51,5 +51,9 @@ public class Version {
 	
 	public String toString() {
 		return String.format("%s.%s", this.getMajor(), this.getMinor());
+	}
+	
+	public static String getCurrentVersion() {
+		return CURRENT_VERSION;
 	}
 }

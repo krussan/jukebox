@@ -58,11 +58,9 @@ public class IMDBFinder {
 	private static boolean urlIsBlacklisted(String imdbUrl, Movie m) {
 		String imdbid = Util.getImdbIdFromUrl(imdbUrl);
 		if (!StringUtils.isEmpty(imdbid)) {	
-			for (Media md : m.getMediaList()) {
-				for (String entry : md.getBlacklistList()) {	
-					if (StringUtils.equalsIgnoreCase(imdbid, entry)) {
-						return true;
-					}
+			for (String entry : m.getBlacklistList()) {	
+				if (StringUtils.equalsIgnoreCase(imdbid, entry)) {
+					return true;
 				}
 			}
 		}

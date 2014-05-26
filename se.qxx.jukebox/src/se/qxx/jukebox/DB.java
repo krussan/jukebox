@@ -1,6 +1,7 @@
 package se.qxx.jukebox;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.sql.Connection;
@@ -14,8 +15,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain;
@@ -46,8 +49,7 @@ public class DB {
 //	" episode int NULL, " +
 //    " firstAirDate date NULL, " +
 //	" _season_ID int NULL",
-	
-	private static String connectionString = "jdbc:sqlite:jukebox.db";
+
 	private static String databaseFilename = "jukebox_proto.db";
 	
 	private DB() {
@@ -915,49 +917,80 @@ public class DB {
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Version
 	//---------------------------------------------------------------------------------------
+	public synchronized static Version getVersion() throws ClassNotFoundException {
+		Connection conn = null;
+		int minor = 0;
+		int major = 0;
+		
+		try {
+			conn = DB.initialize();
+			
+			PreparedStatement prep = conn.prepareStatement("SELECT minor, major FROM Version WHERE ID=1");
+			ResultSet rs = prep.executeQuery();
+			if (rs.next()) {
+				minor = rs.getInt("minor");
+				major = rs.getInt("major");
+			}
+		} catch (Exception e) {
+			minor = 0;
+			major = 0;
+		}
+		
+		finally {
+			DB.disconnect(conn);
+		}
+		
+		//default for pre-protodb is 0.10
+		if (minor == 0 && major == 0)
+			minor = 10;
+		
+		return new Version(major, minor);
+	}
 	
-//	public synchronized static Version getVersion() throws ClassNotFoundException {
-//		Connection conn = null;
-//		int minor = 0;
-//		int major = 0;
-//		
-//		try {
-//			conn = DB.initialize();
-//			
-//			PreparedStatement prep = conn.prepareStatement("SELECT minor, major FROM dbVersion");
-//			ResultSet rs = prep.executeQuery();
-//			if (rs.next()) {
-//				minor = rs.getInt("minor");
-//				major = rs.getInt("major");
-//			}
-//		} catch (Exception e) {
-//			minor = 0;
-//			major = 0;
-//		}
-//		
-//		finally {
-//			DB.disconnect(conn);
-//		}
-//		
-//		return new Version(major, minor);
-//	}
-//	
-//	public synchronized static void setVersion(Version ver) throws ClassNotFoundException, SQLException {
-//		Connection conn = null;
-//		try {
-//			conn = DB.initialize();
-//			
-//			PreparedStatement prep = conn.prepareStatement("UPDATE dbVersion SET major = ?, minor= ?");
-//			prep.setInt(1, ver.getMajor());
-//			prep.setInt(2, ver.getMinor());
-//			
-//			prep.execute();
-//		}
-//		finally {
-//			DB.disconnect(conn);
-//		}
-//	}
+	public synchronized static void setVersion(Version ver) throws ClassNotFoundException, SQLException {
+		Connection conn = null;
+		try {
+			conn = DB.initialize();
+			
+			PreparedStatement prep = conn.prepareStatement("UPDATE Version SET major = ?, minor= ? WHERE ID = 1");
+			prep.setInt(1, ver.getMajor());
+			prep.setInt(2, ver.getMinor());
+			
+			prep.execute();
+		}
+		finally {
+			DB.disconnect(conn);
+		}
+	}
+	
+	public static String backup() throws IOException {
+		String backupFilename = String.format("%s.bak", DB.getDatabaseFilename());
+		File backup = new File(backupFilename);
+		File current = new File(DB.getDatabaseFilename());
+		
+		int i = 1;
+		while (backup.exists()) {
+			backupFilename = String.format("%s.bak.%s", DB.getDatabaseFilename(), i);
+			backup = new File(backupFilename);
+			i++;
+		}
+		
+		System.out.println(String.format("Making backup to :: %s", backupFilename));
+		FileUtils.copyFile(current, backup);
+		
+		return backupFilename;
+	}
 
+	public static void restore(String backupFilename) throws IOException {
+		File backup = new File(backupFilename);
+		File restoreFile = new File(DB.getDatabaseFilename());
+		
+		if (restoreFile.exists())
+			restoreFile.delete();
+		
+		FileUtils.copyFile(backup, restoreFile);
+	}
+	
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Helpers
 	//---------------------------------------------------------------------------------------
@@ -1042,55 +1075,55 @@ public class DB {
 //				.build();				
 //	}
 //
-//	public synchronized static boolean executeUpgradeStatements(String[] statements) {
-//		Connection conn = null;
-//		String sql = StringUtils.EMPTY;
-//		try {
-//			conn = DB.initialize();
-//			conn.setAutoCommit(false);
-//
-//			int nrOfScripts = statements.length;
-//			for (int i=0; i<statements.length;i++) {
-//				sql = statements[i];
-//				System.out.println(String.format("Running script\t\t[%s/%s]", i + 1, nrOfScripts));
-//
-//				PreparedStatement prep = conn.prepareStatement(sql);			
-//				prep.execute();
-//			}
-//
-//			conn.commit();
-//			
-//			return true;
-//		}
-//				
-//		catch (Exception e) {
-//			Log.Error("Upgrade failed", LogType.UPGRADE, e);
-//			Log.Debug("Failing query was::", LogType.UPGRADE);
-//			Log.Debug(sql, LogType.UPGRADE);
-//			
-//			try {
-//				conn.rollback();
-//			} catch (SQLException sqlEx) {}
-//			
-//			return false;
-//		}
-//		finally {
-//			DB.disconnect(conn);
-//		}
-//	}
-//	
-//	private static Connection initialize() throws ClassNotFoundException, SQLException {
-//		Class.forName("org.sqlite.JDBC");
-//	    return DriverManager.getConnection(DB.connectionString);				
-//	}
-//	
-//	private static void disconnect(Connection conn) {
-//		try {
-//			if (conn != null)
-//				conn.close();
-//		} catch (SQLException e) {
-//		}
-//	}
+	public synchronized static boolean executeUpgradeStatements(String[] statements) {
+		Connection conn = null;
+		String sql = StringUtils.EMPTY;
+		try {
+			conn = DB.initialize();
+			conn.setAutoCommit(false);
+
+			int nrOfScripts = statements.length;
+			for (int i=0; i<statements.length;i++) {
+				sql = statements[i];
+				System.out.println(String.format("Running script\t\t[%s/%s]", i + 1, nrOfScripts));
+
+				PreparedStatement prep = conn.prepareStatement(sql);			
+				prep.execute();
+			}
+
+			conn.commit();
+			
+			return true;
+		}
+				
+		catch (Exception e) {
+			Log.Error("Upgrade failed", LogType.UPGRADE, e);
+			Log.Debug("Failing query was::", LogType.UPGRADE);
+			Log.Debug(sql, LogType.UPGRADE);
+			
+			try {
+				conn.rollback();
+			} catch (SQLException sqlEx) {}
+			
+			return false;
+		}
+		finally {
+			DB.disconnect(conn);
+		}
+	}
+	
+	private static Connection initialize() throws ClassNotFoundException, SQLException {
+		Class.forName("org.sqlite.JDBC");
+	    return DriverManager.getConnection(String.format("jdbc:sqlite:%s", DB.databaseFilename));				
+	}
+	
+	private static void disconnect(Connection conn) {
+		try {
+			if (conn != null)
+				conn.close();
+		} catch (SQLException e) {
+		}
+	}
 //
 //	private synchronized static void addArguments(PreparedStatement prep, Movie m) throws SQLException {
 //		Descriptor d = Movie.Builder.getDescriptor();

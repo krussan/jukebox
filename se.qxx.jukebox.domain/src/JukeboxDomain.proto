@@ -24,6 +24,12 @@ enum Rating {
 //---------------------------------------------------------------------------------------
 //----------------------------------------------------------------------- Objects
 //---------------------------------------------------------------------------------------
+message Version {
+	required int32 ID = 1;
+	required int32 major = 2;
+	required int32 minor = 3;
+}
+
 message Movie {
 	required int32 ID = 1;
 	repeated Media media = 2;	
@@ -55,6 +61,8 @@ message Movie {
 	optional int64 subtitleQueuedAt = 26;
 	optional int64 subtitleRetreivedAt = 27;
 	required int32 subtitleRetreiveResult = 28 [default = 0];
+	
+	repeated string blacklist = 29;
 }
 
 message Subtitle {
@@ -74,7 +82,6 @@ message Media {
 	optional int32 metaDuration = 5;
 	optional string metaFramerate = 6;
 	repeated Subtitle subs = 7;
-	repeated string blacklist = 8;		
 }
 
 //---------------------------------------------------------------------------------------

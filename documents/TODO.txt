@@ -14,6 +14,9 @@ x - Correctly identify TV episodes
 - Fix token builder for TV episodes
 x - RPC server is shutting down immediately. Why is that? - Gaah. Yes it will shutdown immediately if there is another process running which is occupying the port. With no error actually. Grr.
 - Make the TV Series appear on another screen in android app.
+- Fix non-iso characters in save / html scraping
+- black-listing doesn't work (no connection / no comm log)
+x - Fix upgrading and backup/restore of database during upgrade
 
 Environent Issues
 -----------------

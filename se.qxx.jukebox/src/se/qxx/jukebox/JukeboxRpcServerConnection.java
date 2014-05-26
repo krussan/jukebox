@@ -53,6 +53,8 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	public void listPlayers(RpcController controller, Empty request,
 			RpcCallback<JukeboxResponseListPlayers> done) {
 
+		Log.Debug("ListPlayers", LogType.COMM);
+
 		Collection<String> hostnames = new ArrayList<String>();
 		for (Server s : Settings.get().getPlayers().getServer()) {
 			hostnames.add(s.getName());
@@ -68,6 +70,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			JukeboxRequestStartMovie request,
 			RpcCallback<JukeboxResponseStartMovie> done) {
 
+		Log.Debug("StartMovie", LogType.COMM);
 		Log.Debug(String.format("Starting movie with ID: %s on player %s", request.getMovieId(), request.getPlayerName()), Log.LogType.COMM);
 		
 		try {
@@ -94,6 +97,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	public void stopMovie(RpcController controller,
 			JukeboxRequestGeneral request, RpcCallback<Empty> done) {
 
+		Log.Debug("StopMovie", LogType.COMM);
 		Log.Debug(String.format("Stopping movie on player %s", request.getPlayerName()), Log.LogType.COMM);
 		
 		try {
@@ -112,6 +116,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	public void pauseMovie(RpcController controller,
 			JukeboxRequestGeneral request, RpcCallback<Empty> done) {
 
+		Log.Debug("PauseMovie", LogType.COMM);
 		Log.Debug(String.format("Pausing movie on player %s", request.getPlayerName()), Log.LogType.COMM);
 		
 		try {
@@ -145,6 +150,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	public void switchVRatio(RpcController controller,
 			JukeboxRequestGeneral request, RpcCallback<Empty> done) {
 
+		Log.Debug("SwitchVRatio", LogType.COMM);
 		Log.Debug(String.format("Toggling vratio on %s...", request.getPlayerName()), Log.LogType.COMM);
 		
 		try {
@@ -162,6 +168,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	public void getTime(RpcController controller,
 			JukeboxRequestGeneral request, RpcCallback<JukeboxResponseTime> done) {
 
+		Log.Debug("GetTime", LogType.COMM);
 		Log.Debug(String.format("Getting time on %s...", request.getPlayerName()), Log.LogType.COMM);
 		
 		try {
@@ -192,6 +199,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			JukeboxRequestGeneral request,
 			RpcCallback<JukeboxResponseIsPlaying> done) {
 
+		Log.Debug("IsPlaying", LogType.COMM);
 		Log.Debug(String.format("Getting is playing status on %s...", request.getPlayerName()), Log.LogType.COMM);
 		
 		try {
@@ -210,13 +218,31 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			RpcCallback<JukeboxResponseGetTitle> done) {
 		// TODO Auto-generated method stub
 		
+		Log.Debug("GetTitle -- EMPTY", LogType.COMM);
 	}
 
 	@Override
 	public void blacklist(RpcController controller,
 			JukeboxRequestMovieID request, RpcCallback<Empty> done) {
-		// TODO Auto-generated method stub
 		
+		Log.Debug("Blacklist -- EMPTY", LogType.COMM);
+		
+//			String response = Distributor.get().getTime(request.getPlayerName());
+//			if (response.equals(StringUtils.EMPTY))
+//				controller.setFailed("Error occured when connecting to target media player"); 
+//			else {
+//				int seconds = Integer.parseInt(response);
+//				String titleFilename = getTitleFilename(request.getPlayerName());
+//				
+//				JukeboxResponseTime time = JukeboxResponseTime.newBuilder()
+//						.setSeconds(seconds)
+//						.setFilename(titleFilename)
+//						.build();
+//
+			done.run(Empty.newBuilder().build());	
+//			}
+				
+			
 	}
 
 	@Override
@@ -224,6 +250,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			JukeboxRequestMovieID request, RpcCallback<Empty> done) {
 		// TODO Auto-generated method stub
 		
+		Log.Debug("ToggleWatched -- EMPTY", LogType.COMM);
 	}
 
 	@Override

@@ -160,7 +160,12 @@
 	    <antcall target="createscript">
 	        <param name="script.class" value="se.qxx.jukebox.tests.TestParserBuilder" />
 	        <param name="script.file" value="${build.dir}/testParserBuilder.sh" />
-	    </antcall>	    
+	    </antcall>	 
+	    
+	    <antcall target="createscript">
+	        <param name="script.class" value="se.qxx.jukebox.tests.GenerateDatabase" />
+	        <param name="script.file" value="${build.dir}/generateDatabase.sh" />
+	    </antcall>		    
 	    	    	    	    	    	    	    	    	    	    
 		<fixcrlf srcdir="${build.dir}" includes="**/*.sh" eol="lf" eof="remove" />
 						
