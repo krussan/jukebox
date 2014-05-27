@@ -1,12 +1,6 @@
 package se.qxx.jukebox.front.comm;
 
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketTimeoutException;
-
 import se.qxx.jukebox.comm.JukeboxFrontServer;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxService;
 import se.qxx.jukebox.front.FrontSettings;
 
 public class TcpListener implements Runnable {

@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -26,7 +24,7 @@ public class ProtoDBScanner {
 	private List<String> objectFieldTargets = new ArrayList<String>();
 
 	private List<FieldDescriptor> repeatedObjectFields = new ArrayList<FieldDescriptor>();
-	private List<String> repeatedObjectFieldTargets = new ArrayList<String>();
+//	private List<String> repeatedObjectFieldTargets = new ArrayList<String>();
 	
 	private List<FieldDescriptor> basicFields = new ArrayList<FieldDescriptor>();
 	private List<FieldDescriptor> repeatedBasicFields = new ArrayList<FieldDescriptor>();

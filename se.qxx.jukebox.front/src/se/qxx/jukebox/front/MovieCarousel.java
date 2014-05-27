@@ -50,6 +50,10 @@ public class MovieCarousel extends Carousel {
 		this.listener = movieStatusListener;
 	}
 	
+	public MovieStatusListener getMovieStatusListener(MovieStatusListener movieStatusListener) {
+		return this.listener;
+	}
+
 	@Override
 	public void keyPressed(KeyEvent e) {
 		super.keyPressed(e);

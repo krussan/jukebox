@@ -2,8 +2,6 @@ package se.qxx.protodb.test;
 
 import static org.junit.Assert.*;
 
-import java.io.File;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -12,11 +10,6 @@ import org.junit.Test;
 
 import se.qxx.protodb.ProtoDB;
 import se.qxx.protodb.exceptions.SearchFieldNotFoundException;
-
-import com.google.protobuf.ByteString;
-import com.google.protobuf.DynamicMessage;
-import com.google.protobuf.InvalidProtocolBufferException;
-import com.google.protobuf.MessageOrBuilder;
 
 public class TestSearch {
 	ProtoDB db = null;

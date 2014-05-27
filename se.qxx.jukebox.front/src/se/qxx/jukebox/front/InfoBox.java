@@ -92,6 +92,8 @@ public class InfoBox extends Canvas {
     	
     	g.drawString(text, x, yCoord);
 	}
+	
+	@SuppressWarnings("unused")
 	private void centerText(String text, int yCoord, Graphics g, int containerWidth) {
     	int stringLen = (int)g.getFontMetrics().getStringBounds(text, g).getWidth();  
         int x = containerWidth / 2 - stringLen/2;

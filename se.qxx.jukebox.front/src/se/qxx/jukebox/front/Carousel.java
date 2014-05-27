@@ -36,7 +36,7 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 	
 	private double currentRotation = 1.0;
 	private int currentPhotoIndex = 0;
-	private boolean mouseMoved = false;
+//	private boolean mouseMoved = false;
 	private int lastMouseX = 0;
 	
 	double velocity = 10;
@@ -261,11 +261,11 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 			// the rest have full opacity.
 			images[i].setAlpha(.5f - (float)decimalOffset);
 			
-			int pi = this.getCurrentIndex();
+//			int pi = this.getCurrentIndex();
 			
 			float alpha;
 			
-			int distanceFromCurrent = Math.abs(pi - i);
+//			int distanceFromCurrent = Math.abs(pi - i);
 			
 			alpha = (float)Math.pow(scale, 3.0d);
 	
@@ -316,7 +316,6 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 		try {
 			tracker.waitForID(1);
 		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 			return;
 		}
@@ -439,7 +438,7 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 	 * based).
 	 */
 	public void setRotation(double value) {
-		int pi = getPhotoIndex();
+//		int pi = getPhotoIndex();
 		currentRotation = modulus(value, this.images.length);
 		setCurrentPhotoIndex((int) Math.round(currentRotation));
 //		if (pi != getPhotoIndex()) {
@@ -560,37 +559,31 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 	
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent arg0) {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -635,7 +628,6 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 

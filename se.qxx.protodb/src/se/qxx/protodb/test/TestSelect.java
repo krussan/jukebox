@@ -2,18 +2,12 @@ package se.qxx.protodb.test;
 
 import static org.junit.Assert.*;
 
-import java.io.File;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import se.qxx.protodb.ProtoDB;
-
-import com.google.protobuf.ByteString;
-import com.google.protobuf.DynamicMessage;
-import com.google.protobuf.InvalidProtocolBufferException;
 
 public class TestSelect {
 	ProtoDB db = null;

@@ -9,8 +9,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.soap.MessageFactory;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
@@ -601,9 +599,6 @@ public class ProtoDB {
 	 */
 	@SuppressWarnings("unchecked")
 	private <T extends Message> T save(T b, Connection conn) throws SQLException, ClassNotFoundException {
-		//TODO: We need to set the ID property of each object
-		// without this subsequent calls to save will corrupt the database.
-
 		// create a new builder to store the new object
 		Builder mainBuilder = b.newBuilderForType();
 		ProtoDBScanner scanner = new ProtoDBScanner(b);
@@ -991,8 +986,6 @@ public class ProtoDB {
 				prep.setString(1, (Boolean)searchFor ? "Y": "N");
 			else
 				prep.setObject(1, searchFor);
-
-			//TODO: check repeated basic fields
 		}
 		else {
 			// object fields

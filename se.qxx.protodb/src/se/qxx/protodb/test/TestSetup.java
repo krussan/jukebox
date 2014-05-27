@@ -3,7 +3,6 @@ package se.qxx.protodb.test;
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -15,7 +14,6 @@ import org.junit.Test;
 import se.qxx.protodb.ProtoDB;
 import se.qxx.protodb.exceptions.IDFieldNotFoundException;
 import se.qxx.protodb.test.TestDomain.Rating;
-import se.qxx.protodb.test.TestDomain.SimpleTest;
 
 public class TestSetup {
 

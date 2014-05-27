@@ -3,7 +3,6 @@ package se.qxx.protodb.test;
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
 
@@ -14,8 +13,6 @@ import se.qxx.protodb.ProtoDB;
 import se.qxx.protodb.exceptions.IDFieldNotFoundException;
 
 import com.google.protobuf.ByteString;
-import com.google.protobuf.DynamicMessage;
-import com.google.protobuf.InvalidProtocolBufferException;
 
 public class TestInsert {
 	ProtoDB db = null;

@@ -23,7 +23,6 @@ import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.front.comm.TcpListener;
 import se.qxx.jukebox.front.model.Model;
 import uk.co.caprica.vlcj.binding.LibVlc;
-import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
 public class JukeboxFront extends JFrame implements MovieStatusListener, KeyListener {
@@ -140,7 +139,7 @@ public class JukeboxFront extends JFrame implements MovieStatusListener, KeyList
 	
 	private void initLogging() {
 		PropertyConfigurator.configure(LOG4J_PROPS);
-		this.log = Logger.getLogger(this.getClass());
+		JukeboxFront.log = Logger.getLogger(this.getClass());
 	}
 
 	@Override
@@ -151,7 +150,6 @@ public class JukeboxFront extends JFrame implements MovieStatusListener, KeyList
 
 	@Override
 	public void play(String filename) {
-		// TODO Auto-generated method stub
 		changePanel(player);
 //		player.initialize(this);
 
@@ -208,6 +206,7 @@ public class JukeboxFront extends JFrame implements MovieStatusListener, KeyList
 		}
 	}
 	
+	@SuppressWarnings("unused")
 	private void stopListening() {
 		try {
 			_listener.stopListening();
@@ -219,13 +218,11 @@ public class JukeboxFront extends JFrame implements MovieStatusListener, KeyList
 	
 	@Override
 	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 }
