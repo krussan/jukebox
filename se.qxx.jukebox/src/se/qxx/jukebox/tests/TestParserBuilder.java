@@ -27,7 +27,7 @@ public class TestParserBuilder {
 			
 			for (File f : list) {
 				ParserBuilder b = new ParserBuilder();
-				ParserMovie pm = b.extractMovie(f.getParent(), FilenameUtils.getBaseName(f.getName()));
+				ParserMovie pm = b.extractMovieParser(f.getParent(), FilenameUtils.getBaseName(f.getName()));
 				
 				System.out.println(pm.toString());
 			}

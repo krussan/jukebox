@@ -850,33 +850,18 @@ public class DB {
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Blacklist
 	//---------------------------------------------------------------------------------------
-	
-//	public synchronized static void addToBlacklist(Movie m) {
-//		Connection conn = null;
-//		String statement =
-//				" INSERT INTO Blacklist (filepath, filename, imdbid) " +
-//				" VALUES (?, ?, ?)";
-//		
-//		try {
-//			conn = DB.initialize();
-//
-//			for (Media md : m.getMediaList()) {
-//				PreparedStatement prep = conn.prepareStatement(statement);
-//				prep.setString(1, md.getFilepath());
-//				prep.setString(2, md.getFilename());
-//				prep.setString(3, Util.getImdbIdFromUrl(m.getImdbUrl()));
-//							
-//				prep.execute();
-//			}
-//
-//		}
-//		catch (Exception e) {
-//			Log.Error("Failed to add movie to blacklist in DB", Log.LogType.MAIN, e);
-//			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
-//		}finally {
-//			DB.disconnect(conn);
-//		}		
-//	}
+
+	public synchronized static void addToBlacklist(Movie m) {
+		try {
+			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			m = Movie.newBuilder(m).addBlacklist(m.getImdbId()).build();			
+			
+			db.save(m);
+		}
+		catch (Exception e) {
+			Log.Error("Failed to add movie to blacklist in DB", Log.LogType.MAIN, e);
+		}		
+	}
 //	
 //	public synchronized static List<String> getBlacklist(Movie m) {
 //		Connection conn = null;
@@ -953,6 +938,22 @@ public class DB {
 			conn = DB.initialize();
 			
 			PreparedStatement prep = conn.prepareStatement("UPDATE Version SET major = ?, minor= ? WHERE ID = 1");
+			prep.setInt(1, ver.getMajor());
+			prep.setInt(2, ver.getMinor());
+			
+			prep.execute();
+		}
+		finally {
+			DB.disconnect(conn);
+		}
+	}
+	
+	private synchronized static void insertVersion(Version ver) throws ClassNotFoundException, SQLException {
+		Connection conn = null;
+		try {
+			conn = DB.initialize();
+			
+			PreparedStatement prep = conn.prepareStatement("INSERT INTO Version (major, minor) VALUES (?, ?)");
 			prep.setInt(1, ver.getMajor());
 			prep.setInt(2, ver.getMinor());
 			
@@ -1262,12 +1263,11 @@ public class DB {
 
 	public synchronized static boolean purgeDatabase() {
 		try {
-
 			File f = new File(databaseFilename);
 			f.delete();
 		
 			setupDatabase();
-					
+			
 			return true;
 		}
 		catch (Exception e) {
@@ -1295,6 +1295,8 @@ public class DB {
 			if (!f.exists()) {
 				ProtoDB db = new ProtoDB(DB.getDatabaseFilename());			
 				db.setupDatabase(Movie.getDefaultInstance());
+				db.setupDatabase(se.qxx.jukebox.domain.JukeboxDomain.Version.getDefaultInstance());
+				DB.insertVersion(new Version());
 			}
 			
 			return true;

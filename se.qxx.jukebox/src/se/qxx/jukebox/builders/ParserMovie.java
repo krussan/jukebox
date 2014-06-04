@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import se.qxx.jukebox.domain.JukeboxDomain.Identifier;
+import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.settings.parser.ParserType;
 
 public class ParserMovie {
@@ -19,6 +21,7 @@ public class ParserMovie {
 	private int episode;
 	private int season;
 	private int year;
+	private String groupName = StringUtils.EMPTY;
 	
 	public ParserMovie() {
 	}
@@ -96,7 +99,7 @@ public class ParserMovie {
 
 	public void pushTitle() {
 		if (!StringUtils.isEmpty(this.getMovieName())) {
-			this.getTitles().add(this.getMovieName());
+			this.getTitles().add(StringUtils.trim(this.getMovieName()));
 			this.setMovieName(StringUtils.EMPTY);
 		}
 	}
@@ -104,6 +107,12 @@ public class ParserMovie {
 	
 	public String toString() {
 		String output = this.getFilename() + "\n";
+		
+		output +=
+				"--- NAME\n";		
+		output += "------ " + this.getMovieName() + "\n";
+		
+		
 		output +=
 				"--- TITLES\n";
 		
@@ -138,7 +147,11 @@ public class ParserMovie {
 
 		for (String item : this.getOthers())
 			output += "------ " + item + "\n";
-		
+
+		output +=
+				"--- GROUP\n";		
+		output += "------ " + this.getGroupName() + "\n";
+
 		output +="\n";
 		output +="----------------------------------------------------\n";
 		output +="----------------------------------------------------\n";
@@ -152,5 +165,69 @@ public class ParserMovie {
 
 	public void setFilename(String filename) {
 		this.filename = filename;
+	}
+
+	public String getGroupName() {
+		return groupName;
+	}
+
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
+	}
+	
+	public Movie getMovie() {
+		Movie.Builder b = Movie.newBuilder();
+		
+		b.setID(-1)
+		 .setEpisode(this.getEpisode())
+		 .setGroupName(this.getGroupName())
+		 .setTitle(this.getMovieName())
+		 .setYear(this.getYear())
+		 .setIdentifier(Identifier.Parser)
+		 .setIsTvEpisode(this.getSeason() > 0 || this.getEpisode() > 0)
+		 .setIdentifierRating(this.getIdentifierRating())
+		 .setSubtitleRetreiveResult(0);
+
+		if (this.getSounds().size() > 0)
+			b.setSound(this.getSounds().get(0));
+		
+		if (this.getTypes().size() > 0)
+			b.setType(this.getTypes().get(0));
+		
+		if (this.getFormats().size() > 0)
+			b.setFormat(this.getFormats().get(0));
+		 
+		if (this.getLanguages().size() > 0)
+			b.setLanguage(this.getLanguages().get(0));
+		
+		
+		return b.build();		
+	}
+	
+	private int getIdentifierRating() {
+		int groupsMatched = 0;
+		
+		if (!StringUtils.isEmpty(movieName))
+			groupsMatched++;
+		
+		if (this.getTitles().size() > 0)
+			groupsMatched++;
+		
+		if (this.getTypes().size() > 0)
+			groupsMatched++;
+		
+		if (this.getFormats().size() > 0)
+			groupsMatched++;
+
+		if (this.getLanguages().size() > 0)
+			groupsMatched++;
+		
+		if (this.getSounds().size() > 0)
+			groupsMatched++;
+
+		if (!StringUtils.isEmpty(groupName))
+			groupsMatched++;
+		
+		return Math.round(100 * groupsMatched / 7);
 	}
 }

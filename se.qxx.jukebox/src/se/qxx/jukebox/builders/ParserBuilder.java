@@ -3,32 +3,42 @@ package se.qxx.jukebox.builders;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import se.qxx.jukebox.Util;
+import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.StringSplitters.Episodes.Pattern.Groups.Group;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.parser.ParserType;
 
-public class ParserBuilder {
+public class ParserBuilder extends MovieBuilder {
+
+	@Override
+	public Movie extractMovie(String filepath, String filename) {
+		return extractMovieParser(filepath, filename).getMovie();
+	}
 	
-	public ParserMovie extractMovie(String filepath, String filename) {
+	public ParserMovie extractMovieParser(String filepath, String filename) {
 		ParserMovie pm = new ParserMovie();
+		String fileNameToMatch = FilenameUtils.getBaseName(filename);
+		
 		pm.setFilename(filename);
-		String stringToProcess = removeParenthesis(filename);
+		String stringToProcess = removeParenthesis(fileNameToMatch);
 		String[] tokens = StringUtils.split(stringToProcess, " _.-");
 		
 		// assume movie name always comes first. The next token after that identifies the end of filename.
-		
+		// assume TV episode title is before season and episode specifier
+		// assume groupName is the last token in the file (if other tokens exist)
 		
 		for (String token : tokens) {
 			if (!StringUtils.isEmpty(StringUtils.trim(token))) {
 				ParserType pt = Settings.parser().checkToken(token);
 				Pair<Integer, Integer> tvEpisode = getTvEpisode(token);
 
-				if (!pt.equals(ParserType.UNKNOWN)) 
+				if (!pt.equals(ParserType.UNKNOWN))  
 					pm.pushTitle();
 
 				if (tvEpisode != null) {
@@ -61,8 +71,8 @@ public class ParserBuilder {
 							break;
 						case UNKNOWN:
 							pm.addMovieNameToken(token);
-	//						else
-	//							Log.Info(String.format("ParserBuilder :: Token %s ignored", token), LogType.FIND);
+							break;
+						default:
 							break;
 						}
 					}
@@ -71,6 +81,11 @@ public class ParserBuilder {
 		}
 		
 		pm.pushTitle();
+		
+		if (pm.getTitles().size() > 0)
+			pm.addMovieNameToken(pm.getTitles().get(0));
+		if (pm.getTitles().size() > 1)
+			pm.setGroupName(pm.getTitles().get(pm.getTitles().size() - 1));
 		
 		return pm;
 	}
@@ -101,9 +116,17 @@ public class ParserBuilder {
 			Matcher matcher = regexPattern.matcher(token);
 			
 			if (matcher.find()) {
-				int season = Integer.parseInt(getProperty(p, matcher, "season"));
-				int episode = Integer.parseInt(getProperty(p, matcher, "episode"));
+//				int season = Integer.parseInt(getProperty(p, matcher, "season"));
+//				int episode = Integer.parseInt(getProperty(p, matcher, "episode"));
+				int season = 0, episode = 0;
 				
+				for(Group g : p.getGroups().getGroup()) {
+					if (StringUtils.equalsIgnoreCase("season", g.getProperty()))
+						season = Integer.parseInt(matcher.group(g.getId()));
+					if (StringUtils.equalsIgnoreCase("episode", g.getProperty()))
+						episode = Integer.parseInt(matcher.group(g.getId()));
+				}
+
 				return new ImmutablePair<Integer, Integer>(season, episode);
 			}
 		}

@@ -11,6 +11,7 @@ enum Identifier {
 	Filename = 1;
 	ParentDirectory = 2;
 	NFO = 3;
+	Parser = 4;
 }
 
 enum Rating {

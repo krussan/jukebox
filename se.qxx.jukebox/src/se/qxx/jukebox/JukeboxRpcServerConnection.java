@@ -226,23 +226,12 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			JukeboxRequestMovieID request, RpcCallback<Empty> done) {
 		
 		Log.Debug("Blacklist -- EMPTY", LogType.COMM);
+
+		Movie m = DB.getMovie(request.getMovieId());
+		if (m != null)
+			DB.addToBlacklist(m);
 		
-//			String response = Distributor.get().getTime(request.getPlayerName());
-//			if (response.equals(StringUtils.EMPTY))
-//				controller.setFailed("Error occured when connecting to target media player"); 
-//			else {
-//				int seconds = Integer.parseInt(response);
-//				String titleFilename = getTitleFilename(request.getPlayerName());
-//				
-//				JukeboxResponseTime time = JukeboxResponseTime.newBuilder()
-//						.setSeconds(seconds)
-//						.setFilename(titleFilename)
-//						.build();
-//
-			done.run(Empty.newBuilder().build());	
-//			}
-				
-			
+		done.run(Empty.newBuilder().build());
 	}
 
 	@Override
