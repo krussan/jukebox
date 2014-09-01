@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 
 public class Model {
@@ -49,11 +50,13 @@ public class Model {
 	private List<Movie> _movies;
 	private List<String> _players;
 	private List<Subtitle> _subs;
+	private List<Series> _series;
 	
 	private Model() {
 		_movies = new ArrayList<Movie>();
 		_players = new ArrayList<String>();
-		_subs = new ArrayList<Subtitle>();		
+		_subs = new ArrayList<Subtitle>();
+		_series = new ArrayList<Series>();
 	}
 	
 	public static Model get() {
@@ -162,6 +165,18 @@ public class Model {
 		});
 	}
 
+	//---------------------------------------------------------------------------------------
+	// SERIES
+	//---------------------------------------------------------------------------------------
+
+	public int countSeries() {
+		return this._series.size();
+	}
+
+	public Series getSeries(int position) {
+		return _series.get(position);
+	}
+	
 	//---------------------------------------------------------------------------------------
 	// MEDIA
 	//---------------------------------------------------------------------------------------
@@ -340,5 +355,7 @@ public class Model {
 	public String getCurrentSubtitle() {
 		return this.currentSub;
 	}
+
+
 	
 }

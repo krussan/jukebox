@@ -5,6 +5,7 @@ import java.util.EventObject;
 import com.google.protobuf.RpcCallback;
 
 import se.qxx.android.jukebox.adapters.MovieLayoutAdapter;
+import se.qxx.android.jukebox.exceptions.JukeboxNotInitializedException;
 import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.android.jukebox.JukeboxConnectionProgressDialog;
 import se.qxx.android.jukebox.model.Model;
@@ -58,7 +59,6 @@ public class JukeboxActivity extends JukeboxActivityBase implements
 			connect();
 		else
 			runOnUiThread(modelResultUpdatedRunnable);
-
 	}
 
 	private void setupOnOffButton() {
@@ -178,9 +178,12 @@ public class JukeboxActivity extends JukeboxActivityBase implements
 
 				@Override
 				public void run(JukeboxResponseListMovies response) {
-					Model.get().clearMovies();
-					Model.get().addAllMovies(response.getMoviesList());
-					Model.get().setInitialized(true);
+					//TODO: if repsonse is null probably the server is down..
+					if (response != null) {
+						Model.get().clearMovies();
+						Model.get().addAllMovies(response.getMoviesList());
+						Model.get().setInitialized(true);
+					}
 				}
 
 			});

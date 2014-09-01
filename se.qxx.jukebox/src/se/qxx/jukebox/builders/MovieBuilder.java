@@ -2,12 +2,18 @@ package se.qxx.jukebox.builders;
 
 import java.util.ArrayList;
 import java.util.Collections;
+
 import org.apache.commons.lang3.StringUtils;
+
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Util;
 import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.domain.JukeboxDomain.Season;
+import se.qxx.jukebox.domain.JukeboxDomain.Series;
+import se.qxx.jukebox.domain.Slice;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Builders.Builder;
 import se.qxx.jukebox.settings.Settings;
 
@@ -16,7 +22,7 @@ public abstract class MovieBuilder {
 	public MovieBuilder() {
 	}
 	
-	public abstract Movie extractMovie(String filepath, String filename);
+	public abstract Slice extractMovie(String filepath, String filename);
 	
 	protected ArrayList<String> getGroupsToCheck() {
 		ArrayList<String> groupsToCheck = new ArrayList<String>();
@@ -36,7 +42,7 @@ public abstract class MovieBuilder {
 	 * @param filename
 	 * @return
 	 */
-	public static Movie identifyMovie(String filepath, String filename) {
+	public static Slice identifyMovie(String filepath, String filename) {
 		PartPattern pp = new PartPattern(filename);
 				
 		ArrayList<Movie> proposals = identifyAndRate(filepath, pp.getResultingFilename());
@@ -59,46 +65,78 @@ public abstract class MovieBuilder {
 	 * @param part
 	 * @return The movie
 	 */
-	protected static Movie buildMovie(
+	protected static Slice build(
 			String filepath, 
 			String filename, 
-			ArrayList<Movie> proposals, 
+			ArrayList<Slice> proposals, 
 			String imdbUrl,
 			PartPattern pp) {
 		
-		Movie m = null;
+		Slice s = null;
 		if (proposals.size() > 0) {
-			m = proposals.get(0);
+			s = proposals.get(0);
 			
-			if (m != null)  {
+			if (s != null)  {
+				if (s.isTvEpisode())
+					s = new Slice(buildSeries(s.getSerie()));
+				else
+					s = new Slice(buildMovie(s.getMovie()));
+				
 				Log.Debug(String.format("MovieBuilder :: Selected proposal has rating of %s", m.getIdentifierRating()), LogType.FIND);
-				
-				Media md = Media.newBuilder()
-						.setID(-1)
-						.setIndex(pp.getPart())
-						.setFilename(filename)
-						.setFilepath(filepath)
-						.build();
-
-				Movie.Builder builder = Movie.newBuilder(m)
-						.setIsTvEpisode(pp.isTvEpisode())
-						.setEpisode(pp.getEpisode())
-						.setSeason(pp.getSeason())
-						.addMedia(md);
-				
-				// If a Imdb Link has been found in one of the builders
-				// then merge it into this one
-				if (!StringUtils.isEmpty(imdbUrl))
-					builder.setImdbUrl(imdbUrl);
-				
-				m = builder.build();
-				
 			}
 		}
 		else {
 			Log.Info(String.format("Failed to identify movie with filename %s", filename), LogType.FIND);
 		}
-		return m;
+		return s;
+	}
+
+	private static Series buildSeries(Series s
+			, String filepath
+			, String filename
+			, PartPattern pp
+			, String imdbUrl) {
+		
+		Media md = Media.newBuilder()
+				.setID(-1)
+				.setIndex(pp.getPart())
+				.setFilename(filename)
+				.setFilepath(filepath)
+				.build();
+
+		Season ss = s.getSeason(0);
+		
+		Episode e = Episode.newBuilder(ss.getEpisode(0))
+				.addMedia(md)
+				.build();
+		
+		ss = Season.newBuilder(ss).setEpisode(0, e).build();
+		
+		return Series.newBuilder(s).setSeason(0, ss).build();
+				
+	}
+	
+	private static Movie buildMovie(Movie m
+			, String filepath
+			, String filename
+			, PartPattern pp
+			, String imdbUrl) {
+		
+		Media md = Media.newBuilder()
+				.setID(-1)
+				.setIndex(pp.getPart())
+				.setFilename(filename)
+				.setFilepath(filepath)
+				.build();
+
+		Movie.Builder builder = Movie.newBuilder(m).addMedia(md);
+		
+		// If a Imdb Link has been found in one of the builders
+		// then merge it into this one
+		if (!StringUtils.isEmpty(imdbUrl))
+			builder.setImdbUrl(imdbUrl);
+
+		return builder.build();
 	}
 
 	/**

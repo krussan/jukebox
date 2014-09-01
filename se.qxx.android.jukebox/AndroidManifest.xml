@@ -21,6 +21,7 @@
         <activity android:name="SubSelectActivity" android:theme="@android:style/Theme.Black.NoTitleBar"></activity>
         <activity android:name="FlipperActivity" android:theme="@android:style/Theme.Black.NoTitleBar"></activity>
         <activity android:name="NowPlayingActivity" android:theme="@android:style/Theme.Black.NoTitleBar"></activity>
+        <activity android:name="SeriesActivity" android:theme="@android:style/Theme.Black.NoTitleBar"></activity>
 
     </application>
 </manifest>

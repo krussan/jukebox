@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:src="@drawable/icon" 
         android:contentDescription="@string/descPosterImage"
-        android:layout_margin="5dp"/>    
+        android:layout_margin="5dp"/>
     <RelativeLayout
         android:id="@+id/relativeLayout1"
         android:layout_width="match_parent"
@@ -59,7 +59,8 @@
             android:layout_alignParentRight="true"
             android:src="@android:drawable/stat_sys_download" 
             android:contentDescription="@string/descDownloading"/>
-
+
+
         <ImageView
             android:id="@+id/imgWatched"
             android:layout_width="wrap_content"
@@ -67,7 +68,8 @@
             android:layout_alignLeft="@+id/txtRating"
             android:layout_below="@id/toptext"
             android:layout_toLeftOf="@id/imgDownloading"
-            android:src="@android:drawable/ic_menu_view" />
+            android:src="@android:drawable/ic_menu_view"
+            android:contentDescription="@string/descWatched" />
        
     </RelativeLayout>
    

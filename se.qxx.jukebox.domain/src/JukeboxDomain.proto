@@ -31,6 +31,56 @@ message Version {
 	required int32 minor = 3;
 }
 
+message Series {
+	required int32 ID = 1;
+	repeated Season season = 2;
+	
+	optional string title = 3;
+	optional int32 year = 4;
+
+	optional string imdb_url = 5;
+	optional string imdb_id = 6;	
+
+	optional string story = 7;
+	optional bytes image = 8;
+	repeated string genre = 9;
+}
+
+message Season {
+	required int32 ID = 1;
+	repeated Episode episode = 2;
+	
+	optional string title = 3;
+	optional int32 year = 4;
+
+	optional string imdb_url = 5;
+	optional string imdb_id = 6;	
+
+	optional string story = 7;
+	optional bytes image = 8;
+	repeated string genre = 9;	
+}
+
+message Episode {
+	required int32 ID = 1;
+	repeated Media media = 2;
+	optional int32 season = 3;
+	optional int32 episode = 4;
+	optional int64 firstAirDate = 5;
+	optional string episodeTitle = 6;
+
+	optional string type = 7;
+	optional string format = 8;
+	optional string sound = 9;
+	optional string language = 10;
+	optional string groupName = 11;
+
+	optional int32 duration = 12;
+
+	optional string rating = 13;
+	optional string director = 14;	
+}
+
 message Movie {
 	required int32 ID = 1;
 	repeated Media media = 2;	
@@ -52,13 +102,7 @@ message Movie {
 	optional Identifier identifier = 18;
 	optional int32 identifierRating = 19;
 	optional bool watched = 20;
-	
-	optional bool isTvEpisode = 21;
-	optional int32 season = 22;
-	optional int32 episode = 23;
-	optional int64 firstAirDate = 24;
-	optional string episodeTitle = 25;
-	
+		
 	optional int64 subtitleQueuedAt = 26;
 	optional int64 subtitleRetreivedAt = 27;
 	required int32 subtitleRetreiveResult = 28 [default = 0];

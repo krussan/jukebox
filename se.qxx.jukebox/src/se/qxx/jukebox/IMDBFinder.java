@@ -135,6 +135,7 @@ public class IMDBFinder {
 			
 			Builder b = Movie.newBuilder(m)
 					.setImdbUrl(rec.getUrl())
+					.setImdbId(Util.getImdbIdFromUrl(rec.getUrl()))
 					.setDirector(rec.getDirector())
 					.setDuration(rec.getDurationMinutes())
 					.setStory(rec.getStory())

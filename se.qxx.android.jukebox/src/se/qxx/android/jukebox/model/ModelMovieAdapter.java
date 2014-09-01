@@ -6,6 +6,10 @@ import android.widget.BaseAdapter;
 
 public abstract class ModelMovieAdapter extends BaseAdapter {
 
+	public ModelMovieAdapter() {
+		super();
+	}
+	
 	@Override
 	public int getCount() {
 		return Model.get().countMovies();

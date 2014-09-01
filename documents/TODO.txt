@@ -12,6 +12,17 @@ Jukebox issues
 - black-listing doesn't work (no connection / no comm log)
 - IMDB identifier and Watcher runs on the same thread.. why is that?
 - Parser builder does not work well on 24.S09E04.HDTV.x264-LOL
+- Make a better subtitle downloader. 400 subtitles for each episode of The Following is not reasonable.
+x - Blacklist does not work because IMDB_ID is null for every movie
+- Does blacklisting re-enqueues the file on the identifier? It did before but can't find the logic now.
+
+- 2014-07-08 - Started to implement an instance of a movie layout for series (breaking the build.. but not checked in)
+- 2014-09-01 - Far down the lane towards complete fuck-up. Tried to add a JukeboxFragment that involves switching between
+     two views in the main Activity. One for movie, one for series.
+     A new concept of Slice that is either a Movie or a Series.
+     All builders should really be returning a pre-populated Slice. Assignement of Media could still be in MovieBuilder, but the rest
+     with Series/Episodes should be done in each builder.
+     New objects Series/Season/Episode
 
 ---------------------------------------------------------------------
 Environent Issues
