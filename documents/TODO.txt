@@ -23,7 +23,7 @@ x - Blacklist does not work because IMDB_ID is null for every movie
      All builders should really be returning a pre-populated Slice. Assignement of Media could still be in MovieBuilder, but the rest
      with Series/Episodes should be done in each builder.
      New objects Series/Season/Episode
-
+- 2014-09-02 - Ok. Fixed the layout in android app somewhat. Need to write scripts to update DB to new schema version.
 ---------------------------------------------------------------------
 Environent Issues
 ---------------------------------------------------------------------

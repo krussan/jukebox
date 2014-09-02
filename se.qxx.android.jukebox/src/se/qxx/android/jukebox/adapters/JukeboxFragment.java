@@ -103,29 +103,6 @@ public class JukeboxFragment extends ListFragment implements
 	    //detector = new SimpleGestureFilter(this, this);
 	}    
 
-	public void onButtonClicked(View v) {
-		int id = v.getId();
-		GUITools.vibrate(28, v.getContext());
-		
-		switch (id) {
-			case R.id.btnPlay:
-				Intent iPlay = new Intent(v.getContext(), NowPlayingActivity.class);
-				startActivity(iPlay);
-				break;	
-			case R.id.btnViewInfo:
-				String url = Model.get().getCurrentMovie().getImdbUrl();
-				if (url != null && url.length() > 0) {
-					Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-					startActivity(browserIntent);
-				}
-				else {
-					Toast.makeText(v.getContext(), "No IMDB link available", Toast.LENGTH_SHORT).show();
-				}
-				break;
-			default:
-				break;
-		}
-	}
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {

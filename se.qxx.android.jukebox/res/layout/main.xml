@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/rootMain"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
-
+    android:gravity="center|clip_vertical|fill_horizontal"
+    android:orientation="vertical" 
+    android:id="@+id/rootMain">
+    
+    <ListView 
+        android:id="@android:id/list"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+    </ListView>
+        
     <RelativeLayout 
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
@@ -62,12 +69,15 @@
 			android:background="@drawable/btnonoffred"
 			android:layout_alignParentRight="true"
 		/>
+		
+		<ListView
+		    android:id="@+id/listView1"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+		    android:layout_below="@id/btnRefresh">
+		</ListView>		
     </RelativeLayout>
 
-	<ListView
-	    android:id="@+id/listView1"
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content">
-	</ListView>
 
-</LinearLayout>
+
+</RelativeLayout>
