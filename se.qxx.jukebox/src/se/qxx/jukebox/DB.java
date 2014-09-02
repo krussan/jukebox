@@ -22,11 +22,14 @@ import org.apache.commons.lang3.time.DateUtils;
 
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain;
+import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Identifier;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie.Builder;
 import se.qxx.jukebox.domain.JukeboxDomain.Rating;
+import se.qxx.jukebox.domain.JukeboxDomain.Season;
+import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.protodb.ProtoDB;
 import se.qxx.protodb.exceptions.IDFieldNotFoundException;
@@ -164,6 +167,37 @@ public class DB {
 				return result.get(0);
 			else
 				return null;
+		} catch (Exception e) {
+			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
+//			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
+			
+			return null;
+		}
+	}
+	
+	public synchronized static Series findSeriesEpisode(String title, Series s) {
+		String searchString = replaceSearchString(title) + "%";
+		
+		Log.Debug(String.format("DB :: Series search string :: %s", searchString), LogType.MAIN);
+		 
+		try {
+			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			List<Series> result =
+				db.find(JukeboxDomain.Series.getDefaultInstance(), 
+					"title", 
+					searchString, 
+					true);
+			
+			if (result.size() > 0) 
+				for (Series ss : result) 
+					for (Season season : ss.getSeasonList()) 
+						if (season.getSeasonNumber() == s.getSeason(0).getSeasonNumber()) 
+							for (Episode e : season.getEpisodeList()) 
+								if (e.getEpisodeNumber() == s.getSeason(0).getEpisode(0).getEpisodeNumber()) 
+									return ss;
+			
+			return null;
+			
 		} catch (Exception e) {
 			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
 //			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);

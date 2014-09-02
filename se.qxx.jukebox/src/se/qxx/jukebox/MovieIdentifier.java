@@ -15,7 +15,9 @@ import se.qxx.jukebox.builders.MovieBuilder;
 import se.qxx.jukebox.builders.PartPattern;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.settings.Settings;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class MovieIdentifier implements Runnable {
 	
@@ -88,9 +90,10 @@ public class MovieIdentifier implements Runnable {
 		else {
 			
 			Movie m = MovieBuilder.identifyMovie(path, filename);
+			Series s = MovieBuilder.identifySeries(m, path, filename);
 					
 			if (m != null) {
-				matchMovieWithDatabase(m, filename);
+				matchMovieWithDatabase(m, s, filename);
 			}
 			else {
 				Log.Info(String.format("Failed to identity movie with filename :: %s", f.getName()), Log.LogType.FIND);
@@ -108,9 +111,10 @@ public class MovieIdentifier implements Runnable {
 	 * @param movie
 	 * @param filename
 	 */
-	protected void matchMovieWithDatabase(Movie movie, String filename) {
+	protected void matchMovieWithDatabase(Movie movie, Series s, String filename) {
 		Log.Info(String.format("MovieIdentifier :: Movie identified by %s as :: %s"
 				, movie.getIdentifier().toString(), movie.getTitle()), Log.LogType.FIND);
+		
 		
 		// Check if movie exists in db
 		PartPattern pp = new PartPattern(filename);
@@ -121,16 +125,25 @@ public class MovieIdentifier implements Runnable {
 		// different thread. Hence synchronized declaration.
 		// Shouldn't be a problem no more as all identification is done on a single thread
 		Movie dbMovie = DB.getMovieByStartOfMediaFilename(pp.getPrefixFilename());
-		Media newMedia = movie.getMedia(0);
 
+		Media newMedia = movie.getMedia(0);
 		if (dbMovie == null) {
 			Log.Debug("MovieIdentifier :: Movie not found -- adding new", LogType.FIND);
-			getInfoAndSaveMovie(movie, newMedia);			
+			getInfoAndSaveMovie(movie, newMedia, s);			
 		}
 		else {
 			Log.Debug("MovieIdentifier :: Movie found -- checking existing media", LogType.FIND);	
 			checkExistingMedia(dbMovie, newMedia);
 		}
+		
+		//TODO: make the same match for Series/Episodes and add them if they don't exist.
+		// we should have an ID on the existing movie - no?
+		// Then it should be easy to insert it into the Series object
+		DB.findSeriesEpisode(movie.getTitle(), s);
+		
+		
+		throw new NotImplementedException();
+
 	}
 
 	/**
@@ -138,7 +151,7 @@ public class MovieIdentifier implements Runnable {
 	 * @param m
 	 * @param newMedia
 	 */
-	protected void getInfoAndSaveMovie(Movie movie, Media media) {
+	protected void getInfoAndSaveMovie(Movie movie, Media media, Series serie) {
 		// If not get information and subtitles
 		// If title is the same as the filename (except ignore pattern) then don't identify on IMDB.
 		if (Arguments.get().isImdbIdentifierEnabled()) 

@@ -345,15 +345,18 @@ public class IMDBFinder {
 	private static Movie getTvEpisodeInfo(Movie m, IMDBRecord rec) throws NumberFormatException, IOException, ParseException {
 		Movie newMovie;
 		
-		Log.Debug(String.format("Finding TV Epsiode info for %s. Season :: %s, Episode :: %s", m.getTitle(), m.getSeason(), m.getEpisode()), LogType.IMDB);
-		
 		// mainMovie contains the overall info about the series
+		// mainMovie should contain the episode title. 
+		// So transfer the properties to the season object 
 		// get the page referencing the wanted season
-		if (m.getSeason() > 0) {
-			String seasonUrl = getSeasonUrl(m.getSeason(), rec.getAllSeasonUrls());
+		if (m.getIsTvEpisode() && m.getEpisode() != null && m.getEpisode().getSeason() != null) {
+			int seasonNumber = m.getEpisode().getSeason().getSeasonNumber();
+			Log.Debug(String.format("Finding TV Epsiode info for %s. Season :: %s, Episode :: %s", m.getTitle(), seasonNumber, m.getEpisode()), LogType.IMDB);
+			
+			String seasonUrl = getSeasonUrl(seasonNumber, rec.getAllSeasonUrls());
 
 			// extract episode info from that page
-			IMDBEpisode ep = getEpisodeUrl(seasonUrl, m.getEpisode());
+			IMDBEpisode ep = getEpisodeUrl(seasonUrl, m.getEpisode().getEpisodeNumber());
 			
 			// extract movie info from episode
 			IMDBRecord episodeRec = IMDBRecord.get(ep.getUrl());

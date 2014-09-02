@@ -5,8 +5,11 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Identifier;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.domain.JukeboxDomain.Season;
+import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.settings.parser.ParserType;
 
 public class ParserMovie {
@@ -177,9 +180,8 @@ public class ParserMovie {
 	
 	public Movie getMovie() {
 		Movie.Builder b = Movie.newBuilder();
-		
+			
 		b.setID(-1)
-		 .setEpisode(this.getEpisode())
 		 .setGroupName(this.getGroupName())
 		 .setTitle(this.getMovieName())
 		 .setYear(this.getYear())

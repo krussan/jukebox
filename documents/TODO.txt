@@ -24,6 +24,11 @@ x - Blacklist does not work because IMDB_ID is null for every movie
      with Series/Episodes should be done in each builder.
      New objects Series/Season/Episode
 - 2014-09-02 - Ok. Fixed the layout in android app somewhat. Need to write scripts to update DB to new schema version.
+- 2014-09-02 - Serious breakdown. Is this really a good design. Slices has been abandoned. We do a Series/Season/Episode hierarchy.
+     We get some dependency issues when trying to match the identified file with existing structure. 
+     The function matchMovieWithDatabase need to be updated with matching code for Series/Season/Episode as well.
+     I have done a single identification that does the whole hierarchy, but that is not enough. We need to separate them and insert
+     the real object into the result
 ---------------------------------------------------------------------
 Environent Issues
 ---------------------------------------------------------------------

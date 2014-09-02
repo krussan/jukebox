@@ -13,7 +13,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
-import se.qxx.jukebox.domain.Slice;
+//import se.qxx.jukebox.domain.Slice;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Builders.Builder;
 import se.qxx.jukebox.settings.Settings;
 
@@ -22,7 +22,7 @@ public abstract class MovieBuilder {
 	public MovieBuilder() {
 	}
 	
-	public abstract Slice extractMovie(String filepath, String filename);
+	public abstract Movie extractMovie(String filepath, String filename);
 	
 	protected ArrayList<String> getGroupsToCheck() {
 		ArrayList<String> groupsToCheck = new ArrayList<String>();
@@ -42,16 +42,46 @@ public abstract class MovieBuilder {
 	 * @param filename
 	 * @return
 	 */
-	public static Slice identifyMovie(String filepath, String filename) {
+	public static Movie identifyMovie(String filepath, String filename) {
 		PartPattern pp = new PartPattern(filename);
 				
-		ArrayList<Slice> proposals = identifyAndRate(filepath, pp.getResultingFilename());
+		ArrayList<Movie> proposals = identifyAndRate(filepath, pp.getResultingFilename());
 		
-		//TODO: Add TV episode to this function
 		return MovieBuilder.build(filepath, filename, proposals, pp);
-	
 	}
 	
+	/**
+	 * Create a Series object if this is part of a tv episode
+	 * @param filepath
+	 * @param filename
+	 * @return
+	 */
+	public static Series identifySeries(Movie m, String filepath, String filename) {
+		PartPattern pp = new PartPattern(filename);
+
+		Series s = null;
+		if (pp.isTvEpisode()) {
+			s = Series.newBuilder()
+					.setID(-1)
+					.setTitle(m.getTitle())
+					.addSeason(
+						Season.newBuilder()
+							.setID(-1)
+							.setSeasonNumber(pp.getSeason())
+							.addEpisode(
+								Episode.newBuilder()
+									.setID(-1)
+									.setEpisodeNumber(pp.getEpisode())
+									.setMovie(m)
+									.build()
+								)
+							.build()
+						)
+					.build();
+		}
+	
+		return s;
+	}
 	
 	/**
 	 * Builds the movie from the first proposal in the list
@@ -62,59 +92,31 @@ public abstract class MovieBuilder {
 	 * @param part
 	 * @return The movie
 	 */
-	protected static Slice build(
+	protected static Movie build(
 			String filepath, 
 			String filename, 
-			ArrayList<Slice> proposals, 
+			ArrayList<Movie> proposals, 
 			PartPattern pp) {
 		
-		Slice s = null;
+		Movie m = null;
 		if (proposals.size() > 0) {
-			s = proposals.get(0);
+			m = proposals.get(0);
 			
 			// check if one of the proposals has identified the movie and added an imdb url
-			String imdbUrl = checkImdbUrl(s.isTvEpisode(), proposals);
+			String imdbUrl = checkImdbUrl(proposals);
 			
-			if (s != null)  {
-				if (s.isTvEpisode())
-					s = new Slice(buildSeries(s.getSerie(), filepath, filename, pp, imdbUrl));
-				else
-					s = new Slice(buildMovie(s.getMovie(), filepath, filename, pp, imdbUrl));
-				
+			if (m != null)  {
+				m = buildMovie(m, filepath, filename, pp, imdbUrl);				
 				Log.Debug(String.format("MovieBuilder :: Selected proposal has rating of %s", m.getIdentifierRating()), LogType.FIND);
 			}
 		}
 		else {
 			Log.Info(String.format("Failed to identify movie with filename %s", filename), LogType.FIND);
 		}
-		return s;
+		return m;
 	}
 
-	private static Series buildSeries(Series s
-			, String filepath
-			, String filename
-			, PartPattern pp
-			, String imdbUrl) {
-		
-		Media md = Media.newBuilder()
-				.setID(-1)
-				.setIndex(pp.getPart())
-				.setFilename(filename)
-				.setFilepath(filepath)
-				.build();
 
-		Season ss = s.getSeason(0);
-		
-		Episode e = Episode.newBuilder(ss.getEpisode(0))
-				.addMedia(md)
-				.build();
-		
-		ss = Season.newBuilder(ss).setEpisode(0, e).build();
-		
-		return Series.newBuilder(s).setSeason(0, ss).build();
-				
-	}
-	
 	private static Movie buildMovie(Movie m
 			, String filepath
 			, String filename
@@ -143,14 +145,10 @@ public abstract class MovieBuilder {
 	 * @param proposals
 	 * @return The first IMDB url found
 	 */
-	private static String checkImdbUrl(boolean isTvEpisode, ArrayList<Slice> proposals) {
+	private static String checkImdbUrl(ArrayList<Movie> proposals) {
 		String imdbUrl = StringUtils.EMPTY;
-		for (Slice s : proposals) {
-			if (s.isTvEpisode() && isTvEpisode)
-				imdbUrl = s.getSerie().getSeason(0).getEpisode(0).getImdbUrl();
-			else 
-				if (s.getMovie() != null )
-					imdbUrl = s.getMovie().getImdbUrl();
+		for (Movie m : proposals) {
+			imdbUrl = m.getImdbUrl();
 						
 			if (!StringUtils.isEmpty(imdbUrl))
 				break;	

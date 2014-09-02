@@ -48,40 +48,29 @@ message Series {
 
 message Season {
 	required int32 ID = 1;
-	repeated Episode episode = 2;
+	required int32 seasonNumber = 2;
+	repeated Episode episode = 3;
 	
-	optional string title = 3;
-	optional int32 year = 4;
+	optional string title = 4;
+	optional int32 year = 5;
 
-	optional string imdb_url = 5;
-	optional string imdb_id = 6;	
+	optional string imdb_url = 6;
+	optional string imdb_id = 7;	
 
-	optional string story = 7;
-	optional bytes image = 8;
-	repeated string genre = 9;	
+	optional string story = 8;
+	optional bytes image = 9;
+	repeated string genre = 10;	
 }
 
 message Episode {
 	required int32 ID = 1;
-	repeated Media media = 2;
-	optional int32 season = 3; 
-	optional int32 episode = 4;
-	optional int64 firstAirDate = 5;
-	optional string episodeTitle = 6;
-
-	optional string type = 7;
-	optional string format = 8;
-	optional string sound = 9;
-	optional string language = 10;
-	optional string groupName = 11;
-
-	optional int32 duration = 12;
-
-	optional string rating = 13;
-	optional string director = 14;	
+	required Movie movie = 2;
 	
-	optional string imdb_url = 15;
-	optional string imdb_id = 16;		
+	optional int32 episodeNumber = 3;
+	optional int64 firstAirDate = 4;
+
+	optional string imdb_url = 5;
+	optional string imdb_id = 6;		
 }
 
 message Movie {
@@ -106,11 +95,13 @@ message Movie {
 	optional int32 identifierRating = 19;
 	optional bool watched = 20;
 		
-	optional int64 subtitleQueuedAt = 26;
-	optional int64 subtitleRetreivedAt = 27;
-	required int32 subtitleRetreiveResult = 28 [default = 0];
+	optional int64 subtitleQueuedAt = 21;
+	optional int64 subtitleRetreivedAt = 22;
+	required int32 subtitleRetreiveResult = 23 [default = 0];
 	
-	repeated string blacklist = 29;
+	repeated string blacklist = 24;
+	
+	required bool isTvEpisode = 25 [default = false];
 }
 
 message Subtitle {
