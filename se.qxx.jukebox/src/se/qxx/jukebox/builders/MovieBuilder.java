@@ -45,13 +45,10 @@ public abstract class MovieBuilder {
 	public static Slice identifyMovie(String filepath, String filename) {
 		PartPattern pp = new PartPattern(filename);
 				
-		ArrayList<Movie> proposals = identifyAndRate(filepath, pp.getResultingFilename());
-		
-		// check if one of the proposals has identified the movie and added an imdb url
-		String imdbUrl = checkImdbUrl(proposals);
+		ArrayList<Slice> proposals = identifyAndRate(filepath, pp.getResultingFilename());
 		
 		//TODO: Add TV episode to this function
-		return buildMovie(filepath, filename, proposals, imdbUrl, pp);
+		return MovieBuilder.build(filepath, filename, proposals, pp);
 	
 	}
 	
@@ -69,18 +66,20 @@ public abstract class MovieBuilder {
 			String filepath, 
 			String filename, 
 			ArrayList<Slice> proposals, 
-			String imdbUrl,
 			PartPattern pp) {
 		
 		Slice s = null;
 		if (proposals.size() > 0) {
 			s = proposals.get(0);
 			
+			// check if one of the proposals has identified the movie and added an imdb url
+			String imdbUrl = checkImdbUrl(s.isTvEpisode(), proposals);
+			
 			if (s != null)  {
 				if (s.isTvEpisode())
-					s = new Slice(buildSeries(s.getSerie()));
+					s = new Slice(buildSeries(s.getSerie(), filepath, filename, pp, imdbUrl));
 				else
-					s = new Slice(buildMovie(s.getMovie()));
+					s = new Slice(buildMovie(s.getMovie(), filepath, filename, pp, imdbUrl));
 				
 				Log.Debug(String.format("MovieBuilder :: Selected proposal has rating of %s", m.getIdentifierRating()), LogType.FIND);
 			}
@@ -144,15 +143,22 @@ public abstract class MovieBuilder {
 	 * @param proposals
 	 * @return The first IMDB url found
 	 */
-	private static String checkImdbUrl(ArrayList<Movie> proposals) {
+	private static String checkImdbUrl(boolean isTvEpisode, ArrayList<Slice> proposals) {
 		String imdbUrl = StringUtils.EMPTY;
-		for (Movie m : proposals) {
-			if (!StringUtils.isEmpty(m.getImdbUrl()) ) {
-				imdbUrl = m.getImdbUrl();				
-				Log.Debug(String.format("MovieBuilder :: ImdbUrl found :: %s", imdbUrl), LogType.FIND);								
-				return imdbUrl;
-			}			
+		for (Slice s : proposals) {
+			if (s.isTvEpisode() && isTvEpisode)
+				imdbUrl = s.getSerie().getSeason(0).getEpisode(0).getImdbUrl();
+			else 
+				if (s.getMovie() != null )
+					imdbUrl = s.getMovie().getImdbUrl();
+						
+			if (!StringUtils.isEmpty(imdbUrl))
+				break;	
+
 		}
+		
+		if (!StringUtils.isEmpty(imdbUrl))
+			Log.Debug(String.format("MovieBuilder :: ImdbUrl found :: %s", imdbUrl), LogType.FIND);
 		
 		return imdbUrl;
 	}

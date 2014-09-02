@@ -64,7 +64,7 @@ message Season {
 message Episode {
 	required int32 ID = 1;
 	repeated Media media = 2;
-	optional int32 season = 3;
+	optional int32 season = 3; 
 	optional int32 episode = 4;
 	optional int64 firstAirDate = 5;
 	optional string episodeTitle = 6;
@@ -79,6 +79,9 @@ message Episode {
 
 	optional string rating = 13;
 	optional string director = 14;	
+	
+	optional string imdb_url = 15;
+	optional string imdb_id = 16;		
 }
 
 message Movie {
