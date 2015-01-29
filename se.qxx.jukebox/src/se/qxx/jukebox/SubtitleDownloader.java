@@ -31,10 +31,12 @@ import org.w3c.dom.NamedNodeMap;
 
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.builders.PartPattern;
+import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Rating;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
+import se.qxx.jukebox.domain.JukeboxDomain.SubtitleQueue;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings;
 import se.qxx.jukebox.settings.Settings;
@@ -100,9 +102,12 @@ public class SubtitleDownloader implements Runnable {
 					} finally {
 						
 						DB.save(Movie.newBuilder(m)
-							.setSubtitleRetreivedAt(DB.getCurrentUnixTimestamp())
-							.setSubtitleRetreiveResult(result)
-							.build());
+							.setSubtitleQueue(
+								SubtitleQueue.newBuilder()									
+									.setSubtitleRetreivedAt(DB.getCurrentUnixTimestamp())
+									.setSubtitleRetreiveResult(result)
+									.build()
+								).build());
 					}
 				}
 				
@@ -402,8 +407,18 @@ public class SubtitleDownloader implements Runnable {
 		synchronized (_instance) {
 			DB.addMovieToSubtitleQueue(m);
 			_instance.notify();
-		}
- 
+		} 
+	}
+	
+	/**
+	 * Add an episode to the subtitile download queue.
+	 * @param m The movie to add
+	 */
+	public void addEpisode(Episode episode) {
+		synchronized (_instance) {
+			DB.addMovieToSubtitleQueue(episode);
+			_instance.notify();
+		} 
 	}
 
 	/**

@@ -13,8 +13,10 @@ import org.apache.commons.lang3.StringUtils;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.builders.MovieBuilder;
 import se.qxx.jukebox.builders.PartPattern;
+import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.settings.Settings;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -91,7 +93,7 @@ public class MovieIdentifier implements Runnable {
 			
 			Movie m = MovieBuilder.identifyMovie(path, filename);
 			Series s = MovieBuilder.identifySeries(m, path, filename);
-					
+
 			if (m != null) {
 				matchMovieWithDatabase(m, s, filename);
 			}
@@ -111,7 +113,7 @@ public class MovieIdentifier implements Runnable {
 	 * @param movie
 	 * @param filename
 	 */
-	protected void matchMovieWithDatabase(Movie movie, Series s, String filename) {
+	protected void matchMovieWithDatabase(Movie movie, Series series, String filename) {
 		Log.Info(String.format("MovieIdentifier :: Movie identified by %s as :: %s"
 				, movie.getIdentifier().toString(), movie.getTitle()), Log.LogType.FIND);
 		
@@ -124,26 +126,82 @@ public class MovieIdentifier implements Runnable {
 		// Careful here! As the identification of the other movie parts could be in a 
 		// different thread. Hence synchronized declaration.
 		// Shouldn't be a problem no more as all identification is done on a single thread
-		Movie dbMovie = DB.getMovieByStartOfMediaFilename(pp.getPrefixFilename());
-
 		Media newMedia = movie.getMedia(0);
-		if (dbMovie == null) {
-			Log.Debug("MovieIdentifier :: Movie not found -- adding new", LogType.FIND);
-			getInfoAndSaveMovie(movie, newMedia, s);			
+		
+		if (series == null) {
+			Movie dbMovie = DB.getMovieByStartOfMediaFilename(pp.getPrefixFilename());
+	
+			
+			if (dbMovie == null) {
+				Log.Debug("MovieIdentifier :: Movie not found -- adding new", LogType.FIND);
+				getInfoAndSaveMovie(movie, newMedia);			
+			}
+			else {
+				Log.Debug("MovieIdentifier :: Movie found -- checking existing media", LogType.FIND);	
+				checkExistingMedia(dbMovie, newMedia);
+			}
 		}
 		else {
-			Log.Debug("MovieIdentifier :: Movie found -- checking existing media", LogType.FIND);	
-			checkExistingMedia(dbMovie, newMedia);
+			matchSeries(series, pp, newMedia);
 		}
-		
-		//TODO: make the same match for Series/Episodes and add them if they don't exist.
-		// we should have an ID on the existing movie - no?
-		// Then it should be easy to insert it into the Series object
-		DB.findSeriesEpisode(movie.getTitle(), s);
-		
-		
-		throw new NotImplementedException();
+	}
 
+	private void matchSeries(Series series, PartPattern pp, Media newMedia) {
+		int season = pp.getSeason();
+		int episode = pp.getEpisode();
+		// find series that matches
+		Series dbSeries = DB.findSeries(
+				series.getTitle());
+		
+		//if no series found in DB. create new from the created series
+		//  - if no series then no seasons and no episodes
+		if (dbSeries == null) {
+			// no series exist
+			getInfoAndSaveSeries(series, newMedia);
+		}
+		else {
+			for (Season sn : dbSeries.getSeasonList()) {
+				if (sn.getSeasonNumber() == season) {
+					// season exist. Check episode
+					for (Episode e : sn.getEpisodeList()) {
+						if (e.getEpisodeNumber() == episode) {
+							//episode exist
+							checkExistingMedia(e, newMedia);
+						}
+						else {
+							//no episode exist. Add the new episode identified.
+							Episode episodeWithInfo = getEpisodeInfo(series.getSeason(0).getEpisode(0));
+							sn.getEpisodeList().add(episodeWithInfo);
+						}
+					}
+				}
+				else {
+					// no season exist. Add the existing season (and episode) identified.
+					Episode episodeWithInfo = getInfo(series.getSeason(0).getEpisode(0));
+					sn.getEpisodeList().add(episodeWithInfo);
+					
+					dbSeries.getSeasonList().add(series.getSeason(0));
+				}
+				
+				//save the whole series
+				DB.save(series);
+			}
+		}
+		// find if season exists
+		// find if episode exists
+		// find if media exists
+		
+		
+		if (dbSeries == null) {
+			Log.Debug("MovieIdentifier :: Series not found -- adding new", LogType.FIND);
+						
+		}
+		else {
+			Log.Debug("MovieIdentifier :: Series found -- checking existing media", LogType.FIND);
+			Episode e = findEpisode(series, pp.getSeason(), pp.getEpisode());
+			
+			checkExistingMedia(dbSeries, newMedia, );
+		}
 	}
 
 	/**
@@ -151,7 +209,7 @@ public class MovieIdentifier implements Runnable {
 	 * @param m
 	 * @param newMedia
 	 */
-	protected void getInfoAndSaveMovie(Movie movie, Media media, Series serie) {
+	protected void getInfoAndSaveMovie(Movie movie, Media media) {
 		// If not get information and subtitles
 		// If title is the same as the filename (except ignore pattern) then don't identify on IMDB.
 		if (Arguments.get().isImdbIdentifierEnabled()) 
@@ -161,6 +219,38 @@ public class MovieIdentifier implements Runnable {
 		if (Arguments.get().isMediaInfoEnabled()) {
 			Media md = MediaMetadata.addMediaMetadata(media);
 
+			movie = Movie.newBuilder(movie)
+					.clearMedia()
+					.addMedia(md)
+					.build();
+		}
+		
+		movie = DB.save(movie);
+		
+		SubtitleDownloader.get().addMovie(movie);
+	}
+	
+	/**
+	 * Gets IMDB and metadata information from media and adds it to the database.
+	 * @param m
+	 * @param newMedia
+	 */
+	protected void getInfoAndSaveSeries(Series series, Media media) {
+		int season = series.getSeason(0).getSeasonNumber();
+		int episode = series.getSeason(0).getEpisode(0).getEpisodeNumber();
+		
+		// find series if exists
+		
+		// If not get information and subtitles
+		// If title is the same as the filename (except ignore pattern) then don't identify on IMDB.
+		if (Arguments.get().isImdbIdentifierEnabled()) 
+			movie = getImdbInformation(movie);
+
+		// Get media information from MediaInfo library
+		if (Arguments.get().isMediaInfoEnabled()) {
+			Media md = MediaMetadata.addMediaMetadata(media);
+			
+			
 			movie = Movie.newBuilder(movie)
 					.clearMedia()
 					.addMedia(md)
@@ -181,13 +271,7 @@ public class MovieIdentifier implements Runnable {
 	 */
 	protected void checkExistingMedia(Movie movie, Media media) {
 		// Check if media exists
-		if (mediaExists(movie, media)) {
-			// Check if movie has subs. If not then add it to the subtitle queue.
-			if (hasSubtitles(movie)) {
-				SubtitleDownloader.get().addMovie(movie);
-			}							
-		}
-		else {
+		if (!mediaExists(movie, media)) {
 			// Add media metadata
 			if (Arguments.get().isMediaInfoEnabled())
 				media = MediaMetadata.addMediaMetadata(media);
@@ -195,8 +279,30 @@ public class MovieIdentifier implements Runnable {
 			// If movie exist but not the media then add the media
 			DB.save(Movie.newBuilder(movie).addMedia(media).build());
 		}
+		
+		// Check if movie has subs. If not then add it to the subtitle queue.
+		if (!hasSubtitles(movie)) {
+			SubtitleDownloader.get().addMovie(movie);
+		}		
 	}
-	
+
+	protected void checkExistingMedia(Episode e, Media media) {
+		// Check if media exists
+
+		if (!mediaExists(e, media)) {
+			// Add media metadata
+			if (Arguments.get().isMediaInfoEnabled())
+				media = MediaMetadata.addMediaMetadata(media);
+
+			// If movie exist but not the media then add the media
+			DB.save(Episode.newBuilder(e).addMedia(media).build());
+		}
+		
+		if (!hasSubtitles(e)) {
+			SubtitleDownloader.get().addEpisode(e);
+		}
+	}
+
 	private boolean mediaExists(Movie m, Media mediaToFind) {
 		for (Media md : m.getMediaList()) {
 			if (StringUtils.equalsIgnoreCase(md.getFilename(), mediaToFind.getFilename()) && StringUtils.equalsIgnoreCase(md.getFilepath(), mediaToFind.getFilepath()))
@@ -205,7 +311,32 @@ public class MovieIdentifier implements Runnable {
 		
 		return false;
 	}
-   
+
+	private Episode findEpisode(Series series, int season, int episode) {
+		for (Season sn : series.getSeasonList()) {
+			if (sn.getSeasonNumber() == season) {
+				for (Episode e : sn.getEpisodeList()) {
+					if (e.getEpisodeNumber() == episode) {
+						return e;
+					}
+				}
+			}
+		}
+		
+		return null;
+	}
+
+	private boolean mediaExists(Episode e, Media mediaToFind) {		
+		if (e != null) {
+			for (Media md : e.getMediaList()) {
+				if (StringUtils.equalsIgnoreCase(md.getFilename(), mediaToFind.getFilename()) && StringUtils.equalsIgnoreCase(md.getFilepath(), mediaToFind.getFilepath()))
+					return true;
+			}
+		}
+		
+		return false;
+	}
+   	
 	private Movie getImdbInformation(Movie m) {
 		//find imdb link
 		try {
@@ -227,6 +358,16 @@ public class MovieIdentifier implements Runnable {
 				return true;
 		}
 		
+		return false;
+	}
+	
+	private boolean hasSubtitles(Episode e) {
+		if (e != null) {
+			for(Media md : e.getMediaList()) {
+				if (md.getSubsCount() > 0)
+					return true;
+			}
+		}
 		return false;
 	}
 }

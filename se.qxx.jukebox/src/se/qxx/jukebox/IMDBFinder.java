@@ -23,6 +23,7 @@ import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie.Builder;
+import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.imdb.Imdb;
 import se.qxx.jukebox.settings.imdb.Imdb.EpisodePatterns.EpisodePattern;
@@ -38,8 +39,25 @@ public class IMDBFinder {
 		Log.Debug(String.format("Starting search on title :: %s (%s)", m.getTitle(), m.getYear()), LogType.IMDB);
 		String imdbUrl = m.getImdbUrl();
  
-		if (StringUtils.isEmpty(imdbUrl) || urlIsBlacklisted(imdbUrl, m)) {	
-			return Search(m, Settings.imdb().getSearchUrl());
+		IMDBRecord rec = null;
+		if (StringUtils.isEmpty(imdbUrl) || urlIsBlacklisted(imdbUrl, m)) {
+			rec = Search(m.getTitle(), Settings.imdb().getSearchUrl()); 
+		}
+		else {
+			Log.Debug(String.format("IMDB url found."), LogType.IMDB);
+			
+			rec = IMDBRecord.get(imdbUrl);
+		}
+		
+		return extractMovieInfo(m, rec);
+	}
+	
+	public synchronized static Series Get(Series series, int season, int episode) throws IOException, NumberFormatException, ParseException {
+		Log.Debug(String.format("Starting search on series title :: %s (%s)", series.getTitle(), series.getYear()), LogType.IMDB);
+		String imdbUrl = series.getImdbUrl();
+ 
+		if (StringUtils.isEmpty(imdbUrl)) {	
+			return Search(series, season, episode, Settings.imdb().getSearchUrl());
 		}
 		else {
 			Log.Debug(String.format("IMDB url found."), LogType.IMDB);
@@ -49,6 +67,7 @@ public class IMDBFinder {
 		}
 	}
 	
+
 	/**
 	 * Checks if an IMDB url is among the blacklisted url:s
 	 * @param imdbUrl		 The Url to check
@@ -68,7 +87,7 @@ public class IMDBFinder {
 		return false;
 	}
 
-	private synchronized static Movie Search(Movie m, String searchUrl) throws IOException, NumberFormatException, ParseException {
+	private synchronized static IMDBRecord Search(String searchString, String searchUrl) throws IOException, NumberFormatException, ParseException {
 		long currentTimeStamp = Util.getCurrentTimestamp();
 		
 		try {
@@ -77,7 +96,7 @@ public class IMDBFinder {
 				Log.Debug(String.format("Waiting %s seconds", (nextSearch - currentTimeStamp) / 1000), LogType.IMDB);
 				Thread.sleep(nextSearch - currentTimeStamp);
 			}
-			WebResult webResult = getSearchResult(m, searchUrl);
+			WebResult webResult = getSearchResult(searchString, searchUrl);
 			
 			// Accomodate for that sometimes IMDB redirects you
 			// directly to the correct movie. (i.e. "Cleanskin")
@@ -93,22 +112,21 @@ public class IMDBFinder {
 			}
 			
 			setNextSearchTimer();
-			
-			Movie mainMovie = extractMovieInfo(m, rec);
 
-			if (mainMovie.getIsTvEpisode()) {
-				mainMovie = getTvEpisodeInfo(mainMovie, rec);
-			}
-			
-			return mainMovie;
+			return rec;
 		} catch (InterruptedException e) {
-			return m;
+			return null;
 		}
 	}
 
-	protected static WebResult getSearchResult(Movie m, String searchUrl)
+	private static Series Search(Series series, int season, int episode, String searchUrl) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	protected static WebResult getSearchResult(String title, String searchUrl)
 			throws UnsupportedEncodingException, IOException {
-		String urlParameters = java.net.URLEncoder.encode(m.getTitle(), "ISO-8859-1");
+		String urlParameters = java.net.URLEncoder.encode(title, "ISO-8859-1");
 		String urlString = searchUrl.replace("%%TITLE%%", urlParameters);
 		//String urlString = "http://www.imdb.com/find?s=tt&q=" + urlParameters;
 

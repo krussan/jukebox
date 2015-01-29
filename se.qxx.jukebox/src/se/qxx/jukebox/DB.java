@@ -31,6 +31,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Rating;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
+import se.qxx.jukebox.domain.JukeboxDomain.SubtitleQueue;
 import se.qxx.protodb.ProtoDB;
 import se.qxx.protodb.exceptions.IDFieldNotFoundException;
 import se.qxx.protodb.exceptions.SearchFieldNotFoundException;
@@ -175,8 +176,8 @@ public class DB {
 		}
 	}
 	
-	public synchronized static Series findSeriesEpisode(String title, Series s) {
-		String searchString = replaceSearchString(title) + "%";
+	public synchronized static Series findSeries(String seriesTitle) {
+		String searchString = replaceSearchString(seriesTitle) + "%";
 		
 		Log.Debug(String.format("DB :: Series search string :: %s", searchString), LogType.MAIN);
 		 
@@ -188,15 +189,10 @@ public class DB {
 					searchString, 
 					true);
 			
-			if (result.size() > 0) 
-				for (Series ss : result) 
-					for (Season season : ss.getSeasonList()) 
-						if (season.getSeasonNumber() == s.getSeason(0).getSeasonNumber()) 
-							for (Episode e : season.getEpisodeList()) 
-								if (e.getEpisodeNumber() == s.getSeason(0).getEpisode(0).getEpisodeNumber()) 
-									return ss;
-			
-			return null;
+			if (result.size() > 0)
+				return result.get(0);
+			else 
+				return null;
 			
 		} catch (Exception e) {
 			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
@@ -274,6 +270,7 @@ public class DB {
 //		}
 //	}
 
+
 	public synchronized static Movie save(Movie m) {
 		try {
 			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
@@ -299,7 +296,32 @@ public class DB {
 			return null;
 		}
 	}
+	
+	public synchronized static Episode save(Episode episode) {
+		try {
+			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			
+			return db.save(episode);
+		}
+		catch (Exception e) {
+			Log.Error("Failed to store episode to DB", Log.LogType.MAIN, e);
+			
+			return null;
+		}
+	}	
 
+	public synchronized static Series save(Series series) {
+		try {
+			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			
+			return db.save(series);
+		}
+		catch (Exception e) {
+			Log.Error("Failed to store episode to DB", Log.LogType.MAIN, e);
+			
+			return null;
+		}
+	}	
 
 //	
 //	protected synchronized static void addMovieMedia(List<Media> medias, int movieID, Connection conn) throws SQLException {
@@ -751,10 +773,29 @@ public class DB {
 		try {
 			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
 
-			db.save(Movie.newBuilder(m).setSubtitleQueuedAt(getCurrentUnixTimestamp()).build());
+			db.save(Movie.newBuilder(m).setSubtitleQueue(
+				SubtitleQueue.newBuilder()
+					.setSubtitleQueuedAt(getCurrentUnixTimestamp())
+					.build())
+				.build());
 		}
 		catch (Exception e) {
 			Log.Error("Failed to store movie to DB", Log.LogType.MAIN, e);
+		}
+	}
+	
+	public synchronized static void addSeriesToSubtitleQueue(Episode episode) {
+		try {
+			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+
+			db.save(Episode.newBuilder(episode).setSubtitleQueue(
+				SubtitleQueue.newBuilder()
+					.setSubtitleQueuedAt(getCurrentUnixTimestamp())
+					.build())
+				.build());
+		}
+		catch (Exception e) {
+			Log.Error("Failed to store episode to DB", Log.LogType.MAIN, e);
 		}
 	}
 	
