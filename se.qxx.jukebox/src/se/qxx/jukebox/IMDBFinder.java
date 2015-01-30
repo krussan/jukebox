@@ -72,12 +72,12 @@ public class IMDBFinder {
 		Log.Debug(String.format("IMDB :: seasonIndex :: %s - episodeIndex :: %s", seasonIndex, episodeIndex), LogType.IMDB);
 		Series s = series;
 		
-		if (StringUtils.isEmpty(imdbUrl)) 
-			seriesRec = Search(series.getTitle(), series.getYear(), null, Settings.imdb().getSearchUrl(), true);
-		else
-			seriesRec = IMDBRecord.get(series.getImdbUrl());
-		
 		if (getSeries) {
+			if (StringUtils.isEmpty(imdbUrl)) 
+				seriesRec = Search(series.getTitle(), series.getYear(), null, Settings.imdb().getSearchUrl(), true);
+			else
+				seriesRec = IMDBRecord.get(series.getImdbUrl());
+				
 			Log.Debug("IMDB :: Creating new series object", LogType.IMDB);
 			s = extractSeriesInfo(s, seriesRec);
 			

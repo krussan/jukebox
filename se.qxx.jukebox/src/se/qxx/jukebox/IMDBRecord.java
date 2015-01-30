@@ -124,7 +124,7 @@ public class IMDBRecord {
 					}
 				}
 				catch (Exception e) {
-					Log.Error(String.format("IMDBFinder for url %s - unable to set %s", url, infoPattern.getType().toString()), LogType.MAIN, e);					
+					Log.Error(String.format("IMDBFinder for url %s - unable to set %s", url, infoPattern.getType()), LogType.MAIN, e);					
 				}
 			}
 		}
@@ -134,9 +134,10 @@ public class IMDBRecord {
 		try {
 			FileInputStream fs = new FileInputStream(f);
 			long length = f.length();
-			if (length > Integer.MAX_VALUE)
+			if (length > Integer.MAX_VALUE) {
+				fs.close();
 				throw new ArrayIndexOutOfBoundsException();
-			
+			}			
 			byte[] data = new byte[(int)length];
 			int offset = 0;
 			int numRead = 0;
@@ -146,6 +147,7 @@ public class IMDBRecord {
 			
 		    // Ensure all the bytes have been read in
 		    if (offset < data.length) {
+		    	fs.close();
 		        throw new IOException("Could not completely read file " + f.getName());
 		    }
 		    
