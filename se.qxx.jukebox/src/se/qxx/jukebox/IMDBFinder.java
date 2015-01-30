@@ -20,9 +20,12 @@ import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 
 import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.domain.DomainUtil;
+import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie.Builder;
+import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.imdb.Imdb;
@@ -40,8 +43,8 @@ public class IMDBFinder {
 		String imdbUrl = m.getImdbUrl();
  
 		IMDBRecord rec = null;
-		if (StringUtils.isEmpty(imdbUrl) || urlIsBlacklisted(imdbUrl, m)) {
-			rec = Search(m.getTitle(), Settings.imdb().getSearchUrl()); 
+		if (StringUtils.isEmpty(imdbUrl) || urlIsBlacklisted(imdbUrl, m.getBlacklistList())) {
+			rec = Search(m.getTitle(), m.getYear(), m.getBlacklistList(), Settings.imdb().getSearchUrl(), false); 
 		}
 		else {
 			Log.Debug(String.format("IMDB url found."), LogType.IMDB);
@@ -52,21 +55,60 @@ public class IMDBFinder {
 		return extractMovieInfo(m, rec);
 	}
 	
-	public synchronized static Series Get(Series series, int season, int episode) throws IOException, NumberFormatException, ParseException {
-		Log.Debug(String.format("Starting search on series title :: %s (%s)", series.getTitle(), series.getYear()), LogType.IMDB);
+	public synchronized static Series Get(Series series, int season, int episode, boolean getSeries, boolean getSeason, boolean getEpisode) throws IOException, NumberFormatException, ParseException {
+		Log.Debug(String.format("Starting search on series title :: %s (%s) S%s E%s", series.getTitle(), series.getYear(), season, episode), LogType.IMDB);
 		String imdbUrl = series.getImdbUrl();
- 
-		if (StringUtils.isEmpty(imdbUrl)) {	
-			return Search(series, season, episode, Settings.imdb().getSearchUrl());
-		}
-		else {
-			Log.Debug(String.format("IMDB url found."), LogType.IMDB);
+
+		IMDBRecord seriesRec = null;
+		IMDBRecord episodeRec = null;
+		IMDBEpisode iep = null;
+		
+		int seasonIndex = DomainUtil.findSeasonIndex(series, season);
+		Season sn = series.getSeason(seasonIndex);
+		
+		int episodeIndex = DomainUtil.findEpisodeIndex(sn, episode);
+		Episode ep = sn.getEpisode(episodeIndex);
+		
+		Log.Debug(String.format("IMDB :: seasonIndex :: %s - episodeIndex :: %s", seasonIndex, episodeIndex), LogType.IMDB);
+		Series s = series;
+		
+		if (StringUtils.isEmpty(imdbUrl)) 
+			seriesRec = Search(series.getTitle(), series.getYear(), null, Settings.imdb().getSearchUrl(), true);
+		else
+			seriesRec = IMDBRecord.get(series.getImdbUrl());
+		
+		if (getSeries) {
+			Log.Debug("IMDB :: Creating new series object", LogType.IMDB);
+			s = extractSeriesInfo(s, seriesRec);
 			
-			IMDBRecord rec = IMDBRecord.get(imdbUrl);
-			return extractMovieInfo(m, rec);
+			// as we have a new series object we need to add the season again
+			// we also set the index to 0 because we now that it is the first item
+			// in the list
 		}
+		
+		String seasonUrl = getSeasonUrl(season, seriesRec.getAllSeasonUrls());
+		if (getSeason) {
+			Log.Debug("IMDB does not carry much information on season. Ignored", LogType.IMDB);
+		}
+		
+		// extract episode info from that page
+		if (getEpisode) {
+			 iep = getEpisodeRec(seasonUrl, episode);
+			 episodeRec = IMDBRecord.get(iep.getUrl());
+			 ep = extractEpisodeInfo(ep, episodeRec);
+		}
+		
+		if (episodeIndex >= 0 && getEpisode)
+			sn = DomainUtil.updateEpisode(sn, ep);
+		
+		if (seasonIndex >= 0 && getSeason)
+			s = DomainUtil.updateSeason(s, sn);
+		
+		return s;
+		
+			
 	}
-	
+
 
 	/**
 	 * Checks if an IMDB url is among the blacklisted url:s
@@ -74,10 +116,10 @@ public class IMDBFinder {
 	 * @param blacklistedIDs The list of blacklisted IMDB id's
 	 * @return
 	 */
-	private static boolean urlIsBlacklisted(String imdbUrl, Movie m) {
+	private static boolean urlIsBlacklisted(String imdbUrl, List<String> blacklist) {
 		String imdbid = Util.getImdbIdFromUrl(imdbUrl);
-		if (!StringUtils.isEmpty(imdbid)) {	
-			for (String entry : m.getBlacklistList()) {	
+		if (!StringUtils.isEmpty(imdbid) && blacklist != null) {	
+			for (String entry : blacklist) {	
 				if (StringUtils.equalsIgnoreCase(imdbid, entry)) {
 					return true;
 				}
@@ -87,7 +129,12 @@ public class IMDBFinder {
 		return false;
 	}
 
-	private synchronized static IMDBRecord Search(String searchString, String searchUrl) throws IOException, NumberFormatException, ParseException {
+	private synchronized static IMDBRecord Search(
+			String searchString, 
+			int yearToFind, 
+			List<String> blacklist, 
+			String searchUrl,
+			boolean isTvEpisode) throws IOException, NumberFormatException, ParseException {
 		long currentTimeStamp = Util.getCurrentTimestamp();
 		
 		try {
@@ -103,12 +150,12 @@ public class IMDBFinder {
 			IMDBRecord rec;
 
 			if (webResult.isRedirected()) {
-				Log.Info(String.format("IMDB :: %s is redirected to movie", m.getTitle()), LogType.IMDB);
+				Log.Info(String.format("IMDB :: %s is redirected to movie", searchString), LogType.IMDB);
 				rec = IMDBRecord.getFromWebResult(webResult);
 			}
 			else {				
-				Log.Info(String.format("IMDB :: %s is NOT redirected to movie", m.getTitle()), LogType.IMDB);				
-				rec = findMovieInSearchResults(m, webResult.getResult());			
+				Log.Info(String.format("IMDB :: %s is NOT redirected to movie", searchString), LogType.IMDB);				
+				rec = findMovieInSearchResults(blacklist, yearToFind, webResult.getResult(), isTvEpisode);			
 			}
 			
 			setNextSearchTimer();
@@ -117,11 +164,6 @@ public class IMDBFinder {
 		} catch (InterruptedException e) {
 			return null;
 		}
-	}
-
-	private static Series Search(Series series, int season, int episode, String searchUrl) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	protected static WebResult getSearchResult(String title, String searchUrl)
@@ -174,6 +216,62 @@ public class IMDBFinder {
 		else
 			return m;
 	}
+	
+	private static Episode extractEpisodeInfo(Episode ep, IMDBRecord rec) {
+		if (rec != null) {
+			// get releaseInfo to get the correct international title
+			String preferredTitle = getPreferredTitle(rec);
+			
+			Episode.Builder b = Episode.newBuilder(ep)
+					.setImdbUrl(rec.getUrl())
+					.setImdbId(Util.getImdbIdFromUrl(rec.getUrl()))
+					.setDirector(rec.getDirector())
+					.setDuration(rec.getDurationMinutes())
+					.setStory(rec.getStory())
+					.setRating(rec.getRating())
+					.addAllGenre(rec.getAllGenres());
+			
+			if (!StringUtils.isEmpty(preferredTitle)) 
+				b.setTitle(preferredTitle);
+			
+			if (rec.getImage() != null)
+				b.setImage(ByteString.copyFrom(rec.getImage()));
+			
+			if (ep.getYear() == 0)
+				b.setYear(rec.getYear());
+			
+			return b.build();
+		}
+		else
+			return ep;
+	}
+	
+	private static Series extractSeriesInfo(Series s, IMDBRecord rec) {
+		if (rec != null) {
+			// get releaseInfo to get the correct international title
+			String preferredTitle = getPreferredTitle(rec);
+			
+			Series.Builder b = Series.newBuilder(s)
+					.setImdbUrl(rec.getUrl())
+					.setImdbId(Util.getImdbIdFromUrl(rec.getUrl()))
+					.setStory(rec.getStory())
+					.setRating(rec.getRating())
+					.addAllGenre(rec.getAllGenres());
+			
+			if (!StringUtils.isEmpty(preferredTitle)) 
+				b.setTitle(preferredTitle);
+			
+			if (rec.getImage() != null)
+				b.setImage(ByteString.copyFrom(rec.getImage()));
+			
+			if (s.getYear() == 0)
+				b.setYear(rec.getYear());
+			
+			return b.build();
+		}
+		else
+			return s;
+	}
 		
 	private static boolean usePreferredCountryDefault() {
 		String preferredTitleCountry = Settings.imdb().getTitle().getPreferredLanguage();
@@ -207,45 +305,45 @@ public class IMDBFinder {
 		return title;
 	}
 
-	private static IMDBRecord findMovieInSearchResults(Movie m, String text) {
+	private static IMDBRecord findMovieInSearchResults(
+			List<String> blacklist, 
+			int yearToFind, 
+			String text,
+			boolean isTvEpisode) {
 		List<SearchResultPattern> patterns = Settings.imdb().getSearchPatterns().getSearchResultPattern();
 		
 		Collections.sort(patterns, new SearchPatternComparer());
 		IMDBRecord rec = null;
 		for (SearchResultPattern p : patterns) {
-			if (p.isEnabled()) {
-				if ((m.getIsTvEpisode() && p.isTvPattern()) || (!m.getIsTvEpisode() && !p.isTvPattern()))
-				{
-					Log.Debug(String.format("Using pattern :: %s", p.getName()), LogType.IMDB);
-					
-					rec = findUrl(
-							  m
-							, text
-							, StringUtils.trim(p.getBlockPattern())
-							, p.getGroupBlock()
-							, StringUtils.trim(p.getRecordPattern())
-							, p.getGroupRecordUrl()
-							, p.getGroupRecordYear());
-					
-					if (rec != null)
-						break;
-				}
+			if (p.isEnabled() && ((p.isTvPattern() && isTvEpisode) || (!p.isTvPattern() && !isTvEpisode))) {
+				Log.Debug(String.format("Using pattern :: %s", p.getName()), LogType.IMDB);
+				
+				rec = findUrl(
+						  blacklist
+						, text
+						, yearToFind
+						, StringUtils.trim(p.getBlockPattern())
+						, p.getGroupBlock()
+						, StringUtils.trim(p.getRecordPattern())
+						, p.getGroupRecordUrl()
+						, p.getGroupRecordYear());
+				
+				if (rec != null)
+					break;
 			}
 		}
 		
 		return rec;
 	}
 	
-	private static boolean testResult(Movie m, IMDBRecord result) {
-		if (m == null || result == null)
-			return false;
-		
-		return (m.getYear() == 0 || m.getYear() == result.getYear());
+	private static boolean testResult(int year, IMDBRecord result) {
+		return (year == 0 || year == result.getYear());
 	}
 
 	private static IMDBRecord findUrl(
-			Movie movie, 
-			String text, 
+			List<String> blacklist, 
+			String text,
+			int yearToFind,
 			String patternForBlock, 
 			int patternGroupForBlock,
 			String patternForRecord,
@@ -269,7 +367,7 @@ public class IMDBFinder {
 				IMDBRecord rec = new IMDBRecord(url, year);
 				
 				// Check if movie was blacklisted. If it was get the next record matching
-				if (!urlIsBlacklisted(url, movie) && testResult(movie, rec))
+				if (!urlIsBlacklisted(url, blacklist) && testResult(yearToFind, rec))
 				{
 					// if year and title matches then continue to the URL and extract information about the movie.
 					rec = IMDBRecord.get(url);
@@ -282,7 +380,7 @@ public class IMDBFinder {
 			}
 		}
 		catch (Exception e) {
-			Log.Error(String.format("Error occured when trying to find %s in IMDB", movie.getTitle()), LogType.FIND, e);
+			Log.Error(String.format("Error occured when trying to find %s in IMDB", text), LogType.FIND, e);
 		}
 
 		return null;
@@ -359,58 +457,9 @@ public class IMDBFinder {
 		return ret;
 		
 	}
-	
-	private static Movie getTvEpisodeInfo(Movie m, IMDBRecord rec) throws NumberFormatException, IOException, ParseException {
-		Movie newMovie;
-		
-		// mainMovie contains the overall info about the series
-		// mainMovie should contain the episode title. 
-		// So transfer the properties to the season object 
-		// get the page referencing the wanted season
-		if (m.getIsTvEpisode() && m.getEpisode() != null && m.getEpisode().getSeason() != null) {
-			int seasonNumber = m.getEpisode().getSeason().getSeasonNumber();
-			Log.Debug(String.format("Finding TV Epsiode info for %s. Season :: %s, Episode :: %s", m.getTitle(), seasonNumber, m.getEpisode()), LogType.IMDB);
-			
-			String seasonUrl = getSeasonUrl(seasonNumber, rec.getAllSeasonUrls());
 
-			// extract episode info from that page
-			IMDBEpisode ep = getEpisodeUrl(seasonUrl, m.getEpisode().getEpisodeNumber());
-			
-			// extract movie info from episode
-			IMDBRecord episodeRec = IMDBRecord.get(ep.getUrl());
-			
-			newMovie = extractMovieInfo(m, episodeRec);
-
-			// Keep the title from the original movie.
-			// That should point to the Series title
-			newMovie = Movie.newBuilder(newMovie).setTitle(m.getTitle()).build();
-			
-			// transfer main movie properties to the season object
-//			Season s = Season.newBuilder(m.getSeason())
-//					.addAllGenre(m.getGenreList())
-//					.setImage(m.getImage())
-//					.setRating(m.getRating())
-//					.setStory(m.getStory())
-//					.build();
-			
-			// build 
-			newMovie = Movie.newBuilder(newMovie)
-//					.setSeason(s)
-					.setEpisode(ep.getEpisodeNumber())
-					.setFirstAirDate(ep.getFirstAirDate().getTime())
-					.setEpisodeTitle(ep.getTitle())			
-					.build();
-			
-			return newMovie;
-		}
-		else {
-			Log.Debug(String.format("%s appears to be a tv episode but no season found", m.getMedia(0).getFilename()), LogType.IMDB);
-		}
-		
-		return m;
-	}
-
-	private static IMDBEpisode getEpisodeUrl(String url, int episode) throws IOException, NumberFormatException, ParseException {
+	private static IMDBEpisode getEpisodeRec(String url, int episode) throws IOException, NumberFormatException, ParseException {
+		Log.Debug(String.format("IMDB :: Epsiode :: %s - URL :: %s", episode, url), LogType.IMDB);
 		WebResult result = WebRetriever.getWebResult(url);
 		
 		for (EpisodePattern p : Settings.imdb().getEpisodePatterns().getEpisodePattern()) {

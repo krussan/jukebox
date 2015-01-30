@@ -186,9 +186,9 @@ public class ParserMovie {
 		 .setTitle(this.getMovieName())
 		 .setYear(this.getYear())
 		 .setIdentifier(Identifier.Parser)
-		 .setIsTvEpisode(this.getSeason() > 0 || this.getEpisode() > 0)
-		 .setIdentifierRating(this.getIdentifierRating())
-		 .setSubtitleRetreiveResult(0);
+//		 .setIsTvEpisode(this.getSeason() > 0 || this.getEpisode() > 0)
+		 .setIdentifierRating(this.getIdentifierRating());
+//		 .setSubtitleRetreiveResult(0);
 
 		if (this.getSounds().size() > 0)
 			b.setSound(this.getSounds().get(0));

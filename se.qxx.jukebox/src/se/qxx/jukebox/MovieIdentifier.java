@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.builders.MovieBuilder;
 import se.qxx.jukebox.builders.PartPattern;
+import se.qxx.jukebox.domain.DomainUtil;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
@@ -157,7 +158,14 @@ public class MovieIdentifier implements Runnable {
 		//  - if no series then no seasons and no episodes
 		if (dbSeries == null) {
 			// no series exist
-			getInfoAndSaveSeries(series, newMedia);
+			getInfoAndSaveSeries(
+				series, 
+				season,
+				episode,
+				true,
+				true,
+				true,
+				newMedia);
 		}
 		else {
 			for (Season sn : dbSeries.getSeasonList()) {
@@ -170,17 +178,13 @@ public class MovieIdentifier implements Runnable {
 						}
 						else {
 							//no episode exist. Add the new episode identified.
-							Episode episodeWithInfo = getEpisodeInfo(series.getSeason(0).getEpisode(0));
-							sn.getEpisodeList().add(episodeWithInfo);
+							getInfoAndSaveSeries(series, season, episode, false, false, true, newMedia);
 						}
 					}
 				}
 				else {
 					// no season exist. Add the existing season (and episode) identified.
-					Episode episodeWithInfo = getInfo(series.getSeason(0).getEpisode(0));
-					sn.getEpisodeList().add(episodeWithInfo);
-					
-					dbSeries.getSeasonList().add(series.getSeason(0));
+					getInfoAndSaveSeries(series, season, episode, false, true, true, newMedia);
 				}
 				
 				//save the whole series
@@ -190,18 +194,6 @@ public class MovieIdentifier implements Runnable {
 		// find if season exists
 		// find if episode exists
 		// find if media exists
-		
-		
-		if (dbSeries == null) {
-			Log.Debug("MovieIdentifier :: Series not found -- adding new", LogType.FIND);
-						
-		}
-		else {
-			Log.Debug("MovieIdentifier :: Series found -- checking existing media", LogType.FIND);
-			Episode e = findEpisode(series, pp.getSeason(), pp.getEpisode());
-			
-			checkExistingMedia(dbSeries, newMedia, );
-		}
 	}
 
 	/**
@@ -235,31 +227,43 @@ public class MovieIdentifier implements Runnable {
 	 * @param m
 	 * @param newMedia
 	 */
-	protected void getInfoAndSaveSeries(Series series, Media media) {
-		int season = series.getSeason(0).getSeasonNumber();
-		int episode = series.getSeason(0).getEpisode(0).getEpisodeNumber();
+	protected void getInfoAndSaveSeries(Series series, int season, int episode, boolean getSeries, boolean getSeason, boolean getEpisode, Media media) {
 		
+		Series s = null;
 		// find series if exists
+		int seasonIndex = DomainUtil.findSeasonIndex(series, season);
+		Season sn = series.getSeason(seasonIndex);
 		
+		int episodeIndex = DomainUtil.findEpisodeIndex(sn, episode);
+		Episode ep = sn.getEpisode(episodeIndex);
+
 		// If not get information and subtitles
 		// If title is the same as the filename (except ignore pattern) then don't identify on IMDB.
 		if (Arguments.get().isImdbIdentifierEnabled()) 
-			movie = getImdbInformation(movie);
+			s = getImdbInformation(series, season, episode, getSeries, getSeason, getEpisode);
 
 		// Get media information from MediaInfo library
 		if (Arguments.get().isMediaInfoEnabled()) {
 			Media md = MediaMetadata.addMediaMetadata(media);
 			
-			
-			movie = Movie.newBuilder(movie)
+			ep = Episode.newBuilder(ep)
 					.clearMedia()
 					.addMedia(md)
 					.build();
+
+			sn = DomainUtil.updateEpisode(sn, ep);
+			s = DomainUtil.updateSeason(s, sn);
+		}
+
+		if (Arguments.get().isSubtitleDownloaderEnabled()) {
+			ep = SubtitleDownloader.get().addEpisode(ep);
+			
+			sn = DomainUtil.updateEpisode(sn, ep);
+			s = DomainUtil.updateSeason(s, sn);
 		}
 		
-		movie = DB.save(movie);
+		DB.save(s);
 		
-		SubtitleDownloader.get().addMovie(movie);
 	}
 
 	/**
@@ -312,19 +316,7 @@ public class MovieIdentifier implements Runnable {
 		return false;
 	}
 
-	private Episode findEpisode(Series series, int season, int episode) {
-		for (Season sn : series.getSeasonList()) {
-			if (sn.getSeasonNumber() == season) {
-				for (Episode e : sn.getEpisodeList()) {
-					if (e.getEpisodeNumber() == episode) {
-						return e;
-					}
-				}
-			}
-		}
-		
-		return null;
-	}
+
 
 	private boolean mediaExists(Episode e, Media mediaToFind) {		
 		if (e != null) {
@@ -350,6 +342,22 @@ public class MovieIdentifier implements Runnable {
 		}
 		
 		return m;
+	}
+
+	private Series getImdbInformation(Series series, int season, int episode, boolean getSeries, boolean getSeason, boolean getEpisode) {
+		//find imdb link
+		Series s = null;
+		try {
+			s = IMDBFinder.Get(series, season, episode, getSeries, getSeason, getEpisode);
+			
+			if (!StringUtils.isEmpty(s.getImdbUrl()))
+				Log.Info(String.format("IMDB link found for :: %s", series.getTitle()), LogType.FIND);
+		}
+		catch (IOException | NumberFormatException | ParseException e) {
+			Log.Error("Error occured when finding IMDB link", Log.LogType.FIND, e);
+		}
+		
+		return s;
 	}
 
 	private boolean hasSubtitles(Movie m) {

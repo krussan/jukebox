@@ -403,10 +403,12 @@ public class SubtitleDownloader implements Runnable {
 	 * Add a movie to the subtitile download queue.
 	 * @param m The movie to add
 	 */
-	public void addMovie(Movie m) {
+	public Movie addMovie(Movie m) {
 		synchronized (_instance) {
-			DB.addMovieToSubtitleQueue(m);
+			Movie mm = DB.addMovieToSubtitleQueue(m);
 			_instance.notify();
+			
+			return mm;
 		} 
 	}
 	
@@ -414,10 +416,12 @@ public class SubtitleDownloader implements Runnable {
 	 * Add an episode to the subtitile download queue.
 	 * @param m The movie to add
 	 */
-	public void addEpisode(Episode episode) {
+	public Episode addEpisode(Episode episode) {
 		synchronized (_instance) {
-			DB.addMovieToSubtitleQueue(episode);
+			Episode ep = DB.addEpisodeToSubtitleQueue(episode);
 			_instance.notify();
+			
+			return ep;
 		} 
 	}
 

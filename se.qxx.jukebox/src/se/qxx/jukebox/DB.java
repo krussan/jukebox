@@ -769,19 +769,41 @@ public class DB {
 //			return false;
 //	}
 //
-	public synchronized static void addMovieToSubtitleQueue(Movie m) {
+	public synchronized static Movie addMovieToSubtitleQueue(Movie m) {
 		try {
 			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
-
-			db.save(Movie.newBuilder(m).setSubtitleQueue(
+			
+			m = Movie.newBuilder(m).setSubtitleQueue(
 				SubtitleQueue.newBuilder()
 					.setSubtitleQueuedAt(getCurrentUnixTimestamp())
 					.build())
-				.build());
+				.build();
+			
+			return db.save(m);
 		}
 		catch (Exception e) {
 			Log.Error("Failed to store movie to DB", Log.LogType.MAIN, e);
 		}
+		return m;
+	}
+	
+	public synchronized static Episode addEpisodeToSubtitleQueue(Episode ep) {
+		try {
+			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+
+			ep = Episode.newBuilder(ep).setSubtitleQueue(
+				SubtitleQueue.newBuilder()
+					.setSubtitleQueuedAt(getCurrentUnixTimestamp())
+					.build())
+				.build();
+			
+			return db.save(ep);
+		}
+		catch (Exception e) {
+			Log.Error("Failed to store movie to DB", Log.LogType.MAIN, e);
+		}
+		
+		return ep;
 	}
 	
 	public synchronized static void addSeriesToSubtitleQueue(Episode episode) {

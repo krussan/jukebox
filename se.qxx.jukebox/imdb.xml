@@ -140,6 +140,9 @@
 		</infoPattern>
 		<infoPattern type="seasons" group="1">
 		    <regex><![CDATA[(\/title/tt\d{1,10}/episodes\?season=\d{1,2})]]></regex>
+		</infoPattern>
+		<infoPattern type="firstAirDate" group="1">
+		    <regex><![CDATA[(\/title/tt\d{1,10}/episodes\?season=\d{1,2})]]></regex>
 		</infoPattern>            
     </infoPatterns>
     <episodePatterns>

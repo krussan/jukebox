@@ -95,7 +95,7 @@ public class FilenameBuilder extends MovieBuilder {
 				.setGroupName(group)
 				.setIdentifier(Identifier.Filename)
 				.setIdentifierRating(Math.round(100 * maxGroupMatch / groupsToCheck.size()))
-				.setSubtitleRetreiveResult(0)
+//				.setSubtitleRetreiveResult(0)
 				.build();
 						
 			return movie;

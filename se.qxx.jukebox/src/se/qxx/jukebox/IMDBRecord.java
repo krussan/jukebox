@@ -69,15 +69,19 @@ public class IMDBRecord {
 					
 					switch (infoPattern.getType()) {
 					case TITLE:
+						Log.Debug(String.format("IMDBRECORD :: Setting title :: %s", unescapedValue), LogType.IMDB);
 						this.setTitle(unescapedValue);
 						break;
 					case DIRECTOR:
+						Log.Debug(String.format("IMDBRECORD :: Setting director :: %s", unescapedValue), LogType.IMDB);
 						this.setDirector(unescapedValue);
 						break;
 					case DURATION:
+						Log.Debug(String.format("IMDBRECORD :: Setting duration :: %s", unescapedValue), LogType.IMDB);
 						this.setDurationMinutes(Integer.parseInt(unescapedValue));
 						break;
 					case GENRES:
+						Log.Debug(String.format("IMDBRECORD :: Setting genres :: %s", unescapedValue), LogType.IMDB);
 						this.genres.add(unescapedValue);					
 						while (m.find()) {
 							value = StringUtils.trim(m.group(infoPattern.getGroup()));
@@ -88,21 +92,26 @@ public class IMDBRecord {
 						
 						break;
 					case POSTER:
+						Log.Debug(String.format("IMDBRECORD :: Setting poster"), LogType.IMDB);
 						File f = WebRetriever.getWebFile(value, Util.getTempDirectory());
 						this.setImage(readFile(f));
 						
 						f.delete();
 						break;
 					case RATING:
+						Log.Debug(String.format("IMDBRECORD :: Setting rating :: %s", unescapedValue), LogType.IMDB);
 						this.setRating(unescapedValue);
 						break;
 					case STORY:
+						Log.Debug(String.format("IMDBRECORD :: Setting story :: %s", unescapedValue), LogType.IMDB);
 						this.setStory(unescapedValue);
 						break;		
 					case YEAR:
+						Log.Debug(String.format("IMDBRECORD :: Setting year :: %s", unescapedValue), LogType.IMDB);
 						this.setYear(Integer.parseInt(unescapedValue));
 						break;
 					case SEASONS:
+						Log.Debug("IMDBRECORD :: Setting seasons", LogType.IMDB);
 						// add seasons url to record
 						this.seasons.add(String.format("http://www.imdb.com%s", value));					
 						while (m.find()) {
