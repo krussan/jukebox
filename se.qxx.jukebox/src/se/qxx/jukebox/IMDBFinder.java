@@ -229,7 +229,8 @@ public class IMDBFinder {
 					.setDuration(rec.getDurationMinutes())
 					.setStory(rec.getStory())
 					.setRating(rec.getRating())
-					.addAllGenre(rec.getAllGenres());
+					.addAllGenre(rec.getAllGenres())
+					.setFirstAirDate(rec.getFirstAirDate().getTime());
 			
 			if (!StringUtils.isEmpty(preferredTitle)) 
 				b.setTitle(preferredTitle);
@@ -336,8 +337,8 @@ public class IMDBFinder {
 		return rec;
 	}
 	
-	private static boolean testResult(int year, IMDBRecord result) {
-		return (year == 0 || year == result.getYear());
+	private static boolean testResult(int expectedYear, int foundYear) {
+		return (expectedYear == 0 || expectedYear == foundYear);
 	}
 
 	private static IMDBRecord findUrl(
@@ -364,18 +365,12 @@ public class IMDBFinder {
 				String url = record[0];
 				int year = Integer.parseInt(record[1]);
 								
-				IMDBRecord rec = new IMDBRecord(url, year);
 				
 				// Check if movie was blacklisted. If it was get the next record matching
-				if (!urlIsBlacklisted(url, blacklist) && testResult(yearToFind, rec))
+				if (!urlIsBlacklisted(url, blacklist) && testResult(yearToFind, year))
 				{
 					// if year and title matches then continue to the URL and extract information about the movie.
-					rec = IMDBRecord.get(url);
-
-					// If the duration of the movie corresponds with the information retreived from MediaInfo then we're
-					// probably right. 
-
-					return rec;
+					return IMDBRecord.get(url);
 				}				
 			}
 		}

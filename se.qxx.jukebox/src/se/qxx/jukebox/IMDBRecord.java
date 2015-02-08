@@ -4,7 +4,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,6 +31,7 @@ public class IMDBRecord {
 	private byte[] image = null;
 	private String title = "";
 	private List<String> seasons = new ArrayList<String>();
+	private Date firstAirDate = null;
 	
 	private IMDBRecord() {
 	}
@@ -57,6 +62,7 @@ public class IMDBRecord {
 
 		List<InfoPattern> patterns = Settings.imdb().getInfoPatterns().getInfoPattern();
 		for (InfoPattern infoPattern : patterns) {
+			Log.Debug(String.format("IMDBRECORD :: Running pattern %s", infoPattern.getType()), LogType.IMDB);
 			p = Pattern.compile(
 				  infoPattern.getRegex()
 				, Pattern.DOTALL | Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
@@ -110,6 +116,10 @@ public class IMDBRecord {
 						Log.Debug(String.format("IMDBRECORD :: Setting year :: %s", unescapedValue), LogType.IMDB);
 						this.setYear(Integer.parseInt(unescapedValue));
 						break;
+					case FIRST_AIR_DATE:
+						Log.Debug(String.format("IMDBRECORD :: Setting firstAirDate :: %s", value), LogType.IMDB);
+						this.setFirstAirDate(value);
+						break;						
 					case SEASONS:
 						Log.Debug("IMDBRECORD :: Setting seasons", LogType.IMDB);
 						// add seasons url to record
@@ -264,5 +274,18 @@ public class IMDBRecord {
 	
 	public List<String> getAllSeasonUrls() {
 		return this.seasons;
+	}
+
+	public Date getFirstAirDate() {
+		return firstAirDate;
+	}
+
+	public void setFirstAirDate(String firstAirDate) {
+		DateFormat df = new SimpleDateFormat("d M. y");
+		try {
+			this.firstAirDate = df.parse(firstAirDate);
+		} catch (ParseException e) {
+			Log.Error(String.format("IMDB :: Unable to parse date :: %s", firstAirDate), LogType.IMDB, e);
+		}
 	}
 }

@@ -172,6 +172,8 @@
     		<xs:enumeration value="duration" />
     		<xs:enumeration value="director" />
     		<xs:enumeration value="seasons" />
+    		<xs:enumeration value="value" />
+    		<xs:enumeration value="firstAirDate" />
     	</xs:restriction>
     </xs:simpleType>
 </xs:schema>

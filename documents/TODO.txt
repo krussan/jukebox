@@ -29,11 +29,12 @@ x - Blacklist does not work because IMDB_ID is null for every movie
      The function matchMovieWithDatabase need to be updated with matching code for Series/Season/Episode as well.
      I have done a single identification that does the whole hierarchy, but that is not enough. We need to separate them and insert
      the real object into the result
-- 2015-01-30 - Fixed most of the structural layout of the domain objects. Decided on a Series/Season/Episode version where a media file
+- 2015-01-30 - ERROR - Fixed most of the structural layout of the domain objects. Decided on a Series/Season/Episode version where a media file
      can be part of either a Movie object or an Episode object. These two have almost the same properties.
      Some issue where the series are filled every time from IMDB. This should not be the case. If the series exist - continue to the 
      season/episode
-
+- 2015-02-08 - FIXED - nullpointer exception in IMDBRecord. -> Missing enumeration member in imdb.xsd
+- 2015-02-08 - ERROR - regex on FirstAirDate does not work. Takes too long to execute
 ---------------------------------------------------------------------
 Environent Issues
 ---------------------------------------------------------------------
