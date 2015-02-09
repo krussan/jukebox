@@ -19,6 +19,7 @@ public class WebRetriever {
 		URL url = new URL(urlString);
 		HttpURLConnection httpcon = (HttpURLConnection) url.openConnection(); 
 		httpcon.addRequestProperty("User-Agent", "Mozilla/4.76"); 
+		httpcon.addRequestProperty("Accept-Language", "en-US");
 		
 		String result = Util.readMessageFromStream(httpcon.getInputStream());
         

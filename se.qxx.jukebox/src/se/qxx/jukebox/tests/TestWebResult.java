@@ -28,6 +28,8 @@ public class TestWebResult {
 			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("weboutput.txt"), "UTF-8"));
 			bw.write(r.getResult());
 			bw.close();
+			
+			System.out.println("Web request made successfully. Saved to weboutput.txt");
 		}
 		else {
 			System.out.println("No arguments");
