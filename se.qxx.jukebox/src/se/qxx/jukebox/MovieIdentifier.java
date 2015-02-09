@@ -237,6 +237,7 @@ public class MovieIdentifier implements Runnable {
 		int episodeIndex = DomainUtil.findEpisodeIndex(sn, episode);
 		Episode ep = sn.getEpisode(episodeIndex);
 
+		Log.Debug(String.format("MovieIdentifier :: Season index :: %s :: Episode index :: %s", seasonIndex, episodeIndex), LogType.FIND);
 		// If not get information and subtitles
 		// If title is the same as the filename (except ignore pattern) then don't identify on IMDB.
 		if (Arguments.get().isImdbIdentifierEnabled()) 
@@ -245,7 +246,7 @@ public class MovieIdentifier implements Runnable {
 		// Get media information from MediaInfo library
 		if (Arguments.get().isMediaInfoEnabled()) {
 			Media md = MediaMetadata.addMediaMetadata(media);
-			
+
 			ep = Episode.newBuilder(ep)
 					.clearMedia()
 					.addMedia(md)
@@ -261,6 +262,7 @@ public class MovieIdentifier implements Runnable {
 			sn = DomainUtil.updateEpisode(sn, ep);
 			s = DomainUtil.updateSeason(s, sn);
 		}
+		
 		
 		DB.save(s);
 		
