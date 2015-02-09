@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.settings.Settings;
@@ -117,8 +118,8 @@ public class IMDBRecord {
 						this.setYear(Integer.parseInt(unescapedValue));
 						break;
 					case FIRST_AIR_DATE:
-						Log.Debug(String.format("IMDBRECORD :: Setting firstAirDate :: %s", value), LogType.IMDB);
-						this.setFirstAirDate(value);
+						Log.Debug(String.format("IMDBRECORD :: Setting firstAirDate :: %s", unescapedValue), LogType.IMDB);
+						this.setFirstAirDate(unescapedValue);
 						break;						
 					case SEASONS:
 						Log.Debug("IMDBRECORD :: Setting seasons", LogType.IMDB);
@@ -281,9 +282,10 @@ public class IMDBRecord {
 	}
 
 	public void setFirstAirDate(String firstAirDate) {
-		DateFormat df = new SimpleDateFormat("d M. y");
 		try {
-			this.firstAirDate = df.parse(firstAirDate);
+			Log.Debug(String.format("IMDB :: parsing date :: %s", firstAirDate), LogType.IMDB);
+			this.firstAirDate = DateUtils.parseDateStrictly(firstAirDate, Settings.imdb().getDatePatterns().getPattern().toArray(new String[]{}));
+			Log.Debug(String.format("IMDB :: parsed date :: %s", this.firstAirDate), LogType.IMDB);
 		} catch (ParseException e) {
 			Log.Error(String.format("IMDB :: Unable to parse date :: %s", firstAirDate), LogType.IMDB, e);
 		}

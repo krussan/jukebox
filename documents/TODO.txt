@@ -34,7 +34,13 @@ x - Blacklist does not work because IMDB_ID is null for every movie
      Some issue where the series are filled every time from IMDB. This should not be the case. If the series exist - continue to the 
      season/episode
 - 2015-02-08 - FIXED - nullpointer exception in IMDBRecord. -> Missing enumeration member in imdb.xsd
-- 2015-02-08 - ERROR - regex on FirstAirDate does not work. Takes too long to execute
+- 2015-02-08 - FIXED - regex on FirstAirDate does not work. Takes too long to execute.. Handled now by rewriting the regex to only parse the date. 
+			Does this really work as expected??
+- 2015-02-09 - FIXED - regex on FirstAirDate somehow picks up the wrong date. American Horror Story goes from 5 Oct. 2011 -> 1 Apr. 2012 ??
+			COMMENT: IMDB returns different values based on regional settings. Our HttpUrlConnection uses swedish air date where as my firefox
+				 uses the american release date. How do we fix this??
+
+
 ---------------------------------------------------------------------
 Environent Issues
 ---------------------------------------------------------------------

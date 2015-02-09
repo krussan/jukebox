@@ -141,8 +141,8 @@
 		<infoPattern type="seasons" group="1">
 		    <regex><![CDATA[(\/title/tt\d{1,10}/episodes\?season=\d{1,2})]]></regex>
 		</infoPattern>
-		<infoPattern type="firstAirDate" group="2">
-		    <regex><![CDATA[<h1[^>]*>\s*<span.*?itemprop="name".*?>(.*?)</span>.*?\((\d{1,2}\s*?[A-Z]{3}\.\s*?\d{4})\)]]></regex>
+		<infoPattern type="firstAirDate" group="1">
+		    <regex><![CDATA[\((\d{1,2}\s*?[A-Z]{3}\.\s*?\d{4})\)]]></regex>
 		</infoPattern>            
     </infoPatterns>
     <episodePatterns>
