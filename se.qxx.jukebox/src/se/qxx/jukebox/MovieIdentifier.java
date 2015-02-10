@@ -158,6 +158,7 @@ public class MovieIdentifier implements Runnable {
 		//  - if no series then no seasons and no episodes
 		if (dbSeries == null) {
 			// no series exist
+			Log.Debug("MovieIdentifier :: No series found! Creating new", LogType.FIND);
 			getInfoAndSaveSeries(
 				series, 
 				season,
@@ -167,33 +168,45 @@ public class MovieIdentifier implements Runnable {
 				true,
 				newMedia);
 		}
-		else {
+		else {	
+			Log.Debug("MovieIdentifier :: Series found. Searching for season..", LogType.FIND);
+			boolean seasonFound = false;
+			boolean episodeFound = false;
+			
 			for (Season sn : dbSeries.getSeasonList()) {
 				if (sn.getSeasonNumber() == season) {
+					seasonFound = true;
+					Log.Debug("MovieIdentifier :: Season found. Searching for episode..", LogType.FIND);
 					// season exist. Check episode
 					for (Episode e : sn.getEpisodeList()) {
 						if (e.getEpisodeNumber() == episode) {
+							episodeFound = true;
+							Log.Debug("MovieIdentifier :: Episode found. Checking existing media..", LogType.FIND);
 							//episode exist
 							checkExistingMedia(e, newMedia);
-						}
-						else {
-							//no episode exist. Add the new episode identified.
-							getInfoAndSaveSeries(series, season, episode, false, false, true, newMedia);
+							break;
 						}
 					}
+					
+					if (!episodeFound) {
+						//no episode exist. Add the new episode identified.
+						Log.Debug("MovieIdentifier :: Episode not found!", LogType.FIND);
+						getInfoAndSaveSeries(series, season, episode, false, false, true, newMedia);
+					}
+					
+					break;
 				}
-				else {
-					// no season exist. Add the existing season (and episode) identified.
-					getInfoAndSaveSeries(series, season, episode, false, true, true, newMedia);
-				}
-				
-				//save the whole series
-				DB.save(series);
 			}
+			
+			if (!seasonFound) {
+				// no season exist. Add the existing season (and episode) identified.
+				Log.Debug("MovieIdentifier :: Season not found!", LogType.FIND);				
+				getInfoAndSaveSeries(series, season, episode, false, true, true, newMedia);
+			}
+			
+			//save the whole series
+			DB.save(series);			
 		}
-		// find if season exists
-		// find if episode exists
-		// find if media exists
 	}
 
 	/**

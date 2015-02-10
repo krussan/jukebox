@@ -39,7 +39,7 @@ x - Blacklist does not work because IMDB_ID is null for every movie
 - 2015-02-09 - FIXED - regex on FirstAirDate somehow picks up the wrong date. American Horror Story goes from 5 Oct. 2011 -> 1 Apr. 2012 ??
 			COMMENT: IMDB returns different values based on regional settings. Our HttpUrlConnection uses swedish air date where as my firefox
 				 uses the american release date. Fixed by setting default language on HttpConnection to en-US!
-
+- 2015-02-10 - ERROR - DB search does not identify already registered series.
 
 ---------------------------------------------------------------------
 Environent Issues
