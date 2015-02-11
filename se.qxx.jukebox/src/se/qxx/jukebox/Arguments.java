@@ -12,6 +12,7 @@ public class Arguments {
 	private boolean purgeMode = false;
 	private boolean helpRequested = false;
 	private boolean purgeSubtitles = false;
+	private boolean purgeSeries = false;
 	
 	private static Arguments _instance;
 	
@@ -77,6 +78,9 @@ public class Arguments {
 		
 		if (arguments.contains("--purgeSubs"))
 			_instance.setPurgeSubtitles(true);
+		
+		if (arguments.contains("--purgeSeries"))
+			_instance.setPurgeSeries(true);
 	}
 	
 	public static Arguments get() {
@@ -108,5 +112,13 @@ public class Arguments {
 
 	public void setPurgeSubtitles(boolean purgeSubtitles) {
 		this.purgeSubtitles = purgeSubtitles;
+	}
+
+	public boolean isPurgeSeries() {
+		return purgeSeries;
+	}
+
+	private void setPurgeSeries(boolean purgeSeries) {
+		this.purgeSeries = purgeSeries;
 	}
 }

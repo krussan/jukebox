@@ -26,6 +26,10 @@ public class Jukebox {
 			System.out.println("Exiting....");			
 			return;
 		}
+		
+		if (Arguments.get().isPurgeSeries()) {
+			DB.purgeSeries();
+		}
 					
 		startMainThread();
 			
@@ -43,6 +47,7 @@ public class Jukebox {
 		System.out.println("\t-dm\tDisable media info library");
 		System.out.println("\t--purge\tPurges all content from database and exit");
 		System.out.println("\t--purgeSubs\tPurges all subtitles and queue from database");
+		System.out.println("\t--purgeSeries\tPurges all series and tv episodes from database");		
 		System.out.println("\t--help\tDisplays this help");
 		System.out.println("");
 	}

@@ -104,7 +104,7 @@ public class DB {
 		String ret = searchString;
 		ret = StringUtils.replace(ret, "%", "\\%");
 		ret = StringUtils.replace(ret, "_", "\\_");
-		return ret;
+		return StringUtils.trim(ret);
 	}
 	
 	public synchronized static Movie getMovieByStartOfMediaFilename(String startOfMediaFilename) {
@@ -824,6 +824,24 @@ public class DB {
 		}
 		
 		return null;
+	}
+
+	public static void purgeSeries() {
+		try {
+			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			List<Series> result =
+					db.find(JukeboxDomain.Series.getDefaultInstance(), 
+						"title", 
+						"%", 
+						true);
+			
+			for (Series s : result) {
+				db.delete(s);
+			}
+			
+		} catch (ClassNotFoundException | SQLException | SearchFieldNotFoundException e) {
+			Log.Error(String.format("Failed to purge series"), Log.LogType.MAIN, e);
+		}		
 	}
 	
 }

@@ -94,6 +94,7 @@ public class MovieIdentifier implements Runnable {
 			
 			Movie m = MovieBuilder.identifyMovie(path, filename);
 			Series s = MovieBuilder.identifySeries(m, path, filename);
+			
 
 			if (m != null) {
 				matchMovieWithDatabase(m, s, filename);
@@ -150,6 +151,8 @@ public class MovieIdentifier implements Runnable {
 	private void matchSeries(Series series, PartPattern pp, Media newMedia) {
 		int season = pp.getSeason();
 		int episode = pp.getEpisode();
+		
+		Log.Debug(String.format("MovieIndentifier :: Finding series :: %s", series.getTitle()), LogType.FIND);
 		// find series that matches
 		Series dbSeries = DB.findSeries(
 				series.getTitle());
@@ -179,7 +182,7 @@ public class MovieIdentifier implements Runnable {
 					Log.Debug("MovieIdentifier :: Season found. Searching for episode..", LogType.FIND);
 					// season exist. Check episode
 					for (Episode e : sn.getEpisodeList()) {
-						if (e.getEpisodeNumber() == episode) {
+						if (e.getEpisodeNumber() == episode) { 
 							episodeFound = true;
 							Log.Debug("MovieIdentifier :: Episode found. Checking existing media..", LogType.FIND);
 							//episode exist

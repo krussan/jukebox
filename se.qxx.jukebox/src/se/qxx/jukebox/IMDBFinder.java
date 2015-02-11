@@ -39,7 +39,9 @@ public class IMDBFinder {
 	private static long nextSearch = 0;
 	
 	public synchronized static Movie Get(Movie m) throws IOException, NumberFormatException, ParseException {
+		Log.Debug("---------------------------------------------------------------------------", LogType.IMDB);
 		Log.Debug(String.format("Starting search on title :: %s (%s)", m.getTitle(), m.getYear()), LogType.IMDB);
+		Log.Debug("---------------------------------------------------------------------------", LogType.IMDB);
 		String imdbUrl = m.getImdbUrl();
  
 		IMDBRecord rec = null;
@@ -56,7 +58,9 @@ public class IMDBFinder {
 	}
 	
 	public synchronized static Series Get(Series series, int season, int episode, boolean getSeries, boolean getSeason, boolean getEpisode) throws IOException, NumberFormatException, ParseException {
+		Log.Debug("---------------------------------------------------------------------------", LogType.IMDB);
 		Log.Debug(String.format("Starting search on series title :: %s (%s) S%s E%s", series.getTitle(), series.getYear(), season, episode), LogType.IMDB);
+		Log.Debug("---------------------------------------------------------------------------", LogType.IMDB);
 		String imdbUrl = series.getImdbUrl();
 
 		IMDBRecord seriesRec = null;
@@ -86,23 +90,32 @@ public class IMDBFinder {
 			// in the list
 		}
 		
-		String seasonUrl = getSeasonUrl(season, seriesRec.getAllSeasonUrls());
 		if (getSeason) {
-			Log.Debug("IMDB does not carry much information on season. Ignored", LogType.IMDB);
+			Log.Debug("IMDB :: Updating season object with urls", LogType.IMDB);
+			String seasonUrl = getSeasonUrl(season, seriesRec.getAllSeasonUrls());
+			sn = Season.newBuilder(sn)
+					.setImdbUrl(seasonUrl)
+					.setImdbId(Util.getImdbIdFromUrl(seasonUrl))
+					.build();
 		}
 		
 		// extract episode info from that page
 		if (getEpisode) {
-			 iep = getEpisodeRec(seasonUrl, episode);
-			 episodeRec = IMDBRecord.get(iep.getUrl());
-			 ep = extractEpisodeInfo(ep, episodeRec);
+			Log.Debug("IMDB :: Getting episode info", LogType.IMDB);
+			iep = getEpisodeRec(sn.getImdbUrl(), episode);
+			episodeRec = IMDBRecord.get(iep.getUrl());
+			ep = extractEpisodeInfo(ep, episodeRec);
 		}
 		
-		if (episodeIndex >= 0 && getEpisode)
+		if (episodeIndex >= 0 && getEpisode) {
+			Log.Debug("IMDB :: Updating episode in season object", LogType.IMDB);
 			sn = DomainUtil.updateEpisode(sn, ep);
+		}
 		
-		if (seasonIndex >= 0 && getSeason)
+		if (seasonIndex >= 0 && getSeason) {
+			Log.Debug("IMDB :: Updating season in series object", LogType.IMDB);
 			s = DomainUtil.updateSeason(s, sn);
+		}
 		
 		return s;
 		
