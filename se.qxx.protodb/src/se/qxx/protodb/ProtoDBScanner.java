@@ -171,6 +171,10 @@ public class ProtoDBScanner {
 		return sql;
 	}	
 	
+	public String getDeleteStatement() {
+		return "DELETE FROM " + this.getObjectName() + " WHERE ID = ?";
+	}
+	
 	public String getCreateStatement() {
 		String sql = String.format("CREATE TABLE %s ", this.getObjectName());
 		List<String> cols = new ArrayList<String>();

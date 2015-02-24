@@ -93,6 +93,7 @@ public class IMDBFinder {
 		if (getSeason) {
 			Log.Debug("IMDB :: Updating season object with urls", LogType.IMDB);
 			String seasonUrl = getSeasonUrl(season, seriesRec.getAllSeasonUrls());
+			Log.Debug(String.format("IMDB :: Season URL :: %s", seasonUrl), LogType.IMDB);
 			sn = Season.newBuilder(sn)
 					.setImdbUrl(seasonUrl)
 					.setImdbId(Util.getImdbIdFromUrl(seasonUrl))

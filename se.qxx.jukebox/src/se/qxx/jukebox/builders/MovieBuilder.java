@@ -63,7 +63,7 @@ public abstract class MovieBuilder {
 		if (pp.isTvEpisode()) {
 			s = Series.newBuilder()
 					.setID(-1)
-					.setTitle(m.getTitle())
+					.setTitle(m.getTitle().trim())
 					.setStory(m.getStory())
 					.setImage(m.getImage())
 					.addAllGenre(m.getGenreList())

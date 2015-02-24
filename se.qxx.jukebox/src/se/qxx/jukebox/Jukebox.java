@@ -28,7 +28,9 @@ public class Jukebox {
 		}
 		
 		if (Arguments.get().isPurgeSeries()) {
+			System.out.println("Purging all series");
 			DB.purgeSeries();
+			return;
 		}
 					
 		startMainThread();

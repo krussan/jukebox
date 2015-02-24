@@ -441,6 +441,8 @@ public class ProtoDB {
 		b.setField(scanner.getIdField(), id);
 		
 		ResultSet rs = prep.executeQuery();
+		int rowcount = 0;
+		
 		while(rs.next()) {
 			// populate object fields
 			for (FieldDescriptor field : scanner.getObjectFields()) {
@@ -497,9 +499,15 @@ public class ProtoDB {
 					
 					;
 				}
-			}			
+			}	
+			
+			rowcount++;
 		}
-		return (T) b.build();
+		
+		if (rowcount>0)
+			return (T) b.build();
+		else
+			return null;
 	}
 
 	private byte[] getBlob(int otherID, Connection conn) throws SQLException {
@@ -714,6 +722,13 @@ public class ProtoDB {
 		
 		prep.execute();
 	}
+	
+	private void deleteRow(ProtoDBScanner scanner, Connection conn) throws SQLException {
+		PreparedStatement prep = conn.prepareStatement(scanner.getDeleteStatement());
+		prep.setInt(1, scanner.getIdValue());
+		
+		prep.execute();
+	}
 
 	private void deleteBlobs(ProtoDBScanner scanner, Connection conn) throws SQLException {
 		for (FieldDescriptor field : scanner.getBlobFields()) {
@@ -923,6 +938,8 @@ public class ProtoDB {
 			deleteBasicLinkObject(scanner, field, conn);			
 		}
 				
+		//Delete the row itself
+		deleteRow(scanner, conn);
 	}
 
 	//---------------------------------------------------------------------------------

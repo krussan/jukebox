@@ -836,6 +836,7 @@ public class DB {
 						true);
 			
 			for (Series s : result) {
+				System.out.println(String.format("Purging :: %s", s.getTitle()));
 				db.delete(s);
 			}
 			

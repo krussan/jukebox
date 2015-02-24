@@ -171,7 +171,12 @@
 	        <param name="script.class" value="se.qxx.jukebox.tests.TestWebResult" />
 	        <param name="script.file" value="${build.dir}/testWebResult.sh" />
 	    </antcall>
-	    	    	    	    	    	    	    	    	    	    	    
+
+   	    <antcall target="createscript">
+	        <param name="script.class" value="se.qxx.jukebox.tests.TestSeriesFinder" />
+	        <param name="script.file" value="${build.dir}/testSeriesFinder.sh" />
+	    </antcall>
+   	    	    	    	    	    	    	    	    	    	    	    	    
 		<fixcrlf srcdir="${build.dir}" includes="**/*.sh" eol="lf" eof="remove" />
 						
 		<copy file="${main.dir}/JukeboxSettings.xml" todir="${build.dir}" />
