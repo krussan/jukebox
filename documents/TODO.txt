@@ -43,7 +43,8 @@ x - Blacklist does not work because IMDB_ID is null for every movie
 - 2015-02-23         - Error seems to stem from db.find(<Series>)
 - 2015-02-24 - ERROR - DB search seems fixed but an error when getting next episode. 
 			Could this be because we have no URLS on series stored?
-  			Delete does not work either. Error in ProtoDB? *sigh*
+- 2015-02-24 - FIXED - Delete does not work either. Error in ProtoDB? *sigh*
+- 2015-02-24 - ERROR - We still have som orphaned records in DB relating to series. Could this be an effect of the previous error?
 
 ---------------------------------------------------------------------
 Environent Issues

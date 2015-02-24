@@ -810,7 +810,7 @@ public class DB {
 			String searchString = replaceSearchString(subsFilename) + "%";
 			
 			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
-			List<Movie> result =
+			List<Movie> result = 
 				db.find(JukeboxDomain.Movie.getDefaultInstance(), 
 					"media.subs.filename", 
 					searchString, 
