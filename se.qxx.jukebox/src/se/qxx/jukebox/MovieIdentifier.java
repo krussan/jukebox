@@ -231,12 +231,12 @@ public class MovieIdentifier implements Runnable {
 	 */
 	protected void getInfoAndSaveSeries(Series series, int season, int episode, boolean getSeries, boolean getSeason, boolean getEpisode, Media media) {
 		
-		Series s = null;
+		Series s = series;
 
 		// If not get information and subtitles
 		// If title is the same as the filename (except ignore pattern) then don't identify on IMDB.
 		if (Arguments.get().isImdbIdentifierEnabled()) 
-			s = getImdbInformation(series, season, episode, getSeries, getSeason, getEpisode);
+			s = getImdbInformation(s, season, episode, getSeries, getSeason, getEpisode);
 
 		// find series if exists
 		int seasonIndex = DomainUtil.findSeasonIndex(s, season);
@@ -265,6 +265,7 @@ public class MovieIdentifier implements Runnable {
 			s = DomainUtil.updateSeason(s, sn);
 		}
 		
+		Log.Debug(String.format("MovieIdentifier :: Number of episodes in season :: %s", sn.getEpisodeCount()), LogType.FIND);
 		
 		DB.save(s);
 		

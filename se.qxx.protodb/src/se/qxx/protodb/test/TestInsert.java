@@ -239,6 +239,56 @@ public class TestInsert {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}		
-	}	
+	}
+	
+	@Test
+	public void TestRepObjectOne() {
+		TestDomain.SimpleTwo o1 = TestDomain.SimpleTwo.newBuilder()
+				.setID(-1)
+				.setDirector("Humpty dumpty")
+				.setTitle("Sat on a wall")
+				.build();
+		
+		TestDomain.SimpleTwo o2 = TestDomain.SimpleTwo.newBuilder()
+				.setID(-1)
+				.setDirector("Humle o dumle")
+				.setTitle("Satt i ett skafferi")
+				.build();
+
+		TestDomain.SimpleTwo o3 = TestDomain.SimpleTwo.newBuilder()
+				.setID(-1)
+				.setDirector("Abrakadabra")
+				.setTitle("Simsalabim")
+				.build();
+
+		TestDomain.RepObjectOne t = TestDomain.RepObjectOne.newBuilder()
+				.setID(-1)
+				.setHappycamper(42)
+				.addListOfObjects(o1)
+				.addListOfObjects(o2)
+				.addListOfObjects(o3)
+				.build();
+
+		try {
+			db.setupDatabase(t);
+			
+			TestDomain.RepObjectOne oo = db.save(t);
+			//int id = db.save(t);	
+			
+			assertNotEquals(oo.getID(), -1);
+			assertEquals(t.getHappycamper(), oo.getHappycamper());
+			
+			TestDomain.RepObjectOne pp = db.get(oo.getID(), TestDomain.RepObjectOne.getDefaultInstance());
+			
+			assertEquals(oo.getID(), pp.getID());
+			assertEquals(3, pp.getListOfObjectsCount());
+			
+						
+		} catch (SQLException | ClassNotFoundException | IDFieldNotFoundException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}		
+
+	}
 
 }

@@ -9,7 +9,7 @@ public class DomainUtil {
 		int seasonIndex = findSeasonIndex(series, newSeason.getSeasonNumber());
 		Series.Builder sb = Series.newBuilder(series);
 		
-		if (seasonIndex>=0)
+		if (seasonIndex >= 0)
 			sb.removeSeason(seasonIndex);
 		
 		

@@ -120,8 +120,11 @@ public class IMDBFinder {
 		Log.Debug("IMDB :: Updating episode in season object", LogType.IMDB);			
 		sn = DomainUtil.updateEpisode(sn, ep);
 		
+
 		Log.Debug("IMDB :: Updating season in series object", LogType.IMDB);
 		s = DomainUtil.updateSeason(s, sn);
+		
+		Log.Debug(String.format("IMDB :: Number of episodes in season :: %s", sn.getEpisodeCount()), LogType.IMDB);
 		
 		return s;
 		
