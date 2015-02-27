@@ -41,10 +41,14 @@ x - Blacklist does not work because IMDB_ID is null for every movie
 				 uses the american release date. Fixed by setting default language on HttpConnection to en-US!
 - 2015-02-10 - FIXED - DB search does not identify already registered series.
 - 2015-02-23         - Error seems to stem from db.find(<Series>)
-- 2015-02-24 - ERROR - DB search seems fixed but an error when getting next episode. 
+- 2015-02-24 - FIXED - DB search seems fixed but an error when getting next episode. 
 			Could this be because we have no URLS on series stored?
 - 2015-02-24 - FIXED - Delete does not work either. Error in ProtoDB? *sigh*
-- 2015-02-24 - ERROR - We still have som orphaned records in DB relating to series. Could this be an effect of the previous error?
+- 2015-02-24 - FIXED - We still have som orphaned records in DB relating to series. Could this be an effect of the previous error?
+- 2015-02-27		Yep. thats it. Records were orphaned due to previous error
+- 2015-02-27 - ERROR - Almost working now. The old episode links in the season object are erased. Could this be related to that season object is created anew?
+			The code should not take that path.
+
 
 ---------------------------------------------------------------------
 Environent Issues

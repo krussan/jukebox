@@ -173,42 +173,28 @@ public class MovieIdentifier implements Runnable {
 		}
 		else {	
 			Log.Debug("MovieIdentifier :: Series found. Searching for season..", LogType.FIND);
-			boolean seasonFound = false;
-			boolean episodeFound = false;
-			
-			for (Season sn : dbSeries.getSeasonList()) {
-				if (sn.getSeasonNumber() == season) {
-					seasonFound = true;
-					Log.Debug("MovieIdentifier :: Season found. Searching for episode..", LogType.FIND);
-					// season exist. Check episode
-					for (Episode e : sn.getEpisodeList()) {
-						if (e.getEpisodeNumber() == episode) { 
-							episodeFound = true;
-							Log.Debug("MovieIdentifier :: Episode found. Checking existing media..", LogType.FIND);
-							//episode exist
-							checkExistingMedia(e, newMedia);
-							break;
-						}
-					}
-					
-					if (!episodeFound) {
-						//no episode exist. Add the new episode identified.
-						Log.Debug("MovieIdentifier :: Episode not found!", LogType.FIND);
-						getInfoAndSaveSeries(series, season, episode, false, false, true, newMedia);
-					}
-					
-					break;
+
+			int seasonIndex = DomainUtil.findSeasonIndex(dbSeries, season);
+			if (seasonIndex >=0) {
+				Log.Debug("MovieIdentifier :: Season found. Searching for episode..", LogType.FIND);
+				// season exist. Check episode
+				int episodeIndex = DomainUtil.findEpisodeIndex(dbSeries.getSeason(seasonIndex), episode);
+				if (episodeIndex >= 0) {
+					Log.Debug("MovieIdentifier :: Episode found. Checking existing media..", LogType.FIND);
+					//episode exist
+					checkExistingMedia(dbSeries.getSeason(seasonIndex).getEpisode(episodeIndex), newMedia);					
+				}
+				else {
+					//no episode exist. Add the new episode identified.
+					Log.Debug("MovieIdentifier :: Episode not found!", LogType.FIND);
+					getInfoAndSaveSeries(dbSeries, season, episode, false, false, true, newMedia);				
 				}
 			}
-			
-			if (!seasonFound) {
-				// no season exist. Add the existing season (and episode) identified.
+			else {
+				// no season exist. Add the existing season (and episode) identified.				
 				Log.Debug("MovieIdentifier :: Season not found!", LogType.FIND);				
-				getInfoAndSaveSeries(series, season, episode, false, true, true, newMedia);
+				getInfoAndSaveSeries(dbSeries, season, episode, false, true, true, newMedia);
 			}
-			
-			//save the whole series
-			DB.save(series);			
 		}
 	}
 
@@ -246,18 +232,18 @@ public class MovieIdentifier implements Runnable {
 	protected void getInfoAndSaveSeries(Series series, int season, int episode, boolean getSeries, boolean getSeason, boolean getEpisode, Media media) {
 		
 		Series s = null;
-		// find series if exists
-		int seasonIndex = DomainUtil.findSeasonIndex(series, season);
-		Season sn = series.getSeason(seasonIndex);
-		
-		int episodeIndex = DomainUtil.findEpisodeIndex(sn, episode);
-		Episode ep = sn.getEpisode(episodeIndex);
 
-		Log.Debug(String.format("MovieIdentifier :: Season index :: %s :: Episode index :: %s", seasonIndex, episodeIndex), LogType.FIND);
 		// If not get information and subtitles
 		// If title is the same as the filename (except ignore pattern) then don't identify on IMDB.
 		if (Arguments.get().isImdbIdentifierEnabled()) 
 			s = getImdbInformation(series, season, episode, getSeries, getSeason, getEpisode);
+
+		// find series if exists
+		int seasonIndex = DomainUtil.findSeasonIndex(s, season);
+		Season sn = s.getSeason(seasonIndex);
+		
+		int episodeIndex = DomainUtil.findEpisodeIndex(sn, episode);
+		Episode ep = sn.getEpisode(episodeIndex);
 
 		// Get media information from MediaInfo library
 		if (Arguments.get().isMediaInfoEnabled()) {

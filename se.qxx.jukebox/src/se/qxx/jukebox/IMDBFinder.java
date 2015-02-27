@@ -66,22 +66,17 @@ public class IMDBFinder {
 		IMDBRecord seriesRec = null;
 		IMDBRecord episodeRec = null;
 		IMDBEpisode iep = null;
-		
-		int seasonIndex = DomainUtil.findSeasonIndex(series, season);
-		Season sn = series.getSeason(seasonIndex);
-		
-		int episodeIndex = DomainUtil.findEpisodeIndex(sn, episode);
-		Episode ep = sn.getEpisode(episodeIndex);
-		
-		Log.Debug(String.format("IMDB :: seasonIndex :: %s - episodeIndex :: %s", seasonIndex, episodeIndex), LogType.IMDB);
-		Series s = series;
-		
-		if (getSeries) {
+
+		if (getSeries || getSeason) {
 			if (StringUtils.isEmpty(imdbUrl)) 
 				seriesRec = Search(series.getTitle(), series.getYear(), null, Settings.imdb().getSearchUrl(), true);
 			else
-				seriesRec = IMDBRecord.get(series.getImdbUrl());
-				
+				seriesRec = IMDBRecord.get(imdbUrl);
+		}
+		
+		Series s = series;
+
+		if (getSeries) {				
 			Log.Debug("IMDB :: Creating new series object", LogType.IMDB);
 			s = extractSeriesInfo(s, seriesRec);
 			
@@ -89,15 +84,25 @@ public class IMDBFinder {
 			// we also set the index to 0 because we now that it is the first item
 			// in the list
 		}
+
+		Season sn = null;
+		Episode ep = null;
 		
 		if (getSeason) {
 			Log.Debug("IMDB :: Updating season object with urls", LogType.IMDB);
 			String seasonUrl = getSeasonUrl(season, seriesRec.getAllSeasonUrls());
 			Log.Debug(String.format("IMDB :: Season URL :: %s", seasonUrl), LogType.IMDB);
-			sn = Season.newBuilder(sn)
+			sn = Season.newBuilder()
+					.setID(-1)
 					.setImdbUrl(seasonUrl)
 					.setImdbId(Util.getImdbIdFromUrl(seasonUrl))
+					.setSeasonNumber(season)
 					.build();
+		}
+		else {
+			Log.Debug("IMDB :: looking up season object in series", LogType.IMDB);
+			int seasonIndex = DomainUtil.findSeasonIndex(s, season);
+			sn = s.getSeason(seasonIndex);
 		}
 		
 		// extract episode info from that page
@@ -105,18 +110,18 @@ public class IMDBFinder {
 			Log.Debug("IMDB :: Getting episode info", LogType.IMDB);
 			iep = getEpisodeRec(sn.getImdbUrl(), episode);
 			episodeRec = IMDBRecord.get(iep.getUrl());
-			ep = extractEpisodeInfo(ep, episodeRec);
+			ep = extractEpisodeInfo(episodeRec, episode);
+		}
+		else {
+			int episodeIndex = DomainUtil.findEpisodeIndex(sn, episode);
+			ep = sn.getEpisode(episodeIndex);			
 		}
 		
-		if (episodeIndex >= 0 && getEpisode) {
-			Log.Debug("IMDB :: Updating episode in season object", LogType.IMDB);
-			sn = DomainUtil.updateEpisode(sn, ep);
-		}
+		Log.Debug("IMDB :: Updating episode in season object", LogType.IMDB);			
+		sn = DomainUtil.updateEpisode(sn, ep);
 		
-		if (seasonIndex >= 0 && getSeason) {
-			Log.Debug("IMDB :: Updating season in series object", LogType.IMDB);
-			s = DomainUtil.updateSeason(s, sn);
-		}
+		Log.Debug("IMDB :: Updating season in series object", LogType.IMDB);
+		s = DomainUtil.updateSeason(s, sn);
 		
 		return s;
 		
@@ -231,12 +236,13 @@ public class IMDBFinder {
 			return m;
 	}
 	
-	private static Episode extractEpisodeInfo(Episode ep, IMDBRecord rec) {
+	private static Episode extractEpisodeInfo(IMDBRecord rec, int episode) {
 		if (rec != null) {
 			// get releaseInfo to get the correct international title
 			String preferredTitle = getPreferredTitle(rec);
 			
-			Episode.Builder b = Episode.newBuilder(ep)
+			Episode.Builder b = Episode.newBuilder()
+					.setID(-1)
 					.setImdbUrl(rec.getUrl())
 					.setImdbId(Util.getImdbIdFromUrl(rec.getUrl()))
 					.setDirector(rec.getDirector())
@@ -244,6 +250,8 @@ public class IMDBFinder {
 					.setStory(rec.getStory())
 					.setRating(rec.getRating())
 					.addAllGenre(rec.getAllGenres())
+					.setYear(rec.getYear())
+					.setEpisodeNumber(episode)
 					.setFirstAirDate(rec.getFirstAirDate().getTime());
 			
 			if (!StringUtils.isEmpty(preferredTitle)) 
@@ -251,14 +259,11 @@ public class IMDBFinder {
 			
 			if (rec.getImage() != null)
 				b.setImage(ByteString.copyFrom(rec.getImage()));
-			
-			if (ep.getYear() == 0)
-				b.setYear(rec.getYear());
-			
+
 			return b.build();
 		}
 		else
-			return ep;
+			return null;
 	}
 	
 	private static Series extractSeriesInfo(Series s, IMDBRecord rec) {
@@ -267,6 +272,7 @@ public class IMDBFinder {
 			String preferredTitle = getPreferredTitle(rec);
 			
 			Series.Builder b = Series.newBuilder(s)
+					.setID(-1)
 					.setImdbUrl(rec.getUrl())
 					.setImdbId(Util.getImdbIdFromUrl(rec.getUrl()))
 					.setStory(rec.getStory())
