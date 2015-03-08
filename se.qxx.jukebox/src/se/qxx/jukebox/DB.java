@@ -528,7 +528,7 @@ public class DB {
 			
 			return
 				db.find(JukeboxDomain.Movie.getDefaultInstance(), 
-					"subtitleRetreiveResult", 
+					"SubtitleQueue.subtitleRetreiveResult", 
 					0, 
 					false);
 
