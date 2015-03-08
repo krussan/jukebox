@@ -5,15 +5,19 @@ import java.util.EventObject;
 import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.android.jukebox.ActionDialog;
+import se.qxx.android.jukebox.Connector;
 import se.qxx.android.jukebox.FlipperActivity;
+import se.qxx.android.jukebox.JukeboxPreferenceActivity;
 import se.qxx.android.jukebox.JukeboxSettings;
 import se.qxx.android.jukebox.NowPlayingActivity;
+import se.qxx.android.jukebox.PlayerPickerActivity;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.jukebox.model.ModelUpdatedEvent;
 import se.qxx.android.jukebox.model.ModelUpdatedType;
 import se.qxx.android.jukebox.model.Model.ModelUpdatedEventListener;
 import se.qxx.android.tools.GUITools;
+import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import android.app.Activity;
 import android.content.Intent;
@@ -23,7 +27,9 @@ import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.webkit.WebView.FindListener;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -33,7 +39,7 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 public class JukeboxFragment extends ListFragment implements
-	ModelUpdatedEventListener, OnItemClickListener, OnItemLongClickListener {
+	ModelUpdatedEventListener, OnItemClickListener, OnItemLongClickListener, OnClickListener {
 	private int position;
 	private MovieLayoutAdapter _jukeboxMovieLayoutAdapter;
 	private SeriesLayoutAdapter _seriesLayoutAdapter;
@@ -85,6 +91,13 @@ public class JukeboxFragment extends ListFragment implements
 		lv.setOnItemClickListener(this);
 		lv.setOnItemLongClickListener(this);
 
+		this.getActivity().findViewById(R.id.btnRefresh).setOnClickListener(this);
+		this.getActivity().findViewById(R.id.btnFullscreen).setOnClickListener(this);
+		this.getActivity().findViewById(R.id.btnCurrentMovie).setOnClickListener(this);
+		this.getActivity().findViewById(R.id.btnPreferences).setOnClickListener(this);
+		this.getActivity().findViewById(R.id.btnOn).setOnClickListener(this);
+		this.getActivity().findViewById(R.id.btnOff).setOnClickListener(this);
+
 		if (position == 0) {
 			_jukeboxMovieLayoutAdapter = new MovieLayoutAdapter(v.getContext());
 			lv.setAdapter(_jukeboxMovieLayoutAdapter);
@@ -96,8 +109,7 @@ public class JukeboxFragment extends ListFragment implements
 
 		Model.get().addEventListener(this);
 
-		
-		//setupOnOffButton();
+		Connector.setupOnOffButton(this.getView());
 
 	    
 	    //detector = new SimpleGestureFilter(this, this);
@@ -128,6 +140,41 @@ public class JukeboxFragment extends ListFragment implements
 		}
 	}
 
+	@Override
+	public void onClick(View v) {
+		int id = v.getId();
+		GUITools.vibrate(28, this.getActivity());
+
+		switch (id) {
+		case R.id.btnRefresh:
+			Logger.Log().i("onConnectClicked");
+
+			Model.get().clearMovies();
+			Connector.connect(this.getActivity());
+			
+			break;
+		case R.id.btnSelectMediaPlayer:
+			Logger.Log().i("selectMediaPlayerClicked");
+
+			Intent i = new Intent(this.getActivity(), PlayerPickerActivity.class);
+			startActivity(i);
+			break;
+		case R.id.btnOn:
+		case R.id.btnOff:
+			Connector.onoff(this.getActivity());
+			Connector.setupOnOffButton(this.getView());
+			break;
+		case R.id.btnPreferences:
+			Intent intentPreferences = new Intent(this.getActivity(), JukeboxPreferenceActivity.class);
+			startActivity(intentPreferences);
+			break;
+		default:
+			break;
+
+		}	
+	}
+
+	
 
 	
 }

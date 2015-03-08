@@ -53,25 +53,15 @@ public class JukeboxActivity extends JukeboxActivityBase implements
 
 		Model.get().addEventListener(this);
 
-		setupOnOffButton();
-
+		Connector.setupOnOffButton(this.getRootView());
+		
 		if (!Model.get().isInitialized())
-			connect();
+			Connector.connect(this);
 		else
 			runOnUiThread(modelResultUpdatedRunnable);
 	}
 
-	private void setupOnOffButton() {
-		View rootView = this.getRootView();
 
-		if (JukeboxSettings.get().isCurrentMediaPlayerOn()) {
-			GUITools.showView(R.id.btnOff, rootView);
-			GUITools.hideView(R.id.btnOn, rootView);
-		} else {
-			GUITools.showView(R.id.btnOn, rootView);
-			GUITools.hideView(R.id.btnOff, rootView);
-		}
-	}
 
 	// @Override
 	// public boolean onCreateOptionsMenu(Menu menu) {
@@ -106,7 +96,7 @@ public class JukeboxActivity extends JukeboxActivityBase implements
 			Logger.Log().i("onConnectClicked");
 
 			Model.get().clearMovies();
-			connect();
+			Connector.connect(this);
 			break;
 		case R.id.btnSelectMediaPlayer:
 			Logger.Log().i("selectMediaPlayerClicked");
@@ -116,7 +106,8 @@ public class JukeboxActivity extends JukeboxActivityBase implements
 			break;
 		case R.id.btnOn:
 		case R.id.btnOff:
-			onoff();
+			Connector.onoff(this);
+			Connector.setupOnOffButton(this.getRootView());
 			break;
 		case R.id.btnPreferences:
 			Intent intentPreferences = new Intent(this,
@@ -129,70 +120,8 @@ public class JukeboxActivity extends JukeboxActivityBase implements
 		}
 	}
 
-	private void onoff() {
-		// TODO: Check if computer is live.
-		final boolean isOnline = JukeboxSettings.get().isCurrentMediaPlayerOn();
-		final String currentMediaPlayer = JukeboxSettings.get()
-				.getCurrentMediaPlayer();
 
-		final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
-				JukeboxSettings.get().getServerIpAddress(), 
-				JukeboxSettings.get().getServerPort(),				
-				JukeboxConnectionProgressDialog.build(this,
-						isOnline ? "Suspending target media player..."
-								: "Waking up..."));
 
-		Thread t = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				if (isOnline)
-					jh.suspend(currentMediaPlayer);
-				else
-					jh.wakeup(currentMediaPlayer);
-			}
-		});
-		t.start();
-
-		JukeboxSettings.get().setIsCurrentMediaPlayerOn(!isOnline);
-		setupOnOffButton();
-	}
-
-	public void showMessage(final Context c, final String message) {
-		runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				Toast.makeText(c, message, Toast.LENGTH_SHORT).show();
-			}
-		});
-	}
-
-	public void connect() {
-		final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
-				JukeboxSettings.get().getServerIpAddress(), 
-				JukeboxSettings.get().getServerPort(),				
-				JukeboxConnectionProgressDialog.build(this,
-						"Getting list of media ..."));
-
-		try {
-			jh.listMovies("", new RpcCallback<JukeboxResponseListMovies>() {
-
-				@Override
-				public void run(JukeboxResponseListMovies response) {
-					//TODO: if repsonse is null probably the server is down..
-					if (response != null) {
-						Model.get().clearMovies();
-						Model.get().addAllMovies(response.getMoviesList());
-						Model.get().setInitialized(true);
-					}
-				}
-
-			});
-		} catch (Exception e) {
-			showMessage(this, "Connection failed. Check settings ...");
-
-		}
-
-	}
 
 	@Override
 	public void handleModelUpdatedEventListener(EventObject e) {
