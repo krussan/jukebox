@@ -170,7 +170,7 @@ public class MovieIdentifier implements Runnable {
 		}
 		else {
 			Log.Debug("MovieIdentifier :: Series found. Searching for season..", LogType.FIND);
-			Log.Debug(String.format("MovieIdentifier :: dbSeries nr of episodes :: %s", DomainUtil.findSeason(dbSeries, season).getEpisodeCount()), LogType.FIND);
+//			Log.Debug(String.format("MovieIdentifier :: dbSeries nr of episodes :: %s", DomainUtil.findSeason(dbSeries, season).getEpisodeCount()), LogType.FIND);
 			
 			//verify if dbSeries have the episode.
 			//if it does then exit
