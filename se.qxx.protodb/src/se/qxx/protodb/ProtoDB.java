@@ -83,6 +83,12 @@ public class ProtoDB {
 				ret.add(p);
 			}
 		}
+		catch (Exception e) {
+			System.out.println("Exception in ProtoDB!");
+			e.printStackTrace();
+			
+			throw e;
+		}
 		finally {
 			this.disconnect(conn);
 		}
@@ -255,7 +261,10 @@ public class ProtoDB {
 			try {
 				conn.rollback();
 			} catch (SQLException sqlEx) {}
-			
+
+			System.out.println("Exception in ProtoDB!");
+			e.printStackTrace();
+
 			throw e;
 		}
 		finally {
@@ -393,6 +402,12 @@ public class ProtoDB {
 			msg = get(id, instance, conn);
 			
 		}
+		catch (Exception e) {
+			System.out.println("Exception in ProtoDB!");
+			e.printStackTrace();
+			
+			throw e;
+		}		
 		finally {
 			this.disconnect(conn);
 		}		
@@ -585,7 +600,10 @@ public class ProtoDB {
 			try {
 				conn.rollback();
 			} catch (SQLException sqlEx) {}
-			
+
+			System.out.println("Exception in ProtoDB!");
+			e.printStackTrace();
+
 			throw e;
 		}		
 		finally {
@@ -718,7 +736,7 @@ public class ProtoDB {
 			FieldDescriptor field,
 			Connection conn) throws SQLException {
 		PreparedStatement prep = conn.prepareStatement(scanner.getLinkTableDeleteStatement(other, field.getName()));
-		prep.setInt(1, scanner.getIdValue());
+		prep.setInt(1, other.getIdValue());
 		
 		prep.execute();
 	}
@@ -884,6 +902,12 @@ public class ProtoDB {
 			
 			throw e;
 		}		
+		catch (Exception e) {
+			System.out.println("Exception in ProtoDB!");
+			e.printStackTrace();
+			
+			throw e;
+		}		
 		finally {
 			this.disconnect(conn);
 		}
@@ -968,6 +992,12 @@ public class ProtoDB {
 			result = this.find(instance, fieldName, searchFor, isLikeOperator, conn);
 			
 		}
+		catch (Exception e) {
+			System.out.println("Exception in ProtoDB!");
+			e.printStackTrace();
+			
+			throw e;
+		}		
 		finally {
 			this.disconnect(conn);
 		}

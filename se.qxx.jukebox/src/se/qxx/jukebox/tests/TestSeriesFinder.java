@@ -26,14 +26,25 @@ public class TestSeriesFinder {
 			
 			try {
 				ProtoDB db = new ProtoDB("jukebox_proto.db");
-				List<Series> result =
-					db.find(JukeboxDomain.Series.getDefaultInstance(), 
-						"title", 
-						args[0], 
-						true);
 				
-				if (result.size() > 0)
-					System.out.println(result.get(0).getTitle());
+				Series s = null;
+				
+				if (StringUtils.isNumeric(args[0]))
+					s = db.get(Integer.parseInt(args[0]), JukeboxDomain.Series.getDefaultInstance());
+				else {
+					List<Series> result =
+						db.find(JukeboxDomain.Series.getDefaultInstance(), 
+							"title", 
+							args[0], 
+							true);
+					
+					if (result.size() > 0)
+						s = result.get(0);
+				}
+				
+				if (s != null) {
+					System.out.println(s);
+				}
 				else 
 					System.out.println("Nothing found!");
 				

@@ -414,15 +414,17 @@ public class SubtitleDownloader implements Runnable {
 	
 	/**
 	 * Add an episode to the subtitile download queue.
+	 * The episode and series have to be saved separately
 	 * @param m The movie to add
 	 */
 	public Episode addEpisode(Episode episode) {
-		synchronized (_instance) {
-			Episode ep = DB.addEpisodeToSubtitleQueue(episode);
-			_instance.notify();
-			
-			return ep;
-		} 
+		return Episode.newBuilder(episode).setSubtitleQueue(
+				SubtitleQueue.newBuilder()
+					.setID(-1)
+					.setSubtitleRetreiveResult(0)				
+					.setSubtitleQueuedAt(DB.getCurrentUnixTimestamp())
+					.build())
+				.build();	
 	}
 
 	/**

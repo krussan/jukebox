@@ -1,7 +1,5 @@
 package se.qxx.jukebox.tests;
 
-import java.util.ArrayList;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;  
 
@@ -34,7 +32,7 @@ public class TestImdbFinder {
 				System.out.println(mm);
 			}
 			else {
-				Series ss = IMDBFinder.Get(s, pp.getSeason(), pp.getEpisode(), true, true, true);
+				Series ss = IMDBFinder.Get(s, pp.getSeason(), pp.getEpisode());
 				System.out.println(ss);
 			}
 			

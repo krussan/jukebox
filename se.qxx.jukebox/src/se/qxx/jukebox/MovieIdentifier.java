@@ -19,8 +19,6 @@ import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
-import se.qxx.jukebox.settings.Settings;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class MovieIdentifier implements Runnable {
 	
@@ -153,49 +151,83 @@ public class MovieIdentifier implements Runnable {
 		int episode = pp.getEpisode();
 		
 		Log.Debug(String.format("MovieIndentifier :: Finding series :: %s", series.getTitle()), LogType.FIND);
+		
 		// find series that matches
+		// do we not need to merge dbSeries and series??!!
 		Series dbSeries = DB.findSeries(
 				series.getTitle());
 		
 		//if no series found in DB. create new from the created series
 		//  - if no series then no seasons and no episodes
 		if (dbSeries == null) {
-			// no series exist
+			// no series exist 
 			Log.Debug("MovieIdentifier :: No series found! Creating new", LogType.FIND);
 			getInfoAndSaveSeries(
 				series, 
 				season,
 				episode,
-				true,
-				true,
-				true,
 				newMedia);
 		}
-		else {	
+		else {
 			Log.Debug("MovieIdentifier :: Series found. Searching for season..", LogType.FIND);
-
-			int seasonIndex = DomainUtil.findSeasonIndex(dbSeries, season);
-			if (seasonIndex >=0) {
-				Log.Debug("MovieIdentifier :: Season found. Searching for episode..", LogType.FIND);
-				// season exist. Check episode
-				int episodeIndex = DomainUtil.findEpisodeIndex(dbSeries.getSeason(seasonIndex), episode);
-				if (episodeIndex >= 0) {
-					Log.Debug("MovieIdentifier :: Episode found. Checking existing media..", LogType.FIND);
-					//episode exist
-					checkExistingMedia(dbSeries.getSeason(seasonIndex).getEpisode(episodeIndex), newMedia);					
-				}
-				else {
-					//no episode exist. Add the new episode identified.
-					Log.Debug("MovieIdentifier :: Episode not found!", LogType.FIND);
-					getInfoAndSaveSeries(dbSeries, season, episode, false, false, true, newMedia);				
-				}
+			Log.Debug(String.format("MovieIdentifier :: dbSeries nr of episodes :: %s", DomainUtil.findSeason(dbSeries, season).getEpisodeCount()), LogType.FIND);
+			
+			//verify if dbSeries have the episode.
+			//if it does then exit
+			if (checkSeries(dbSeries, season, episode)) {
+				Log.Debug("MovieIdentifier :: Episode already exist in DB. Exiting ... ", LogType.FIND);
+				return;
 			}
-			else {
-				// no season exist. Add the existing season (and episode) identified.				
-				Log.Debug("MovieIdentifier :: Season not found!", LogType.FIND);				
-				getInfoAndSaveSeries(dbSeries, season, episode, false, true, true, newMedia);
-			}
+			
+			dbSeries = mergeSeries(dbSeries, series, season, episode);
+			
+			getInfoAndSaveSeries(
+				dbSeries, 
+				season,
+				episode,
+				newMedia);
 		}
+	}
+
+	/**
+	 * Returns if the series already contains information about the season and episode specified
+	 * @param dbSeries
+	 * @param season
+	 * @param episode
+	 * @return
+	 */
+	private boolean checkSeries(Series series, int season, int episode) {
+		Season sn = DomainUtil.findSeason(series, season);
+		if (sn == null)
+			return false;
+		
+		Episode ep = DomainUtil.findEpisode(sn, episode);
+		if (ep == null)
+			return false;
+		
+		return true;
+	}
+
+	/**
+	 * Takes the season and episode (both at index 0) from the mergeFrom object and merges them
+	 * into the mergeTo object. If they already exist nothing will be merged.
+	 * @param mergeTo
+	 * @param mergeFrom
+	 * @param season
+	 * @param episode
+	 * @return
+	 */
+	private Series mergeSeries(Series mergeTo, Series mergeFrom, int season, int episode) {
+		Season sn = DomainUtil.findSeason(mergeTo, season);
+		if (sn == null)
+			sn = mergeFrom.getSeason(0);
+		
+		Episode ep = DomainUtil.findEpisode(sn, episode);
+		if (ep == null)
+			ep = mergeFrom.getSeason(0).getEpisode(0);
+		
+		sn = DomainUtil.updateEpisode(sn, ep);
+		return DomainUtil.updateSeason(mergeTo, sn);
 	}
 
 	/**
@@ -229,22 +261,27 @@ public class MovieIdentifier implements Runnable {
 	 * @param m
 	 * @param newMedia
 	 */
-	protected void getInfoAndSaveSeries(Series series, int season, int episode, boolean getSeries, boolean getSeason, boolean getEpisode, Media media) {
+	protected void getInfoAndSaveSeries(Series series, int season, int episode, Media media) {
 		
 		Series s = series;
 
+		// construct the objects.
+		// this should be done here and not in the IMDBFinder.
+		// IMDBFinder should expect the objects in the hierarchy to be populated.
+		Season sn = DomainUtil.findSeason(s, season);
+		Episode ep = DomainUtil.findEpisode(sn, episode);
+
+		if (sn == null || ep == null)
+			throw new IllegalArgumentException("Season or Episode not found!");
+		
 		// If not get information and subtitles
 		// If title is the same as the filename (except ignore pattern) then don't identify on IMDB.
 		if (Arguments.get().isImdbIdentifierEnabled()) 
-			s = getImdbInformation(s, season, episode, getSeries, getSeason, getEpisode);
-
-		// find series if exists
-		int seasonIndex = DomainUtil.findSeasonIndex(s, season);
-		Season sn = s.getSeason(seasonIndex);
+			s = getImdbInformation(s, season, episode);
 		
-		int episodeIndex = DomainUtil.findEpisodeIndex(sn, episode);
-		Episode ep = sn.getEpisode(episodeIndex);
-
+		sn = DomainUtil.findSeason(s, season);
+		ep = DomainUtil.findEpisode(sn, episode);
+		
 		// Get media information from MediaInfo library
 		if (Arguments.get().isMediaInfoEnabled()) {
 			Media md = MediaMetadata.addMediaMetadata(media);
@@ -252,20 +289,17 @@ public class MovieIdentifier implements Runnable {
 			ep = Episode.newBuilder(ep)
 					.clearMedia()
 					.addMedia(md)
-					.build();
-
-			sn = DomainUtil.updateEpisode(sn, ep);
-			s = DomainUtil.updateSeason(s, sn);
+					.build();	
 		}
-
+			
 		if (Arguments.get().isSubtitleDownloaderEnabled()) {
 			ep = SubtitleDownloader.get().addEpisode(ep);
-			
-			sn = DomainUtil.updateEpisode(sn, ep);
-			s = DomainUtil.updateSeason(s, sn);
 		}
 		
-		Log.Debug(String.format("MovieIdentifier :: Number of episodes in season :: %s", sn.getEpisodeCount()), LogType.FIND);
+		sn = DomainUtil.updateEpisode(sn, ep);
+		s = DomainUtil.updateSeason(s, sn);
+		
+		Log.Debug(String.format("MovieIdentifier :: #3 Number of episodes :: %s", sn.getEpisodeCount()), LogType.FIND);
 		
 		DB.save(s);
 		
@@ -349,11 +383,11 @@ public class MovieIdentifier implements Runnable {
 		return m;
 	}
 
-	private Series getImdbInformation(Series series, int season, int episode, boolean getSeries, boolean getSeason, boolean getEpisode) {
+	private Series getImdbInformation(Series series, int season, int episode) {
 		//find imdb link
 		Series s = null;
 		try {
-			s = IMDBFinder.Get(series, season, episode, getSeries, getSeason, getEpisode);
+			s = IMDBFinder.Get(series, season, episode);
 			
 			if (!StringUtils.isEmpty(s.getImdbUrl()))
 				Log.Info(String.format("IMDB link found for :: %s", series.getTitle()), LogType.FIND);

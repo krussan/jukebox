@@ -27,20 +27,40 @@ public class DomainUtil {
 	}
 	
 	public static int findSeasonIndex(Series s, int season) {
-		for (int i=0; i<s.getSeasonCount(); i++){
-			if (s.getSeason(i).getSeasonNumber() == season)
-				return i;
+		if (s != null) {
+			for (int i=0; i<s.getSeasonCount(); i++){
+				if (s.getSeason(i).getSeasonNumber() == season)
+					return i;
+			}
 		}
 		
 		return -1;
 	}
 	
+	public static Season findSeason(Series s, int season) {
+		int seasonIndex = DomainUtil.findSeasonIndex(s, season);
+		if (seasonIndex >= 0)
+			return s.getSeason(seasonIndex);
+		else
+			return null;
+	}
+	
 	public static int findEpisodeIndex(Season sn, int episode) {
-		for (int i=0; i<sn.getEpisodeCount(); i++){
-			if (sn.getEpisode(i).getEpisodeNumber() == episode)
-				return i;
+		if (sn != null) {
+			for (int i=0; i<sn.getEpisodeCount(); i++){
+				if (sn.getEpisode(i).getEpisodeNumber() == episode)
+					return i;
+			}
 		}
 		
 		return -1;
+	}
+	
+	public static Episode findEpisode(Season sn, int episode) {
+		int episodeIndex = DomainUtil.findEpisodeIndex(sn, episode);
+		if (episodeIndex >= 0)
+			return sn.getEpisode(episodeIndex);
+		else
+			return null;
 	}
 }

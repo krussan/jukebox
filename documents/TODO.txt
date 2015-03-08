@@ -46,9 +46,19 @@ x - Blacklist does not work because IMDB_ID is null for every movie
 - 2015-02-24 - FIXED - Delete does not work either. Error in ProtoDB? *sigh*
 - 2015-02-24 - FIXED - We still have som orphaned records in DB relating to series. Could this be an effect of the previous error?
 - 2015-02-27		Yep. thats it. Records were orphaned due to previous error
-- 2015-02-27 - ERROR - Almost working now. The old episode links in the season object are erased. Could this be related to that season object is created anew?
+- 2015-02-27 - FIXED - Almost working now. The old episode links in the season object are erased. Could this be related to that season object is created anew?
 			The code should not take that path.
+- 2015-03-08         - The episodes are not read back when reading the series! Should be a protoDB issue?
+			- yep. when doing a DB.get only the last episode exist in the resulting object!
+			- eeh. no. the episodes to series table is not populated.
+			- Either protoDB does not save both entries, or the links are erased when populating the new object.
 
+			- Rewrote the logic somewhat. IMDB should not check if the series hierarchy exists. Actually it will now fail if it doesn't
+			- Still error that simpy one link record is stored in DB. Or just one record re-read upon select?
+			- Must be a protoDB error. Before saving we have 2 episodes, but only one gets stored to DB!?
+- 2015-03-08		- FIXED - yep. Error in protoDB that removed all links from the source object. Correct would be to remove objects with the target ID.
+			- 	- Also a bit of confusion with new objects after imdbIdentifier has run and after mediaIndentifier. We need to get the new objects
+				- after these have been created before each new step.
 
 ---------------------------------------------------------------------
 Environent Issues

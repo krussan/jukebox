@@ -517,43 +517,7 @@ public class DB {
 		}
 		return m;
 	}
-	
-	public synchronized static Episode addEpisodeToSubtitleQueue(Episode ep) {
-		try {
-			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
-
-			ep = Episode.newBuilder(ep).setSubtitleQueue(
-				SubtitleQueue.newBuilder()
-					.setID(-1)
-					.setSubtitleRetreiveResult(0)				
-					.setSubtitleQueuedAt(getCurrentUnixTimestamp())
-					.build())
-				.build();
 			
-			return db.save(ep);
-		}
-		catch (Exception e) {
-			Log.Error("Failed to store movie to DB", Log.LogType.MAIN, e);
-		}
-		
-		return ep;
-	}
-	
-	public synchronized static void addSeriesToSubtitleQueue(Episode episode) {
-		try {
-			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
-
-			db.save(Episode.newBuilder(episode).setSubtitleQueue(
-				SubtitleQueue.newBuilder()
-					.setSubtitleQueuedAt(getCurrentUnixTimestamp())
-					.build())
-				.build());
-		}
-		catch (Exception e) {
-			Log.Error("Failed to store episode to DB", Log.LogType.MAIN, e);
-		}
-	}
-	
 	public static long getCurrentUnixTimestamp() {
 		return System.currentTimeMillis() / 1000L;
 	}

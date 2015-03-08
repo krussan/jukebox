@@ -35,7 +35,11 @@ public class Log {
 	public static void Error(String msg, LogType type, Exception e) {
 		log(msg, type, e, "ERROR");
 	}
-	
+
+	public static void Error(String msg, LogType type) {
+		log(msg, type, "ERROR");
+	}
+
 	public static void Debug(String msg, LogType type) {
 		log(msg, type, "DEBUG");
 	}
