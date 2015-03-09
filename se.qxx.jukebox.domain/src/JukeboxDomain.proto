@@ -209,6 +209,7 @@ message JukeboxFrontSetSubtitle {
 
 message JukeboxResponseListMovies {
 	repeated Movie movies = 1;
+	repeated Series series = 2;
 }
 
 message JukeboxResponseListPlayers {

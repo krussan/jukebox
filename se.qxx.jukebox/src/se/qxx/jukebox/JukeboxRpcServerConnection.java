@@ -28,6 +28,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseTime;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxService;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Players.Server;
@@ -45,7 +46,12 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		
 		String searchString = request.getSearchString();
 		List<Movie> list = DB.searchMoviesByTitle(searchString);
-		JukeboxResponseListMovies lm = JukeboxResponseListMovies.newBuilder().addAllMovies(list).build();
+		List<Series> listSeries = DB.searchSeriesByTitle(searchString);
+		
+		JukeboxResponseListMovies lm = JukeboxResponseListMovies.newBuilder()
+				.addAllMovies(list)
+				.addAllSeries(listSeries)
+				.build();
 		done.run(lm);
 	}
  

@@ -91,8 +91,25 @@ public class DB {
 			return new ArrayList<Movie>();
 		}
 	}
+
+	public synchronized static List<Series> searchSeriesByTitle(String searchString) {
+		try {
+			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			
+			return 
+				db.find(JukeboxDomain.Series.getDefaultInstance(), 
+					"title", 
+					"%" + searchString + "%", 
+					true);
+		}
+		catch (Exception e) {
+			Log.Error("Failed to retrieve series listing from DB", Log.LogType.MAIN, e);
+			return new ArrayList<Series>();
+		}
+	}
 	
-	protected static List<Media> parseDynamicListToMedia(
+	
+	protected static List<Media> __parseDynamicListToMedia(
 			List<DynamicMessage> result) throws InvalidProtocolBufferException {
 		List<Media> movieResult = new ArrayList<Media>();
 		for (DynamicMessage m : result)

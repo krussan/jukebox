@@ -49,7 +49,7 @@ public class JukeboxFragment extends ListFragment implements
 		@Override
 		public void run() {
 			_jukeboxMovieLayoutAdapter.notifyDataSetChanged();
-			_seriesLayoutAdapter.notifyDataSetChanged();
+//			_seriesLayoutAdapter.notifyDataSetChanged();
 		}
 	};
 
@@ -91,12 +91,12 @@ public class JukeboxFragment extends ListFragment implements
 		lv.setOnItemClickListener(this);
 		lv.setOnItemLongClickListener(this);
 
-		this.getActivity().findViewById(R.id.btnRefresh).setOnClickListener(this);
-		this.getActivity().findViewById(R.id.btnFullscreen).setOnClickListener(this);
-		this.getActivity().findViewById(R.id.btnCurrentMovie).setOnClickListener(this);
-		this.getActivity().findViewById(R.id.btnPreferences).setOnClickListener(this);
-		this.getActivity().findViewById(R.id.btnOn).setOnClickListener(this);
-		this.getActivity().findViewById(R.id.btnOff).setOnClickListener(this);
+		v.findViewById(R.id.btnRefresh).setOnClickListener(this);
+		v.findViewById(R.id.btnSelectMediaPlayer).setOnClickListener(this);
+		v.findViewById(R.id.btnCurrentMovie).setOnClickListener(this);
+		v.findViewById(R.id.btnPreferences).setOnClickListener(this);
+		v.findViewById(R.id.btnOn).setOnClickListener(this);
+		v.findViewById(R.id.btnOff).setOnClickListener(this);
 
 		if (position == 0) {
 			_jukeboxMovieLayoutAdapter = new MovieLayoutAdapter(v.getContext());
@@ -109,7 +109,7 @@ public class JukeboxFragment extends ListFragment implements
 
 		Model.get().addEventListener(this);
 
-		Connector.setupOnOffButton(this.getView());
+		Connector.setupOnOffButton(v);
 
 	    
 	    //detector = new SimpleGestureFilter(this, this);
@@ -136,7 +136,7 @@ public class JukeboxFragment extends ListFragment implements
 		ModelUpdatedEvent ev = (ModelUpdatedEvent) e;
 
 		if (ev.getType() == ModelUpdatedType.Movies) {
-			this.getActivity().runOnUiThread(modelResultUpdatedRunnable);
+			getActivity().runOnUiThread(modelResultUpdatedRunnable);
 		}
 	}
 

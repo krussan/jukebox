@@ -14810,6 +14810,16 @@ public final class JukeboxDomain {
         getMoviesOrBuilderList();
     se.qxx.jukebox.domain.JukeboxDomain.MovieOrBuilder getMoviesOrBuilder(
         int index);
+    
+    // repeated .se.qxx.jukebox.domain.Series series = 2;
+    java.util.List<se.qxx.jukebox.domain.JukeboxDomain.Series> 
+        getSeriesList();
+    se.qxx.jukebox.domain.JukeboxDomain.Series getSeries(int index);
+    int getSeriesCount();
+    java.util.List<? extends se.qxx.jukebox.domain.JukeboxDomain.SeriesOrBuilder> 
+        getSeriesOrBuilderList();
+    se.qxx.jukebox.domain.JukeboxDomain.SeriesOrBuilder getSeriesOrBuilder(
+        int index);
   }
   public static final class JukeboxResponseListMovies extends
       com.google.protobuf.GeneratedMessage
@@ -14860,8 +14870,30 @@ public final class JukeboxDomain {
       return movies_.get(index);
     }
     
+    // repeated .se.qxx.jukebox.domain.Series series = 2;
+    public static final int SERIES_FIELD_NUMBER = 2;
+    private java.util.List<se.qxx.jukebox.domain.JukeboxDomain.Series> series_;
+    public java.util.List<se.qxx.jukebox.domain.JukeboxDomain.Series> getSeriesList() {
+      return series_;
+    }
+    public java.util.List<? extends se.qxx.jukebox.domain.JukeboxDomain.SeriesOrBuilder> 
+        getSeriesOrBuilderList() {
+      return series_;
+    }
+    public int getSeriesCount() {
+      return series_.size();
+    }
+    public se.qxx.jukebox.domain.JukeboxDomain.Series getSeries(int index) {
+      return series_.get(index);
+    }
+    public se.qxx.jukebox.domain.JukeboxDomain.SeriesOrBuilder getSeriesOrBuilder(
+        int index) {
+      return series_.get(index);
+    }
+    
     private void initFields() {
       movies_ = java.util.Collections.emptyList();
+      series_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -14870,6 +14902,12 @@ public final class JukeboxDomain {
       
       for (int i = 0; i < getMoviesCount(); i++) {
         if (!getMovies(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      for (int i = 0; i < getSeriesCount(); i++) {
+        if (!getSeries(i).isInitialized()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -14884,6 +14922,9 @@ public final class JukeboxDomain {
       for (int i = 0; i < movies_.size(); i++) {
         output.writeMessage(1, movies_.get(i));
       }
+      for (int i = 0; i < series_.size(); i++) {
+        output.writeMessage(2, series_.get(i));
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -14896,6 +14937,10 @@ public final class JukeboxDomain {
       for (int i = 0; i < movies_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, movies_.get(i));
+      }
+      for (int i = 0; i < series_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, series_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -15014,6 +15059,7 @@ public final class JukeboxDomain {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
           getMoviesFieldBuilder();
+          getSeriesFieldBuilder();
         }
       }
       private static Builder create() {
@@ -15027,6 +15073,12 @@ public final class JukeboxDomain {
           bitField0_ = (bitField0_ & ~0x00000001);
         } else {
           moviesBuilder_.clear();
+        }
+        if (seriesBuilder_ == null) {
+          series_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000002);
+        } else {
+          seriesBuilder_.clear();
         }
         return this;
       }
@@ -15074,6 +15126,15 @@ public final class JukeboxDomain {
         } else {
           result.movies_ = moviesBuilder_.build();
         }
+        if (seriesBuilder_ == null) {
+          if (((bitField0_ & 0x00000002) == 0x00000002)) {
+            series_ = java.util.Collections.unmodifiableList(series_);
+            bitField0_ = (bitField0_ & ~0x00000002);
+          }
+          result.series_ = series_;
+        } else {
+          result.series_ = seriesBuilder_.build();
+        }
         onBuilt();
         return result;
       }
@@ -15115,6 +15176,32 @@ public final class JukeboxDomain {
             }
           }
         }
+        if (seriesBuilder_ == null) {
+          if (!other.series_.isEmpty()) {
+            if (series_.isEmpty()) {
+              series_ = other.series_;
+              bitField0_ = (bitField0_ & ~0x00000002);
+            } else {
+              ensureSeriesIsMutable();
+              series_.addAll(other.series_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.series_.isEmpty()) {
+            if (seriesBuilder_.isEmpty()) {
+              seriesBuilder_.dispose();
+              seriesBuilder_ = null;
+              series_ = other.series_;
+              bitField0_ = (bitField0_ & ~0x00000002);
+              seriesBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getSeriesFieldBuilder() : null;
+            } else {
+              seriesBuilder_.addAllMessages(other.series_);
+            }
+          }
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -15122,6 +15209,12 @@ public final class JukeboxDomain {
       public final boolean isInitialized() {
         for (int i = 0; i < getMoviesCount(); i++) {
           if (!getMovies(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        for (int i = 0; i < getSeriesCount(); i++) {
+          if (!getSeries(i).isInitialized()) {
             
             return false;
           }
@@ -15156,6 +15249,12 @@ public final class JukeboxDomain {
               se.qxx.jukebox.domain.JukeboxDomain.Movie.Builder subBuilder = se.qxx.jukebox.domain.JukeboxDomain.Movie.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addMovies(subBuilder.buildPartial());
+              break;
+            }
+            case 18: {
+              se.qxx.jukebox.domain.JukeboxDomain.Series.Builder subBuilder = se.qxx.jukebox.domain.JukeboxDomain.Series.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addSeries(subBuilder.buildPartial());
               break;
             }
           }
@@ -15348,6 +15447,192 @@ public final class JukeboxDomain {
           movies_ = null;
         }
         return moviesBuilder_;
+      }
+      
+      // repeated .se.qxx.jukebox.domain.Series series = 2;
+      private java.util.List<se.qxx.jukebox.domain.JukeboxDomain.Series> series_ =
+        java.util.Collections.emptyList();
+      private void ensureSeriesIsMutable() {
+        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+          series_ = new java.util.ArrayList<se.qxx.jukebox.domain.JukeboxDomain.Series>(series_);
+          bitField0_ |= 0x00000002;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          se.qxx.jukebox.domain.JukeboxDomain.Series, se.qxx.jukebox.domain.JukeboxDomain.Series.Builder, se.qxx.jukebox.domain.JukeboxDomain.SeriesOrBuilder> seriesBuilder_;
+      
+      public java.util.List<se.qxx.jukebox.domain.JukeboxDomain.Series> getSeriesList() {
+        if (seriesBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(series_);
+        } else {
+          return seriesBuilder_.getMessageList();
+        }
+      }
+      public int getSeriesCount() {
+        if (seriesBuilder_ == null) {
+          return series_.size();
+        } else {
+          return seriesBuilder_.getCount();
+        }
+      }
+      public se.qxx.jukebox.domain.JukeboxDomain.Series getSeries(int index) {
+        if (seriesBuilder_ == null) {
+          return series_.get(index);
+        } else {
+          return seriesBuilder_.getMessage(index);
+        }
+      }
+      public Builder setSeries(
+          int index, se.qxx.jukebox.domain.JukeboxDomain.Series value) {
+        if (seriesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureSeriesIsMutable();
+          series_.set(index, value);
+          onChanged();
+        } else {
+          seriesBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      public Builder setSeries(
+          int index, se.qxx.jukebox.domain.JukeboxDomain.Series.Builder builderForValue) {
+        if (seriesBuilder_ == null) {
+          ensureSeriesIsMutable();
+          series_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          seriesBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addSeries(se.qxx.jukebox.domain.JukeboxDomain.Series value) {
+        if (seriesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureSeriesIsMutable();
+          series_.add(value);
+          onChanged();
+        } else {
+          seriesBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      public Builder addSeries(
+          int index, se.qxx.jukebox.domain.JukeboxDomain.Series value) {
+        if (seriesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureSeriesIsMutable();
+          series_.add(index, value);
+          onChanged();
+        } else {
+          seriesBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      public Builder addSeries(
+          se.qxx.jukebox.domain.JukeboxDomain.Series.Builder builderForValue) {
+        if (seriesBuilder_ == null) {
+          ensureSeriesIsMutable();
+          series_.add(builderForValue.build());
+          onChanged();
+        } else {
+          seriesBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addSeries(
+          int index, se.qxx.jukebox.domain.JukeboxDomain.Series.Builder builderForValue) {
+        if (seriesBuilder_ == null) {
+          ensureSeriesIsMutable();
+          series_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          seriesBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addAllSeries(
+          java.lang.Iterable<? extends se.qxx.jukebox.domain.JukeboxDomain.Series> values) {
+        if (seriesBuilder_ == null) {
+          ensureSeriesIsMutable();
+          super.addAll(values, series_);
+          onChanged();
+        } else {
+          seriesBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      public Builder clearSeries() {
+        if (seriesBuilder_ == null) {
+          series_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000002);
+          onChanged();
+        } else {
+          seriesBuilder_.clear();
+        }
+        return this;
+      }
+      public Builder removeSeries(int index) {
+        if (seriesBuilder_ == null) {
+          ensureSeriesIsMutable();
+          series_.remove(index);
+          onChanged();
+        } else {
+          seriesBuilder_.remove(index);
+        }
+        return this;
+      }
+      public se.qxx.jukebox.domain.JukeboxDomain.Series.Builder getSeriesBuilder(
+          int index) {
+        return getSeriesFieldBuilder().getBuilder(index);
+      }
+      public se.qxx.jukebox.domain.JukeboxDomain.SeriesOrBuilder getSeriesOrBuilder(
+          int index) {
+        if (seriesBuilder_ == null) {
+          return series_.get(index);  } else {
+          return seriesBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends se.qxx.jukebox.domain.JukeboxDomain.SeriesOrBuilder> 
+           getSeriesOrBuilderList() {
+        if (seriesBuilder_ != null) {
+          return seriesBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(series_);
+        }
+      }
+      public se.qxx.jukebox.domain.JukeboxDomain.Series.Builder addSeriesBuilder() {
+        return getSeriesFieldBuilder().addBuilder(
+            se.qxx.jukebox.domain.JukeboxDomain.Series.getDefaultInstance());
+      }
+      public se.qxx.jukebox.domain.JukeboxDomain.Series.Builder addSeriesBuilder(
+          int index) {
+        return getSeriesFieldBuilder().addBuilder(
+            index, se.qxx.jukebox.domain.JukeboxDomain.Series.getDefaultInstance());
+      }
+      public java.util.List<se.qxx.jukebox.domain.JukeboxDomain.Series.Builder> 
+           getSeriesBuilderList() {
+        return getSeriesFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          se.qxx.jukebox.domain.JukeboxDomain.Series, se.qxx.jukebox.domain.JukeboxDomain.Series.Builder, se.qxx.jukebox.domain.JukeboxDomain.SeriesOrBuilder> 
+          getSeriesFieldBuilder() {
+        if (seriesBuilder_ == null) {
+          seriesBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              se.qxx.jukebox.domain.JukeboxDomain.Series, se.qxx.jukebox.domain.JukeboxDomain.Series.Builder, se.qxx.jukebox.domain.JukeboxDomain.SeriesOrBuilder>(
+                  series_,
+                  ((bitField0_ & 0x00000002) == 0x00000002),
+                  getParentForChildren(),
+                  isClean());
+          series_ = null;
+        }
+        return seriesBuilder_;
       }
       
       // @@protoc_insertion_point(builder_scope:se.qxx.jukebox.domain.JukeboxResponseListMovies)
@@ -20191,81 +20476,82 @@ public final class JukeboxDomain {
       "tStartMovie\022\013\n\003mrl\030\001 \002(\t\022\017\n\007subFile\030\002 \001(",
       "\t\"#\n\020JukeboxFrontSeek\022\017\n\007seconds\030\001 \002(\005\"*" +
       "\n\027JukeboxFrontSetSubtitle\022\017\n\007subFile\030\001 \002" +
-      "(\t\"I\n\031JukeboxResponseListMovies\022,\n\006movie" +
-      "s\030\001 \003(\0132\034.se.qxx.jukebox.domain.Movie\".\n" +
-      "\032JukeboxResponseListPlayers\022\020\n\010hostname\030" +
-      "\001 \003(\t\"Q\n\034JukeboxResponseListSubtitles\0221\n" +
-      "\010subtitle\030\001 \003(\0132\037.se.qxx.jukebox.domain." +
-      "Subtitle\"N\n\031JukeboxResponseStartMovie\0221\n" +
-      "\010subtitle\030\001 \003(\0132\037.se.qxx.jukebox.domain." +
-      "Subtitle\"8\n\023JukeboxResponseTime\022\017\n\007secon",
-      "ds\030\001 \002(\005\022\020\n\010filename\030\002 \002(\t\"-\n\030JukeboxRes" +
-      "ponseIsPlaying\022\021\n\tisPlaying\030\001 \002(\010\"(\n\027Juk" +
-      "eboxResponseGetTitle\022\r\n\005title\030\001 \002(\t*D\n\nI" +
-      "dentifier\022\014\n\010Filename\020\001\022\023\n\017ParentDirecto" +
-      "ry\020\002\022\007\n\003NFO\020\003\022\n\n\006Parser\020\004*]\n\006Rating\022\016\n\nN" +
-      "otMatched\020\001\022\021\n\rProbableMatch\020\002\022\021\n\rPositi" +
-      "veMatch\020\003\022\016\n\nExactMatch\020\004\022\r\n\tSubsExist\020\005" +
-      "2\211\r\n\016JukeboxService\022o\n\nListMovies\022/.se.q" +
-      "xx.jukebox.domain.JukeboxRequestListMovi" +
-      "es\0320.se.qxx.jukebox.domain.JukeboxRespon",
-      "seListMovies\022^\n\013ListPlayers\022\034.se.qxx.juk" +
-      "ebox.domain.Empty\0321.se.qxx.jukebox.domai" +
-      "n.JukeboxResponseListPlayers\022o\n\nStartMov" +
-      "ie\022/.se.qxx.jukebox.domain.JukeboxReques" +
-      "tStartMovie\0320.se.qxx.jukebox.domain.Juke" +
-      "boxResponseStartMovie\022W\n\tStopMovie\022,.se." +
-      "qxx.jukebox.domain.JukeboxRequestGeneral" +
-      "\032\034.se.qxx.jukebox.domain.Empty\022X\n\nPauseM" +
-      "ovie\022,.se.qxx.jukebox.domain.JukeboxRequ" +
-      "estGeneral\032\034.se.qxx.jukebox.domain.Empty",
-      "\022O\n\004Seek\022).se.qxx.jukebox.domain.Jukebox" +
-      "RequestSeek\032\034.se.qxx.jukebox.domain.Empt" +
-      "y\022Z\n\014SwitchVRatio\022,.se.qxx.jukebox.domai" +
-      "n.JukeboxRequestGeneral\032\034.se.qxx.jukebox" +
-      ".domain.Empty\022c\n\007GetTime\022,.se.qxx.jukebo" +
-      "x.domain.JukeboxRequestGeneral\032*.se.qxx." +
-      "jukebox.domain.JukeboxResponseTime\022j\n\tis" +
-      "Playing\022,.se.qxx.jukebox.domain.JukeboxR" +
-      "equestGeneral\032/.se.qxx.jukebox.domain.Ju" +
-      "keboxResponseIsPlaying\022h\n\010GetTitle\022,.se.",
-      "qxx.jukebox.domain.JukeboxRequestGeneral" +
-      "\032..se.qxx.jukebox.domain.JukeboxResponse" +
-      "GetTitle\022^\n\020ToggleFullscreen\022,.se.qxx.ju" +
-      "kebox.domain.JukeboxRequestGeneral\032\034.se." +
-      "qxx.jukebox.domain.Empty\022W\n\tBlacklist\022,." +
-      "se.qxx.jukebox.domain.JukeboxRequestMovi" +
-      "eID\032\034.se.qxx.jukebox.domain.Empty\022[\n\rTog" +
-      "gleWatched\022,.se.qxx.jukebox.domain.Jukeb" +
-      "oxRequestMovieID\032\034.se.qxx.jukebox.domain" +
-      ".Empty\022x\n\rListSubtitles\0222.se.qxx.jukebox",
-      ".domain.JukeboxRequestListSubtitles\0323.se" +
-      ".qxx.jukebox.domain.JukeboxResponseListS" +
-      "ubtitles\022]\n\013SetSubtitle\0220.se.qxx.jukebox" +
-      ".domain.JukeboxRequestSetSubtitle\032\034.se.q" +
-      "xx.jukebox.domain.Empty\022T\n\006Wakeup\022,.se.q" +
-      "xx.jukebox.domain.JukeboxRequestGeneral\032" +
-      "\034.se.qxx.jukebox.domain.Empty\022U\n\007Suspend" +
+      "(\t\"x\n\031JukeboxResponseListMovies\022,\n\006movie" +
+      "s\030\001 \003(\0132\034.se.qxx.jukebox.domain.Movie\022-\n" +
+      "\006series\030\002 \003(\0132\035.se.qxx.jukebox.domain.Se" +
+      "ries\".\n\032JukeboxResponseListPlayers\022\020\n\010ho" +
+      "stname\030\001 \003(\t\"Q\n\034JukeboxResponseListSubti" +
+      "tles\0221\n\010subtitle\030\001 \003(\0132\037.se.qxx.jukebox." +
+      "domain.Subtitle\"N\n\031JukeboxResponseStartM" +
+      "ovie\0221\n\010subtitle\030\001 \003(\0132\037.se.qxx.jukebox.",
+      "domain.Subtitle\"8\n\023JukeboxResponseTime\022\017" +
+      "\n\007seconds\030\001 \002(\005\022\020\n\010filename\030\002 \002(\t\"-\n\030Juk" +
+      "eboxResponseIsPlaying\022\021\n\tisPlaying\030\001 \002(\010" +
+      "\"(\n\027JukeboxResponseGetTitle\022\r\n\005title\030\001 \002" +
+      "(\t*D\n\nIdentifier\022\014\n\010Filename\020\001\022\023\n\017Parent" +
+      "Directory\020\002\022\007\n\003NFO\020\003\022\n\n\006Parser\020\004*]\n\006Rati" +
+      "ng\022\016\n\nNotMatched\020\001\022\021\n\rProbableMatch\020\002\022\021\n" +
+      "\rPositiveMatch\020\003\022\016\n\nExactMatch\020\004\022\r\n\tSubs" +
+      "Exist\020\0052\211\r\n\016JukeboxService\022o\n\nListMovies" +
+      "\022/.se.qxx.jukebox.domain.JukeboxRequestL",
+      "istMovies\0320.se.qxx.jukebox.domain.Jukebo" +
+      "xResponseListMovies\022^\n\013ListPlayers\022\034.se." +
+      "qxx.jukebox.domain.Empty\0321.se.qxx.jukebo" +
+      "x.domain.JukeboxResponseListPlayers\022o\n\nS" +
+      "tartMovie\022/.se.qxx.jukebox.domain.Jukebo" +
+      "xRequestStartMovie\0320.se.qxx.jukebox.doma" +
+      "in.JukeboxResponseStartMovie\022W\n\tStopMovi" +
+      "e\022,.se.qxx.jukebox.domain.JukeboxRequest" +
+      "General\032\034.se.qxx.jukebox.domain.Empty\022X\n" +
+      "\nPauseMovie\022,.se.qxx.jukebox.domain.Juke",
+      "boxRequestGeneral\032\034.se.qxx.jukebox.domai" +
+      "n.Empty\022O\n\004Seek\022).se.qxx.jukebox.domain." +
+      "JukeboxRequestSeek\032\034.se.qxx.jukebox.doma" +
+      "in.Empty\022Z\n\014SwitchVRatio\022,.se.qxx.jukebo" +
+      "x.domain.JukeboxRequestGeneral\032\034.se.qxx." +
+      "jukebox.domain.Empty\022c\n\007GetTime\022,.se.qxx" +
+      ".jukebox.domain.JukeboxRequestGeneral\032*." +
+      "se.qxx.jukebox.domain.JukeboxResponseTim" +
+      "e\022j\n\tisPlaying\022,.se.qxx.jukebox.domain.J" +
+      "ukeboxRequestGeneral\032/.se.qxx.jukebox.do",
+      "main.JukeboxResponseIsPlaying\022h\n\010GetTitl" +
+      "e\022,.se.qxx.jukebox.domain.JukeboxRequest" +
+      "General\032..se.qxx.jukebox.domain.JukeboxR" +
+      "esponseGetTitle\022^\n\020ToggleFullscreen\022,.se" +
+      ".qxx.jukebox.domain.JukeboxRequestGenera" +
+      "l\032\034.se.qxx.jukebox.domain.Empty\022W\n\tBlack" +
+      "list\022,.se.qxx.jukebox.domain.JukeboxRequ" +
+      "estMovieID\032\034.se.qxx.jukebox.domain.Empty" +
+      "\022[\n\rToggleWatched\022,.se.qxx.jukebox.domai" +
+      "n.JukeboxRequestMovieID\032\034.se.qxx.jukebox",
+      ".domain.Empty\022x\n\rListSubtitles\0222.se.qxx." +
+      "jukebox.domain.JukeboxRequestListSubtitl" +
+      "es\0323.se.qxx.jukebox.domain.JukeboxRespon" +
+      "seListSubtitles\022]\n\013SetSubtitle\0220.se.qxx." +
+      "jukebox.domain.JukeboxRequestSetSubtitle" +
+      "\032\034.se.qxx.jukebox.domain.Empty\022T\n\006Wakeup" +
       "\022,.se.qxx.jukebox.domain.JukeboxRequestG" +
-      "eneral\032\034.se.qxx.jukebox.domain.Empty2\251\005\n" +
-      "\023JukeboxFrontService\022Y\n\nStartMovie\022-.se.",
-      "qxx.jukebox.domain.JukeboxFrontStartMovi" +
-      "e\032\034.se.qxx.jukebox.domain.Empty\022G\n\tStopM" +
-      "ovie\022\034.se.qxx.jukebox.domain.Empty\032\034.se." +
-      "qxx.jukebox.domain.Empty\022H\n\nPauseMovie\022\034" +
-      ".se.qxx.jukebox.domain.Empty\032\034.se.qxx.ju" +
-      "kebox.domain.Empty\022M\n\004Seek\022\'.se.qxx.juke" +
-      "box.domain.JukeboxFrontSeek\032\034.se.qxx.juk" +
-      "ebox.domain.Empty\022J\n\014SwitchVRatio\022\034.se.q" +
-      "xx.jukebox.domain.Empty\032\034.se.qxx.jukebox" +
-      ".domain.Empty\022S\n\007GetTime\022\034.se.qxx.jukebo",
-      "x.domain.Empty\032*.se.qxx.jukebox.domain.J" +
-      "ukeboxResponseTime\022Z\n\tisPlaying\022\034.se.qxx" +
-      ".jukebox.domain.Empty\032/.se.qxx.jukebox.d" +
-      "omain.JukeboxResponseIsPlaying\022X\n\010GetTit" +
-      "le\022\034.se.qxx.jukebox.domain.Empty\032..se.qx" +
-      "x.jukebox.domain.JukeboxResponseGetTitle" +
-      "B\032\n\025se.qxx.jukebox.domain\210\001\001"
+      "eneral\032\034.se.qxx.jukebox.domain.Empty\022U\n\007" +
+      "Suspend\022,.se.qxx.jukebox.domain.JukeboxR" +
+      "equestGeneral\032\034.se.qxx.jukebox.domain.Em",
+      "pty2\251\005\n\023JukeboxFrontService\022Y\n\nStartMovi" +
+      "e\022-.se.qxx.jukebox.domain.JukeboxFrontSt" +
+      "artMovie\032\034.se.qxx.jukebox.domain.Empty\022G" +
+      "\n\tStopMovie\022\034.se.qxx.jukebox.domain.Empt" +
+      "y\032\034.se.qxx.jukebox.domain.Empty\022H\n\nPause" +
+      "Movie\022\034.se.qxx.jukebox.domain.Empty\032\034.se" +
+      ".qxx.jukebox.domain.Empty\022M\n\004Seek\022\'.se.q" +
+      "xx.jukebox.domain.JukeboxFrontSeek\032\034.se." +
+      "qxx.jukebox.domain.Empty\022J\n\014SwitchVRatio" +
+      "\022\034.se.qxx.jukebox.domain.Empty\032\034.se.qxx.",
+      "jukebox.domain.Empty\022S\n\007GetTime\022\034.se.qxx" +
+      ".jukebox.domain.Empty\032*.se.qxx.jukebox.d" +
+      "omain.JukeboxResponseTime\022Z\n\tisPlaying\022\034" +
+      ".se.qxx.jukebox.domain.Empty\032/.se.qxx.ju" +
+      "kebox.domain.JukeboxResponseIsPlaying\022X\n" +
+      "\010GetTitle\022\034.se.qxx.jukebox.domain.Empty\032" +
+      "..se.qxx.jukebox.domain.JukeboxResponseG" +
+      "etTitleB\032\n\025se.qxx.jukebox.domain\210\001\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -20429,7 +20715,7 @@ public final class JukeboxDomain {
           internal_static_se_qxx_jukebox_domain_JukeboxResponseListMovies_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_se_qxx_jukebox_domain_JukeboxResponseListMovies_descriptor,
-              new java.lang.String[] { "Movies", },
+              new java.lang.String[] { "Movies", "Series", },
               se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies.class,
               se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies.Builder.class);
           internal_static_se_qxx_jukebox_domain_JukeboxResponseListPlayers_descriptor =
