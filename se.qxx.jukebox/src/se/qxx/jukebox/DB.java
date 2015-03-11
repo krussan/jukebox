@@ -149,8 +149,8 @@ public class DB {
 		}
 	}
 	
-	public synchronized static Series findSeries(String seriesTitle) {
-		String searchString = replaceSearchString(seriesTitle) + "%";
+	public synchronized static Series findSeries(String seriesIdentifiedTitle) {
+		String searchString = replaceSearchString(seriesIdentifiedTitle) + "%";
 		
 		Log.Debug(String.format("DB :: Series search string :: %s", searchString), LogType.MAIN);
 		 
@@ -158,7 +158,7 @@ public class DB {
 			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
 			List<Series> result =
 				db.find(JukeboxDomain.Series.getDefaultInstance(), 
-					"title", 
+					"identifiedTitle", 
 					searchString, 
 					true);
 			

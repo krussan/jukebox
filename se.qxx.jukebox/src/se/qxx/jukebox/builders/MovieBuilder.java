@@ -64,6 +64,7 @@ public abstract class MovieBuilder {
 			s = Series.newBuilder()
 					.setID(-1)
 					.setTitle(m.getTitle().trim())
+					.setIdentifiedTitle(m.getTitle().trim())
 					.setStory(m.getStory())
 					.setImage(m.getImage())
 					.addAllGenre(m.getGenreList())

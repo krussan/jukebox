@@ -52,7 +52,9 @@ message Series {
 	optional bytes image = 8;
 	repeated string genre = 9;
 	
-	optional string rating = 10;	
+	optional string rating = 10;
+	
+	optional string identifiedTitle = 11;	
 }
 
 message Season {

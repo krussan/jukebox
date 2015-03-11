@@ -74,6 +74,8 @@ x - Blacklist does not work because IMDB_ID is null for every movie
 - 2015-03-11 - ERROR - Example "House of Cards" gets new series every time! why is that?
 			- Probably because the title is changed after IMDB call. Before it searches for "House of Cards Chapter"(!)
 			  as this is part of the "non-numeric" fields after season and episode have been parsed away.
+			- Added a new field "identifiedTitle" to use for this purpose.
+
 ---------------------------------------------------------------------
 Environent Issues
 ---------------------------------------------------------------------
