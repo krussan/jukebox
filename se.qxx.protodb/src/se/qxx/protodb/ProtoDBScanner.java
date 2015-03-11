@@ -160,7 +160,8 @@ public class ProtoDBScanner {
 	
 	public String getLinkTableDeleteStatement(ProtoDBScanner other, String fieldName) {
 		String sql = "DELETE FROM " + this.getLinkTableName(other, fieldName)
-				+ " WHERE _" + this.getObjectName().toLowerCase() + "_ID = ?";
+				+ " WHERE _" + this.getObjectName().toLowerCase() + "_ID = ?"
+				+ " AND _" + other.getObjectName().toLowerCase() + "_ID = ?";;
 		return sql;
 	}
 	

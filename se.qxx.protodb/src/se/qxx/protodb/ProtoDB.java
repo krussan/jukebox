@@ -684,8 +684,12 @@ public class ProtoDB {
 			ProtoDBScanner other,
 			FieldDescriptor field,
 			Connection conn) throws SQLException {
-		PreparedStatement prep = conn.prepareStatement(scanner.getLinkTableDeleteStatement(other, field.getName()));
-		prep.setInt(1, other.getIdValue());
+		String sql = scanner.getLinkTableDeleteStatement(other, field.getName());
+		Log(sql);
+		
+		PreparedStatement prep = conn.prepareStatement(sql);
+		prep.setInt(1, scanner.getIdValue());
+		prep.setInt(2, other.getIdValue());
 		
 		prep.execute();
 	}

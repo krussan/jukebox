@@ -59,11 +59,15 @@ x - Blacklist does not work because IMDB_ID is null for every movie
 - 2015-03-08		- FIXED - yep. Error in protoDB that removed all links from the source object. Correct would be to remove objects with the target ID.
 			- 	- Also a bit of confusion with new objects after imdbIdentifier has run and after mediaIndentifier. We need to get the new objects
 				- after these have been created before each new step.
-- 2015-03-09 - ERROR - We appear to get duplicates in the episodes. This results in flooding of the database.
+- 2015-03-09 - FIXED - We appear to get duplicates in the episodes. This results in flooding of the database.
 - 2015-03-11		- Looks ok in database? Error on retreive?
 			- No. Media gets duplicated. Not episode/season/series hierarchy!
 			- Media is ALSO correct in DB. must be a serious protoDB issue?
 			- No. Link table EpsiodeMedia_Media is incorrect! Was this due to the change that we erased the "otherID"? (as of 2015-03-08)
+- 2015-03-11		- Yeah. It was the deleteLinkObject in protoDB. Modified to only remove one (!) row.
+- 2015-03-11 - ISSUE - story on series (season/episode as well?) does not get the "full summary" but gets the hyperlink. Haven't we fixed
+			this for movies?
+
 - 2015-03-09 - WORK IN PROGRESS - Android app have now been fitted with series response object. Need to create the GUI accordingly.
 
 ---------------------------------------------------------------------
