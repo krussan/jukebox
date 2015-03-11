@@ -40,6 +40,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 
 public class JukeboxFragment extends ListFragment implements
 	ModelUpdatedEventListener, OnItemClickListener, OnItemLongClickListener, OnClickListener {
+		
 	private int position;
 	private MovieLayoutAdapter _jukeboxMovieLayoutAdapter;
 	private SeriesLayoutAdapter _seriesLayoutAdapter;
@@ -48,8 +49,11 @@ public class JukeboxFragment extends ListFragment implements
 
 		@Override
 		public void run() {
-			_jukeboxMovieLayoutAdapter.notifyDataSetChanged();
-//			_seriesLayoutAdapter.notifyDataSetChanged();
+			if (_jukeboxMovieLayoutAdapter != null)
+				_jukeboxMovieLayoutAdapter.notifyDataSetChanged();
+			
+			if (_seriesLayoutAdapter != null)
+				_seriesLayoutAdapter.notifyDataSetChanged();
 		}
 	};
 
@@ -59,7 +63,7 @@ public class JukeboxFragment extends ListFragment implements
 		Bundle b = new Bundle();
 		JukeboxFragment mf = new JukeboxFragment();
 		
-		b.putInt("pos", position);
+		b.putInt("position", position);
 		mf.setArguments(b);
 		
 		return mf;
@@ -71,7 +75,7 @@ public class JukeboxFragment extends ListFragment implements
 		super.onCreate(savedInstanceState);
 		Bundle b = getArguments();
 		if (b != null) {
-			this.position = b.getInt("position") ;
+			this.position = b.getInt("position");
 		}
 	}	
 	
@@ -118,9 +122,14 @@ public class JukeboxFragment extends ListFragment implements
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
-		Model.get().setCurrentMovie(pos);
-		Intent i = new Intent(arg1.getContext(), FlipperActivity.class);
-		startActivity(i);
+		if (this.position == 0) {
+			Model.get().setCurrentMovie(pos);
+			Intent i = new Intent(arg1.getContext(), FlipperActivity.class);
+			startActivity(i);
+		}
+		else {
+			Toast.makeText(this.getActivity(), "Should display the new series!", Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	@Override

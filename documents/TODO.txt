@@ -67,9 +67,13 @@ x - Blacklist does not work because IMDB_ID is null for every movie
 - 2015-03-11		- Yeah. It was the deleteLinkObject in protoDB. Modified to only remove one (!) row.
 - 2015-03-11 - ISSUE - story on series (season/episode as well?) does not get the "full summary" but gets the hyperlink. Haven't we fixed
 			this for movies?
-
+- 2015-03-11 - ISSUE - we have some problems with episodes that have the episode title in them. These are identified as a new series:
+			- example: Homeland Drone Queen WEB DL
 - 2015-03-09 - WORK IN PROGRESS - Android app have now been fitted with series response object. Need to create the GUI accordingly.
-
+- 2015-03-11 - ISSUE - What if we have the same episodes but with two different filenames/paths??
+- 2015-03-11 - ERROR - Example "House of Cards" gets new series every time! why is that?
+			- Probably because the title is changed after IMDB call. Before it searches for "House of Cards Chapter"(!)
+			  as this is part of the "non-numeric" fields after season and episode have been parsed away.
 ---------------------------------------------------------------------
 Environent Issues
 ---------------------------------------------------------------------
