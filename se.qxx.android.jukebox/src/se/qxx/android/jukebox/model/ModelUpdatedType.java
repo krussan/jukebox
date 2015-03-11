@@ -4,5 +4,6 @@ public enum ModelUpdatedType {
 	Movies,
 	Players,
 	Subs,
-	CurrentSub
+	CurrentSub,
+	Series
 }

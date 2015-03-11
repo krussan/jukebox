@@ -29,6 +29,7 @@ public class Connector {
 					if (response != null) {
 						Model.get().clearMovies();
 						Model.get().addAllMovies(response.getMoviesList());
+						Model.get().addAllSeries(response.getSeriesList());
 						Model.get().setInitialized(true);
 					}
 				}

@@ -25,7 +25,7 @@ public class TestSeriesFinder {
 		if (args.length > 0) {
 			
 			try {
-				ProtoDB db = new ProtoDB("jukebox_proto.db");
+				ProtoDB db = new ProtoDB("jukebox_proto.db", "protodb_test.log");
 				
 				Series s = null;
 				

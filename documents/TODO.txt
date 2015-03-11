@@ -60,6 +60,10 @@ x - Blacklist does not work because IMDB_ID is null for every movie
 			- 	- Also a bit of confusion with new objects after imdbIdentifier has run and after mediaIndentifier. We need to get the new objects
 				- after these have been created before each new step.
 - 2015-03-09 - ERROR - We appear to get duplicates in the episodes. This results in flooding of the database.
+- 2015-03-11		- Looks ok in database? Error on retreive?
+			- No. Media gets duplicated. Not episode/season/series hierarchy!
+			- Media is ALSO correct in DB. must be a serious protoDB issue?
+			- No. Link table EpsiodeMedia_Media is incorrect! Was this due to the change that we erased the "otherID"? (as of 2015-03-08)
 - 2015-03-09 - WORK IN PROGRESS - Android app have now been fitted with series response object. Need to create the GUI accordingly.
 
 ---------------------------------------------------------------------

@@ -94,6 +94,12 @@ public class Model {
 		fireModelUpdatedEvent(ModelUpdatedType.Movies);
 	}
 	
+	public void addAllSeries(List<Series> series) {
+		_series.addAll(series);
+		sortSeries(); 
+		fireModelUpdatedEvent(ModelUpdatedType.Series);
+	}
+	
 	public void clearMovies() {
 		_movies.clear();
 		fireModelUpdatedEvent(ModelUpdatedType.Movies);
@@ -159,6 +165,16 @@ public class Model {
 		Collections.sort(_movies, new Comparator<Movie>() {
 			@Override
 			public int compare(Movie lhs, Movie rhs) {
+				
+				return lhs.getTitle().compareTo(rhs.getTitle());
+			}
+		});
+	}
+	
+	public void sortSeries() {
+		Collections.sort(_series, new Comparator<Series>() {
+			@Override
+			public int compare(Series lhs, Series rhs) {
 				
 				return lhs.getTitle().compareTo(rhs.getTitle());
 			}

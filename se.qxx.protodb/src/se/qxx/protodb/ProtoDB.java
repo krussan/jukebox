@@ -6,7 +6,10 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -30,6 +33,7 @@ import com.google.protobuf.Descriptors.FieldDescriptor;
 
 public class ProtoDB {
 	private String connectionString = "jdbc:sqlite:jukebox.db";
+	private String logfile = "";
 	
 	//---------------------------------------------------------------------------------
 	//----------------------------------------------------------------------  PROPS
@@ -54,6 +58,11 @@ public class ProtoDB {
 	
 	public ProtoDB(String databaseFilename) {
 		this.setDatabase(databaseFilename);
+	}	
+
+	public ProtoDB(String databaseFilename, String logFilename) {
+		this.setDatabase(databaseFilename);
+		this.setLogfile(logFilename);
 	}	
 
 //	protected List<String> getColumnList(Connection conn) throws SQLException {
@@ -109,74 +118,6 @@ public class ProtoDB {
 		return prep.executeQuery();
 	}
 
-//	/***
-//	 * Creates a list of table columns mapped to a java type
-//	 * @param table
-//	 * @param conn
-//	 * @throws SQLException
-//	 */
-//	protected void setupColumns(String table, Connection conn) throws SQLException {
-//		ResultSet rs = retreiveColumns(table, conn);
-//		
-//		Map<String, Type> map = new HashMap<String, Type>();
-//		List<String> ret = new ArrayList<String>();
-//
-//		while (rs.next()) {
-//			ret.add(rs.getString("name"));
-//			
-//			String columnName = rs.getString("name");
-//			String type = rs.getString("type");
-//			
-//			Class<?> c = String.class;
-//			if (StringUtils.equalsIgnoreCase(type, "BOOL"))
-//				c = Boolean.class;
-//			if (StringUtils.equalsIgnoreCase(type, "BOOLEAN"))
-//				c = Boolean.class;			
-//			else if (StringUtils.equalsIgnoreCase(type, "DATE"))
-//				c = Date.class;
-//			else if (StringUtils.equalsIgnoreCase(type, "DATETIME"))
-//				c = Date.class;			
-//			else if (StringUtils.equalsIgnoreCase(type, "INT"))
-//				c = Integer.class;
-//			else if (StringUtils.equalsIgnoreCase(type, "INTEGER"))
-//				c = Integer.class;
-//			else if (StringUtils.equalsIgnoreCase(type, "TINYINT"))
-//				c = Integer.class;
-//			else if (StringUtils.equalsIgnoreCase(type, "SMALLINT"))
-//				c = Integer.class;
-//			else if (StringUtils.equalsIgnoreCase(type, "MEDIUMINT"))
-//				c = Integer.class;
-//			else if (StringUtils.equalsIgnoreCase(type, "BIGINT"))
-//				c = BigInteger.class;
-//			else if (StringUtils.equalsIgnoreCase(type, "UNSIGNED BIG INT"))
-//				c = BigInteger.class;
-//			else if (StringUtils.equalsIgnoreCase(type, "INT2"))
-//				c = Integer.class;
-//			else if (StringUtils.equalsIgnoreCase(type, "INT8"))
-//				c = Integer.class;	
-//			else if (StringUtils.equalsIgnoreCase(type, "BLOB"))
-//				c = Byte.class;
-//			else if (StringUtils.equalsIgnoreCase(type, "REAL"))
-//				c = Float.class;
-//			else if (StringUtils.equalsIgnoreCase(type, "DOUBLE"))
-//				c = Double.class;
-//			else if (StringUtils.equalsIgnoreCase(type, "DOUBLE PRECISION"))
-//				c = Double.class;
-//			else if (StringUtils.equalsIgnoreCase(type, "FLOAT"))
-//				c = Float.class;
-//			else if (StringUtils.equalsIgnoreCase(type, "NUMERIC"))
-//				c = Float.class;
-//			else if (StringUtils.startsWithIgnoreCase(type, "NUMERIC"))
-//				c = Float.class;
-//			else if (StringUtils.startsWithIgnoreCase(type, "DECIMAL"))
-//				c = Float.class;
-//						
-//			map.put(columnName, c);
-//		}
-//	
-////		this.setColumnMap(map);
-////		this.setColumns(ret);
-//	}
 
 	//---------------------------------------------------------------------------------
 	//----------------------------------------------------------------------  INIT
@@ -212,27 +153,6 @@ public class ProtoDB {
 	private void setDatabase(String databaseFilename) {
 		this.setConnectionString(String.format("jdbc:sqlite:%s", databaseFilename));
 	}
-	
-//	private Builder<?> mapResultSet(Builder<?> b, ResultSet rs, Connection conn) throws SQLException {
-//		List<FieldDescriptor> fields = b.getDescriptorForType().getFields();
-//
-//		for(FieldDescriptor field : fields) {
-//			String fieldName = field.getName();
-//			String fieldNameRep = fieldName.replace("_", "").replace(".","");
-//			List<String> columnList = this.getColumnList(conn);
-//			for (String s : columnList) {
-//				String sRep = s.replace("_", "").replace(".","");
-//				if (StringUtils.equalsIgnoreCase(sRep, fieldNameRep)) {
-//					b.setField(field, rs.getObject(fieldName));
-//					break;
-//				}
-//					
-//			}
-//		}		
-//		
-//		return b;
-//	}
-//	
 
 	//---------------------------------------------------------------------------------
 	//----------------------------------------------------------------------  SETUP
@@ -355,12 +275,16 @@ public class ProtoDB {
 			String sql = "CREATE TABLE " + tableName + "(" 
 					+ "ID INTEGER PRIMARY KEY AUTOINCREMENT,"
 					+ "value TEXT NOT NULL)";
+
+			Log(sql);
 			
 			PreparedStatement prep = conn.prepareStatement(sql);
 			prep.execute();
 			
 			for (EnumValueDescriptor value : fieldName.getValues()) {
 				sql = "INSERT INTO " + tableName + " (value) VALUES (?)";
+				Log(sql);
+				
 				prep = conn.prepareStatement(sql);
 				prep.setString(1, value.getName());
 				
@@ -375,6 +299,8 @@ public class ProtoDB {
 	}
 
 	private void executeStatement(String sql, Connection conn) throws SQLException {
+		Log(sql);
+		
 		PreparedStatement prep = conn.prepareStatement(sql);
 		prep.execute();			
 	}
@@ -425,18 +351,25 @@ public class ProtoDB {
 	private <T extends Message> T get(int id, T instance, Connection conn) throws SQLException{
 		Builder b = instance.newBuilderForType();
 		
+		
 		//DynamicMessage d = DynamicMessage.getDefaultInstance(desc);
 		ProtoDBScanner scanner = new ProtoDBScanner(instance);
-		
+		Log(String.format("Populating object %s :: %s", scanner.getObjectName(), id));
 		
 		// populate list of sub objects
 		for (FieldDescriptor field : scanner.getRepeatedObjectFields()) {
+			Log(String.format("Populating repeated object field :: %s", field.getName()));
 			getLinkObject(id, b, scanner, field, conn);
 		}
 
 		// populate list of basic types
 		for (FieldDescriptor field : scanner.getRepeatedBasicFields()) {
-			PreparedStatement prep = conn.prepareStatement(scanner.getBasicLinkTableSelectStatement(field));
+			Log(String.format("Populating repeated basic field :: %s", field.getName()));
+			
+			String sql = scanner.getBasicLinkTableSelectStatement(field);
+			Log(sql);
+			
+			PreparedStatement prep = conn.prepareStatement(sql);
 			prep.setInt(1, id);
 			
 			ResultSet rs = prep.executeQuery();
@@ -447,12 +380,11 @@ public class ProtoDB {
 			rs.close();
 		}			
 		
+		String sql = scanner.getSelectStatement(id);
+		Log(sql);
 		
-		PreparedStatement prep = conn.prepareStatement(
-				scanner.getSelectStatement(id));
-		
+		PreparedStatement prep = conn.prepareStatement(sql);
 		prep.setInt(1, id);
-		
 		b.setField(scanner.getIdField(), id);
 		
 		ResultSet rs = prep.executeQuery();
@@ -461,7 +393,10 @@ public class ProtoDB {
 		while(rs.next()) {
 			// populate object fields
 			for (FieldDescriptor field : scanner.getObjectFields()) {
+				Log(String.format("Populating object fields :: %s", field.getName()));
+				
 				int otherID = rs.getInt(scanner.getObjectFieldName(field));
+				Log(String.format("OtherID :: %s", otherID));
 				
 				if (field.getJavaType() == JavaType.MESSAGE) {
 					DynamicMessage innerInstance = DynamicMessage.getDefaultInstance(field.getMessageType());
@@ -476,6 +411,8 @@ public class ProtoDB {
 			// populate blobs
 			for (FieldDescriptor field : scanner.getBlobFields()) {
 				int otherID = rs.getInt(scanner.getObjectFieldName(field));
+				Log(String.format("Populating blob id :: %s", otherID));
+				
 				byte[] data = getBlob(otherID, conn);
 				
 				if (data != null)
@@ -484,6 +421,8 @@ public class ProtoDB {
 			
 			// populate basic fields			
 			for (FieldDescriptor field : scanner.getBasicFields()) {
+				Log(String.format("Populating basic field :: %s", field.getName()));
+				
 				if (field.getName().equalsIgnoreCase("ID")) {
 					b.setField(field, id);
 				}
@@ -556,16 +495,23 @@ public class ProtoDB {
 		
 			if (field.isRepeated()) {
 				// get select statement for link table
-				PreparedStatement prep = conn.prepareStatement(scanner.getLinkTableSelectStatement(other, field.getName()));
+				String sql = scanner.getLinkTableSelectStatement(other, field.getName());
+				Log(sql);
+				
+				PreparedStatement prep = conn.prepareStatement(sql);
 				prep.setInt(1, id);
 				
 				ResultSet rs = prep.executeQuery();
 				
+				int c = 0;
 				while(rs.next()) {
 					// get sub objects
 					DynamicMessage otherMsg = get(rs.getInt("ID"), mg, conn);
 					b.addRepeatedField(field, otherMsg);
+					c++;
 				}
+				
+				Log(String.format("Number of records retreived :: %s", c));
 				
 				rs.close();
 			}
@@ -725,7 +671,10 @@ public class ProtoDB {
 	}
 	
 	private void deleteBasicLinkObject(ProtoDBScanner scanner, FieldDescriptor field, Connection conn) throws SQLException {
-		PreparedStatement prep = conn.prepareStatement(scanner.getBasicLinkTableDeleteStatement(field));
+		String sql = scanner.getBasicLinkTableDeleteStatement(field);
+		Log(sql);
+		
+		PreparedStatement prep = conn.prepareStatement(sql);
 		prep.setInt(1, scanner.getIdValue());
 		
 		prep.execute();
@@ -751,6 +700,8 @@ public class ProtoDB {
 	private void deleteBlobs(ProtoDBScanner scanner, Connection conn) throws SQLException {
 		for (FieldDescriptor field : scanner.getBlobFields()) {
 			String sql = "DELETE FROM BlobData WHERE ID IN (SELECT " + scanner.getObjectFieldName(field) + " FROM " + scanner.getObjectName() + " WHERE ID = ?)";
+			Log(sql);
+			
 			PreparedStatement prep = conn.prepareStatement(sql);
 			prep.setInt(1, scanner.getIdValue());
 			
@@ -809,9 +760,12 @@ public class ProtoDB {
 			throws SQLException {
 		
 		
+		String sql = scanner.getBasicLinkInsertStatement(field);
+		Log(sql);
+		
 		PreparedStatement prep = 
 			scanner.compileLinkBasicArguments(
-				scanner.getBasicLinkInsertStatement(field)
+					  sql
 					, thisID
 					, field.getJavaType()
 					, value
@@ -1199,6 +1153,57 @@ public class ProtoDB {
 		
 		return b;
 		
+	}
+
+	//---------------------------------------------------------------------------------
+	//----------------------------------------------------------------------  LOG
+	//---------------------------------------------------------------------------------
+
+	private void Log(String message) {
+		Log(message, null);
+	}
+	
+	private void Log(String message, Exception e) {
+		logMessage(getLogString(message));
+	}
+	
+
+	private void printStackTrace(Exception e) {
+		for (StackTraceElement ste : e.getStackTrace()) {
+			logMessage(String.format("%s\n", ste));
+		}
+	}
+
+	private void logMessage(String logMessage) {
+		if (!StringUtils.isEmpty(this.getLogfile())) {
+			try {
+				java.io.FileWriter fs = new java.io.FileWriter(this.getLogfile(), true);
+				fs.write(String.format("%s\n", logMessage));
+				fs.close();
+			}
+			catch (Exception ex) {
+				System.out.println("---Exception occured in logging class---");
+				ex.printStackTrace();
+			}
+		}
+	}
+
+	public String getLogfile() {
+		return logfile;
+	}
+
+	public void setLogfile(String logfile) {
+		this.logfile = logfile;
+	}
+
+	private static String getLogString(String msg) {
+		return String.format("%s - [%s] - %s", getDateString(), Thread.currentThread().getId(), msg);
+	}
+
+	public static String getDateString() {
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	    Date date = new Date();
+	    return dateFormat.format(date);
 	}
 
 }

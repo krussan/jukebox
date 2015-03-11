@@ -167,7 +167,7 @@ public class MovieIdentifier implements Runnable {
 				season,
 				episode,
 				newMedia);
-		}
+		} 
 		else {
 			Log.Debug("MovieIdentifier :: Series found. Searching for season..", LogType.FIND);
 //			Log.Debug(String.format("MovieIdentifier :: dbSeries nr of episodes :: %s", DomainUtil.findSeason(dbSeries, season).getEpisodeCount()), LogType.FIND);
@@ -178,14 +178,15 @@ public class MovieIdentifier implements Runnable {
 				Log.Debug("MovieIdentifier :: Episode already exist in DB. Exiting ... ", LogType.FIND);
 				return;
 			}
-			
-			dbSeries = mergeSeries(dbSeries, series, season, episode);
-			
-			getInfoAndSaveSeries(
-				dbSeries, 
-				season,
-				episode,
-				newMedia);
+			else {			
+				dbSeries = mergeSeries(dbSeries, series, season, episode);
+				
+				getInfoAndSaveSeries(
+					dbSeries, 
+					season,
+					episode,
+					newMedia);
+			}
 		}
 	}
 
