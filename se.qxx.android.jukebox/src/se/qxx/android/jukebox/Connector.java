@@ -28,6 +28,7 @@ public class Connector {
 					//TODO: if repsonse is null probably the server is down..
 					if (response != null) {
 						Model.get().clearMovies();
+						Model.get().clearSeries();
 						Model.get().addAllMovies(response.getMoviesList());
 						Model.get().addAllSeries(response.getSeriesList());
 						Model.get().setInitialized(true);

@@ -105,6 +105,11 @@ public class Model {
 		fireModelUpdatedEvent(ModelUpdatedType.Movies);
 	}
 	
+	public void clearSeries() {
+		_series.clear();
+		fireModelUpdatedEvent(ModelUpdatedType.Series);
+	}
+	
 	public Movie getMovie(int position) {
 		return _movies.get(position);
 	}

@@ -69,12 +69,16 @@ x - Blacklist does not work because IMDB_ID is null for every movie
 			this for movies?
 - 2015-03-11 - ISSUE - we have some problems with episodes that have the episode title in them. These are identified as a new series:
 			- example: Homeland Drone Queen WEB DL
+			- example: Sons of Anarchy The Mad King
+			- we should be able to fix this (somewhat) by identifying the series by the name preceeding the s01e01 tag.
+			- will not work for all, but this seems to be the most used pattern.
 - 2015-03-09 - WORK IN PROGRESS - Android app have now been fitted with series response object. Need to create the GUI accordingly.
 - 2015-03-11 - ISSUE - What if we have the same episodes but with two different filenames/paths??
-- 2015-03-11 - ERROR - Example "House of Cards" gets new series every time! why is that?
+- 2015-03-11 - FIXED - Example "House of Cards" gets new series every time! why is that?
 			- Probably because the title is changed after IMDB call. Before it searches for "House of Cards Chapter"(!)
 			  as this is part of the "non-numeric" fields after season and episode have been parsed away.
 			- Added a new field "identifiedTitle" to use for this purpose.
+
 
 ---------------------------------------------------------------------
 Environent Issues
