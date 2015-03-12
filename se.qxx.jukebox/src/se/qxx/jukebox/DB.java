@@ -175,14 +175,14 @@ public class DB {
 		}
 	}
 
+	//---------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------ Get
+	//---------------------------------------------------------------------------------------
+
 	public synchronized static Movie getMovie(int id) {
 		try {
 			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
-			Movie m = db.get(id, Movie.getDefaultInstance());
-			
-			if (m!=null)
-				return Movie.parseFrom(m.toByteString());
-		
+			return db.get(id, Movie.getDefaultInstance());
 		} catch (Exception e) {
 			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
 			
@@ -192,6 +192,42 @@ public class DB {
 		return null;
 	}
 
+	public synchronized static Series getSeries(int id) {
+		try {
+			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			return db.get(id, Series.getDefaultInstance());
+		} catch (Exception e) {
+			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
+		}
+		
+		return null;
+	}
+
+	public synchronized static Season getSeason(int id) {
+		try {
+			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			return db.get(id, Season.getDefaultInstance());
+		} catch (Exception e) {
+			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
+		}
+		
+		return null;
+	}
+
+	public synchronized static Episode getEpisode(int id) {
+		try {
+			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			return db.get(id, Episode.getDefaultInstance());
+		} catch (Exception e) {
+			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
+		}
+		
+		return null;
+	}
+
+	//---------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------ Save
+	//---------------------------------------------------------------------------------------
 
 	public synchronized static Movie save(Movie m) {
 		try {
@@ -244,6 +280,65 @@ public class DB {
 			return null;
 		}
 	}	
+
+	//---------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------ Delete
+	//---------------------------------------------------------------------------------------
+	public synchronized static void delete(Movie m) throws ClassNotFoundException, SQLException {
+		try {
+			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			
+			db.delete(m);
+		}
+		catch (ClassNotFoundException | SQLException e) {
+			Log.Error("Failed to delete movie in DB", Log.LogType.MAIN, e);
+			
+			throw e;
+		}		
+	}
+	
+	public synchronized static void delete(Series s) throws ClassNotFoundException, SQLException {
+		try {
+			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			
+			db.delete(s);
+		}
+		catch (ClassNotFoundException | SQLException e) {
+			Log.Error("Failed to delete series in DB", Log.LogType.MAIN, e);
+			
+			throw e;
+		}			
+	}
+
+	public synchronized static void delete(Season sn) throws ClassNotFoundException, SQLException {
+		try {
+			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			
+			db.delete(sn);
+		}
+		catch (ClassNotFoundException | SQLException e) {
+			Log.Error("Failed to delete season in DB", Log.LogType.MAIN, e);
+			
+			throw e;
+		}			
+	}
+
+	public synchronized static void delete(Episode ep) throws ClassNotFoundException, SQLException {
+		try {
+			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			
+			db.delete(ep);
+		}
+		catch (ClassNotFoundException | SQLException e) {
+			Log.Error("Failed to delete episode in DB", Log.LogType.MAIN, e);
+			
+			throw e;
+		}				
+	}
+
+	//---------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------ Watched
+	//---------------------------------------------------------------------------------------
 	
 	public synchronized static void toggleWatched(Movie m) {
 		try {
@@ -256,264 +351,11 @@ public class DB {
 			Log.Error("Failed to store movie to DB", Log.LogType.MAIN, e);
 		}
 
-	}
-		
-	//---------------------------------------------------------------------------------------
-	//------------------------------------------------------------------------ Images
-	//---------------------------------------------------------------------------------------
-//	private synchronized static void addMovieImage(int movieID, ImageType imageType, byte[] data, Connection conn) throws SQLException {
-//		addImage(movieID, "MovieImage", "_movie_ID", imageType, data, conn);
-//	}
-	
-//	private synchronized static void addSeasonImage(int seasonID, ImageType imageType, byte[] data, Connection conn) throws SQLException {
-//		addImage(seasonID, "SeasonImage", "_season_ID", imageType, data, conn);
-//	}
-	
-//	private synchronized static void addImage(int ID, String tableName, String id_column, ImageType imageType, byte[] data, Connection conn) throws SQLException {
-//		if (data.length > 0) {
-//			PreparedStatement prep = conn.prepareStatement(
-//				" INSERT INTO BlobData (data) VALUES (?)");
-//			
-//			prep.setBytes(1, data);
-//			prep.execute();
-//			
-//			int id = getIdentity(conn);
-//			
-//			prep = conn.prepareStatement(
-//				" INSERT INTO " + tableName + " (" + id_column + ", _blob_id, imageType) VALUES (?, ?, ?)");
-//			
-//			prep.setInt(1, ID);
-//			prep.setInt(2, id);
-//			prep.setString(3, imageType.toString());
-//					
-//			prep.execute();
-//		}
-//	}
-	
-//	private synchronized static byte[] getMovieImage(int movieID, ImageType imageType, Connection conn) throws SQLException {
-//		return getImageData(movieID, "MovieImage", "_movie_ID", imageType, conn);
-//	}
-	
-//	private synchronized static byte[] getSeasonImage(int seasonID, ImageType imageType, Connection conn) throws SQLException {
-//		return getImageData(seasonID, "SeasonImage", "_season_ID", imageType, conn);
-//	}
-	
-//	private synchronized static byte[] getImageData(int ID, String tableName, String id_column, ImageType imageType, Connection conn) throws SQLException {
-//		byte[] data = null;
-//		PreparedStatement prep = conn.prepareStatement(
-//		   " SELECT B.data" +
-//		   " FROM " + tableName + " A" +
-//		   " INNER JOIN BlobData B ON A._blob_id = B.id " +
-//		   " WHERE A." + id_column + " = ? AND A.imageType = ?");
-//		
-//		prep.setInt(1, ID);
-//		prep.setString(2, imageType.toString());
-//		
-//		ResultSet rs = prep.executeQuery();
-//		
-//		if (rs.next())
-//			data = rs.getBytes("data");
-//		
-//		return data;
-//	}	
+	}		
 
 	//---------------------------------------------------------------------------------------
-	//------------------------------------------------------------------------ Genres
+	//------------------------------------------------------------------------ Subtitles
 	//---------------------------------------------------------------------------------------
-	
-//	private synchronized static int addGenre(String genre, Connection conn) throws SQLException {
-//		PreparedStatement prep = conn.prepareStatement(
-//				"INSERT INTO Genre (genreName) VALUES (?)");
-//		
-//		prep.setString(1, genre);
-//		
-//		prep.execute();
-//		int i = getIdentity(conn);
-//
-//		return i;
-//	}
-//	
-//	protected synchronized static void addMovieGenres(List<String> genres, int movieID, Connection conn) throws SQLException {
-//		addGenres(movieID, "MovieGenre", "_movie_ID", genres, conn);
-//	}
-//
-//	protected synchronized static void addSeasonGenres(List<String> genres, int seasonID, Connection conn) throws SQLException {
-//		addGenres(seasonID, "SeasonGenre", "_season_ID", genres, conn);
-//	}
-//	
-//	protected synchronized static void addGenres(int ID, String tableName, String id_column, List<String> genres, Connection conn) throws SQLException {
-//		PreparedStatement prep;
-//		for(String genre : genres) {
-//			int genreID = getGenreID(genre, conn);
-//			if (genreID == -1)
-//				genreID = addGenre(genre, conn);
-//			
-//			String statement = "INSERT INTO " + tableName + " (" + id_column + ", _genre_ID) VALUES (?, ?)"; 
-//			prep = conn.prepareStatement(statement);
-//			prep.setInt(1, ID);
-//			prep.setInt(2, genreID);
-//			
-//			prep.execute();
-//		}
-//	}	
-//	
-//	private synchronized static int getGenreID(String genre, Connection conn) throws SQLException {
-//		PreparedStatement prep = conn.prepareStatement(
-//				"SELECT ID, genreName FROM Genre WHERE genreName = ?");
-//		
-//		prep.setString(1, genre);
-//		
-//		ResultSet rs = prep.executeQuery();
-//		
-//		if (rs.next())
-//			return rs.getInt("ID");
-//		else
-//			return -1;
-//	}
-//	
-//	private synchronized static List<String> getGenres(int movieID, Connection conn) throws SQLException {
-//		List<String> list = new ArrayList<String>();
-//		
-//		PreparedStatement prep = conn.prepareStatement(
-//			" SELECT G.genreName FROM MovieGenre MG" +
-//			" INNER JOIN Genre G ON MG._genre_ID = G.ID" +
-//			" WHERE MG._movie_ID = ?");
-//		
-//		prep.setInt(1, movieID);
-//		
-//		ResultSet rs = prep.executeQuery();
-//		
-//		while (rs.next()) 
-//			list.add(rs.getString("genreName"));
-//		
-//		return list;
-//	}
-	
-/*	private static List<String> getSeasonGenres(int seasonid, Connection conn) throws SQLException {
-		List<String> list = new ArrayList<String>();
-		
-		PreparedStatement prep = conn.prepareStatement(
-			" SELECT G.genreName " +
-		    " FROM SeasonGenre SG" +
-			" INNER JOIN Genre G ON SG._genre_ID = G.ID" +
-			" WHERE SG._season_ID = ?");
-		
-		prep.setInt(1, seasonid);
-		
-		ResultSet rs = prep.executeQuery();
-		
-		while (rs.next()) 
-			list.add(rs.getString("genreName"));
-		
-		return list;
-	}
-*/	
-
-	//---------------------------------------------------------------------------------------
-	//------------------------------------------------------------------------ Media
-	//---------------------------------------------------------------------------------------
-//	public synchronized static Media getMediaById(int mediaID) {
-//		Connection conn = null;
-//		String statement = 
-//				" SELECT ID, _movie_id, idx, filename, filepath, metaDuration, metaFramerate" +
-//				" FROM Media" +
-//				" WHERE ID = ?";
-//		try {
-//			conn = DB.initialize();
-//
-//			PreparedStatement prep = conn.prepareStatement(statement);
-//			prep.setInt(1, mediaID);
-//				
-//			ResultSet rs = prep.executeQuery();
-//			if (rs.next())
-//				return extractMedia(rs, conn);
-//			else
-//				return null;
-//
-//		} catch (Exception e) {
-//			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
-//			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
-//			
-//			return null;
-//		}finally {
-//			DB.disconnect(conn);
-//		}
-//	}
-//	
-//	private synchronized static List<Media> getMedia(int movieID, Connection conn) throws SQLException {
-//		List<Media> list = new ArrayList<Media>();
-//		
-//		PreparedStatement prep = conn.prepareStatement(
-//			" SELECT MD.ID, MD._movie_ID, MD.filename, MD.filepath, MD.idx, MD.metaDuration, MD.metaFramerate " +
-//			" FROM Media MD" +
-//			" WHERE MD._movie_ID = ?" +
-//			" ORDER BY idx");
-//		
-//		prep.setInt(1, movieID);
-//		ResultSet rs = prep.executeQuery();
-//				
-//		while (rs.next()) {
-//			Media md = extractMedia(rs, conn);
-//
-//			list.add(md);
-//		}
-//		
-//		return list;
-//	}
-//	
-//	public synchronized static int addMedia(int movieid, Media media) {
-//		Connection conn = null;
-//		
-//		try {
-//			conn = DB.initialize();
-//
-//			return addMedia(movieid, media, conn);
-//		}
-//		catch (Exception e) {
-//			Log.Error("Failed to retrieve movie subtitles from DB", Log.LogType.MAIN, e);
-//			
-//		}finally {
-//			DB.disconnect(conn);
-//		}
-//
-//		return -1;
-//	}
-//
-//	protected synchronized static int addMedia(int movieid, Media media, Connection conn)
-//			throws SQLException {
-//		String statement = "INSERT INTO Media (_movie_ID, idx, filepath, filename, metaDuration, metaFramerate) VALUES (?, ?, ?, ?, ?, ?)"; 
-//		PreparedStatement prep = conn.prepareStatement(statement);
-//		prep.setInt(1, movieid);
-//		prep.setInt(2, media.getIndex());
-//		prep.setString(3, media.getFilepath());
-//		prep.setString(4, media.getFilename());
-//		prep.setInt(5, media.getMetaDuration());
-//		prep.setString(6, media.getMetaFramerate());
-//		
-//		prep.execute();
-//		
-//		int i = getIdentity(conn);
-//		
-//		return i;
-//	}
-//
-//	protected synchronized static Media extractMedia(ResultSet rs, Connection conn)
-//			throws SQLException {
-//		int mediaid = rs.getInt("ID");
-//		
-//		List<Subtitle> subs = getSubtitles(mediaid, conn);
-//					
-//		Media md = se.qxx.jukebox.domain.JukeboxDomain.Media.newBuilder()
-//				.setID(mediaid)
-//				.setIndex(rs.getInt("idx"))
-//				.setFilename(rs.getString("filename"))
-//				.setFilepath(rs.getString("filepath"))
-//				.setMetaDuration(rs.getInt("metaDuration"))
-//				.setMetaFramerate(rs.getString("metaFramerate"))
-//				.addAllSubs(subs)
-//				.build();
-//		return md;
-//	}
 
 	public synchronized static Movie addMovieToSubtitleQueue(Movie m) {
 		try {

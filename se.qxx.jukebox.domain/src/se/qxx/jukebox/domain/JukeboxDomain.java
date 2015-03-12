@@ -161,6 +161,81 @@ public final class JukeboxDomain {
     // @@protoc_insertion_point(enum_scope:se.qxx.jukebox.domain.Rating)
   }
   
+  public enum RequestType
+      implements com.google.protobuf.ProtocolMessageEnum {
+    TypeMovie(0, 1),
+    TypeSeries(1, 2),
+    TypeSeason(2, 3),
+    TypeEpisode(3, 4),
+    ;
+    
+    public static final int TypeMovie_VALUE = 1;
+    public static final int TypeSeries_VALUE = 2;
+    public static final int TypeSeason_VALUE = 3;
+    public static final int TypeEpisode_VALUE = 4;
+    
+    
+    public final int getNumber() { return value; }
+    
+    public static RequestType valueOf(int value) {
+      switch (value) {
+        case 1: return TypeMovie;
+        case 2: return TypeSeries;
+        case 3: return TypeSeason;
+        case 4: return TypeEpisode;
+        default: return null;
+      }
+    }
+    
+    public static com.google.protobuf.Internal.EnumLiteMap<RequestType>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static com.google.protobuf.Internal.EnumLiteMap<RequestType>
+        internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<RequestType>() {
+            public RequestType findValueByNumber(int number) {
+              return RequestType.valueOf(number);
+            }
+          };
+    
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      return getDescriptor().getValues().get(index);
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return se.qxx.jukebox.domain.JukeboxDomain.getDescriptor().getEnumTypes().get(2);
+    }
+    
+    private static final RequestType[] VALUES = {
+      TypeMovie, TypeSeries, TypeSeason, TypeEpisode, 
+    };
+    
+    public static RequestType valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      return VALUES[desc.getIndex()];
+    }
+    
+    private final int index;
+    private final int value;
+    
+    private RequestType(int index, int value) {
+      this.index = index;
+      this.value = value;
+    }
+    
+    // @@protoc_insertion_point(enum_scope:se.qxx.jukebox.domain.RequestType)
+  }
+  
   public interface VersionOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
@@ -11181,61 +11256,80 @@ public final class JukeboxDomain {
     // @@protoc_insertion_point(class_scope:se.qxx.jukebox.domain.JukeboxRequestGeneral)
   }
   
-  public interface JukeboxRequestMovieIDOrBuilder
+  public interface JukeboxRequestIDOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // required int32 movieId = 1;
-    boolean hasMovieId();
-    int getMovieId();
+    // required int32 id = 1;
+    boolean hasId();
+    int getId();
+    
+    // required .se.qxx.jukebox.domain.RequestType requestType = 2;
+    boolean hasRequestType();
+    se.qxx.jukebox.domain.JukeboxDomain.RequestType getRequestType();
   }
-  public static final class JukeboxRequestMovieID extends
+  public static final class JukeboxRequestID extends
       com.google.protobuf.GeneratedMessage
-      implements JukeboxRequestMovieIDOrBuilder {
-    // Use JukeboxRequestMovieID.newBuilder() to construct.
-    private JukeboxRequestMovieID(Builder builder) {
+      implements JukeboxRequestIDOrBuilder {
+    // Use JukeboxRequestID.newBuilder() to construct.
+    private JukeboxRequestID(Builder builder) {
       super(builder);
     }
-    private JukeboxRequestMovieID(boolean noInit) {}
+    private JukeboxRequestID(boolean noInit) {}
     
-    private static final JukeboxRequestMovieID defaultInstance;
-    public static JukeboxRequestMovieID getDefaultInstance() {
+    private static final JukeboxRequestID defaultInstance;
+    public static JukeboxRequestID getDefaultInstance() {
       return defaultInstance;
     }
     
-    public JukeboxRequestMovieID getDefaultInstanceForType() {
+    public JukeboxRequestID getDefaultInstanceForType() {
       return defaultInstance;
     }
     
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return se.qxx.jukebox.domain.JukeboxDomain.internal_static_se_qxx_jukebox_domain_JukeboxRequestMovieID_descriptor;
+      return se.qxx.jukebox.domain.JukeboxDomain.internal_static_se_qxx_jukebox_domain_JukeboxRequestID_descriptor;
     }
     
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return se.qxx.jukebox.domain.JukeboxDomain.internal_static_se_qxx_jukebox_domain_JukeboxRequestMovieID_fieldAccessorTable;
+      return se.qxx.jukebox.domain.JukeboxDomain.internal_static_se_qxx_jukebox_domain_JukeboxRequestID_fieldAccessorTable;
     }
     
     private int bitField0_;
-    // required int32 movieId = 1;
-    public static final int MOVIEID_FIELD_NUMBER = 1;
-    private int movieId_;
-    public boolean hasMovieId() {
+    // required int32 id = 1;
+    public static final int ID_FIELD_NUMBER = 1;
+    private int id_;
+    public boolean hasId() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
-    public int getMovieId() {
-      return movieId_;
+    public int getId() {
+      return id_;
+    }
+    
+    // required .se.qxx.jukebox.domain.RequestType requestType = 2;
+    public static final int REQUESTTYPE_FIELD_NUMBER = 2;
+    private se.qxx.jukebox.domain.JukeboxDomain.RequestType requestType_;
+    public boolean hasRequestType() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public se.qxx.jukebox.domain.JukeboxDomain.RequestType getRequestType() {
+      return requestType_;
     }
     
     private void initFields() {
-      movieId_ = 0;
+      id_ = 0;
+      requestType_ = se.qxx.jukebox.domain.JukeboxDomain.RequestType.TypeMovie;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
       
-      if (!hasMovieId()) {
+      if (!hasId()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasRequestType()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -11247,7 +11341,10 @@ public final class JukeboxDomain {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeInt32(1, movieId_);
+        output.writeInt32(1, id_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeEnum(2, requestType_.getNumber());
       }
       getUnknownFields().writeTo(output);
     }
@@ -11260,7 +11357,11 @@ public final class JukeboxDomain {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(1, movieId_);
+          .computeInt32Size(1, id_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(2, requestType_.getNumber());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -11274,41 +11375,41 @@ public final class JukeboxDomain {
       return super.writeReplace();
     }
     
-    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID parseFrom(
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return newBuilder().mergeFrom(data).buildParsed();
     }
-    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID parseFrom(
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return newBuilder().mergeFrom(data, extensionRegistry)
                .buildParsed();
     }
-    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID parseFrom(byte[] data)
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return newBuilder().mergeFrom(data).buildParsed();
     }
-    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID parseFrom(
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return newBuilder().mergeFrom(data, extensionRegistry)
                .buildParsed();
     }
-    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID parseFrom(java.io.InputStream input)
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return newBuilder().mergeFrom(input).buildParsed();
     }
-    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID parseFrom(
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return newBuilder().mergeFrom(input, extensionRegistry)
                .buildParsed();
     }
-    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID parseDelimitedFrom(java.io.InputStream input)
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       Builder builder = newBuilder();
       if (builder.mergeDelimitedFrom(input)) {
@@ -11317,7 +11418,7 @@ public final class JukeboxDomain {
         return null;
       }
     }
-    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID parseDelimitedFrom(
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -11328,12 +11429,12 @@ public final class JukeboxDomain {
         return null;
       }
     }
-    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID parseFrom(
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return newBuilder().mergeFrom(input).buildParsed();
     }
-    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID parseFrom(
+    public static se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -11343,7 +11444,7 @@ public final class JukeboxDomain {
     
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID prototype) {
+    public static Builder newBuilder(se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
@@ -11356,18 +11457,18 @@ public final class JukeboxDomain {
     }
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieIDOrBuilder {
+       implements se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestIDOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return se.qxx.jukebox.domain.JukeboxDomain.internal_static_se_qxx_jukebox_domain_JukeboxRequestMovieID_descriptor;
+        return se.qxx.jukebox.domain.JukeboxDomain.internal_static_se_qxx_jukebox_domain_JukeboxRequestID_descriptor;
       }
       
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return se.qxx.jukebox.domain.JukeboxDomain.internal_static_se_qxx_jukebox_domain_JukeboxRequestMovieID_fieldAccessorTable;
+        return se.qxx.jukebox.domain.JukeboxDomain.internal_static_se_qxx_jukebox_domain_JukeboxRequestID_fieldAccessorTable;
       }
       
-      // Construct using se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID.newBuilder()
+      // Construct using se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -11386,8 +11487,10 @@ public final class JukeboxDomain {
       
       public Builder clear() {
         super.clear();
-        movieId_ = 0;
+        id_ = 0;
         bitField0_ = (bitField0_ & ~0x00000001);
+        requestType_ = se.qxx.jukebox.domain.JukeboxDomain.RequestType.TypeMovie;
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
       
@@ -11397,24 +11500,24 @@ public final class JukeboxDomain {
       
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID.getDescriptor();
+        return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID.getDescriptor();
       }
       
-      public se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID getDefaultInstanceForType() {
-        return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID.getDefaultInstance();
+      public se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID getDefaultInstanceForType() {
+        return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID.getDefaultInstance();
       }
       
-      public se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID build() {
-        se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID result = buildPartial();
+      public se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID build() {
+        se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
       
-      private se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID buildParsed()
+      private se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID buildParsed()
           throws com.google.protobuf.InvalidProtocolBufferException {
-        se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID result = buildPartial();
+        se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(
             result).asInvalidProtocolBufferException();
@@ -11422,39 +11525,50 @@ public final class JukeboxDomain {
         return result;
       }
       
-      public se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID buildPartial() {
-        se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID result = new se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID(this);
+      public se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID buildPartial() {
+        se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID result = new se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
           to_bitField0_ |= 0x00000001;
         }
-        result.movieId_ = movieId_;
+        result.id_ = id_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.requestType_ = requestType_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
       
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID) {
-          return mergeFrom((se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID)other);
+        if (other instanceof se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID) {
+          return mergeFrom((se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
       
-      public Builder mergeFrom(se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID other) {
-        if (other == se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID.getDefaultInstance()) return this;
-        if (other.hasMovieId()) {
-          setMovieId(other.getMovieId());
+      public Builder mergeFrom(se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID other) {
+        if (other == se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID.getDefaultInstance()) return this;
+        if (other.hasId()) {
+          setId(other.getId());
+        }
+        if (other.hasRequestType()) {
+          setRequestType(other.getRequestType());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
       
       public final boolean isInitialized() {
-        if (!hasMovieId()) {
+        if (!hasId()) {
+          
+          return false;
+        }
+        if (!hasRequestType()) {
           
           return false;
         }
@@ -11486,7 +11600,18 @@ public final class JukeboxDomain {
             }
             case 8: {
               bitField0_ |= 0x00000001;
-              movieId_ = input.readInt32();
+              id_ = input.readInt32();
+              break;
+            }
+            case 16: {
+              int rawValue = input.readEnum();
+              se.qxx.jukebox.domain.JukeboxDomain.RequestType value = se.qxx.jukebox.domain.JukeboxDomain.RequestType.valueOf(rawValue);
+              if (value == null) {
+                unknownFields.mergeVarintField(2, rawValue);
+              } else {
+                bitField0_ |= 0x00000002;
+                requestType_ = value;
+              }
               break;
             }
           }
@@ -11495,36 +11620,60 @@ public final class JukeboxDomain {
       
       private int bitField0_;
       
-      // required int32 movieId = 1;
-      private int movieId_ ;
-      public boolean hasMovieId() {
+      // required int32 id = 1;
+      private int id_ ;
+      public boolean hasId() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
-      public int getMovieId() {
-        return movieId_;
+      public int getId() {
+        return id_;
       }
-      public Builder setMovieId(int value) {
+      public Builder setId(int value) {
         bitField0_ |= 0x00000001;
-        movieId_ = value;
+        id_ = value;
         onChanged();
         return this;
       }
-      public Builder clearMovieId() {
+      public Builder clearId() {
         bitField0_ = (bitField0_ & ~0x00000001);
-        movieId_ = 0;
+        id_ = 0;
         onChanged();
         return this;
       }
       
-      // @@protoc_insertion_point(builder_scope:se.qxx.jukebox.domain.JukeboxRequestMovieID)
+      // required .se.qxx.jukebox.domain.RequestType requestType = 2;
+      private se.qxx.jukebox.domain.JukeboxDomain.RequestType requestType_ = se.qxx.jukebox.domain.JukeboxDomain.RequestType.TypeMovie;
+      public boolean hasRequestType() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public se.qxx.jukebox.domain.JukeboxDomain.RequestType getRequestType() {
+        return requestType_;
+      }
+      public Builder setRequestType(se.qxx.jukebox.domain.JukeboxDomain.RequestType value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000002;
+        requestType_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearRequestType() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        requestType_ = se.qxx.jukebox.domain.JukeboxDomain.RequestType.TypeMovie;
+        onChanged();
+        return this;
+      }
+      
+      // @@protoc_insertion_point(builder_scope:se.qxx.jukebox.domain.JukeboxRequestID)
     }
     
     static {
-      defaultInstance = new JukeboxRequestMovieID(true);
+      defaultInstance = new JukeboxRequestID(true);
       defaultInstance.initFields();
     }
     
-    // @@protoc_insertion_point(class_scope:se.qxx.jukebox.domain.JukeboxRequestMovieID)
+    // @@protoc_insertion_point(class_scope:se.qxx.jukebox.domain.JukeboxRequestID)
   }
   
   public interface JukeboxRequestListMoviesOrBuilder
@@ -18494,12 +18643,17 @@ public final class JukeboxDomain {
       
       public abstract void blacklist(
           com.google.protobuf.RpcController controller,
-          se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID request,
+          se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID request,
           com.google.protobuf.RpcCallback<se.qxx.jukebox.domain.JukeboxDomain.Empty> done);
       
       public abstract void toggleWatched(
           com.google.protobuf.RpcController controller,
-          se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID request,
+          se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID request,
+          com.google.protobuf.RpcCallback<se.qxx.jukebox.domain.JukeboxDomain.Empty> done);
+      
+      public abstract void reIdentify(
+          com.google.protobuf.RpcController controller,
+          se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID request,
           com.google.protobuf.RpcCallback<se.qxx.jukebox.domain.JukeboxDomain.Empty> done);
       
       public abstract void listSubtitles(
@@ -18618,7 +18772,7 @@ public final class JukeboxDomain {
         @java.lang.Override
         public  void blacklist(
             com.google.protobuf.RpcController controller,
-            se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID request,
+            se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID request,
             com.google.protobuf.RpcCallback<se.qxx.jukebox.domain.JukeboxDomain.Empty> done) {
           impl.blacklist(controller, request, done);
         }
@@ -18626,9 +18780,17 @@ public final class JukeboxDomain {
         @java.lang.Override
         public  void toggleWatched(
             com.google.protobuf.RpcController controller,
-            se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID request,
+            se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID request,
             com.google.protobuf.RpcCallback<se.qxx.jukebox.domain.JukeboxDomain.Empty> done) {
           impl.toggleWatched(controller, request, done);
+        }
+        
+        @java.lang.Override
+        public  void reIdentify(
+            com.google.protobuf.RpcController controller,
+            se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID request,
+            com.google.protobuf.RpcCallback<se.qxx.jukebox.domain.JukeboxDomain.Empty> done) {
+          impl.reIdentify(controller, request, done);
         }
         
         @java.lang.Override
@@ -18708,16 +18870,18 @@ public final class JukeboxDomain {
             case 10:
               return impl.toggleFullscreen(controller, (se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGeneral)request);
             case 11:
-              return impl.blacklist(controller, (se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID)request);
+              return impl.blacklist(controller, (se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID)request);
             case 12:
-              return impl.toggleWatched(controller, (se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID)request);
+              return impl.toggleWatched(controller, (se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID)request);
             case 13:
-              return impl.listSubtitles(controller, (se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListSubtitles)request);
+              return impl.reIdentify(controller, (se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID)request);
             case 14:
-              return impl.setSubtitle(controller, (se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSetSubtitle)request);
+              return impl.listSubtitles(controller, (se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListSubtitles)request);
             case 15:
-              return impl.wakeup(controller, (se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGeneral)request);
+              return impl.setSubtitle(controller, (se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSetSubtitle)request);
             case 16:
+              return impl.wakeup(controller, (se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGeneral)request);
+            case 17:
               return impl.suspend(controller, (se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGeneral)request);
             default:
               throw new java.lang.AssertionError("Can't get here.");
@@ -18756,16 +18920,18 @@ public final class JukeboxDomain {
             case 10:
               return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGeneral.getDefaultInstance();
             case 11:
-              return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID.getDefaultInstance();
+              return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID.getDefaultInstance();
             case 12:
-              return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID.getDefaultInstance();
+              return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID.getDefaultInstance();
             case 13:
-              return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListSubtitles.getDefaultInstance();
+              return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID.getDefaultInstance();
             case 14:
-              return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSetSubtitle.getDefaultInstance();
+              return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListSubtitles.getDefaultInstance();
             case 15:
-              return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGeneral.getDefaultInstance();
+              return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSetSubtitle.getDefaultInstance();
             case 16:
+              return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGeneral.getDefaultInstance();
+            case 17:
               return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGeneral.getDefaultInstance();
             default:
               throw new java.lang.AssertionError("Can't get here.");
@@ -18808,12 +18974,14 @@ public final class JukeboxDomain {
             case 12:
               return se.qxx.jukebox.domain.JukeboxDomain.Empty.getDefaultInstance();
             case 13:
-              return se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListSubtitles.getDefaultInstance();
-            case 14:
               return se.qxx.jukebox.domain.JukeboxDomain.Empty.getDefaultInstance();
+            case 14:
+              return se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListSubtitles.getDefaultInstance();
             case 15:
               return se.qxx.jukebox.domain.JukeboxDomain.Empty.getDefaultInstance();
             case 16:
+              return se.qxx.jukebox.domain.JukeboxDomain.Empty.getDefaultInstance();
+            case 17:
               return se.qxx.jukebox.domain.JukeboxDomain.Empty.getDefaultInstance();
             default:
               throw new java.lang.AssertionError("Can't get here.");
@@ -18880,12 +19048,17 @@ public final class JukeboxDomain {
     
     public abstract void blacklist(
         com.google.protobuf.RpcController controller,
-        se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID request,
+        se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID request,
         com.google.protobuf.RpcCallback<se.qxx.jukebox.domain.JukeboxDomain.Empty> done);
     
     public abstract void toggleWatched(
         com.google.protobuf.RpcController controller,
-        se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID request,
+        se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID request,
+        com.google.protobuf.RpcCallback<se.qxx.jukebox.domain.JukeboxDomain.Empty> done);
+    
+    public abstract void reIdentify(
+        com.google.protobuf.RpcController controller,
+        se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID request,
         com.google.protobuf.RpcCallback<se.qxx.jukebox.domain.JukeboxDomain.Empty> done);
     
     public abstract void listSubtitles(
@@ -18986,31 +19159,36 @@ public final class JukeboxDomain {
               done));
           return;
         case 11:
-          this.blacklist(controller, (se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID)request,
+          this.blacklist(controller, (se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID)request,
             com.google.protobuf.RpcUtil.<se.qxx.jukebox.domain.JukeboxDomain.Empty>specializeCallback(
               done));
           return;
         case 12:
-          this.toggleWatched(controller, (se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID)request,
+          this.toggleWatched(controller, (se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID)request,
             com.google.protobuf.RpcUtil.<se.qxx.jukebox.domain.JukeboxDomain.Empty>specializeCallback(
               done));
           return;
         case 13:
+          this.reIdentify(controller, (se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID)request,
+            com.google.protobuf.RpcUtil.<se.qxx.jukebox.domain.JukeboxDomain.Empty>specializeCallback(
+              done));
+          return;
+        case 14:
           this.listSubtitles(controller, (se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListSubtitles)request,
             com.google.protobuf.RpcUtil.<se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListSubtitles>specializeCallback(
               done));
           return;
-        case 14:
+        case 15:
           this.setSubtitle(controller, (se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSetSubtitle)request,
             com.google.protobuf.RpcUtil.<se.qxx.jukebox.domain.JukeboxDomain.Empty>specializeCallback(
               done));
           return;
-        case 15:
+        case 16:
           this.wakeup(controller, (se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGeneral)request,
             com.google.protobuf.RpcUtil.<se.qxx.jukebox.domain.JukeboxDomain.Empty>specializeCallback(
               done));
           return;
-        case 16:
+        case 17:
           this.suspend(controller, (se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGeneral)request,
             com.google.protobuf.RpcUtil.<se.qxx.jukebox.domain.JukeboxDomain.Empty>specializeCallback(
               done));
@@ -19052,16 +19230,18 @@ public final class JukeboxDomain {
         case 10:
           return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGeneral.getDefaultInstance();
         case 11:
-          return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID.getDefaultInstance();
+          return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID.getDefaultInstance();
         case 12:
-          return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID.getDefaultInstance();
+          return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID.getDefaultInstance();
         case 13:
-          return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListSubtitles.getDefaultInstance();
+          return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID.getDefaultInstance();
         case 14:
-          return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSetSubtitle.getDefaultInstance();
+          return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListSubtitles.getDefaultInstance();
         case 15:
-          return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGeneral.getDefaultInstance();
+          return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSetSubtitle.getDefaultInstance();
         case 16:
+          return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGeneral.getDefaultInstance();
+        case 17:
           return se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGeneral.getDefaultInstance();
         default:
           throw new java.lang.AssertionError("Can't get here.");
@@ -19104,12 +19284,14 @@ public final class JukeboxDomain {
         case 12:
           return se.qxx.jukebox.domain.JukeboxDomain.Empty.getDefaultInstance();
         case 13:
-          return se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListSubtitles.getDefaultInstance();
-        case 14:
           return se.qxx.jukebox.domain.JukeboxDomain.Empty.getDefaultInstance();
+        case 14:
+          return se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListSubtitles.getDefaultInstance();
         case 15:
           return se.qxx.jukebox.domain.JukeboxDomain.Empty.getDefaultInstance();
         case 16:
+          return se.qxx.jukebox.domain.JukeboxDomain.Empty.getDefaultInstance();
+        case 17:
           return se.qxx.jukebox.domain.JukeboxDomain.Empty.getDefaultInstance();
         default:
           throw new java.lang.AssertionError("Can't get here.");
@@ -19299,7 +19481,7 @@ public final class JukeboxDomain {
       
       public  void blacklist(
           com.google.protobuf.RpcController controller,
-          se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID request,
+          se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID request,
           com.google.protobuf.RpcCallback<se.qxx.jukebox.domain.JukeboxDomain.Empty> done) {
         channel.callMethod(
           getDescriptor().getMethods().get(11),
@@ -19314,10 +19496,25 @@ public final class JukeboxDomain {
       
       public  void toggleWatched(
           com.google.protobuf.RpcController controller,
-          se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID request,
+          se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID request,
           com.google.protobuf.RpcCallback<se.qxx.jukebox.domain.JukeboxDomain.Empty> done) {
         channel.callMethod(
           getDescriptor().getMethods().get(12),
+          controller,
+          request,
+          se.qxx.jukebox.domain.JukeboxDomain.Empty.getDefaultInstance(),
+          com.google.protobuf.RpcUtil.generalizeCallback(
+            done,
+            se.qxx.jukebox.domain.JukeboxDomain.Empty.class,
+            se.qxx.jukebox.domain.JukeboxDomain.Empty.getDefaultInstance()));
+      }
+      
+      public  void reIdentify(
+          com.google.protobuf.RpcController controller,
+          se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID request,
+          com.google.protobuf.RpcCallback<se.qxx.jukebox.domain.JukeboxDomain.Empty> done) {
+        channel.callMethod(
+          getDescriptor().getMethods().get(13),
           controller,
           request,
           se.qxx.jukebox.domain.JukeboxDomain.Empty.getDefaultInstance(),
@@ -19332,7 +19529,7 @@ public final class JukeboxDomain {
           se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListSubtitles request,
           com.google.protobuf.RpcCallback<se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListSubtitles> done) {
         channel.callMethod(
-          getDescriptor().getMethods().get(13),
+          getDescriptor().getMethods().get(14),
           controller,
           request,
           se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListSubtitles.getDefaultInstance(),
@@ -19347,7 +19544,7 @@ public final class JukeboxDomain {
           se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSetSubtitle request,
           com.google.protobuf.RpcCallback<se.qxx.jukebox.domain.JukeboxDomain.Empty> done) {
         channel.callMethod(
-          getDescriptor().getMethods().get(14),
+          getDescriptor().getMethods().get(15),
           controller,
           request,
           se.qxx.jukebox.domain.JukeboxDomain.Empty.getDefaultInstance(),
@@ -19362,7 +19559,7 @@ public final class JukeboxDomain {
           se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGeneral request,
           com.google.protobuf.RpcCallback<se.qxx.jukebox.domain.JukeboxDomain.Empty> done) {
         channel.callMethod(
-          getDescriptor().getMethods().get(15),
+          getDescriptor().getMethods().get(16),
           controller,
           request,
           se.qxx.jukebox.domain.JukeboxDomain.Empty.getDefaultInstance(),
@@ -19377,7 +19574,7 @@ public final class JukeboxDomain {
           se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGeneral request,
           com.google.protobuf.RpcCallback<se.qxx.jukebox.domain.JukeboxDomain.Empty> done) {
         channel.callMethod(
-          getDescriptor().getMethods().get(16),
+          getDescriptor().getMethods().get(17),
           controller,
           request,
           se.qxx.jukebox.domain.JukeboxDomain.Empty.getDefaultInstance(),
@@ -19451,12 +19648,17 @@ public final class JukeboxDomain {
       
       public se.qxx.jukebox.domain.JukeboxDomain.Empty blacklist(
           com.google.protobuf.RpcController controller,
-          se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID request)
+          se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID request)
           throws com.google.protobuf.ServiceException;
       
       public se.qxx.jukebox.domain.JukeboxDomain.Empty toggleWatched(
           com.google.protobuf.RpcController controller,
-          se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID request)
+          se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID request)
+          throws com.google.protobuf.ServiceException;
+      
+      public se.qxx.jukebox.domain.JukeboxDomain.Empty reIdentify(
+          com.google.protobuf.RpcController controller,
+          se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID request)
           throws com.google.protobuf.ServiceException;
       
       public se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListSubtitles listSubtitles(
@@ -19621,7 +19823,7 @@ public final class JukeboxDomain {
       
       public se.qxx.jukebox.domain.JukeboxDomain.Empty blacklist(
           com.google.protobuf.RpcController controller,
-          se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID request)
+          se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID request)
           throws com.google.protobuf.ServiceException {
         return (se.qxx.jukebox.domain.JukeboxDomain.Empty) channel.callBlockingMethod(
           getDescriptor().getMethods().get(11),
@@ -19633,10 +19835,22 @@ public final class JukeboxDomain {
       
       public se.qxx.jukebox.domain.JukeboxDomain.Empty toggleWatched(
           com.google.protobuf.RpcController controller,
-          se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID request)
+          se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID request)
           throws com.google.protobuf.ServiceException {
         return (se.qxx.jukebox.domain.JukeboxDomain.Empty) channel.callBlockingMethod(
           getDescriptor().getMethods().get(12),
+          controller,
+          request,
+          se.qxx.jukebox.domain.JukeboxDomain.Empty.getDefaultInstance());
+      }
+      
+      
+      public se.qxx.jukebox.domain.JukeboxDomain.Empty reIdentify(
+          com.google.protobuf.RpcController controller,
+          se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID request)
+          throws com.google.protobuf.ServiceException {
+        return (se.qxx.jukebox.domain.JukeboxDomain.Empty) channel.callBlockingMethod(
+          getDescriptor().getMethods().get(13),
           controller,
           request,
           se.qxx.jukebox.domain.JukeboxDomain.Empty.getDefaultInstance());
@@ -19648,7 +19862,7 @@ public final class JukeboxDomain {
           se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListSubtitles request)
           throws com.google.protobuf.ServiceException {
         return (se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListSubtitles) channel.callBlockingMethod(
-          getDescriptor().getMethods().get(13),
+          getDescriptor().getMethods().get(14),
           controller,
           request,
           se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListSubtitles.getDefaultInstance());
@@ -19660,7 +19874,7 @@ public final class JukeboxDomain {
           se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSetSubtitle request)
           throws com.google.protobuf.ServiceException {
         return (se.qxx.jukebox.domain.JukeboxDomain.Empty) channel.callBlockingMethod(
-          getDescriptor().getMethods().get(14),
+          getDescriptor().getMethods().get(15),
           controller,
           request,
           se.qxx.jukebox.domain.JukeboxDomain.Empty.getDefaultInstance());
@@ -19672,7 +19886,7 @@ public final class JukeboxDomain {
           se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGeneral request)
           throws com.google.protobuf.ServiceException {
         return (se.qxx.jukebox.domain.JukeboxDomain.Empty) channel.callBlockingMethod(
-          getDescriptor().getMethods().get(15),
+          getDescriptor().getMethods().get(16),
           controller,
           request,
           se.qxx.jukebox.domain.JukeboxDomain.Empty.getDefaultInstance());
@@ -19684,7 +19898,7 @@ public final class JukeboxDomain {
           se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGeneral request)
           throws com.google.protobuf.ServiceException {
         return (se.qxx.jukebox.domain.JukeboxDomain.Empty) channel.callBlockingMethod(
-          getDescriptor().getMethods().get(16),
+          getDescriptor().getMethods().get(17),
           controller,
           request,
           se.qxx.jukebox.domain.JukeboxDomain.Empty.getDefaultInstance());
@@ -20420,10 +20634,10 @@ public final class JukeboxDomain {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_se_qxx_jukebox_domain_JukeboxRequestGeneral_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_se_qxx_jukebox_domain_JukeboxRequestMovieID_descriptor;
+    internal_static_se_qxx_jukebox_domain_JukeboxRequestID_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_se_qxx_jukebox_domain_JukeboxRequestMovieID_fieldAccessorTable;
+      internal_static_se_qxx_jukebox_domain_JukeboxRequestID_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
     internal_static_se_qxx_jukebox_domain_JukeboxRequestListMovies_descriptor;
   private static
@@ -20558,95 +20772,100 @@ public final class JukeboxDomain {
       "n\030\005 \001(\005\022\025\n\rmetaFramerate\030\006 \001(\t\022-\n\004subs\030\007" +
       " \003(\0132\037.se.qxx.jukebox.domain.Subtitle\"\007\n" +
       "\005Empty\"+\n\025JukeboxRequestGeneral\022\022\n\nplaye",
-      "rName\030\001 \002(\t\"(\n\025JukeboxRequestMovieID\022\017\n\007" +
-      "movieId\030\001 \002(\005\"0\n\030JukeboxRequestListMovie" +
-      "s\022\024\n\014searchString\030\002 \001(\t\"?\n\030JukeboxReques" +
-      "tStartMovie\022\017\n\007movieId\030\001 \002(\005\022\022\n\nplayerNa" +
-      "me\030\002 \001(\t\"9\n\022JukeboxRequestSeek\022\022\n\nplayer" +
-      "Name\030\001 \002(\t\022\017\n\007seconds\030\002 \002(\005\".\n\033JukeboxRe" +
-      "questListSubtitles\022\017\n\007mediaId\030\001 \002(\005\"]\n\031J" +
-      "ukeboxRequestSetSubtitle\022\022\n\nplayerName\030\001" +
-      " \002(\t\022\017\n\007mediaID\030\002 \002(\005\022\033\n\023subtitleDescrip" +
-      "tion\030\003 \002(\t\"6\n\026JukeboxFrontStartMovie\022\013\n\003",
-      "mrl\030\001 \002(\t\022\017\n\007subFile\030\002 \001(\t\"#\n\020JukeboxFro" +
-      "ntSeek\022\017\n\007seconds\030\001 \002(\005\"*\n\027JukeboxFrontS" +
-      "etSubtitle\022\017\n\007subFile\030\001 \002(\t\"x\n\031JukeboxRe" +
-      "sponseListMovies\022,\n\006movies\030\001 \003(\0132\034.se.qx" +
-      "x.jukebox.domain.Movie\022-\n\006series\030\002 \003(\0132\035" +
-      ".se.qxx.jukebox.domain.Series\".\n\032Jukebox" +
-      "ResponseListPlayers\022\020\n\010hostname\030\001 \003(\t\"Q\n" +
-      "\034JukeboxResponseListSubtitles\0221\n\010subtitl" +
-      "e\030\001 \003(\0132\037.se.qxx.jukebox.domain.Subtitle" +
-      "\"N\n\031JukeboxResponseStartMovie\0221\n\010subtitl",
-      "e\030\001 \003(\0132\037.se.qxx.jukebox.domain.Subtitle" +
-      "\"8\n\023JukeboxResponseTime\022\017\n\007seconds\030\001 \002(\005" +
-      "\022\020\n\010filename\030\002 \002(\t\"-\n\030JukeboxResponseIsP" +
-      "laying\022\021\n\tisPlaying\030\001 \002(\010\"(\n\027JukeboxResp" +
-      "onseGetTitle\022\r\n\005title\030\001 \002(\t*D\n\nIdentifie" +
-      "r\022\014\n\010Filename\020\001\022\023\n\017ParentDirectory\020\002\022\007\n\003" +
-      "NFO\020\003\022\n\n\006Parser\020\004*]\n\006Rating\022\016\n\nNotMatche" +
-      "d\020\001\022\021\n\rProbableMatch\020\002\022\021\n\rPositiveMatch\020" +
-      "\003\022\016\n\nExactMatch\020\004\022\r\n\tSubsExist\020\0052\211\r\n\016Juk" +
-      "eboxService\022o\n\nListMovies\022/.se.qxx.jukeb",
-      "ox.domain.JukeboxRequestListMovies\0320.se." +
-      "qxx.jukebox.domain.JukeboxResponseListMo" +
-      "vies\022^\n\013ListPlayers\022\034.se.qxx.jukebox.dom" +
-      "ain.Empty\0321.se.qxx.jukebox.domain.Jukebo" +
-      "xResponseListPlayers\022o\n\nStartMovie\022/.se." +
-      "qxx.jukebox.domain.JukeboxRequestStartMo" +
-      "vie\0320.se.qxx.jukebox.domain.JukeboxRespo" +
-      "nseStartMovie\022W\n\tStopMovie\022,.se.qxx.juke" +
+      "rName\030\001 \002(\t\"W\n\020JukeboxRequestID\022\n\n\002id\030\001 " +
+      "\002(\005\0227\n\013requestType\030\002 \002(\0162\".se.qxx.jukebo" +
+      "x.domain.RequestType\"0\n\030JukeboxRequestLi" +
+      "stMovies\022\024\n\014searchString\030\002 \001(\t\"?\n\030Jukebo" +
+      "xRequestStartMovie\022\017\n\007movieId\030\001 \002(\005\022\022\n\np" +
+      "layerName\030\002 \001(\t\"9\n\022JukeboxRequestSeek\022\022\n" +
+      "\nplayerName\030\001 \002(\t\022\017\n\007seconds\030\002 \002(\005\".\n\033Ju" +
+      "keboxRequestListSubtitles\022\017\n\007mediaId\030\001 \002" +
+      "(\005\"]\n\031JukeboxRequestSetSubtitle\022\022\n\nplaye" +
+      "rName\030\001 \002(\t\022\017\n\007mediaID\030\002 \002(\005\022\033\n\023subtitle",
+      "Description\030\003 \002(\t\"6\n\026JukeboxFrontStartMo" +
+      "vie\022\013\n\003mrl\030\001 \002(\t\022\017\n\007subFile\030\002 \001(\t\"#\n\020Juk" +
+      "eboxFrontSeek\022\017\n\007seconds\030\001 \002(\005\"*\n\027Jukebo" +
+      "xFrontSetSubtitle\022\017\n\007subFile\030\001 \002(\t\"x\n\031Ju" +
+      "keboxResponseListMovies\022,\n\006movies\030\001 \003(\0132" +
+      "\034.se.qxx.jukebox.domain.Movie\022-\n\006series\030" +
+      "\002 \003(\0132\035.se.qxx.jukebox.domain.Series\".\n\032" +
+      "JukeboxResponseListPlayers\022\020\n\010hostname\030\001" +
+      " \003(\t\"Q\n\034JukeboxResponseListSubtitles\0221\n\010" +
+      "subtitle\030\001 \003(\0132\037.se.qxx.jukebox.domain.S",
+      "ubtitle\"N\n\031JukeboxResponseStartMovie\0221\n\010" +
+      "subtitle\030\001 \003(\0132\037.se.qxx.jukebox.domain.S" +
+      "ubtitle\"8\n\023JukeboxResponseTime\022\017\n\007second" +
+      "s\030\001 \002(\005\022\020\n\010filename\030\002 \002(\t\"-\n\030JukeboxResp" +
+      "onseIsPlaying\022\021\n\tisPlaying\030\001 \002(\010\"(\n\027Juke" +
+      "boxResponseGetTitle\022\r\n\005title\030\001 \002(\t*D\n\nId" +
+      "entifier\022\014\n\010Filename\020\001\022\023\n\017ParentDirector" +
+      "y\020\002\022\007\n\003NFO\020\003\022\n\n\006Parser\020\004*]\n\006Rating\022\016\n\nNo" +
+      "tMatched\020\001\022\021\n\rProbableMatch\020\002\022\021\n\rPositiv" +
+      "eMatch\020\003\022\016\n\nExactMatch\020\004\022\r\n\tSubsExist\020\005*",
+      "M\n\013RequestType\022\r\n\tTypeMovie\020\001\022\016\n\nTypeSer" +
+      "ies\020\002\022\016\n\nTypeSeason\020\003\022\017\n\013TypeEpisode\020\0042\324" +
+      "\r\n\016JukeboxService\022o\n\nListMovies\022/.se.qxx" +
+      ".jukebox.domain.JukeboxRequestListMovies" +
+      "\0320.se.qxx.jukebox.domain.JukeboxResponse" +
+      "ListMovies\022^\n\013ListPlayers\022\034.se.qxx.jukeb" +
+      "ox.domain.Empty\0321.se.qxx.jukebox.domain." +
+      "JukeboxResponseListPlayers\022o\n\nStartMovie" +
+      "\022/.se.qxx.jukebox.domain.JukeboxRequestS" +
+      "tartMovie\0320.se.qxx.jukebox.domain.Jukebo",
+      "xResponseStartMovie\022W\n\tStopMovie\022,.se.qx" +
+      "x.jukebox.domain.JukeboxRequestGeneral\032\034" +
+      ".se.qxx.jukebox.domain.Empty\022X\n\nPauseMov" +
+      "ie\022,.se.qxx.jukebox.domain.JukeboxReques" +
+      "tGeneral\032\034.se.qxx.jukebox.domain.Empty\022O" +
+      "\n\004Seek\022).se.qxx.jukebox.domain.JukeboxRe" +
+      "questSeek\032\034.se.qxx.jukebox.domain.Empty\022" +
+      "Z\n\014SwitchVRatio\022,.se.qxx.jukebox.domain." +
+      "JukeboxRequestGeneral\032\034.se.qxx.jukebox.d" +
+      "omain.Empty\022c\n\007GetTime\022,.se.qxx.jukebox.",
+      "domain.JukeboxRequestGeneral\032*.se.qxx.ju" +
+      "kebox.domain.JukeboxResponseTime\022j\n\tisPl" +
+      "aying\022,.se.qxx.jukebox.domain.JukeboxReq" +
+      "uestGeneral\032/.se.qxx.jukebox.domain.Juke" +
+      "boxResponseIsPlaying\022h\n\010GetTitle\022,.se.qx" +
+      "x.jukebox.domain.JukeboxRequestGeneral\032." +
+      ".se.qxx.jukebox.domain.JukeboxResponseGe" +
+      "tTitle\022^\n\020ToggleFullscreen\022,.se.qxx.juke" +
       "box.domain.JukeboxRequestGeneral\032\034.se.qx" +
-      "x.jukebox.domain.Empty\022X\n\nPauseMovie\022,.s",
-      "e.qxx.jukebox.domain.JukeboxRequestGener" +
-      "al\032\034.se.qxx.jukebox.domain.Empty\022O\n\004Seek" +
-      "\022).se.qxx.jukebox.domain.JukeboxRequestS" +
-      "eek\032\034.se.qxx.jukebox.domain.Empty\022Z\n\014Swi" +
-      "tchVRatio\022,.se.qxx.jukebox.domain.Jukebo" +
-      "xRequestGeneral\032\034.se.qxx.jukebox.domain." +
-      "Empty\022c\n\007GetTime\022,.se.qxx.jukebox.domain" +
-      ".JukeboxRequestGeneral\032*.se.qxx.jukebox." +
-      "domain.JukeboxResponseTime\022j\n\tisPlaying\022" +
-      ",.se.qxx.jukebox.domain.JukeboxRequestGe",
-      "neral\032/.se.qxx.jukebox.domain.JukeboxRes" +
-      "ponseIsPlaying\022h\n\010GetTitle\022,.se.qxx.juke" +
-      "box.domain.JukeboxRequestGeneral\032..se.qx" +
-      "x.jukebox.domain.JukeboxResponseGetTitle" +
-      "\022^\n\020ToggleFullscreen\022,.se.qxx.jukebox.do" +
-      "main.JukeboxRequestGeneral\032\034.se.qxx.juke" +
-      "box.domain.Empty\022W\n\tBlacklist\022,.se.qxx.j" +
-      "ukebox.domain.JukeboxRequestMovieID\032\034.se" +
-      ".qxx.jukebox.domain.Empty\022[\n\rToggleWatch" +
-      "ed\022,.se.qxx.jukebox.domain.JukeboxReques",
-      "tMovieID\032\034.se.qxx.jukebox.domain.Empty\022x" +
-      "\n\rListSubtitles\0222.se.qxx.jukebox.domain." +
-      "JukeboxRequestListSubtitles\0323.se.qxx.juk" +
-      "ebox.domain.JukeboxResponseListSubtitles" +
-      "\022]\n\013SetSubtitle\0220.se.qxx.jukebox.domain." +
-      "JukeboxRequestSetSubtitle\032\034.se.qxx.jukeb" +
-      "ox.domain.Empty\022T\n\006Wakeup\022,.se.qxx.jukeb" +
-      "ox.domain.JukeboxRequestGeneral\032\034.se.qxx" +
-      ".jukebox.domain.Empty\022U\n\007Suspend\022,.se.qx" +
-      "x.jukebox.domain.JukeboxRequestGeneral\032\034",
-      ".se.qxx.jukebox.domain.Empty2\251\005\n\023Jukebox" +
-      "FrontService\022Y\n\nStartMovie\022-.se.qxx.juke" +
-      "box.domain.JukeboxFrontStartMovie\032\034.se.q" +
-      "xx.jukebox.domain.Empty\022G\n\tStopMovie\022\034.s" +
-      "e.qxx.jukebox.domain.Empty\032\034.se.qxx.juke" +
-      "box.domain.Empty\022H\n\nPauseMovie\022\034.se.qxx." +
-      "jukebox.domain.Empty\032\034.se.qxx.jukebox.do" +
-      "main.Empty\022M\n\004Seek\022\'.se.qxx.jukebox.doma" +
-      "in.JukeboxFrontSeek\032\034.se.qxx.jukebox.dom" +
-      "ain.Empty\022J\n\014SwitchVRatio\022\034.se.qxx.jukeb",
-      "ox.domain.Empty\032\034.se.qxx.jukebox.domain." +
-      "Empty\022S\n\007GetTime\022\034.se.qxx.jukebox.domain" +
-      ".Empty\032*.se.qxx.jukebox.domain.JukeboxRe" +
-      "sponseTime\022Z\n\tisPlaying\022\034.se.qxx.jukebox" +
-      ".domain.Empty\032/.se.qxx.jukebox.domain.Ju" +
-      "keboxResponseIsPlaying\022X\n\010GetTitle\022\034.se." +
-      "qxx.jukebox.domain.Empty\032..se.qxx.jukebo" +
-      "x.domain.JukeboxResponseGetTitleB\032\n\025se.q" +
-      "xx.jukebox.domain\210\001\001"
+      "x.jukebox.domain.Empty\022R\n\tBlacklist\022\'.se",
+      ".qxx.jukebox.domain.JukeboxRequestID\032\034.s" +
+      "e.qxx.jukebox.domain.Empty\022V\n\rToggleWatc" +
+      "hed\022\'.se.qxx.jukebox.domain.JukeboxReque" +
+      "stID\032\034.se.qxx.jukebox.domain.Empty\022S\n\nRe" +
+      "Identify\022\'.se.qxx.jukebox.domain.Jukebox" +
+      "RequestID\032\034.se.qxx.jukebox.domain.Empty\022" +
+      "x\n\rListSubtitles\0222.se.qxx.jukebox.domain" +
+      ".JukeboxRequestListSubtitles\0323.se.qxx.ju" +
+      "kebox.domain.JukeboxResponseListSubtitle" +
+      "s\022]\n\013SetSubtitle\0220.se.qxx.jukebox.domain",
+      ".JukeboxRequestSetSubtitle\032\034.se.qxx.juke" +
+      "box.domain.Empty\022T\n\006Wakeup\022,.se.qxx.juke" +
+      "box.domain.JukeboxRequestGeneral\032\034.se.qx" +
+      "x.jukebox.domain.Empty\022U\n\007Suspend\022,.se.q" +
+      "xx.jukebox.domain.JukeboxRequestGeneral\032" +
+      "\034.se.qxx.jukebox.domain.Empty2\251\005\n\023Jukebo" +
+      "xFrontService\022Y\n\nStartMovie\022-.se.qxx.juk" +
+      "ebox.domain.JukeboxFrontStartMovie\032\034.se." +
+      "qxx.jukebox.domain.Empty\022G\n\tStopMovie\022\034." +
+      "se.qxx.jukebox.domain.Empty\032\034.se.qxx.juk",
+      "ebox.domain.Empty\022H\n\nPauseMovie\022\034.se.qxx" +
+      ".jukebox.domain.Empty\032\034.se.qxx.jukebox.d" +
+      "omain.Empty\022M\n\004Seek\022\'.se.qxx.jukebox.dom" +
+      "ain.JukeboxFrontSeek\032\034.se.qxx.jukebox.do" +
+      "main.Empty\022J\n\014SwitchVRatio\022\034.se.qxx.juke" +
+      "box.domain.Empty\032\034.se.qxx.jukebox.domain" +
+      ".Empty\022S\n\007GetTime\022\034.se.qxx.jukebox.domai" +
+      "n.Empty\032*.se.qxx.jukebox.domain.JukeboxR" +
+      "esponseTime\022Z\n\tisPlaying\022\034.se.qxx.jukebo" +
+      "x.domain.Empty\032/.se.qxx.jukebox.domain.J",
+      "ukeboxResponseIsPlaying\022X\n\010GetTitle\022\034.se" +
+      ".qxx.jukebox.domain.Empty\032..se.qxx.jukeb" +
+      "ox.domain.JukeboxResponseGetTitleB\032\n\025se." +
+      "qxx.jukebox.domain\210\001\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -20733,14 +20952,14 @@ public final class JukeboxDomain {
               new java.lang.String[] { "PlayerName", },
               se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGeneral.class,
               se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGeneral.Builder.class);
-          internal_static_se_qxx_jukebox_domain_JukeboxRequestMovieID_descriptor =
+          internal_static_se_qxx_jukebox_domain_JukeboxRequestID_descriptor =
             getDescriptor().getMessageTypes().get(10);
-          internal_static_se_qxx_jukebox_domain_JukeboxRequestMovieID_fieldAccessorTable = new
+          internal_static_se_qxx_jukebox_domain_JukeboxRequestID_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_se_qxx_jukebox_domain_JukeboxRequestMovieID_descriptor,
-              new java.lang.String[] { "MovieId", },
-              se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID.class,
-              se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID.Builder.class);
+              internal_static_se_qxx_jukebox_domain_JukeboxRequestID_descriptor,
+              new java.lang.String[] { "Id", "RequestType", },
+              se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID.class,
+              se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID.Builder.class);
           internal_static_se_qxx_jukebox_domain_JukeboxRequestListMovies_descriptor =
             getDescriptor().getMessageTypes().get(11);
           internal_static_se_qxx_jukebox_domain_JukeboxRequestListMovies_fieldAccessorTable = new

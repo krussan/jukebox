@@ -9,7 +9,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Empty;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGeneral;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListSubtitles;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSeek;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSetSubtitle;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStartMovie;
@@ -23,6 +23,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseTime;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxService;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 
 public class JukeboxConnectionHandler {
@@ -42,15 +43,45 @@ public class JukeboxConnectionHandler {
 	//--------------------------------------------------------------------------------------------------- RPC Calls
 	//----------------------------------------------------------------------------------------------------------------
 	
-	public void blacklist(final Movie m) {
+	public void blacklist(final int id, final RequestType requestType) {
 		final RpcController controller = new SocketRpcController();
 
 		Thread t = new Thread() {
 			public void run() {
 				JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
 				
-				JukeboxRequestMovieID request = JukeboxRequestMovieID.newBuilder().setMovieId(m.getID()).build();
+				JukeboxRequestID request = JukeboxRequestID.newBuilder()
+						.setId(id)
+						.setRequestType(requestType)
+						.build();
+				
 				service.blacklist(controller, request, new RpcCallback<JukeboxDomain.Empty>() {
+					@Override
+					public void run(Empty arg0) {
+						onRequestComplete(controller);
+					}
+				});
+				
+			}
+		};
+		t.start();
+		
+		
+	}
+	
+	public void reIdentify(final int id, final RequestType requestType) {
+		final RpcController controller = new SocketRpcController();
+
+		Thread t = new Thread() {
+			public void run() {
+				JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
+				
+				JukeboxRequestID request = JukeboxRequestID.newBuilder()
+						.setId(id)
+						.setRequestType(requestType)
+						.build();
+				
+				service.reIdentify(controller, request, new RpcCallback<JukeboxDomain.Empty>() {
 					@Override
 					public void run(Empty arg0) {
 						onRequestComplete(controller);
@@ -431,14 +462,18 @@ public class JukeboxConnectionHandler {
 
 	}
 
-	public void toggleWatched(final Movie m) {
+	public void toggleWatched(final int id, final RequestType requestType) {
 		final RpcController controller = new SocketRpcController();
 
 		Thread t = new Thread() {
 			public void run() {
 				JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
 				
-				JukeboxRequestMovieID request = JukeboxRequestMovieID.newBuilder().setMovieId(m.getID()).build();
+				JukeboxRequestID request = JukeboxRequestID.newBuilder()
+						.setId(id)
+						.setRequestType(requestType)
+						.build();
+				
 				service.toggleWatched(controller, request, new RpcCallback<JukeboxDomain.Empty>() {
 					@Override
 					public void run(Empty arg0) {

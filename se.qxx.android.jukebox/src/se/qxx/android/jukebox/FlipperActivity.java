@@ -3,6 +3,7 @@ package se.qxx.android.jukebox;
 import se.qxx.android.jukebox.adapters.MovieFragmentAdapter;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
+import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -74,7 +75,7 @@ public class FlipperActivity extends FragmentActivity implements OnPageChangeLis
 
 	@Override
 	public boolean onLongClick(View v) {
-		ActionDialog d = new ActionDialog(this, Model.get().getCurrentMovie());
+		ActionDialog d = new ActionDialog(this, Model.get().getCurrentMovie().getID(), RequestType.TypeMovie);
 		d.show();
 		return false;
 	}

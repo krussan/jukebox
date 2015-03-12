@@ -3,6 +3,7 @@ package se.qxx.android.jukebox;
 import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.android.jukebox.JukeboxConnectionProgressDialog;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -10,16 +11,19 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 
 public class ActionDialog implements OnClickListener{
-	Movie currentMovie;
+	int id;
+	RequestType reqType;
 	Activity activity;
 	
 	final String[] commands = {
 		"Blacklist",
-		"Toggle watched"
+		"Toggle watched",
+		"Re-identify"
 	};
 	
-	public ActionDialog(Activity activity, Movie movie) {
-		this.currentMovie = movie;
+	public ActionDialog(Activity activity, int id, RequestType requestType) {
+		this.reqType = requestType;
+		this.id = id;
 		this.activity = activity;
 	}
 	
@@ -32,7 +36,8 @@ public class ActionDialog implements OnClickListener{
 
 	@Override
 	public void onClick(DialogInterface dialog, int which) {
-		final Movie m = this.currentMovie;
+		final int id = this.id;
+		final RequestType requestType = this.reqType;
 		final int choice = which;		
 		
 		switch (choice) {
@@ -45,7 +50,7 @@ public class ActionDialog implements OnClickListener{
 			Thread t1 = new Thread(new Runnable() {
 				@Override
 				public void run() {
-					jh1.blacklist(m);			
+					jh1.blacklist(id, requestType);			
 				}
 			});
 			t1.start();
@@ -58,11 +63,25 @@ public class ActionDialog implements OnClickListener{
 			Thread t2 = new Thread(new Runnable() {
 				@Override
 				public void run() {
-					jh2.toggleWatched(m);				
+					jh2.toggleWatched(id, requestType);				
 				}
 			});			
 			t2.start();
 			break;
-		}				
+		case 2:
+			final JukeboxConnectionHandler jh3 = new JukeboxConnectionHandler(
+					JukeboxSettings.get().getServerIpAddress(), 
+					JukeboxSettings.get().getServerPort(),
+					JukeboxConnectionProgressDialog.build(this.activity, "Marking object for re-identify..."));
+			Thread t3 = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					jh3.reIdentify(id, requestType);				
+				}
+			});			
+			t3.start();
+			break;
+		}	
+		
 	}
 }

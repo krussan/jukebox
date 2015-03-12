@@ -22,6 +22,13 @@ enum Rating {
 	SubsExist = 5;
 }
 
+enum RequestType {
+	TypeMovie = 1;
+	TypeSeries = 2;
+	TypeSeason = 3;
+	TypeEpisode = 4;
+}
+
 //---------------------------------------------------------------------------------------
 //----------------------------------------------------------------------- Objects
 //---------------------------------------------------------------------------------------
@@ -160,8 +167,9 @@ message JukeboxRequestGeneral {
 	required string playerName = 1;
 }
 
-message JukeboxRequestMovieID {
-	required int32 movieId = 1;
+message JukeboxRequestID {
+	required int32 id = 1;
+	required RequestType requestType = 2;
 }
 
 message JukeboxRequestListMovies {
@@ -256,8 +264,9 @@ service JukeboxService {
 	rpc GetTitle(JukeboxRequestGeneral) returns (JukeboxResponseGetTitle);
 	rpc ToggleFullscreen(JukeboxRequestGeneral) returns (Empty);
 	
-	rpc Blacklist(JukeboxRequestMovieID) returns (Empty);
-	rpc ToggleWatched(JukeboxRequestMovieID) returns (Empty);	
+	rpc Blacklist(JukeboxRequestID) returns (Empty);
+	rpc ToggleWatched(JukeboxRequestID) returns (Empty);	
+	rpc ReIdentify(JukeboxRequestID) returns (Empty);
 	
 	rpc ListSubtitles(JukeboxRequestListSubtitles) returns (JukeboxResponseListSubtitles);
 	rpc SetSubtitle(JukeboxRequestSetSubtitle) returns (Empty);

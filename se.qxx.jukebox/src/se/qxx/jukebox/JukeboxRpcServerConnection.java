@@ -11,10 +11,11 @@ import com.google.protobuf.RpcController;
 
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Empty;
+import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGeneral;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListSubtitles;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestMovieID;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSeek;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSetSubtitle;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStartMovie;
@@ -28,6 +29,8 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseTime;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxService;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
+import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.settings.Settings;
@@ -229,20 +232,26 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 
 	@Override
 	public void blacklist(RpcController controller,
-			JukeboxRequestMovieID request, RpcCallback<Empty> done) {
+			JukeboxRequestID request, RpcCallback<Empty> done) {
 		
 		Log.Debug("Blacklist -- EMPTY", LogType.COMM);
 
-		Movie m = DB.getMovie(request.getMovieId());
-		if (m != null)
-			DB.addToBlacklist(m);
+		if (request.getRequestType() == RequestType.TypeMovie) {
+			Movie m = DB.getMovie(request.getId());
+			if (m != null)
+				DB.addToBlacklist(m);
+		}
+		
+		if (request.getRequestType() == RequestType.TypeEpisode) {
+			Log.Debug("Not Implemented yet -- Blacklist of episodes", LogType.COMM);
+		}
 		
 		done.run(Empty.newBuilder().build());
 	}
 
 	@Override
 	public void toggleWatched(RpcController controller,
-			JukeboxRequestMovieID request, RpcCallback<Empty> done) {
+			JukeboxRequestID request, RpcCallback<Empty> done) {
 		// TODO Auto-generated method stub
 		
 		Log.Debug("ToggleWatched -- EMPTY", LogType.COMM);
@@ -373,5 +382,76 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		} catch (VLCConnectionNotFoundException e) {
 			return StringUtils.EMPTY; 			
 		}		
-	}	
+	}
+
+	@Override
+	public void reIdentify(RpcController controller, JukeboxRequestID request,
+			RpcCallback<Empty> done) {
+		
+		Log.Debug("Re-identify -- EMPTY", LogType.COMM);
+
+		try {
+			if (request.getRequestType() == RequestType.TypeMovie) {
+				Movie m = DB.getMovie(request.getId());
+				DB.delete(m);
+				reenlist(m);
+			}
+			
+			if (request.getRequestType() == RequestType.TypeSeries) {
+				Series s = DB.getSeries(request.getId());
+				DB.delete(s);			
+				reenlist(s);			
+			}
+
+			if (request.getRequestType() == RequestType.TypeSeason) {
+				Season sn = DB.getSeason(request.getId());
+				DB.delete(sn);			
+				reenlist(sn);			
+			}
+
+			if (request.getRequestType() == RequestType.TypeEpisode) {
+				Episode ep = DB.getEpisode(request.getId());
+				DB.delete(ep);			
+				reenlist(ep);			
+			}
+			
+			done.run(Empty.newBuilder().build());
+		}
+		catch (Exception e) {
+			controller.setFailed("Error occured when deleting object from database");
+		}
+	}
+	
+	private void reenlist(Movie m) {
+		for (Media md : m.getMediaList()) {
+			reenlist(md);
+		}
+	}
+	
+	private void reenlist(Media md) {
+		// create a file representation based on the values of the media object
+		FileRepresentation f = new FileRepresentation(md.getFilepath(), md.getFilename(), Util.getCurrentTimestamp());
+		
+		// re-enlist the file into the movie identifier
+		MovieIdentifier.get().addFile(f);
+	}
+
+	private void reenlist(Series s) {
+		for (Season sn : s.getSeasonList()) {
+			reenlist(sn);
+		}	
+	}
+	
+	private void reenlist(Season sn) {
+		for (Episode ep: sn.getEpisodeList()) {
+			reenlist(ep);
+		}	
+	}
+	
+	private void reenlist(Episode ep) {
+		for (Media md : ep.getMediaList()) {
+			reenlist(md);
+		}	
+	}
+	
 }

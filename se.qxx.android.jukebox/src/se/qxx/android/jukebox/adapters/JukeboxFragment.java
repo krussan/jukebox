@@ -19,6 +19,7 @@ import se.qxx.android.jukebox.model.Model.ModelUpdatedEventListener;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -135,8 +136,20 @@ public class JukeboxFragment extends ListFragment implements
 	@Override
 	public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int arg2,
 			long arg3) {
-		ActionDialog d = new ActionDialog(this.getActivity(), Model.get().getMovie(arg2));
-		d.show();
+		
+		ActionDialog d = null;
+		
+		switch (this.position){
+		case 0:
+			d = new ActionDialog(this.getActivity(), Model.get().getMovie(arg2).getID(), RequestType.TypeMovie);
+			break;
+		case 1:
+			d = new ActionDialog(this.getActivity(), Model.get().getSeries(arg2).getID(), RequestType.TypeSeries);
+		}
+		
+		if (d != null)
+			d.show();
+		
 		return false;
 	}
 

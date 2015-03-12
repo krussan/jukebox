@@ -15,6 +15,7 @@ import se.qxx.android.jukebox.model.ModelUpdatedType;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
+import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -142,7 +143,7 @@ public class JukeboxActivity extends JukeboxActivityBase implements
 	@Override
 	public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int arg2,
 			long arg3) {
-		ActionDialog d = new ActionDialog(this, Model.get().getMovie(arg2));
+		ActionDialog d = new ActionDialog(this, Model.get().getMovie(arg2).getID(), RequestType.TypeMovie);
 		d.show();
 		return false;
 	}
