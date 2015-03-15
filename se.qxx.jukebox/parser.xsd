@@ -110,6 +110,15 @@
     		default="false">
     	</attribute>
     	<attribute name="group" type="int" use="optional"></attribute>
-    	<attribute name="recursiveCount" type="int" default="1" use="optional"></attribute>
+    	<attribute name="recursiveCount" type="int" default="1"
+    		use="optional">
+    	</attribute>
+    	<attribute name="firstToken" type="boolean" use="optional"
+    		default="false">
+    	</attribute>
+    	<attribute name="lastToken" type="boolean" use="optional"
+    		default="false">
+    	</attribute>
+    	<attribute name="lookahead" type="int" use="optional" default="0"></attribute>
     </complexType>
 </schema>

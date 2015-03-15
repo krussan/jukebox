@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -41,16 +42,33 @@ public class ParserBuilder extends MovieBuilder {
 		// assume groupName is the last token in the file (if other tokens exist)
 		boolean titleMode = false;
 		
-		for (String token : tokens) {
+		int nrOfTokens = tokens.length;
+		
+		for (int i=0; i<nrOfTokens;i++) {
+			String token = tokens[i];
+
+			// get the tail if we are to use lookahead
+			String[] tail = new String[] {}; 
+			if (i < nrOfTokens - 1)
+				tail = ArrayUtils.subarray(tokens, i + 1, nrOfTokens);
+			
+			// check if we are on the last or first token
+			boolean isFirst = i == 0;
+			boolean isLast = i == nrOfTokens - 1;
+			
 			if (!StringUtils.isEmpty(StringUtils.trim(token))) {
-				ParserToken result = checkToken(token);	
+				// check the token
+				ParserToken result = checkToken(token, isFirst, isLast, tail);
+				
+				// parse the token and make recursive calls if needed.
 				titleMode = 
 					parseToken(
 						pm, 
 						titleMode, 
 						result, 
 						result.getRecursiveCount(), 
-						new ArrayList<ParserType>());
+						new ArrayList<ParserType>(),
+						tail);
 			}
 		}
 		
@@ -71,7 +89,8 @@ public class ParserBuilder extends MovieBuilder {
 			boolean titleMode, 
 			ParserToken token, 
 			int recursiveCount, 
-			List<ParserType> ignoreTypes) {
+			List<ParserType> ignoreTypes,
+			String[] tail) {
 			
 		ParserType pt = token.getType();
 		String resultingToken = token.getResultingToken();
@@ -131,42 +150,90 @@ public class ParserBuilder extends MovieBuilder {
 		if (recursiveCount > 1) {
 			recursiveCount--;
 			ignoreTypes.add(pt);
-			ParserToken newToken = checkToken(token.getOriginalToken(), ignoreTypes);
-			titleMode = parseToken(pm, titleMode, newToken, recursiveCount, ignoreTypes);
+			
+			ParserToken newToken = 
+					checkToken(
+						token.getOriginalToken(),
+						token.isFirst(),
+						token.isLast(),
+						ignoreTypes,
+						tail);
+			
+			titleMode = parseToken(pm, titleMode, newToken, recursiveCount, ignoreTypes, tail);
 		}
 		
 		return titleMode;
 	}
 
-	private ParserToken checkToken(String token) {
-		return checkToken(token, new ArrayList<ParserType>());
+	private ParserToken checkToken(String token, boolean isFirst, boolean isLast, String[] tail) {
+		return checkToken(token, isFirst, isLast, new ArrayList<ParserType>(), tail);
 	}
 	
-	private ParserToken checkToken(String token, List<ParserType> ignoreTypes) {
+	private ParserToken checkToken(
+			String token, 
+			boolean isFirst, 
+			boolean isLast, 
+			List<ParserType> ignoreTypes,
+			String[] tail) {
+		
 		for (ParserType pt : ParserType.values()) {
 			if (!ignoreTypes.contains(pt)) {
 				for (WordType wt : getWordList(pt)) {
-					String result = checkWordType(wt, token);
-					if (!StringUtils.isEmpty(result))
-						return new ParserToken(pt, token, result, wt.getRecursiveCount());
+					String result = checkWordType(wt, token, isFirst, isLast);
+					if (!StringUtils.isEmpty(result)) {
+						return new ParserToken(
+								pt, 
+								token, 
+								result, 
+								wt.getRecursiveCount(), 
+								isFirst, 
+								isLast);
+					}
+					else {
+						if (wt.getLookahead() > 0 && tail.length > 0 && tail.length >= wt.getLookahead()) {
+							// get sub-array of the tail of the number of lookahed elements we need
+							// concatenate them into a new token and parse that
+							String newToken = token + " " + 
+									StringUtils.join(ArrayUtils.subarray(tail, 0, wt.getLookahead()), " ");
+							
+							String newTokenResult = checkWordType(wt, newToken, isFirst, isLast);
+							if (!StringUtils.isEmpty(newTokenResult)) {
+								return new ParserToken(
+										pt, 
+										newToken, 
+										newTokenResult, 
+										wt.getRecursiveCount(), 
+										isFirst, 
+										isLast);
+							}
+						}
+					}
 				}
 			}
 		}
 		
-		return new ParserToken(ParserType.UNKNOWN, token, token, 1);
+		return new ParserToken(ParserType.UNKNOWN, token, token, 1, isFirst, isLast);
 	} 
 	
-	private String checkWordType(WordType wt, String token) {
+	private String checkWordType(WordType wt, String token, boolean isFirst, boolean isLast) {
 		if (wt != null) {
-			if (wt.isRegex()) {
-				return checkRegex(token, wt.getKey(), wt.getGroup());
-			}
-			else {
-				return StringUtils.equalsIgnoreCase(wt.getKey(), token) ? token : StringUtils.EMPTY;
+			if (isTokenConsidered(wt, isFirst, isLast)) {
+				if (wt.isRegex()) {
+					return checkRegex(token, wt.getKey(), wt.getGroup());
+				}
+				else {
+					return StringUtils.equalsIgnoreCase(wt.getKey(), token) ? token : StringUtils.EMPTY;
+				}
 			}
 		}
 		
 		return StringUtils.EMPTY;
+	}
+	
+	private boolean isTokenConsidered(WordType wt, boolean isFirst, boolean isLast) {
+		return (wt.isFirstToken() && isFirst) || 
+				(wt.isLastToken() && isLast) ||
+				(!wt.isFirstToken() && !wt.isLastToken());
 	}
  
 	private String checkRegex(String token, String regex, int group) {

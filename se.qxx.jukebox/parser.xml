@@ -17,15 +17,18 @@
         <word key="PPV" />
         <word key="Bluray" />
         <word key="BDRip" />
-        <word key="HDTV" />        
+        <word key="HDTV" />
+        <word key="18p" />        
+        <word key="108p" />
     </type>
     <year>
         <word key="(19|20)\d{2}" regex="true" group="0" />
     </year>
     <parts>
-        <word key="(Part|CD)[.|_|\s|-]*(\d+)" regex="true" group="2" />
+        <word key="(Part|CD)[.|_|\s|-]*(\d+)" regex="true" group="2" lookahead="1" />
     </parts>
     <season>
+        <word key="(\d{1,2})(\d{2})" regex="true" group="1" recursiveCount="2" firstToken="true" />
         <word key="s(\d{1,2})" regex="true" group="1" />
         <word key="Season(\d{1,2})" regex="true" group="1" />
         <word key="(\d{1,2})sezon" regex="true" group="1" />
@@ -35,6 +38,7 @@
         <word key="Season(\d{1,2})Episode(\d{1,2})" regex="true" group="1" recursiveCount="2" />
     </season>
     <episode>
+        <word key="(\d{1,2})(\d{2})" regex="true" group="2" recursiveCount="2" firstToken="true" />
         <word key="e(\d{1,2})" regex="true" group="1" />
         <word key="(\d{1,2})seriya" regex="true" group="1" />
         <word key="Episode(\d{1,2})" regex="true" group="1" />
@@ -53,13 +57,17 @@
         <word key="AC3" />
         <word key="aac" />
         <word key="ac3pt" />
+        <word key="dd51" />
+        <word key="AAC2" />
     </sound>
     <language>
         <word key="Eng" />
+        <word key="English" />
         <word key="SWEDISH" />
         <word key="SWE" />
         <word key="SWESUB" />
         <word key="German" />
+        <word key="GER" />
         <word key="en" />
         <word key="de" />
     </language>
@@ -76,6 +84,7 @@
         <word key="PLAYNOW" />
         <word key="SPARKS" />
         <word key="CM8" />
+        <word key="tvs" />
     </groups>
     <other>
         <word key="REPACK" />
@@ -87,7 +96,14 @@
         <word key="MD" />
         <word key="i2p" />
         <word key="EXTENDED" />
-        <word key="DC" />        
+        <word key="DC" />
+        <word key="dl" />
+        <word key="ded" />
+        <word key="PROPER" /> 
+        <word key="DUB" />  
+        <word key="WEB" />
+        <word key="rerip" />
+        <word key="UNRATED" />     
     </other>
   </keywords>
 </parser>

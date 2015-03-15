@@ -7,7 +7,26 @@ public class ParserToken {
 	String originalToken;
 	String resultingToken;
 	int recursiveCount;
+	boolean isFirst = false;
+	boolean isLast = false;
 	
+	
+	public boolean isFirst() {
+		return isFirst;
+	}
+
+	public void setFirst(boolean isFirst) {
+		this.isFirst = isFirst;
+	}
+
+	public boolean isLast() {
+		return isLast;
+	}
+
+	public void setLast(boolean isLast) {
+		this.isLast = isLast;
+	}
+
 	public ParserType getType() {
 		return type;
 	}
@@ -41,10 +60,18 @@ public class ParserToken {
 	}
 
 
-	public ParserToken(ParserType type, String originalToken, String resultingToken, int recursiveCount) {
+	public ParserToken(
+			ParserType type, 
+			String originalToken, 
+			String resultingToken, 
+			int recursiveCount,
+			boolean isFirst,
+			boolean isLast) {
 		this.setType(type);
 		this.setOriginalToken(originalToken);
 		this.setResultingToken(resultingToken);
 		this.setRecursiveCount(recursiveCount);
+		this.setFirst(isFirst);
+		this.setLast(isLast);
 	}
 }
