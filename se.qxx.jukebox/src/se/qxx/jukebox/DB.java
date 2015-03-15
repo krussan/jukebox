@@ -148,7 +148,7 @@ public class DB {
 			return null;
 		}
 	}
-	
+
 	public synchronized static Series findSeries(String seriesIdentifiedTitle) {
 		String searchString = replaceSearchString(seriesIdentifiedTitle) + "%";
 		

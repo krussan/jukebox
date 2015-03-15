@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import se.qxx.jukebox.Util;
 import se.qxx.jukebox.builders.FilenameBuilder;
 import se.qxx.jukebox.builders.MovieBuilder;
+import se.qxx.jukebox.builders.MovieOrSeries;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.settings.JukeboxListenerSettings;
 import se.qxx.jukebox.settings.Settings;
@@ -33,11 +34,15 @@ public class TestMovieBuilder {
 			System.out.println(filePath);
 			System.out.println(singleFile);
 			
-			Movie m = MovieBuilder.identifyMovie(filePath, singleFile);
+			MovieOrSeries mos = MovieBuilder.identify(filePath, singleFile);
 
-			System.out.println(String.format("Movie identified by :: %s", m.getIdentifier()));
+			System.out.println(String.format("Movie identified by :: %s", mos.getIdentifier()));
 			
-			System.out.println(m.toString());
+			if (mos.isSeries())
+				System.out.println(mos.getSeries().toString());
+			else
+				System.out.println(mos.getMovie().toString());
+			
 		}
 		else {
 			System.out.println("No arguments");

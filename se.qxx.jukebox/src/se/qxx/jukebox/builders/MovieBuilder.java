@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Util;
 import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.domain.DomainUtil;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
@@ -22,7 +23,7 @@ public abstract class MovieBuilder {
 	public MovieBuilder() {
 	}
 	
-	public abstract Movie extractMovie(String filepath, String filename);
+	public abstract MovieOrSeries extract(String filepath, String filename) throws DeprecatedBuilderException;
 	
 	protected ArrayList<String> getGroupsToCheck() {
 		ArrayList<String> groupsToCheck = new ArrayList<String>();
@@ -42,12 +43,10 @@ public abstract class MovieBuilder {
 	 * @param filename
 	 * @return
 	 */
-	public static Movie identifyMovie(String filepath, String filename) {
-		PartPattern pp = new PartPattern(filename);
-				
-		ArrayList<Movie> proposals = identifyAndRate(filepath, pp.getResultingFilename());
+	public static MovieOrSeries identify(String filepath, String filename) {
+		ArrayList<MovieOrSeries> proposals = identifyAndRate(filepath, filename);
 		
-		return MovieBuilder.build(filepath, filename, proposals, pp);
+		return MovieBuilder.build(filepath, filename, proposals);
 	}
 	
 	/**
@@ -56,47 +55,47 @@ public abstract class MovieBuilder {
 	 * @param filename
 	 * @return
 	 */
-	public static Series identifySeries(Movie m, String filepath, String filename) {
-		PartPattern pp = new PartPattern(filename);
-
-		Series s = null;
-		if (pp.isTvEpisode()) {
-			s = Series.newBuilder()
-					.setID(-1)
-					.setTitle(m.getTitle().trim())
-					.setIdentifiedTitle(m.getTitle().trim())
-					.setStory(m.getStory())
-					.setImage(m.getImage())
-					.addAllGenre(m.getGenreList())
-					.addSeason(
-						Season.newBuilder()
-							.setID(-1)
-							.setSeasonNumber(pp.getSeason())
-							.addEpisode(
-								Episode.newBuilder()
-									.setID(-1)
-									.setEpisodeNumber(pp.getEpisode())
-									.setYear(m.getYear())
-									.setType(m.getType())
-									.setFormat(m.getFormat())
-									.setSound(m.getSound())
-									.setLanguage(m.getLanguage())
-									.setGroupName(m.getGroupName())
-									.setDuration(m.getDuration())
-									.setRating(m.getRating())
-									.setDirector(m.getDirector())
-									.setIdentifier(m.getIdentifier())
-									.setIdentifierRating(m.getIdentifierRating())
-									.addAllMedia(m.getMediaList())
-									.build()
-								)
-							.build()
-						)
-					.build();
-		}
-	
-		return s;
-	}
+//	public static Series identifySeries(Movie m, String filepath, String filename) {
+//		PartPattern pp = new PartPattern(filename);
+//
+//		Series s = null;
+//		if (pp.isTvEpisode()) {
+//			s = Series.newBuilder()
+//					.setID(-1)
+//					.setTitle(pp.getSeriesTitle())
+//					.setIdentifiedTitle(pp.getSeriesTitle())
+//					.setStory(m.getStory())
+//					.setImage(m.getImage())
+//					.addAllGenre(m.getGenreList())
+//					.addSeason(
+//						Season.newBuilder()
+//							.setID(-1)
+//							.setSeasonNumber(pp.getSeason())
+//							.addEpisode(
+//								Episode.newBuilder()
+//									.setID(-1)
+//									.setEpisodeNumber(pp.getEpisode())
+//									.setYear(m.getYear())
+//									.setType(m.getType())
+//									.setFormat(m.getFormat())
+//									.setSound(m.getSound())
+//									.setLanguage(m.getLanguage())
+//									.setGroupName(m.getGroupName())
+//									.setDuration(m.getDuration())
+//									.setRating(m.getRating())
+//									.setDirector(m.getDirector())
+//									.setIdentifier(m.getIdentifier())
+//									.setIdentifierRating(m.getIdentifierRating())
+//									.addAllMedia(m.getMediaList())
+//									.build()
+//								)
+//							.build()
+//						)
+//					.build();
+//		}
+//	
+//		return s;
+//	}
 	
 	/**
 	 * Builds the movie from the first proposal in the list
@@ -107,63 +106,60 @@ public abstract class MovieBuilder {
 	 * @param part
 	 * @return The movie
 	 */
-	protected static Movie build(
+	protected static MovieOrSeries build(
 			String filepath, 
 			String filename, 
-			ArrayList<Movie> proposals, 
-			PartPattern pp) {
+			ArrayList<MovieOrSeries> proposals) {
 		
-		Movie m = null;
+		MovieOrSeries mos = null;
 		if (proposals.size() > 0) {
-			m = proposals.get(0);
+			mos = proposals.get(0);
 			
 			// check if one of the proposals has identified the movie and added an imdb url
 			String imdbUrl = checkImdbUrl(proposals);
 			
-			if (m != null)  {
-				m = buildMovie(m, filepath, filename, pp, imdbUrl);				
-				Log.Debug(String.format("MovieBuilder :: Selected proposal has rating of %s", m.getIdentifierRating()), LogType.FIND);
+			if (mos != null)  {				
+				Log.Debug(String.format("MovieBuilder :: Selected proposal has rating of %s", mos.getIdentifierRating()), LogType.FIND);
 			}
 		}
 		else {
 			Log.Info(String.format("Failed to identify movie with filename %s", filename), LogType.FIND);
 		}
-		return m;
+		return mos;
 	}
 
 
-	private static Movie buildMovie(Movie m
-			, String filepath
-			, String filename
-			, PartPattern pp
-			, String imdbUrl) {
-		
-		Media md = Media.newBuilder()
-				.setID(-1)
-				.setIndex(pp.getPart())
-				.setFilename(filename)
-				.setFilepath(filepath)
-				.build();
-
-		Movie.Builder builder = Movie.newBuilder(m).addMedia(md);
-		
-		// If a Imdb Link has been found in one of the builders
-		// then merge it into this one
-		if (!StringUtils.isEmpty(imdbUrl))
-			builder.setImdbUrl(imdbUrl);
-
-		return builder.build();
-	}
+//	private static MovieOrSeries buildMovieOrSeries(MovieOrSeries mos
+//			, String filepath
+//			, String filename
+//			, String imdbUrl) {
+//		
+//		Media md = Media.newBuilder()
+//				.setID(-1)
+//				.setIndex(pp.getPart())
+//				.setFilename(filename)
+//				.setFilepath(filepath)
+//				.build();
+//
+//		Movie.Builder builder = Movie.newBuilder(m).addMedia(md);
+//		
+//		// If a Imdb Link has been found in one of the builders
+//		// then merge it into this one
+//		if (!StringUtils.isEmpty(imdbUrl))
+//			builder.setImdbUrl(imdbUrl);
+//
+//		return builder.build();
+//	}
 
 	/**
 	 * Checks the list of proposals and returns if one has identified an IMDB url
 	 * @param proposals
 	 * @return The first IMDB url found
 	 */
-	private static String checkImdbUrl(ArrayList<Movie> proposals) {
+	private static String checkImdbUrl(ArrayList<MovieOrSeries> proposals) {
 		String imdbUrl = StringUtils.EMPTY;
-		for (Movie m : proposals) {
-			imdbUrl = m.getImdbUrl();
+		for (MovieOrSeries mos : proposals) {
+			imdbUrl = getImdbUrl(mos);
 						
 			if (!StringUtils.isEmpty(imdbUrl))
 				break;	
@@ -176,15 +172,26 @@ public abstract class MovieBuilder {
 		return imdbUrl;
 	}
 
+	private static String getImdbUrl(MovieOrSeries mos) {
+		if (mos.isSeries()) {
+			return mos.getSeries().getSeason(0).getEpisode(0).getImdbUrl();
+		}
+		else {
+			return mos.getMovie().getImdbUrl();
+		}
+	}
+
 	/**
 	 * Execute all builders, perform rating and returns a sorted list where the best match is the first
 	 * @param filepath
 	 * @param filename
 	 * @return A sorted list of proposals where the best match is the first
 	 */
-	protected static ArrayList<Movie> identifyAndRate(String filepath, String filename) {
-		ArrayList<Movie> proposals = new ArrayList<Movie>();		
-		
+	protected static ArrayList<MovieOrSeries> identifyAndRate(String filepath, String filename)  {
+		ArrayList<MovieOrSeries> proposals = new ArrayList<MovieOrSeries>();		
+
+
+
 		for (Builder b : Settings.get().getBuilders().getBuilder()) {
 			String className = b.getClazz();
 			int weight = 1;
@@ -195,13 +202,9 @@ public abstract class MovieBuilder {
 				if (b.isEnabled()) {
 					Object o = Util.getInstance(className);
 					if (o != null) {
-						Movie proposal = ((MovieBuilder)o).extractMovie(filepath, filename);
+						MovieOrSeries proposal = ((MovieBuilder)o).extract(filepath, filename);
 						if (proposal != null) {
-							proposal = Movie.newBuilder(proposal)
-									.setIdentifierRating(proposal.getIdentifierRating() * weight)
-									.build();
-							
-							
+							proposal.setIdentifierRating(proposal.getIdentifierRating() * weight);
 							proposals.add(proposal);
 						}
 					}
@@ -215,28 +218,37 @@ public abstract class MovieBuilder {
 		return proposals;
 	}
 	
+	protected Media getMedia(String filepath, String filename) {
+		return Media.newBuilder()
+				.setID(-1)
+				.setFilename(filename)
+				.setFilepath(filepath)
+				.setIndex(1)
+				.build();
+	}
+	
 	/**
 	 * Gets an instance of the builder that identified the movie
 	 * @param m
 	 * @return A MovieBuilder representing the builder that identified the movie.
 	 */
-	public static MovieBuilder getIdentifyingBuilder(Movie m) {
-		MovieBuilder mb = null;
-		switch (m.getIdentifier()) {
-		case Filename:
-			mb = new FilenameBuilder();
-			break;
-		case NFO:
-			mb = new NfoBuilder();
-			break;
-		case ParentDirectory:
-			mb = new ParentDirectoryBuilder();
-			break;
-		default:
-			mb = new FilenameBuilder();
-		}
-		
-		return mb;
-	}
+//	public static MovieBuilder getIdentifyingBuilder(Movie m) {
+//		MovieBuilder mb = null;
+//		switch (m.getIdentifier()) {
+//		case Filename:
+//			mb = new FilenameBuilder();
+//			break;
+//		case NFO:
+//			mb = new NfoBuilder();
+//			break;
+//		case ParentDirectory:
+//			mb = new ParentDirectoryBuilder();
+//			break;
+//		default:
+//			mb = new FilenameBuilder();
+//		}
+//		
+//		return mb;
+//	}
 
 }

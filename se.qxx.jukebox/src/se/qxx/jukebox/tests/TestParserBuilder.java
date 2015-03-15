@@ -20,17 +20,10 @@ public class TestParserBuilder {
 		Settings.initialize();
 		
 		if (args.length > 0) {
-			ExtensionFileFilter eff = new ExtensionFileFilter();
-			eff.addExtensions(Util.getExtensions());
-			
-			List<File> list = Util.getFileListing(new File(args[0]), eff);
-			
-			for (File f : list) {
-				ParserBuilder b = new ParserBuilder();
-				ParserMovie pm = b.extractMovieParser(f.getParent(), FilenameUtils.getBaseName(f.getName()));
+			ParserBuilder b = new ParserBuilder();
+			ParserMovie pm = b.extractMovieParser("", args[0]);
 				
-				System.out.println(pm.toString());
-			}
+			System.out.println(pm.toString());
 		}
 	}
 	

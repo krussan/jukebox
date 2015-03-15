@@ -78,7 +78,13 @@ x - Blacklist does not work because IMDB_ID is null for every movie
 			- Probably because the title is changed after IMDB call. Before it searches for "House of Cards Chapter"(!)
 			  as this is part of the "non-numeric" fields after season and episode have been parsed away.
 			- Added a new field "identifiedTitle" to use for this purpose.
+- 2015-03-14 		- Made the move towards removing the PartPattern and letting ParserBuilder handle all identification. 
+			- Moved a lot of code around to the builder instead and removed settings from the main xml file.
+			- Started implementing JUnit tests for the parser builder... too little too late.. but anyways.
+			- REALLY GOOD WORK TODAY!
+	
 
+- 2015-03-14 - ERROR - Subtitle downloader need to be fixed after the above changes.. .but what else is new.
 
 ---------------------------------------------------------------------
 Environent Issues

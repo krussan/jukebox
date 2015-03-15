@@ -143,11 +143,6 @@
 	    </antcall>
 
 	    <antcall target="createscript">
-	        <param name="script.class" value="se.qxx.jukebox.tests.TestFilenameBuilder" />
-	        <param name="script.file" value="${build.dir}/testFilenameBuilder.sh" />
-	    </antcall>
-
-	    <antcall target="createscript">
 	        <param name="script.class" value="se.qxx.jukebox.tests.TestMovieBuilder" />
 	        <param name="script.file" value="${build.dir}/testMovieBuilder.sh" />
 	    </antcall>

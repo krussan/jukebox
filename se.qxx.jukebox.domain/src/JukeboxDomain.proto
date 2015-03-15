@@ -61,7 +61,7 @@ message Series {
 	
 	optional string rating = 10;
 	
-	optional string identifiedTitle = 11;	
+	required string identifiedTitle = 11;	
 }
 
 message Season {
@@ -136,6 +136,8 @@ message Movie {
 	repeated string blacklist = 21;
 
 	optional SubtitleQueue subtitleQueue = 22;
+
+	required string identifiedTitle = 23;	
 }
 
 message Subtitle {

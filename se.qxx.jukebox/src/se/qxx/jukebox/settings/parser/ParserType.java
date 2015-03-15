@@ -7,5 +7,9 @@ public enum ParserType {
 	LANGUAGE,
 	OTHER,
 	UNKNOWN,
-	YEAR
+	YEAR,
+	PART,
+	SEASON,
+	EPISODE,
+	GROUP
 }

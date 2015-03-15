@@ -30,7 +30,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 
 import se.qxx.jukebox.Log.LogType;
-import se.qxx.jukebox.builders.PartPattern;
+import se.qxx.jukebox.builders.MovieBuilder;
+import se.qxx.jukebox.builders.MovieOrSeries;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
@@ -46,7 +47,11 @@ import se.qxx.jukebox.subtitles.Subs;
 
 public class SubtitleDownloader implements Runnable {
 
+	// TODO: total rewrite. ! The thing to download all offline maybe not the best.
+	// let the user decide?
+	// TODO: store them in the database to avoid discrepancies
 	// TODO: add event listeners that listens for that subtitles for a specific
+	
 	// movie
 	// has been downloaded
 
@@ -614,13 +619,15 @@ public class SubtitleDownloader implements Runnable {
 	 * @return The media matching the sub filename
 	 */
 	private Media matchFileToMedia(Movie m, File unpackedFile) {
-		int part = new PartPattern(FilenameUtils.getBaseName(unpackedFile.getName())).getPart();
+		MovieOrSeries mos = MovieBuilder.identify("", unpackedFile.getName());
+		
+		int subIndex = mos.getMedia().getIndex();
 		
 		for (Media md : m.getMediaList()) {
-			if (md.getIndex() == part) 
+			if (md.getIndex() == subIndex)
 				return md;
 		}
-		
+				
 		return null;
 	}
 
@@ -685,8 +692,8 @@ public class SubtitleDownloader implements Runnable {
 	
 	private String getSubsPath(Media md) {
 		String movieFilename = FilenameUtils.getBaseName(md.getFilename());	
-		PartPattern pp = new PartPattern(movieFilename);
-		String movieSubsPath = String.format("%s/%s", subsPath, pp.getResultingFilename());
+		//PartPattern pp = new PartPattern(movieFilename);
+		String movieSubsPath = String.format("%s/%s", subsPath, movieFilename);
 		return movieSubsPath;		
 	}
 	

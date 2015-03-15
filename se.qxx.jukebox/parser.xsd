@@ -51,6 +51,51 @@
     								</sequence>
     							</complexType>
     						</element>
+    						<element name="year">
+    							<complexType>
+    								<sequence>
+    									<element name="word"
+    										type="tns:wordType" maxOccurs="unbounded" minOccurs="0">
+    									</element>
+    								</sequence>
+    							</complexType>
+    						</element>
+    						<element name="parts">
+    							<complexType>
+    								<sequence>
+    									<element name="word"
+    										type="tns:wordType" maxOccurs="unbounded" minOccurs="0">
+    									</element>
+    								</sequence>
+    							</complexType>
+    						</element>
+    						<element name="season">
+    							<complexType>
+    								<sequence>
+    									<element name="word"
+    										type="tns:wordType" maxOccurs="unbounded" minOccurs="0">
+    									</element>
+    								</sequence>
+    							</complexType>
+    						</element>
+    						<element name="episode">
+    							<complexType>
+    								<sequence>
+    									<element name="word"
+    										type="tns:wordType" maxOccurs="unbounded" minOccurs="0">
+    									</element>
+    								</sequence>
+    							</complexType>
+    						</element>
+    						<element name="groups">
+    							<complexType>
+    								<sequence>
+    									<element name="word"
+    										type="tns:wordType" maxOccurs="unbounded" minOccurs="0">
+    									</element>
+    								</sequence>
+    							</complexType>
+    						</element>
     					</sequence>
 
     				</complexType>
@@ -61,5 +106,10 @@
 
     <complexType name="wordType">
     	<attribute name="key" type="string"></attribute>
+    	<attribute name="regex" type="boolean" use="optional"
+    		default="false">
+    	</attribute>
+    	<attribute name="group" type="int" use="optional"></attribute>
+    	<attribute name="recursiveCount" type="int" default="1" use="optional"></attribute>
     </complexType>
 </schema>

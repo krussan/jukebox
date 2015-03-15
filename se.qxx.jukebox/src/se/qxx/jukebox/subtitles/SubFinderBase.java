@@ -7,10 +7,12 @@ import java.util.List;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import se.qxx.jukebox.MovieIdentifier;
 import se.qxx.jukebox.Util;
 import se.qxx.jukebox.builders.FilenameBuilder;
 import se.qxx.jukebox.builders.MovieBuilder;
-import se.qxx.jukebox.builders.PartPattern;
+import se.qxx.jukebox.builders.MovieOrSeries;
+import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.settings.JukeboxListenerSettings;
 import se.qxx.jukebox.settings.Settings;
@@ -64,30 +66,35 @@ public abstract class SubFinderBase {
 	 * @return Rating			 - A rating based on the Rating enumeration				
 	 */
 	protected Rating rateSub(Movie m, String subFileDescription) {
-		FilenameBuilder b = new FilenameBuilder();
-		Movie subMovie = b.extractMovie("", subFileDescription.concat(".dummy"));
-		Rating r = Rating.NotMatched;
+		MovieOrSeries mos = MovieBuilder.identify("", subFileDescription + ".dummy");
 		
-		PartPattern moviePP = new PartPattern(FilenameUtils.getBaseName(m.getMedia(0).getFilename()));
-		PartPattern subPP = new PartPattern(subFileDescription);
 
-		if (StringUtils.equalsIgnoreCase(moviePP.getResultingFilename(), subPP.getResultingFilename()))
-			return Rating.ExactMatch;
-		
-		if (subMovie != null) {
-			String group = m.getGroupName();
-			String subGroup = subMovie.getGroupName();
-			
-			if (subGroup != null) {
-				if (StringUtils.equalsIgnoreCase(subGroup, group) && !StringUtils.isEmpty(subGroup)) {
-					if (StringUtils.equalsIgnoreCase(subMovie.getFormat(), m.getFormat()) && !StringUtils.isEmpty(subMovie.getFormat()))
-						r = Rating.PositiveMatch;
-					else
-						r = Rating.ProbableMatch;
-				}
+		//PartPattern moviePP = new PartPattern(FilenameUtils.getBaseName(m.getMedia(0).getFilename()));
+		//PartPattern subPP = new PartPattern(subFileDescription);
+
+		if (mos != null) {
+			String subFilename = FilenameUtils.getBaseName(mos.getMedia().getFilename());
+			for (Media md : m.getMediaList()) {
+				String mediaFilename = FilenameUtils.getBaseName(md.getFilename());
+				if (StringUtils.equalsIgnoreCase(mediaFilename, subFilename))
+					return Rating.ExactMatch;
 			}
+		
+			String group = m.getGroupName();
+			String subGroup = mos.getGroupName();
+			
+			String subFormat = mos.getFormat();
+			
+			if (StringUtils.equalsIgnoreCase(subGroup, group) && !StringUtils.isEmpty(subGroup)) {
+				if (StringUtils.equalsIgnoreCase(subFormat, m.getFormat()) && !StringUtils.isEmpty(subFormat))
+					return Rating.PositiveMatch;
+				else
+					return Rating.ProbableMatch;
+			}
+		
 		}
-		return r;
+		
+		return Rating.NotMatched;
 	
 	}	
 	

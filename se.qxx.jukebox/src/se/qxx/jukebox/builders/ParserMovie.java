@@ -7,13 +7,13 @@ import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Identifier;
+import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.settings.parser.ParserType;
 
 public class ParserMovie {
-	private String filename;
 	private String movieName = StringUtils.EMPTY;
 	private List<String> titles 		= new ArrayList<String>();
 	private List<String> types  		= new ArrayList<String>();
@@ -24,9 +24,13 @@ public class ParserMovie {
 	private int episode;
 	private int season;
 	private int year;
+	private int part;
 	private String groupName = StringUtils.EMPTY;
 	
-	public ParserMovie() {
+	private Media media;
+	
+	public ParserMovie(Media md) {
+		this.setMedia(md);
 	}
 	
 	public String getMovieName() {
@@ -77,6 +81,7 @@ public class ParserMovie {
 	public void addMovieNameToken(String token) {
 		this.setMovieName(String.format("%s %s", this.getMovieName(), token));
 	}
+	
 	public List<String> getTitles() {
 		return titles;
 	}
@@ -109,7 +114,7 @@ public class ParserMovie {
 	
 	
 	public String toString() {
-		String output = this.getFilename() + "\n";
+		String output = this.getMedia().getFilename() + "\n";
 		
 		output +=
 				"--- NAME\n";		
@@ -162,14 +167,6 @@ public class ParserMovie {
 		return output;
 	}
 
-	public String getFilename() {
-		return filename;
-	}
-
-	public void setFilename(String filename) {
-		this.filename = filename;
-	}
-
 	public String getGroupName() {
 		return groupName;
 	}
@@ -178,17 +175,31 @@ public class ParserMovie {
 		this.groupName = groupName;
 	}
 	
-	public Movie getMovie() {
+	public MovieOrSeries build() {
+		if (this.getSeason() > 0 || this.getEpisode() > 0) {
+			return new MovieOrSeries(buildSeries());
+		}
+		else {
+			return new MovieOrSeries(buildMovie());
+		}
+	}
+
+	private Movie buildMovie() {
 		Movie.Builder b = Movie.newBuilder();
-			
+		
+		// update media with part information
+		Media md = Media.newBuilder(this.getMedia())
+				.setIndex(this.getPart())
+				.build();
+		
 		b.setID(-1)
 		 .setGroupName(this.getGroupName())
 		 .setTitle(this.getMovieName())
 		 .setYear(this.getYear())
 		 .setIdentifier(Identifier.Parser)
-//		 .setIsTvEpisode(this.getSeason() > 0 || this.getEpisode() > 0)
-		 .setIdentifierRating(this.getIdentifierRating());
-//		 .setSubtitleRetreiveResult(0);
+		 .setIdentifierRating(this.getIdentifierRating())
+		 .addMedia(md)
+		 .setIdentifiedTitle(this.getMovieName());
 
 		if (this.getSounds().size() > 0)
 			b.setSound(this.getSounds().get(0));
@@ -202,8 +213,45 @@ public class ParserMovie {
 		if (this.getLanguages().size() > 0)
 			b.setLanguage(this.getLanguages().get(0));
 		
+		return b.build();							
+	}
+	
+	private Series buildSeries() {
+		Episode.Builder b = Episode.newBuilder();
 		
-		return b.build();		
+		b.setID(-1)
+		 .setGroupName(this.getGroupName())
+		 .setTitle(this.getMovieName())
+		 .setYear(this.getYear())
+		 .setIdentifier(Identifier.Parser)
+		 .setIdentifierRating(this.getIdentifierRating())
+		 .setEpisodeNumber(this.getEpisode())
+		 .addMedia(this.getMedia());
+
+		if (this.getSounds().size() > 0)
+			b.setSound(this.getSounds().get(0));
+		
+		if (this.getTypes().size() > 0)
+			b.setType(this.getTypes().get(0));
+		
+		if (this.getFormats().size() > 0)
+			b.setFormat(this.getFormats().get(0));
+		 
+		if (this.getLanguages().size() > 0)
+			b.setLanguage(this.getLanguages().get(0));
+		
+		return Series.newBuilder()
+			.setID(-1)
+			.setTitle(this.getMovieName())
+			.setIdentifiedTitle(this.getMovieName())
+			.addSeason(
+				Season.newBuilder()
+					.setID(-1)
+					.setSeasonNumber(this.getSeason())
+					.addEpisode(b.build())
+					.build()
+				)
+			.build();		
 	}
 	
 	private int getIdentifierRating() {
@@ -231,5 +279,21 @@ public class ParserMovie {
 			groupsMatched++;
 		
 		return Math.round(100 * groupsMatched / 7);
+	}
+
+	public int getPart() {
+		return part;
+	}
+
+	public void setPart(int part) {
+		this.part = part;
+	}
+
+	public Media getMedia() {
+		return media;
+	}
+
+	private void setMedia(Media media) {
+		this.media = media;
 	}
 }

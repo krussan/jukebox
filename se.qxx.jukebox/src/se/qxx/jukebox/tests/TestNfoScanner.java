@@ -8,6 +8,7 @@ import javax.xml.bind.JAXBException;
 
 import org.apache.commons.io.FilenameUtils;
 
+import se.qxx.jukebox.builders.MovieOrSeries;
 import se.qxx.jukebox.builders.NFOLine;
 import se.qxx.jukebox.builders.NFOScanner;
 import se.qxx.jukebox.builders.NfoBuilder;
@@ -41,7 +42,9 @@ public class TestNfoScanner {
  
 		NfoBuilder builder = new NfoBuilder();
 		
-	    Movie m = builder.extractMovie(filePath, singleFile);
+	    MovieOrSeries mos = builder.extract(filePath, singleFile);
+	    Movie m = mos.getMovie();
+	    
 	    System.out.println(String.format("TITLE\t::\t%s", m.getTitle()));
 	    System.out.println(String.format("YEAR\t::\t%s", m.getYear()));
 	    System.out.println(String.format("TYPE\t::\t%s", m.getType()));

@@ -18,13 +18,14 @@ import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Util;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Identifier;
+import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 
 public class NfoBuilder extends MovieBuilder {
 	
 	
 	@Override
-	public Movie extractMovie(String filepath, String filename) {
+	public MovieOrSeries extract(String filepath, String filename) {
 		Movie m = null;
 		Log.Debug(String.format("NfoBuilder :: filepath :: %s", filepath), LogType.FIND);
 		Log.Debug(String.format("NfoBuilder :: filename :: %s", filename), LogType.FIND);
@@ -101,6 +102,7 @@ public class NfoBuilder extends MovieBuilder {
 						.setIdentifier(Identifier.NFO)
 						.setIdentifierRating(idRating)
 						.setImdbUrl(imdbUrl)
+						.setIdentifiedTitle(title)
 //						.setSubtitleRetreiveResult(0)
 						.build();
 				
@@ -112,7 +114,7 @@ public class NfoBuilder extends MovieBuilder {
 		if (m==null)
 			Log.Debug("No movie found", LogType.FIND);
 		
-		return m; 
+		return new MovieOrSeries(m);
 	}
 
 	protected File findNfoFile(String filepath, String filename) {

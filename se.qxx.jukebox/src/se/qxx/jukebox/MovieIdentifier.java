@@ -3,16 +3,12 @@ package se.qxx.jukebox;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.builders.MovieBuilder;
-import se.qxx.jukebox.builders.PartPattern;
+import se.qxx.jukebox.builders.MovieOrSeries;
 import se.qxx.jukebox.domain.DomainUtil;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
@@ -90,12 +86,10 @@ public class MovieIdentifier implements Runnable {
 		}
 		else {
 			
-			Movie m = MovieBuilder.identifyMovie(path, filename);
-			Series s = MovieBuilder.identifySeries(m, path, filename);
-			
+			MovieOrSeries mos = MovieBuilder.identify(path, filename);
 
-			if (m != null) {
-				matchMovieWithDatabase(m, s, filename);
+			if (mos != null) {
+				matchMovieWithDatabase(mos, filename);
 			}
 			else {
 				Log.Info(String.format("Failed to identity movie with filename :: %s", f.getName()), Log.LogType.FIND);
@@ -113,28 +107,27 @@ public class MovieIdentifier implements Runnable {
 	 * @param movie
 	 * @param filename
 	 */
-	protected void matchMovieWithDatabase(Movie movie, Series series, String filename) {
-		Log.Info(String.format("MovieIdentifier :: Movie identified by %s as :: %s"
-				, movie.getIdentifier().toString(), movie.getTitle()), Log.LogType.FIND);
+	protected void matchMovieWithDatabase(MovieOrSeries mos, String filename) {
+		Log.Info(String.format("MovieIdentifier :: Object identified by %s as :: %s"
+				, mos.getIdentifier().toString(), mos.getTitle()), Log.LogType.FIND);
 		
 		
 		// Check if movie exists in db
-		PartPattern pp = new PartPattern(filename);
-		
-		Log.Debug(String.format("MovieIdentifier :: Finding movie that starts with :: %s", pp.getPrefixFilename()), LogType.FIND);
+		//PartPattern pp = new PartPattern(filename); // ABOMINATION!
 		
 		// Careful here! As the identification of the other movie parts could be in a 
 		// different thread. Hence synchronized declaration.
 		// Shouldn't be a problem no more as all identification is done on a single thread
-		Media newMedia = movie.getMedia(0);
+		Media newMedia = mos.getMedia();
 		
-		if (series == null) {
-			Movie dbMovie = DB.getMovieByStartOfMediaFilename(pp.getPrefixFilename());
+		if (!mos.isSeries()) {
+			//Movie dbMovie = DB.getMovieByStartOfMediaFilename(mos.getTitle());
+			Movie dbMovie = DB.getMovieByStartOfMediaFilename(mos.getTitle());
 	
 			
 			if (dbMovie == null) {
 				Log.Debug("MovieIdentifier :: Movie not found -- adding new", LogType.FIND);
-				getInfoAndSaveMovie(movie, newMedia);			
+				getInfoAndSaveMovie(mos.getMovie(), newMedia);			
 			}
 			else {
 				Log.Debug("MovieIdentifier :: Movie found -- checking existing media", LogType.FIND);	
@@ -142,15 +135,20 @@ public class MovieIdentifier implements Runnable {
 			}
 		}
 		else {
-			matchSeries(series, pp, newMedia);
+			matchSeries(mos.getSeries(), newMedia);
 		}
 	}
 
-	private void matchSeries(Series series, PartPattern pp, Media newMedia) {
-		int season = pp.getSeason();
-		int episode = pp.getEpisode();
-		
-		Log.Debug(String.format("MovieIndentifier :: Finding series :: %s", series.getTitle()), LogType.FIND);
+	private void matchSeries(Series series, Media newMedia) {
+		// verify that we have season and episode info!
+		int season = series.getSeason(0).getSeasonNumber();
+		int episode = series.getSeason(0).getEpisode(0).getEpisodeNumber();
+		if (season == 0 && episode == 0) {
+			Log.Error("MovieIdentifier :: Series identified but season and episode info not found!", LogType.FIND);
+		}
+		else {
+			Log.Debug(String.format("MovieIndentifier :: Finding series :: %s", series.getTitle()), LogType.FIND);	
+		}
 		
 		// find series that matches
 		// do we not need to merge dbSeries and series??!!

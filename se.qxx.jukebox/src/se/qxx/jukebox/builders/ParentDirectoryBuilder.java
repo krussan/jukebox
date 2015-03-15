@@ -9,14 +9,17 @@ import org.apache.commons.io.FilenameUtils;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Identifier;
+import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
 import se.qxx.jukebox.settings.Settings;
 
-public class ParentDirectoryBuilder extends FilenameBuilder {
+public class ParentDirectoryBuilder extends ParserBuilder {
 
 	@Override
-	public Movie extractMovie(String filepath, String filename) {
+	public MovieOrSeries extract(String filepath, String filename) {
+		Media md = getMedia(filepath, filename);
+		
 		File path = new File(filepath); 
 		String parentDirectoryName = FilenameUtils.getName(filepath);
 		
@@ -31,15 +34,19 @@ public class ParentDirectoryBuilder extends FilenameBuilder {
 
 		Log.Info(String.format("ParentDirectoryBuilder path :: %s", filepath), LogType.FIND);
 
+		MovieOrSeries mos = null;
+		
 		// check if path exist and if that is under one of the base directory
 		if (path.exists() && !isBasePath(filepath)) {
 			// add .dummy as extension as this is removed by FilenameBuilder
-			Movie m = super.extractMovie(path.getParent(), path.getName() + ".dummy");
-			if (m != null) 
-				return Movie.newBuilder(m).setIdentifier(Identifier.ParentDirectory).build();
+			mos = super.extract(path.getParent(), path.getName() + ".dummy");
+			if (mos != null) {
+				mos.replaceMedia(md);
+				mos.setIdentifier(Identifier.ParentDirectory);
+			}
 		}
 
-		return null;
+		return mos;
 	}
 	
 	private boolean isBasePath(String path) {

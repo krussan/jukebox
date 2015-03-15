@@ -19,6 +19,30 @@
         <word key="BDRip" />
         <word key="HDTV" />        
     </type>
+    <year>
+        <word key="(19|20)\d{2}" regex="true" group="0" />
+    </year>
+    <parts>
+        <word key="(Part|CD)[.|_|\s|-]*(\d+)" regex="true" group="2" />
+    </parts>
+    <season>
+        <word key="s(\d{1,2})" regex="true" group="1" />
+        <word key="Season(\d{1,2})" regex="true" group="1" />
+        <word key="(\d{1,2})sezon" regex="true" group="1" />
+        <word key="s(\d{1,2})e(\d{1,2})" regex="true" group="1" recursiveCount="2" />
+        <word key="(\d{1,2})x(\d{1,2})" regex="true" group="1" recursiveCount="2" />
+        <word key="(\d{1,2})sezon(\d{1,2})[.|_|\s|-]*seriya" regex="true" group="1" recursiveCount="2" />
+        <word key="Season(\d{1,2})Episode(\d{1,2})" regex="true" group="1" recursiveCount="2" />
+    </season>
+    <episode>
+        <word key="e(\d{1,2})" regex="true" group="1" />
+        <word key="(\d{1,2})seriya" regex="true" group="1" />
+        <word key="Episode(\d{1,2})" regex="true" group="1" />
+        <word key="s(\d{1,2})e(\d{1,2})" regex="true" group="2" />
+        <word key="(\d{1,2})x(\d{1,2})" regex="true" group="2" />
+        <word key="(\d{1,2})sezon(\d{1,2})seriya" regex="true" group="2" />
+        <word key="Season(\d{1,2})Episode(\d{1,2})" regex="true" group="2" />
+    </episode>
     <format>
         <word key="XviD" />
         <word key="IFLIX" />
@@ -39,6 +63,20 @@
         <word key="en" />
         <word key="de" />
     </language>
+    <groups>
+        <word key="tvp" />
+        <word key="KILLERS" />
+        <word key="LOL" />
+        <word key="DIAMOND" />
+        <word key="JYK" />
+        <word key="MILLENIUM" />
+        <word key="ASAP" />
+        <word key="YIFY" />
+        <word key="ETRG" />
+        <word key="PLAYNOW" />
+        <word key="SPARKS" />
+        <word key="CM8" />
+    </groups>
     <other>
         <word key="REPACK" />
         <word key="V2" />

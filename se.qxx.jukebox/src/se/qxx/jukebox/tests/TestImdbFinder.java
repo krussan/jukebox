@@ -7,7 +7,7 @@ import se.qxx.jukebox.IMDBFinder;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.builders.MovieBuilder;
-import se.qxx.jukebox.builders.PartPattern;
+import se.qxx.jukebox.builders.MovieOrSeries;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.settings.Settings;
@@ -22,17 +22,18 @@ public class TestImdbFinder {
 			String path = FilenameUtils.getPath(filename);
 			filename = FilenameUtils.getName(filename);
 			
-			PartPattern pp = new PartPattern(filename);
-
-			Movie m = MovieBuilder.identifyMovie(path, filename);
-			Series s = MovieBuilder.identifySeries(m, path, filename);
+			MovieOrSeries mos = MovieBuilder.identify(path, filename);
 			
-			if (s == null){
-				Movie mm = IMDBFinder.Get(m);
+			if (!mos.isSeries()){
+				Movie mm = IMDBFinder.Get(mos.getMovie());
 				System.out.println(mm);
 			}
 			else {
-				Series ss = IMDBFinder.Get(s, pp.getSeason(), pp.getEpisode());
+				Series ss = mos.getSeries();
+				ss = IMDBFinder.Get(ss, 
+						ss.getSeason(0).getSeasonNumber(),
+						ss.getSeason(0).getEpisode(0).getEpisodeNumber());
+				
 				System.out.println(ss);
 			}
 			
