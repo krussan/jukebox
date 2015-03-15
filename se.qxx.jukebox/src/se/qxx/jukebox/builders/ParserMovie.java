@@ -275,10 +275,19 @@ public class ParserMovie {
 		if (this.getSounds().size() > 0)
 			groupsMatched++;
 
+		if (this.getYear() > 0)
+			groupsMatched++;
+		
+		if (this.getSeason() > 0)
+			groupsMatched++;
+		
+		if (this.getEpisode() > 0)
+			groupsMatched++;
+		
 		if (!StringUtils.isEmpty(groupName))
 			groupsMatched++;
 		
-		return Math.round(100 * groupsMatched / 7);
+		return Math.round(100 * groupsMatched / 10);
 	}
 
 	public int getPart() {
