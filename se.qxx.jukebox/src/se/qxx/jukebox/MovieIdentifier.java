@@ -83,17 +83,25 @@ public class MovieIdentifier implements Runnable {
 		// Added ignore on all filename that contains the string sample
 		if (StringUtils.containsIgnoreCase(filename, "sample")) {
 			Log.Info(String.format("Ignoring %s as this appears to be a sample", filename), LogType.FIND);
-		}
+		}		
 		else {
-			
-			MovieOrSeries mos = MovieBuilder.identify(path, filename);
-
-			if (mos != null) {
-				matchMovieWithDatabase(mos);
+			//check if the same media already exist in db
+			Media dbMedia = DB.getMediaByFilename(filename);
+			if (dbMedia != null && StringUtils.equalsIgnoreCase(dbMedia.getFilepath(), path)) {
+				Log.Info("Media already exist in DB. Continuing...", LogType.FIND);
+				return;
 			}
 			else {
-				Log.Info(String.format("Failed to identity movie with filename :: %s", f.getName()), Log.LogType.FIND);
+				MovieOrSeries mos = MovieBuilder.identify(path, filename);
+
+				if (mos != null) {
+					matchMovieWithDatabase(mos);
+				}
+				else {
+					Log.Info(String.format("Failed to identity movie with filename :: %s", f.getName()), Log.LogType.FIND);
+				}
 			}
+			
 			
 		}		
 	}
@@ -119,15 +127,6 @@ public class MovieIdentifier implements Runnable {
 		// different thread. Hence synchronized declaration.
 		// Shouldn't be a problem no more as all identification is done on a single thread
 		Media newMedia = mos.getMedia();
-		
-		//check if the same media already exist in db
-		Media dbMedia = DB.getMediaByFilename(newMedia.getFilename());
-		if (dbMedia != null) {
-			if (StringUtils.equalsIgnoreCase(dbMedia.getFilepath(), newMedia.getFilepath())) {
-				Log.Info("Media already exist in DB. Continuing...", LogType.FIND);
-				return;
-			}
-		}
 		
 		if (!mos.isSeries()) {
 			//Movie dbMovie = DB.getMovieByStartOfMediaFilename(mos.getTitle());

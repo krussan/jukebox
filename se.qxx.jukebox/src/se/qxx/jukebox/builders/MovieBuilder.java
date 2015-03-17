@@ -209,13 +209,12 @@ public abstract class MovieBuilder {
 							
 							// it this is a series and season and episode is not set then ignore the
 							// proposal
-							if (proposal.isSeries() 
-								&& proposal.getSeries().getSeasonCount() > 0
-								&& proposal.getSeries().getSeason(0).getEpisodeCount() > 0) {
-								Log.Info("MovieBuilder :: Series ignored since it failed to identify season and episode", LogType.FIND);
+							if (verifyProposal(proposal)) {
+								proposals.add(proposal);
 							}
 							else {
-								proposals.add(proposal);
+								Log.Info("MovieBuilder :: Series ignored since it failed to identify season and episode", LogType.FIND);
+								
 							}
 						}
 					}
@@ -229,6 +228,13 @@ public abstract class MovieBuilder {
 		return proposals;
 	}
 	
+	private static boolean verifyProposal(MovieOrSeries proposal) {
+		return !proposal.isSeries()
+				|| (proposal.isSeries() 
+						&& proposal.getSeries().getSeasonCount() > 0
+						&& proposal.getSeries().getSeason(0).getEpisodeCount() > 0);
+	}
+
 	protected Media getMedia(String filepath, String filename) {
 		return Media.newBuilder()
 				.setID(-1)
