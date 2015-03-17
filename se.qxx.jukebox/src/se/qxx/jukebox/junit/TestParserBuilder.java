@@ -211,5 +211,17 @@ public class TestParserBuilder {
 		assertEquals(1, m.getPart());
 	}
 	
+	@Test
+	public void TestSons() {
+		String filename = " Sons.of.Anarchy.S04.E13To Be, Act 1.mp4";
+		
+		ParserBuilder b = new ParserBuilder();
+		ParserMovie m = b.extractMovieParser("", filename);
+		
+		assertEquals("Sons of Anarchy", m.getMovieName());
+		assertEquals(4, m.getSeason());
+		assertEquals(13, m.getEpisode());
+	}
+	
 	//
 }

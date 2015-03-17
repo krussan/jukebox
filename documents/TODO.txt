@@ -86,8 +86,12 @@ x - Blacklist does not work because IMDB_ID is null for every movie
 	
 
 - 2015-03-14 - ERROR - Subtitle downloader need to be fixed after the above changes.. .but what else is new.
-- 2015-03-17 - ERROR - NFOBuilder does not correctly identify series.
+- 2015-03-17 - HOLD - NFOBuilder does not correctly identify series. Series are ignored if pattern found for now.
 - 2015-03-17 - FIXED - NFOBuilder does not include media
+- 2015-03-17 - WISH	- If we look at the files it seems to update the date parameter when it was last modified.
+			- If we can set some values on "how long" is acceptable before we assume the file is complete, then
+			- we can detect when the download is complete
+
 ---------------------------------------------------------------------
 Environent Issues
 ---------------------------------------------------------------------
