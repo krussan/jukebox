@@ -67,11 +67,12 @@ x - Blacklist does not work because IMDB_ID is null for every movie
 - 2015-03-11		- Yeah. It was the deleteLinkObject in protoDB. Modified to only remove one (!) row.
 - 2015-03-11 - ISSUE - story on series (season/episode as well?) does not get the "full summary" but gets the hyperlink. Haven't we fixed
 			this for movies?
-- 2015-03-11 - ISSUE - we have some problems with episodes that have the episode title in them. These are identified as a new series:
+- 2015-03-11 - FIXED - we have some problems with episodes that have the episode title in them. These are identified as a new series:
 			- example: Homeland Drone Queen WEB DL
 			- example: Sons of Anarchy The Mad King
 			- we should be able to fix this (somewhat) by identifying the series by the name preceeding the s01e01 tag.
 			- will not work for all, but this seems to be the most used pattern.
+			- Fixed by ParserBuilder!
 - 2015-03-09 - WORK IN PROGRESS - Android app have now been fitted with series response object. Need to create the GUI accordingly.
 - 2015-03-11 - ISSUE - What if we have the same episodes but with two different filenames/paths??
 - 2015-03-11 - FIXED - Example "House of Cards" gets new series every time! why is that?
@@ -85,7 +86,8 @@ x - Blacklist does not work because IMDB_ID is null for every movie
 	
 
 - 2015-03-14 - ERROR - Subtitle downloader need to be fixed after the above changes.. .but what else is new.
-
+- 2015-03-17 - ERROR - NFOBuilder does not correctly identify series.
+- 2015-03-17 - FIXED - NFOBuilder does not include media
 ---------------------------------------------------------------------
 Environent Issues
 ---------------------------------------------------------------------

@@ -4,6 +4,7 @@ public class NFOLine {
 	private NFOClass type;
 	private String value;
 	private String line;
+	
 	public NFOClass getType() {
 		return type;
 	}

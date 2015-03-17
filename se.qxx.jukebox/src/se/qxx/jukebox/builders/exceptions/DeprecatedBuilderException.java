@@ -1,4 +1,4 @@
-package se.qxx.jukebox.builders;
+package se.qxx.jukebox.builders.exceptions;
 
 public class DeprecatedBuilderException extends Exception {
 

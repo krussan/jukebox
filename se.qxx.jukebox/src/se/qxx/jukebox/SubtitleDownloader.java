@@ -240,57 +240,57 @@ public class SubtitleDownloader implements Runnable {
 	 * can be found.
 	 * Also writes and merges a subs xml file.s
 	 */
-	private void initSubsDatabaseFromDisk() {
-		ExtensionFileFilter filter = new ExtensionFileFilter();
-		filter.addExtension("srt");
-		filter.addExtension("sub");
-		filter.addExtension("idx");
-
-		File path = new File(subsPath);
-		
-		if (path.exists()) {
-			List<File> list =  Util.getFileListing(path, filter);
-			
-			for (File subFile : list) {
-				String subFilename = subFile.getAbsolutePath();
-				Log.Debug(String.format("INITSUBS :: Initializing subtitles for %s", subFilename), LogType.SUBS);
-				String mediaName = FilenameUtils.getBaseName(subFile.getParentFile().getAbsolutePath());
-				Media md = DB.getMediaByStartOfFilename(mediaName);
-				
-				if (md != null) {
-					Log.Debug(String.format("INITSUBS :: Movie Found :: %s", md.getFilename()), LogType.SUBS);
-					
-					boolean found = false;
-					for (Subtitle sub : md.getSubsList()) {
-						if (StringUtils.equalsIgnoreCase(sub.getFilename(), subFilename)) {
-							found = true;
-							break;
-						}
-					}
-					
-					if (!found){
-						Log.Debug(String.format("INITSUBS :: Sub not found ... Adding %s", subFilename), LogType.SUBS);
-												
-						DB.save(
-							Media.newBuilder(md).addSubs(
-								Subtitle.newBuilder()
-								.setID(-1)
-								.setDescription("")
-								.setMediaIndex(0)
-								.setLanguage("Default")
-								.setFilename(subFilename)
-								.setRating(Rating.NotMatched)
-								.build())
-							.build());
-						
-//						DB.addSubtitle(md, subFilename, StringUtils.EMPTY, Rating.NotMatched, Language.Unknown.toString());						
-					}
-				}
-			}
-			
-//			writeSubsXmlFile();
-		}
-	}
+//	private void initSubsDatabaseFromDisk() {
+//		ExtensionFileFilter filter = new ExtensionFileFilter();
+//		filter.addExtension("srt");
+//		filter.addExtension("sub");
+//		filter.addExtension("idx");
+//
+//		File path = new File(subsPath);
+//		
+//		if (path.exists()) {
+//			List<File> list =  Util.getFileListing(path, filter);
+//			
+//			for (File subFile : list) {
+//				String subFilename = subFile.getAbsolutePath();
+//				Log.Debug(String.format("INITSUBS :: Initializing subtitles for %s", subFilename), LogType.SUBS);
+//				String mediaName = FilenameUtils.getBaseName(subFile.getParentFile().getAbsolutePath());
+//				Media md = DB.getMediaByStartOfFilename(mediaName);
+//				
+//				if (md != null) {
+//					Log.Debug(String.format("INITSUBS :: Movie Found :: %s", md.getFilename()), LogType.SUBS);
+//					
+//					boolean found = false;
+//					for (Subtitle sub : md.getSubsList()) {
+//						if (StringUtils.equalsIgnoreCase(sub.getFilename(), subFilename)) {
+//							found = true;
+//							break;
+//						}
+//					}
+//					
+//					if (!found){
+//						Log.Debug(String.format("INITSUBS :: Sub not found ... Adding %s", subFilename), LogType.SUBS);
+//												
+//						DB.save(
+//							Media.newBuilder(md).addSubs(
+//								Subtitle.newBuilder()
+//								.setID(-1)
+//								.setDescription("")
+//								.setMediaIndex(0)
+//								.setLanguage("Default")
+//								.setFilename(subFilename)
+//								.setRating(Rating.NotMatched)
+//								.build())
+//							.build());
+//						
+////						DB.addSubtitle(md, subFilename, StringUtils.EMPTY, Rating.NotMatched, Language.Unknown.toString());						
+//					}
+//				}
+//			}
+//			
+////			writeSubsXmlFile();
+//		}
+//	}
 	
 	/**
 	 * Saves database entries to subs xml file.

@@ -12,13 +12,14 @@ import se.qxx.jukebox.builders.MovieOrSeries;
 import se.qxx.jukebox.builders.NFOLine;
 import se.qxx.jukebox.builders.NFOScanner;
 import se.qxx.jukebox.builders.NfoBuilder;
+import se.qxx.jukebox.builders.exceptions.SeriesNotSupportedException;
 import se.qxx.jukebox.domain.JukeboxDomain.Identifier;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.imdb.ImdbSettings;
 
 public class TestNfoScanner {
-	public static void main(String[] args) throws IOException, JAXBException {
+	public static void main(String[] args) throws IOException, JAXBException, SeriesNotSupportedException {
 		Settings.initialize();
 		
 	    String FileName = "example.nfo";

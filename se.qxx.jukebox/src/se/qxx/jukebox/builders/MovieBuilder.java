@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Util;
 import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.builders.exceptions.DeprecatedBuilderException;
 import se.qxx.jukebox.domain.DomainUtil;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
@@ -203,9 +204,19 @@ public abstract class MovieBuilder {
 					Object o = Util.getInstance(className);
 					if (o != null) {
 						MovieOrSeries proposal = ((MovieBuilder)o).extract(filepath, filename);
-						if (proposal != null) {
+						if (proposal != null && !proposal.isEmpty()) {
 							proposal.setIdentifierRating(proposal.getIdentifierRating() * weight);
-							proposals.add(proposal);
+							
+							// it this is a series and season and episode is not set then ignore the
+							// proposal
+							if (proposal.isSeries() 
+								&& proposal.getSeries().getSeasonCount() > 0
+								&& proposal.getSeries().getSeason(0).getEpisodeCount() > 0) {
+								Log.Info("MovieBuilder :: Series ignored since it failed to identify season and episode", LogType.FIND);
+							}
+							else {
+								proposals.add(proposal);
+							}
 						}
 					}
 				}

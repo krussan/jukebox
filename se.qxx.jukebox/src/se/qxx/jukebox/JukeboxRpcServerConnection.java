@@ -280,10 +280,15 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 
 		Log.Debug(String.format("Setting subtitle on %s...", request.getPlayerName()), Log.LogType.COMM);
 		
-		Media md = DB.getMediaById(request.getMediaID());
-		Movie m = DB.getMovieByStartOfMediaFilename(md.getFilename());		
-//		List<Subtitle> subs = DB.getSubtitles(md);
+		int mediaID = request.getMediaID();
+		Movie m = DB.getMovieByMediaID(mediaID);
 		
+		Media md = null;
+		for (int i=0;i<m.getMediaCount();i++) {
+			md = m.getMedia(i);
+			if (md.getID() == mediaID)
+				break;
+		}		
 		
 		// It appears that VLC RC interface only reads the first sub-file option specified
 		// in the command sent. Thus we need to clear playlist and restart video each time we

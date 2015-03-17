@@ -89,7 +89,7 @@ public class MovieIdentifier implements Runnable {
 			MovieOrSeries mos = MovieBuilder.identify(path, filename);
 
 			if (mos != null) {
-				matchMovieWithDatabase(mos, filename);
+				matchMovieWithDatabase(mos);
 			}
 			else {
 				Log.Info(String.format("Failed to identity movie with filename :: %s", f.getName()), Log.LogType.FIND);
@@ -107,7 +107,7 @@ public class MovieIdentifier implements Runnable {
 	 * @param movie
 	 * @param filename
 	 */
-	protected void matchMovieWithDatabase(MovieOrSeries mos, String filename) {
+	protected void matchMovieWithDatabase(MovieOrSeries mos) {
 		Log.Info(String.format("MovieIdentifier :: Object identified by %s as :: %s"
 				, mos.getIdentifier().toString(), mos.getTitle()), Log.LogType.FIND);
 		
@@ -120,9 +120,18 @@ public class MovieIdentifier implements Runnable {
 		// Shouldn't be a problem no more as all identification is done on a single thread
 		Media newMedia = mos.getMedia();
 		
+		//check if the same media already exist in db
+		Media dbMedia = DB.getMediaByFilename(newMedia.getFilename());
+		if (dbMedia != null) {
+			if (StringUtils.equalsIgnoreCase(dbMedia.getFilepath(), newMedia.getFilepath())) {
+				Log.Info("Media already exist in DB. Continuing...", LogType.FIND);
+				return;
+			}
+		}
+		
 		if (!mos.isSeries()) {
 			//Movie dbMovie = DB.getMovieByStartOfMediaFilename(mos.getTitle());
-			Movie dbMovie = DB.getMovieByStartOfMediaFilename(mos.getTitle());
+			Movie dbMovie = DB.findMovie(mos.getTitle());
 	
 			
 			if (dbMovie == null) {

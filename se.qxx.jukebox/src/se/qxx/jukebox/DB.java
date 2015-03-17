@@ -124,23 +124,49 @@ public class DB {
 		return StringUtils.trim(ret);
 	}
 	
-	public synchronized static Movie getMovieByStartOfMediaFilename(String startOfMediaFilename) {
-		String searchString = replaceSearchString(startOfMediaFilename) + "%";
+//	public synchronized static Movie getMovieByStartOfMediaFilename(String startOfMediaFilename) {
+//		String searchString = replaceSearchString(startOfMediaFilename) + "%";
+//		
+//		Log.Debug(String.format("DB :: Database search string :: %s", searchString), LogType.MAIN);
+//				 
+//		try {
+//			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+//			List<Movie> result =
+//				db.find(JukeboxDomain.Movie.getDefaultInstance(), 
+//					"media.filename", 
+//					searchString, 
+//					true);
+//			
+//			if (result.size() > 0)
+//				return result.get(0);
+//			else
+//				return null;
+//		} catch (Exception e) {
+//			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
+////			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
+//			
+//			return null;
+//		}
+//	}
+
+	public synchronized static Movie findMovie(String identifiedTitle) {
+		String searchString = replaceSearchString(identifiedTitle) + "%";
 		
-		Log.Debug(String.format("DB :: Database search string :: %s", searchString), LogType.MAIN);
-				 
+		Log.Debug(String.format("DB :: Series search string :: %s", searchString), LogType.MAIN);
+		 
 		try {
 			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
 			List<Movie> result =
 				db.find(JukeboxDomain.Movie.getDefaultInstance(), 
-					"media.filename", 
+					"identifiedTitle", 
 					searchString, 
 					true);
 			
 			if (result.size() > 0)
 				return result.get(0);
-			else
+			else 
 				return null;
+			
 		} catch (Exception e) {
 			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
 //			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
@@ -148,9 +174,9 @@ public class DB {
 			return null;
 		}
 	}
-
-	public synchronized static Series findSeries(String seriesIdentifiedTitle) {
-		String searchString = replaceSearchString(seriesIdentifiedTitle) + "%";
+	
+	public synchronized static Series findSeries(String identifiedTitle) {
+		String searchString = replaceSearchString(identifiedTitle) + "%";
 		
 		Log.Debug(String.format("DB :: Series search string :: %s", searchString), LogType.MAIN);
 		 
@@ -595,6 +621,54 @@ public class DB {
 		return false;
 	}
 
+	public static Movie getMovieByMediaID(int mediaID) {
+		try {
+			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			List<Movie> result =
+				db.find(JukeboxDomain.Movie.getDefaultInstance(), 
+					"media.ID", 
+					mediaID, 
+					false);
+			
+			if (result.size() > 0)
+				return result.get(0);
+			else 
+				return null;
+			
+		} catch (Exception e) {
+			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
+//			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
+			
+			return null;
+		}
+			
+	}
+
+	
+	public static Media getMediaByFilename(String filename) {
+		try {
+			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			List<Media> result =
+				db.find(JukeboxDomain.Media.getDefaultInstance(), 
+					"filename", 
+					filename, 
+					false);
+			
+			if (result.size() > 0)
+				return result.get(0);
+			else 
+				return null;
+			
+		} catch (Exception e) {
+			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
+//			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
+			
+			return null;
+		}
+			
+	}
+
+	
 	public static Media getMediaById(int mediaId) {
 		try {
 			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());			
@@ -606,28 +680,28 @@ public class DB {
 		return null;		
 	}
 
-	public static Media getMediaByStartOfFilename(String mediaFilename) {
-		try {
-			String searchString = replaceSearchString(mediaFilename) + "%";
-			
-			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
-			List<Media> result =
-				db.find(JukeboxDomain.Media.getDefaultInstance(), 
-					"filename", 
-					searchString, 
-					true);
-			
-			if (result.size() > 0)
-				return result.get(0);
-			
-		} catch (ClassNotFoundException | SQLException
-				| SearchFieldNotFoundException e) {
-			Log.Error(String.format("Failed to get media %s", mediaFilename), Log.LogType.MAIN, e);
-		}
-		
-		return null;
-	}
-	
+//	public static Media getMediaByStartOfFilename(String mediaFilename) {
+//		try {
+//			String searchString = replaceSearchString(mediaFilename) + "%";
+//			
+//			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+//			List<Media> result =
+//				db.find(JukeboxDomain.Media.getDefaultInstance(), 
+//					"filename", 
+//					searchString, 
+//					true);
+//			
+//			if (result.size() > 0)
+//				return result.get(0);
+//			
+//		} catch (ClassNotFoundException | SQLException
+//				| SearchFieldNotFoundException e) {
+//			Log.Error(String.format("Failed to get media %s", mediaFilename), Log.LogType.MAIN, e);
+//		}
+//		
+//		return null;
+//	}
+//	
 	public static Movie getMovieBySubfilename(String subsFilename) {
 		try {
 			String searchString = replaceSearchString(subsFilename) + "%";

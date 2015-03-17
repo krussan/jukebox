@@ -150,7 +150,7 @@
 	    <antcall target="createscript">
 	        <param name="script.class" value="se.qxx.jukebox.tests.TestImdbFinder" />
 	        <param name="script.file" value="${build.dir}/testImdbFinder.sh" />
-	    </antcall>
+	    </antcall> 
 	    
 	    <antcall target="createscript">
 	        <param name="script.class" value="se.qxx.jukebox.tests.TestParserBuilder" />

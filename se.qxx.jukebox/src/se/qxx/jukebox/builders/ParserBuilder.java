@@ -8,14 +8,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-
-import se.qxx.jukebox.Util;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
-import se.qxx.jukebox.domain.JukeboxDomain.Movie;
-import se.qxx.jukebox.settings.Settings;
-import se.qxx.jukebox.settings.parser.Parser.Keywords;
 import se.qxx.jukebox.settings.parser.ParserSettings;
 import se.qxx.jukebox.settings.parser.ParserType;
 import se.qxx.jukebox.settings.parser.WordType;

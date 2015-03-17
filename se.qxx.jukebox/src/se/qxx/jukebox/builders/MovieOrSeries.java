@@ -40,6 +40,10 @@ public class MovieOrSeries {
 		return this.getSeries() != null;
 	}
 	
+	public boolean isEmpty() {
+		return this.getSeries() == null && this.getMovie() == null;
+	}
+	
 	public int getIdentifierRating() {
 		if (this.isSeries())
 			return this.getEpisode().getIdentifierRating();

@@ -17,11 +17,13 @@ import se.qxx.jukebox.ExtensionFileFilter;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Util;
 import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.builders.exceptions.SeriesNotSupportedException;
 import se.qxx.jukebox.domain.JukeboxDomain.Identifier;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 
 public class NfoBuilder extends MovieBuilder {
+	
 	
 	
 	@Override
@@ -94,6 +96,7 @@ public class NfoBuilder extends MovieBuilder {
 								
 				m = Movie.newBuilder()
 						.setID(-1)
+						.addMedia(getMedia(filepath, filename))
 						.setTitle(title)
 						.setYear(year)
 						.setType(type)
@@ -107,7 +110,11 @@ public class NfoBuilder extends MovieBuilder {
 						.build();
 				
 			}
-		} catch (Exception e) {
+		} 
+		catch (SeriesNotSupportedException sns) {
+			Log.Debug("Series found. Ignoring!", LogType.FIND);
+		}
+		catch (Exception e) {
 			Log.Error("NfoBuilder :: Error", LogType.FIND, e);
 		}
 		

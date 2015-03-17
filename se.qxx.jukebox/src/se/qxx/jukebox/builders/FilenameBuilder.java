@@ -1,5 +1,7 @@
 package se.qxx.jukebox.builders;
 
+import se.qxx.jukebox.builders.exceptions.DeprecatedBuilderException;
+
 //import java.util.ArrayList;
 //import java.util.regex.Matcher;
 //import java.util.regex.Pattern;
