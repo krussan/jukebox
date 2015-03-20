@@ -32,8 +32,6 @@ public class JukeboxFront extends JFrame implements MovieStatusListener, KeyList
 	 */
 	private static final long serialVersionUID = -1556370601254211254L;
 	
-	private static final int SERVER_PORT = 2152;
-	private static final String SERVER_IP_ADDRESS = "192.168.1.120";
 	private static final String LOG4J_PROPS = "log4j.prop";
 	
 	public static Logger log;
@@ -60,7 +58,7 @@ public class JukeboxFront extends JFrame implements MovieStatusListener, KeyList
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
 		NativeLibrary.addSearchPath(
-                RuntimeUtil.getLibVlcLibraryName(), "D:/Dev/svn/jukebox/lib/native/win_x64");
+                RuntimeUtil.getLibVlcLibraryName(), FrontSettings.get().getLibVlcPath());
  
  	    Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
 
@@ -116,7 +114,9 @@ public class JukeboxFront extends JFrame implements MovieStatusListener, KeyList
 
 	private void connect() {
 		if (!Model.get().isInitialized()) {
-			final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(SERVER_IP_ADDRESS, SERVER_PORT);
+			final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
+					FrontSettings.get().getServer(), 
+					FrontSettings.get().getServerPort());
 			
 			try {
 				jh.listMovies("", new RpcCallback<JukeboxResponseListMovies>() {

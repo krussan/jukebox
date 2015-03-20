@@ -25,6 +25,18 @@ public class FrontSettings {
 		return Integer.parseInt(prop.getProperty("jukeboxfront.port", "2156"));		
 	}
 	
+	public String getServer() {
+		return prop.getProperty("jukebox.server");
+	}
+	
+	public int getServerPort() {
+		return Integer.parseInt(prop.getProperty("jukebox.port", "2150"));
+	}
+	
+	public String getLibVlcPath() {
+		return prop.getProperty("libvlc.path");
+	}
+	
 	public static FrontSettings get() {
 		if (_instance == null)
 			_instance = new FrontSettings();

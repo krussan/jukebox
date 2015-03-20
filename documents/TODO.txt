@@ -91,7 +91,8 @@ x - Blacklist does not work because IMDB_ID is null for every movie
 - 2015-03-17 - WISH	- If we look at the files it seems to update the date parameter when it was last modified.
 			- If we can set some values on "how long" is acceptable before we assume the file is complete, then
 			- we can detect when the download is complete
-
+- 2015-03-20 - WISH     - Thumbnail of poster will be sent down to android device
+- 2015-03-20 - BUG	- href links remains in story field. Parse them away and fix "Plot summary" issues
 ---------------------------------------------------------------------
 Environent Issues
 ---------------------------------------------------------------------
