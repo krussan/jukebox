@@ -39,7 +39,7 @@
     </season>
     <episode>
         <word key="(\d{1,2})(\d{2})" regex="true" group="2" recursiveCount="2" firstToken="true" />
-        <word key="e(\d{1,2})" regex="true" group="1" />
+        <word key="e(\d{1,2}).*" regex="true" group="1" />
         <word key="(\d{1,2})seriya" regex="true" group="1" />
         <word key="Episode(\d{1,2})" regex="true" group="1" />
         <word key="s(\d{1,2})e(\d{1,2})" regex="true" group="2" />
