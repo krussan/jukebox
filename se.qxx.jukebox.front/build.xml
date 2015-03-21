@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project>
+    <!--  MAIN JUKEBOX BUILD FILE -->
+    
+	<buildnumber file="build.num" />
+	 
+	<include file="../global_properties.xml" />
+	<property name="version.num" value="0.7.${build.number}" />
+				
+	<property name="main.dir" value="${jukebox.solution.dir}/se.qxx.jukebox.front" />
+	<property name="main.src.dir" value="${main.dir}/src" />
+	
+	<property name="build.dir" value="${main.dir}/build" />
+	<property name="classes.dir" value="${build.dir}/classes" />
+
+	<property name="jar.file" value="jukebox-front-${version.num}.jar" />
+		
+	<property name="main-class" value="se.qxx.jukebox.front.JukeboxFront" />
+
+	<property name="target.platform" value="debian_x86_lenny" />
+
+	<target name="protoc">
+	    <exec executable="${jukebox.protoc.comm}" dir="${jukebox.domain.src.dir}">
+	        <arg value="--java_out=." />
+	        <arg value="JukeboxDomain.proto" />
+	    </exec>
+	</target>
+	
+	<target name="clean">
+		<delete dir="${build.dir}" includeemptydirs="true" />
+	</target>
+	
+	<target name="compile">
+		<echo message="libdir :: ${jukebox.lib.dir}" />
+		<mkdir dir="${classes.dir}" />
+		<javac 
+		    srcdir="${jukebox.domain.src.dir}" 
+		    destdir="${classes.dir}" 
+		    classpathref="jukebox.classpath" 
+		    includeantruntime="true" 
+		    debug="true"
+
+		    verbose="true"
+	    />
+		<javac 
+		    srcdir="${jukebox.comm.src.dir}" 
+		    destdir="${classes.dir}" 
+		    classpathref="jukebox.classpath" 
+		    includeantruntime="true" 
+		    debug="true"
+	    />
+		<javac 
+		    srcdir="${main.src.dir}" 
+		    destdir="${classes.dir}" 
+		    classpathref="jukebox.classpath" 
+		    includeantruntime="true"
+		    debug="true"	
+	    />
+	</target>
+	
+	<target name="jar">
+		<jar destfile="${build.dir}/${jar.file}"
+			basedir="${classes.dir}">
+			<manifest>
+				<attribute name="Main-Class" value="${main-class}" />		
+    			<attribute name="Built-By" value="${user.name}"/>
+        		<attribute name="Implementation-Version" value="${version.num}"/> 		
+			</manifest>
+ 		</jar>
+	</target>
+		
+	<target name="build" depends="clean,protoc,compile,jar">
+	</target>
+</project>

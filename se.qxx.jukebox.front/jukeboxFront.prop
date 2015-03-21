@@ -1,5 +1,5 @@
 # Set port to listen on
 jukeboxfront.port=2156
-libvlc.path=D:/Dev/svn/jukebox/lib/native/win_x64
+libvlc.path=/usr/lib
 jukebox.server=192.168.1.120
 jukebox.port=2152

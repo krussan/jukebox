@@ -18,7 +18,7 @@
 	<property name="jukebox.apk.deploy.path" value="${jukebox.deploy.user}@${jukebox.deploy.server}:${jukebox.deploy.server.path.apk}" />
 
 	<path id="jukebox.classpath">
-        <fileset dir="${jukebox.lib.dir}" includes="**/*.jar"/>
-    </path>
+           <fileset dir="${jukebox.lib.dir}" includes="**/*.jar"/>
+    	</path>
 	
 </project>
