@@ -27,9 +27,7 @@ public class Arguments {
 		
 		CommandLineParser parser = new org.apache.commons.cli.GnuParser();
 		try {
-			Arguments arg = 
-			CommandLine line = parser.parse(opt, args);
-			
+			Arguments arg = new Arguments(parser.parse(opt, args));
 			
 			return true;
 		} catch (ParseException e) {
