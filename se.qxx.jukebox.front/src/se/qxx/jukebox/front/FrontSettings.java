@@ -9,12 +9,12 @@ public class FrontSettings {
 	private Properties prop;
 	private static FrontSettings _instance;
 	
-	private FrontSettings() {
+	private FrontSettings(String propFile) {
 		prop = new Properties();
 		 
     	try {
             //load a properties file
-    		prop.load(new FileInputStream("jukeboxFront.prop"));
+    		prop.load(new FileInputStream(propFile));
  
     	} catch (IOException ex) {
     		ex.printStackTrace();
