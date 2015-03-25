@@ -55,6 +55,24 @@ public class JukeboxFront extends JFrame implements MovieStatusListener, KeyList
 	}
 	
 	public static final void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
+		Arguments.parseCLI(args);
+		
+		if (checkArgs()) {
+			initialize();
+		}
+		
+	}
+
+	private static boolean checkArgs() {
+		if (Arguments.cmd().hasOption("help")) {
+			Arguments.get().printHelp();
+			return false;
+		}
+			
+		return true;
+	}
+	
+	private static void initialize() throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
 		NativeLibrary.addSearchPath(
@@ -70,7 +88,6 @@ public class JukeboxFront extends JFrame implements MovieStatusListener, KeyList
 				}
 			});
 	}
-
 	private void setupMain() {
 //	    ImageCanvas c = new ImageCanvas("/res/xperiencebg.jpg");
 //	    c.setBackground(Color.black);
