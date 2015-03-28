@@ -2,6 +2,9 @@ package se.qxx.jukebox.front;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.GraphicsEnvironment;
+import java.awt.GraphicsDevice;
+import java.awt.Rectangle;
 import java.util.concurrent.CountDownLatch;
 
 import javax.swing.JFrame;
@@ -10,6 +13,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import org.apache.commons.lang3.SystemUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
@@ -116,13 +121,17 @@ public class JukeboxFront extends JFrame implements MovieStatusListener, KeyList
 			mainCarousel.addKeyListener(this);
 	    	
 		    //frame = new JFrame("Jukebox Front");	
-		    //GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow(frame);
+		    
 		    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		    this.setContentPane(mainCarousel);
 		    this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-		    this.setUndecorated(true);
-		    this.setVisible(true);
 		    this.addKeyListener(this);
+
+		    //this.setUndecorated(true);
+		    //this.setVisible(true);
+
+		    //GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow(this);
+		    setFullscreen();
 		} catch (InterruptedException e) {
 			System.exit(-1);
 		}
@@ -241,5 +250,32 @@ public class JukeboxFront extends JFrame implements MovieStatusListener, KeyList
 	@Override
 	public void keyTyped(KeyEvent e) {
 		
+	}
+
+	private void setFullscreen() {
+	 final GraphicsDevice gd = this.getGraphicsConfiguration().getDevice();
+	      log.debug(SystemUtils.OS_NAME);
+	      log.debug(SystemUtils.OS_VERSION);
+	      log.debug(SystemUtils.OS_ARCH);
+	      log.debug(System.getProperty("linux.version", ""));
+
+	      this.setUndecorated( true );
+	      this.setResizable(true);
+
+	      boolean isFullScreenSupported = gd.isFullScreenSupported();
+	      if (StringUtils.containsIgnoreCase(System.getProperty("linux.version", ""), "ubuntu"))
+		  isFullScreenSupported = true;
+
+	      if (isFullScreenSupported) {
+		  log.debug("- Creating UI window (native fullscreen)");
+		  gd.setFullScreenWindow(this);
+	      }
+	      else {
+		  final Rectangle bounds = this.getGraphicsConfiguration().getBounds(); 
+		  log.debug("- Creating UI window (fullscreen fallback for " + bounds + ")");
+		  this.setAlwaysOnTop( true );
+		  this.setBounds( bounds );
+		  this.setVisible( true );
+	      }
 	}
 }
