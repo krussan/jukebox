@@ -6,10 +6,10 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/se.qxx.jukebox.domain"/>
 	<classpathentry kind="lib" path="../../lib/protobuf-2.4.1.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/se.qxx.jukebox.comm"/>
-	<classpathentry kind="lib" path="/home/ubuntu/workspace/jukebox/lib/commons-lang3-3.1.jar"/>
-	<classpathentry kind="lib" path="/home/ubuntu/workspace/jukebox/lib/jna.jar"/>
-	<classpathentry kind="lib" path="/home/ubuntu/workspace/jukebox/lib/log4j-1.2.17.jar"/>
-	<classpathentry kind="lib" path="/home/ubuntu/workspace/jukebox/lib/vlcj-2.2.0.jar"/>
-	<classpathentry kind="lib" path="/home/ubuntu/workspace/jukebox/lib/commons-cli-1.2.jar"/>
+	<classpathentry kind="lib" path="../../lib/commons-lang3-3.1.jar"/>
+	<classpathentry kind="lib" path="../../lib/jna.jar"/>
+	<classpathentry kind="lib" path="../../lib/log4j-1.2.17.jar"/>
+	<classpathentry kind="lib" path="../../lib/vlcj-2.2.0.jar"/>
+	<classpathentry kind="lib" path="../../lib/commons-cli-1.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

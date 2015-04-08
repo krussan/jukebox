@@ -8,6 +8,6 @@
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry kind="lib" path="libs/android-support-v4.jar"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
-	<classpathentry kind="lib" path="/home/ubuntu/workspace/jukebox/trunk/se.qxx.android.jukebox/libs/protobuf-socket-rpc-2.0.jar"/>
+	<classpathentry kind="lib" path="../../trunk/se.qxx.android.jukebox/libs/protobuf-socket-rpc-2.0.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
