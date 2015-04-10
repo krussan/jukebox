@@ -199,26 +199,27 @@ public class JukeboxFront extends JFrame implements MovieStatusListener, KeyList
 
 	@Override
 	public void keyPressed(KeyEvent e) {
+		if (e.getKeyCode() == KeyEvent.VK_ENTER)
+			startStop();
+		
+	}
+	
+	private void startStop() {
 		if (player.isPlaying()) {
-			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 				this.stop();
-			}					
 		}
 		else {
-			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-				Movie m = Model.get().getMovie(mainCarousel.getCurrentIndex());
-				
-				JukeboxFront.log.info(m.getMedia(0).getFilename());
-				String filepath = m.getMedia(0).getFilepath().replace("/c/media/BitTorrent", "");
-				if (filepath.startsWith("/"))
-					filepath = filepath.substring(1);
-				
-				String filename = String.format("\\\\ULTRA\\media\\BitTorrent\\%s\\%s", filepath, m.getMedia(0).getFilename());
-				
-				this.play(filename);
-			}			
-		}
+			Movie m = Model.get().getMovie(mainCarousel.getCurrentIndex());
 			
+			JukeboxFront.log.info(m.getMedia(0).getFilename());
+			String filepath = m.getMedia(0).getFilepath().replace("/c/media/BitTorrent", "");
+			if (filepath.startsWith("/"))
+				filepath = filepath.substring(1);
+			
+			String filename = String.format("\\\\ULTRA\\media\\BitTorrent\\%s\\%s", filepath, m.getMedia(0).getFilename());
+			
+			this.play(filename);
+		}
 	}
 	
 	private void setupListening() {
