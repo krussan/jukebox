@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="global_properties">
-	<include file="local_properties.xml" optional="false"/>
+	<dirname file="${basedir}" property="jukebox.solution.dir" />
+	<dirname file="${jukebox.solution.dir}" property="jukebox.root.dir" />
+	<dirname file="${jukebox.root.dir}" property="jukebox.root.dir" />
 
+	<echo message="jukebox.root.dir :: ${jukebox.root.dir}" />
+	<echo message="jukebox.solution.dir :: ${jukebox.solution.dir}" />
+
+	<exec executable="hostname" outputproperty="computer.hostname"/>
+	<include file="local_properties_${computer.hostname}.xml" optional="false"/>
+	
 	<property name="jukebox.lib.dir" value="${jukebox.root.dir}/lib" />	
 	<property name="jukebox.solution.dir" value="${jukebox.root.dir}/trunk" />
 	<property name="jukebox.domain.dir" value="${jukebox.solution.dir}/se.qxx.jukebox.domain" />

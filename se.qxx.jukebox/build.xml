@@ -8,6 +8,8 @@
 	<property name="version.num" value="0.7.${build.number}" />
 				
 	<property name="main.dir" value="${jukebox.solution.dir}/se.qxx.jukebox" />
+
+<echo message="main.dir :: ${main.dir}" />
 	<property name="main.src.dir" value="${main.dir}/src" />
 	
 	<property name="build.dir" value="${main.dir}/build" />
