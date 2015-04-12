@@ -39,8 +39,8 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 //	private boolean mouseMoved = false;
 	private int lastMouseX = 0;
 	
-	double velocity = 10;
-	RotationTimer timer = new RotationTimer();
+//	double velocity = 10;
+	RotationWidget rotationHandler = new RotationWidget();
 
 	double acceleration = .998;
 	double velocityThreshold = .00002;
@@ -58,7 +58,8 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
     double logPosition;
     double logDistance;
     
-    long keyTimer = 0;
+    private boolean keyDown = false;
+//    long keyTimer = 0;
     private int direction = 0;
     boolean debugMode = true;
     
@@ -120,7 +121,7 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
         requestFocus();
         animator = new Thread(this);
         animator.start();
-        rotater = new Thread(timer);
+        rotater = new Thread(rotationHandler);
         rotater.start();
         
     }
@@ -152,7 +153,7 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 				g.drawString(String.format("logPosition :: %s",  this.logPosition), 20, 50);
 				g.drawString(String.format("logDistance :: %s",  this.logDistance), 20, 65);
 				g.drawString(String.format("acceleration :: %s",  acceleration), 20, 80);
-				g.drawString(String.format("velocity :: %s",  velocity), 20, 95);
+				g.drawString(String.format("velocity :: %s",  rotationHandler.getVelocity()), 20, 95);
 				g.drawString(String.format("currentZIndex :: %s", images[this.currentPhotoIndex].getzIndex()), 20, 110);
 				g.drawString(String.format("isKeyDown :: %s", false), 20, 125);
 				g.drawString(String.format("lastkey :: %s", this.lastKeycodePressed), 20, 140);
@@ -168,19 +169,6 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
     
     public void cycle() {
 		placeImages();
-//    	Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-//
-//        if (y >= d.getHeight() - star.getHeight(this) || y <= 0)
-//    		directionY = -1 * directionY;
-//        
-//        if (x >= d.getWidth() - star.getWidth(this) || x <= 0)
-//        	directionX = -1 * directionX;
-//
-//        
-//    		
-//        x += directionX;
-//        y += directionY;
-//
     }
 
     
@@ -306,83 +294,6 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
         }		
 	}
 
-	private class RotationTimer implements Runnable {
-		private boolean enabled = false;
-		
-		public void run() {
-			long timeDiff, sleep;
-			long lastTime =  System.currentTimeMillis();
-			while (true) {
-				long currentTime = System.currentTimeMillis();
-				int ticks = (int) (currentTime - lastTime);
-				
-				if (this.isEnabled()) {
-					if (acceleration == 1.0) {
-						setRotation(currentRotation + ticks * velocity);
-					} else {
-						double newVelocity = velocity * Math.pow(acceleration, ticks);
-						
-						if (Math.abs(newVelocity) < velocityThreshold) {
-							setRotation(currentRotation + distanceFromStartingVelocity(velocity, acceleration, velocityThreshold));
-							setVelocity(0.0);
-						} else {
-							setRotation(currentRotation + distanceForXTicks(velocity, acceleration, ticks));
-							setVelocity(newVelocity);
-						}
-					}
-				}
-				timeDiff = System.currentTimeMillis() - lastTime;
-	            sleep = DELAY - timeDiff;
-
-	            if (sleep < 0)
-	                sleep = 2;
-	            try {
-	                Thread.sleep(sleep);
-	            } catch (InterruptedException e) {
-	                System.out.println("interrupted");
-	            }
-	            
-				lastTime = currentTime;
-	            
-			}
-		}
-		
-		public void enable() {
-			this.setEnabled(true);
-		}
-		
-		public void disable() {
-			this.setEnabled(false);
-		}
-
-		public boolean isEnabled() {
-			return enabled;
-		}
-
-		private void setEnabled(boolean enabled) {
-			this.enabled = enabled;
-		}
-	}
-	
-	/**
-	 * Set the speed for the carousel to rotate.
-	 */
-	public void setVelocity(double velocity) {
-		this.velocity = velocity;
-		
-		if (Math.abs(velocity) < velocityThreshold) {
-			if (timer.isEnabled()) 
-				timer.disable();
-			
-			this.velocity = 0;
-		} else if (!timer.isEnabled()) {
-			timer.enable();
-		}
-	}
-	
-	public double getVelocity() {
-		return velocity;
-	}
 
 	/**
 	 * The current rotational position of the carousel. Rotation is based on
@@ -556,7 +467,7 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 
 		double newVelocity = ((double)lastMouseX - (double)pointX) / 3.0;
 		if (lastMouseX > 0 )
-			this.setVelocity(newVelocity / 50);
+			rotationHandler.setVelocity(newVelocity / 50);
 		
 		lastMouseX = pointX;
 		
@@ -565,6 +476,7 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 	@Override
 	public void keyPressed(KeyEvent e) {
 		this.lastKeycodePressed = e.getKeyCode();
+		keyDown = true;
 		
 		direction = 0;
 		if (e.getKeyCode() == KeyEvent.VK_LEFT)
@@ -578,19 +490,22 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 		else if (e.getKeyCode() == 0)
 			this.debugMode = !this.debugMode;
 		
-		if (keyTimer == 0)
-			keyTimer =  System.currentTimeMillis();		
+//		if (keyTimer == 0)
+//			keyTimer =  System.currentTimeMillis();		
 	}
 	
 	@Override
 	public void keyReleased(KeyEvent e) {
+		keyDown = false;
+//		keyTimer = 0;
+		
+		// slow down the acceleration to 0
 		if (direction != 0) {
 			setAcceleration(0.998f);
-			keyTimer = 0;
 			rotateTo(this.currentPhotoIndex + direction);
 		}
 		
-		keyTimer = 0;
+		
 	}
 
 	@Override
@@ -620,7 +535,7 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 		}
 		logDistance = distance;
 		
-		setVelocity(velocityForDistance(distance, acceleration, velocityThreshold));
+		rotationHandler.setVelocity(velocityForDistance(distance, acceleration, velocityThreshold));
 	}
 	
 
