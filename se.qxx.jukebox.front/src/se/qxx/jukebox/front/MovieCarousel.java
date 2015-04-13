@@ -9,8 +9,10 @@ import java.util.List;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.front.model.Model;
 
-public class MovieCarousel extends Carousel {
+public class MovieCarousel extends Carousel implements LogListener {
 
+	boolean debugMode = false;
+	
 	InfoBox info = new InfoBox();
 	/**
 	 * 
@@ -20,6 +22,8 @@ public class MovieCarousel extends Carousel {
     
 	public MovieCarousel(String backgroundImage, List<Movie> movies) {
 		super(backgroundImage, movies.size());
+		
+		super.setLogListener(this);
 		
 		ArrayList<CarouselImage> images = new ArrayList<CarouselImage>();
 		for(Movie m : movies) {
@@ -31,8 +35,6 @@ public class MovieCarousel extends Carousel {
 		
 		loadImages(tracker, images);
 	}
-	
-	
 	
 
     public void paint(Graphics g) {
@@ -57,6 +59,19 @@ public class MovieCarousel extends Carousel {
 	@Override
 	public void keyPressed(KeyEvent e) {
 		super.keyPressed(e);
+		
+		if (e.getKeyCode() == 0) {
+			this.debugMode = !this.debugMode;
+			super.setDebugMode(this.debugMode);
+			info.setDebugMode(this.debugMode);
+		}
+	}
+
+
+
+	@Override
+	public void log(String message) {
+		info.addLog(message);
 	}
 
 }

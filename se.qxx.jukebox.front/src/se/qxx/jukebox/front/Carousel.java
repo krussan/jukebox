@@ -29,6 +29,7 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 	private final int DELAY = 1;
 	
 	MediaTracker tracker;
+	LogListener logListener;
 	
 	private CarouselImage[] images;
 	
@@ -60,7 +61,8 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
     
     long keyTimer = 0;
     private int direction = 0;
-    boolean debugMode = true;
+    boolean debugMode = false;
+    boolean keyDown = false;
     
     int lastKeycodePressed = -1;
         	
@@ -154,7 +156,7 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 				g.drawString(String.format("acceleration :: %s",  acceleration), 20, 80);
 				g.drawString(String.format("velocity :: %s",  velocity), 20, 95);
 				g.drawString(String.format("currentZIndex :: %s", images[this.currentPhotoIndex].getzIndex()), 20, 110);
-				g.drawString(String.format("isKeyDown :: %s", false), 20, 125);
+				g.drawString(String.format("isKeyDown :: %s", this.keyDown), 20, 125);
 				g.drawString(String.format("lastkey :: %s", this.lastKeycodePressed), 20, 140);
 			}
     	}
@@ -168,19 +170,6 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
     
     public void cycle() {
 		placeImages();
-//    	Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-//
-//        if (y >= d.getHeight() - star.getHeight(this) || y <= 0)
-//    		directionY = -1 * directionY;
-//        
-//        if (x >= d.getWidth() - star.getWidth(this) || x <= 0)
-//        	directionX = -1 * directionX;
-//
-//        
-//    		
-//        x += directionX;
-//        y += directionY;
-//
     }
 
     
@@ -219,8 +208,6 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 		double angleOffset = -(decimalOffset * ((Math.PI) / 4));
 
 		for (int i = 0; i < images.length; i++) {
-//			Image image = images[i + preLoadSize];
-			
 			// The actual angle of the given image from the front.
 			double angle = ((i * Math.PI) / 4) + angleOffset;
 			
@@ -312,6 +299,7 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 		public void run() {
 			long timeDiff, sleep;
 			long lastTime =  System.currentTimeMillis();
+
 			while (true) {
 				long currentTime = System.currentTimeMillis();
 				int ticks = (int) (currentTime - lastTime);
@@ -418,6 +406,8 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 	}
 	
 	private void setCurrentPhotoIndex(int photoIndex) {
+		logListener.log(String.format("Setting current photo index :: %s", photoIndex));
+		
 		int size = this.images.length;
 		
 		if (this.currentPhotoIndex == photoIndex)
@@ -564,6 +554,7 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 
 	@Override
 	public void keyPressed(KeyEvent e) {
+		keyDown = true;
 		this.lastKeycodePressed = e.getKeyCode();
 		
 		direction = 0;
@@ -575,8 +566,6 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 			System.exit(0);
 		else if (e.getKeyCode() == KeyEvent.VK_I)
 			rotateTo(0.0f);
-		else if (e.getKeyCode() == 0)
-			this.debugMode = !this.debugMode;
 		
 		if (keyTimer == 0)
 			keyTimer =  System.currentTimeMillis();		
@@ -584,13 +573,13 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 	
 	@Override
 	public void keyReleased(KeyEvent e) {
+		keyDown = false;
+		keyTimer = 0;
+		
 		if (direction != 0) {
 			setAcceleration(0.998f);
-			keyTimer = 0;
 			rotateTo(this.currentPhotoIndex + direction);
 		}
-		
-		keyTimer = 0;
 	}
 
 	@Override
@@ -652,6 +641,14 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 	
 	public int getCurrentIndex() {
 		return (this.currentPhotoIndex + 4) % this.images.length;
+	}
+
+	public void setLogListener(LogListener logListener) {
+		this.logListener = logListener;
+	}
+	
+	public void setDebugMode(boolean debugMode) {
+		this.debugMode = debugMode;
 	}
 	
 //	private boolean keyIsDown() {

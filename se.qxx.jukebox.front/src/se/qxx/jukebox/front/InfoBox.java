@@ -13,6 +13,8 @@ import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.Toolkit;
 import java.awt.geom.RoundRectangle2D;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -21,10 +23,20 @@ import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 public class InfoBox extends Canvas {
 
 	private static final long serialVersionUID = -1946627803885458231L;
+	private LinkedList<String> logs = new LinkedList<String>();
 	
 	private Movie movie;
+	private boolean debugMode = false;
 	
+
 	public InfoBox() {
+	}
+
+	public void addLog(String msg) {
+		if (logs.size() > 0 && !StringUtils.equalsIgnoreCase(msg, logs.getLast()))
+			logs.add(msg);
+		
+		cleanLog();
 	}
 	
 	public Movie getMovie() {
@@ -33,30 +45,31 @@ public class InfoBox extends Canvas {
 	public void setMovie(Movie movie) {
 		this.movie = movie;
 	}
-	
+
+	public boolean isDebugMode() {
+		return debugMode;
+	}
+
+	public void setDebugMode(boolean debugMode) {
+		this.debugMode = debugMode;
+	}
+
 
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
+		
+		if (debugMode)
+			renderLogWindow(g);
+		else
+			renderInfoWindow(g);
+	}
+	
+	private void renderInfoWindow(Graphics g) {
 		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 		Graphics2D g2 = (Graphics2D)g;
-		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
-		g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 		
-		Stroke oldStroke = g2.getStroke();
-		g2.setStroke(new BasicStroke(3.0f));
-		g2.setColor(new Color(224,172,27));
-
-        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
-
-        float boxTop = (float)d.getHeight() - 170;
-    	RoundRectangle2D roundedRectangle = new RoundRectangle2D.Float(10.0f, boxTop, (float)d.getWidth() - 20, 150, 20, 20);
-        g2.draw(roundedRectangle);
-        g2.setStroke(oldStroke);
-        
-        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.1f));
-        g2.fill(roundedRectangle);
-        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+		float boxTop = setupWindow(g2, d);
         
 		g2.setColor(new Color(240,240,240));
 		g2.setFont(new Font("Calibri", Font.BOLD, 24));
@@ -84,6 +97,55 @@ public class InfoBox extends Canvas {
 //        	(int)d.getHeight() - 100,
 //        	g,
 //        	(int)d.getWidth());
+
+	}
+	
+	private float setupWindow(Graphics2D g2, Dimension d) {
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+		
+		Stroke oldStroke = g2.getStroke();
+		g2.setStroke(new BasicStroke(3.0f));
+		g2.setColor(new Color(224,172,27));
+
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
+
+        float boxTop = (float)d.getHeight() - 170;
+    	RoundRectangle2D roundedRectangle = new RoundRectangle2D.Float(10.0f, boxTop, (float)d.getWidth() - 20, 150, 20, 20);
+        g2.draw(roundedRectangle);
+        g2.setStroke(oldStroke);
+        
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.1f));
+        g2.fill(roundedRectangle);
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+        
+        return boxTop;
+	}
+	
+	private void renderLogWindow(Graphics g) {
+		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+		Graphics2D g2 = (Graphics2D)g;
+		float boxTop = setupWindow(g2, d);
+		
+		g2.setFont(new Font("Calibri", Font.PLAIN, 12));		
+		
+		int newY = (int)boxTop + 30;
+
+		cleanLog();
+			
+		int retainer = logs.size() >= 8 ? 8 : logs.size();
+		for (int i=logs.size() - retainer;i < logs.size();i++) {
+			g.drawString(logs.get(i), 30, newY);
+			newY += 15;
+		}
+	}
+	
+	private void cleanLog() {
+		if (logs.size() >= 8) {
+			for (int i=0;i<8;i++) {
+				logs.remove();
+			}
+		}
 	}
 	
 	private void rightText(String text, int yCoord, Graphics g, int containerWidth, int margin) {
