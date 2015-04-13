@@ -8,6 +8,8 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -15,7 +17,10 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import javax.swing.Timer;
 import javax.swing.JPanel;
+
 
 
 public class Carousel extends JPanel implements Runnable, MouseListener, MouseMotionListener, KeyListener  {
@@ -23,6 +28,8 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 	 * 
 	 */
 	private static final long serialVersionUID = -5859498040090776572L;
+	
+	private static final int KEYCONTROL_DELAY = 2;
 	private Thread animator;
 	private Thread rotater;
 	
@@ -30,6 +37,8 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 	
 	MediaTracker tracker;
 	LogListener logListener;
+	
+	private Timer keyControl;
 	
 	private CarouselImage[] images;
 	
@@ -58,7 +67,7 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
     double spiralSpread;
     double logPosition;
     double logDistance;
-    
+    long logLastTime;
     long keyTimer = 0;
     private int direction = 0;
     boolean debugMode = false;
@@ -69,6 +78,7 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 	protected Carousel(String backgroundImage, int size) {
 		init(size);
 		loadBackground(tracker, backgroundImage);
+		
 	}
 	
 	public Carousel(String backgroundImage, String[] imageNames) {
@@ -88,8 +98,11 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
         setDoubleBuffered(true);
         this.images = new CarouselImage[size];
         this.addMouseMotionListener(this);
-        this.addKeyListener(this);
+        
         this.tracker = new MediaTracker(this);
+        
+        this.addKeyListener(KeyListenerWrapper.init(this, true));
+
 	}
 	
 	protected void loadBackground(MediaTracker trac, String backgroundImage) {
@@ -158,6 +171,9 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 				g.drawString(String.format("currentZIndex :: %s", images[this.currentPhotoIndex].getzIndex()), 20, 110);
 				g.drawString(String.format("isKeyDown :: %s", this.keyDown), 20, 125);
 				g.drawString(String.format("lastkey :: %s", this.lastKeycodePressed), 20, 140);
+				g.drawString(String.format("timer enabled :: %s", timer.isEnabled()), 20, 155);
+				g.drawString(String.format("logLastTime :: %s", logLastTime), 20, 170);
+				
 			}
     	}
     	catch (Exception e) {
@@ -299,7 +315,8 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 		public void run() {
 			long timeDiff, sleep;
 			long lastTime =  System.currentTimeMillis();
-
+			logLastTime = lastTime;
+			
 			while (true) {
 				long currentTime = System.currentTimeMillis();
 				int ticks = (int) (currentTime - lastTime);
@@ -311,6 +328,7 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 						double newVelocity = velocity * Math.pow(acceleration, ticks);
 						
 						if (Math.abs(newVelocity) < velocityThreshold) {
+							//set target rotation if we are under threshold 
 							setRotation(currentRotation + distanceFromStartingVelocity(velocity, acceleration, velocityThreshold));
 							setVelocity(0.0);
 						} else {
@@ -363,9 +381,7 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 				timer.disable();
 			
 			this.velocity = 0;
-		} else if (!timer.isEnabled()) {
-			timer.enable();
-		}
+		} 
 	}
 	
 	public double getVelocity() {
@@ -554,6 +570,8 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 
 	@Override
 	public void keyPressed(KeyEvent e) {
+		logListener.log("KeyPressed");
+		
 		keyDown = true;
 		this.lastKeycodePressed = e.getKeyCode();
 		
@@ -579,6 +597,8 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 		if (direction != 0) {
 			setAcceleration(0.998f);
 			rotateTo(this.currentPhotoIndex + direction);
+			if (!timer.isEnabled())
+				timer.enable();
 		}
 	}
 
@@ -594,10 +614,11 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 	 */
 	public void rotateTo(double position) {
 		logPosition = position;
-		if (acceleration >= 1.0) {
-			setRotation(position);
-			return;
-		}
+		
+//		if (acceleration >= 1.0) {
+//			setRotation(position);
+//			return;
+//		}
 		
 		int size = this.images.length;
 		
@@ -650,7 +671,7 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 	public void setDebugMode(boolean debugMode) {
 		this.debugMode = debugMode;
 	}
-	
+
 //	private boolean keyIsDown() {
 //		boolean isKeyInitialized = System.currentTimeMillis() - keyTimer < KEY_DELAY;
 //		if (keyTimer != 0 || isKeyInitialized)
