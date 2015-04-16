@@ -17,7 +17,7 @@ import se.qxx.jukebox.front.JukeboxFront;
 
 public class T9 implements ActionListener {
 	private final static int COMPLETED_DELAY = 1200;
-	private final static int KEYCOMPLETED_DELAY = 1200;
+	private final static int KEYCOMPLETED_DELAY = 2000;
 	
 	private Timer completedTimer;
 	private String typedInput = StringUtils.EMPTY;
@@ -71,11 +71,11 @@ public class T9 implements ActionListener {
 		JukeboxFront.log.debug(String.format("T9 :: Last index :: %s", lastIndex));
 		JukeboxFront.log.debug(String.format("T9 :: Keys :: %s", Arrays.toString(keys)));
 
-		if (newTimestamp - timestamp <= KEYCOMPLETED_DELAY && lastKey != number) {
+		if (newTimestamp - timestamp <= KEYCOMPLETED_DELAY && lastKey == number) {
 			// toggle to next character
 			lastIndex++;
 			if (typedInput.length() > 0)
-				typedInput = typedInput.substring(0, typedInput.length() - 2);			
+				typedInput = typedInput.substring(0, typedInput.length() - 1);			
 			
 			if (lastIndex == keys.length)
 				lastIndex = 0;
@@ -87,11 +87,11 @@ public class T9 implements ActionListener {
 			// save the last character to the feed
 			// start over on the next
 			lastIndex = 0;
-			timestamp = newTimestamp;
 			
 			typedInput += keys[lastIndex];
 		}
 		
+		timestamp = newTimestamp;
 		lastKey = number;
 	}
 	

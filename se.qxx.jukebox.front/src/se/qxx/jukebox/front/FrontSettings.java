@@ -1,7 +1,10 @@
 package se.qxx.jukebox.front;
 
+import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
@@ -16,7 +19,11 @@ public class FrontSettings {
 		 
     	try {
             //load a properties file
-    		prop.load(new FileInputStream(this.getPropFile()));
+    		  BufferedReader reader = new BufferedReader(
+    		           new InputStreamReader(
+    		                      new FileInputStream(this.getPropFile()), "UTF8"));
+
+    		prop.load(reader);
  
     	} catch (IOException ex) {
     		ex.printStackTrace();

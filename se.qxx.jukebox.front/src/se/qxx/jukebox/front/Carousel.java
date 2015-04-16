@@ -587,6 +587,7 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 			setDebugMode(!debugMode);
 		else if (e.getKeyCode() >= 0x30 && e.getKeyCode() <= 0x39)
 			teeniner.addKey(e.getKeyCode() - 0x30);
+		//TODO: Add numeric keypad 
 		
 		if (keyTimer == 0)
 			keyTimer =  System.currentTimeMillis();		
