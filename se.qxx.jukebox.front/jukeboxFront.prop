@@ -3,3 +3,15 @@ jukeboxfront.port=2156
 libvlc.path=/usr/lib
 jukebox.server=192.168.1.120
 jukebox.port=2152
+
+## T9 key maps
+T9.active.keymap=sv
+T9.sv.1=.,_1
+T9.sv.2=abcåä2
+T9.sv.3=def3
+T9.sv.4=ghi4
+T9.sv.5=jkl5
+T9.sv.6=mnoö6
+T9.sv.7=pqrs7
+T9.sv.8=tuv8
+T9.sv.9=wxyz9

@@ -24,25 +24,31 @@ public class FrontSettings {
 	}
 	
 	public String getPropFile() {
-		return getString("", "props", "jukeboxFront.prop");
+		return getString("", "props-file", "jukeboxFront.prop");
 	}
 	
 	public int getPort() {
-		return getInt("jukeboxfront.port", "p", 2156);
+		return getInt("jukeboxfront.port", "front-port", 2156);
 	}
 	
 	public String getServer() {
-		if (Arguments.cmd().hasOption("ip"))
-			return Arguments.cmd().getOptionValue("ip");
-		else
-			return prop.getProperty("jukebox.server");
+		return getString("jukebox.server", "jukebox-server-address", "127.0.0.1");
 	}
 	
 	public int getServerPort() {
-		return getInt("jukebox.port", "sp", 2150);
+		return getInt("jukebox.port", "jukebox-server-port", 2150);
+	}
+	
+	public String getT9ActiveKeymap() {
+		return getString("T9.active.keymap", "keymap", "sv");
+	}
+	
+	public String getT9key(int key) {
+		return getString(String.format("T9.%s.%s", getT9ActiveKeymap(), key), "", "");
 	}
 	
 	public String getLibVlcPath() {
+		
 		return prop.getProperty("libvlc.path");
 	}
 	

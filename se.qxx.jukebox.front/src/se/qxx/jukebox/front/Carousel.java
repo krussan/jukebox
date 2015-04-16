@@ -8,8 +8,6 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -21,6 +19,9 @@ import java.util.Arrays;
 import javax.swing.Timer;
 import javax.swing.JPanel;
 
+import se.qxx.jukebox.front.input.KeyListenerWrapper;
+import se.qxx.jukebox.front.input.T9;
+
 
 
 public class Carousel extends JPanel implements Runnable, MouseListener, MouseMotionListener, KeyListener  {
@@ -29,7 +30,6 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 	 */
 	private static final long serialVersionUID = -5859498040090776572L;
 	
-	private static final int KEYCONTROL_DELAY = 2;
 	private Thread animator;
 	private Thread rotater;
 	
@@ -37,9 +37,7 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 	
 	MediaTracker tracker;
 	LogListener logListener;
-	
-	private Timer keyControl;
-	
+		
 	private CarouselImage[] images;
 	
 //	private final long KEY_DELAY = 500;
@@ -75,6 +73,8 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
     
     int lastKeycodePressed = -1;
         	
+    T9 teeniner = new T9();
+    
 	protected Carousel(String backgroundImage, int size) {
 		init(size);
 		loadBackground(tracker, backgroundImage);
@@ -173,6 +173,7 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 				g.drawString(String.format("lastkey :: %s", this.lastKeycodePressed), 20, 140);
 				g.drawString(String.format("timer enabled :: %s", timer.isEnabled()), 20, 155);
 				g.drawString(String.format("logLastTime :: %s", logLastTime), 20, 170);
+				g.drawString(String.format("T9 input :: %s", teeniner.getTypedInput()), 20, 185);
 				
 			}
     	}
@@ -582,8 +583,10 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 			next();
 		else if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
 			System.exit(0);
-		else if (e.getKeyCode() == KeyEvent.VK_I)
-			rotateTo(0.0f);
+		else if (e.getKeyCode() == 0)
+			setDebugMode(!debugMode);
+		else if (e.getKeyCode() >= 0x30 && e.getKeyCode() <= 0x39)
+			teeniner.addKey(e.getKeyCode() - 0x30);
 		
 		if (keyTimer == 0)
 			keyTimer =  System.currentTimeMillis();		
@@ -671,22 +674,4 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 	public void setDebugMode(boolean debugMode) {
 		this.debugMode = debugMode;
 	}
-
-//	private boolean keyIsDown() {
-//		boolean isKeyInitialized = System.currentTimeMillis() - keyTimer < KEY_DELAY;
-//		if (keyTimer != 0 || isKeyInitialized)
-//			return true;
-//		else
-//			return false;
-////		return keyTimer == 0 && ;
-////		if (keyTimer == 0)
-////			return false;
-////		else 
-////			return System.currentTimeMillis() - keyTimer < KEY_DELAY;
-////		return keyTimer != 0 && ;
-//	}
-
-
-
-
 }

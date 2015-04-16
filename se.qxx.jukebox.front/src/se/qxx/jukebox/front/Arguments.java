@@ -1,5 +1,7 @@
 package se.qxx.jukebox.front;
 
+import java.util.Properties;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -7,6 +9,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.log4j.PropertyConfigurator;
 
 public class Arguments {
 	private static Arguments _instance = null;
@@ -59,39 +62,46 @@ public class Arguments {
 		
 		opt.addOption(new Option("help", "prints this message"));
 		opt.addOption(OptionBuilder
-				.withArgName("file")
+				.withArgName("props-file")
 				.hasArg()
 				.withDescription("Sets the property file to be used for properties")
 				.create("props"));
 		
 		opt.addOption(OptionBuilder
-				.withArgName("path")
+				.withArgName("vlc-path")
 				.hasArg()
 				.withDescription("Sets the path where vlc libraries are found")
 				.withLongOpt("vlc-path")
 				.create("lib"));
 		
 		opt.addOption(OptionBuilder
-				.withArgName("port")
+				.withArgName("front-port")
 				.hasArg()
 				.withDescription("Sets the jukebox front connection port for receiving playback calls")
 				.withLongOpt("front-port")
 				.create("p"));
 		
 		opt.addOption(OptionBuilder
-				.withArgName("port")
+				.withArgName("jukebox-server-port")
 				.hasArg()
 				.withDescription("Sets the jukebox server connection port")
 				.withLongOpt("server-port")
 				.create("sp"));
 		
 		opt.addOption(OptionBuilder
-				.withArgName("address")
+				.withArgName("jukebox-server-address")
 				.hasArg()
 				.withDescription("Sets the ip address of the jukebox server connection")
 				.withLongOpt("server-ip")
 				.create("sip"));
-		
+	
+		opt.addOption(OptionBuilder
+				.withArgName("keymap")
+				.hasArg()
+				.withDescription("Sets the currently active keymap for T9 input")
+				.withLongOpt("keymap")
+				.create("k"));
+	
 		return opt;
 	}
 	

@@ -153,15 +153,21 @@ public class Model {
 	}
 
 	public void sortMovies() {
-		Collections.sort(_movies, new Comparator<Movie>() {
-			@Override
-			public int compare(Movie lhs, Movie rhs) {
-				
-				return lhs.getTitle().compareTo(rhs.getTitle());
-			}
-		});
+		Collections.sort(_movies, new MovieComparator());
+	}
+	
+	public Movie findMovie(String searchstring) {
+		return MovieFinder.search(_movies, searchstring);
 	}
 
+	private class MovieComparator implements Comparator<Movie> {
+
+		@Override
+		public int compare(Movie lhs, Movie rhs) {
+			return lhs.getTitle().compareTo(rhs.getTitle());
+		}
+		
+	}
 	//---------------------------------------------------------------------------------------
 	// MEDIA
 	//---------------------------------------------------------------------------------------
