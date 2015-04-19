@@ -74,7 +74,6 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
     
     int lastKeycodePressed = -1;
         	
-    T9 teeniner = new T9();
     
 	protected Carousel(String backgroundImage, int size) {
 		init(size);
@@ -174,8 +173,7 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 				g.drawString(String.format("lastkey :: %s", this.lastKeycodePressed), 20, 140);
 				g.drawString(String.format("timer enabled :: %s", timer.isEnabled()), 20, 155);
 				g.drawString(String.format("logLastTime :: %s", logLastTime), 20, 170);
-				g.drawString(String.format("T9 input :: %s", teeniner.getTypedInput()), 20, 185);
-				
+
 			}
     	}
     	catch (Exception e) {
@@ -590,10 +588,6 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 			System.exit(0);
 		else if (e.getKeyCode() == 0)
 			setDebugMode(!debugMode);
-		else if (e.getKeyCode() >= 0x30 && e.getKeyCode() <= 0x39)
-			teeniner.addKey(e.getKeyCode() - 0x30);
-		else if (e.getKeyCode() >= 0x60 && e.getKeyCode() <= 0x69)
-			teeniner.addKey(e.getKeyCode() - 0x60);
 
 		this.lastKeycodePressed = e.getKeyCode();
 	}

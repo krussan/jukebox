@@ -67,6 +67,8 @@ public class T9 implements ActionListener {
 		long newTimestamp = System.currentTimeMillis();
 		char[] keys = keymap.get(number);
 		
+		completedTimer.start();
+		
 		JukeboxFront.log.debug(String.format("T9 :: Key pressed :: %s", number));
 		JukeboxFront.log.debug(String.format("T9 :: Last index :: %s", lastIndex));
 		JukeboxFront.log.debug(String.format("T9 :: Keys :: %s", Arrays.toString(keys)));
@@ -104,7 +106,7 @@ public class T9 implements ActionListener {
 		if (arg0.getActionCommand() == "completed") {
 			completedTimer.stop();
 			fireKeyInputCompletedListener(this.getTypedInput());
-			this.setTypedInput(StringUtils.EMPTY);
+			//this.setTypedInput(StringUtils.EMPTY);
 		}
 	}
 
@@ -115,4 +117,5 @@ public class T9 implements ActionListener {
 	public void setTypedInput(String typedInput) {
 		this.typedInput = typedInput;
 	}
+
 }

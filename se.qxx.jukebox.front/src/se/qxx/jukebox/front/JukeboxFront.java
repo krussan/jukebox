@@ -26,6 +26,7 @@ import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.front.comm.TcpListener;
+import se.qxx.jukebox.front.input.T9;
 import se.qxx.jukebox.front.model.Model;
 import uk.co.caprica.vlcj.binding.LibVlc;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
@@ -201,8 +202,9 @@ public class JukeboxFront extends JFrame implements MovieStatusListener, KeyList
 	public void keyPressed(KeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_ENTER)
 			startStop();
-		
+	
 	}
+	
 	
 	private void startStop() {
 		if (player.isPlaying()) {
