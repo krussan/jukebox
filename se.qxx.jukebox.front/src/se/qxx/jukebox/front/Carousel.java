@@ -52,6 +52,7 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 
 	double acceleration = .998;
 	double velocityThreshold = .00002;
+	double maxVelocity = .004;
 	
 	private Image backgroundImg;
 	protected Dimension windowDimension;
@@ -66,7 +67,7 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
     double logPosition;
     double logDistance;
     long logLastTime;
-    long keyTimer = 0;
+    
     private int direction = 0;
     boolean debugMode = false;
     boolean keyDown = false;
@@ -328,6 +329,10 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 					} else {
 						double newVelocity = velocity * Math.pow(acceleration, ticks);
 						
+						
+						if (Math.abs(newVelocity) > maxVelocity)
+							newVelocity = Math.signum(newVelocity) * maxVelocity;
+						
 						if (Math.abs(newVelocity) < velocityThreshold) {
 							//set target rotation if we are under threshold 
 							setRotation(currentRotation + distanceFromStartingVelocity(velocity, acceleration, velocityThreshold));
@@ -574,13 +579,13 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 		logListener.log("KeyPressed");
 		
 		keyDown = true;
-		this.lastKeycodePressed = e.getKeyCode();
+		
 		
 		direction = 0;
 		if (e.getKeyCode() == KeyEvent.VK_LEFT)
-			prev();
+			setSpinner(1, true, e.getKeyCode());
 		else if (e.getKeyCode() == KeyEvent.VK_RIGHT)
-			next();
+			setSpinner(-1, true, e.getKeyCode());
 		else if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
 			System.exit(0);
 		else if (e.getKeyCode() == 0)
@@ -590,21 +595,17 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 		else if (e.getKeyCode() >= 0x60 && e.getKeyCode() <= 0x69)
 			teeniner.addKey(e.getKeyCode() - 0x60);
 
-		if (keyTimer == 0)
-			keyTimer =  System.currentTimeMillis();		
+		this.lastKeycodePressed = e.getKeyCode();
 	}
 	
 	@Override
 	public void keyReleased(KeyEvent e) {
 		keyDown = false;
-		keyTimer = 0;
 		
-		if (direction != 0) {
-			setAcceleration(0.998f);
-			rotateTo(this.currentPhotoIndex + direction);
-			if (!timer.isEnabled())
-				timer.enable();
-		}
+		if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_RIGHT)
+			setSpinner(-1 * direction, false, e.getKeyCode());
+		
+		
 	}
 
 	@Override
@@ -645,20 +646,22 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 		return finalVelocity - distance * Math.log(acceleration);
 	}
 	
-	/**
-	 * Start an animated rotation to the previous photo.
-	 */
-	public void prev() {
-		direction = -1;
-		setAcceleration(1.002f);
-	}
+	public void setSpinner(int dir, boolean keyDown, int currentKey) {
+		direction = dir;
+		if (keyDown) {
+			setAcceleration(1.002f);
+		}
+		else {
+			setAcceleration(0.998f);
+		}
+				
+		if (direction != 0 && lastKeycodePressed != currentKey) {
+			rotateTo(this.currentPhotoIndex + direction);
+		}
+		
+		if (!timer.isEnabled())
+			timer.enable();
 
-	/**
-	 * Start an animated rotation to the next photo.
-	 */
-	public void next() {
-		direction = 1;
-		setAcceleration(1.002f);
 	}
 	
 	private void setAcceleration(double acceleration) {
