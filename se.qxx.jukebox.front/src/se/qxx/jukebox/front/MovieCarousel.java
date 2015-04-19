@@ -44,6 +44,8 @@ public class MovieCarousel extends Carousel implements LogListener, KeyInputComp
 		}
 		
 		loadImages(tracker, images);
+		
+		teeniner.addEventListener(this);
 	}
 	
 
@@ -102,7 +104,9 @@ public class MovieCarousel extends Carousel implements LogListener, KeyInputComp
 
 	@Override
 	public void handleKeyInputCompletedListener(EventObject e) {
+		
 		T9InputCompletedEvent event = (T9InputCompletedEvent)e;
+		JukeboxFront.log.debug(String.format("Input completed :: %s", event.getInput()));
 		
 		int newIndex = MovieFinder.searchIndex(event.getInput());
 		super.setCurrentIndex(newIndex);
