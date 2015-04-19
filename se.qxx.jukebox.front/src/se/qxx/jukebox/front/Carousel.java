@@ -665,6 +665,11 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 	public int getCurrentIndex() {
 		return (this.currentPhotoIndex + 4) % this.images.length;
 	}
+	
+	public void setCurrentIndex(int index) {
+		this.currentPhotoIndex = index;
+		rotateTo(this.currentPhotoIndex);
+	}
 
 	public void setLogListener(LogListener logListener) {
 		this.logListener = logListener;

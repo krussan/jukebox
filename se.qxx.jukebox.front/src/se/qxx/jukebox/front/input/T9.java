@@ -16,8 +16,8 @@ import se.qxx.jukebox.front.FrontSettings;
 import se.qxx.jukebox.front.JukeboxFront;
 
 public class T9 implements ActionListener {
-	private final static int COMPLETED_DELAY = 1200;
-	private final static int KEYCOMPLETED_DELAY = 2000;
+	private final static int COMPLETED_DELAY = 2000;
+	private final static int KEYCOMPLETED_DELAY = 1200;
 	
 	private Timer completedTimer;
 	private String typedInput = StringUtils.EMPTY;

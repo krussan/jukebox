@@ -4,15 +4,19 @@ import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.EventObject;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.front.input.T9;
+import se.qxx.jukebox.front.input.T9.KeyInputCompletedListener;
+import se.qxx.jukebox.front.input.T9InputCompletedEvent;
 import se.qxx.jukebox.front.model.Model;
+import se.qxx.jukebox.front.model.MovieFinder;
 
-public class MovieCarousel extends Carousel implements LogListener {
+public class MovieCarousel extends Carousel implements LogListener, KeyInputCompletedListener {
 
 	boolean debugMode = false;
 	
@@ -93,6 +97,15 @@ public class MovieCarousel extends Carousel implements LogListener {
 	@Override
 	public void log(String message) {
 		info.addLog(message);
+	}
+
+
+	@Override
+	public void handleKeyInputCompletedListener(EventObject e) {
+		T9InputCompletedEvent event = (T9InputCompletedEvent)e;
+		
+		int newIndex = MovieFinder.searchIndex(event.getInput());
+		super.setCurrentIndex(newIndex);
 	}
 
 }
