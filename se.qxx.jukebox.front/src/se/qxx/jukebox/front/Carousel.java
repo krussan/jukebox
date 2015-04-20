@@ -629,7 +629,7 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 			distance += size;
 		}
 		logDistance = distance;
-		
+				
 		setVelocity(velocityForDistance(distance, acceleration, velocityThreshold));
 	}
 	
@@ -666,9 +666,18 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 		return (this.currentPhotoIndex + 4) % this.images.length;
 	}
 	
-	public void setCurrentIndex(int index) {
-		this.currentPhotoIndex = index;
+	public void setCurrentIndex(int index) {		
+		int photoIndex = modulus(index - 4, this.images.length);
+		JukeboxFront.log.debug(String.format("new photoindex :: %s", photoIndex));
+		
+		this.setCurrentPhotoIndex(photoIndex);
 		rotateTo(this.currentPhotoIndex);
+		
+		if (timer.isEnabled())
+			timer.disable();
+		
+		timer.enable();
+
 	}
 
 	public void setLogListener(LogListener logListener) {

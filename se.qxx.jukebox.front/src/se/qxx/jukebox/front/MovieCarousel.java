@@ -109,6 +109,8 @@ public class MovieCarousel extends Carousel implements LogListener, KeyInputComp
 		JukeboxFront.log.debug(String.format("Input completed :: %s", event.getInput()));
 		
 		int newIndex = MovieFinder.searchIndex(event.getInput());
+		JukeboxFront.log.debug(String.format("New Index :: %s", newIndex));
+		
 		super.setCurrentIndex(newIndex);
 	}
 
