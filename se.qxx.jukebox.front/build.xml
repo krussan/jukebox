@@ -5,7 +5,7 @@
 	<buildnumber file="build.num" />
 	 
 	<include file="../global_properties.xml" />
-	<property name="version.num" value="0.1.${build.number}" />
+	<property name="version.num" value="0.2.${build.number}" />
 				
 	<property name="main.dir" value="${jukebox.solution.dir}/se.qxx.jukebox.front" />
 	<property name="main.src.dir" value="${main.dir}/src" />
@@ -70,17 +70,6 @@
    			<fileset dir="${main.dir}/res" />
    		</copy>
    		
-   		<copy todir="${output.dir}">
-   		    <fileset dir="${jukebox.lib.dir}">
-   		        <include name="jna.jar" />
-   		        <include name="protobuf-2.4.1.jar" />
-   		        <include name="commons-lang3-3.1.jar" />
-   		        <include name="protobuf-socket-rpc-2.0.jar" />
-   		        <include name="vlcj-2.2.0.jar" />
-   		        <include name="log4j-1.2.17.jar" />
-   		        <include name="commons-cli-1.2.jar" />
- 		    </fileset>
-   		</copy>
 	</target>
 	
 	<target name="createscript">
@@ -106,13 +95,25 @@
 		<jar destfile="${output.dir}/${jar.file}">
 			<manifest>
 				<attribute name="Main-Class" value="${main-class}" />		
-    			<attribute name="Built-By" value="${user.name}"/>
-        		<attribute name="Implementation-Version" value="${version.num}"/> 		
+    				<attribute name="Built-By" value="${user.name}"/>
+	        		<attribute name="Implementation-Version" value="${version.num}"/> 		
 			</manifest>
+
 			<fileset dir="${classes.dir}" />
 			<fileset dir="${build.dir}">
-		    	<include name="res/**" />
+				<include name="res/**" />
 			</fileset>
+
+			<zipgroupfileset dir="${jukebox.lib.dir}">
+				<include name="jna.jar" />
+				<include name="protobuf-2.4.1.jar" />
+				<include name="commons-lang3-3.1.jar" />
+				<include name="protobuf-socket-rpc-2.0.jar" />
+				<include name="vlcj-2.2.0.jar" />
+				<include name="log4j-1.2.17.jar" />
+				<include name="commons-cli-1.2.jar" />
+			</zipgroupfileset>
+			
  		</jar>
  		
 	</target>

@@ -1,4 +1,5 @@
 version=`uname -v`
 echo $version
 
-java -cp 'jna.jar:${jar.file}:protobuf-2.4.1.jar:commons-lang3-3.1.jar:protobuf-socket-rpc-2.0.jar:vlcj-2.2.0.jar:log4j-1.2.17.jar:commons-cli-1.2.jar' -Dlinux.version=\""$version\"" ${script.class} ${1+"$@"} &
+#java -cp 'jna.jar:${jar.file}:protobuf-2.4.1.jar:commons-lang3-3.1.jar:protobuf-socket-rpc-2.0.jar:vlcj-2.2.0.jar:log4j-1.2.17.jar:commons-cli-1.2.jar' -Dlinux.version=\""$version\"" ${script.class} ${1+"$@"} &
+java -Dlinux.version=\""$version\"" -jar ${jar.file} ${1+"$@"} &
