@@ -93,6 +93,11 @@ x - Blacklist does not work because IMDB_ID is null for every movie
 			- we can detect when the download is complete
 - 2015-03-20 - WISH     - Thumbnail of poster will be sent down to android device
 - 2015-03-20 - BUG	- href links remains in story field. Parse them away and fix "Plot summary" issues
+- 2015-04-05 - BUG	- Front does not set fullscreen. Apparently this is a "feature" in Ubuntu. Switching to other desktop
+			- managers is recommended. Otherwise installing this and setting "legacy fullscreen support" works.
+				sudo apt-get install compizconfig-settings-manager
+				under utility/workarounds enable "legacy fullscreen support"
+
 ---------------------------------------------------------------------
 Environent Issues
 ---------------------------------------------------------------------
