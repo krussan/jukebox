@@ -36,10 +36,16 @@ public class MovieFinder {
 		// ccc
 		// ggg
 		// ppp
+		JukeboxFront.log.debug(String.format("Searching for %s", key));
 		
 		for (int i=0; i<list.size(); i++) {
-			if (key.toLowerCase().compareTo(list.get(i).getTitle().toLowerCase()) <=0)
+			int result = key.toLowerCase().compareTo(list.get(i).getTitle().toLowerCase().trim());
+			JukeboxFront.log.debug(String.format("Testing :: %s - %s", list.get(i).getTitle(), result));
+			
+			if (result <= 0) {
+				JukeboxFront.log.debug("--- FOUND ---");
 				return i;
+			}
 		}
 			
 		return list.size() - 1;

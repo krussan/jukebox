@@ -164,7 +164,7 @@ public class Model {
 
 		@Override
 		public int compare(Movie lhs, Movie rhs) {
-			return lhs.getTitle().compareTo(rhs.getTitle());
+			return lhs.getTitle().toLowerCase().compareTo(rhs.getTitle().toLowerCase());
 		}
 		
 	}
