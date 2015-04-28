@@ -29,25 +29,49 @@ public class MovieFinder {
 	}
 	
 	public static int searchIndex(List<Movie> list, String key) {
-		List<String> titles = new ArrayList<String>();
-		
 		// go
 		// aaa
 		// ccc
 		// ggg
 		// ppp
+		// zzz
 		JukeboxFront.log.debug(String.format("Searching for %s", key));
 		
-		for (int i=0; i<list.size(); i++) {
-			int result = key.toLowerCase().compareTo(list.get(i).getTitle().toLowerCase().trim());
-			JukeboxFront.log.debug(String.format("Testing :: %s - %s", list.get(i).getTitle(), result));
-			
-			if (result <= 0) {
-				JukeboxFront.log.debug("--- FOUND ---");
-				return i;
-			}
+		int mid = list.size() / 2;
+		Movie m = list.get(mid);
+		int result = key.toLowerCase().compareTo(m.getTitle().toLowerCase().trim());
+		
+		JukeboxFront.log.debug(String.format("Testing :: %s - %s", m.getTitle(), result));
+		
+		if (result == 0)
+			return mid;
+		
+		if (list.size() == 1)
+			return -1;
+		
+		if (result < 0) {
+			result = searchIndex(list.subList(0, mid - 1), key);
 		}
-			
-		return list.size() - 1;
+		else {
+			result = searchIndex(list.subList(mid + 1, list.size() - 1), key);
+		}
+		
+		if (result == -1)
+			return mid;
+		else
+			return result;
+		
+		
+//		for (int i=0; i<list.size(); i++) {
+//			int result = key.toLowerCase().compareTo(list.get(i).getTitle().toLowerCase().trim());
+//			JukeboxFront.log.debug(String.format("Testing :: %s - %s", list.get(i).getTitle(), result));
+//			
+//			if (result <= 0) {
+//				JukeboxFront.log.debug("--- FOUND ---");
+//				return i;
+//			}
+//		}
+//			
+//		return list.size() - 1;
 	}	
 }
