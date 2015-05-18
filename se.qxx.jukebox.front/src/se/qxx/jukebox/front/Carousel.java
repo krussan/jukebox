@@ -50,9 +50,12 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 	double velocity = 10;
 	RotationTimer timer = new RotationTimer();
 
+	static final double ACCELERATION_DIFF = 0.002;
+	static final double INITIAL_VELOCITY = 0.02;
+	static final double VELOCITY_THRESHOLD = .00002;
+	static final double MAX_VELOCITY = 0.004;
+	
 	double acceleration = .998;
-	double velocityThreshold = .00002;
-	double maxVelocity = .004;
 	
 	private Image backgroundImg;
 	protected Dimension windowDimension;
@@ -64,9 +67,11 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
     double xRadius;
     double yRadius;
     double spiralSpread;
+
     double logPosition;
     double logDistance;
     long logLastTime;
+    double logVelocity;
     
     private int direction = 0;
     boolean debugMode = false;
@@ -173,6 +178,7 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 				g.drawString(String.format("lastkey :: %s", this.lastKeycodePressed), 20, 140);
 				g.drawString(String.format("timer enabled :: %s", timer.isEnabled()), 20, 155);
 				g.drawString(String.format("logLastTime :: %s", logLastTime), 20, 170);
+				g.drawString(String.format("logVelocity :: %s", logVelocity), 20, 185);				
 
 			}
     	}
@@ -326,14 +332,13 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 						setRotation(currentRotation + ticks * velocity);
 					} else {
 						double newVelocity = velocity * Math.pow(acceleration, ticks);
+
+						if (Math.abs(acceleration) > 1 && Math.abs(newVelocity) > MAX_VELOCITY)
+							newVelocity = Math.signum(newVelocity) * MAX_VELOCITY;
 						
-						
-						if (Math.abs(newVelocity) > maxVelocity)
-							newVelocity = Math.signum(newVelocity) * maxVelocity;
-						
-						if (Math.abs(newVelocity) < velocityThreshold) {
+						if (Math.abs(newVelocity) < VELOCITY_THRESHOLD) {
 							//set target rotation if we are under threshold 
-							setRotation(currentRotation + distanceFromStartingVelocity(velocity, acceleration, velocityThreshold));
+							setRotation(currentRotation + distanceFromStartingVelocity(velocity, acceleration, VELOCITY_THRESHOLD));
 							setVelocity(0.0);
 						} else {
 							setRotation(currentRotation + distanceForXTicks(velocity, acceleration, ticks));
@@ -344,6 +349,8 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 				timeDiff = System.currentTimeMillis() - lastTime;
 	            sleep = DELAY - timeDiff;
 
+	            lastTime = currentTime;
+	            
 	            if (sleep < 0)
 	                sleep = 2;
 	            try {
@@ -352,7 +359,7 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 	                System.out.println("interrupted");
 	            }
 	            
-				lastTime = currentTime;
+				
 	            
 			}
 		}
@@ -380,7 +387,7 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 	public void setVelocity(double velocity) {
 		this.velocity = velocity;
 		
-		if (Math.abs(velocity) < velocityThreshold) {
+		if (Math.abs(velocity) < VELOCITY_THRESHOLD) {
 			if (timer.isEnabled()) 
 				timer.disable();
 			
@@ -498,11 +505,18 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 	private double distanceFromStartingVelocity(double velocity, double acceleration, double finalVelocity) {
 		if (velocity < 0)
 			finalVelocity = -finalVelocity;
-		return (finalVelocity - velocity) / Math.log(acceleration);
+		return (finalVelocity - velocity) / log2(acceleration);
+	}
+	
+	public static double velocityForDistance(double distance, double acceleration, double finalVelocity) {
+		if (distance < 0)
+			finalVelocity = -finalVelocity;
+		
+		return finalVelocity - distance * log2(acceleration);
 	}
 	
 	private double distanceForXTicks(double velocity, double acceleration, int ticks) {
-		return velocity * (Math.pow(acceleration, ticks) - 1) / Math.log(acceleration);
+		return velocity * (Math.pow(acceleration, ticks) - 1) / log2(acceleration);
 	}
 	
 	private int modulus(int a, int b){
@@ -596,8 +610,10 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 	public void keyReleased(KeyEvent e) {
 		keyDown = false;
 		
-		if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_RIGHT)
+		if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_RIGHT) {
+			JukeboxFront.log.debug("KEY UP");
 			setSpinner(-1 * direction, false, e.getKeyCode());
+		}
 		
 		
 	}
@@ -615,42 +631,34 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 	public void rotateTo(double position) {
 		logPosition = position;
 		
-//		if (acceleration >= 1.0) {
-//			setRotation(position);
-//			return;
-//		}
-		
 		int size = this.images.length;
-		
 		double distance = modulus(position, size) - currentRotation;
-		if (distance > size / 2) {
+		
+		if (distance > size / 2)
 			distance -= size;
-		} else if (distance < size / -2) {
+		else if (distance < size / -2)
 			distance += size;
-		}
+		
 		logDistance = distance;
+		logVelocity = velocityForDistance(distance, 1 - ACCELERATION_DIFF, VELOCITY_THRESHOLD); 
 				
-		setVelocity(velocityForDistance(distance, acceleration, velocityThreshold));
+		setVelocity(logVelocity);
+		setAcceleration(1 - ACCELERATION_DIFF);
 	}
-	
-
-	public static double velocityForDistance(double distance, double acceleration, double finalVelocity) {
-		if (distance < 0)
-			finalVelocity = -finalVelocity;
-		return finalVelocity - distance * Math.log(acceleration);
-	}
-	
+		
 	public void setSpinner(int dir, boolean keyDown, int currentKey) {
 		direction = dir;
+		
 		if (keyDown) {
-			setAcceleration(1.002f);
+			setAcceleration(1 + ACCELERATION_DIFF);
 		}
 		else {
-			setAcceleration(0.998f);
+			setAcceleration(1 - ACCELERATION_DIFF);
+			rotateTo(this.currentPhotoIndex - direction);
 		}
-				
+		
 		if (direction != 0 && lastKeycodePressed != currentKey) {
-			rotateTo(this.currentPhotoIndex + direction);
+			setVelocity(direction * INITIAL_VELOCITY);
 		}
 		
 		if (!timer.isEnabled())
@@ -667,16 +675,10 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 	}
 	
 	public void setCurrentIndex(int index) {		
-		int photoIndex = modulus(index - 4, this.images.length);
-		JukeboxFront.log.debug(String.format("new photoindex :: %s", photoIndex));
+		rotateTo(index - 4);
 		
-		this.setCurrentPhotoIndex(photoIndex);
-		rotateTo(this.currentPhotoIndex);
-		
-		if (timer.isEnabled())
-			timer.disable();
-		
-		timer.enable();
+		if (!timer.isEnabled())
+			timer.enable();
 
 	}
 
@@ -686,5 +688,9 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 	
 	public void setDebugMode(boolean debugMode) {
 		this.debugMode = debugMode;
+	}
+	
+	private static double log2(double a) {
+		return Math.log10(a) / Math.log10(2);
 	}
 }

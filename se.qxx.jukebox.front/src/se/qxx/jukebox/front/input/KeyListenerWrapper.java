@@ -14,6 +14,9 @@ import javax.swing.SwingUtilities;
  */
 public final class KeyListenerWrapper implements KeyListener, Runnable
 {
+	
+	private static final int POLL_MILLIS = 8;
+	
     /** The listener to delegate key events to. */
     final KeyListener wrappedListener;
     /** Our background thread. */
@@ -140,7 +143,7 @@ public final class KeyListenerWrapper implements KeyListener, Runnable
                     break;
                 case KeyEvent.KEY_RELEASED:
                     {
-                        final KeyEvent next = this.keyEvents.poll(5, TimeUnit.MILLISECONDS);
+                        final KeyEvent next = this.keyEvents.poll(POLL_MILLIS, TimeUnit.MILLISECONDS);
                         if(next == null)
                         {
                             this.postKeyEvent(last, this.useInvokeLater);

@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.front.JukeboxFront;
 
@@ -21,18 +23,20 @@ public class MovieFinder {
 	}
 	
 	public static int searchIndex(String key) {
-		int index = searchIndex(Model.get().getMovies(), key);
-	    
-		JukeboxFront.log.debug(String.format("Found index :: %s", index));
+		int index = searchIndex2(Model.get().getMovies(), key);
+
+		Movie m = Model.get().getMovie(index);
+		
+		JukeboxFront.log.debug(String.format("Found index :: %s - %s", index, m.getTitle()));
 
 		return index;
 	}
 	
-	public static int searchIndex(List<Movie> list, String key) {
+	private static int searchIndex(List<Movie> list, String key) {
 		// go
 		// aaa
-		// ccc
-		// ggg
+		// ccc 1 -> --
+		// ggg0
 		// ppp
 		// zzz
 		JukeboxFront.log.debug(String.format("Searching for %s", key));
@@ -53,25 +57,55 @@ public class MovieFinder {
 			result = searchIndex(list.subList(0, mid - 1), key);
 		}
 		else {
-			result = searchIndex(list.subList(mid + 1, list.size() - 1), key);
+			result = mid + 1 + searchIndex(list.subList(mid + 1, list.size() - 1), key);
 		}
 		
 		if (result == -1)
 			return mid;
 		else
 			return result;
-		
-		
-//		for (int i=0; i<list.size(); i++) {
-//			int result = key.toLowerCase().compareTo(list.get(i).getTitle().toLowerCase().trim());
-//			JukeboxFront.log.debug(String.format("Testing :: %s - %s", list.get(i).getTitle(), result));
-//			
-//			if (result <= 0) {
-//				JukeboxFront.log.debug("--- FOUND ---");
-//				return i;
-//			}
-//		}
-//			
-//		return list.size() - 1;
 	}	
+	
+	private static int searchIndex2(List<Movie> list, String key) {
+		if (list.size() == 0)
+			return -1;
+		else if (compare(list.get(list.size() - 1), key) > 0)
+			return list.size() - 1;
+		else {
+			int low = 0;
+			int high = list.size() - 1;
+			int mid = -1;
+			
+			while(low<=high) {
+				mid = (low + high) / 2;
+				Movie m = list.get(mid);
+				int result = compare(m, key);
+				
+				JukeboxFront.log.debug(String.format("Testing %s - %s :: %s", mid, m.getTitle(), result));
+				
+				if (result < 0) 
+					high = mid - 1;
+				else if (result > 0)
+					low = mid + 1;
+				else {
+					return mid;
+				}
+			}
+			
+			if (mid == 0 || mid == list.size() - 1)				
+				return mid;
+			
+			int distance = Math.abs(compare(list.get(mid), key)) - Math.abs(compare(list.get(mid + 1), key));
+			if (distance > 0)
+				return mid + 1;
+			else
+				return mid;
+			
+		}
+	}
+	
+	private static int compare(Movie movie, String key) {
+		return key.toLowerCase().compareTo(movie.getTitle().toLowerCase().trim());
+	}
+	
 }
