@@ -23,12 +23,14 @@ public class MovieFinder {
 	}
 	
 	public static int searchIndex(String key) {
-		int index = searchIndex2(Model.get().getMovies(), key);
-
-		Movie m = Model.get().getMovie(index);
+		//int index = searchIndex2(Model.get().getMovies(), key);
+		int index = linearSearch(Model.get().getMovies(), key);
 		
-		JukeboxFront.log.debug(String.format("Found index :: %s - %s", index, m.getTitle()));
-
+		if (index >= 0) {
+			Movie m = Model.get().getMovie(index);
+		
+			JukeboxFront.log.debug(String.format("Found index :: %s - %s", index, m.getTitle()));
+		}
 		return index;
 	}
 	
@@ -92,20 +94,20 @@ public class MovieFinder {
 				}
 			}
 			
-			if (mid == 0 || mid == list.size() - 1)				
-				return mid;
-			
-			int distance = Math.abs(compare(list.get(mid), key)) - Math.abs(compare(list.get(mid + 1), key));
-			if (distance > 0)
-				return mid + 1;
-			else
-				return mid;
-			
+			return mid;
 		}
+	}
+	
+	private static int linearSearch(List<Movie> list, String key) {
+		for (int i=0;i<list.size(); i++) {
+			if (StringUtils.startsWithIgnoreCase(list.get(i).getTitle(), key))
+				return i;
+		}
+		
+		return -1;
 	}
 	
 	private static int compare(Movie movie, String key) {
 		return key.toLowerCase().compareTo(movie.getTitle().toLowerCase().trim());
 	}
-	
 }
