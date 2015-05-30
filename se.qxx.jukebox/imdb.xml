@@ -142,7 +142,7 @@
 		    <regex><![CDATA[(\/title/tt\d{1,10}/episodes\?season=\d{1,2})]]></regex>
 		</infoPattern>
 		<infoPattern type="firstAirDate" group="1">
-		    <regex><![CDATA[\((\d{1,2}\s*?[A-Z]{3}\.\s*?\d{4})\)]]></regex>
+		    <regex><![CDATA[\((\d{1,2}\s*?[A-Z]{3}\.?\s*?\d{4})\)]]></regex>
 		</infoPattern>            
     </infoPatterns>
     <episodePatterns>
@@ -152,6 +152,7 @@
     </episodePatterns>
     
     <datePatterns>
+        <pattern><![CDATA[dd MMM yyyy]]></pattern>
         <pattern><![CDATA[dd MMM. yyyy]]></pattern>
         <pattern><![CDATA[MMM. dd, yyyy]]></pattern>
         <pattern><![CDATA[yyyy-MM-dd]]></pattern>

@@ -24,6 +24,8 @@ public class TestImdbFinder {
 			
 			MovieOrSeries mos = MovieBuilder.identify(path, filename);
 			
+			System.out.println(String.format("Title :: %s", mos.getTitle()));
+			
 			if (!mos.isSeries()){
 				Movie mm = IMDBFinder.Get(mos.getMovie());
 				System.out.println(mm);
