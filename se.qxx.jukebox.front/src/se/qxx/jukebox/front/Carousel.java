@@ -16,15 +16,11 @@ import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import javax.swing.Timer;
 import javax.swing.JPanel;
 
 import se.qxx.jukebox.front.input.KeyListenerWrapper;
-import se.qxx.jukebox.front.input.T9;
 
-
-
-public class Carousel extends JPanel implements Runnable, MouseListener, MouseMotionListener, KeyListener  {
+public abstract class Carousel extends JPanel implements Runnable, MouseListener, MouseMotionListener, KeyListener  {
 	/**
 	 * 
 	 */
@@ -47,6 +43,10 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 //	private boolean mouseMoved = false;
 	private int lastMouseX = 0;
 	
+	// these handles switching between series and movies
+	private double yOffset = 0;
+	private int yOffsetDirection = 0;
+	
 	double velocity = 10;
 	RotationTimer timer = new RotationTimer();
 
@@ -54,6 +54,7 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 	static final double INITIAL_VELOCITY = 0.02;
 	static final double VELOCITY_THRESHOLD = .00002;
 	static final double MAX_VELOCITY = 0.004;
+	static final double Y_VELOCITY = 2.0;
 	
 	double acceleration = .998;
 	
@@ -78,12 +79,13 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
     boolean keyDown = false;
     
     int lastKeycodePressed = -1;
-        	
+
+    
+    protected abstract ArrayList<CarouselImage> nextImageSet(int direction);
     
 	protected Carousel(String backgroundImage, int size) {
 		init(size);
 		loadBackground(tracker, backgroundImage);
-		
 	}
 	
 	public Carousel(String backgroundImage, String[] imageNames) {
@@ -147,40 +149,23 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
     
     public void paint(Graphics g) {
         super.paint(g);
-        CarouselImage copy[] = Arrays.copyOf(this.images, this.images.length);
-        try {
-	        Arrays.sort(copy);
-        }
-        catch (Exception e) {
-        	JukeboxFront.log.error(e);
-        }
+        //CarouselImage copy[] = Arrays.copyOf(this.images, this.images.length);
+//        try {
+//	        Arrays.sort(copy);
+//        }
+//        catch (Exception e) {
+//        	JukeboxFront.log.error(e);
+//        }
         
     	try {
 	    	g.drawImage(backgroundImg, 0, 0, (int)windowDimension.getWidth(), (int)windowDimension.getHeight(), this);
-	
 			
-			for (int i=0; i<copy.length; i++)
-				copy[i].paint(g);
+			for (int i=0; i<this.images.length; i++)
+				this.images[i].paint(g);
 			
-	        Graphics2D g2d = (Graphics2D)g;
-			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+			if (debugMode)
+				printDebugOutput(g);
 			
-			if (debugMode) {
-				g.setColor(Color.WHITE);
-				g.drawString(String.format("currentIndex :: %s",  this.currentPhotoIndex), 20, 20);	
-				g.drawString(String.format("currentRotation :: %s",  this.currentRotation), 20, 35);
-				g.drawString(String.format("logPosition :: %s",  this.logPosition), 20, 50);
-				g.drawString(String.format("logDistance :: %s",  this.logDistance), 20, 65);
-				g.drawString(String.format("acceleration :: %s",  acceleration), 20, 80);
-				g.drawString(String.format("velocity :: %s",  velocity), 20, 95);
-				g.drawString(String.format("currentZIndex :: %s", images[this.currentPhotoIndex].getzIndex()), 20, 110);
-				g.drawString(String.format("isKeyDown :: %s", this.keyDown), 20, 125);
-				g.drawString(String.format("lastkey :: %s", this.lastKeycodePressed), 20, 140);
-				g.drawString(String.format("timer enabled :: %s", timer.isEnabled()), 20, 155);
-				g.drawString(String.format("logLastTime :: %s", logLastTime), 20, 170);
-				g.drawString(String.format("logVelocity :: %s", logVelocity), 20, 185);				
-
-			}
     	}
     	catch (Exception e) {
     		JukeboxFront.log.error("Error in paint method", e);
@@ -190,10 +175,49 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
     	
     }
     
-    public void cycle() {
+    private void printDebugOutput(Graphics g) {
+        Graphics2D g2d = (Graphics2D)g;
+		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+			
+		g.setColor(Color.WHITE);
+		g.drawString(String.format("currentIndex :: %s",  this.currentPhotoIndex), 20, 20);	
+		g.drawString(String.format("currentRotation :: %s",  this.currentRotation), 20, 35);
+		g.drawString(String.format("logPosition :: %s",  this.logPosition), 20, 50);
+		g.drawString(String.format("logDistance :: %s",  this.logDistance), 20, 65);
+		g.drawString(String.format("acceleration :: %s",  acceleration), 20, 80);
+		g.drawString(String.format("velocity :: %s",  velocity), 20, 95);
+		g.drawString(String.format("currentZIndex :: %s", images[this.currentPhotoIndex].getzIndex()), 20, 110);
+		g.drawString(String.format("isKeyDown :: %s", this.keyDown), 20, 125);
+		g.drawString(String.format("lastkey :: %s", this.lastKeycodePressed), 20, 140);
+		g.drawString(String.format("timer enabled :: %s", timer.isEnabled()), 20, 155);
+		g.drawString(String.format("logLastTime :: %s", logLastTime), 20, 170);
+		g.drawString(String.format("logVelocity :: %s", logVelocity), 20, 185);				
+	}
+
+	public void cycle() {
+		setVerticalOffset();		
 		placeImages();
     }
 
+	public void setVerticalOffset() {
+		if (yOffsetDirection != 0)
+			yOffset += Y_VELOCITY * yOffsetDirection;
+		
+		if (yOffsetDirection != 0 && Math.abs(yOffset) < 2.0) {
+			yOffset = 0;
+			yOffsetDirection = 0;
+		}
+		
+		if (Math.abs(yOffset) > (containerHeight - boxHeight / 2.0) + 200) {
+			yOffset = yOffsetDirection * ((containerHeight - boxHeight / 2.0) + 200);
+			yOffset = -1 * yOffset;
+			
+			ArrayList<CarouselImage> newImages = nextImageSet(yOffsetDirection);
+			this.images = new CarouselImage[newImages.size()];
+			
+			loadImages(tracker, newImages);
+		}
+	}
     
     private void initializeWindowSize() {
     	windowDimension = Toolkit.getDefaultToolkit().getScreenSize();
@@ -264,7 +288,8 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 			// effect.
 			float spiralFactor = Math.round(spiralSpread * (i - 4 - decimalOffset));
 			int ycoord = (int) Math.round((y * yRadius) + containerHeight - boxHeight - yRadius - images[i].getIconHeight()
-					/ 2.0 - spiralFactor) - 200;
+					/ 2.0 - spiralFactor + yOffset) - 200;
+			
 			images[i].setY(ycoord);
 			
 			// Finally, fade out the images that are at the very back. Make sure
@@ -693,4 +718,14 @@ public class Carousel extends JPanel implements Runnable, MouseListener, MouseMo
 	private static double log2(double a) {
 		return Math.log10(a) / Math.log10(2);
 	}
+	
+	protected void moveUpwards() {
+		yOffsetDirection = -1;
+	}
+	
+	protected void moveDownwards() {
+		yOffsetDirection = 1;
+	}
+	
+	
 }

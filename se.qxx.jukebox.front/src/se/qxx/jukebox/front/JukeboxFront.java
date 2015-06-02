@@ -2,7 +2,6 @@ package se.qxx.jukebox.front;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.GraphicsEnvironment;
 import java.awt.GraphicsDevice;
 import java.awt.Rectangle;
 import java.util.concurrent.CountDownLatch;
@@ -26,7 +25,6 @@ import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.front.comm.TcpListener;
-import se.qxx.jukebox.front.input.T9;
 import se.qxx.jukebox.front.model.Model;
 import uk.co.caprica.vlcj.binding.LibVlc;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
@@ -103,7 +101,7 @@ public class JukeboxFront extends JFrame implements MovieStatusListener, KeyList
 	    	log.info("Querying jukebox server for movies");
 			waiter.await();
 			
-			mainCarousel = new MovieCarousel("/res/xperiencebg.jpg", Model.get().getMovies());
+			mainCarousel = new MovieCarousel("/res/xperiencebg.jpg");
 			mainCarousel.setMovieStatusListener(this);
 			mainCarousel.addKeyListener(this);
 	    	
@@ -137,7 +135,11 @@ public class JukeboxFront extends JFrame implements MovieStatusListener, KeyList
 					@Override
 					public void run(JukeboxResponseListMovies response) {
 			  			Model.get().clearMovies();
+			  			Model.get().clearSeries();
+			  			
 						Model.get().addAllMovies(response.getMoviesList());
+						Model.get().addAllSeries(response.getSeriesList());
+						
 						Model.get().setInitialized(true);
 						waiter.countDown();
 					}

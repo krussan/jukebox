@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 
 public class Model {
@@ -41,19 +42,18 @@ public class Model {
 			i.next().handleModelUpdatedEventListener(event);
 		}
 	}
-
-	
-	
 		
 	private static Model _instance;
 	private List<Movie> _movies;
+	private List<Series> _series;
 	private List<String> _players;
 	private List<Subtitle> _subs;
 	
 	private Model() {
 		_movies = new ArrayList<Movie>();
+		_series = new ArrayList<Series>();
 		_players = new ArrayList<String>();
-		_subs = new ArrayList<Subtitle>();		
+		_subs = new ArrayList<Subtitle>();
 	}
 	
 	public static Model get() {
@@ -168,6 +168,41 @@ public class Model {
 		}
 		
 	}
+	
+	private class SeriesComparator implements Comparator<Series> {
+
+		@Override
+		public int compare(Series o1, Series o2) {
+			return o1.getTitle().compareToIgnoreCase(o2.getTitle());
+		}
+		
+	}
+	
+	//---------------------------------------------------------------------------------------
+	// SERIES
+	//---------------------------------------------------------------------------------------
+		
+	public void addAllSeries(List<Series> series) {
+		_series.addAll(series);
+		Collections.sort(_series, new SeriesComparator());
+		
+		fireModelUpdatedEvent(ModelUpdatedType.Movies);
+	}
+	
+	public void clearSeries() {
+		_series.clear();
+		fireModelUpdatedEvent(ModelUpdatedType.Movies);
+	}
+	
+	public List<Series> getSeries() {
+		return _series;
+	}
+	
+
+	public Series getSeries(int position) {
+		return _series.get(position);
+	}
+
 	//---------------------------------------------------------------------------------------
 	// MEDIA
 	//---------------------------------------------------------------------------------------

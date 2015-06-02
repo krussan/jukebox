@@ -1,5 +1,4 @@
 package se.qxx.jukebox.domain;
-
 import se.qxx.jukebox.domain.DomainUtil;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Identifier;
@@ -138,6 +137,14 @@ public class MovieOrSeries {
 					.build());
 		}		
 	}
+	
+	public String getMainTitle() {
+		if (this.isSeries())
+			return this.getSeries().getTitle();
+		else
+			return this.getMovie().getTitle();
+		
+	}
 
 	public String getTitle() {
 		if (this.isSeries())
@@ -165,5 +172,19 @@ public class MovieOrSeries {
 	
 	private Episode getEpisode() {
 		return this.getSeries().getSeason(0).getEpisode(0);
+	}
+	
+	public String getMainStory() {
+		if (this.isSeries())
+			return this.getSeries().getStory();
+		else
+			return this.getMovie().getStory();
+	}
+
+	public String getMainRating() {
+		if (this.isSeries())
+			return this.getSeries().getRating();
+		else
+			return this.getMovie().getRating();
 	}
 }

@@ -8,8 +8,10 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.util.LinkedList;
+
 import org.apache.commons.lang3.StringUtils;
 
+import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 
 public class InfoBox extends Canvas {
@@ -17,7 +19,7 @@ public class InfoBox extends Canvas {
 	private static final long serialVersionUID = -1946627803885458231L;
 	private LinkedList<String> logs = new LinkedList<String>();
 	
-	private Movie movie;
+	private MovieOrSeries mos;
 	private boolean debugMode = false;
 	
 
@@ -31,11 +33,11 @@ public class InfoBox extends Canvas {
 		cleanLog();
 	}
 	
-	public Movie getMovie() {
-		return movie;
+	public MovieOrSeries getMovieOrSeries() {
+		return mos;
 	}
-	public void setMovie(Movie movie) {
-		this.movie = movie;
+	public void setMovieOrSeries(MovieOrSeries mos) {
+		this.mos = mos;
 	}
 
 	public boolean isDebugMode() {
@@ -66,18 +68,26 @@ public class InfoBox extends Canvas {
         
 		g2.setColor(new Color(240,240,240));
 		g2.setFont(new Font("Calibri", Font.BOLD, 24));
-		g.drawString(this.getMovie().getTitle(), 30, (int)boxTop + 30);
-		if (this.getMovie().getYear() > 0)
-			RenderUtils.rightText(String.format("[%s]", this.getMovie().getYear()), (int)boxTop + 30, g, (int)d.getWidth(), 20);
-
-
-		g2.setFont(new Font("Calibri", Font.PLAIN, 16));		
-		int newY = RenderUtils.drawTextarea(g, this.getMovie().getStory(), 30, (int)boxTop + 50, (int)(d.getWidth() * 4 / 5 - 30));
-		newY += 10;
-		g.drawString(String.format("Director :: %s", this.getMovie().getDirector()), 30, newY);
-		g.drawString(String.format("Duration :: %s min", this.getMovie().getDuration()), 30, newY + 20);
 		
-		String rating = this.getMovie().getRating();
+		g.drawString(this.getMovieOrSeries().getMainTitle(), 30, (int)boxTop + 30);
+		
+		if (!this.getMovieOrSeries().isSeries()) {
+			if (this.getMovieOrSeries().getMovie().getYear() > 0)
+				RenderUtils.rightText(String.format("[%s]", this.getMovieOrSeries().getMovie().getYear()), (int)boxTop + 30, g, (int)d.getWidth(), 20);
+		}
+
+
+		g2.setFont(new Font("Calibri", Font.PLAIN, 16));
+		
+		int newY = RenderUtils.drawTextarea(g, this.getMovieOrSeries().getMainStory(), 30, (int)boxTop + 50, (int)(d.getWidth() * 4 / 5 - 30));
+		newY += 10;
+		
+		if (!this.getMovieOrSeries().isSeries()) {
+			g.drawString(String.format("Director :: %s", this.getMovieOrSeries().getMovie().getDirector()), 30, newY);
+			g.drawString(String.format("Duration :: %s min", this.getMovieOrSeries().getMovie().getDuration()), 30, newY + 20);
+		}
+		
+		String rating = this.getMovieOrSeries().getMainRating();
 		if (!StringUtils.isEmpty(rating))
 			RenderUtils.rightText(String.format("%s / 10", rating), (int)boxTop + 50, g, (int)d.getWidth(), 20);
 //		rightText(String.format("%s / 10", this.getMovie().getRating()), (int)boxTop + 50, g, (int)d.getWidth(), 20);

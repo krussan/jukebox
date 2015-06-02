@@ -10,6 +10,8 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.domain.JukeboxDomain.Series;
+import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.front.input.T9;
 import se.qxx.jukebox.front.input.T9.KeyInputCompletedListener;
 import se.qxx.jukebox.front.input.T9InputCompletedEvent;
@@ -23,44 +25,75 @@ public class MovieCarousel extends Carousel implements LogListener, KeyInputComp
 	InfoBox info = new InfoBox();
 	InputBox searchInputBox = new InputBox();
 	T9 teeniner = new T9();
+
+
+	public enum DisplayType {
+		Movie
+	 ,  Series
+	}
 	
+	private DisplayType currentType = DisplayType.Movie;
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 311298267035861868L;
     private MovieStatusListener listener;
     
-	public MovieCarousel(String backgroundImage, List<Movie> movies) {
-		super(backgroundImage, movies.size());
+	public MovieCarousel(String backgroundImage) {
+		super(backgroundImage, Model.get().getMovies().size());
 		
 		super.setLogListener(this);
 		
+		loadImages(tracker, getMovieImageSet());
+		
+		teeniner.addEventListener(this);
+	}
+	
+	private ArrayList<CarouselImage> getMovieImageSet() {
 		ArrayList<CarouselImage> images = new ArrayList<CarouselImage>();
-		for(Movie m : movies) {
+		for(Movie m : Model.get().getMovies()) {
 			if (m.getImage().isEmpty())
 				images.add(new CarouselImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/res/movie.png"))));
 			else
 				images.add(new CarouselImage(m.getImage().toByteArray()));
 		}
 		
-		loadImages(tracker, images);
-		
-		teeniner.addEventListener(this);
+		return images;
 	}
 	
 
+	private ArrayList<CarouselImage> getSeriesImageSet() {
+		ArrayList<CarouselImage> images = new ArrayList<CarouselImage>();
+		for(Series s : Model.get().getSeries()) {
+			if (s.getImage().isEmpty())
+				images.add(new CarouselImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/res/movie.png"))));
+			else
+				images.add(new CarouselImage(s.getImage().toByteArray()));
+		}
+		
+		return images;
+	}
+	
     public void paint(Graphics g) {
     	super.paint(g);
     	
     	// paint information about movie.
-    	Movie m = Model.get().getMovie(super.getCurrentIndex());
+    	MovieOrSeries mos = getCurrentMovieOrSeries();    	
     	  
-    	info.setMovie(m);
+    	info.setMovieOrSeries(mos);
     	info.paint(g);
 
     	searchInputBox.paint(g);
     }
     
+	private MovieOrSeries getCurrentMovieOrSeries() {
+    	if (this.currentType == DisplayType.Movie) 
+    		return new MovieOrSeries(Model.get().getMovie(super.getCurrentIndex()));
+    	else
+    		return new MovieOrSeries(Model.get().getSeries(super.getCurrentIndex()));
+	}
+
 	public void setMovieStatusListener(MovieStatusListener movieStatusListener) {
 		this.listener = movieStatusListener;
 	}
@@ -84,6 +117,10 @@ public class MovieCarousel extends Carousel implements LogListener, KeyInputComp
 			addToSearchString(e.getKeyCode() - 0x60);
 		else if (e.getKeyCode() == 8)
 			clearSearchString();
+		else if (e.getKeyCode() == KeyEvent.VK_UP)
+			moveUpwards();
+		else if (e.getKeyCode() == KeyEvent.VK_DOWN)
+			moveDownwards();
 	}
 	
 	public void clearSearchString() {
@@ -113,6 +150,22 @@ public class MovieCarousel extends Carousel implements LogListener, KeyInputComp
 	
 		if (newIndex >= 0)
 			super.setCurrentIndex(newIndex);
+	}
+
+
+	@Override
+	protected ArrayList<CarouselImage> nextImageSet(int direction) {
+		if (currentType == DisplayType.Movie){
+			currentType = DisplayType.Series;
+			return getSeriesImageSet();
+		}
+		else {
+			currentType = DisplayType.Movie;
+			return getMovieImageSet();
+		}
+		
+		
+		
 	}
 
 }
