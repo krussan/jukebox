@@ -8,7 +8,9 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
+import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.settings.parser.ParserSettings;
 import se.qxx.jukebox.settings.parser.ParserType;
 import se.qxx.jukebox.settings.parser.WordType;

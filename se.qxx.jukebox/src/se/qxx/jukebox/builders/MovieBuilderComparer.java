@@ -3,6 +3,7 @@ package se.qxx.jukebox.builders;
 import java.util.Comparator;
 
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.domain.MovieOrSeries;
 
 public class MovieBuilderComparer implements Comparator<MovieOrSeries> {
 

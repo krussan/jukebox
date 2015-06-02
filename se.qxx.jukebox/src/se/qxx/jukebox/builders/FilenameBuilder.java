@@ -1,6 +1,7 @@
 package se.qxx.jukebox.builders;
 
 import se.qxx.jukebox.builders.exceptions.DeprecatedBuilderException;
+import se.qxx.jukebox.domain.MovieOrSeries;
 
 //import java.util.ArrayList;
 //import java.util.regex.Matcher;

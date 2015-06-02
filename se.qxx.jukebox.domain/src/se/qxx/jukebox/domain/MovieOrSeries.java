@@ -1,4 +1,4 @@
-package se.qxx.jukebox.builders;
+package se.qxx.jukebox.domain;
 
 import se.qxx.jukebox.domain.DomainUtil;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;

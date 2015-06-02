@@ -8,7 +8,7 @@ import javax.xml.bind.JAXBException;
 
 import org.apache.commons.io.FilenameUtils;
 
-import se.qxx.jukebox.builders.MovieOrSeries;
+import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.builders.NFOLine;
 import se.qxx.jukebox.builders.NFOScanner;
 import se.qxx.jukebox.builders.NfoBuilder;

@@ -31,7 +31,7 @@ import org.w3c.dom.NamedNodeMap;
 
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.builders.MovieBuilder;
-import se.qxx.jukebox.builders.MovieOrSeries;
+import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;

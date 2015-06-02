@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.builders.MovieBuilder;
-import se.qxx.jukebox.builders.MovieOrSeries;
+import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.domain.DomainUtil;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;

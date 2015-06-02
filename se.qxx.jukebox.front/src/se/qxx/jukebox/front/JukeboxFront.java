@@ -94,25 +94,11 @@ public class JukeboxFront extends JFrame implements MovieStatusListener, KeyList
 				}
 			});
 	}
-	private void setupMain() {
-//	    ImageCanvas c = new ImageCanvas("/res/xperiencebg.jpg");
-//	    c.setBackground(Color.black);
-	    
-//	    JPanel p = new JPanel();
-//	    p.setLayout(new BorderLayout());
-//	    p.add(c, BorderLayout.CENTER);
-	    
-//	    BackDrop bd = new BackDrop();
-//	    bd.setLayout(new BorderLayout());
-    
+	
+	private void setupMain() {    
 	    player = new JukeboxMediaPlayer(this);
 	    player.addKeyListener(this);
-	    
-//	    int size = Model.get().getMovies().size();
-//	    String[] imageUrls = new String[size];
-//	    for (int i=0;i<size;i++) 
-//	    	imageUrls[i] = String.format("/res/test/movie%s.jpg", i);
-	    	    
+	    	    	    
 	    try {
 	    	log.info("Querying jukebox server for movies");
 			waiter.await();
@@ -179,7 +165,6 @@ public class JukeboxFront extends JFrame implements MovieStatusListener, KeyList
 	public void play(String filename) {
 		JukeboxFront.log.debug(String.format("Play issued on %s", filename));
 		changePanel(player);
-//		player.initialize(this);
 
 		try {
 			if (!player.start(filename)) {
@@ -271,15 +256,15 @@ public class JukeboxFront extends JFrame implements MovieStatusListener, KeyList
 		  isFullScreenSupported = true;
 
 	      if (isFullScreenSupported) {
-		  log.debug("- Creating UI window (native fullscreen)");
-		  gd.setFullScreenWindow(this);
+			  log.debug("- Creating UI window (native fullscreen)");
+			  gd.setFullScreenWindow(this);
 	      }
 	      else {
-		  final Rectangle bounds = this.getGraphicsConfiguration().getBounds(); 
-		  log.debug("- Creating UI window (fullscreen fallback for " + bounds + ")");
-		  this.setAlwaysOnTop( true );
-		  this.setBounds( bounds );
-		  this.setVisible( true );
+			  final Rectangle bounds = this.getGraphicsConfiguration().getBounds(); 
+			  log.debug("- Creating UI window (fullscreen fallback for " + bounds + ")");
+			  this.setAlwaysOnTop( true );
+			  this.setBounds( bounds );
+			  this.setVisible( true );
 	      }
 	}
 }
