@@ -177,6 +177,7 @@ public class JukeboxFront extends JFrame implements MovieStatusListener, KeyList
 
 	@Override
 	public void play(String filename) {
+		JukeboxFront.log.debug(String.format("Play issued on %s", filename));
 		changePanel(player);
 //		player.initialize(this);
 
@@ -187,7 +188,7 @@ public class JukeboxFront extends JFrame implements MovieStatusListener, KeyList
 		}
 		catch (Exception e) {
 			JukeboxFront.log.error("Error when starting video", e);
-			changePanel(player);
+			changePanel(mainCarousel);
 		}		
 	}
 	
@@ -208,7 +209,7 @@ public class JukeboxFront extends JFrame implements MovieStatusListener, KeyList
 	
 	private void startStop() {
 		if (player.isPlaying()) {
-				this.stop();
+			this.stop();
 		}
 		else {
 			Movie m = Model.get().getMovie(mainCarousel.getCurrentIndex());

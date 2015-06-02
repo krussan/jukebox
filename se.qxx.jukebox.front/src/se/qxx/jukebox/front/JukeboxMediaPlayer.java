@@ -20,13 +20,18 @@ public class JukeboxMediaPlayer extends JPanel {
 	private static final long serialVersionUID = -6294647093162238024L;
 	EmbeddedMediaPlayer mediaPlayerComponent;
 	
+	private JFrame parentFrame = null;
+	
 	public JukeboxMediaPlayer(JFrame frame) {
+		this.parentFrame = frame;
 		movieCanvas.setBackground(Color.BLACK);
 	    
 	    this.setLayout(new BorderLayout());
 	    this.add(movieCanvas, BorderLayout.CENTER);
-	    
-	    String[] VLC_ARGS = {
+	}
+	
+	private void initSurface() {
+		String[] VLC_ARGS = {
 	            "--intf", "dummy",          // no interface
 //	            "--vout", "dummy",          // we don't want video (output)
 //	            "--no-audio",               // we don't want audio (decoding)
@@ -42,9 +47,9 @@ public class JukeboxMediaPlayer extends JPanel {
 	    };
 	    
 	    MediaPlayerFactory factory = new MediaPlayerFactory(VLC_ARGS);
-	    mediaPlayerComponent = factory.newEmbeddedMediaPlayer(new DefaultFullScreenStrategy(frame));
+	    mediaPlayerComponent = factory.newEmbeddedMediaPlayer(new DefaultFullScreenStrategy(parentFrame));
 		
-	    mediaPlayerComponent.setVideoSurface(factory.newVideoSurface(movieCanvas));	    
+	    mediaPlayerComponent.setVideoSurface(factory.newVideoSurface(movieCanvas));
 	}
 	
 
@@ -55,6 +60,7 @@ public class JukeboxMediaPlayer extends JPanel {
 //				filepath = filepath.substring(1);
 //			
 //			String filename = String.format("\\\\ULTRA\\media\\BitTorrent\\%s\\%s", filepath, m.getMedia(0).getFilename());
+			initSurface();
 			
 			JukeboxFront.log.info(filename);
 			boolean success = mediaPlayerComponent.startMedia(filename);
