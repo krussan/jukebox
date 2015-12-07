@@ -11,8 +11,6 @@
     	<delete dir="${build.dir}" />
     	<mkdir dir="${build.dir}" />
     	
-    	<delete dir="${dao.dir}" />
-    	<mkdir dir="${dao.dir}" />
     </target>
     
 	<target name="protoc">
