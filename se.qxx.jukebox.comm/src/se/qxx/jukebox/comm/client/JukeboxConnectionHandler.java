@@ -185,6 +185,7 @@ public class JukeboxConnectionHandler {
 		 
 				JukeboxRequestListMovies request = JukeboxRequestListMovies.newBuilder()
 						.setSearchString("")
+						.setReturnFullSizePictures(false)
 						.build();
 		
 				try {

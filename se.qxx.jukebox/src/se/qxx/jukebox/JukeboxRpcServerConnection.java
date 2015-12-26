@@ -6,10 +6,12 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.protobuf.ByteString;
 import com.google.protobuf.RpcCallback;
 import com.google.protobuf.RpcController;
 
 import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.domain.DomainUtil;
 import se.qxx.jukebox.domain.JukeboxDomain.Empty;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGeneral;
@@ -51,11 +53,44 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		List<Movie> list = DB.searchMoviesByTitle(searchString);
 		List<Series> listSeries = DB.searchSeriesByTitle(searchString);
 		
+		if (!request.getReturnFullSizePictures()) {
+			list = removeFullsizePictures(list);
+			listSeries = removeFullSizePictures(listSeries);
+		}
+		
 		JukeboxResponseListMovies lm = JukeboxResponseListMovies.newBuilder()
 				.addAllMovies(list)
 				.addAllSeries(listSeries)
 				.build();
 		done.run(lm);
+	}
+
+	private List<Series> removeFullSizePictures(List<Series> listSeries) {
+		List<Series> listSeriesNoPics = new ArrayList<Series>();
+
+		for (Series s : listSeries) {
+			for (Season sn : s.getSeasonList()) {
+				for (Episode e : sn.getEpisodeList()) {
+					Episode e1 = Episode.newBuilder(e).setImage(ByteString.EMPTY).build();
+					DomainUtil.updateEpisode(sn, e1);
+				}
+				
+				Season sn1 = Season.newBuilder(sn).setImage(ByteString.EMPTY).build();
+				DomainUtil.updateSeason(s, sn1);
+			}
+			
+			Series s1 = Series.newBuilder(s).setImage(ByteString.EMPTY).build();
+			listSeriesNoPics.add(s1);
+		}
+		
+		return listSeriesNoPics;
+	}
+
+	private List<Movie> removeFullsizePictures(List<Movie> list) {
+		List<Movie> listNoPics = new ArrayList<Movie>();
+		for (Movie m : list)
+			listNoPics.add(Movie.newBuilder(m).setImage(ByteString.EMPTY).build());
+		return listNoPics;
 	}
  
 	@Override

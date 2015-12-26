@@ -17,6 +17,6 @@
 	<classpathentry kind="lib" path="../../lib/protobuf-2.4.1.jar"/>
 	<classpathentry kind="lib" path="../../lib/sqlite-jdbc-3.7.2.jar"/>
 	<classpathentry kind="lib" path="../../lib/vlcj-2.2.0.jar"/>
-	<classpathentry kind="lib" path="/home/chris/workspace/jukebox/lib/imgscalr-lib-4.2.jar"/>
+	<classpathentry kind="lib" path="../../lib/imgscalr-lib-4.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

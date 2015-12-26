@@ -52,8 +52,8 @@ public class MovieFragment extends ListFragment {
 	}
 	
 	private void initializeView(View v, Movie m) {
-	    if (!m.getImage().isEmpty()) {
-	    	Bitmap bm = GUITools.getBitmapFromByteArray(m.getImage().toByteArray());
+	    if (!m.getThumbnail().isEmpty()) {
+	    	Bitmap bm = GUITools.getBitmapFromByteArray(m.getThumbnail().toByteArray());
 	    	Bitmap scaledImage = GUITools.scaleImage(120, bm, v.getContext());
 	    	GUITools.setImageOnImageView(R.id.imageView1, scaledImage, v);	
 	    }

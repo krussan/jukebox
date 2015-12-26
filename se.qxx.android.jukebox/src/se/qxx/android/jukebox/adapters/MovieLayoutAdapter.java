@@ -50,8 +50,8 @@ public class MovieLayoutAdapter extends ModelMovieAdapter {
 	        	if (downloadFinished)
 	        		GUITools.hideView(R.id.imgDownloading, v);	
 	        		
-	    	    if (!m.getImage().isEmpty()) {
-	    	    	Bitmap image = GUITools.getBitmapFromByteArray(m.getImage().toByteArray());
+	    	    if (!m.getThumbnail().isEmpty()) {
+	    	    	Bitmap image = GUITools.getBitmapFromByteArray(m.getThumbnail().toByteArray());
 	    	    	Bitmap scaledImage = GUITools.scaleImage(80, image, v.getContext());
 	    	    	GUITools.setImageOnImageView(R.id.imageView1, scaledImage, v);
 	    	    }

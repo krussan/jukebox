@@ -184,6 +184,7 @@ message JukeboxRequestID {
 
 message JukeboxRequestListMovies {
 	optional string searchString = 2;
+	optional bool returnFullSizePictures = 3 [default=true];
 }
 
 message JukeboxRequestStartMovie {

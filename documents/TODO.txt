@@ -97,6 +97,9 @@ x - Blacklist does not work because IMDB_ID is null for every movie
 			- managers is recommended. Otherwise installing this and setting "legacy fullscreen support" works.
 				sudo apt-get install compizconfig-settings-manager
 				under utility/workarounds enable "legacy fullscreen support"
+- 2015-11-24 - BUG	- FRONT - indexation wrong when switching between series and movies
+- 2015-11-24 - TODO	- FRONT - Switch to episodes in tv mode
+- 2015-12-26 - TODO 	- APP - Support chromecast (smb with subtitles, MediaInfo, MediaTrack)
 
 ---------------------------------------------------------------------
 Environent Issues
