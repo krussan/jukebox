@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
+    <buildnumber file="build.num" />
     
     <include file="../global_properties.xml" />
-    
+    <property name="version.num" value="0.1.${build.number}" />
+
     <property name="build.dir" value="${jukebox.domain.dir}/build" />
     <property name="classes.dir" value="${build.dir}/classes" />
-    <property name="jar.file" value="se.qxx.jukebox.domain.temp.jar" />
+    <property name="jar.file" value="jukebox-domain-${version.num}.jar" />
+	
+	<property name="main.dir" value="${jukebox.domain.dir}" />
+	<property name="main.src.dir" value="${main.dir}/src" />
+	
+	<property name="build.dir" value="${main.dir}/build" />
+	<property name="classes.dir" value="${build.dir}/classes" />
 
     <target name="clean">
     	<delete dir="${build.dir}" />
@@ -20,8 +28,9 @@
 	    </exec>
 	</target>
     
-    <target name="build" depends="protoc,clean">
+	<target name="compile">
 		<mkdir dir="${classes.dir}" />
+		
 		<javac 
 		    srcdir="${jukebox.domain.src.dir}" 
 		    destdir="${classes.dir}" 
@@ -29,8 +38,33 @@
 		    includeantruntime="true" 
 		    debug="true"
 	    />
+	</target>
 
+    <target name="build" depends="protoc,clean,compile,jar,maven-install">
     </target>
+
+	<target name="jar">
+		<jar destfile="${build.dir}/${jar.file}"
+			basedir="${classes.dir}">
+			<manifest>
+    			<attribute name="Built-By" value="${user.name}"/>
+        		<attribute name="Implementation-Version" value="${version.num}"/> 		
+			</manifest>
+ 		</jar>
+
+	</target>
+
+	<target name="maven-install">
+		<exec dir="${build.dir}" executable="mvn">
+			<arg value="install:install-file" />
+			<arg value="-Dfile=${jar.file}" />
+			<arg value="-DgroupId=se.qxx.jukebox" />
+			<arg value="-DartifactId=jukebox-domain" />
+			<arg value="-Dversion=${version.num}" />
+			<arg value="-Dpackaging=jar" />
+			<arg value="-DgeneratePom=true" />
+		</exec>
+	</target>
     
     
 </project>
