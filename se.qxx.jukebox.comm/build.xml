@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+    <buildnumber file="build.num" />
+    
+    <include file="../global_properties.xml" />
+    <property name="version.num" value="0.1.${build.number}" />
+
+    <property name="main.dir" value="${jukebox.solution.dir}/se.qxx.jukebox.comm" />
+    <property name="main.src.dir" value="${main.dir}/src" />
+	
+    <property name="build.dir" value="${main.dir}/build" />
+    <property name="classes.dir" value="${build.dir}/classes" />
+    <property name="jar.file" value="jukebox-comm-${version.num}.jar" />
+	
+
+	<property name="build.dir" value="${main.dir}/build" />
+	<property name="classes.dir" value="${build.dir}/classes" />
+
+	<path id="jukebox.comm.classpath">
+           <fileset dir="${jukebox.lib.dir}">
+		<include name="protobuf-2.4.1.jar" />
+		<include name="protobuf-socket-rpc-2.0.jar" />
+	   </fileset>
+    	</path>
+
+    <target name="clean">
+    	<delete dir="${build.dir}" />
+    	<mkdir dir="${build.dir}" />
+    	
+    </target>
+    
+	<target name="compile">
+		<mkdir dir="${classes.dir}" />
+
+		<javac 
+		    srcdir="${jukebox.domain.src.dir}" 
+		    destdir="${classes.dir}" 
+		    classpathref="jukebox.domain.classpath"
+		    includeantruntime="true" 
+		    debug="true"
+		/>
+
+		<javac 
+		    srcdir="${main.src.dir}" 
+		    destdir="${classes.dir}" 
+		    classpathref="jukebox.comm.classpath"
+		    includeantruntime="true" 
+		    debug="true"
+	    />
+	</target>
+
+    <target name="build" depends="clean,compile,jar,maven-install">
+    </target>
+
+	<target name="jar">
+		<jar destfile="${build.dir}/${jar.file}"
+			basedir="${classes.dir}">
+			<manifest>
+    			<attribute name="Built-By" value="${user.name}"/>
+        		<attribute name="Implementation-Version" value="${version.num}"/> 		
+			</manifest>
+ 		</jar>
+
+	</target>
+
+	<target name="maven-install">
+		<exec dir="${build.dir}" executable="mvn">
+			<arg value="install:install-file" />
+			<arg value="-Dfile=${jar.file}" />
+			<arg value="-DgroupId=se.qxx.jukebox" />
+			<arg value="-DartifactId=jukebox-comm" />
+			<arg value="-Dversion=${version.num}" />
+			<arg value="-Dpackaging=jar" />
+			<arg value="-DgeneratePom=true" />
+		</exec>
+	</target>
+    
+    
+</project>

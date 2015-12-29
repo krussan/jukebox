@@ -1,0 +1,74 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+      <modelVersion>4.0.0</modelVersion>
+     
+      <groupId>se.qxx.jukebox</groupId>
+      <artifactId>jukebox-comm</artifactId>
+      <version>1.0.16</version>
+      <packaging>jar</packaging>
+     
+      <name>Jukebox communications library</name>
+     
+	<pluginRepositories>
+	    <pluginRepository>
+		<id>autoincrement-versions-maven-plugin</id>
+		<name>autoincrement-versions-maven-plugin</name>
+		<url>http://autoincrement-versions-maven-plugin.googlecode.com/svn/repo</url>
+		<snapshots>
+		    <enabled>true</enabled>
+		</snapshots>
+	    </pluginRepository>
+	</pluginRepositories>
+
+
+      <dependencies>
+        <dependency>
+          <groupId>se.qxx.jukebox</groupId>
+          <artifactId>jukebox-domain</artifactId>
+          <version>[0.1.2,)</version>
+        </dependency>
+
+		<dependency>
+			<groupId>com.google.protobuf</groupId>
+			<artifactId>protobuf-java</artifactId>
+			<version>2.4.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.googlecode</groupId>
+			<artifactId>protobuf-socket-rpc</artifactId>
+			<version>2.0</version>
+		</dependency>
+      </dependencies>
+
+	<build>
+		
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>autoincrement-versions-maven-plugin</artifactId>
+				<version>2.0-SNAPSHOT</version>
+				<executions>
+					<execution>
+					    <id>update-pom-versions</id>
+					    <goals>
+				            <goal>increment</goal>
+				            <goal>commit</goal>
+					    </goals>
+					    <phase>install</phase>
+					    <configuration>
+					            <autoIncrementVersion>true</autoIncrementVersion>
+					    </configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+	
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.3</version>
+			</plugin>
+		</plugins>
+	</build>
+</project>

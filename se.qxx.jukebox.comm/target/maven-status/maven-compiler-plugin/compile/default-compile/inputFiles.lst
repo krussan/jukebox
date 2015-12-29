@@ -1,0 +1,9 @@
+/home/chris/workspace/jukebox/trunk/se.qxx.jukebox.comm/src/main/java/se/qxx/jukebox/comm/JukeboxRpcServer.java
+/home/chris/workspace/jukebox/trunk/se.qxx.jukebox.comm/src/main/java/se/qxx/jukebox/comm/client/JukeboxConnectionPool.java
+/home/chris/workspace/jukebox/trunk/se.qxx.jukebox.comm/src/main/java/se/qxx/jukebox/comm/client/JukeboxResponseListener.java
+/home/chris/workspace/jukebox/trunk/se.qxx.jukebox.comm/src/main/java/se/qxx/jukebox/comm/JukeboxFrontServer.java
+/home/chris/workspace/jukebox/trunk/se.qxx.jukebox.comm/src/main/java/se/qxx/jukebox/comm/EmptyRpcCallback.java
+/home/chris/workspace/jukebox/trunk/se.qxx.jukebox.comm/src/main/java/se/qxx/jukebox/comm/JukeboxRpcServerConnection.java
+/home/chris/workspace/jukebox/trunk/se.qxx.jukebox.comm/src/main/java/se/qxx/jukebox/comm/client/JukeboxConnectionHandler.java
+/home/chris/workspace/jukebox/trunk/se.qxx.jukebox.comm/src/main/java/se/qxx/jukebox/comm/client/JukeboxConnectionMessage.java
+/home/chris/workspace/jukebox/trunk/se.qxx.jukebox.comm/src/main/java/se/qxx/jukebox/comm/JukeboxServerConnection.java
