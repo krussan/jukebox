@@ -75,7 +75,6 @@ public class DB {
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Search
 	//---------------------------------------------------------------------------------------
-	
 	public synchronized static List<Movie> searchMoviesByTitle(String searchString) {
 		try {
 			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
@@ -89,7 +88,7 @@ public class DB {
 		catch (Exception e) {
 			Log.Error("Failed to retrieve movie listing from DB", Log.LogType.MAIN, e);
 			return new ArrayList<Movie>();
-		}
+		}	
 	}
 
 	public synchronized static List<Series> searchSeriesByTitle(String searchString) {

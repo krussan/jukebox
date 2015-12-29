@@ -4,9 +4,6 @@
 	<dirname file="${jukebox.solution.dir}" property="jukebox.root.dir" />
 	<dirname file="${jukebox.root.dir}" property="jukebox.root.dir" />
 
-	<echo message="jukebox.root.dir :: ${jukebox.root.dir}" />
-	<echo message="jukebox.solution.dir :: ${jukebox.solution.dir}" />
-
 	<exec executable="hostname" outputproperty="computer.hostname"/>
 	<include file="local_properties_${computer.hostname}.xml" optional="false"/>
 	
@@ -28,5 +25,14 @@
 	<path id="jukebox.classpath">
            <fileset dir="${jukebox.lib.dir}" includes="**/*.jar"/>
     	</path>
-	
+
+	<path id="jukebox.domain.classpath">
+           <fileset dir="${jukebox.lib.dir}">
+		<include name="protobuf-2.4.1.jar" />
+	   </fileset>
+    	</path>
+
+	<echo message="jukebox.root.dir :: ${jukebox.root.dir}" />
+	<echo message="jukebox.solution.dir :: ${jukebox.solution.dir}" />
+	<echo message="jukebox.lib.dir :: ${jukebox.lib.dir}" />	
 </project>
