@@ -1,0 +1,8 @@
+-keep public class com.google.android.gms.** { public *; }
+-dontnote org.apache.commons.lang3.reflect.**
+-dontnote com.google.android.gms.internal.zzlh
+
+-dontwarn android.support.**
+
+-keep class se.qxx.jukebox.domain.** { *; }
+-keep com.google.protobuf.** { *; }

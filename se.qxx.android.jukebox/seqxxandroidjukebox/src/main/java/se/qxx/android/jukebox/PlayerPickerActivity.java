@@ -3,6 +3,7 @@ package se.qxx.android.jukebox;
 import java.util.EventObject;
 import java.util.List;
 
+import com.google.android.gms.cast.CastMediaControlIntent;
 import com.google.protobuf.RpcCallback;
 
 import se.qxx.android.jukebox.adapters.PlayerLayoutAdapter;
@@ -14,21 +15,23 @@ import se.qxx.android.jukebox.model.Model.ModelUpdatedEventListener;
 import se.qxx.android.jukebox.model.ModelUpdatedEvent;
 import se.qxx.android.jukebox.model.ModelUpdatedType;
 import android.os.Bundle;
+import android.support.v7.media.MediaRouter;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.support.v7.media.MediaRouteSelector;
 
 public class PlayerPickerActivity extends JukeboxActivityBase implements ModelUpdatedEventListener, OnItemClickListener {
 
 	PlayerLayoutAdapter adapter;
 	List<String> values;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 
-	    setContentView(R.layout.playerpicker);
+        setContentView(R.layout.playerpicker);
 	    Model.get().addEventListener(this);
 
 	    final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
@@ -42,15 +45,21 @@ public class PlayerPickerActivity extends JukeboxActivityBase implements ModelUp
 			    jh.listPlayers(new RpcCallback<JukeboxResponseListPlayers>() {
 					@Override
 					public void run(JukeboxResponseListPlayers response) {
+						// Add Jukebox central players
 						Model.get().clearPlayers();
-						Model.get().addAllPlayers(response.getHostnameList());							    							
+						Model.get().addAllPlayers(response.getHostnameList());
+
+						// Add chromecast players
+                        Model.get().getPlayers().add("Chromecast");
 					}
 				});
 			}
 		});
-		t.start();			
-    
-	    adapter = new PlayerLayoutAdapter(this);	    
+		t.start();
+
+
+
+		adapter = new PlayerLayoutAdapter(this);
 	    ListView listView = (ListView)findViewById(R.id.listPlayers);	    
 
 	    listView.setAdapter(adapter);
