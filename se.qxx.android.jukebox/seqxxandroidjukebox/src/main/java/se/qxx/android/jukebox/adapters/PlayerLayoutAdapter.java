@@ -21,13 +21,14 @@ public class PlayerLayoutAdapter extends ModelPlayersAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View v = convertView; 
-		
-		try {		
+
+		try {
 	        if (v == null) {
 	            LayoutInflater vi = (LayoutInflater)this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	            v = vi.inflate(R.layout.playerpickerrow, null);
 	        }
-	        String name = (String)this.getItem(position);
+
+			String name = (String)this.getItem(position);
 	        String currentMediaPlayer = JukeboxSettings.get().getCurrentMediaPlayer();
 	        
 	        GUITools.setTextOnTextview(R.id.txtPlayerName, name, v);

@@ -6,6 +6,8 @@ import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -55,7 +57,7 @@ public class MovieFragment extends ListFragment {
 	    if (!m.getThumbnail().isEmpty()) {
 	    	Bitmap bm = GUITools.getBitmapFromByteArray(m.getThumbnail().toByteArray());
 	    	Bitmap scaledImage = GUITools.scaleImage(120, bm, v.getContext());
-	    	GUITools.setImageOnImageView(R.id.imageView1, scaledImage, v);	
+	    	GUITools.setImageOnImageView(R.id.imageView1, scaledImage, v);
 	    }
 	    
 	    int duration = m.getDuration();

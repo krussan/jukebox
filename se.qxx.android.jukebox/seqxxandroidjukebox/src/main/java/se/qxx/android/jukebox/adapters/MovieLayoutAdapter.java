@@ -2,7 +2,7 @@ package se.qxx.android.jukebox.adapters;
 
 import java.util.List;
 
-import se.qxx.android.jukebox.IncludeSubtitleRating;
+import se.qxx.android.jukebox.activities.IncludeSubtitleRating;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.model.ModelMovieAdapter;
 import se.qxx.android.tools.GUITools;
@@ -27,15 +27,16 @@ public class MovieLayoutAdapter extends ModelMovieAdapter {
 	
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		View v = convertView; 
-		
+		View v = convertView;
+
 		try {
 			
 	        if (v == null) {
 	            LayoutInflater vi = (LayoutInflater)this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	            v = vi.inflate(R.layout.movielistrow, null);
 	        }
-	        Movie m = (Movie)this.getItem(position);
+
+			Movie m = (Movie)this.getItem(position);
 	        if (m != null) {
 	        	GUITools.setTextOnTextview(R.id.toptext, m.getTitle(), v);
 	        	GUITools.setTextOnTextview(R.id.bottomtext, Integer.toString(m.getYear()), v);
@@ -48,7 +49,7 @@ public class MovieLayoutAdapter extends ModelMovieAdapter {
 	        			downloadFinished = false;
 	        	}
 	        	if (downloadFinished)
-	        		GUITools.hideView(R.id.imgDownloading, v);	
+	        		GUITools.hideView(R.id.imgDownloading, v);
 	        		
 	    	    if (!m.getThumbnail().isEmpty()) {
 	    	    	Bitmap image = GUITools.getBitmapFromByteArray(m.getThumbnail().toByteArray());

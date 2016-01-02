@@ -1,5 +1,6 @@
 package se.qxx.android.tools;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,6 +16,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 public class GUITools {
+	public static View getRootView(Context context) {
+		return ((Activity)context).getWindow().getDecorView().findViewById(android.R.id.content);
+	}
 
 	public static void hideView(int id, View rootView) {
 		View v = rootView.findViewById(id);

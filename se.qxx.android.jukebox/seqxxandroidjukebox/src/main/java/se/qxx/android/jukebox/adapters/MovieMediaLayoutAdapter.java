@@ -28,7 +28,8 @@ public class MovieMediaLayoutAdapter extends ModelMediaAdapter {
 	            LayoutInflater vi = (LayoutInflater)this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	            v = vi.inflate(R.layout.medialistrow, null);
 	        }
-	        Media md = (Media)this.getItem(position);
+
+			Media md = (Media)this.getItem(position);
 	        if (md != null) 
 	        	GUITools.setTextOnTextview(R.id.txtFilename, String.format("Filename :: %s", md.getFilename()), v);
 		}

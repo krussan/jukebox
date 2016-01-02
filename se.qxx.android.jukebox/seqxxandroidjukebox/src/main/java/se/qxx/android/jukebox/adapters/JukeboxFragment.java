@@ -2,15 +2,11 @@ package se.qxx.android.jukebox.adapters;
 
 import java.util.EventObject;
 
-import org.apache.commons.lang3.StringUtils;
-
 import se.qxx.android.jukebox.ActionDialog;
 import se.qxx.android.jukebox.Connector;
-import se.qxx.android.jukebox.FlipperActivity;
-import se.qxx.android.jukebox.JukeboxPreferenceActivity;
-import se.qxx.android.jukebox.JukeboxSettings;
-import se.qxx.android.jukebox.NowPlayingActivity;
-import se.qxx.android.jukebox.PlayerPickerActivity;
+import se.qxx.android.jukebox.activities.FlipperActivity;
+import se.qxx.android.jukebox.activities.JukeboxPreferenceActivity;
+import se.qxx.android.jukebox.activities.PlayerPickerActivity;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.jukebox.model.ModelUpdatedEvent;
@@ -18,26 +14,20 @@ import se.qxx.android.jukebox.model.ModelUpdatedType;
 import se.qxx.android.jukebox.model.Model.ModelUpdatedEventListener;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
-import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
-import android.app.Activity;
+
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.webkit.WebView.FindListener;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
-
-import com.google.protobuf.InvalidProtocolBufferException;
 
 public class JukeboxFragment extends ListFragment implements
 	ModelUpdatedEventListener, OnItemClickListener, OnItemLongClickListener, OnClickListener {

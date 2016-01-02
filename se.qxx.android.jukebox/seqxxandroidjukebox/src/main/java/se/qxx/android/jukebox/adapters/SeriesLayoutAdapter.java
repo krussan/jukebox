@@ -1,18 +1,11 @@
 package se.qxx.android.jukebox.adapters;
 
-import java.util.List;
-
-import se.qxx.android.jukebox.IncludeSubtitleRating;
 import se.qxx.android.jukebox.R;
-import se.qxx.android.jukebox.model.ModelMovieAdapter;
 import se.qxx.android.jukebox.model.ModelSeriesAdapter;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
-import se.qxx.jukebox.domain.JukeboxDomain.Media;
-import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
-import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
-import se.qxx.jukebox.domain.Sorter;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
@@ -30,21 +23,23 @@ public class SeriesLayoutAdapter extends ModelSeriesAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View v = convertView; 
-		
+
 		try {
 			
 	        if (v == null) {
 	            LayoutInflater vi = (LayoutInflater)this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	            v = vi.inflate(R.layout.movielistrow, null);
 	        }
-	        Series m = (Series)this.getItem(position);
+			Context context = v.getContext();
+
+			Series m = (Series)this.getItem(position);
 	        if (m != null) {
 	        	GUITools.setTextOnTextview(R.id.toptext, m.getTitle(), v);
 	        	GUITools.setTextOnTextview(R.id.bottomtext, Integer.toString(m.getYear()), v);
 //	        	GUITools.setTextOnTextview(R.id.txtRating, m.getRating(), v);
 	        	
 	        	// If all media has a meta duration then hide the download icon
-        		GUITools.hideView(R.id.imgDownloading, v);	
+        		GUITools.hideView(R.id.imgDownloading, v);
 	        		
 	    	    if (!m.getThumbnail().isEmpty()) {
 	    	    	Bitmap image = GUITools.getBitmapFromByteArray(m.getThumbnail().toByteArray());

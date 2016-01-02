@@ -1,6 +1,6 @@
 package se.qxx.android.jukebox.adapters;
 
-import se.qxx.android.jukebox.IncludeSubtitleRating;
+import se.qxx.android.jukebox.activities.IncludeSubtitleRating;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.model.ModelRatedSubtitleAdapter;
 import se.qxx.android.tools.Logger;
