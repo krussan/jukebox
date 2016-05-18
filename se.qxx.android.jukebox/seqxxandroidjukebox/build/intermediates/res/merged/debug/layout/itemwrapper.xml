@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center|clip_vertical|fill_horizontal"
+    android:orientation="vertical" 
+    android:id="@+id/rootMovieItem">
+
+    
+	<android.support.v4.view.ViewPager
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent" 
+	    android:layout_alignParentTop="true"
+	    android:id="@+id/rootViewPager">	    
+	</android.support.v4.view.ViewPager>
+    
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center_horizontal" >
+
+        <Button
+            android:id="@+id/btnPlay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btnplay"
+            android:onClick="onButtonClicked"
+        />
+
+        <ImageButton
+            android:id="@+id/btnViewInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00000000"
+            android:hapticFeedbackEnabled="true"
+            android:src="@drawable/infoabout"
+            android:contentDescription="@string/descViewInfo" 
+            android:onClick="onButtonClicked"
+
+            />
+	        	        
+    </LinearLayout>
+		
+</RelativeLayout>

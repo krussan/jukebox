@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/menu/mainmenu.xml",
+        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/menu/mainmenu.xml"
+    },
+    {
+        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/menu/cast.xml",
+        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/menu/cast.xml"
+    }
+]
