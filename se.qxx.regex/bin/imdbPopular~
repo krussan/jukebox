@@ -1,1 +1,0 @@
-Popular\sTitles.*?\<a\s*href\s*=\s*[\"|'](?<url>.*?)[\"|']

@@ -1,1 +1,0 @@
-&lt;tr[^&gt;]*?&gt;.*?&lt;td[^&gt;]*?&gt;.*?&lt;a[^&gt;]*?alt\s*=\s*"Ladda\sner\sundertext[^"]*?".*?href\s*=\s*\"(?&lt;url&gt;[^"]*?)"[^&gt;]*?&gt;.*?Nedladdningar.*?&lt;br&gt;\s*(?&lt;name&gt;[^&lt;]*?)&lt;/td[^&gt;]*?&gt;.*?&lt;/tr[^&gt;]*?&gt;
