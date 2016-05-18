@@ -35,4 +35,5 @@ dependencies {
     compile 'se.qxx.jukebox:jukebox-comm:1.0.+'
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'com.google.protobuf:protobuf-java:2.4.1'
+    compile 'se.qxx.android.tools:android-tools:1.0.2'
 }
