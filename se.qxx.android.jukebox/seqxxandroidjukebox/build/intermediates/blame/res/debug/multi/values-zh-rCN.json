@@ -11,13 +11,13 @@
                     "endOffset": 196
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-zh-rCN/values-zh-rCN.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
                     "position": {
-                        "startLine": 4,
+                        "startLine": 2,
                         "startColumn": 4,
-                        "startOffset": 280,
+                        "startOffset": 55,
                         "endColumn": 95,
-                        "endOffset": 371
+                        "endOffset": 146
                     }
                 }
             },
@@ -30,13 +30,13 @@
                     "endOffset": 303
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-zh-rCN/values-zh-rCN.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
                     "position": {
-                        "startLine": 5,
+                        "startLine": 3,
                         "startColumn": 4,
-                        "startOffset": 376,
+                        "startOffset": 151,
                         "endColumn": 106,
-                        "endOffset": 478
+                        "endOffset": 253
                     }
                 }
             },
@@ -49,13 +49,13 @@
                     "endOffset": 426
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-zh-rCN/values-zh-rCN.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
                     "position": {
-                        "startLine": 6,
+                        "startLine": 4,
                         "startColumn": 4,
-                        "startOffset": 483,
+                        "startOffset": 258,
                         "endColumn": 122,
-                        "endOffset": 601
+                        "endOffset": 376
                     }
                 }
             },
@@ -68,13 +68,13 @@
                     "endOffset": 521
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-zh-rCN/values-zh-rCN.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
                     "position": {
-                        "startLine": 7,
+                        "startLine": 5,
                         "startColumn": 4,
-                        "startOffset": 606,
+                        "startOffset": 381,
                         "endColumn": 94,
-                        "endOffset": 696
+                        "endOffset": 471
                     }
                 }
             },
@@ -87,13 +87,13 @@
                     "endOffset": 621
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-zh-rCN/values-zh-rCN.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
                     "position": {
-                        "startLine": 8,
+                        "startLine": 6,
                         "startColumn": 4,
-                        "startOffset": 701,
+                        "startOffset": 476,
                         "endColumn": 99,
-                        "endOffset": 796
+                        "endOffset": 571
                     }
                 }
             },
@@ -106,13 +106,13 @@
                     "endOffset": 703
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-zh-rCN/values-zh-rCN.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
                     "position": {
-                        "startLine": 9,
+                        "startLine": 7,
                         "startColumn": 4,
-                        "startOffset": 801,
+                        "startOffset": 576,
                         "endColumn": 81,
-                        "endOffset": 878
+                        "endOffset": 653
                     }
                 }
             },
@@ -125,13 +125,13 @@
                     "endOffset": 800
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-zh-rCN/values-zh-rCN.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
                     "position": {
-                        "startLine": 10,
+                        "startLine": 8,
                         "startColumn": 4,
-                        "startOffset": 883,
+                        "startOffset": 658,
                         "endColumn": 96,
-                        "endOffset": 975
+                        "endOffset": 750
                     }
                 }
             },
@@ -144,13 +144,13 @@
                     "endOffset": 906
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-zh-rCN/values-zh-rCN.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
                     "position": {
-                        "startLine": 11,
+                        "startLine": 9,
                         "startColumn": 4,
-                        "startOffset": 980,
+                        "startOffset": 755,
                         "endColumn": 105,
-                        "endOffset": 1081
+                        "endOffset": 856
                     }
                 }
             },
@@ -159,17 +159,17 @@
                     "startLine": 10,
                     "startColumn": 4,
                     "startOffset": 911,
-                    "endColumn": 77,
-                    "endOffset": 984
+                    "endColumn": 75,
+                    "endOffset": 982
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-zh-rCN/values-zh-rCN.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
                     "position": {
-                        "startLine": 12,
+                        "startLine": 10,
                         "startColumn": 4,
-                        "startOffset": 1086,
-                        "endColumn": 77,
-                        "endOffset": 1159
+                        "startOffset": 861,
+                        "endColumn": 75,
+                        "endOffset": 932
                     }
                 }
             },
@@ -177,18 +177,18 @@
                 "to": {
                     "startLine": 11,
                     "startColumn": 4,
-                    "startOffset": 989,
-                    "endColumn": 95,
-                    "endOffset": 1080
+                    "startOffset": 987,
+                    "endColumn": 75,
+                    "endOffset": 1058
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-zh-rCN/values-zh-rCN.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
                     "position": {
-                        "startLine": 13,
+                        "startLine": 11,
                         "startColumn": 4,
-                        "startOffset": 1164,
-                        "endColumn": 95,
-                        "endOffset": 1255
+                        "startOffset": 937,
+                        "endColumn": 75,
+                        "endOffset": 1008
                     }
                 }
             },
@@ -196,18 +196,18 @@
                 "to": {
                     "startLine": 12,
                     "startColumn": 4,
-                    "startOffset": 1085,
-                    "endColumn": 95,
-                    "endOffset": 1176
+                    "startOffset": 1063,
+                    "endColumn": 77,
+                    "endOffset": 1136
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-zh-rCN/values-zh-rCN.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
                     "position": {
-                        "startLine": 14,
+                        "startLine": 12,
                         "startColumn": 4,
-                        "startOffset": 1260,
-                        "endColumn": 95,
-                        "endOffset": 1351
+                        "startOffset": 1013,
+                        "endColumn": 77,
+                        "endOffset": 1086
                     }
                 }
             },
@@ -215,18 +215,18 @@
                 "to": {
                     "startLine": 13,
                     "startColumn": 4,
-                    "startOffset": 1181,
-                    "endColumn": 94,
-                    "endOffset": 1271
+                    "startOffset": 1141,
+                    "endColumn": 95,
+                    "endOffset": 1232
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-zh-rCN/values-zh-rCN.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
                     "position": {
-                        "startLine": 15,
+                        "startLine": 13,
                         "startColumn": 4,
-                        "startOffset": 1356,
-                        "endColumn": 94,
-                        "endOffset": 1446
+                        "startOffset": 1091,
+                        "endColumn": 95,
+                        "endOffset": 1182
                     }
                 }
             },
@@ -234,18 +234,18 @@
                 "to": {
                     "startLine": 14,
                     "startColumn": 4,
-                    "startOffset": 1276,
-                    "endColumn": 96,
-                    "endOffset": 1368
+                    "startOffset": 1237,
+                    "endColumn": 95,
+                    "endOffset": 1328
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-zh-rCN/values-zh-rCN.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
                     "position": {
-                        "startLine": 16,
+                        "startLine": 14,
                         "startColumn": 4,
-                        "startOffset": 1451,
-                        "endColumn": 96,
-                        "endOffset": 1543
+                        "startOffset": 1187,
+                        "endColumn": 95,
+                        "endOffset": 1278
                     }
                 }
             },
@@ -253,18 +253,18 @@
                 "to": {
                     "startLine": 15,
                     "startColumn": 4,
-                    "startOffset": 1373,
+                    "startOffset": 1333,
                     "endColumn": 94,
-                    "endOffset": 1463
+                    "endOffset": 1423
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-zh-rCN/values-zh-rCN.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
                     "position": {
-                        "startLine": 17,
+                        "startLine": 15,
                         "startColumn": 4,
-                        "startOffset": 1548,
+                        "startOffset": 1283,
                         "endColumn": 94,
-                        "endOffset": 1638
+                        "endOffset": 1373
                     }
                 }
             },
@@ -272,18 +272,18 @@
                 "to": {
                     "startLine": 16,
                     "startColumn": 4,
-                    "startOffset": 1468,
-                    "endColumn": 97,
-                    "endOffset": 1561
+                    "startOffset": 1428,
+                    "endColumn": 96,
+                    "endOffset": 1520
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-zh-rCN/values-zh-rCN.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
                     "position": {
-                        "startLine": 18,
+                        "startLine": 16,
                         "startColumn": 4,
-                        "startOffset": 1643,
-                        "endColumn": 97,
-                        "endOffset": 1736
+                        "startOffset": 1378,
+                        "endColumn": 96,
+                        "endOffset": 1470
                     }
                 }
             },
@@ -291,18 +291,18 @@
                 "to": {
                     "startLine": 17,
                     "startColumn": 4,
-                    "startOffset": 1566,
-                    "endColumn": 111,
-                    "endOffset": 1673
+                    "startOffset": 1525,
+                    "endColumn": 94,
+                    "endOffset": 1615
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-zh-rCN/values-zh-rCN.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
                     "position": {
-                        "startLine": 19,
+                        "startLine": 17,
                         "startColumn": 4,
-                        "startOffset": 1741,
-                        "endColumn": 111,
-                        "endOffset": 1848
+                        "startOffset": 1475,
+                        "endColumn": 94,
+                        "endOffset": 1565
                     }
                 }
             },
@@ -310,18 +310,18 @@
                 "to": {
                     "startLine": 18,
                     "startColumn": 4,
-                    "startOffset": 1678,
-                    "endColumn": 93,
-                    "endOffset": 1767
+                    "startOffset": 1620,
+                    "endColumn": 97,
+                    "endOffset": 1713
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-zh-rCN/values-zh-rCN.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
                     "position": {
-                        "startLine": 20,
+                        "startLine": 18,
                         "startColumn": 4,
-                        "startOffset": 1853,
-                        "endColumn": 93,
-                        "endOffset": 1942
+                        "startOffset": 1570,
+                        "endColumn": 97,
+                        "endOffset": 1663
                     }
                 }
             },
@@ -329,9 +329,47 @@
                 "to": {
                     "startLine": 19,
                     "startColumn": 4,
-                    "startOffset": 1772,
+                    "startOffset": 1718,
+                    "endColumn": 111,
+                    "endOffset": 1825
+                },
+                "from": {
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
+                    "position": {
+                        "startLine": 19,
+                        "startColumn": 4,
+                        "startOffset": 1668,
+                        "endColumn": 111,
+                        "endOffset": 1775
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 20,
+                    "startColumn": 4,
+                    "startOffset": 1830,
+                    "endColumn": 93,
+                    "endOffset": 1919
+                },
+                "from": {
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
+                    "position": {
+                        "startLine": 20,
+                        "startColumn": 4,
+                        "startOffset": 1780,
+                        "endColumn": 93,
+                        "endOffset": 1869
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 21,
+                    "startColumn": 4,
+                    "startOffset": 1924,
                     "endColumn": 188,
-                    "endOffset": 1956
+                    "endOffset": 2108
                 },
                 "from": {
                     "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/values-zh-rCN/base_strings.xml",
@@ -346,11 +384,11 @@
             },
             {
                 "to": {
-                    "startLine": 20,
+                    "startLine": 22,
                     "startColumn": 4,
-                    "startOffset": 1961,
+                    "startOffset": 2113,
                     "endColumn": 117,
-                    "endOffset": 2074
+                    "endOffset": 2226
                 },
                 "from": {
                     "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/values-zh-rCN/base_strings.xml",
@@ -365,11 +403,11 @@
             },
             {
                 "to": {
-                    "startLine": 21,
+                    "startLine": 23,
                     "startColumn": 4,
-                    "startOffset": 2079,
+                    "startOffset": 2231,
                     "endColumn": 160,
-                    "endOffset": 2235
+                    "endOffset": 2387
                 },
                 "from": {
                     "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/values-zh-rCN/base_strings.xml",
@@ -384,11 +422,11 @@
             },
             {
                 "to": {
-                    "startLine": 22,
+                    "startLine": 24,
                     "startColumn": 4,
-                    "startOffset": 2240,
+                    "startOffset": 2392,
                     "endColumn": 116,
-                    "endOffset": 2352
+                    "endOffset": 2504
                 },
                 "from": {
                     "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/values-zh-rCN/base_strings.xml",
@@ -403,11 +441,11 @@
             },
             {
                 "to": {
-                    "startLine": 23,
+                    "startLine": 25,
                     "startColumn": 4,
-                    "startOffset": 2357,
+                    "startOffset": 2509,
                     "endColumn": 118,
-                    "endOffset": 2471
+                    "endOffset": 2623
                 },
                 "from": {
                     "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/values-zh-rCN/base_strings.xml",
@@ -422,11 +460,11 @@
             },
             {
                 "to": {
-                    "startLine": 24,
+                    "startLine": 26,
                     "startColumn": 4,
-                    "startOffset": 2476,
+                    "startOffset": 2628,
                     "endColumn": 169,
-                    "endOffset": 2641
+                    "endOffset": 2793
                 },
                 "from": {
                     "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/values-zh-rCN/base_strings.xml",
@@ -441,11 +479,11 @@
             },
             {
                 "to": {
-                    "startLine": 25,
+                    "startLine": 27,
                     "startColumn": 4,
-                    "startOffset": 2646,
+                    "startOffset": 2798,
                     "endColumn": 172,
-                    "endOffset": 2814
+                    "endOffset": 2966
                 },
                 "from": {
                     "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/values-zh-rCN/base_strings.xml",
@@ -460,11 +498,11 @@
             },
             {
                 "to": {
-                    "startLine": 26,
+                    "startLine": 28,
                     "startColumn": 4,
-                    "startOffset": 2819,
+                    "startOffset": 2971,
                     "endColumn": 117,
-                    "endOffset": 2932
+                    "endOffset": 3084
                 },
                 "from": {
                     "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/values-zh-rCN/base_strings.xml",
@@ -479,11 +517,11 @@
             },
             {
                 "to": {
-                    "startLine": 27,
+                    "startLine": 29,
                     "startColumn": 4,
-                    "startOffset": 2937,
+                    "startOffset": 3089,
                     "endColumn": 128,
-                    "endOffset": 3061
+                    "endOffset": 3213
                 },
                 "from": {
                     "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/values-zh-rCN/base_strings.xml",
@@ -498,11 +536,11 @@
             },
             {
                 "to": {
-                    "startLine": 28,
+                    "startLine": 30,
                     "startColumn": 4,
-                    "startOffset": 3066,
+                    "startOffset": 3218,
                     "endColumn": 109,
-                    "endOffset": 3171
+                    "endOffset": 3323
                 },
                 "from": {
                     "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/values-zh-rCN/base_strings.xml",
@@ -517,11 +555,11 @@
             },
             {
                 "to": {
-                    "startLine": 29,
+                    "startLine": 31,
                     "startColumn": 4,
-                    "startOffset": 3176,
+                    "startOffset": 3328,
                     "endColumn": 135,
-                    "endOffset": 3307
+                    "endOffset": 3459
                 },
                 "from": {
                     "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/values-zh-rCN/base_strings.xml",
@@ -536,11 +574,11 @@
             },
             {
                 "to": {
-                    "startLine": 30,
+                    "startLine": 32,
                     "startColumn": 4,
-                    "startOffset": 3312,
+                    "startOffset": 3464,
                     "endColumn": 110,
-                    "endOffset": 3418
+                    "endOffset": 3570
                 },
                 "from": {
                     "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/values-zh-rCN/base_strings.xml",
@@ -555,11 +593,11 @@
             },
             {
                 "to": {
-                    "startLine": 31,
+                    "startLine": 33,
                     "startColumn": 4,
-                    "startOffset": 3423,
+                    "startOffset": 3575,
                     "endColumn": 122,
-                    "endOffset": 3541
+                    "endOffset": 3693
                 },
                 "from": {
                     "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/values-zh-rCN/base_strings.xml",
@@ -574,11 +612,11 @@
             },
             {
                 "to": {
-                    "startLine": 32,
+                    "startLine": 34,
                     "startColumn": 4,
-                    "startOffset": 3546,
+                    "startOffset": 3698,
                     "endColumn": 128,
-                    "endOffset": 3670
+                    "endOffset": 3822
                 },
                 "from": {
                     "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/values-zh-rCN/base_strings.xml",
@@ -593,11 +631,11 @@
             },
             {
                 "to": {
-                    "startLine": 33,
+                    "startLine": 35,
                     "startColumn": 4,
-                    "startOffset": 3675,
+                    "startOffset": 3827,
                     "endColumn": 117,
-                    "endOffset": 3788
+                    "endOffset": 3940
                 },
                 "from": {
                     "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/values-zh-rCN/base_strings.xml",
@@ -612,11 +650,11 @@
             },
             {
                 "to": {
-                    "startLine": 34,
+                    "startLine": 36,
                     "startColumn": 4,
-                    "startOffset": 3793,
+                    "startOffset": 3945,
                     "endColumn": 122,
-                    "endOffset": 3911
+                    "endOffset": 4063
                 },
                 "from": {
                     "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/values-zh-rCN/base_strings.xml",
@@ -631,11 +669,11 @@
             },
             {
                 "to": {
-                    "startLine": 35,
+                    "startLine": 37,
                     "startColumn": 4,
-                    "startOffset": 3916,
+                    "startOffset": 4068,
                     "endColumn": 111,
-                    "endOffset": 4023
+                    "endOffset": 4175
                 },
                 "from": {
                     "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/values-zh-rCN/base_strings.xml",
@@ -650,11 +688,11 @@
             },
             {
                 "to": {
-                    "startLine": 36,
+                    "startLine": 38,
                     "startColumn": 4,
-                    "startOffset": 4028,
+                    "startOffset": 4180,
                     "endColumn": 175,
-                    "endOffset": 4199
+                    "endOffset": 4351
                 },
                 "from": {
                     "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-basement/8.4.0/res/values-zh-rCN/common_strings.xml",
@@ -669,11 +707,11 @@
             },
             {
                 "to": {
-                    "startLine": 37,
+                    "startLine": 39,
                     "startColumn": 4,
-                    "startOffset": 4204,
+                    "startOffset": 4356,
                     "endColumn": 189,
-                    "endOffset": 4389
+                    "endOffset": 4541
                 },
                 "from": {
                     "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/values-zh-rCN/base_strings.xml",
@@ -688,11 +726,11 @@
             },
             {
                 "to": {
-                    "startLine": 38,
+                    "startLine": 40,
                     "startColumn": 4,
-                    "startOffset": 4394,
+                    "startOffset": 4546,
                     "endColumn": 117,
-                    "endOffset": 4507
+                    "endOffset": 4659
                 },
                 "from": {
                     "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/values-zh-rCN/base_strings.xml",
@@ -707,11 +745,11 @@
             },
             {
                 "to": {
-                    "startLine": 39,
+                    "startLine": 41,
                     "startColumn": 4,
-                    "startOffset": 4512,
+                    "startOffset": 4664,
                     "endColumn": 102,
-                    "endOffset": 4610
+                    "endOffset": 4762
                 },
                 "from": {
                     "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/values-zh-rCN/base_strings.xml",
@@ -726,11 +764,11 @@
             },
             {
                 "to": {
-                    "startLine": 40,
+                    "startLine": 42,
                     "startColumn": 4,
-                    "startOffset": 4615,
+                    "startOffset": 4767,
                     "endColumn": 160,
-                    "endOffset": 4771
+                    "endOffset": 4923
                 },
                 "from": {
                     "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/values-zh-rCN/base_strings.xml",
@@ -745,11 +783,11 @@
             },
             {
                 "to": {
-                    "startLine": 41,
+                    "startLine": 43,
                     "startColumn": 4,
-                    "startOffset": 4776,
+                    "startOffset": 4928,
                     "endColumn": 116,
-                    "endOffset": 4888
+                    "endOffset": 5040
                 },
                 "from": {
                     "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/values-zh-rCN/base_strings.xml",
@@ -764,11 +802,11 @@
             },
             {
                 "to": {
-                    "startLine": 42,
+                    "startLine": 44,
                     "startColumn": 4,
-                    "startOffset": 4893,
+                    "startOffset": 5045,
                     "endColumn": 162,
-                    "endOffset": 5051
+                    "endOffset": 5203
                 },
                 "from": {
                     "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/values-zh-rCN/base_strings.xml",
@@ -783,11 +821,11 @@
             },
             {
                 "to": {
-                    "startLine": 43,
+                    "startLine": 45,
                     "startColumn": 4,
-                    "startOffset": 5056,
+                    "startOffset": 5208,
                     "endColumn": 119,
-                    "endOffset": 5171
+                    "endOffset": 5323
                 },
                 "from": {
                     "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/values-zh-rCN/base_strings.xml",
@@ -802,11 +840,11 @@
             },
             {
                 "to": {
-                    "startLine": 44,
+                    "startLine": 46,
                     "startColumn": 4,
-                    "startOffset": 5176,
+                    "startOffset": 5328,
                     "endColumn": 137,
-                    "endOffset": 5309
+                    "endOffset": 5461
                 },
                 "from": {
                     "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/values-zh-rCN/base_strings.xml",
@@ -821,11 +859,11 @@
             },
             {
                 "to": {
-                    "startLine": 45,
+                    "startLine": 47,
                     "startColumn": 4,
-                    "startOffset": 5314,
+                    "startOffset": 5466,
                     "endColumn": 84,
-                    "endOffset": 5394
+                    "endOffset": 5546
                 },
                 "from": {
                     "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/values-zh-rCN/base_strings.xml",
@@ -840,11 +878,11 @@
             },
             {
                 "to": {
-                    "startLine": 46,
+                    "startLine": 48,
                     "startColumn": 4,
-                    "startOffset": 5399,
+                    "startOffset": 5551,
                     "endColumn": 86,
-                    "endOffset": 5481
+                    "endOffset": 5633
                 },
                 "from": {
                     "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/values-zh-rCN/base_strings.xml",
@@ -859,11 +897,11 @@
             },
             {
                 "to": {
-                    "startLine": 47,
+                    "startLine": 49,
                     "startColumn": 4,
-                    "startOffset": 5486,
+                    "startOffset": 5638,
                     "endColumn": 103,
-                    "endOffset": 5585
+                    "endOffset": 5737
                 },
                 "from": {
                     "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/values-zh-rCN/base_strings.xml",
@@ -878,58 +916,20 @@
             },
             {
                 "to": {
-                    "startLine": 48,
-                    "startColumn": 4,
-                    "startOffset": 5590,
-                    "endColumn": 102,
-                    "endOffset": 5688
-                },
-                "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.0.0/res/values-zh-rCN/values-zh-rCN.xml",
-                    "position": {
-                        "startLine": 4,
-                        "startColumn": 4,
-                        "startOffset": 282,
-                        "endColumn": 102,
-                        "endOffset": 380
-                    }
-                }
-            },
-            {
-                "to": {
-                    "startLine": 49,
-                    "startColumn": 4,
-                    "startOffset": 5693,
-                    "endColumn": 98,
-                    "endOffset": 5787
-                },
-                "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.0.0/res/values-zh-rCN/values-zh-rCN.xml",
-                    "position": {
-                        "startLine": 5,
-                        "startColumn": 4,
-                        "startOffset": 385,
-                        "endColumn": 98,
-                        "endOffset": 479
-                    }
-                }
-            },
-            {
-                "to": {
                     "startLine": 50,
                     "startColumn": 4,
-                    "startOffset": 5792,
+                    "startOffset": 5742,
                     "endColumn": 92,
-                    "endOffset": 5880
+                    "endOffset": 5830
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.0.0/res/values-zh-rCN/values-zh-rCN.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
                     "position": {
-                        "startLine": 6,
+                        "startLine": 2,
                         "startColumn": 4,
-                        "startOffset": 484,
+                        "startOffset": 55,
                         "endColumn": 92,
-                        "endOffset": 572
+                        "endOffset": 143
                     }
                 }
             },
@@ -937,18 +937,18 @@
                 "to": {
                     "startLine": 51,
                     "startColumn": 4,
-                    "startOffset": 5885,
-                    "endColumn": 98,
-                    "endOffset": 5979
+                    "startOffset": 5835,
+                    "endColumn": 85,
+                    "endOffset": 5916
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.0.0/res/values-zh-rCN/values-zh-rCN.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
                     "position": {
-                        "startLine": 7,
+                        "startLine": 3,
                         "startColumn": 4,
-                        "startOffset": 577,
-                        "endColumn": 98,
-                        "endOffset": 671
+                        "startOffset": 148,
+                        "endColumn": 85,
+                        "endOffset": 229
                     }
                 }
             },
@@ -956,18 +956,18 @@
                 "to": {
                     "startLine": 52,
                     "startColumn": 4,
-                    "startOffset": 5984,
-                    "endColumn": 110,
-                    "endOffset": 6090
+                    "startOffset": 5921,
+                    "endColumn": 77,
+                    "endOffset": 5994
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.0.0/res/values-zh-rCN/values-zh-rCN.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
                     "position": {
-                        "startLine": 8,
+                        "startLine": 4,
                         "startColumn": 4,
-                        "startOffset": 676,
-                        "endColumn": 110,
-                        "endOffset": 782
+                        "startOffset": 234,
+                        "endColumn": 77,
+                        "endOffset": 307
                     }
                 }
             },
@@ -975,18 +975,18 @@
                 "to": {
                     "startLine": 53,
                     "startColumn": 4,
-                    "startOffset": 6095,
-                    "endColumn": 92,
-                    "endOffset": 6183
+                    "startOffset": 5999,
+                    "endColumn": 93,
+                    "endOffset": 6088
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.0.0/res/values-zh-rCN/values-zh-rCN.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
                     "position": {
-                        "startLine": 9,
+                        "startLine": 5,
                         "startColumn": 4,
-                        "startOffset": 787,
-                        "endColumn": 92,
-                        "endOffset": 875
+                        "startOffset": 312,
+                        "endColumn": 93,
+                        "endOffset": 401
                     }
                 }
             },
@@ -994,18 +994,18 @@
                 "to": {
                     "startLine": 54,
                     "startColumn": 4,
-                    "startOffset": 6188,
-                    "endColumn": 91,
-                    "endOffset": 6275
+                    "startOffset": 6093,
+                    "endColumn": 92,
+                    "endOffset": 6181
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.0.0/res/values-zh-rCN/values-zh-rCN.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
                     "position": {
-                        "startLine": 10,
+                        "startLine": 6,
                         "startColumn": 4,
-                        "startOffset": 880,
-                        "endColumn": 91,
-                        "endOffset": 967
+                        "startOffset": 406,
+                        "endColumn": 92,
+                        "endOffset": 494
                     }
                 }
             },
@@ -1013,18 +1013,18 @@
                 "to": {
                     "startLine": 55,
                     "startColumn": 4,
-                    "startOffset": 6280,
-                    "endColumn": 108,
-                    "endOffset": 6384
+                    "startOffset": 6186,
+                    "endColumn": 89,
+                    "endOffset": 6271
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.0.0/res/values-zh-rCN/values-zh-rCN.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
                     "position": {
-                        "startLine": 11,
+                        "startLine": 7,
                         "startColumn": 4,
-                        "startOffset": 972,
-                        "endColumn": 108,
-                        "endOffset": 1076
+                        "startOffset": 499,
+                        "endColumn": 89,
+                        "endOffset": 584
                     }
                 }
             },
@@ -1032,18 +1032,18 @@
                 "to": {
                     "startLine": 56,
                     "startColumn": 4,
-                    "startOffset": 6389,
-                    "endColumn": 93,
-                    "endOffset": 6478
+                    "startOffset": 6276,
+                    "endColumn": 87,
+                    "endOffset": 6359
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.0.0/res/values-zh-rCN/values-zh-rCN.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
                     "position": {
-                        "startLine": 12,
+                        "startLine": 8,
                         "startColumn": 4,
-                        "startOffset": 1081,
-                        "endColumn": 93,
-                        "endOffset": 1170
+                        "startOffset": 589,
+                        "endColumn": 87,
+                        "endOffset": 672
                     }
                 }
             },
@@ -1051,18 +1051,18 @@
                 "to": {
                     "startLine": 57,
                     "startColumn": 4,
-                    "startOffset": 6483,
-                    "endColumn": 81,
-                    "endOffset": 6560
+                    "startOffset": 6364,
+                    "endColumn": 87,
+                    "endOffset": 6447
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.0.0/res/values-zh-rCN/values-zh-rCN.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
                     "position": {
-                        "startLine": 13,
+                        "startLine": 9,
                         "startColumn": 4,
-                        "startOffset": 1175,
-                        "endColumn": 81,
-                        "endOffset": 1252
+                        "startOffset": 677,
+                        "endColumn": 87,
+                        "endOffset": 760
                     }
                 }
             },
@@ -1070,18 +1070,18 @@
                 "to": {
                     "startLine": 58,
                     "startColumn": 4,
-                    "startOffset": 6565,
-                    "endColumn": 88,
-                    "endOffset": 6649
+                    "startOffset": 6452,
+                    "endColumn": 98,
+                    "endOffset": 6546
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.0.0/res/values-zh-rCN/values-zh-rCN.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
                     "position": {
-                        "startLine": 14,
+                        "startLine": 10,
                         "startColumn": 4,
-                        "startOffset": 1257,
-                        "endColumn": 88,
-                        "endOffset": 1341
+                        "startOffset": 765,
+                        "endColumn": 98,
+                        "endOffset": 859
                     }
                 }
             },
@@ -1089,18 +1089,132 @@
                 "to": {
                     "startLine": 59,
                     "startColumn": 4,
-                    "startOffset": 6654,
-                    "endColumn": 100,
-                    "endOffset": 6750
+                    "startOffset": 6551,
+                    "endColumn": 97,
+                    "endOffset": 6644
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-zh-rCN/values-zh-rCN.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
+                    "position": {
+                        "startLine": 11,
+                        "startColumn": 4,
+                        "startOffset": 864,
+                        "endColumn": 97,
+                        "endOffset": 957
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 60,
+                    "startColumn": 4,
+                    "startOffset": 6649,
+                    "endColumn": 80,
+                    "endOffset": 6725
+                },
+                "from": {
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
+                    "position": {
+                        "startLine": 12,
+                        "startColumn": 4,
+                        "startOffset": 962,
+                        "endColumn": 80,
+                        "endOffset": 1038
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 61,
+                    "startColumn": 4,
+                    "startOffset": 6730,
+                    "endColumn": 78,
+                    "endOffset": 6804
+                },
+                "from": {
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
+                    "position": {
+                        "startLine": 13,
+                        "startColumn": 4,
+                        "startOffset": 1043,
+                        "endColumn": 78,
+                        "endOffset": 1117
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 62,
+                    "startColumn": 4,
+                    "startOffset": 6809,
+                    "endColumn": 81,
+                    "endOffset": 6886
+                },
+                "from": {
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
+                    "position": {
+                        "startLine": 14,
+                        "startColumn": 4,
+                        "startOffset": 1122,
+                        "endColumn": 81,
+                        "endOffset": 1199
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 63,
+                    "startColumn": 4,
+                    "startOffset": 6891,
+                    "endColumn": 81,
+                    "endOffset": 6968
+                },
+                "from": {
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
+                    "position": {
+                        "startLine": 15,
+                        "startColumn": 4,
+                        "startOffset": 1204,
+                        "endColumn": 81,
+                        "endOffset": 1281
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 64,
+                    "startColumn": 4,
+                    "startOffset": 6973,
+                    "endColumn": 88,
+                    "endOffset": 7057
+                },
+                "from": {
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
+                    "position": {
+                        "startLine": 16,
+                        "startColumn": 4,
+                        "startOffset": 1286,
+                        "endColumn": 88,
+                        "endOffset": 1370
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 65,
+                    "startColumn": 4,
+                    "startOffset": 7062,
+                    "endColumn": 100,
+                    "endOffset": 7158
+                },
+                "from": {
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-zh-rCN/values-zh-rCN.xml",
                     "position": {
                         "startLine": 21,
                         "startColumn": 4,
-                        "startOffset": 1947,
+                        "startOffset": 1874,
                         "endColumn": 100,
-                        "endOffset": 2043
+                        "endOffset": 1970
                     }
                 }
             }

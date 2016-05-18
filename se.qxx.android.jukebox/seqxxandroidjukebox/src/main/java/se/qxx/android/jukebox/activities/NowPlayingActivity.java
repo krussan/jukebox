@@ -39,6 +39,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.cast.CastMediaControlIntent;
+import com.google.android.gms.cast.MediaInfo;
+import com.google.android.gms.cast.MediaMetadata;
+import com.google.android.gms.cast.MediaTrack;
+import com.google.android.libraries.cast.companionlibrary.cast.BaseCastManager;
+import com.google.android.libraries.cast.companionlibrary.cast.CastConfiguration;
+import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager;
 import com.google.protobuf.RpcCallback;
 
 public class NowPlayingActivity extends AppCompatActivity
@@ -48,8 +54,7 @@ public class NowPlayingActivity extends AppCompatActivity
 	private boolean isManualSeeking = false;
 	private JukeboxConnectionHandler comm;
 
-	MediaRouter mMediaRouter = null;
-	MediaRouteSelector mMediaRouteSelector = null;
+	VideoCastManager mCastManager = null;
 	ChromecastCallback mChromecastCallback = null;
 
 	//region --CALLBACKS--
@@ -197,12 +202,45 @@ public class NowPlayingActivity extends AppCompatActivity
 	}
 
 	private void initializeChromecast(Movie m) {
-		mMediaRouter = MediaRouter.getInstance(getApplicationContext());
+		BaseCastManager.checkGooglePlayServices(this);
+
+		CastConfiguration options = new CastConfiguration.Builder(CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID)
+				.enableAutoReconnect()
+				.enableCaptionManagement()
+				.enableLockScreen()
+				.enableWifiReconnection()
+				.enableNotification()
+				.addNotificationAction(CastConfiguration.NOTIFICATION_ACTION_DISCONNECT, true)
+				.addNotificationAction(CastConfiguration.NOTIFICATION_ACTION_PLAY_PAUSE, true)
+				.build();
+
+		VideoCastManager.initialize(this, options);
+
+		mCastManager = VideoCastManager.getInstance();
+
+		String uri = String.format("file://192.168.1.120/%s", m.getMedia(0).getFilepath());
+		MediaMetadata md = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
+		md.putString(MediaMetadata.KEY_TITLE, m.getTitle());
+
+		MediaInfo mi = new MediaInfo.Builder(uri)
+				.setMetadata(md)
+				.setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
+				.setContentType("video/mp4")
+				.build();
+
+		mCastManager.startVideoCastControllerActivity(this, mi, 0, true);
+
+/*		m.getMedia(0).get
+		MediaInfo mi = new MediaInfo.Builder().build();
+
+
+		mCastManager.startVideoCastControllerActivity(this, mediaInfo, 0, true);*/
+		/*		mMediaRouter = MediaRouter.getInstance(getApplicationContext());
 		mMediaRouteSelector = new MediaRouteSelector.Builder()
 				.addControlCategory(CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID)
 				.build();
 
-		mChromecastCallback = new ChromecastCallback();
+		mChromecastCallback = new ChromecastCallback();*/
 	}
 
 	//endregion
@@ -214,6 +252,9 @@ public class NowPlayingActivity extends AppCompatActivity
 		super.onPause();
 		if (seeker != null)
 			seeker.stop();
+
+		if (mCastManager != null)
+			mCastManager.decrementUiCounter();
 	};
 
 	@Override
@@ -226,9 +267,11 @@ public class NowPlayingActivity extends AppCompatActivity
 	@Override protected void onResume() {
 		super.onResume();
 
-		if (mChromecastCallback != null) {
+		if (mCastManager != null) {
 			// Start media router discovery
-			mMediaRouter.addCallback( mMediaRouteSelector, mChromecastCallback, MediaRouter.CALLBACK_FLAG_PERFORM_ACTIVE_SCAN );
+			// mMediaRouter.addCallback( mMediaRouteSelector, mChromecastCallback, MediaRouter.CALLBACK_FLAG_PERFORM_ACTIVE_SCAN );
+			mCastManager = VideoCastManager.getInstance();
+			mCastManager.incrementUiCounter();
 		}
 		else {
 			if (seeker != null)
@@ -362,10 +405,12 @@ public class NowPlayingActivity extends AppCompatActivity
 		super.onCreateOptionsMenu( menu );
 		getMenuInflater().inflate( R.menu.cast, menu );
 
-		MenuItem mediaRouteMenuItem = menu.findItem( R.id.media_route_menu_item );
+		mCastManager.addMediaRouterButton(menu, R.id.media_route_menu_item);
 
-		MediaRouteActionProvider mediaRouteActionProvider = (MediaRouteActionProvider) MenuItemCompat.getActionProvider(mediaRouteMenuItem);
-		mediaRouteActionProvider.setRouteSelector(mMediaRouteSelector);
+		//MenuItem mediaRouteMenuItem = menu.findItem( R.id.media_route_menu_item );
+
+		//MediaRouteActionProvider mediaRouteActionProvider = (MediaRouteActionProvider) MenuItemCompat.getActionProvider(mediaRouteMenuItem);
+		//mediaRouteActionProvider.setRouteSelector(mMediaRouteSelector);
 		return true;
 	}
 

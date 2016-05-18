@@ -2,5 +2,9 @@
     {
         "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/xml/preferences.xml",
         "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/xml/preferences.xml"
+    },
+    {
+        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/xml/caption_preference.xml",
+        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.libraries.cast.companionlibrary/ccl/2.8.3/res/xml/caption_preference.xml"
     }
 ]

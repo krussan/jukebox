@@ -11,13 +11,13 @@
                     "endOffset": 106
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-port/values-port.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-port/values-port.xml",
                     "position": {
-                        "startLine": 4,
+                        "startLine": 2,
                         "startColumn": 4,
-                        "startOffset": 276,
+                        "startOffset": 55,
                         "endColumn": 55,
-                        "endOffset": 327
+                        "endOffset": 106
                     }
                 }
             }

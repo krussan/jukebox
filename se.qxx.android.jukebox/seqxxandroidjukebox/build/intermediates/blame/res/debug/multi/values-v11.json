@@ -12,14 +12,14 @@
                     "endOffset": 469
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-v11/values-v11.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-v11/values-v11.xml",
                     "position": {
-                        "startLine": 4,
+                        "startLine": 2,
                         "startColumn": 4,
-                        "startOffset": 286,
-                        "endLine": 9,
+                        "startOffset": 55,
+                        "endLine": 7,
                         "endColumn": 12,
-                        "endOffset": 700
+                        "endOffset": 469
                     }
                 }
             },
@@ -33,14 +33,14 @@
                     "endOffset": 894
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-v11/values-v11.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-v11/values-v11.xml",
                     "position": {
-                        "startLine": 10,
+                        "startLine": 8,
                         "startColumn": 4,
-                        "startOffset": 705,
-                        "endLine": 15,
+                        "startOffset": 474,
+                        "endLine": 13,
                         "endColumn": 12,
-                        "endOffset": 1125
+                        "endOffset": 894
                     }
                 }
             },
@@ -54,14 +54,14 @@
                     "endOffset": 1322
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-v11/values-v11.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-v11/values-v11.xml",
                     "position": {
-                        "startLine": 16,
+                        "startLine": 14,
                         "startColumn": 4,
-                        "startOffset": 1130,
-                        "endLine": 21,
+                        "startOffset": 899,
+                        "endLine": 19,
                         "endColumn": 12,
-                        "endOffset": 1553
+                        "endOffset": 1322
                     }
                 }
             },
@@ -75,14 +75,14 @@
                     "endOffset": 1748
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-v11/values-v11.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-v11/values-v11.xml",
                     "position": {
-                        "startLine": 22,
+                        "startLine": 20,
                         "startColumn": 4,
-                        "startOffset": 1558,
-                        "endLine": 27,
+                        "startOffset": 1327,
+                        "endLine": 25,
                         "endColumn": 12,
-                        "endOffset": 1979
+                        "endOffset": 1748
                     }
                 }
             },
@@ -96,14 +96,14 @@
                     "endOffset": 2175
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-v11/values-v11.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-v11/values-v11.xml",
                     "position": {
-                        "startLine": 28,
+                        "startLine": 26,
                         "startColumn": 4,
-                        "startOffset": 1984,
-                        "endLine": 33,
+                        "startOffset": 1753,
+                        "endLine": 31,
                         "endColumn": 12,
-                        "endOffset": 2406
+                        "endOffset": 2175
                     }
                 }
             },
@@ -117,14 +117,14 @@
                     "endOffset": 2600
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-v11/values-v11.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-v11/values-v11.xml",
                     "position": {
-                        "startLine": 34,
+                        "startLine": 32,
                         "startColumn": 4,
-                        "startOffset": 2411,
-                        "endLine": 39,
+                        "startOffset": 2180,
+                        "endLine": 37,
                         "endColumn": 12,
-                        "endOffset": 2831
+                        "endOffset": 2600
                     }
                 }
             },
@@ -137,13 +137,13 @@
                     "endOffset": 2689
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-v11/values-v11.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-v11/values-v11.xml",
                     "position": {
-                        "startLine": 42,
+                        "startLine": 38,
                         "startColumn": 4,
-                        "startOffset": 3062,
+                        "startOffset": 2605,
                         "endColumn": 88,
-                        "endOffset": 3146
+                        "endOffset": 2689
                     }
                 }
             },
@@ -156,13 +156,13 @@
                     "endOffset": 2790
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-v11/values-v11.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-v11/values-v11.xml",
                     "position": {
-                        "startLine": 43,
+                        "startLine": 39,
                         "startColumn": 4,
-                        "startOffset": 3151,
+                        "startOffset": 2694,
                         "endColumn": 100,
-                        "endOffset": 3247
+                        "endOffset": 2790
                     }
                 }
             },
@@ -176,14 +176,14 @@
                     "endOffset": 3198
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-v11/values-v11.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-v11/values-v11.xml",
                     "position": {
-                        "startLine": 44,
+                        "startLine": 40,
                         "startColumn": 4,
-                        "startOffset": 3252,
-                        "endLine": 48,
+                        "startOffset": 2795,
+                        "endLine": 44,
                         "endColumn": 12,
-                        "endOffset": 3655
+                        "endOffset": 3198
                     }
                 }
             },
@@ -197,14 +197,14 @@
                     "endOffset": 3618
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-v11/values-v11.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-v11/values-v11.xml",
                     "position": {
-                        "startLine": 49,
+                        "startLine": 45,
                         "startColumn": 4,
-                        "startOffset": 3660,
-                        "endLine": 53,
+                        "startOffset": 3203,
+                        "endLine": 49,
                         "endColumn": 12,
-                        "endOffset": 4075
+                        "endOffset": 3618
                     }
                 }
             },
@@ -218,14 +218,14 @@
                     "endOffset": 3725
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-v11/values-v11.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-v11/values-v11.xml",
                     "position": {
-                        "startLine": 56,
+                        "startLine": 50,
                         "startColumn": 4,
-                        "startOffset": 4306,
-                        "endLine": 57,
+                        "startOffset": 3623,
+                        "endLine": 51,
                         "endColumn": 12,
-                        "endOffset": 4408
+                        "endOffset": 3725
                     }
                 }
             },
@@ -239,14 +239,14 @@
                     "endOffset": 3854
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-v11/values-v11.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-v11/values-v11.xml",
                     "position": {
-                        "startLine": 58,
+                        "startLine": 52,
                         "startColumn": 4,
-                        "startOffset": 4413,
-                        "endLine": 59,
+                        "startOffset": 3730,
+                        "endLine": 53,
                         "endColumn": 12,
-                        "endOffset": 4537
+                        "endOffset": 3854
                     }
                 }
             },
@@ -255,97 +255,139 @@
                     "startLine": 54,
                     "startColumn": 4,
                     "startOffset": 3859,
+                    "endLine": 56,
+                    "endColumn": 12,
+                    "endOffset": 4027
+                },
+                "from": {
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.libraries.cast.companionlibrary/ccl/2.8.3/res/values-v11/values-v11.xml",
+                    "position": {
+                        "startLine": 4,
+                        "startColumn": 4,
+                        "startOffset": 194,
+                        "endLine": 6,
+                        "endColumn": 12,
+                        "endOffset": 362
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 57,
+                    "startColumn": 4,
+                    "startOffset": 4032,
+                    "endLine": 60,
+                    "endColumn": 12,
+                    "endOffset": 4207
+                },
+                "from": {
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.libraries.cast.companionlibrary/ccl/2.8.3/res/values-v11/values-v11.xml",
+                    "position": {
+                        "startLine": 7,
+                        "startColumn": 4,
+                        "startOffset": 367,
+                        "endLine": 10,
+                        "endColumn": 12,
+                        "endOffset": 542
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 61,
+                    "startColumn": 4,
+                    "startOffset": 4212,
                     "endColumn": 70,
-                    "endOffset": 3925
+                    "endOffset": 4278
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-v11/values-v11.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-v11/values-v11.xml",
                     "position": {
-                        "startLine": 62,
+                        "startLine": 54,
                         "startColumn": 4,
-                        "startOffset": 4768,
+                        "startOffset": 3859,
                         "endColumn": 70,
-                        "endOffset": 4834
+                        "endOffset": 3925
                     }
                 }
             },
             {
                 "to": {
-                    "startLine": 55,
+                    "startLine": 62,
                     "startColumn": 4,
-                    "startOffset": 3930,
+                    "startOffset": 4283,
                     "endColumn": 82,
-                    "endOffset": 4008
+                    "endOffset": 4361
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-v11/values-v11.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-v11/values-v11.xml",
                     "position": {
-                        "startLine": 63,
+                        "startLine": 55,
                         "startColumn": 4,
-                        "startOffset": 4839,
+                        "startOffset": 3930,
                         "endColumn": 82,
-                        "endOffset": 4917
+                        "endOffset": 4008
                     }
                 }
             },
             {
                 "to": {
-                    "startLine": 56,
+                    "startLine": 63,
                     "startColumn": 4,
-                    "startOffset": 4013,
-                    "endLine": 106,
+                    "startOffset": 4366,
+                    "endLine": 113,
                     "endColumn": 12,
-                    "endOffset": 7716
+                    "endOffset": 8069
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-v11/values-v11.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-v11/values-v11.xml",
                     "position": {
-                        "startLine": 64,
+                        "startLine": 56,
                         "startColumn": 4,
-                        "startOffset": 4922,
-                        "endLine": 114,
+                        "startOffset": 4013,
+                        "endLine": 106,
                         "endColumn": 12,
-                        "endOffset": 8625
+                        "endOffset": 7716
                     }
                 }
             },
             {
                 "to": {
-                    "startLine": 107,
+                    "startLine": 114,
                     "startColumn": 4,
-                    "startOffset": 7721,
-                    "endLine": 158,
+                    "startOffset": 8074,
+                    "endLine": 165,
                     "endColumn": 12,
-                    "endOffset": 11564
+                    "endOffset": 11917
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-v11/values-v11.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-v11/values-v11.xml",
                     "position": {
-                        "startLine": 115,
+                        "startLine": 107,
                         "startColumn": 4,
-                        "startOffset": 8630,
-                        "endLine": 166,
+                        "startOffset": 7721,
+                        "endLine": 158,
                         "endColumn": 12,
-                        "endOffset": 12473
+                        "endOffset": 11564
                     }
                 }
             },
             {
                 "to": {
-                    "startLine": 159,
+                    "startLine": 166,
                     "startColumn": 4,
-                    "startOffset": 11569,
+                    "startOffset": 11922,
                     "endColumn": 90,
-                    "endOffset": 11655
+                    "endOffset": 12008
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-v11/values-v11.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-v11/values-v11.xml",
                     "position": {
-                        "startLine": 169,
+                        "startLine": 159,
                         "startColumn": 4,
-                        "startOffset": 12704,
+                        "startOffset": 11569,
                         "endColumn": 90,
-                        "endOffset": 12790
+                        "endOffset": 11655
                     }
                 }
             }

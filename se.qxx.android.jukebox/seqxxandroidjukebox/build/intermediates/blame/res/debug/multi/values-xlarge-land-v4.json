@@ -11,13 +11,13 @@
                     "endOffset": 114
                 },
                 "from": {
-                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.0/res/values-xlarge-land/values-xlarge-land.xml",
+                    "file": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/values-xlarge-land-v4/values-xlarge-land-v4.xml",
                     "position": {
-                        "startLine": 4,
+                        "startLine": 2,
                         "startColumn": 4,
-                        "startOffset": 284,
+                        "startOffset": 55,
                         "endColumn": 63,
-                        "endOffset": 343
+                        "endOffset": 114
                     }
                 }
             }

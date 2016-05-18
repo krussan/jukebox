@@ -52,6 +52,13 @@
     </style>
     <style name="Base.Widget.AppCompat.ProgressBar.Horizontal" parent="android:Widget.Holo.ProgressBar.Horizontal">
     </style>
+    <style name="CCLCastDialog" parent="@android:style/Theme.Holo.Dialog">
+        <item name="android:windowTitleStyle">@style/CCLCastDialogWindowTitle</item>
+    </style>
+    <style name="CCLCastDialogWindowTitle">
+        <item name="android:textSize">22sp</item>
+        <item name="android:textColor">@color/ccl_mr_custom_title</item>
+    </style>
     <style name="Platform.AppCompat" parent="Platform.V11.AppCompat"/>
     <style name="Platform.AppCompat.Light" parent="Platform.V11.AppCompat.Light"/>
     <style name="Platform.V11.AppCompat" parent="android:Theme.Holo">
