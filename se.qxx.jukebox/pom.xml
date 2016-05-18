@@ -67,9 +67,21 @@
     </dependency>
 
     <dependency>
-      <groupId>se.qxx.jukebox.domain</groupId>
+      <groupId>se.qxx.jukebox</groupId>
       <artifactId>jukebox-domain</artifactId>
-      <version>1.0</version>
+      <version>[0.1.2,)</version>
+    </dependency>
+
+    <dependency>
+      <groupId>se.qxx.jukebox</groupId>
+      <artifactId>jukebox-comm</artifactId>
+      <version>[1.0.1,)</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.imgscalr</groupId>
+      <artifactId>imgscalr-lib</artifactId>
+      <version>4.2</version>
     </dependency>
 
   </dependencies>

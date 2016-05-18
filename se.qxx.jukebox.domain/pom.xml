@@ -2,9 +2,9 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>se.qxx.jukebox.domain</groupId>
+  <groupId>se.qxx.jukebox</groupId>
   <artifactId>jukebox-domain</artifactId>
-  <version>0.1.2</version>
+  <version>0.1.4</version>
   <packaging>jar</packaging>
 
   <name>domain-model</name>
@@ -62,6 +62,22 @@
             </plugin>
         
             <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-install-plugin</artifactId>
+              <executions>
+                <execution>
+                  <phase>install</phase>
+                  <goals>
+                    <goal>install-file</goal>
+                  </goals>
+                </execution>
+              </executions>
+            </plugin>
+        </plugins>
+    </pluginManagement>
+
+    <plugins>
+            <plugin>
                 <groupId>org.xolstice.maven.plugins</groupId>
                 <artifactId>protobuf-maven-plugin</artifactId>
                 <version>0.5.0</version>
@@ -89,7 +105,7 @@
                       <goal>increment</goal>
                       <goal>commit</goal>
                     </goals>
-                    <phase>compile</phase>
+                    <phase>install</phase>
                     <configuration>
                       <autoIncrementVersion>true</autoIncrementVersion>
                     </configuration>
@@ -97,19 +113,7 @@
                 </executions>
              </plugin>
 
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-install-plugin</artifactId>
-              <executions>
-                <execution>
-                  <phase>install</phase>
-                  <goals>
-                    <goal>install-file</goal>
-                  </goals>
-                </execution>
-              </executions>
-            </plugin>
-        </plugins>
-    </pluginManagement>
+    </plugins>
+
   </build>
 </project>
