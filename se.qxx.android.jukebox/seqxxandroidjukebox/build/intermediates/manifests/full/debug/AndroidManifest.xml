@@ -56,7 +56,7 @@
             android:launchMode="singleTask"
             android:parentActivityName="se.qxx.android.jukebox.activities.NowPlayingActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat" >
+            android:theme="@style/Theme.AppCompat.NoActionBar" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITTY"
                 android:value=".activities.NowPlayingActivity" />

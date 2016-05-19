@@ -1,11 +1,11 @@
 [
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/ic_notification_stop_24dp.xml",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.libraries.cast.companionlibrary/ccl/2.8.3/res/drawable/ic_notification_stop_24dp.xml"
-    },
-    {
         "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/abc_btn_borderless_material.xml",
         "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/drawable/abc_btn_borderless_material.xml"
+    },
+    {
+        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/ic_notification_stop_24dp.xml",
+        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.libraries.cast.companionlibrary/ccl/2.8.3/res/drawable/ic_notification_stop_24dp.xml"
     },
     {
         "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/common_google_signin_btn_text_light.xml",
@@ -56,12 +56,12 @@
         "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/drawable/abc_btn_default_mtrl_shape.xml"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/mr_ic_close_dark.xml",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.2.1/res/drawable/mr_ic_close_dark.xml"
-    },
-    {
         "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/skip_previous_button.xml",
         "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.libraries.cast.companionlibrary/ccl/2.8.3/res/drawable/skip_previous_button.xml"
+    },
+    {
+        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/mr_ic_close_dark.xml",
+        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.2.1/res/drawable/mr_ic_close_dark.xml"
     },
     {
         "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/abc_list_selector_holo_light.xml",
@@ -124,20 +124,20 @@
         "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/drawable/abc_btn_check_material.xml"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/abc_ratingbar_full_material.xml",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/drawable/abc_ratingbar_full_material.xml"
-    },
-    {
         "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/ic_notification_pause_24dp.xml",
         "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.libraries.cast.companionlibrary/ccl/2.8.3/res/drawable/ic_notification_pause_24dp.xml"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/abc_item_background_holo_light.xml",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/drawable/abc_item_background_holo_light.xml"
+        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/abc_ratingbar_full_material.xml",
+        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/drawable/abc_ratingbar_full_material.xml"
     },
     {
         "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/ic_expand.xml",
         "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.2.1/res/drawable/ic_expand.xml"
+    },
+    {
+        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/abc_item_background_holo_light.xml",
+        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/drawable/abc_item_background_holo_light.xml"
     },
     {
         "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/ic_mini_controller_upcoming_stop.xml",
@@ -168,24 +168,24 @@
         "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/drawable/abc_text_cursor_material.xml"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/abc_cab_background_internal_bg.xml",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/drawable/abc_cab_background_internal_bg.xml"
-    },
-    {
         "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/abc_list_selector_holo_dark.xml",
         "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/drawable/abc_list_selector_holo_dark.xml"
+    },
+    {
+        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/abc_cab_background_internal_bg.xml",
+        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/drawable/abc_cab_background_internal_bg.xml"
     },
     {
         "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/ic_mini_controller_stop.xml",
         "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.libraries.cast.companionlibrary/ccl/2.8.3/res/drawable/ic_mini_controller_stop.xml"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/mr_dialog_material_background_dark.xml",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.2.1/res/drawable/mr_dialog_material_background_dark.xml"
-    },
-    {
         "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/ic_notification_skip_prev_semi_48dp.xml",
         "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.libraries.cast.companionlibrary/ccl/2.8.3/res/drawable/ic_notification_skip_prev_semi_48dp.xml"
+    },
+    {
+        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/mr_dialog_material_background_dark.xml",
+        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.2.1/res/drawable/mr_dialog_material_background_dark.xml"
     },
     {
         "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/mr_ic_media_route_mono_dark.xml",
@@ -200,32 +200,32 @@
         "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/drawable/abc_ratingbar_indicator_material.xml"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/abc_item_background_holo_dark.xml",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/drawable/abc_item_background_holo_dark.xml"
-    },
-    {
         "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/ic_mini_controller_upcoming_play.xml",
         "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.libraries.cast.companionlibrary/ccl/2.8.3/res/drawable/ic_mini_controller_upcoming_play.xml"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/mr_ic_media_route_connecting_mono_dark.xml",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.2.1/res/drawable/mr_ic_media_route_connecting_mono_dark.xml"
+        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/abc_item_background_holo_dark.xml",
+        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/drawable/abc_item_background_holo_dark.xml"
     },
     {
         "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/common_plus_signin_btn_text_dark.xml",
         "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/drawable/common_plus_signin_btn_text_dark.xml"
     },
     {
+        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/mr_ic_media_route_connecting_mono_dark.xml",
+        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.2.1/res/drawable/mr_ic_media_route_connecting_mono_dark.xml"
+    },
+    {
         "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/abc_btn_radio_material.xml",
         "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/drawable/abc_btn_radio_material.xml"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/abc_dialog_material_background_light.xml",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/drawable/abc_dialog_material_background_light.xml"
-    },
-    {
         "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/abc_textfield_search_material.xml",
         "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/drawable/abc_textfield_search_material.xml"
+    },
+    {
+        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/abc_dialog_material_background_light.xml",
+        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/drawable/abc_dialog_material_background_light.xml"
     },
     {
         "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/ic_notification_skip_next_semi_48dp.xml",
@@ -252,48 +252,48 @@
         "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.2.1/res/drawable/mr_ic_pause_light.xml"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/abc_ratingbar_small_material.xml",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/drawable/abc_ratingbar_small_material.xml"
-    },
-    {
         "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/common_google_signin_btn_icon_light.xml",
         "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/drawable/common_google_signin_btn_icon_light.xml"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/ic_notification_rewind30_48dp.xml",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.libraries.cast.companionlibrary/ccl/2.8.3/res/drawable/ic_notification_rewind30_48dp.xml"
+        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/abc_ratingbar_small_material.xml",
+        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/drawable/abc_ratingbar_small_material.xml"
     },
     {
         "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/mini_gradient_light.xml",
         "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.libraries.cast.companionlibrary/ccl/2.8.3/res/drawable/mini_gradient_light.xml"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/ic_notification_stop_48dp.xml",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.libraries.cast.companionlibrary/ccl/2.8.3/res/drawable/ic_notification_stop_48dp.xml"
+        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/ic_notification_rewind30_48dp.xml",
+        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.libraries.cast.companionlibrary/ccl/2.8.3/res/drawable/ic_notification_rewind30_48dp.xml"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/common_google_signin_btn_icon_dark.xml",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/drawable/common_google_signin_btn_icon_dark.xml"
+        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/ic_notification_stop_48dp.xml",
+        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.libraries.cast.companionlibrary/ccl/2.8.3/res/drawable/ic_notification_stop_48dp.xml"
     },
     {
         "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/abc_list_selector_background_transition_holo_dark.xml",
         "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/drawable/abc_list_selector_background_transition_holo_dark.xml"
     },
     {
+        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/common_google_signin_btn_icon_dark.xml",
+        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/drawable/common_google_signin_btn_icon_dark.xml"
+    },
+    {
         "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/mr_ic_cast_dark.xml",
         "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.2.1/res/drawable/mr_ic_cast_dark.xml"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/common_plus_signin_btn_icon_light.xml",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/drawable/common_plus_signin_btn_icon_light.xml"
+        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/ic_notification_forward30_48dp.xml",
+        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.libraries.cast.companionlibrary/ccl/2.8.3/res/drawable/ic_notification_forward30_48dp.xml"
     },
     {
         "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/mr_ic_pause_dark.xml",
         "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/23.2.1/res/drawable/mr_ic_pause_dark.xml"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/ic_notification_forward30_48dp.xml",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.libraries.cast.companionlibrary/ccl/2.8.3/res/drawable/ic_notification_forward30_48dp.xml"
+        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/common_plus_signin_btn_icon_light.xml",
+        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/res/drawable/common_plus_signin_btn_icon_light.xml"
     },
     {
         "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/ic_media_route_controller_play.xml",
@@ -316,12 +316,12 @@
         "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.libraries.cast.companionlibrary/ccl/2.8.3/res/drawable/ic_notification_forward_48dp.xml"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/ic_mini_controller_pause.xml",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.libraries.cast.companionlibrary/ccl/2.8.3/res/drawable/ic_mini_controller_pause.xml"
-    },
-    {
         "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/abc_cab_background_top_material.xml",
         "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.2.1/res/drawable/abc_cab_background_top_material.xml"
+    },
+    {
+        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/ic_mini_controller_pause.xml",
+        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/exploded-aar/com.google.android.libraries.cast.companionlibrary/ccl/2.8.3/res/drawable/ic_mini_controller_pause.xml"
     },
     {
         "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable/ic_notification_disconnect_24dp.xml",

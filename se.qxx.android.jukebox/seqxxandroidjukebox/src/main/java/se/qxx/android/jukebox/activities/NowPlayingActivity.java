@@ -2,6 +2,7 @@ package se.qxx.android.jukebox.activities;
 
 import org.apache.commons.lang3.StringUtils;
 
+import se.qxx.android.jukebox.JukeboxCastConsumer;
 import se.qxx.android.jukebox.JukeboxSettings;
 import se.qxx.android.jukebox.OnListSubtitlesCompleteHandler;
 import se.qxx.android.jukebox.R;
@@ -38,6 +39,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.cast.ApplicationMetadata;
 import com.google.android.gms.cast.CastMediaControlIntent;
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaMetadata;
@@ -45,6 +47,7 @@ import com.google.android.gms.cast.MediaTrack;
 import com.google.android.libraries.cast.companionlibrary.cast.BaseCastManager;
 import com.google.android.libraries.cast.companionlibrary.cast.CastConfiguration;
 import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager;
+import com.google.android.libraries.cast.companionlibrary.cast.callbacks.VideoCastConsumerImpl;
 import com.google.protobuf.RpcCallback;
 
 public class NowPlayingActivity extends AppCompatActivity
@@ -218,17 +221,9 @@ public class NowPlayingActivity extends AppCompatActivity
 
 		mCastManager = VideoCastManager.getInstance();
 
-		String uri = String.format("file://192.168.1.120/%s", m.getMedia(0).getFilepath());
-		MediaMetadata md = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
-		md.putString(MediaMetadata.KEY_TITLE, m.getTitle());
-
-		MediaInfo mi = new MediaInfo.Builder(uri)
-				.setMetadata(md)
-				.setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
-				.setContentType("video/mp4")
-				.build();
-
-		mCastManager.startVideoCastControllerActivity(this, mi, 0, true);
+		if (mCastManager != null) {
+			mCastManager.addVideoCastConsumer(new JukeboxCastConsumer(this));
+		}
 
 /*		m.getMedia(0).get
 		MediaInfo mi = new MediaInfo.Builder().build();

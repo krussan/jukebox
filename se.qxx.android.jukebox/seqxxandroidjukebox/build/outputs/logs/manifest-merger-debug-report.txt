@@ -180,7 +180,7 @@ ADDED from /home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/sr
 	android:label
 		ADDED from /home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/AndroidManifest.xml:53:13-45
 	android:theme
-		ADDED from /home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/AndroidManifest.xml:56:13-51
+		ADDED from /home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/AndroidManifest.xml:56:13-63
 	android:parentActivityName
 		ADDED from /home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/AndroidManifest.xml:55:13-72
 	android:name
