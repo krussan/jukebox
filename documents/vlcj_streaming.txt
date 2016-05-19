@@ -1,0 +1,57 @@
+import uk.co.caprica.vlcj.player.MediaPlayerFactory;
+import uk.co.caprica.vlcj.player.headless.HeadlessMediaPlayer;
+import uk.co.caprica.vlcj.test.VlcjTest;
+
+/**
+* An example of how to stream a media file over HTTP.
+* <p>
+* The client specifies an MRL of <code>http://127.0.0.1:5555</code>
+*/
+public class StreamHttp extends VlcjTest {
+
+    //when running this it requires an MRL (Media Resource Locator)
+    //fancy term for saying the file you want to stream. This could be a url to another
+    //location that streams media or a filepath to a media file you want to stream
+    //on the system you are running this code on.
+    public static void main(String[] args) throws Exception {
+        if(args.length != 1) {
+            System.out.println("Specify a single MRL to stream");
+            System.exit(1);
+        }
+
+        //the media you are wanting to stream
+        String media = args[0];
+        //this is the IP address and port you are wanting to stream at
+        //this means clients will connect to http://127.0.0.1:5555
+        //to watch the stream
+        String options = formatHttpStream("127.0.0.1", 5555);
+
+        System.out.println("Streaming '" + media + "' to '" + options + "'");
+
+        //this creates a the actual media player that will make calls into the native
+        //vlc libraries to actually play the media you supplied. It does it in
+        //a headless fashion, as you are going to stream it over http to be watched
+        //instead of playing it locally to be watched.    
+        MediaPlayerFactory mediaPlayerFactory = new MediaPlayerFactory(args);
+        HeadlessMediaPlayer mediaPlayer = mediaPlayerFactory.newHeadlessMediaPlayer();
+
+        //this simply starts the player playing the media you gave it
+        mediaPlayer.playMedia(media, options);
+
+        // Don't exit
+        //basically you don't want the thread to end and kill the player, 
+        //so it just hangs around and waits for it to end.
+        Thread.currentThread().join();
+    }
+
+    private static String formatHttpStream(String serverAddress, int serverPort) {
+        StringBuilder sb = new StringBuilder(60);
+        sb.append(":sout=#duplicate{dst=std{access=http,mux=ts,");
+        sb.append("dst=");
+        sb.append(serverAddress);
+        sb.append(':');
+        sb.append(serverPort);
+        sb.append("}}");
+        return sb.toString();
+    }
+}
