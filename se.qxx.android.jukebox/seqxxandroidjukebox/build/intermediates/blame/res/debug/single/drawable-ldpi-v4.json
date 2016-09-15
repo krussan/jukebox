@@ -1,334 +1,334 @@
 [
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/console.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/console.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/console.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/console.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/btnonoffred.xml",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/btnonoffred.xml"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/backward.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/backward.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_backward_down.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_backward_down.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_forward_down.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_forward_down.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_current.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_current.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/btnplay.xml",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/btnplay.xml"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_backward.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_backward.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/film_roll.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/film_roll.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_pause_down.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_pause_down.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/stop32.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/stop32.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/movie1.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/movie1.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/display.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/display.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/forward32.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/forward32.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_subtitles.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_subtitles.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/refresh.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/refresh.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/clock32.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/clock32.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/onoff.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/onoff.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/icon.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/icon.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/btnstop.xml",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/btnstop.xml"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/pause.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/pause.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/movie2.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/movie2.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/movie2.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/movie2.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/btnonoff.xml",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/btnonoff.xml"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/onoff.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/onoff.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/pictures32.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/pictures32.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_play.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_play.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_fullscreen_down.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_fullscreen_down.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/btnfullscreen.xml",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/btnfullscreen.xml"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/play32.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/play32.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_pause.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_pause.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_subtitles.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_subtitles.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/btnstop.xml",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/btnstop.xml"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/clock.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/clock.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/paperclip.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/paperclip.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/infoabout.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/infoabout.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/cd32.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/cd32.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/zap.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/zap.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/forward.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/forward.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/rewind_48.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/rewind_48.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_stop_down.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_stop_down.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_display_down.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_display_down.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_onoff.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_onoff.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_onoff.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_onoff.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/pause_48.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/pause_48.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_subtitles_down.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_subtitles_down.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/btnforward.xml",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/btnforward.xml"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/todo.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/todo.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/btnpause.xml",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/btnpause.xml"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/infoabout32.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/infoabout32.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/rewind_48.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/rewind_48.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/paperclip.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/paperclip.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/battery.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/battery.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_onoff_down.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_onoff_down.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_onoff_down.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_onoff_down.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/redo.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/redo.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_forward.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_forward.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/forward_48.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/forward_48.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/backward32.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/backward32.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/icon.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/icon.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_fullscreen_down.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_fullscreen_down.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/btnsubtitles.xml",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/btnsubtitles.xml"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/selected.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/selected.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/selected.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/selected.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_onoff_red.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_onoff_red.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/magnify.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/magnify.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/pictures32.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/pictures32.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/star.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/star.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/infoabout.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/infoabout.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/battery.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/battery.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/btnbackward.xml",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/btnbackward.xml"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/backward32.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/backward32.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_onoff_red_down.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_onoff_red_down.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/widescreen.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/widescreen.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/pause32.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/pause32.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/flag.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/flag.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/back_48.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/back_48.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/btnrefresh.xml",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/btnrefresh.xml"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/console32.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/console32.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/pause_48.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/pause_48.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_stop.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_stop.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_pause.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_pause.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_backward_down.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_backward_down.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/back_48.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/back_48.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/clock.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/clock.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/console32.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/console32.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/movie1.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/movie1.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/btnplayer.xml",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/btnplayer.xml"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/redo.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/redo.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/play.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/play.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_fullscreen.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_fullscreen.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/film_roll.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/film_roll.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/enable_48.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/enable_48.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/pause32.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/pause32.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/play.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/play.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/forward.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/forward.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/forward32.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/forward32.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_current_down.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_current_down.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_pause_down.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_pause_down.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/stop32.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/stop32.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/moon.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/moon.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_onoff_red.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_onoff_red.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/btnsubtitles.xml",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/btnsubtitles.xml"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/display.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/display.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_display.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_display.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/backward.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/backward.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_current_down.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_current_down.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_play_down.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_play_down.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/stop.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/stop.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_forward_down.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_forward_down.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/pin.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/pin.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/cd32.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/cd32.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/disable_48.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/disable_48.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/btncurrent.xml",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/btncurrent.xml"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/btnonoffred.xml",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/btnonoffred.xml"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/clock32.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/clock32.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_display_down.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_display_down.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/disable_48.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/disable_48.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_refresh_down.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_refresh_down.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/stop.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/stop.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/btncurrent.xml",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/btncurrent.xml"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/filesearch32.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/filesearch32.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/btnonoff.xml",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/btnonoff.xml"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_refresh_down.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_refresh_down.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_current.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_current.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_forward.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_forward.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/zap.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/zap.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/btnplay.xml",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/btnplay.xml"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_backward.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_backward.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/pin.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/pin.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/note.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/note.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/note.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/note.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/btnplayer.xml",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/btnplayer.xml"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/btnforward.xml",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/btnforward.xml"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/refresh.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/refresh.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/fast_forward_48.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/fast_forward_48.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/fast_forward_48.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/fast_forward_48.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/pictures.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/pictures.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/pictures.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/pictures.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_onoff_red_down.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_onoff_red_down.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_subtitles_down.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_subtitles_down.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_display.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_display.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/widescreen.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/widescreen.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_refresh.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_refresh.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/forward_48.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/forward_48.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/btnpause.xml",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/btnpause.xml"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/todo.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/todo.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/btnfullscreen.xml",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/btnfullscreen.xml"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/star.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/star.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_stop.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_stop.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/btnrefresh.xml",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/btnrefresh.xml"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_play.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_play.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/flag.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/flag.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/moon.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/moon.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/play32.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/play32.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/enable_48.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/enable_48.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_refresh.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_refresh.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/pause.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/pause.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/filesearch32.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/filesearch32.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/btnbackward.xml",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/btnbackward.xml"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_play_down.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_play_down.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_stop_down.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_stop_down.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/magnify.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/magnify.png"
     },
     {
-        "merged": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/m_fullscreen.png",
-        "source": "/home/chris/dev/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/m_fullscreen.png"
+        "merged": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/build/intermediates/res/merged/debug/drawable-ldpi-v4/infoabout32.png",
+        "source": "/home/chris/git/jukebox/se.qxx.android.jukebox/seqxxandroidjukebox/src/main/res/drawable-ldpi/infoabout32.png"
     }
 ]
