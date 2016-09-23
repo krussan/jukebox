@@ -6,11 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.Stack;
 
-import org.apache.commons.io.FileUtils;
-
 import se.qxx.jukebox.DB;
-import se.qxx.jukebox.Log;
-import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.Version;
 
 public class Upgrader {

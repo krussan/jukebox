@@ -10,7 +10,6 @@ import javax.xml.transform.stream.StreamSource;
 
 import se.qxx.jukebox.settings.imdb.Imdb;
 import se.qxx.jukebox.settings.imdb.ImdbSettings;
-import se.qxx.jukebox.settings.parser.Parser;
 import se.qxx.jukebox.settings.parser.ParserSettings;
 
 

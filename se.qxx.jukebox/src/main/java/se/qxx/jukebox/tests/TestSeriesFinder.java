@@ -5,18 +5,10 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import se.qxx.jukebox.DB;
-import se.qxx.jukebox.Log;
-import se.qxx.jukebox.Util;
-import se.qxx.jukebox.builders.FilenameBuilder;
 import se.qxx.jukebox.domain.JukeboxDomain;
-import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
-import se.qxx.jukebox.settings.Settings;
-import se.qxx.jukebox.settings.imdb.ImdbSettings;
 import se.qxx.protodb.ProtoDB;
 
 public class TestSeriesFinder {

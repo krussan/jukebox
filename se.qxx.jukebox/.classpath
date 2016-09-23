@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry combineaccessrules="false" kind="src" path="/se.qxx.jukebox.domain"/>
-	<classpathentry kind="src" path="src">
+	<classpathentry kind="src" output="target/classes" path="src/main/java">
 		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="se.qxx.jukebox"/>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/se.qxx.jukebox.comm"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/se.qxx.protodb"/>
-	<classpathentry kind="lib" path="../../lib/commons-exec-1.1.jar"/>
-	<classpathentry kind="lib" path="../../lib/commons-io-2.4.jar"/>
-	<classpathentry kind="lib" path="../../lib/commons-lang3-3.1.jar"/>
-	<classpathentry kind="lib" path="../../lib/jna.jar"/>
-	<classpathentry kind="lib" path="../../lib/junit-4.10.jar"/>
-	<classpathentry kind="lib" path="../../lib/protobuf-2.4.1.jar"/>
-	<classpathentry kind="lib" path="../../lib/sqlite-jdbc-3.7.2.jar"/>
-	<classpathentry kind="lib" path="../../lib/vlcj-2.2.0.jar"/>
-	<classpathentry kind="lib" path="../../lib/imgscalr-lib-4.2.jar"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="src" path="src/test/java"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="target/classes"/>
 </classpath>

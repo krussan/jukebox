@@ -7,16 +7,13 @@ import java.util.List;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import se.qxx.jukebox.MovieIdentifier;
-import se.qxx.jukebox.Util;
-import se.qxx.jukebox.builders.FilenameBuilder;
 import se.qxx.jukebox.builders.MovieBuilder;
-import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.domain.JukeboxDomain.Rating;
+import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.settings.JukeboxListenerSettings;
 import se.qxx.jukebox.settings.Settings;
-import se.qxx.jukebox.domain.JukeboxDomain.Rating;
 
 
 public abstract class SubFinderBase {

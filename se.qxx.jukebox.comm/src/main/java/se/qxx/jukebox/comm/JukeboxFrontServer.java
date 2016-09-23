@@ -2,12 +2,11 @@ package se.qxx.jukebox.comm;
 
 import java.util.concurrent.Executors;
 
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxFrontService;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxService;
-
 import com.googlecode.protobuf.socketrpc.RpcServer;
 import com.googlecode.protobuf.socketrpc.ServerRpcConnectionFactory;
 import com.googlecode.protobuf.socketrpc.SocketRpcConnectionFactories;
+
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxFrontService;
 
 
 public class JukeboxFrontServer {

@@ -8,15 +8,13 @@ import javax.xml.bind.JAXBException;
 
 import org.apache.commons.io.FilenameUtils;
 
-import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.builders.NFOLine;
 import se.qxx.jukebox.builders.NFOScanner;
 import se.qxx.jukebox.builders.NfoBuilder;
 import se.qxx.jukebox.builders.exceptions.SeriesNotSupportedException;
-import se.qxx.jukebox.domain.JukeboxDomain.Identifier;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.settings.Settings;
-import se.qxx.jukebox.settings.imdb.ImdbSettings;
 
 public class TestNfoScanner {
 	public static void main(String[] args) throws IOException, JAXBException, SeriesNotSupportedException {

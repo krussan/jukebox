@@ -1,11 +1,6 @@
 package se.qxx.jukebox.builders;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,11 +10,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.ExtensionFileFilter;
 import se.qxx.jukebox.Log;
-import se.qxx.jukebox.Util;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.builders.exceptions.SeriesNotSupportedException;
 import se.qxx.jukebox.domain.JukeboxDomain.Identifier;
-import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.MovieOrSeries;
 

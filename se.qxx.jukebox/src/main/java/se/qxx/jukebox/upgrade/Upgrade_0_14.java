@@ -1,15 +1,6 @@
 package se.qxx.jukebox.upgrade;
 
-import java.awt.image.BufferedImage;
-import java.util.List;
-
-import javax.imageio.ImageIO;
-
-import org.apache.commons.lang3.StringUtils;
-
 import se.qxx.jukebox.Version;
-import se.qxx.jukebox.DB;
-import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 
 public class Upgrade_0_14 implements IIncrimentalUpgrade {
 
