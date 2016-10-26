@@ -19,7 +19,7 @@
     <repository>
       <id>krussan</id>
       <name>protodb</name>
-      <url>https://github.com/krussan/maven-repo/raw/master/</url>
+      <url>https://raw.githubusercontent.com/krussan/maven-repo/master/</url>
     </repository>
   </repositories>
 
