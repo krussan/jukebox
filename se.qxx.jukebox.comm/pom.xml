@@ -22,7 +22,7 @@
     <repository>
       <id>krussan</id>
       <name>protodb</name>
-      <url>https://github.com/krussan/maven-repo/raw/master/</url>
+      <url>https://raw.githubusercontent.com/krussan/maven-repo/master/</url>
     </repository>
   </repositories>
 
@@ -109,7 +109,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.3</version>
+				<version>3.5.1</version>
 			</plugin>
 		</plugins>
 	</build>

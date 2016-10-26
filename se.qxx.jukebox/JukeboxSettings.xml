@@ -126,5 +126,6 @@
   	<log type="file" filename="comm.log" level="DEBUG" logs="COMM" />
   	<log type="file" filename="upgrade.log" level="DEBUG" logs="UPGRADE" />
   	<log type="file" filename="imdb.log" level="DEBUG" logs="IMDB" />	
+  	<log type="file" filename="webserver.log" level="DEBUG" logs="WEBSERVER" />
   </logs>  
 </JukeboxListenerSettings>

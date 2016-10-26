@@ -21,7 +21,8 @@ public class Log {
 		COMM,
 		UPGRADE,
 		VLCRESPONSE,
-		IMDB
+		IMDB,
+		WEBSERVER
 	}
 	
 	public static void Critical(String msg, LogType type) {
@@ -69,6 +70,7 @@ public class Log {
 			logToConsole(logMessage, e);
 		}
 	}
+	
 	
 	private static void log(String msg, LogType type, Exception e, String level) {
 		log(msg, type, level);
