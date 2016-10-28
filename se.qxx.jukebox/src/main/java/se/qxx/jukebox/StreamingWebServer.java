@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import fi.iki.elonen.InternalRewrite;
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.WebServerPlugin;
+import fi.iki.elonen.util.ServerRunner;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import fi.iki.elonen.NanoHTTPD.Response;
 import se.qxx.jukebox.Log.LogType;
@@ -27,7 +28,7 @@ public class StreamingWebServer extends NanoHTTPD {
 	private Map<String, String> streamingMap = null;
 	private AtomicInteger streamingIterator;
 	
-	public StreamingWebServer(String host, int port,String dummyRootDir) {
+	public StreamingWebServer(String host, int port) {
 		super(host, port);
 		
 		streamingMap = new ConcurrentHashMap<String, String>();
@@ -190,6 +191,11 @@ public class StreamingWebServer extends NanoHTTPD {
         }
         return res;
     }
+
+	public static void setup(String host, int port) {
+		ServerRunner.executeInstance(new StreamingWebServer(host, port));
+		
+	}
 
 	
 

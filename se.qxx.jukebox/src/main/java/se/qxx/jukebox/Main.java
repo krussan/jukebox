@@ -27,6 +27,10 @@ public class Main implements Runnable, INotifyClient
 				subtitleDownloaderThread.start();
 			}
 			
+			if (Arguments.get().isWebServerEnabled()) {
+				StreamingWebServer.setup("127.0.0.1", 8001);
+			}
+			
 			Thread identifierThread = new Thread(MovieIdentifier.get());
 			identifierThread.start();
 			
