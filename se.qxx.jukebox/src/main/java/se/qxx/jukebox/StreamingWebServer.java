@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -46,7 +48,7 @@ public class StreamingWebServer extends NanoHTTPD {
 		
 		Log.Info(String.format("Registering file %s", streamingFile), LogType.WEBSERVER);
 		
-		return streamingFile;
+		return getStreamUri(streamingFile);
 	}
 	
 	public void deregisterFile(String streamingFile) {
@@ -221,6 +223,19 @@ public class StreamingWebServer extends NanoHTTPD {
 		return _instance;
 	}
 
+	private String getStreamUri(String streamingFile) {
+		String uri = streamingFile;
+		String ipAddress = "127.0.0.1";
+		try {
+			ipAddress = Inet4Address.getLocalHost().getHostAddress();
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			Log.Error("Unknown host while getting ip number", LogType.WEBSERVER, e);
+		}
+		
+		return String.format("http://%s/%s", ipAddress, streamingFile);
+		
+	}
 	
 
 }
