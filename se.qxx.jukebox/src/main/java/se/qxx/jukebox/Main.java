@@ -28,7 +28,7 @@ public class Main implements Runnable, INotifyClient
 			}
 			
 			if (Arguments.get().isWebServerEnabled()) {
-				StreamingWebServer.setup("127.0.0.1", 8001);
+				StreamingWebServer.setup("0.0.0.0", 8001);
 			}
 			
 			Thread identifierThread = new Thread(MovieIdentifier.get());

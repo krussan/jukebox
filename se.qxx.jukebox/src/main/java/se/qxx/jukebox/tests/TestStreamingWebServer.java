@@ -10,7 +10,7 @@ public class TestStreamingWebServer {
 
 	public static void main(String[] args) throws IOException, JAXBException {
 
-		StreamingWebServer.setup("127.0.0.1", 8001);
+		StreamingWebServer.setup("0.0.0.0", 8001);
 		
 		System.out.println("Continuing...");
 		if (args.length > 0)
