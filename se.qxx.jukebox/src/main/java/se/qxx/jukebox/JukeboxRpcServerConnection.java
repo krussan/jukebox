@@ -139,7 +139,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 				
 				JukeboxResponseStartMovie ls = JukeboxResponseStartMovie.newBuilder()
 						.addAllSubtitle(subs)
-						.addUri(uri)
+						.setUri(uri)
 						.build();
 									
 				done.run(ls);
