@@ -24,6 +24,9 @@ import se.qxx.jukebox.Log.LogType;
 
 public class StreamingWebServer extends NanoHTTPD {
 
+	private static StreamingWebServer _instance;
+	
+	
 	// maps stream name to actual file name
 	private Map<String, String> streamingMap = null;
 	private AtomicInteger streamingIterator;
@@ -31,6 +34,7 @@ public class StreamingWebServer extends NanoHTTPD {
 	public StreamingWebServer(String host, int port) {
 		super(host, port);
 		
+		streamingIterator = new AtomicInteger();
 		streamingMap = new ConcurrentHashMap<String, String>();
 	}
 	
@@ -39,6 +43,8 @@ public class StreamingWebServer extends NanoHTTPD {
 		
 		String streamingFile = String.format("stream%s.mp4", iter);
 		streamingMap.put(streamingFile, file);
+		
+		Log.Info(String.format("Registering file %s", streamingFile), LogType.WEBSERVER);
 		
 		return streamingFile;
 	}
@@ -69,7 +75,9 @@ public class StreamingWebServer extends NanoHTTPD {
 	private Response respond(Map<String, String> headers, IHTTPSession session, String uri) {
         uri = getUriWithoutArguments(uri);
         
-        // This server only serves specific stream uri's        
+        // This server only serves specific stream uri's  
+        Log.Info(String.format("Requesting file :: %s", uri), LogType.WEBSERVER);
+        
         if (!uri.startsWith("stream") || !uri.endsWith(".mp4")) 
         	return getForbiddenResponse("Won't serve ../ for security reasons.");
 
@@ -93,6 +101,9 @@ public class StreamingWebServer extends NanoHTTPD {
 	private String getUriWithoutArguments(String uri) {
 		// Remove URL arguments
         uri = uri.trim().replace(File.separatorChar, '/');
+        if (StringUtils.startsWith(uri, "/"))
+        	uri = uri.substring(1);
+        
         if (uri.indexOf('?') >= 0) {
             uri = uri.substring(0, uri.indexOf('?'));
         }
@@ -193,8 +204,21 @@ public class StreamingWebServer extends NanoHTTPD {
     }
 
 	public static void setup(String host, int port) {
-		ServerRunner.executeInstance(new StreamingWebServer(host, port));
+		_instance = new StreamingWebServer(host, port);
+
+		try {
+			_instance.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public static StreamingWebServer get() {
+		if (_instance == null)
+			setup("127.0.0.1", 8080);
 		
+		return _instance;
 	}
 
 	

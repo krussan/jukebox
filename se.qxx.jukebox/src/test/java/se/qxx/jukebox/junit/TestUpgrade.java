@@ -25,6 +25,6 @@ public class TestUpgrade {
 			, IllegalAccessException
 			, InvocationTargetException {
 		
-		Upgrader.performUpgrade();
+		//Upgrader.performUpgrade();
 	}
 }
