@@ -15,10 +15,11 @@ import com.google.android.libraries.cast.companionlibrary.cast.exceptions.NoConn
 import com.google.android.libraries.cast.companionlibrary.cast.exceptions.TransientNetworkDisconnectionException;
 
 import java.net.URLEncoder;
+import java.util.List;
 
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.Logger;
-import se.qxx.jukebox.domain.JukeboxDomain;
+import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 
 /**
  * Created by chris on 5/19/16.
@@ -26,10 +27,16 @@ import se.qxx.jukebox.domain.JukeboxDomain;
 public class JukeboxCastConsumer extends VideoCastConsumerImpl {
     VideoCastManager mCastManager = null;
     Activity parentActivity = null;
+    Movie currentMovie = null;
+    String movieUri = null;
+    List<String> subtitleUris = null;
 
-    public JukeboxCastConsumer(Activity context) {
+    public JukeboxCastConsumer(Activity context, Movie currentMovie, String movieUri, List<String> subtitleUris) {
         mCastManager = VideoCastManager.getInstance();
         parentActivity = context;
+        this.currentMovie = currentMovie;
+        this.movieUri = movieUri;
+        this.subtitleUris = subtitleUris;
     }
 
     @Override
@@ -103,19 +110,17 @@ public class JukeboxCastConsumer extends VideoCastConsumerImpl {
 
     protected void startCastVideo() {
         if (mCastManager != null) {
-            JukeboxDomain.Movie m = Model.get().getCurrentMovie();
-
-            String file = String.format("%s/%s", m.getMedia(0).getFilepath(), m.getMedia(0).getFilename());
+/*            String file = String.format("%s/%s", m.getMedia(0).getFilepath(), m.getMedia(0).getFilename());
             file = file.substring(0, 1).equals("/") ? file = file.substring(1) : file;
             file = file.substring(0, 2).equals("c/") ? file = file.substring(2) : file;
 
 
-            String uri = String.format("file://192.168.1.120/%s", file);
+            String uri = String.format("file://192.168.1.120/%s", file);*/
             
             MediaMetadata md = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
-            md.putString(MediaMetadata.KEY_TITLE, m.getTitle());
+            md.putString(MediaMetadata.KEY_TITLE, this.currentMovie.getTitle());
 
-            MediaInfo mi = new MediaInfo.Builder(uri)
+            MediaInfo mi = new MediaInfo.Builder(this.movieUri)
                     .setMetadata(md)
                     .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
                     .setContentType("video/mp4")

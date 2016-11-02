@@ -21,6 +21,8 @@ import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -49,6 +51,9 @@ import com.google.android.libraries.cast.companionlibrary.cast.CastConfiguration
 import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager;
 import com.google.android.libraries.cast.companionlibrary.cast.callbacks.VideoCastConsumerImpl;
 import com.google.protobuf.RpcCallback;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class NowPlayingActivity extends AppCompatActivity
 	implements OnSeekBarChangeListener, SeekerListener {
@@ -137,6 +142,42 @@ public class NowPlayingActivity extends AppCompatActivity
 		}
 	}
 
+    private class OnChromecastStartComplete implements RpcCallback<JukeboxResponseStartMovie> {
+
+        private Activity parentContext;
+
+        public OnChromecastStartComplete(Activity parentContext) {
+            this.parentContext = parentContext;
+        }
+
+        /***
+         * This is called when a movie was selected to play on a chromecast device
+         * and the file has successfully registered with the http server
+         * Sets up the chromecast stream.
+         * @param response
+         */
+        @Override
+        public void run(JukeboxResponseStartMovie response) {
+            CastConfiguration options = new CastConfiguration.Builder(CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID)
+                    .enableAutoReconnect()
+                    .enableCaptionManagement()
+                    .enableLockScreen()
+                    .enableWifiReconnection()
+                    .enableNotification()
+                    .addNotificationAction(CastConfiguration.NOTIFICATION_ACTION_DISCONNECT, true)
+                    .addNotificationAction(CastConfiguration.NOTIFICATION_ACTION_PLAY_PAUSE, true)
+                    .build();
+
+            VideoCastManager.initialize(this.parentContext, options);
+
+            mCastManager = VideoCastManager.getInstance();
+
+            if (mCastManager != null) {
+                mCastManager.addVideoCastConsumer(new JukeboxCastConsumer(this.parentContext, Model.get().getCurrentMovie(), response.getUri(), response.getSubtitleUrisList()));
+            }
+        }
+    }
+
 	private class OnStopMovieComplete implements RpcCallback<Empty> {
 		@Override
 		public void run(Empty arg0) {
@@ -146,7 +187,8 @@ public class NowPlayingActivity extends AppCompatActivity
 				@Override
 				public void run() {
 					Logger.Log().d("Request --- StartMovie");
-					comm.startMovie(JukeboxSettings.get().getCurrentMediaPlayer(), Model.get().getCurrentMovie(), new OnStartMovieComplete());				}
+					comm.startMovie(JukeboxSettings.get().getCurrentMediaPlayer(), Model.get().getCurrentMovie(), new OnStartMovieComplete());
+                }
 			});
 			t.start();
 		}
@@ -207,23 +249,11 @@ public class NowPlayingActivity extends AppCompatActivity
 	private void initializeChromecast(Movie m) {
 		BaseCastManager.checkGooglePlayServices(this);
 
-		CastConfiguration options = new CastConfiguration.Builder(CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID)
-				.enableAutoReconnect()
-				.enableCaptionManagement()
-				.enableLockScreen()
-				.enableWifiReconnection()
-				.enableNotification()
-				.addNotificationAction(CastConfiguration.NOTIFICATION_ACTION_DISCONNECT, true)
-				.addNotificationAction(CastConfiguration.NOTIFICATION_ACTION_PLAY_PAUSE, true)
-				.build();
+        comm.startMovie(
+                JukeboxSettings.get().getCurrentMediaPlayer(),
+                m, new OnChromecastStartComplete());
 
-		VideoCastManager.initialize(this, options);
 
-		mCastManager = VideoCastManager.getInstance();
-
-		if (mCastManager != null) {
-			mCastManager.addVideoCastConsumer(new JukeboxCastConsumer(this));
-		}
 
 /*		m.getMedia(0).get
 		MediaInfo mi = new MediaInfo.Builder().build();

@@ -4,7 +4,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.3'
+        classpath 'com.android.tools.build:gradle:2.2.2'
     }
 }
 
@@ -14,7 +14,7 @@ allprojects {
         mavenLocal()
         mavenCentral()
         maven {
-            url "https://github.com/krussan/maven-repo/raw/master"
+            url "https://raw.githubusercontent.com/krussan/maven-repo/master/"
         }
     }
 }
