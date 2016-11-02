@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import fi.iki.elonen.InternalRewrite;
@@ -43,7 +44,9 @@ public class StreamingWebServer extends NanoHTTPD {
 	public String registerFile(String file) {
 		int iter = streamingIterator.incrementAndGet();
 		
-		String streamingFile = String.format("stream%s.mp4", iter);
+		String extension = FilenameUtils.getExtension(file);
+		
+		String streamingFile = String.format("stream%s.%s", iter, extension);
 		streamingMap.put(streamingFile, file);
 		
 		Log.Info(String.format("Registering file %s", streamingFile), LogType.WEBSERVER);
@@ -80,8 +83,8 @@ public class StreamingWebServer extends NanoHTTPD {
         // This server only serves specific stream uri's  
         Log.Info(String.format("Requesting file :: %s", uri), LogType.WEBSERVER);
         
-        if (!uri.startsWith("stream") || !uri.endsWith(".mp4")) 
-        	return getForbiddenResponse("Won't serve ../ for security reasons.");
+        if (!uri.startsWith("stream") || (!uri.endsWith(".mp4") && !uri.endsWith(".srt"))) 
+        	return getForbiddenResponse("Won't serve anything else than registered files for streaming.");
 
         //TODO: If stream filename is not in one of the added files return
         // a not found response
