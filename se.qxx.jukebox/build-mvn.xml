@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project>
+    
+   	<target name="createscript">
+	    <echo file="${script.file}"><![CDATA[#!/bin/sh
+if [ -n "$LD_LIBRARY_PATH" ]
+then
+   LD_LIBRARY_PATH=$PWD:${LD_LIBRARY_PATH}
+else
+   LD_LIBRARY_PATH=$PWD
+fi
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH]]></echo>
+
+	    <echo file="${script-file}" message="java -${run.type} ${jarFile} ${script.class} \$\{1+&quot;\$\@&quot;} \&" 
+	        append="true" />		
+	    	    
+	</target>
+	
+	<target name="createrunscript">
+	    <antcall target="createscript">
+	        <param name="script.class" value="" />	        
+	        <param name="script.file" value="${project.build.directory}/run.sh" />
+	        <param name="run.type" value="jar" />
+	    </antcall>
+	    <echo file="${project.build.directory}/run.sh" append="true">echo $! > jukebox.pid</echo>
+
+	    <foreach list="TestMediaInfo,TestNfoScanner,TestImdbXmlReader,TestMovieBuilder,TestImdbFinder,TestParserBuilder,GenerateDatabase,TestWebResult,TestSeriesFinder,DeleteSeries,StreamingTest" 
+	        delimiter="," 
+	        param="param.class">
+		    <antcall target="createscript">
+		        <param name="script.class" value="se.qxx.jukebox.tests.${param.class}" />
+		        <param name="script.file" value="${project.build.directory}/${param.class}.sh" />
+		        <param name="run.type" value="cp" />
+		    </antcall>	        
+	    </foreach>
+   	    	    	    	    	    
+		<fixcrlf srcdir="${project.build.directory}" includes="**/*.sh" eol="lf" eof="remove" />
+						
+		<copy file="${project.basedir}/JukeboxSettings.xml" todir="${build.dir}" />
+		<copy file="${project.basedir}/imdb.xml" todir="${build.dir}" />
+		<copy file="${project.basedir}/parser.xml" todir="${build.dir}" />
+			
+		<copy todir="${project.build.directory}">
+	    	<fileset dir="${project.basedir}/native/${target.platform}">
+	    	    <include name="*" />
+	    	</fileset> 
+	    </copy>
+   	
+	</target>	
+    
+</project>
