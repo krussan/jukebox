@@ -277,13 +277,19 @@
 						<tasks>
 							<taskdef  resource="net/sf/antcontrib/antcontrib.properties"
                                         classpathref="maven.plugin.classpath" />
+							<taskdef resource="net/sf/antcontrib/antlib.xml"
+                                        classpathref="maven.plugin.classpath" />
 
 							<echoproperties />                                        
 
 							<property name="jarFile" value="${project.build.finalName}-jar-with-dependencies.jar" />
+							<property name="build.dir" value="${project.build.directory}" />
+							<property name="base.dir" value="${project.basedir}" />
+
 							<echo message="Jar File :: ${jarFile}" />
+							<echo message="Project directory :: ${project.build.directory}" />
 							
-							<ant antfile="build-mvn.xml" target="createrunscript" />							
+							<ant antfile="build-mvn.xml" target="createrunscript" inheritAll="true" inheritRefs="true" />							
 						</tasks>
 					</configuration>
 				</execution>

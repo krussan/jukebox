@@ -9,43 +9,44 @@ then
 else
    LD_LIBRARY_PATH=$PWD
 fi
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH]]></echo>
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH]]>
+</echo>
 
-	    <echo file="${script-file}" message="java -${run.type} ${jarFile} ${script.class} \$\{1+&quot;\$\@&quot;} \&" 
+	    <echo file="${script.file}" message="java -${run.type} 
+${jarFile} ${script.class} ${1+&quot;$@&quot;} &amp;${line.separator}" 
 	        append="true" />		
-	    	    
+
+		<chmod file="${script.file}" perm="755" />
 	</target>
 	
 	<target name="createrunscript">
+		<echo message="Project directory :: ${build.dir}" />
+
 	    <antcall target="createscript">
 	        <param name="script.class" value="" />	        
-	        <param name="script.file" value="${project.build.directory}/run.sh" />
+	        <param name="script.file" value="${build.dir}/run.sh" />
 	        <param name="run.type" value="jar" />
 	    </antcall>
-	    <echo file="${project.build.directory}/run.sh" append="true">echo $! > jukebox.pid</echo>
+	    <echo file="${build.dir}/run.sh" append="true">echo $! > jukebox.pid</echo>
 
-	    <foreach list="TestMediaInfo,TestNfoScanner,TestImdbXmlReader,TestMovieBuilder,TestImdbFinder,TestParserBuilder,GenerateDatabase,TestWebResult,TestSeriesFinder,DeleteSeries,StreamingTest" 
-	        delimiter="," 
+	    <for list="TestMediaInfo,TestNfoScanner,TestImdbXmlReader,TestMovieBuilder,TestImdbFinder,TestParserBuilder,GenerateDatabase,TestWebResult,TestSeriesFinder,DeleteSeries,StreamingTest"
+			delimiter=","
 	        param="param.class">
+			<sequential>
 		    <antcall target="createscript">
-		        <param name="script.class" value="se.qxx.jukebox.tests.${param.class}" />
-		        <param name="script.file" value="${project.build.directory}/${param.class}.sh" />
+		        <param name="script.class" value="se.qxx.jukebox.tests.@{param.class}" />
+		        <param name="script.file" value="${build.dir}/@{param.class}.sh" />
 		        <param name="run.type" value="cp" />
 		    </antcall>	        
-	    </foreach>
+			</sequential>
+	    </for>
    	    	    	    	    	    
-		<fixcrlf srcdir="${project.build.directory}" includes="**/*.sh" eol="lf" eof="remove" />
+		<fixcrlf srcdir="${build.dir}" includes="**/*.sh" eol="lf" eof="remove" />
 						
-		<copy file="${project.basedir}/JukeboxSettings.xml" todir="${build.dir}" />
-		<copy file="${project.basedir}/imdb.xml" todir="${build.dir}" />
-		<copy file="${project.basedir}/parser.xml" todir="${build.dir}" />
+		<copy file="${base.dir}/JukeboxSettings.xml" todir="${build.dir}" />
+		<copy file="${base.dir}/imdb.xml" todir="${build.dir}" />
+		<copy file="${base.dir}/parser.xml" todir="${build.dir}" />
 			
-		<copy todir="${project.build.directory}">
-	    	<fileset dir="${project.basedir}/native/${target.platform}">
-	    	    <include name="*" />
-	    	</fileset> 
-	    </copy>
-   	
 	</target>	
     
 </project>
