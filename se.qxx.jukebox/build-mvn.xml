@@ -49,4 +49,43 @@ ${jarFile} ${script.class} ${1+&quot;$@&quot;} &amp;${line.separator}"
 			
 	</target>	
     
+	<target name="deploy" if="${doDeploy}">
+		<echo message="Connecting..." />
+		<echo message="Server :: ${jukeboxDeployServer}" />
+		<echo message="User :: ${jukeboxDeployUser}" />
+		<echo message="Path :: ${jukeboxDeployPath}" />
+		<echo message="KeyFile :: ${jukeboxKeyFile}" />
+
+		<sshexec
+	        trust="true"
+	        keyfile="${jukeboxKeyFile}"
+	        host="${jukeboxDeployServer}"
+	        username="${jukeboxDeployUser}"
+	        failonerror="false"
+	        command="cd ${jukeboxDeployPath};./stop.sh;" 
+	        passphrase="${jukeboxKeyFilePass}"
+        />
+	    	    
+	    <sshexec
+	        trust="true"
+	        keyfile="${jukeboxKeyFile}"
+	        host="${jukeboxDeployServer}"
+	        username="${jukeboxDeployUser}"
+	        failonerror="false"
+	        passphrase="${jukeboxKeyFilePass}"
+	        command="rm ${jukeboxDeployPath}/*.jar;rm ${jukeboxDeployPath}/*.log; rm ${jukeboxDeployPath}/*.sh"
+        />
+	    
+			<scp  
+					todir="${jukeboxDeployUser}@${jukeboxDeployServer}:${jukeboxDeployPath}" 
+					trust="true"
+					keyfile="${jukeboxKeyFile}"
+					passphrase="${jukeboxKeyFilePass}"
+				>
+             	<fileset dir="${build.dir}">
+               	<include name="*" />
+					</fileset>
+				</scp>
+	    
+	</target>
 </project>

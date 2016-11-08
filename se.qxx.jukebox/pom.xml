@@ -105,6 +105,9 @@
 	    <artifactId>nanohttpd-webserver</artifactId>
 	    <version>2.3.1</version>
 	</dependency>
+
+
+
   </dependencies>
 
 <build>
@@ -121,7 +124,6 @@
                    <target>1.7</target>
                 </configuration>
             </plugin>
-            
             
  		</plugins>
     </pluginManagement>
@@ -234,11 +236,13 @@
 
 		<plugin>
 			<artifactId>maven-antrun-plugin</artifactId>
+			<version>1.8</version>
 			<dependencies>
+
 				<dependency>
 				    <groupId>org.apache.ant</groupId>
 				    <artifactId>ant-jsch</artifactId>
-				    <version>1.9.7</version>
+				    <version>1.8.0</version>
 				</dependency>
 			    
 			    <dependency>
@@ -259,12 +263,6 @@
 				    </exclusions>
 				</dependency>
 				
-				<dependency>
-				    <groupId>ant</groupId>
-				    <artifactId>ant-nodeps</artifactId>
-				    <version>1.6.5</version>
-				</dependency>
-			
 			</dependencies>
 			<executions>
 				<execution>
@@ -282,14 +280,28 @@
 
 							<echoproperties />                                        
 
+
+							<condition property="doDeploy" else="false">
+								<isset property="jukeboxDeployServer" />
+							</condition>
+
 							<property name="jarFile" value="${project.build.finalName}-jar-with-dependencies.jar" />
 							<property name="build.dir" value="${project.build.directory}" />
 							<property name="base.dir" value="${project.basedir}" />
+							<property name="jukeboxKeyFile" value="${jukeboxKeyFile}" />
+							<property name="jukeboxKeyFilePass" value="${jukeboxKeyFilePass}" />
+							<property name="jukeboxDeployUser" value="${jukeboxDeployUser}" />
+							<property name="jukeboxDeployPath" value="${jukeboxDeployPath}" />
+							<property name="jukeboxDeployServer" value="${jukeboxDeployServer}" />
+							
 
 							<echo message="Jar File :: ${jarFile}" />
 							<echo message="Project directory :: ${project.build.directory}" />
-							
-							<ant antfile="build-mvn.xml" target="createrunscript" inheritAll="true" inheritRefs="true" />							
+							<echo message="Do deploy :: ${doDeploy}" />
+							<echo message="Deploy server :: ${jukeboxDeployServer}" />							
+							<ant antfile="build-mvn.xml" target="createrunscript" />							
+							<ant antfile="build-mvn.xml" target="deploy"	/>							
+
 						</tasks>
 					</configuration>
 				</execution>
