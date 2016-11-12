@@ -66,6 +66,8 @@ public class JukeboxCastConsumer extends VideoCastConsumerImpl {
         super.onConnected();
 
         Logger.Log().i("onConnected");
+        startCastVideo();
+
     }
 
     @Override
@@ -83,6 +85,7 @@ public class JukeboxCastConsumer extends VideoCastConsumerImpl {
             Logger.Log().e(String.format("onMediaLoadResult :: %s - %s", statusCode, CastStatusCodes.getStatusCodeString(statusCode)));
 
             if (mCastManager != null)
+                mCastManager.removeVideoCastConsumer(this);
                 mCastManager.disconnect();
         }
     }
@@ -116,7 +119,7 @@ public class JukeboxCastConsumer extends VideoCastConsumerImpl {
 
 
             String uri = String.format("file://192.168.1.120/%s", file);*/
-            
+
             MediaMetadata md = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
             md.putString(MediaMetadata.KEY_TITLE, this.currentMovie.getTitle());
 
