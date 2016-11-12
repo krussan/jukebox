@@ -83,14 +83,18 @@ public class IMDBFinder {
 		// extract episode info from that page
 		ep = populateEpisode(sn.getImdbUrl(), ep);
 		
-		Log.Debug("IMDB :: Updating episode in season object", LogType.IMDB);
-		sn = DomainUtil.updateEpisode(sn, ep);
+		if (ep != null) {
+			Log.Debug("IMDB :: Updating episode in season object", LogType.IMDB);
+			sn = DomainUtil.updateEpisode(sn, ep);
 	
-		Log.Debug("IMDB :: Updating season in series object", LogType.IMDB);
-		s = DomainUtil.updateSeason(s, sn);
-		
-		Log.Debug(String.format("IMDB :: Number of episodes in season :: %s", sn.getEpisodeCount()), LogType.IMDB);		
-		
+			Log.Debug("IMDB :: Updating season in series object", LogType.IMDB);
+			s = DomainUtil.updateSeason(s, sn);
+			
+			Log.Debug(String.format("IMDB :: Number of episodes in season :: %s", sn.getEpisodeCount()), LogType.IMDB);		
+		}
+		else {
+			Log.Debug("No episode found!", LogType.IMDB);
+		}
 		return s;
 	}
 
@@ -103,6 +107,10 @@ public class IMDBFinder {
 		
 		if (!StringUtils.isEmpty(seasonUrl)) {
 			iep = getEpisodeRec(seasonUrl, ep.getEpisodeNumber());
+			
+			if (iep == null)
+				return null;
+			
 			episodeRec = IMDBRecord.get(iep.getUrl());
 			
 			return populateEpisodeInfo(ep, episodeRec);
