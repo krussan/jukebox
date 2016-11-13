@@ -236,8 +236,10 @@ public class StreamingWebServer extends NanoHTTPD {
 			Log.Error("Unknown host while getting ip number", LogType.WEBSERVER, e);
 		}
 		
-		return String.format("http://%s/%s", ipAddress, streamingFile);
-		
+		return String.format("http://%s%s/%s", 
+				ipAddress,  
+				this.getListeningPort() == 80 ? "" : String.format(":%s", this.getListeningPort()),
+				streamingFile);
 	}
 	
 
