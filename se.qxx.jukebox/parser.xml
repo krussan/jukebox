@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<parser xmlns="http://www.qxx.se/jukebox/parser" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.qxx.se/jukebox/parser parser.xsd ">
+<parser xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="parser.xsd">
   <keywords>
     <type>
         <word key="480p" />

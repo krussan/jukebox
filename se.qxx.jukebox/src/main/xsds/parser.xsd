@@ -1,124 +1,127 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.qxx.se/jukebox/parser" xmlns:tns="http://www.qxx.se/jukebox/parser" elementFormDefault="qualified">
-    <element name="parser">
-    	<complexType>
-    		<sequence>
-    			<element name="keywords">
-    				<complexType>
-    					<sequence>
-    						<element name="type">
-    							<complexType>
-    								<sequence>
-    									<element name="word"
-    										type="tns:wordType" maxOccurs="unbounded" minOccurs="0">
-    									</element>
-    								</sequence>
-    							</complexType>
-    						</element>
-    						<element name="format">
-    							<complexType>
-    								<sequence>
-    									<element name="word"
-    										type="tns:wordType" maxOccurs="unbounded" minOccurs="0">
-    									</element>
-    								</sequence>
-    							</complexType>
-    						</element>
-    						<element name="sound">
-    							<complexType>
-    								<sequence>
-    									<element name="word"
-    										type="tns:wordType" maxOccurs="unbounded" minOccurs="0">
-    									</element>
-    								</sequence>
-    							</complexType>
-    						</element>
-    						<element name="language">
-    							<complexType>
-    								<sequence>
-    									<element name="word"
-    										type="tns:wordType" maxOccurs="unbounded" minOccurs="0">
-    									</element>
-    								</sequence>
-    							</complexType>
-    						</element>
-    						<element name="other">
-    							<complexType>
-    								<sequence>
-    									<element name="word"
-    										type="tns:wordType" maxOccurs="unbounded" minOccurs="0">
-    									</element>
-    								</sequence>
-    							</complexType>
-    						</element>
-    						<element name="year">
-    							<complexType>
-    								<sequence>
-    									<element name="word"
-    										type="tns:wordType" maxOccurs="unbounded" minOccurs="0">
-    									</element>
-    								</sequence>
-    							</complexType>
-    						</element>
-    						<element name="parts">
-    							<complexType>
-    								<sequence>
-    									<element name="word"
-    										type="tns:wordType" maxOccurs="unbounded" minOccurs="0">
-    									</element>
-    								</sequence>
-    							</complexType>
-    						</element>
-    						<element name="season">
-    							<complexType>
-    								<sequence>
-    									<element name="word"
-    										type="tns:wordType" maxOccurs="unbounded" minOccurs="0">
-    									</element>
-    								</sequence>
-    							</complexType>
-    						</element>
-    						<element name="episode">
-    							<complexType>
-    								<sequence>
-    									<element name="word"
-    										type="tns:wordType" maxOccurs="unbounded" minOccurs="0">
-    									</element>
-    								</sequence>
-    							</complexType>
-    						</element>
-    						<element name="groups">
-    							<complexType>
-    								<sequence>
-    									<element name="word"
-    										type="tns:wordType" maxOccurs="unbounded" minOccurs="0">
-    									</element>
-    								</sequence>
-    							</complexType>
-    						</element>
-    					</sequence>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    attributeFormDefault="unqualified"
+    elementFormDefault="qualified">
+    
+    <xs:element name="parser">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element name="keywords" maxOccurs="1" minOccurs="0">
+    				<xs:complexType>
+    					<xs:sequence>
+    						<xs:element name="type">
+    							<xs:complexType>
+    								<xs:sequence>
+    									<xs:element name="word"
+    										type="wordType" maxOccurs="unbounded" minOccurs="0">
+    									</xs:element>
+    								</xs:sequence>
+    							</xs:complexType>
+    						</xs:element>
+    						<xs:element name="format">
+    							<xs:complexType>
+    								<xs:sequence>
+    									<xs:element name="word"
+    										type="wordType" maxOccurs="unbounded" minOccurs="0">
+    									</xs:element>
+    								</xs:sequence>
+    							</xs:complexType>
+    						</xs:element>
+    						<xs:element name="sound">
+    							<xs:complexType>
+    								<xs:sequence>
+    									<xs:element name="word"
+    										type="wordType" maxOccurs="unbounded" minOccurs="0">
+    									</xs:element>
+    								</xs:sequence>
+    							</xs:complexType>
+    						</xs:element>
+    						<xs:element name="language">
+    							<xs:complexType>
+    								<xs:sequence>
+    									<xs:element name="word"
+    										type="wordType" maxOccurs="unbounded" minOccurs="0">
+    									</xs:element>
+    								</xs:sequence>
+    							</xs:complexType>
+    						</xs:element>
+    						<xs:element name="other">
+    							<xs:complexType>
+    								<xs:sequence>
+    									<xs:element name="word"
+    										type="wordType" maxOccurs="unbounded" minOccurs="0">
+    									</xs:element>
+    								</xs:sequence>
+    							</xs:complexType>
+    						</xs:element>
+    						<xs:element name="year">
+    							<xs:complexType>
+    								<xs:sequence>
+    									<xs:element name="word"
+    										type="wordType" maxOccurs="unbounded" minOccurs="0">
+    									</xs:element>
+    								</xs:sequence>
+    							</xs:complexType>
+    						</xs:element>
+    						<xs:element name="parts">
+    							<xs:complexType>
+    								<xs:sequence>
+    									<xs:element name="word"
+    										type="wordType" maxOccurs="unbounded" minOccurs="0">
+    									</xs:element>
+    								</xs:sequence>
+    							</xs:complexType>
+    						</xs:element>
+    						<xs:element name="season">
+    							<xs:complexType>
+    								<xs:sequence>
+    									<xs:element name="word"
+    										type="wordType" maxOccurs="unbounded" minOccurs="0">
+    									</xs:element>
+    								</xs:sequence>
+    							</xs:complexType>
+    						</xs:element>
+    						<xs:element name="episode">
+    							<xs:complexType>
+    								<xs:sequence>
+    									<xs:element name="word"
+    										type="wordType" maxOccurs="unbounded" minOccurs="0">
+    									</xs:element>
+    								</xs:sequence>
+    							</xs:complexType>
+    						</xs:element>
+    						<xs:element name="groups">
+    							<xs:complexType>
+    								<xs:sequence>
+    									<xs:element name="word"
+    										type="wordType" maxOccurs="unbounded" minOccurs="0">
+    									</xs:element>
+    								</xs:sequence>
+    							</xs:complexType>
+    						</xs:element>
+    					</xs:sequence>
 
-    				</complexType>
-    			</element>
-    		</sequence>
-    	</complexType>
-    </element>
+    				</xs:complexType>
+    			</xs:element>
+    		</xs:sequence>
+    	</xs:complexType>
+    </xs:element>
 
-    <complexType name="wordType">
-    	<attribute name="key" type="string"></attribute>
-    	<attribute name="regex" type="boolean" use="optional"
+    <xs:complexType name="wordType">
+    	<xs:attribute name="key" type="xs:string"></xs:attribute>
+    	<xs:attribute name="regex" type="xs:boolean" use="optional"
     		default="false">
-    	</attribute>
-    	<attribute name="group" type="int" use="optional"></attribute>
-    	<attribute name="recursiveCount" type="int" default="1"
+    	</xs:attribute>
+    	<xs:attribute name="group" type="xs:int" use="optional"></xs:attribute>
+    	<xs:attribute name="recursiveCount" type="xs:int" default="1"
     		use="optional">
-    	</attribute>
-    	<attribute name="firstToken" type="boolean" use="optional"
+    	</xs:attribute>
+    	<xs:attribute name="firstToken" type="xs:boolean" use="optional"
     		default="false">
-    	</attribute>
-    	<attribute name="lastToken" type="boolean" use="optional"
+    	</xs:attribute>
+    	<xs:attribute name="lastToken" type="xs:boolean" use="optional"
     		default="false">
-    	</attribute>
-    	<attribute name="lookahead" type="int" use="optional" default="0"></attribute>
-    </complexType>
-</schema>
+    	</xs:attribute>
+    	<xs:attribute name="lookahead" type="xs:int" use="optional" default="0"></xs:attribute>
+    </xs:complexType>
+</xs:schema>
