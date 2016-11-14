@@ -46,6 +46,7 @@ ${jarFile} ${script.class} ${1+&quot;$@&quot;} &amp;${line.separator}"
 		<copy file="${base.dir}/JukeboxSettings.xml" todir="${build.dir}" />
 		<copy file="${base.dir}/imdb.xml" todir="${build.dir}" />
 		<copy file="${base.dir}/parser.xml" todir="${build.dir}" />
+		<copy file="${base.dir}/stop.sh" todir="${build.dir}" />
 			
 	</target>	
     
@@ -86,6 +87,16 @@ ${jarFile} ${script.class} ${1+&quot;$@&quot;} &amp;${line.separator}"
                	<include name="*" />
 					</fileset>
 				</scp>
-	    
+
+	    <sshexec
+	        trust="true"
+	        keyfile="${jukeboxKeyFile}"
+	        host="${jukeboxDeployServer}"
+	        username="${jukeboxDeployUser}"
+	        failonerror="false"
+	        passphrase="${jukeboxKeyFilePass}"
+	        command="cd ${jukeboxDeployPath}; chmod 755 *.sh"
+        />
+
 	</target>
 </project>
