@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.Language;
 import se.qxx.jukebox.Log;
+import se.qxx.jukebox.WebResult;
 import se.qxx.jukebox.WebRetriever;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.builders.MovieBuilder;
@@ -29,6 +30,8 @@ import se.qxx.jukebox.settings.Settings;
 public abstract class SubFinderBase {
 	private String className;
 	private Language language;
+	private int minWaitSeconds = 20;
+	private int maxWaitSeconds = 30;
 	
 	private final int MAX_SUBS_DOWNLOADED = 15;
 	
@@ -47,6 +50,22 @@ public abstract class SubFinderBase {
 	protected void setLanguage(Language language) {
 		this.language = language;
 	}
+	
+	protected int getMinWaitSeconds() {
+		return minWaitSeconds;
+	}
+
+	protected void setMinWaitSeconds(int minWaitSeconds) {
+		this.minWaitSeconds = minWaitSeconds;
+	}
+
+	protected int getMaxWaitSeconds() {
+		return maxWaitSeconds;
+	}
+
+	protected void setMaxWaitSeconds(int maxWaitSeconds) {
+		this.maxWaitSeconds = maxWaitSeconds;
+	}	
 
 	private HashMap<String, String> settings = new HashMap<String, String>();
 
@@ -105,14 +124,16 @@ public abstract class SubFinderBase {
 				Log.Debug(String.format("%s :: Error when downloading subtitle :: %s", this.getClassName(), sf.getFile().getName()), LogType.SUBS);
 			}
 			
-			try {
-				Random r = new Random();
-				int n = r.nextInt(20000) + 10000;
-				
-				// sleep randomly to avoid detection (from 10 sec to 30 sec)
-				Thread.sleep(n);
-			} catch (InterruptedException e) {
-				Log.Error(String.format("Subtitle downloader interrupted", this.getClassName()), Log.LogType.SUBS, e);
+			if (listSubs.size() > 1) {
+				try {
+					Random r = new Random();
+					int n = r.nextInt((this.getMaxWaitSeconds() - this.getMinWaitSeconds()) * 1000 + 1) + this.getMinWaitSeconds() * 1000;
+					
+					// sleep randomly to avoid detection (from 10 sec to 30 sec)
+					Thread.sleep(n);
+				} catch (InterruptedException e) {
+					Log.Error(String.format("Subtitle downloader interrupted", this.getClassName()), Log.LogType.SUBS, e);
+				}
 			}
 			
 		}
@@ -123,19 +144,21 @@ public abstract class SubFinderBase {
 	
 	
 	protected String performSearch(String url) {
-		String webResult;
+		String result = StringUtils.EMPTY;
 		try {
-			webResult = WebRetriever.getWebResult(url).getResult();
+			WebResult webResult = WebRetriever.getWebResult(url);
+			
+			result = webResult.getResult();
 	
 			// replace newline
-			webResult = webResult.replace("\r", "");
-			webResult = webResult.replace("\n", "");
+			result = result.replace("\r", "");
+			result = result.replace("\n", "");
 		}
 		catch (IOException e) {
-			webResult = StringUtils.EMPTY;
+			Log.Error("Error while making web call", LogType.SUBS, e);
 		}
 		
-		return webResult;	
+		return result;	
 	}
 	
 	/***
@@ -170,9 +193,9 @@ public abstract class SubFinderBase {
 		Log.Debug(String.format("%s :: Finding subtitles for %s", this.getClassName(), m.getMedia(0).getFilename()), Log.LogType.SUBS);
 		
 		while (matcher.find()) {
-			String urlString = matcher.group(urlGroup);
-			String description = matcher.group(nameGroup); 
-			String language = matcher.group(languageGroup);
+			String urlString = matcher.group(urlGroup).trim();
+			String description = matcher.group(nameGroup).trim();
+			String language = matcher.group(languageGroup).trim();
 
 			if (languageGroup == 0 || StringUtils.equalsIgnoreCase(language, this.getLanguage().toString())) {
 				SubFile sf = new SubFile(urlString, description, this.getLanguage());
