@@ -8,12 +8,12 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import se.qxx.jukebox.ExtensionFileFilter;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.builders.exceptions.SeriesNotSupportedException;
 import se.qxx.jukebox.domain.JukeboxDomain.Identifier;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.watcher.ExtensionFileFilter;
 import se.qxx.jukebox.domain.MovieOrSeries;
 
 public class NfoBuilder extends MovieBuilder {

@@ -1,4 +1,4 @@
-package se.qxx.jukebox;
+package se.qxx.jukebox.imdb;
 
 public class IMDBTitle {
 	private String title;

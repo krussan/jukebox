@@ -1,4 +1,4 @@
-package se.qxx.jukebox;
+package se.qxx.jukebox.subtitles;
 
 public enum Language {
 	Unknown,

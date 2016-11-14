@@ -1,4 +1,4 @@
-package se.qxx.jukebox;
+package se.qxx.jukebox.webserver;
 
 import java.io.File;
 import java.io.FileInputStream;

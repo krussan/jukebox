@@ -1,4 +1,4 @@
-package se.qxx.jukebox;
+package se.qxx.jukebox.tools;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -12,6 +12,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+
+import se.qxx.jukebox.Log;
+import se.qxx.jukebox.Log.LogType;
 
 public class WebRetriever {
 	

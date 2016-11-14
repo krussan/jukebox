@@ -7,12 +7,12 @@ import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
-import se.qxx.jukebox.Util;
 import se.qxx.jukebox.builders.exceptions.DeprecatedBuilderException;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.MovieOrSeries;
 //import se.qxx.jukebox.domain.Slice;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Builders.Builder;
+import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.settings.Settings;
 
 public abstract class MovieBuilder {

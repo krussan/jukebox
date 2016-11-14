@@ -38,6 +38,8 @@ import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.subtitles.SubFile;
 import se.qxx.jukebox.subtitles.SubFinderBase;
 import se.qxx.jukebox.subtitles.Subs;
+import se.qxx.jukebox.tools.Unpacker;
+import se.qxx.jukebox.tools.Util;
 
 public class SubtitleDownloader implements Runnable {
 

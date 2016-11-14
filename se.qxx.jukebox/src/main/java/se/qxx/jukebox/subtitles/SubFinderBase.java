@@ -13,10 +13,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import se.qxx.jukebox.Language;
 import se.qxx.jukebox.Log;
-import se.qxx.jukebox.WebResult;
-import se.qxx.jukebox.WebRetriever;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.builders.MovieBuilder;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
@@ -25,6 +22,8 @@ import se.qxx.jukebox.domain.JukeboxDomain.Rating;
 import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.settings.JukeboxListenerSettings;
 import se.qxx.jukebox.settings.Settings;
+import se.qxx.jukebox.tools.WebResult;
+import se.qxx.jukebox.tools.WebRetriever;
 
 
 public abstract class SubFinderBase {

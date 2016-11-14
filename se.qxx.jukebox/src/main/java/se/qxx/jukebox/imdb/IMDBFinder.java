@@ -1,4 +1,4 @@
-package se.qxx.jukebox;
+package se.qxx.jukebox.imdb;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 
+import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.DomainUtil;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
@@ -25,6 +26,9 @@ import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.imdb.Imdb;
 import se.qxx.jukebox.settings.imdb.Imdb.EpisodePatterns.EpisodePattern;
 import se.qxx.jukebox.settings.imdb.Imdb.SearchPatterns.SearchResultPattern;
+import se.qxx.jukebox.tools.Util;
+import se.qxx.jukebox.tools.WebResult;
+import se.qxx.jukebox.tools.WebRetriever;
 import se.qxx.jukebox.settings.imdb.SearchPatternComparer;
 
 import com.google.protobuf.ByteString;

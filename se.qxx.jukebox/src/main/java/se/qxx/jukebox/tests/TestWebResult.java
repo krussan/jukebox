@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import javax.xml.bind.JAXBException;
 
-import se.qxx.jukebox.WebResult;
-import se.qxx.jukebox.WebRetriever;
+import se.qxx.jukebox.tools.WebResult;
+import se.qxx.jukebox.tools.WebRetriever;
 
 public class TestWebResult {
 

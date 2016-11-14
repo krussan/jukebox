@@ -1,4 +1,4 @@
-package se.qxx.jukebox;
+package se.qxx.jukebox.servercomm;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,6 +10,9 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.RpcCallback;
 import com.google.protobuf.RpcController;
 
+import se.qxx.jukebox.DB;
+import se.qxx.jukebox.Log;
+import se.qxx.jukebox.MovieIdentifier;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.DomainUtil;
 import se.qxx.jukebox.domain.JukeboxDomain.Empty;
@@ -37,7 +40,10 @@ import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Players.Server;
+import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.vlc.VLCConnectionNotFoundException;
+import se.qxx.jukebox.watcher.FileRepresentation;
+import se.qxx.jukebox.webserver.StreamingWebServer;
 import se.qxx.jukebox.vlc.Distributor;
 
 public class JukeboxRpcServerConnection extends JukeboxService {

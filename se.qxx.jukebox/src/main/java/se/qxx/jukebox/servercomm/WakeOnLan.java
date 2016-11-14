@@ -1,10 +1,11 @@
-package se.qxx.jukebox;
+package se.qxx.jukebox.servercomm;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
+import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 
 public class WakeOnLan {

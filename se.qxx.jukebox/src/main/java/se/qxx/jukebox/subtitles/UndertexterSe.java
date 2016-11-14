@@ -2,9 +2,6 @@ package se.qxx.jukebox.subtitles;
 
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
-import se.qxx.jukebox.Language;
-import se.qxx.jukebox.Util;
-import se.qxx.jukebox.WebRetriever;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +17,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings;
+import se.qxx.jukebox.tools.Util;
+import se.qxx.jukebox.tools.WebRetriever;
 import se.qxx.jukebox.domain.JukeboxDomain.Rating;
 
 

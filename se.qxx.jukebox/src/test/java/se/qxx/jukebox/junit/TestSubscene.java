@@ -22,8 +22,6 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import se.qxx.jukebox.WebResult;
-import se.qxx.jukebox.WebRetriever;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.settings.Settings;
@@ -32,6 +30,8 @@ import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder.SubF
 import se.qxx.jukebox.subtitles.SubFile;
 import se.qxx.jukebox.subtitles.SubFinderBase;
 import se.qxx.jukebox.subtitles.Subscene;
+import se.qxx.jukebox.tools.WebResult;
+import se.qxx.jukebox.tools.WebRetriever;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(WebRetriever.class)

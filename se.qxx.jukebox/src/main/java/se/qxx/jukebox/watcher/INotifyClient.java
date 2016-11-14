@@ -1,4 +1,4 @@
-package se.qxx.jukebox;
+package se.qxx.jukebox.watcher;
 
 public interface INotifyClient {
 	public void fileModified(FileRepresentation f);

@@ -1,4 +1,4 @@
-package se.qxx.jukebox;
+package se.qxx.jukebox.tools;
 
 import java.io.FileNotFoundException;
 
@@ -6,6 +6,7 @@ import net.sourceforge.filebot.mediainfo.MediaInfo;
 
 import org.apache.commons.lang3.StringUtils;
 
+import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 

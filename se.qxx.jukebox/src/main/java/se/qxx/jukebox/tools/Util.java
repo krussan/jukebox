@@ -1,4 +1,4 @@
-package se.qxx.jukebox;
+package se.qxx.jukebox.tools;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -16,8 +16,11 @@ import javax.swing.filechooser.FileSystemView;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 
+import se.qxx.jukebox.Log;
+import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.settings.JukeboxListenerSettings;
 import se.qxx.jukebox.settings.Settings;
+import se.qxx.jukebox.watcher.ExtensionFileFilter;
 
 public class Util {
 	/**

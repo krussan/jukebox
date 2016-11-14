@@ -1,8 +1,10 @@
-package se.qxx.jukebox;
+package se.qxx.jukebox.servercomm;
 
+import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.comm.JukeboxRpcServer;
 import se.qxx.jukebox.settings.Settings;
+import se.qxx.jukebox.tools.Util;
 
 public class TcpListener implements Runnable {
 

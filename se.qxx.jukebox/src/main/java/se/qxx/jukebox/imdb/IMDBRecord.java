@@ -1,4 +1,4 @@
-package se.qxx.jukebox;
+package se.qxx.jukebox.imdb;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,9 +15,13 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 
+import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.imdb.Imdb.InfoPatterns.InfoPattern;
+import se.qxx.jukebox.tools.Util;
+import se.qxx.jukebox.tools.WebResult;
+import se.qxx.jukebox.tools.WebRetriever;
 
 public class IMDBRecord { 
 	private String url = "";

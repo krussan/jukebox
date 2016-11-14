@@ -1,4 +1,4 @@
-package se.qxx.jukebox;
+package se.qxx.jukebox.webserver;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,6 +23,7 @@ import fi.iki.elonen.WebServerPlugin;
 import fi.iki.elonen.util.ServerRunner;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import fi.iki.elonen.NanoHTTPD.Response;
+import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 
 public class StreamingWebServer extends NanoHTTPD {

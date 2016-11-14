@@ -1,4 +1,4 @@
-package se.qxx.jukebox;
+package se.qxx.jukebox.servercomm;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -9,6 +9,7 @@ import java.net.Socket;
 
 import org.apache.commons.lang3.StringUtils;
 
+import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 
 public class TcpClient {

@@ -1,4 +1,4 @@
-package se.qxx.jukebox;
+package se.qxx.jukebox.watcher;
 
 import java.io.File;
 import java.util.ArrayList;

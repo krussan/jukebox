@@ -15,6 +15,10 @@ import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
+import se.qxx.jukebox.imdb.IMDBFinder;
+import se.qxx.jukebox.tools.MediaMetadata;
+import se.qxx.jukebox.tools.Util;
+import se.qxx.jukebox.watcher.FileRepresentation;
 
 public class MovieIdentifier implements Runnable {
 	
