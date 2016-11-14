@@ -2,6 +2,7 @@ package se.qxx.android.jukebox.activities;
 
 import org.apache.commons.lang3.StringUtils;
 
+import se.qxx.android.jukebox.JukeboxCastConsumer;
 import se.qxx.android.jukebox.JukeboxSettings;
 import se.qxx.android.jukebox.OnListSubtitlesCompleteHandler;
 import se.qxx.android.jukebox.R;
@@ -20,6 +21,8 @@ import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -38,8 +41,19 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.cast.ApplicationMetadata;
 import com.google.android.gms.cast.CastMediaControlIntent;
+import com.google.android.gms.cast.MediaInfo;
+import com.google.android.gms.cast.MediaMetadata;
+import com.google.android.gms.cast.MediaTrack;
+import com.google.android.libraries.cast.companionlibrary.cast.BaseCastManager;
+import com.google.android.libraries.cast.companionlibrary.cast.CastConfiguration;
+import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager;
+import com.google.android.libraries.cast.companionlibrary.cast.callbacks.VideoCastConsumerImpl;
 import com.google.protobuf.RpcCallback;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class NowPlayingActivity extends AppCompatActivity
 	implements OnSeekBarChangeListener, SeekerListener {
@@ -48,9 +62,8 @@ public class NowPlayingActivity extends AppCompatActivity
 	private boolean isManualSeeking = false;
 	private JukeboxConnectionHandler comm;
 
-	MediaRouter mMediaRouter = null;
-	MediaRouteSelector mMediaRouteSelector = null;
 	ChromecastCallback mChromecastCallback = null;
+	JukeboxCastConsumer mCastConsumer = null;
 
 	//region --CALLBACKS--
 
@@ -129,6 +142,31 @@ public class NowPlayingActivity extends AppCompatActivity
 		}
 	}
 
+    private class OnChromecastStartComplete implements RpcCallback<JukeboxResponseStartMovie> {
+
+        private Activity parentContext;
+
+        public OnChromecastStartComplete(Activity parentContext) {
+            this.parentContext = parentContext;
+        }
+
+        /***
+         * This is called when a movie was selected to play on a chromecast device
+         * and the file has successfully registered with the http server
+         * Sets up the chromecast stream.
+         * @param response
+         */
+        @Override
+        public void run(JukeboxResponseStartMovie response) {
+			VideoCastManager mCastManager = VideoCastManager.getInstance();
+
+            if (mCastManager != null) {
+				mCastConsumer = new JukeboxCastConsumer(this.parentContext, Model.get().getCurrentMovie(), response.getUri(), response.getSubtitleUrisList());
+				mCastManager.addVideoCastConsumer(mCastConsumer);
+            }
+        }
+    }
+
 	private class OnStopMovieComplete implements RpcCallback<Empty> {
 		@Override
 		public void run(Empty arg0) {
@@ -138,7 +176,8 @@ public class NowPlayingActivity extends AppCompatActivity
 				@Override
 				public void run() {
 					Logger.Log().d("Request --- StartMovie");
-					comm.startMovie(JukeboxSettings.get().getCurrentMediaPlayer(), Model.get().getCurrentMovie(), new OnStartMovieComplete());				}
+					comm.startMovie(JukeboxSettings.get().getCurrentMediaPlayer(), Model.get().getCurrentMovie(), new OnStartMovieComplete());
+                }
 			});
 			t.start();
 		}
@@ -197,12 +236,38 @@ public class NowPlayingActivity extends AppCompatActivity
 	}
 
 	private void initializeChromecast(Movie m) {
-		mMediaRouter = MediaRouter.getInstance(getApplicationContext());
+		BaseCastManager.checkGooglePlayServices(this);
+
+		CastConfiguration options = new CastConfiguration.Builder(CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID)
+				.enableAutoReconnect()
+				.enableCaptionManagement()
+				.enableLockScreen()
+				.enableWifiReconnection()
+				.enableNotification()
+				.addNotificationAction(CastConfiguration.NOTIFICATION_ACTION_DISCONNECT, true)
+				.addNotificationAction(CastConfiguration.NOTIFICATION_ACTION_PLAY_PAUSE, true)
+				.build();
+
+		VideoCastManager.initialize(this, options);
+
+
+		comm.startMovie(
+				JukeboxSettings.get().getCurrentMediaPlayer(),
+				Model.get().getCurrentMovie(),
+				new OnChromecastStartComplete(this));
+
+
+/*		m.getMedia(0).get
+		MediaInfo mi = new MediaInfo.Builder().build();
+
+
+		mCastManager.startVideoCastControllerActivity(this, mediaInfo, 0, true);*/
+		/*		mMediaRouter = MediaRouter.getInstance(getApplicationContext());
 		mMediaRouteSelector = new MediaRouteSelector.Builder()
 				.addControlCategory(CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID)
 				.build();
 
-		mChromecastCallback = new ChromecastCallback();
+		mChromecastCallback = new ChromecastCallback();*/
 	}
 
 	//endregion
@@ -214,6 +279,11 @@ public class NowPlayingActivity extends AppCompatActivity
 		super.onPause();
 		if (seeker != null)
 			seeker.stop();
+
+		VideoCastManager mCastManager = VideoCastManager.getInstance();
+
+		if (mCastManager != null)
+			mCastManager.decrementUiCounter();
 	};
 
 	@Override
@@ -226,9 +296,13 @@ public class NowPlayingActivity extends AppCompatActivity
 	@Override protected void onResume() {
 		super.onResume();
 
-		if (mChromecastCallback != null) {
+		VideoCastManager mCastManager = VideoCastManager.getInstance();
+
+		if (mCastManager != null) {
 			// Start media router discovery
-			mMediaRouter.addCallback( mMediaRouteSelector, mChromecastCallback, MediaRouter.CALLBACK_FLAG_PERFORM_ACTIVE_SCAN );
+			// mMediaRouter.addCallback( mMediaRouteSelector, mChromecastCallback, MediaRouter.CALLBACK_FLAG_PERFORM_ACTIVE_SCAN );
+			mCastManager = VideoCastManager.getInstance();
+			mCastManager.incrementUiCounter();
 		}
 		else {
 			if (seeker != null)
@@ -304,7 +378,7 @@ public class NowPlayingActivity extends AppCompatActivity
 		switch (id) {
 			case R.id.btnPlay:
 				Logger.Log().d("Request --- StartMovie");
-				comm.startMovie(player, Model.get().getCurrentMovie(), new OnStartMovieComplete());
+				startMovie();
 				break;
 			case R.id.btnFullscreen:
 				Logger.Log().d("Request --- ToggleFullScreen");
@@ -339,6 +413,19 @@ public class NowPlayingActivity extends AppCompatActivity
 		}
     }
 
+	private void startMovie() {
+		if(StringUtils.equalsIgnoreCase(JukeboxSettings.get().getCurrentMediaPlayer(), "ChromeCast")) {
+
+
+		}
+		else {
+			comm.startMovie(
+					JukeboxSettings.get().getCurrentMediaPlayer(),
+					Model.get().getCurrentMovie(),
+					new OnStartMovieComplete());
+		}
+	}
+
 	//endregion
 
 	//region --HELPERS--
@@ -362,10 +449,15 @@ public class NowPlayingActivity extends AppCompatActivity
 		super.onCreateOptionsMenu( menu );
 		getMenuInflater().inflate( R.menu.cast, menu );
 
-		MenuItem mediaRouteMenuItem = menu.findItem( R.id.media_route_menu_item );
+		VideoCastManager mCastManager = VideoCastManager.getInstance();
 
-		MediaRouteActionProvider mediaRouteActionProvider = (MediaRouteActionProvider) MenuItemCompat.getActionProvider(mediaRouteMenuItem);
-		mediaRouteActionProvider.setRouteSelector(mMediaRouteSelector);
+		if (mCastManager != null)
+			mCastManager.addMediaRouterButton(menu, R.id.media_route_menu_item);
+
+		//MenuItem mediaRouteMenuItem = menu.findItem( R.id.media_route_menu_item );
+
+		//MediaRouteActionProvider mediaRouteActionProvider = (MediaRouteActionProvider) MenuItemCompat.getActionProvider(mediaRouteMenuItem);
+		//mediaRouteActionProvider.setRouteSelector(mMediaRouteSelector);
 		return true;
 	}
 

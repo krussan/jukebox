@@ -4,7 +4,7 @@
 
   <groupId>se.qxx.jukebox</groupId>
   <artifactId>jukebox</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>0.8.3</version>
   <packaging>jar</packaging>
 
   <name>jukebox</name>
@@ -13,13 +13,14 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <fully.qualified.main.class>se.qxx.jukebox.Jukebox</fully.qualified.main.class>
+    <script.file>run.sh</script.file>
   </properties>
 
   <repositories>
     <repository>
       <id>krussan</id>
       <name>protodb</name>
-      <url>https://github.com/krussan/maven-repo/raw/master/</url>
+      <url>https://raw.githubusercontent.com/krussan/maven-repo/master/</url>
     </repository>
   </repositories>
 
@@ -30,6 +31,14 @@
       <version>4.11</version>
       <scope>test</scope>
     </dependency>
+    
+	<dependency>
+	  <groupId>org.codehaus.mojo</groupId>
+	  <artifactId>jaxb2-maven-plugin</artifactId>
+	  <version>2.3</version>
+	  <type>maven-plugin</type>
+	  <scope>provided</scope>
+	</dependency>
 
     <dependency>
       <groupId>com.google.protobuf</groupId>
@@ -72,7 +81,7 @@
       <artifactId>jukebox-domain</artifactId>
       <version>[0.1.2,)</version>
     </dependency>
-
+    
     <dependency>
       <groupId>se.qxx.jukebox</groupId>
       <artifactId>jukebox-comm</artifactId>
@@ -91,12 +100,32 @@
         <version>3.8.11.2</version>
     </dependency>
 
+	<dependency>
+	    <groupId>org.nanohttpd</groupId>
+	    <artifactId>nanohttpd-webserver</artifactId>
+	    <version>2.3.1</version>
+	</dependency>
+
+
+
   </dependencies>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>autoincrement-versions-maven-plugin</id>
+      <name>autoincrement-versions-maven-plugin</name>
+      <url>https://raw.githubusercontent.com/krussan/maven-repo/master/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
 
 <build>
 
     <pluginManagement>
         <plugins>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -106,33 +135,209 @@
                    <target>1.7</target>
                 </configuration>
             </plugin>
- 	</plugins>
+            
+ 		</plugins>
     </pluginManagement>
 
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <archive>
-                <manifest>
-                  <mainClass>${fully.qualified.main.class}</mainClass>
-                </manifest>
-              </archive>
-              <descriptorRefs>
-                <descriptorRef>jar-with-dependencies</descriptorRef>
-              </descriptorRefs>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
 
+		<plugin>
+			<groupId>org.codehaus.mojo</groupId>
+			<artifactId>jaxb2-maven-plugin</artifactId>
+			<version>2.3</version>
+	  
+			<executions>
+				<execution>
+					<id>settings</id>
+					<goals>
+						<goal>xjc</goal>
+					</goals>
+	
+		    		<configuration>
+	        			<!-- The package of your generated sources -->
+	             		<packageName>se.qxx.jukebox.settings</packageName>
+		             
+						<sources>
+							<source>src/main/xsds/JukeboxSettings.xsd</source>
+						</sources>
+		             
+						<clearOutputDir>false</clearOutputDir>                
+					</configuration>
+		        </execution>
+		           
+				<execution>
+	               <id>imdb</id>
+	               <goals>
+	                   <goal>xjc</goal>
+	               </goals>
+	
+					<configuration>
+						<!-- The package of your generated sources -->
+						<packageName>se.qxx.jukebox.settings.imdb</packageName>
+		              
+						<sources>
+							<source>src/main/xsds/imdb.xsd</source>
+						</sources>
+		            
+						<clearOutputDir>false</clearOutputDir>                
+					</configuration>
+				</execution>                
+		
+				
+				<execution>
+		            <id>parser</id>
+	                <goals>
+	                    <goal>xjc</goal>
+	                </goals>
+	
+					<configuration>
+						<!-- The package of your generated sources -->
+						<packageName>se.qxx.jukebox.settings.parser</packageName>
+		              
+						<sources>
+							<source>src/main/xsds/parser.xsd</source>
+						</sources>                
+		              
+						<clearOutputDir>false</clearOutputDir>
+					</configuration>
+				</execution>                
+		
+				<execution>
+	                <id>subtitles</id>
+	                <goals>
+	                    <goal>xjc</goal>
+	                </goals>
+	
+					<configuration>
+						<!-- The package of your generated sources -->
+						<packageName>se.qxx.jukebox.subtitles</packageName>
+			            
+						<sources>
+			                <source>src/main/xsds/subs.xsd</source>
+		            	</sources>                
+		            
+		            	<clearOutputDir>false</clearOutputDir>
+					</configuration>
+				</execution> 
+			</executions>
+		</plugin>
+
+		<plugin>
+		  <groupId>org.apache.maven.plugins</groupId>
+		  <artifactId>maven-assembly-plugin</artifactId>
+		  <executions>
+		    <execution>
+		      <phase>package</phase>
+		      <goals>
+		        <goal>single</goal>
+		      </goals>
+		      <configuration>
+		        <archive>
+		          <manifest>
+		            <mainClass>${fully.qualified.main.class}</mainClass>
+		          </manifest>
+		        </archive>
+		        <descriptorRefs>
+		          <descriptorRef>jar-with-dependencies</descriptorRef>
+		        </descriptorRefs>
+		      </configuration>
+		    </execution>
+		  </executions>
+		</plugin>
+		
+         <plugin>
+             <groupId>org.codehaus.mojo</groupId>
+             <artifactId>autoincrement-versions-maven-plugin</artifactId>
+             <version>2.0-SNAPSHOT</version>
+             <executions>
+               <execution>
+                 <id>update-pom-versions</id>
+                 <goals>
+                   <goal>increment</goal>
+                   <goal>commit</goal>
+                 </goals>
+                 <phase>package</phase>
+                 <configuration>
+                   <autoIncrementVersion>true</autoIncrementVersion>
+                 </configuration>
+               </execution>
+             </executions>
+          </plugin>
+		
+
+		<plugin>
+			<artifactId>maven-antrun-plugin</artifactId>
+			<version>1.8</version>
+			<dependencies>
+
+				<dependency>
+				    <groupId>org.apache.ant</groupId>
+				    <artifactId>ant-jsch</artifactId>
+				    <version>1.8.0</version>
+				</dependency>
+			    
+			    <dependency>
+				    <groupId>com.jcraft</groupId>
+				    <artifactId>jsch</artifactId>
+				    <version>0.1.54</version>
+				</dependency>
+
+				<dependency>
+				    <groupId>ant-contrib</groupId>
+				    <artifactId>ant-contrib</artifactId>
+				    <version>1.0b3</version>
+				    <exclusions>
+				        <exclusion>
+				            <groupId>ant</groupId>
+				            <artifactId>ant</artifactId>
+				        </exclusion>
+				    </exclusions>
+				</dependency>
+				
+			</dependencies>
+			<executions>
+				<execution>
+					
+					<phase>package</phase>
+					<goals>
+						<goal>run</goal>
+					</goals>
+					<configuration>
+						<tasks>
+							<taskdef  resource="net/sf/antcontrib/antcontrib.properties"
+                                        classpathref="maven.plugin.classpath" />
+							<taskdef resource="net/sf/antcontrib/antlib.xml"
+                                        classpathref="maven.plugin.classpath" />
+
+							<echoproperties />                                        
+
+
+							<condition property="doDeploy" else="false">
+								<isset property="jukeboxDeployServer" />
+							</condition>
+
+							<property name="jarFile" value="${project.build.finalName}-jar-with-dependencies.jar" />
+							<property name="build.dir" value="${project.build.directory}" />
+							<property name="base.dir" value="${project.basedir}" />
+							<property name="jukeboxKeyFile" value="${jukeboxKeyFile}" />
+							<property name="jukeboxKeyFilePass" value="${jukeboxKeyFilePass}" />
+							<property name="jukeboxDeployUser" value="${jukeboxDeployUser}" />
+							<property name="jukeboxDeployPath" value="${jukeboxDeployPath}" />
+							<property name="jukeboxDeployServer" value="${jukeboxDeployServer}" />
+							
+
+							<echo message="Jar File :: ${jarFile}" />
+							<echo message="Project directory :: ${project.build.directory}" />
+							<echo message="Do deploy :: ${doDeploy}" />
+							<echo message="Deploy server :: ${jukeboxDeployServer}" />							
+							<ant antfile="build-mvn.xml" target="createrunscript" />							
+							<ant antfile="build-mvn.xml" target="deploy"	/>							
+
+						</tasks>
+					</configuration>
+				</execution>
+			</executions>
+		</plugin>
     </plugins>
   </build>
 </project>

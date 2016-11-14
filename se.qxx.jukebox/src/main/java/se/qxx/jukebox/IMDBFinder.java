@@ -3,26 +3,20 @@ package se.qxx.jukebox;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.DomainUtil;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
-import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie.Builder;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
@@ -89,14 +83,18 @@ public class IMDBFinder {
 		// extract episode info from that page
 		ep = populateEpisode(sn.getImdbUrl(), ep);
 		
-		Log.Debug("IMDB :: Updating episode in season object", LogType.IMDB);
-		sn = DomainUtil.updateEpisode(sn, ep);
+		if (ep != null) {
+			Log.Debug("IMDB :: Updating episode in season object", LogType.IMDB);
+			sn = DomainUtil.updateEpisode(sn, ep);
 	
-		Log.Debug("IMDB :: Updating season in series object", LogType.IMDB);
-		s = DomainUtil.updateSeason(s, sn);
-		
-		Log.Debug(String.format("IMDB :: Number of episodes in season :: %s", sn.getEpisodeCount()), LogType.IMDB);		
-		
+			Log.Debug("IMDB :: Updating season in series object", LogType.IMDB);
+			s = DomainUtil.updateSeason(s, sn);
+			
+			Log.Debug(String.format("IMDB :: Number of episodes in season :: %s", sn.getEpisodeCount()), LogType.IMDB);		
+		}
+		else {
+			Log.Debug("No episode found!", LogType.IMDB);
+		}
 		return s;
 	}
 
@@ -109,6 +107,10 @@ public class IMDBFinder {
 		
 		if (!StringUtils.isEmpty(seasonUrl)) {
 			iep = getEpisodeRec(seasonUrl, ep.getEpisodeNumber());
+			
+			if (iep == null)
+				return null;
+			
 			episodeRec = IMDBRecord.get(iep.getUrl());
 			
 			return populateEpisodeInfo(ep, episodeRec);

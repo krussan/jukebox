@@ -1,15 +1,10 @@
 package se.qxx.jukebox;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-
-import javax.xml.bind.JAXBException;
 
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
 import se.qxx.jukebox.settings.Settings;
-import se.qxx.jukebox.settings.imdb.ImdbSettings;
-import se.qxx.jukebox.settings.parser.ParserSettings;
 
 public class Main implements Runnable, INotifyClient
 {
@@ -30,6 +25,10 @@ public class Main implements Runnable, INotifyClient
 			if (Arguments.get().isSubtitleDownloaderEnabled()) {
 				Thread subtitleDownloaderThread = new Thread(SubtitleDownloader.get());
 				subtitleDownloaderThread.start();
+			}
+			
+			if (Arguments.get().isWebServerEnabled()) {
+				StreamingWebServer.setup("0.0.0.0", 8001);
 			}
 			
 			Thread identifierThread = new Thread(MovieIdentifier.get());

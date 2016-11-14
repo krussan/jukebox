@@ -1,15 +1,8 @@
 package se.qxx.jukebox.tests;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.List;
-
 import javax.xml.bind.JAXBException;
 
-import org.apache.commons.io.FilenameUtils;
-
-import se.qxx.jukebox.ExtensionFileFilter;
-import se.qxx.jukebox.Util;
 import se.qxx.jukebox.builders.ParserBuilder;
 import se.qxx.jukebox.builders.ParserMovie;
 import se.qxx.jukebox.settings.Settings;

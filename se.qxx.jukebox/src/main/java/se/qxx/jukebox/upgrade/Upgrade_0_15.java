@@ -6,8 +6,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-import org.imgscalr.Scalr.Method;
-
 import javax.imageio.ImageIO;
 
 import org.apache.commons.lang3.StringUtils;
@@ -22,8 +20,6 @@ import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.DomainUtil;
-import se.qxx.jukebox.domain.MovieOrSeries;
-import sun.print.PSPrinterJob.EPSPrinter;
 
 public class Upgrade_0_15 implements IIncrimentalUpgrade {
 

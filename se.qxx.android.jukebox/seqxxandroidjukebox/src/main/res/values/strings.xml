@@ -40,4 +40,5 @@
     <string name="descSubsExist">Subtitles exist</string>
     <string name="lblSubtitleLanguage">LANG</string>
     <string name="descWatched">Watched</string>
+    <string name="title_activity_video">VideoActivity</string>
 </resources>

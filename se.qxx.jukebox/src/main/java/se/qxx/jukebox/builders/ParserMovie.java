@@ -12,7 +12,6 @@ import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.MovieOrSeries;
-import se.qxx.jukebox.settings.parser.ParserType;
 
 public class ParserMovie {
 	private String movieName = StringUtils.EMPTY;

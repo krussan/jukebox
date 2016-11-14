@@ -1,8 +1,5 @@
 package se.qxx.jukebox.tests;
 
-import java.io.Console;
-import java.util.ArrayList;
-
 import se.qxx.jukebox.vlc.*;
 
 public class TestVLCConnection {

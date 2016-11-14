@@ -12,7 +12,6 @@ import java.util.LinkedList;
 import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.domain.MovieOrSeries;
-import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 
 public class InfoBox extends Canvas {
 

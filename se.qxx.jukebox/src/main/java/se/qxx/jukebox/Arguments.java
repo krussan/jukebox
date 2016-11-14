@@ -13,6 +13,7 @@ public class Arguments {
 	private boolean helpRequested = false;
 	private boolean purgeSubtitles = false;
 	private boolean purgeSeries = false;
+	private boolean webServerEnabled = true;
 	
 	private static Arguments _instance;
 	
@@ -48,7 +49,14 @@ public class Arguments {
 		this.mediaInfoEnabled = mediaInfoEnabled;
 	}
 
+	public boolean isWebServerEnabled() {
+		return webServerEnabled;
+	}
 
+	public void setWebServerEnabled(boolean webServerEnabled) {
+		this.webServerEnabled = webServerEnabled;
+	}
+	
 	private Arguments() {
 		
 	}
@@ -69,6 +77,9 @@ public class Arguments {
 
 		if (arguments.contains("-dm"))
 			_instance.setMediaInfoEnabled(false);
+
+		if (arguments.contains("-dw"))
+			_instance.setWebServerEnabled(false);
 
 		if (arguments.contains("--purge"))
 			_instance.setPurgeMode(true);
