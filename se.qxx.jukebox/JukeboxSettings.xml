@@ -37,7 +37,7 @@
     </catalog>        
   </catalogs>
   <subFinders subsPath="/c/media/Subs" threadWaitSeconds="25">
-    <subFinder class="se.qxx.jukebox.subtitles.UndertexterSe">
+    <subFinder class="se.qxx.jukebox.subtitles.UndertexterSe" enabled="false">
     	<subFinderSettings>
     		<setting>
     			<key>regex</key>
@@ -57,7 +57,7 @@
     		</setting>
     	</subFinderSettings>
     </subFinder>
-    <subFinder class="se.qxx.jukebox.subtitles.EngsubNet">
+    <subFinder class="se.qxx.jukebox.subtitles.EngsubNet" enabled="false">
     	<subFinderSettings>
     		<setting>
     			<key>regex</key>
@@ -77,6 +77,50 @@
     		</setting>
     	</subFinderSettings>
     </subFinder>
+	<subFinder class="se.qxx.jukebox.subtitles.Subscene" enabled="true">
+    	<subFinderSettings>
+    		<setting>
+    			<key>searchResultRegex</key>
+    			<value><![CDATA[<a\s*href=\"(/subtitles/[^\"]*)\">[^<]*</a>]]></value>    			   		
+			</setting>
+			<setting>
+			    <key>searchResultUrlGroup</key>
+			    <value>1</value>
+			</setting>
+			<setting>
+			    <key>searchResultUrlGroup</key>
+			    <value>1</value>
+			</setting>
+			<setting>
+				<key>listResultRegex</key>
+				<value><![CDATA[<td[^>]*>\s*<a\s*href="(\/subtitles[^"]*)">\s*<span[^>]*>([^<]*)</span>\s*<span[^>]*>([^<]*)</span>\s*<\/a>]]></value>
+			</setting>
+			<setting>
+			    <key>listResultUrlGroup</key>
+			    <value>1</value>
+			</setting>
+			<setting>
+			    <key>listResultLanguageGroup</key>
+			    <value>2</value>
+			</setting>
+			<setting>
+			    <key>listResultNameGroup</key>
+			    <value>3</value>
+			</setting>
+			<setting>
+				<key>downloadUrlRegex</key>
+				<value><![CDATA[<a\s*href="([^"]*)"[^>]*>\s*Download\s*[a-z]*\ssubtitle\s*<\/a>]]></value>
+			</setting>
+			<setting>
+			    <key>downloadUrlGroup</key>
+			    <value>1</value>
+			</setting>			
+    		<setting>
+    			<key>url</key>
+    			<value><![CDATA[https://subscene.com/subtitles/title?q=__searchString__]]></value>
+    		</setting>
+    	</subFinderSettings>
+    </subFinder>    
   </subFinders>
   <builders>
       <builder class="se.qxx.jukebox.builders.FilenameBuilder" enabled="false" weight="1" />

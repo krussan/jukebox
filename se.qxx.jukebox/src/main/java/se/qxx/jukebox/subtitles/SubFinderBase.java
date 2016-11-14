@@ -1,12 +1,22 @@
 package se.qxx.jukebox.subtitles;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import se.qxx.jukebox.Language;
+import se.qxx.jukebox.Log;
+import se.qxx.jukebox.WebRetriever;
+import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.builders.MovieBuilder;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
@@ -17,6 +27,26 @@ import se.qxx.jukebox.settings.Settings;
 
 
 public abstract class SubFinderBase {
+	private String className;
+	private Language language;
+	
+	private final int MAX_SUBS_DOWNLOADED = 15;
+	
+	protected String getClassName() {
+		return className;
+	}
+
+	protected void setClassName(String className) {
+		this.className = className;
+	}
+	
+	protected Language getLanguage() {
+		return language;
+	}
+
+	protected void setLanguage(Language language) {
+		this.language = language;
+	}
 
 	private HashMap<String, String> settings = new HashMap<String, String>();
 
@@ -32,26 +62,140 @@ public abstract class SubFinderBase {
 		return this.settings.get(key);
 	}
 
-//	protected String createSubsPath(Movie m) {
-//		String filename = FilenameUtils.normalize(String.format("%s/%s"
-//				, Settings.get().getSubFinders().getSubsPath()
-//				, FilenameUtils.getBaseName(m.getFilename())));
-//		
-//		File f = new File(filename);
-//		if (!f.exists())
-//			f.mkdirs();
-//		return filename;
-//	}
+	protected List<SubFile> downloadSubs(Movie m, List<SubFile> listSubs) {
+		List<SubFile> files = new ArrayList<SubFile>();
+		
+		//Store downloaded files in temporary storage
+		//SubtitleDownloader will move them to correct path
+		String tempSubPath = createTempSubsPath(m);
+		
+		int sizeCollection = listSubs.size();
+		int c = 1;
+		
+		for (SubFile sf : listSubs) {
+			try {
+				File file = WebRetriever.getWebFile(sf.getUrl(), tempSubPath);
+				if (file != null) {
+					sf.setFile(file);
+					
+					files.add(sf);
+		
+					Log.Debug(String.format("%s :: [%s/%s] :: File downloaded: %s"
+							, this.getClassName()
+							, c
+							, sizeCollection
+							, sf.getFile().getName())
+						, Log.LogType.SUBS);
+		
+					if (sf.getRating() == Rating.ExactMatch || sf.getRating() == Rating.PositiveMatch)  {
+						Log.Debug(String.format("%s :: Exact or positive match found. exiting...", 
+								this.getClassName()), 
+								Log.LogType.SUBS);
+						break;
+					}
+				}
+				
+				c++;
+				
+				if (c > MAX_SUBS_DOWNLOADED)
+					break;
+				
+			}
+			catch (IOException e) {
+				Log.Debug(String.format("%s :: Error when downloading subtitle :: %s", this.getClassName(), sf.getFile().getName()), LogType.SUBS);
+			}
+			
+			try {
+				Random r = new Random();
+				int n = r.nextInt(20000) + 10000;
+				
+				// sleep randomly to avoid detection (from 10 sec to 30 sec)
+				Thread.sleep(n);
+			} catch (InterruptedException e) {
+				Log.Error(String.format("Subtitle downloader interrupted", this.getClassName()), Log.LogType.SUBS, e);
+			}
+			
+		}
+		
+		return files;
+		
+	}
 	
-//	/**
-//	 * Return a temporary filename to download subtitles to.
-//	 * @param filename The filename of the movie
-//	 * @return
-//	 */
-//	public static String getTempSubsName(Movie m) {
-//		String path = createTempSubsPath();
-//        return String.format("%s/%s_%s", path, Thread.currentThread().getId(), filename);
-//	}
+	
+	protected String performSearch(String url) {
+		String webResult;
+		try {
+			webResult = WebRetriever.getWebResult(url).getResult();
+	
+			// replace newline
+			webResult = webResult.replace("\r", "");
+			webResult = webResult.replace("\n", "");
+		}
+		catch (IOException e) {
+			webResult = StringUtils.EMPTY;
+		}
+		
+		return webResult;	
+	}
+	
+	/***
+	 * Collects download links from a webresult.
+	 * Also rates the name of the sub in accordance with the name of the media file
+	 * - if we found an exact match get that one
+	 * - if we found a postive match get that one
+	 * - otherwise get all up to a cut-off
+	 * 
+	 * Regex for the pattern to extract the information needs to be supplied accompanied
+	 * by the groups for download link and name.
+	 * 
+	 * A language group can also be defined. If set to zero this one will be ignored.
+	 * If the language does _not_ match the language set by the sub-finder implementation then
+	 * the download link is ignored.
+	 * 
+	 * @param m
+	 * @param webResult
+	 * @param pattern
+	 * @param urlGroup
+	 * @param nameGroup
+	 * @param languageGroup
+	 * @return
+	 */
+	protected List<SubFile> collectSubFiles(Movie m, String webResult, String pattern, int urlGroup, int nameGroup, int languageGroup) {
+		//String pattern = this.getSetting(SETTING_PATTERN);
+		Pattern p = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.UNICODE_CASE | Pattern.UNIX_LINES);
+		Matcher matcher = p.matcher(webResult);
+		
+		List<SubFile> listSubs = new ArrayList<SubFile>();
+		
+		Log.Debug(String.format("%s :: Finding subtitles for %s", this.getClassName(), m.getMedia(0).getFilename()), Log.LogType.SUBS);
+		
+		while (matcher.find()) {
+			String urlString = matcher.group(urlGroup);
+			String description = matcher.group(nameGroup); 
+			String language = matcher.group(languageGroup);
+
+			if (languageGroup == 0 || StringUtils.equalsIgnoreCase(language, this.getLanguage().toString())) {
+				SubFile sf = new SubFile(urlString, description, this.getLanguage());
+				Rating r = this.rateSub(m, description);
+				sf.setRating(r);
+				Log.Debug(String.format("%s :: Sub with description %s rated as %s", this.getClassName(), description, r.toString()), Log.LogType.SUBS);
+				
+				listSubs.add(sf);				
+			}
+			else {
+				Log.Debug(String.format("%s :: Skipping subtitle with language %s", this.getClassName(), language), LogType.SUBS);
+			}
+				
+		}
+		
+		if (listSubs.size()==0)
+			Log.Debug(String.format("%s :: No subs found", this.getClassName()), Log.LogType.SUBS);
+
+		Collections.sort(listSubs);
+		
+		return listSubs;
+	}
+
 	
 	
 	/**
