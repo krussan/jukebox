@@ -19,6 +19,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.JukeboxDomain.SubtitleQueue;
+import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.protodb.ProtoDB;
 import se.qxx.protodb.exceptions.IDFieldNotFoundException;
 import se.qxx.protodb.exceptions.SearchFieldNotFoundException;
@@ -384,21 +385,58 @@ public class DB {
 		}
 		return m;
 	}
+	
+	public synchronized static Episode addEpisodeToSubtitleQueue(Episode e) {
+		try {
+			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
 			
+			e = Episode.newBuilder(e).setSubtitleQueue(
+					SubtitleQueue.newBuilder()
+						.setID(-1)
+						.setSubtitleRetreiveResult(0)				
+						.setSubtitleQueuedAt(DB.getCurrentUnixTimestamp())
+						.build())
+					.build();	
+			
+			return db.save(e);
+		}
+		catch (Exception ex) {
+			Log.Error("Failed to store epsiode to DB", Log.LogType.MAIN, ex);
+		}
+		return e;
+	}
+	
 	public static long getCurrentUnixTimestamp() {
 		return System.currentTimeMillis() / 1000L;
 	}
 
-	public synchronized static List<Movie> getSubtitleQueue() {
+	public synchronized static List<MovieOrSeries> getSubtitleQueue() {
 		try {
 			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
-			
-			return
+			 
+			List<Movie> movies = 
 				db.find(JukeboxDomain.Movie.getDefaultInstance(), 
 					"SubtitleQueue.subtitleRetreiveResult", 
 					0, 
 					false);
 
+			List<Series> series = 
+					db.find(JukeboxDomain.Series.getDefaultInstance(), 
+						"Season.Episode.subtitleRetreiveResult", 
+						0, 
+						false);
+
+			List<MovieOrSeries> moss = new ArrayList<MovieOrSeries>();
+			
+			for (Movie m : movies) {
+				MovieOrSeries mos = new MovieOrSeries(m);
+				moss.add(mos);
+			}
+			
+			// oops.. no we cant do this...
+			for (Series s : series) {
+				MovieOrSeries s
+			}
 		}
 		catch (Exception e) {
 			Log.Error("Failed to retrieve movie listing from DB", Log.LogType.MAIN, e);

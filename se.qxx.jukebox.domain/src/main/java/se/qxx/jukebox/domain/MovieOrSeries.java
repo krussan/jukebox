@@ -187,4 +187,12 @@ public class MovieOrSeries {
 		else
 			return this.getMovie().getRating();
 	}
+	
+	public int getID() {
+		if (this.isSeries())
+			return this.getEpisode().getID();
+		else
+			return this.getMovie().getID();
+	}
+
 }

@@ -68,7 +68,7 @@ public abstract class SubFinderBase {
 
 	private HashMap<String, String> settings = new HashMap<String, String>();
 
-	public abstract List<SubFile> findSubtitles(Movie m, List<String> languages);
+	public abstract List<SubFile> findSubtitles(MovieOrSeries mos, List<String> languages);
 
 	public SubFinderBase(JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings subFinderSettings) {
 		for (JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings.Setting setting : subFinderSettings.getSetting()) {
@@ -80,12 +80,12 @@ public abstract class SubFinderBase {
 		return this.settings.get(key);
 	}
 
-	protected List<SubFile> downloadSubs(Movie m, List<SubFile> listSubs) {
+	protected List<SubFile> downloadSubs(MovieOrSeries mos, List<SubFile> listSubs) {
 		List<SubFile> files = new ArrayList<SubFile>();
 		
 		//Store downloaded files in temporary storage
 		//SubtitleDownloader will move them to correct path
-		String tempSubPath = createTempSubsPath(m);
+		String tempSubPath = createTempSubsPath(mos);
 		
 		int sizeCollection = listSubs.size();
 		int c = 1;
@@ -182,14 +182,14 @@ public abstract class SubFinderBase {
 	 * @param languageGroup
 	 * @return
 	 */
-	protected List<SubFile> collectSubFiles(Movie m, String webResult, String pattern, int urlGroup, int nameGroup, int languageGroup) {
+	protected List<SubFile> collectSubFiles(MovieOrSeries mos, String webResult, String pattern, int urlGroup, int nameGroup, int languageGroup) {
 		//String pattern = this.getSetting(SETTING_PATTERN);
 		Pattern p = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.UNICODE_CASE | Pattern.UNIX_LINES);
 		Matcher matcher = p.matcher(webResult);
 		
 		List<SubFile> listSubs = new ArrayList<SubFile>();
 		
-		Log.Debug(String.format("%s :: Finding subtitles for %s", this.getClassName(), m.getMedia(0).getFilename()), Log.LogType.SUBS);
+		Log.Debug(String.format("%s :: Finding subtitles for %s", this.getClassName(), mos.getMedia().getFilename()), Log.LogType.SUBS);
 		
 		while (matcher.find()) {
 			String urlString = matcher.group(urlGroup).trim();
@@ -198,7 +198,7 @@ public abstract class SubFinderBase {
 
 			if (languageGroup == 0 || StringUtils.equalsIgnoreCase(language, this.getLanguage().toString())) {
 				SubFile sf = new SubFile(urlString, description, this.getLanguage());
-				Rating r = this.rateSub(m, description);
+				Rating r = this.rateSub(mos, description);
 				sf.setRating(r);
 				Log.Debug(String.format("%s :: Sub with description %s rated as %s", this.getClassName(), description, r.toString()), Log.LogType.SUBS);
 				
@@ -228,28 +228,28 @@ public abstract class SubFinderBase {
 	 * @param subFileDescription - The description of the subtitle file. Could be the same as the filename but without extension.
 	 * @return Rating			 - A rating based on the Rating enumeration				
 	 */
-	protected Rating rateSub(Movie m, String subFileDescription) {
-		MovieOrSeries mos = MovieBuilder.identify("", subFileDescription + ".dummy");
+	protected Rating rateSub(MovieOrSeries mos, String subFileDescription) {
+		MovieOrSeries subMos = MovieBuilder.identify("", subFileDescription + ".dummy");
 		
 
 		//PartPattern moviePP = new PartPattern(FilenameUtils.getBaseName(m.getMedia(0).getFilename()));
 		//PartPattern subPP = new PartPattern(subFileDescription);
 
-		if (mos != null) {
-			String subFilename = FilenameUtils.getBaseName(mos.getMedia().getFilename());
-			for (Media md : m.getMediaList()) {
-				String mediaFilename = FilenameUtils.getBaseName(md.getFilename());
-				if (StringUtils.equalsIgnoreCase(mediaFilename, subFilename))
-					return Rating.ExactMatch;
-			}
-		
-			String group = m.getGroupName();
-			String subGroup = mos.getGroupName();
+		if (subMos != null) {
+			String subFilename = FilenameUtils.getBaseName(subMos.getMedia().getFilename());
+			String mediaFilename = FilenameUtils.getBaseName(mos.getMedia().getFilename());
 			
-			String subFormat = mos.getFormat();
+			if (StringUtils.equalsIgnoreCase(mediaFilename, subFilename))
+				return Rating.ExactMatch;
+			
+		
+			String group = mos.getGroupName();
+			String subGroup = subMos.getGroupName();
+			
+			String subFormat = subMos.getFormat();
 			
 			if (StringUtils.equalsIgnoreCase(subGroup, group) && !StringUtils.isEmpty(subGroup)) {
-				if (StringUtils.equalsIgnoreCase(subFormat, m.getFormat()) && !StringUtils.isEmpty(subFormat))
+				if (StringUtils.equalsIgnoreCase(subFormat, mos.getFormat()) && !StringUtils.isEmpty(subFormat))
 					return Rating.PositiveMatch;
 				else
 					return Rating.ProbableMatch;
@@ -265,12 +265,12 @@ public abstract class SubFinderBase {
 	 * Returns a temporary path to download subtitles to
 	 * @return
 	 */
-	public static String createTempSubsPath(Movie m) {
+	public static String createTempSubsPath(MovieOrSeries mos) {
 		String tempPath = 
 			FilenameUtils.normalize(
 				String.format("%s/temp/%s"
 					, Settings.get().getSubFinders().getSubsPath()
-					, m.getID()));
+					, mos.getID()));
 
 		File path = new File(tempPath);
 		if (!path.exists())

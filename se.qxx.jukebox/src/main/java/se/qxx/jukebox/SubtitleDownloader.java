@@ -124,80 +124,9 @@ public class SubtitleDownloader implements Runnable {
 		}
 	}
 
-	/**
-	 * Initialize subtitles by scanning subs directory. 
-	   If subs.xml exist then use the xml file for identifying subs. Otherwise scan directory. 
-	   If an unclean purge has been performed then there could be subs in the directory
-	   but not in the database		
-	*/
-//	private void initializeSubsDatabase() {
-//		if (!initSubsDatabaseFromXmlFile())
-//			initSubsDatabaseFromDisk();
-//	}
+
 	
-	/**
-	 * Initialize subs database by scanning the subs xml file.
-	 * If it exist then save all the data in it to database.
-	 * Leaves existing entries in the xml file that do not match an existing movie as these
-	 * could be movies that have not been identified yet
-	 * @return true if subs database has been initialized from xml file
-	 */
-//	private boolean initSubsDatabaseFromXmlFile() {
-//		try {				
-//			Subs subs = getSubsFile();
-//			if (subs != null) {
-//				if (saveXmlFileToSubsDatabase(subs));
-//					return true;
-//			}
-//		}
-//		catch (Exception e) {
-//			Log.Error("Error occured when parsing subs Xml file", LogType.SUBS, e);
-//		}
-//		
-//		return false;		
-//	}
-	
-	/**
-	 * Saves a subs xml file to database.
-	 * Leaves existing entries in the xml file that do not match an existing movie as these
-	 * could be movies that have not been identified yet
-	 * @param subs The parsed subs xml file
-	 * @return True if all entries has been saved to database.
-	 */
-//	private boolean saveXmlFileToSubsDatabase(Subs subs) {
-//		Log.Debug("INITSUBS_XML :: Saving subs xml file to database", LogType.SUBS);
-//		
-//		try {
-//			for (se.qxx.jukebox.subtitles.Subs.Movie movie : subs.getMovie()) {
-//				String movieFilename = movie.getFilename();
-//				for (se.qxx.jukebox.subtitles.Subs.Movie.Sub sub : movie.getSub()) {
-//					Media md = DB.getMediaByStartOfFilename(movieFilename);
-//					if (md != null) {
-//						String subsFilename = String.format("%s/%s/%s", subsPath, movieFilename, sub.getFilename());
-//
-//						Movie m = DB.getMovieBySubfilename(subsFilename);
-//						
-//						if (m == null) {
-//								
-//							Rating r = Rating.valueOf(sub.getRating());
-//							Log.Debug(String.format("INITSUBS_XML :: Adding to subs database :: %s", sub.getFilename()), LogType.SUBS);
-//							DB.addSubtitle(md, subsFilename, sub.getDescription(), r, sub.getLanguage());
-//						}
-//						else {
-//							Log.Debug(String.format("INITSUBS_XML :: Sub exists in DB :: %s", sub.getFilename()), LogType.SUBS);							
-//						}
-//					}
-//				}
-//			}
-//			
-//			return true;
-//		}
-//		catch (Exception e) {
-//			Log.Error("Error occured when parsing subs Xml file", LogType.SUBS, e);			
-//		}
-//		
-//		return false;
-//	}
+
 
 	/**
 	 * Parses the subs xml file into an object structure.
@@ -230,160 +159,6 @@ public class SubtitleDownloader implements Runnable {
 		return null;
 	}
 	
-	
-	/**
-	 * Loads all existing subs from subs directory into database if a movie with the correct filename
-	 * can be found.
-	 * Also writes and merges a subs xml file.s
-	 */
-//	private void initSubsDatabaseFromDisk() {
-//		ExtensionFileFilter filter = new ExtensionFileFilter();
-//		filter.addExtension("srt");
-//		filter.addExtension("sub");
-//		filter.addExtension("idx");
-//
-//		File path = new File(subsPath);
-//		
-//		if (path.exists()) {
-//			List<File> list =  Util.getFileListing(path, filter);
-//			
-//			for (File subFile : list) {
-//				String subFilename = subFile.getAbsolutePath();
-//				Log.Debug(String.format("INITSUBS :: Initializing subtitles for %s", subFilename), LogType.SUBS);
-//				String mediaName = FilenameUtils.getBaseName(subFile.getParentFile().getAbsolutePath());
-//				Media md = DB.getMediaByStartOfFilename(mediaName);
-//				
-//				if (md != null) {
-//					Log.Debug(String.format("INITSUBS :: Movie Found :: %s", md.getFilename()), LogType.SUBS);
-//					
-//					boolean found = false;
-//					for (Subtitle sub : md.getSubsList()) {
-//						if (StringUtils.equalsIgnoreCase(sub.getFilename(), subFilename)) {
-//							found = true;
-//							break;
-//						}
-//					}
-//					
-//					if (!found){
-//						Log.Debug(String.format("INITSUBS :: Sub not found ... Adding %s", subFilename), LogType.SUBS);
-//												
-//						DB.save(
-//							Media.newBuilder(md).addSubs(
-//								Subtitle.newBuilder()
-//								.setID(-1)
-//								.setDescription("")
-//								.setMediaIndex(0)
-//								.setLanguage("Default")
-//								.setFilename(subFilename)
-//								.setRating(Rating.NotMatched)
-//								.build())
-//							.build());
-//						
-////						DB.addSubtitle(md, subFilename, StringUtils.EMPTY, Rating.NotMatched, Language.Unknown.toString());						
-//					}
-//				}
-//			}
-//			
-////			writeSubsXmlFile();
-//		}
-//	}
-	
-	/**
-	 * Saves database entries to subs xml file.
-	 * Leaves existing entries in the xml file that do not match an existing movie as these
-	 * could be movies that have not been identified yet
-	 */
-//	private void writeSubsXmlFile() {
-//		try {
-//			
-//			//TODO: <HIGH> This needs to actually MERGE the information in xml file
-//			// and that in the database. Otherwise we will start deleting entries old entries that don't
-//			// yet have a movie reference
-//						
-//			DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
-//			DocumentBuilder docBuilder = dbfac.newDocumentBuilder();
-//			Document doc = docBuilder.newDocument();
-//
-//			Element subs = doc.createElement("subs");
-//			
-//			List<Movie> movies = DB.searchMoviesByTitle(StringUtils.EMPTY);
-//			for (Movie m : movies) {
-//				for (Media md : m.getMediaList()) {
-//					Element movie = doc.createElement("movie");
-//					movie.getAttributes().setNamedItem(getAttribute(doc, "filename", FilenameUtils.getBaseName(md.getFilename())));
-//					
-//					List<Subtitle> subtitles = DB.getSubtitles(md);
-//					for (Subtitle s : subtitles) {
-//						String subsFilename = FilenameUtils.getName(s.getFilename());
-//						Element sub = doc.createElement("sub");
-//						NamedNodeMap attrs = sub.getAttributes();
-//						attrs.setNamedItem(getAttribute(doc, "filename", subsFilename));
-//						attrs.setNamedItem(getAttribute(doc, "description", s.getDescription()));
-//						attrs.setNamedItem(getAttribute(doc, "rating", s.getRating().toString()));
-//						
-//						movie.appendChild(sub);
-//					}
-//					
-//					if (subtitles.size() > 0)
-//						subs.appendChild(movie);
-//				}
-//			}
-//			
-//			
-//			Subs subsFile = getSubsFile();
-//			
-//			if (subsFile != null) {
-//				for (se.qxx.jukebox.subtitles.Subs.Movie subsMovie : subsFile.getMovie()) {
-//					Media md = DB.getMediaByStartOfFilename(subsMovie.getFilename());
-//					if (md == null) {
-//						Log.Debug(String.format("SUBS :: Adding subs to xml file even if movie does not exist yet :: %s", subsMovie.getFilename()), LogType.SUBS);
-//	
-//						JAXBContext c = JAXBContext.newInstance(se.qxx.jukebox.subtitles.Subs.Movie.class);
-//						Marshaller m = c.createMarshaller();
-//					
-//						m.marshal(subsMovie, subs);
-//					}
-//				}
-//	
-//				doc.appendChild(subs);
-//			}
-//			
-//			Log.Debug(String.format("SUBS :: Writing xml file :: %s", subsXmlFilename), LogType.SUBS);
-//			writeXmlDocument(doc, subsXmlFilename);
-//		} catch (Exception e) {
-//			Log.Error("Error when writing xml to file", LogType.SUBS, e);
-//		}
-//	}
-	
-	/**
-	 * Helper method for writing xml document to file.
-	 * @param doc The xml document
-	 * @param filename Filename to write to.
-	 */
-	private void writeXmlDocument(Document doc, String filename) {
-		try {
-			Transformer transformer = TransformerFactory.newInstance().newTransformer();
-			Result output = new StreamResult(new File(filename));
-			Source input = new DOMSource(doc);
-
-			transformer.transform(input, output);
-		} catch (Exception e) {
-			Log.Error("Error when writing xml to file", LogType.SUBS, e);
-		}		
-	}
-	
-	/**
-	 * Helper method for initializing an attribute in xml document
-	 * @param doc The xml document
-	 * @param name The name of the attribute
-	 * @param value The value of the attribute
-	 * @return An Attr object with the name and value.
-	 */
-	private Attr getAttribute(Document doc, String name, String value) {
-		Attr a = doc.createAttribute(name);
-		a.setValue(value);
-		return a;
-	}
 
 	/**
 	 * Empties the temp directory. 
@@ -416,16 +191,15 @@ public class SubtitleDownloader implements Runnable {
 	/**
 	 * Add an episode to the subtitile download queue.
 	 * The episode and series have to be saved separately
-	 * @param m The movie to add
+	 * @param episode The episode to add
 	 */
 	public Episode addEpisode(Episode episode) {
-		return Episode.newBuilder(episode).setSubtitleQueue(
-				SubtitleQueue.newBuilder()
-					.setID(-1)
-					.setSubtitleRetreiveResult(0)				
-					.setSubtitleQueuedAt(DB.getCurrentUnixTimestamp())
-					.build())
-				.build();	
+		synchronized (_instance) {
+			episode = DB.addEpisodeToSubtitleQueue(episode);
+			_instance.notify();
+			
+			return episode;
+		}  
 	}
 
 	/**
@@ -439,45 +213,24 @@ public class SubtitleDownloader implements Runnable {
 	 * Wrapper function for getting subs for a specific movie
 	 * @param m
 	 */
-	private void getSubtitles(Movie m) {
+	private void getSubtitles(MovieOrSeries mos) {
 		// We only check if there exist subs for the first media file.
 		// If it does then it should exist from the others as well.
 		Media md = m.getMedia(0);
-		List<SubFile> files = checkSubsDirForSubs(md);
+		List<SubFile> files = checkMovieDirForSubs(md);
 		
 		if (files.size() == 0) {
-			files = checkMovieDirForSubs(md);
-			if (files.size() == 0) {
-				// use reflection to get all subfinders
-				// get files
-				files = callSubtitleDownloaders(m);
-			}
-	
-			// Extract files from rar/zip
-			extractSubs(m, files);
-		}			
-	}
-	
-	/**
-	 * Checks if subs exists in subs directory for a specific movie.
-	 * @param m The movie to find subtitles for
-	 * @return Returns a list of subtitles, present in the subs directory, for the specific movie. 
-	 */
-	private List<SubFile> checkSubsDirForSubs(Media md) {
-		List<SubFile> list = new ArrayList<SubFile>();
+			// use reflection to get all subfinders
+			// get files
+			files = callSubtitleDownloaders(mos);
+		}
 
-		String movieFilenameWithoutExt = FilenameUtils.getBaseName(md.getFilename());
-		File subsPathDir = new File(getSubsPath(md));
-		
-		list.addAll(checkDirForSubs(movieFilenameWithoutExt,subsPathDir));
-
-		Log.Debug(String.format("Found %s subs for movie %s in subs folder", list.size(), movieFilenameWithoutExt), Log.LogType.SUBS);
-
-		return list;
+		// Extract files from rar/zip
+		extractSubs(m, files);
 	}
 
 	/**
-	 * Checks both movie path and jukebox subs path for subtitles for a specific movie
+	 * Checks movie path for subtitles for a specific movie
 	 * @param m
 	 * @return A list of subfiles for the movie
 	 */
@@ -653,48 +406,6 @@ public class SubtitleDownloader implements Runnable {
 	}
 
 	/**
-	 * Moves and renames a sub file to the subs folder corresponding to the movie.
-	 * The name of the sub becomes moviename.iterator.extension
-	 * 
-	 * @param m The movie
-	 * @param c Iterator
-	 * @param subFile The original sub file
-	 * @return A path string pointing to the new sub file
-	 */
-	protected String moveFileToSubsPath(
-			Media md, 
-			int c, 
-			File subFile) {
-	
-		String subExtension = FilenameUtils.getExtension(subFile.getName());		
-		// rename file to filename_of_movie.iterator.srt/sub		
-		
-		String finalSubfileName = FilenameUtils.normalize(
-			String.format("%s/%s.%s.%s"
-				, getSubsPath(md)
-				, FilenameUtils.getBaseName(md.getFilename())
-				, c
-				, subExtension));
-		
-		File newFile = new File(finalSubfileName);
-		try {
-			FileUtils.moveFile(subFile, newFile);
-		} catch (IOException e) {
-			Log.Debug(String.format("Failed to move file %s to %s", subFile.getName(), finalSubfileName), LogType.SUBS	);
-		}
-		
-		return finalSubfileName;
-	}
-	
-	private String getSubsPath(Media md) {
-		String movieFilename = FilenameUtils.getBaseName(md.getFilename());	
-		//PartPattern pp = new PartPattern(movieFilename);
-		String movieSubsPath = String.format("%s/%s", subsPath, movieFilename);
-		return movieSubsPath;		
-	}
-	
-
-	/**
 	 * Iterates through all sub finders declared in the settings file.
 	 * Each sub finder is called in sequence and asked to download files corresponding to a movie.
 	 * Returns a list of sub files downloaded from each sub finder
@@ -702,7 +413,7 @@ public class SubtitleDownloader implements Runnable {
 	 * @return A list of sub files downloaded. These files could be in raw format as delivered by the sub finder. I.e. they
 	 * 		   may have to be decompressed.
 	 */
-	private List<SubFile> callSubtitleDownloaders(Movie m) {
+	private List<SubFile> callSubtitleDownloaders(MovieOrSeries mos) {
 		ArrayList<SubFile> subtitleFiles = new ArrayList<SubFile>();
 		for (SubFinder f : Settings.get().getSubFinders().getSubFinder()) {
 			String className = f.getClazz();
@@ -716,7 +427,7 @@ public class SubtitleDownloader implements Runnable {
 				languages.add("Swe");
 
 				// add list of downloaded files to list
-				subtitleFiles.addAll(finder.findSubtitles(m, languages));
+				subtitleFiles.addAll(finder.findSubtitles(mos, languages));
 
 			} catch (Exception e) {
 				

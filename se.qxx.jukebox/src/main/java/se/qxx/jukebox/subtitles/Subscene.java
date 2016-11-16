@@ -14,6 +14,7 @@ import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Rating;
+import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings;
 import se.qxx.jukebox.tools.Util;
 
@@ -48,11 +49,12 @@ public class Subscene extends SubFinderBase {
 
 	@Override
 	public List<SubFile> findSubtitles(
-			Movie m, 
+			MovieOrSeries mos, 
 			List<String> languages) {
 
-		List<SubFile> files = new ArrayList<SubFile>();
-		String searchString = getSearchString(m);
+		List<SubFile> files = new ArrayList<SubFile>(); 
+		String searchString = getSearchString(mos.getMainTitle());
+		
 		if (!StringUtils.isEmpty(searchString)) {
 			String url = this.getSetting(SETTING_URL).replaceAll("__searchString__", searchString);
 			String baseUrl = getBaseUrl(url);
@@ -61,7 +63,7 @@ public class Subscene extends SubFinderBase {
 			String webResult = performSearch(url);
 			
 			//Get the first result 
-			url = getMatchingResult(m, webResult);
+			url = getMatchingResult(webResult);
 			Log.Debug(String.format("Matching url :: %s", url), LogType.SUBS);
 			
 			if (!StringUtils.isEmpty(url)) {
@@ -69,28 +71,28 @@ public class Subscene extends SubFinderBase {
 				
 				// Get the subfiles from the underlying web result
 				webResult = performSearch(url);
-				
-				// Now we have a list of subs. But each download link is hidden one step below.
-				// The list is enough to rate the list at least.
-					
-				if (!StringUtils.isEmpty(webResult)) {
-
-					List<SubFile> listSubs = collectSubFiles(
-							m, 
-							webResult, 
-							this.getSetting(SETTING_LISTRESULT_REGEX),
-							Integer.parseInt(this.getSetting(SETTING_LISTRESULT_URLGROUP)),
-							Integer.parseInt(this.getSetting(SETTING_LISTRESULT_NAMEGROUP)),
-							Integer.parseInt(this.getSetting(SETTING_LISTRESULT_LANGUAGEGROUP)));
-					
-					// We need to replace the download links in each and every subfile
-					listSubs = replaceDownloadLinks(listSubs, baseUrl);
-					
-					files = downloadSubs(m, listSubs);
-				}
-			
 			}
-
+			else {
+				//We could have been redirected directly to the list (!)
+				// continue and hope for match in the next phase
+			}
+				
+			// Now we have a list of subs. But each download link is hidden one step below.
+			// The list is enough to rate the list at least.
+			if (!StringUtils.isEmpty(webResult)) {
+				List<SubFile> listSubs = collectSubFiles(
+						mos, 
+						webResult, 
+						this.getSetting(SETTING_LISTRESULT_REGEX),
+						Integer.parseInt(this.getSetting(SETTING_LISTRESULT_URLGROUP)),
+						Integer.parseInt(this.getSetting(SETTING_LISTRESULT_NAMEGROUP)),
+						Integer.parseInt(this.getSetting(SETTING_LISTRESULT_LANGUAGEGROUP)));
+				
+				// We need to replace the download links in each and every subfile
+				listSubs = replaceDownloadLinks(listSubs, baseUrl);
+				
+				files = downloadSubs(mos, listSubs);
+			}
 		}
 		
 		return files;
@@ -138,7 +140,7 @@ public class Subscene extends SubFinderBase {
 		return listSubs;
 	}
 
-	private String getMatchingResult(Movie m, String webResult) {
+	private String getMatchingResult(String webResult) {
 		Pattern p = Pattern.compile(this.getSetting(SETTING_SEARCHRESULT_REGEX), Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.UNICODE_CASE | Pattern.UNIX_LINES);
 		Matcher matcher = p.matcher(webResult);
 
@@ -150,8 +152,8 @@ public class Subscene extends SubFinderBase {
 		return StringUtils.EMPTY;
 	}
 
-	protected String getSearchString(Movie m) {
-		String searchString = m.getTitle();
+	protected String getSearchString(String title) {
+		String searchString = title;
 		
 		try {
 			searchString = java.net.URLEncoder.encode(searchString.trim(), "ISO-8859-1");
