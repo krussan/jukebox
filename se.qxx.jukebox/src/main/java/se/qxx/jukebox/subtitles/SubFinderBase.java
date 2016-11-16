@@ -68,7 +68,7 @@ public abstract class SubFinderBase {
 
 	private HashMap<String, String> settings = new HashMap<String, String>();
 
-	public abstract List<SubFile> findSubtitles(MovieOrSeries mos, List<String> languages);
+	public abstract List<SubFile> findSubtitles(Movie m, List<String> languages);
 
 	public SubFinderBase(JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings subFinderSettings) {
 		for (JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings.Setting setting : subFinderSettings.getSetting()) {
@@ -278,5 +278,5 @@ public abstract class SubFinderBase {
 		
 		return tempPath;
 	}	
-	
+
 }

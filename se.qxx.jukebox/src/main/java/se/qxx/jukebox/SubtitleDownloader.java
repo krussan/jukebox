@@ -216,7 +216,7 @@ public class SubtitleDownloader implements Runnable {
 	private void getSubtitles(MovieOrSeries mos) {
 		// We only check if there exist subs for the first media file.
 		// If it does then it should exist from the others as well.
-		Media md = m.getMedia(0);
+		Media md = mos.getMedia();
 		List<SubFile> files = checkMovieDirForSubs(md);
 		
 		if (files.size() == 0) {
