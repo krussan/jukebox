@@ -26,10 +26,10 @@ import se.qxx.jukebox.domain.DomainUtil;
 public class Upgrade_0_16 implements IIncrimentalUpgrade {
 
 	static final String[] DbScripts = {
-		"DELETE FROM SubtitleQueue",
 		"UPDATE Movie SET _subtitlequeue_ID = NULL",
 		"UPDATE Episode SET _subtitlequeue_ID = NULL",
-		"ALTER TABLE Subtitle ADD [_textdata_ID] INTEGER NOT NULL REFERENCES BlobData (ID)"
+		"DELETE FROM SubtitleQueue",
+		"ALTER TABLE Subtitle ADD [_textdata_ID] INTEGER NULL REFERENCES BlobData (ID) "
 	};
 	
 	@Override
