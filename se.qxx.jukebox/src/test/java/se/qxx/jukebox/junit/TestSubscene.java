@@ -24,6 +24,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings;
@@ -116,7 +117,8 @@ public class TestSubscene {
 		WebResult resultDownload2 = new WebResult(new URL("https://subscene.com/subtitles/Mockito/1123456"), download2Result, false);
 		Mockito.when(WebRetriever.getWebResult("https://subscene.com/subtitles/Mockito/1123456")).thenReturn(resultDownload2);
 		
-		String tempFilePath = SubFinderBase.createTempSubsPath(m);
+		MovieOrSeries mos = new MovieOrSeries(m);
+		String tempFilePath = SubFinderBase.createTempSubsPath(mos);
 		Mockito.when(
 				WebRetriever.getWebFile("https://subscene.com/subtitle/download?mac=minYVuJCyMyRv2laUi3x4JRZpygROrUboH6SnmAZMHI0BjB2Ect5yTARB0a8KolifMxdZlSEtc-I5wEKPCP7OxtfvN6JYKOmrUtlONkO-4MWpvB-nqHp421TU8WptRiE0", 
 						tempFilePath))
@@ -140,7 +142,7 @@ public class TestSubscene {
 		List<String> lang = new ArrayList<String>();
 		lang.add("English");
 		
-		List<SubFile> files = ss.findSubtitles(m, lang);
+		List<SubFile> files = ss.findSubtitles(new MovieOrSeries(m), lang);
 		
 		assertEquals(2, files.size());
 	}

@@ -68,7 +68,7 @@ public abstract class SubFinderBase {
 
 	private HashMap<String, String> settings = new HashMap<String, String>();
 
-	public abstract List<SubFile> findSubtitles(Movie m, List<String> languages);
+	public abstract List<SubFile> findSubtitles(MovieOrSeries mos, List<String> languages);
 
 	public SubFinderBase(JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings subFinderSettings) {
 		for (JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings.Setting setting : subFinderSettings.getSetting()) {
@@ -231,10 +231,6 @@ public abstract class SubFinderBase {
 	protected Rating rateSub(MovieOrSeries mos, String subFileDescription) {
 		MovieOrSeries subMos = MovieBuilder.identify("", subFileDescription + ".dummy");
 		
-
-		//PartPattern moviePP = new PartPattern(FilenameUtils.getBaseName(m.getMedia(0).getFilename()));
-		//PartPattern subPP = new PartPattern(subFileDescription);
-
 		if (subMos != null) {
 			String subFilename = FilenameUtils.getBaseName(subMos.getMedia().getFilename());
 			String mediaFilename = FilenameUtils.getBaseName(mos.getMedia().getFilename());
@@ -245,7 +241,6 @@ public abstract class SubFinderBase {
 		
 			String group = mos.getGroupName();
 			String subGroup = subMos.getGroupName();
-			
 			String subFormat = subMos.getFormat();
 			
 			if (StringUtils.equalsIgnoreCase(subGroup, group) && !StringUtils.isEmpty(subGroup)) {

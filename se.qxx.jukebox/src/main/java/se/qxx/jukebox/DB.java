@@ -410,7 +410,16 @@ public class DB {
 		return System.currentTimeMillis() / 1000L;
 	}
 
+	/***
+	 * Retrieves the subtitle queue as a list of MovieOrSeries objects
+	 * Due to the nature of the MovieOrSeries class all episodes needs
+	 * to be represented by a single series and a single season object
+	 * 
+	 * @return
+	 */
 	public synchronized static List<MovieOrSeries> getSubtitleQueue() {
+		List<MovieOrSeries> result = new ArrayList<MovieOrSeries>();
+		
 		try {
 			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
 			 
@@ -426,22 +435,52 @@ public class DB {
 						0, 
 						false);
 
-			List<MovieOrSeries> moss = new ArrayList<MovieOrSeries>();
-			
-			for (Movie m : movies) {
-				MovieOrSeries mos = new MovieOrSeries(m);
-				moss.add(mos);
-			}
-			
-			// oops.. no we cant do this...
-			for (Series s : series) {
-				MovieOrSeries s
-			}
+			result = constructSubtitleQueue(movies, series);
 		}
 		catch (Exception e) {
 			Log.Error("Failed to retrieve movie listing from DB", Log.LogType.MAIN, e);
-			return new ArrayList<Movie>();
 		}
+		
+		return result;
+	}
+
+	private static List<MovieOrSeries> constructSubtitleQueue(List<Movie> movies, List<Series> series) {
+		List<MovieOrSeries> moss = new ArrayList<MovieOrSeries>();
+		
+		for (Movie m : movies) {
+			MovieOrSeries mos = new MovieOrSeries(m);
+			moss.add(mos);
+		}
+		
+		// we need to create a single Series object for every episode
+		// since the MovieOrSeries object is mainly used for identifying
+		moss.addAll(decoupleSeries(series));
+		
+		return moss;
+	}
+
+	private static List<MovieOrSeries> decoupleSeries(List<Series> series) {
+		List<MovieOrSeries> moss = new ArrayList<MovieOrSeries>();
+		
+		for (Series s : series) {
+			for (Season ss : s.getSeasonList()) {
+				for (Episode e : ss.getEpisodeList()) {
+					Series s2 = Series.newBuilder(s)
+							.clearSeason()
+							
+							.addSeason(Season.newBuilder(ss)
+								.clearEpisode()
+								.addEpisode(e)
+								.build())
+					
+							.build();
+					
+					moss.add(new MovieOrSeries(s2));
+				}
+			}
+		}
+		
+		return moss;
 	}
 
 	

@@ -1,6 +1,9 @@
 package se.qxx.jukebox;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,6 +26,9 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
+
+import com.google.protobuf.ByteString;
+
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.builders.MovieBuilder;
 import se.qxx.jukebox.domain.MovieOrSeries;
@@ -30,6 +36,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Rating;
+import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.domain.JukeboxDomain.SubtitleQueue;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder;
@@ -53,7 +60,6 @@ public class SubtitleDownloader implements Runnable {
 
 
 	private String subsPath = StringUtils.EMPTY;
-	private String subsXmlFilename = StringUtils.EMPTY;
 	private static SubtitleDownloader _instance;
 	private boolean isRunning;
 
@@ -75,8 +81,7 @@ public class SubtitleDownloader implements Runnable {
 		Util.waitForSettings();
 				
 		subsPath = Settings.get().getSubFinders().getSubsPath();
-		subsXmlFilename = String.format("%s/%s", FilenameUtils.normalize(subsPath), "subs.xml");
-		
+			
 //		initializeSubsDatabase();
 
 		mainLoop();
@@ -85,31 +90,24 @@ public class SubtitleDownloader implements Runnable {
 
 	protected void mainLoop() {
 		long threadWaitSeconds = Settings.get().getSubFinders().getThreadWaitSeconds() * 1000;
-		List<Movie> _listProcessing =  DB.getSubtitleQueue();				
+		List<MovieOrSeries> _listProcessing =  DB.getSubtitleQueue();				
 		
 		while (isRunning()) {
 			int result = 0;
 			try {
-				for (Movie m : _listProcessing) {
+				for (MovieOrSeries mos : _listProcessing) {
 					try {
-						if (m != null) {
-							getSubtitles(m);
-//							writeSubsXmlFile();
+						if (mos != null) {
+							getSubtitles(mos);
 							result = 1;
 						}
 					} catch (Exception e) {
 						Log.Error("Error when downloading subtitles", Log.LogType.SUBS, e);
 						result = -1;
-					} finally {
-						
-						DB.save(Movie.newBuilder(m)
-							.setSubtitleQueue(
-								SubtitleQueue.newBuilder()									
-									.setSubtitleRetreivedAt(DB.getCurrentUnixTimestamp())
-									.setSubtitleRetreiveResult(result)
-									.build()
-								).build());
+
 					}
+					
+					saveSubtitleQueue(mos, result);
 				}
 				
 				// wait for trigger
@@ -128,37 +126,28 @@ public class SubtitleDownloader implements Runnable {
 	
 
 
-	/**
-	 * Parses the subs xml file into an object structure.
-	 * The subs xml file should be in the root directory of the subs directory as indicated by settings.
-	 * @return The parsed xml file as an object structure.
-	 */
-	private Subs getSubsFile() {
-		try {
-			Log.Debug(String.format("INITSUBS :: Looking for subs xml file :: %s", subsXmlFilename), LogType.SUBS);
-			File subsFile = new File(subsXmlFilename);
-			
-			if (subsFile.exists()) {
-				JAXBContext c = JAXBContext.newInstance(Subs.class);
-				Unmarshaller u = c.createUnmarshaller();
-				
-				JAXBElement<Subs> root = u.unmarshal(new StreamSource(subsFile), Subs.class);
-				Subs subs = root.getValue();		
-				
-				return subs;				
-			}
-			
-
-		} catch (JAXBException e) {
-			Log.Debug("Error occured when parsing subs Xml file", LogType.SUBS);
-			Log.Error("Error occured when parsing subs Xml file", LogType.MAIN, e);
+	private void saveSubtitleQueue(MovieOrSeries mos, int result) {
+		
+		if (mos.isSeries()) {
+			DB.save(Episode.newBuilder(mos.getEpisode())
+				.setSubtitleQueue(
+					SubtitleQueue.newBuilder()									
+						.setSubtitleRetreivedAt(DB.getCurrentUnixTimestamp())
+						.setSubtitleRetreiveResult(result)
+						.build()
+					).build());
+		}
+		else {
+			DB.save(Movie.newBuilder(mos.getMovie())
+				.setSubtitleQueue(
+					SubtitleQueue.newBuilder()									
+						.setSubtitleRetreivedAt(DB.getCurrentUnixTimestamp())
+						.setSubtitleRetreiveResult(result)
+						.build()
+					).build());
 		}
 		
-		Log.Debug("INITSUBS :: Subs xml file not found or error occured", LogType.SUBS);
-		
-		return null;
 	}
-	
 
 	/**
 	 * Empties the temp directory. 
@@ -226,7 +215,7 @@ public class SubtitleDownloader implements Runnable {
 		}
 
 		// Extract files from rar/zip
-		extractSubs(m, files);
+		extractSubs(mos, files);
 	}
 
 	/**
@@ -306,10 +295,10 @@ public class SubtitleDownloader implements Runnable {
 	 * @param m The movie for these sub files
 	 * @param files The files downloaded
 	 */
-	private void extractSubs(Movie m, List<SubFile> files) {
-		String unpackPath = getUnpackedPath(m);
-		
-		Log.Debug(String.format("Unpack path :: %s", unpackPath), LogType.SUBS);
+	private void extractSubs(MovieOrSeries mos, List<SubFile> files) {
+		String unpackPath = getUnpackedPath(mos);
+		String tempFilepath = SubFinderBase.createTempSubsPath(mos);
+		Log.Debug(String.format("Unpack path :ö: %s", unpackPath), LogType.SUBS);
 		
 		int c = 0;
 		for (SubFile subfile : files) {
@@ -321,31 +310,20 @@ public class SubtitleDownloader implements Runnable {
 
 				for (File unpackedFile : unpackedFiles) {
 					if (unpackedFile != null) {
-						Media md = matchFileToMedia(m, unpackedFile);
+						Media md = matchFileToMedia(mos, unpackedFile);
 						
 						if (md != null) {
-							String filename = moveFileToSubsPath(md, c, unpackedFile);
-			
 							c++;
-			
+	
+							// read file
+							String textdata = readSubFile(unpackedFile);
+							
 							// store filename of sub in database
-							DB.save(
-								Media.newBuilder(md).addSubs(
-									Subtitle.newBuilder()
-										.setID(-1)
-										.setMediaIndex(0)
-										.setFilename(filename)
-										.setDescription(subfile.getDescription())
-										.setRating(subfile.getRating())
-										.setLanguage(subfile.getLanguage().toString())
-										.build())
-									.build());
-								
-//							DB.addSubtitle(md, filename, subfile.getDescription(), subfile.getRating(), subfile.getLanguage().toString());
+							saveSubtitle(subfile, unpackedFile, md, textdata);
 							
 						}
 						else {
-							Log.Debug(String.format("Failed to match sub %s against media for movie %s", unpackedFile.getName(), m.getTitle()), LogType.SUBS);
+							Log.Debug(String.format("Failed to match sub %s against media for movie %s", unpackedFile.getName(), mos.getTitle()), LogType.SUBS);
 						}
 					}
 				}
@@ -355,24 +333,74 @@ public class SubtitleDownloader implements Runnable {
 			}
 		}
 		
+		cleanupTempDirectory(tempFilepath);
+	}
+
+	private void cleanupTempDirectory(String tempFilepath) {
 		try {
-			FileUtils.deleteDirectory(new File(SubFinderBase.createTempSubsPath(m)));
+			FileUtils.deleteDirectory(new File(tempFilepath));
 		} catch (IOException e) {
+			Log.Error(String.format("Error while deleting temporary dir :: %s", tempFilepath), LogType.SUBS);
 		}
 	}
 
+	private void saveSubtitle(SubFile subfile, File unpackedFile, Media md, String textdata) {
+		DB.save(
+			Media.newBuilder(md).addSubs(
+				Subtitle.newBuilder()
+					.setID(-1)
+					.setMediaIndex(md.getIndex())
+					.setFilename(unpackedFile.getName())
+					.setDescription(subfile.getDescription())
+					.setRating(subfile.getRating())
+					.setLanguage(subfile.getLanguage().toString())
+					
+					.setTextdata(ByteString.copyFromUtf8(textdata))
+					.build())
+				.build());
+	}
+
+	private String readSubFile(File unpackedFile) {
+		BufferedReader br = null;
+		String result = StringUtils.EMPTY;
+		try {
+			br = new BufferedReader(new FileReader(unpackedFile));
+
+			StringBuilder sb = new StringBuilder();
+		    String line = br.readLine();
+
+		    while (line != null) {
+		        sb.append(line);
+		        sb.append(System.lineSeparator());
+		        line = br.readLine();
+		    }
+		    result = sb.toString();
+		} 
+		catch (IOException e) {
+			Log.Error(String.format("Error while reading sub file %s", unpackedFile.getName()), LogType.SUBS);
+		} 
+		finally {
+		    try {
+				br.close();
+			} catch (IOException e) {
+				Log.Error(String.format("Error while closing stream on sub file %s", unpackedFile.getName()), LogType.SUBS);
+			}
+		}
+		
+		return result;
+	}
 	/**
 	 * Matches the filename of an unpacked sub file against the media in the movie
 	 * @param m
 	 * @param unpackedFile
 	 * @return The media matching the sub filename
 	 */
-	private Media matchFileToMedia(Movie m, File unpackedFile) {
-		MovieOrSeries mos = MovieBuilder.identify("", unpackedFile.getName());
+	private Media matchFileToMedia(MovieOrSeries mos, File unpackedFile) {
+		MovieOrSeries unpackedMos = MovieBuilder.identify("", unpackedFile.getName());
 		
-		int subIndex = mos.getMedia().getIndex();
+		int subIndex = unpackedMos.getMedia().getIndex();
 		
-		for (Media md : m.getMediaList()) {
+		for (Media md : mos.getMediaList()) {
 			if (md.getIndex() == subIndex)
 				return md;
 		}
@@ -400,8 +428,8 @@ public class SubtitleDownloader implements Runnable {
 	 * @param m The movie for which the subs are destined for
 	 * @return The path
 	 */
-	private String getUnpackedPath(Movie m) {
-		String tempBase = SubFinderBase.createTempSubsPath(m);
+	private String getUnpackedPath(MovieOrSeries mos) {
+		String tempBase = SubFinderBase.createTempSubsPath(mos);
 		return String.format("%s/unpack", tempBase);
 	}
 
