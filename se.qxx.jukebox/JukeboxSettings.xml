@@ -37,46 +37,6 @@
     </catalog>        
   </catalogs>
   <subFinders subsPath="/c/media/Subs" threadWaitSeconds="25">
-    <subFinder class="se.qxx.jukebox.subtitles.UndertexterSe" enabled="false">
-    	<subFinderSettings>
-    		<setting>
-    			<key>regex</key>
-    			<value><![CDATA[<tr[^>]*?>.*?<td[^>]*?>.*?<a[^>]*?alt\s*=\s*"Ladda\sner\sundertext[^"]*?".*?href\s*=\s*\"([^\"]*?)\"[^>]*?>.*?Nedladdningar.*?<br>\s*([^<]*?)</td[^>]*?>.*?</tr[^>]*?>]]></value>    			   		
-			</setting>
-			<setting>
-			    <key>urlRegexGroup</key>
-			    <value>1</value>
-			</setting>
-			<setting>
-			    <key>nameRegexGroup</key>
-			    <value>2</value>
-			</setting>			
-    		<setting>
-    			<key>url</key>
-    			<value><![CDATA[http://www.undertexter.se/?p=soek&add=arkiv&str=__searchString__]]></value>
-    		</setting>
-    	</subFinderSettings>
-    </subFinder>
-    <subFinder class="se.qxx.jukebox.subtitles.EngsubNet" enabled="false">
-    	<subFinderSettings>
-    		<setting>
-    			<key>regex</key>
-    			<value><![CDATA[<tr>.*?<td[^>]*>.*?<a[^>]*href="([^"]*)"[^>]*>\s*<img\s*src="http://engsub.net/bilder/ladda_codec_mini.gif"[^>]*>\s*</a>.*?Downloads:\s*\d*\s*<br>\s*<img[^>]*>\s*<br>\s*(.*?)</td>]]></value>    			   		
-			</setting>
-			<setting>
-			    <key>urlRegexGroup</key>
-			    <value>1</value>
-			</setting>
-			<setting>
-			    <key>nameRegexGroup</key>
-			    <value>2</value>
-			</setting>			
-    		<setting>
-    			<key>url</key>
-    			<value><![CDATA[http://www.engsub.net/?p=eng_search&add=arkiv&str=__searchString__]]></value>
-    		</setting>
-    	</subFinderSettings>
-    </subFinder>
 	<subFinder class="se.qxx.jukebox.subtitles.Subscene" enabled="true">
     	<subFinderSettings>
     		<setting>

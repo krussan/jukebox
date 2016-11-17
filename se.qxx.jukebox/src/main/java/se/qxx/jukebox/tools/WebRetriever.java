@@ -86,12 +86,15 @@ public class WebRetriever {
 			}
 		}
 	
+		
 		String contentDisposition = httpcon.getHeaderField("content-disposition");
 		String filename = url.getPath().substring(url.getPath().lastIndexOf("/") + 1, url.getPath().length());
 		
+		Log.Debug(String.format("Content-Disposition :: %s", contentDisposition), LogType.MAIN);
+		
 		if (!StringUtils.isEmpty(contentDisposition)) {
 			//attachment; filename="Catch..44.2011.BRRip.XviD.AC3-FTW._www.ENGSUB.NET.zip"
-			Pattern p = Pattern.compile("filename=\"([^\"]*)\"");
+			Pattern p = Pattern.compile("filename=\"?(.*?)\"?", Pattern.CASE_INSENSITIVE);
 			Matcher m = p.matcher(contentDisposition);
 			
 			if (m.find()) 

@@ -1,5 +1,6 @@
 package se.qxx.jukebox.servercomm;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -500,8 +501,10 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	}
 	
 	private void reenlist(Media md) {
+		File file = new File(String.format("%s/%s", md.getFilepath(), md.getFilename()));
+		
 		// create a file representation based on the values of the media object
-		FileRepresentation f = new FileRepresentation(md.getFilepath(), md.getFilename(), Util.getCurrentTimestamp());
+		FileRepresentation f = new FileRepresentation(md.getFilepath(), md.getFilename(), Util.getCurrentTimestamp(), file.length());
 		
 		// re-enlist the file into the movie identifier
 		MovieIdentifier.get().addFile(f);

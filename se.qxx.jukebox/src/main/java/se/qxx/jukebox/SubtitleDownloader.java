@@ -90,6 +90,8 @@ public class SubtitleDownloader implements Runnable {
 
 	protected void mainLoop() {
 		long threadWaitSeconds = Settings.get().getSubFinders().getThreadWaitSeconds() * 1000;
+		
+		Log.Debug("Retrieving list to process", LogType.SUBS);
 		List<MovieOrSeries> _listProcessing =  DB.getSubtitleQueue();				
 		
 		while (isRunning()) {
@@ -129,18 +131,22 @@ public class SubtitleDownloader implements Runnable {
 	private void saveSubtitleQueue(MovieOrSeries mos, int result) {
 		
 		if (mos.isSeries()) {
+			SubtitleQueue q = mos.getEpisode().getSubtitleQueue();
+			
 			DB.save(Episode.newBuilder(mos.getEpisode())
 				.setSubtitleQueue(
-					SubtitleQueue.newBuilder()									
+					SubtitleQueue.newBuilder(q)
 						.setSubtitleRetreivedAt(DB.getCurrentUnixTimestamp())
 						.setSubtitleRetreiveResult(result)
 						.build()
 					).build());
 		}
 		else {
+			SubtitleQueue q = mos.getMovie().getSubtitleQueue();
+			
 			DB.save(Movie.newBuilder(mos.getMovie())
 				.setSubtitleQueue(
-					SubtitleQueue.newBuilder()									
+					SubtitleQueue.newBuilder(q)									
 						.setSubtitleRetreivedAt(DB.getCurrentUnixTimestamp())
 						.setSubtitleRetreiveResult(result)
 						.build()
@@ -345,6 +351,8 @@ public class SubtitleDownloader implements Runnable {
 	}
 
 	private void saveSubtitle(SubFile subfile, File unpackedFile, Media md, String textdata) {
+		Log.Debug(String.format("Saving subtitle %s - %s bytes", subfile.getDescription(), textdata.length()), LogType.SUBS);
+		
 		DB.save(
 			Media.newBuilder(md).addSubs(
 				Subtitle.newBuilder()

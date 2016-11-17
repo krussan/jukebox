@@ -120,7 +120,7 @@ public abstract class SubFinderBase {
 				
 			}
 			catch (IOException e) {
-				Log.Debug(String.format("%s :: Error when downloading subtitle :: %s", this.getClassName(), sf.getFile().getName()), LogType.SUBS);
+				Log.Error(String.format("%s :: Error when downloading subtitle :: %s", this.getClassName(), sf.getFile().getName()), LogType.SUBS, e);
 			}
 			
 			if (listSubs.size() > 1) {
@@ -203,9 +203,6 @@ public abstract class SubFinderBase {
 				Log.Debug(String.format("%s :: Sub with description %s rated as %s", this.getClassName(), description, r.toString()), Log.LogType.SUBS);
 				
 				listSubs.add(sf);				
-			}
-			else {
-				Log.Debug(String.format("%s :: Skipping subtitle with language %s", this.getClassName(), language), LogType.SUBS);
 			}
 				
 		}

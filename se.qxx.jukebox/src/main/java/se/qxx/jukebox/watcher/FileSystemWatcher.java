@@ -65,7 +65,7 @@ public class FileSystemWatcher implements Runnable {
 		  //List<File> list = Util.getFileListingWorkAround(directory, _filter);
 		  
 		  for (File f : list) {
-			  rep.add(new FileRepresentation(f.getParent(), f.getName(), f.lastModified()));
+			  rep.add(new FileRepresentation(f.getParent(), f.getName(), f.lastModified(), f.length()));
 		  }
 		  
 		  return rep;		

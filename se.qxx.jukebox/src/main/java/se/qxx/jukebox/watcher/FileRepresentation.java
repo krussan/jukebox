@@ -5,6 +5,7 @@ public class FileRepresentation {
 	private String _path;
 	private String _name;
 	private long _lastModified;
+	private long _fileSize;
 	
 	public void setName(String name) {
 		this._name = name;
@@ -26,9 +27,18 @@ public class FileRepresentation {
 		return this._lastModified;
 	}
 	
-	public FileRepresentation(String path, String name, long l) {	
+	public FileRepresentation(String path, String name, long l, long fileSize) {	
 		this._path = path;
 		this._name = name;
 		this._lastModified = l;
+		this._fileSize = fileSize;
+	}
+
+	public long getFileSize() {
+		return _fileSize;
+	}
+
+	public void setFileSize(long _fileSize) {
+		this._fileSize = _fileSize;
 	}
 }

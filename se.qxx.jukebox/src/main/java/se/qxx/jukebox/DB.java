@@ -59,7 +59,7 @@ public class DB {
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Search
 	//---------------------------------------------------------------------------------------
-	public synchronized static List<Movie> searchMoviesByTitle(String searchString) {
+	public static List<Movie> searchMoviesByTitle(String searchString) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			
@@ -75,7 +75,7 @@ public class DB {
 		}	
 	}
 
-	public synchronized static List<Series> searchSeriesByTitle(String searchString) {
+	public static List<Series> searchSeriesByTitle(String searchString) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			
@@ -90,15 +90,7 @@ public class DB {
 			return new ArrayList<Series>();
 		}
 	}
-	
-	
-	protected static List<Media> __parseDynamicListToMedia(
-			List<DynamicMessage> result) throws InvalidProtocolBufferException {
-		List<Media> movieResult = new ArrayList<Media>();
-		for (DynamicMessage m : result)
-			movieResult.add(Media.parseFrom(m.toByteString()));
-		return movieResult;
-	}
+
 
 	private static String replaceSearchString(String searchString) {
 		String ret = searchString;
@@ -132,7 +124,7 @@ public class DB {
 //		}
 //	}
 
-	public synchronized static Movie findMovie(String identifiedTitle) {
+	public static Movie findMovie(String identifiedTitle) {
 		String searchString = replaceSearchString(identifiedTitle) + "%";
 		
 		Log.Debug(String.format("DB :: Series search string :: %s", searchString), LogType.MAIN);
@@ -158,7 +150,7 @@ public class DB {
 		}
 	}
 	
-	public synchronized static Series findSeries(String identifiedTitle) {
+	public static Series findSeries(String identifiedTitle) {
 		String searchString = replaceSearchString(identifiedTitle) + "%";
 		
 		Log.Debug(String.format("DB :: Series search string :: %s", searchString), LogType.MAIN);
@@ -417,23 +409,29 @@ public class DB {
 	 * 
 	 * @return
 	 */
-	public synchronized static List<MovieOrSeries> getSubtitleQueue() {
+	public static List<MovieOrSeries> getSubtitleQueue() {
 		List<MovieOrSeries> result = new ArrayList<MovieOrSeries>();
 		
 		try {
 			ProtoDB db = getProtoDBInstance();
 			 
+			// Restrict result to 5. Since the list will be retrieved again it does not matter.
 			List<Movie> movies = 
 				db.find(JukeboxDomain.Movie.getDefaultInstance(), 
 					"subtitleQueue.subtitleRetreiveResult", 
 					0, 
-					false);
+					false,
+					5);
 
+			// this is a bit dangerous.
+			// what if we cut a series/season in half and save the series (!)
+			// So to be sure we save _only_ the episode from the SubtitleDownloader.
 			List<Series> series = 
 					db.find(JukeboxDomain.Series.getDefaultInstance(), 
 						"season.episode.subtitleQueue.subtitleRetreiveResult", 
 						0, 
-						false);
+						false,
+						5);
 
 			result = constructSubtitleQueue(movies, series);
 		}
