@@ -128,15 +128,19 @@ public class NfoBuilder extends MovieBuilder {
 		File[] files = dir.listFiles(eff);
 		
 		String nfoFilename = StringUtils.EMPTY;
-		for (File f : files) {
-			String nfoFullPathFilename = f.getAbsolutePath();
-			
-			if (FilenameUtils.getExtension(nfoFullPathFilename).equalsIgnoreCase("nfo")) {
-				nfoFilename = FilenameUtils.getBaseName(nfoFullPathFilename);
-				if (StringUtils.startsWithIgnoreCase(nfoFilename, filenameWithoutExt))
-					return f;
+		
+		if (files != null) {
+			for (File f : files) {
+				String nfoFullPathFilename = f.getAbsolutePath();
+				
+				if (FilenameUtils.getExtension(nfoFullPathFilename).equalsIgnoreCase("nfo")) {
+					nfoFilename = FilenameUtils.getBaseName(nfoFullPathFilename);
+					if (StringUtils.startsWithIgnoreCase(nfoFilename, filenameWithoutExt))
+						return f;
+				}
 			}
 		}
+		
 		
 		return null;
 	}

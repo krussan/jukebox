@@ -4,7 +4,7 @@
 
   <groupId>se.qxx.jukebox</groupId>
   <artifactId>jukebox</artifactId>
-  <version>0.16.9</version>
+  <version>0.16.13</version>
   <packaging>jar</packaging>
 
   <name>jukebox</name>
@@ -20,7 +20,7 @@
   <repositories>
     <repository>
       <id>krussan</id>
-      <name>protodb</name>
+      <name>krussans maven repo</name>
       <url>https://raw.githubusercontent.com/krussan/maven-repo/master/</url>
     </repository>
   </repositories>
@@ -83,7 +83,7 @@
     <dependency>
       <groupId>se.qxx.protodb</groupId>
       <artifactId>protodb-java</artifactId>
-      <version>1.0</version>
+      <version>1.1</version>
     </dependency>
 
     <dependency>

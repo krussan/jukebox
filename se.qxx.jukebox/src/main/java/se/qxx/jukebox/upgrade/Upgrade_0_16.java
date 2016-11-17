@@ -50,16 +50,32 @@ public class Upgrade_0_16 implements IIncrimentalUpgrade {
 		
 		try {
 
+			System.out.println("Re-adding all media to subtitle queue");
+			
 			List<Movie> movies = DB.searchMoviesByTitle("");
 			List<Series> series = DB.searchSeriesByTitle("");
-					
-			for (Movie m : movies) {
-				DB.addMovieToSubtitleQueue(m);
+			
+			int mSize = movies.size();
+
+			for (int i=0;i<mSize; i++) {
+				System.out.println(String.format("Adding movie [%s/%s]", i, mSize));
+				DB.addMovieToSubtitleQueue(movies.get(i));
 			}
 			
-			for (Series s : series) {
-				for (Season ss : s.getSeasonList()) {
-					for (Episode e : ss.getEpisodeList()) {
+			int sSize = series.size(); 
+			
+			for (int i=0;i<sSize;i++) {
+				Series s = series.get(i);
+				int ssSize = s.getSeasonCount();
+				
+				for (int j=0;j<ssSize;j++) {
+					Season ss = s.getSeason(j);
+					int eSize = ss.getEpisodeCount();
+					
+					for (int k=0;k<eSize;k++) {
+						Episode e = ss.getEpisode(k);
+						
+						System.out.println(String.format("Adding episode [%s/%s] [%s/%s] [%s/%s]", i, sSize, j, ssSize, k, eSize));
 						DB.addEpisodeToSubtitleQueue(e);
 					}
 				}

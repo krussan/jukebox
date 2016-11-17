@@ -445,7 +445,7 @@ public class DB {
 	}
 
 	private static ProtoDB getProtoDBInstance() {
-		return new ProtoDB(DB.getDatabaseFilename(), "protodb.log");
+		return new ProtoDB(DB.getDatabaseFilename());
 	}
 
 	private static List<MovieOrSeries> constructSubtitleQueue(List<Movie> movies, List<Series> series) {
