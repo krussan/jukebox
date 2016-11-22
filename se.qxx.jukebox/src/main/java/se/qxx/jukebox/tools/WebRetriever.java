@@ -94,7 +94,7 @@ public class WebRetriever {
 		
 		if (!StringUtils.isEmpty(contentDisposition)) {
 			//attachment; filename="Catch..44.2011.BRRip.XviD.AC3-FTW._www.ENGSUB.NET.zip"
-			Pattern p = Pattern.compile("filename=\"?(.*?)\"?", Pattern.CASE_INSENSITIVE);
+			Pattern p = Pattern.compile("filename=\"?(.*?)\"?$", Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
 			Matcher m = p.matcher(contentDisposition);
 			
 			if (m.find()) 
