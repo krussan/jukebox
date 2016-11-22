@@ -413,7 +413,8 @@ public class SubtitleDownloader implements Runnable {
 				return md;
 		}
 				
-		return null;
+		// else return the first media found...
+		return mos.getMedia();
 	}
 
 	/**

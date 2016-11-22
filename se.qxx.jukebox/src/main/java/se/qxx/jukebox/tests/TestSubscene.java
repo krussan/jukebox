@@ -18,6 +18,7 @@ import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings;
+import se.qxx.jukebox.subtitles.SubFile;
 import se.qxx.jukebox.subtitles.Subscene;
 import se.qxx.protodb.ProtoDB;
 
@@ -45,7 +46,7 @@ public class TestSubscene {
 							languages.add("Eng");
 							languages.add("Swe");
 							
-							s.findSubtitles(mos, languages);
+							List<SubFile> files = s.findSubtitles(mos, languages);
 							
 						}
 						

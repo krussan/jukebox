@@ -69,7 +69,7 @@
 			</setting>
 			<setting>
 				<key>downloadUrlRegex</key>
-				<value><![CDATA[<a\s*href="([^"]*)"[^>]*>\s*Download\s*[a-z]*\ssubtitle\s*<\/a>]]></value>
+				<value><![CDATA[<a\s*href="([^"]*)"[^>]*>\s*Download\s*[a-z]*\ssubtitle\s*.*?<\/a>]]></value>
 			</setting>
 			<setting>
 			    <key>downloadUrlGroup</key>

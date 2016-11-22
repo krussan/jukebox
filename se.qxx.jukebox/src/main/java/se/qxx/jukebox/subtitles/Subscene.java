@@ -89,6 +89,7 @@ public class Subscene extends SubFinderBase {
 						Integer.parseInt(this.getSetting(SETTING_LISTRESULT_LANGUAGEGROUP)));
 				
 				// We need to replace the download links in each and every subfile
+				// We get an error because listsubs is null
 				listSubs = replaceDownloadLinks(listSubs, baseUrl);
 				
 				files = downloadSubs(mos, listSubs);
