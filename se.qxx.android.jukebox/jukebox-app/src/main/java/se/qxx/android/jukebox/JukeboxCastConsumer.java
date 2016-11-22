@@ -6,6 +6,7 @@ import com.google.android.gms.cast.ApplicationMetadata;
 import com.google.android.gms.cast.CastStatusCodes;
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaMetadata;
+import com.google.android.gms.cast.MediaTrack;
 import com.google.android.gms.cast.internal.ApplicationStatus;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager;
@@ -14,11 +15,15 @@ import com.google.android.libraries.cast.companionlibrary.cast.exceptions.CastEx
 import com.google.android.libraries.cast.companionlibrary.cast.exceptions.NoConnectionException;
 import com.google.android.libraries.cast.companionlibrary.cast.exceptions.TransientNetworkDisconnectionException;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.Logger;
+import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 
 /**
@@ -27,14 +32,22 @@ import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 public class JukeboxCastConsumer extends VideoCastConsumerImpl {
     VideoCastManager mCastManager = null;
     Activity parentActivity = null;
-    Movie currentMovie = null;
+    String title = StringUtils.EMPTY;
     String movieUri = null;
     List<String> subtitleUris = null;
+    List<Subtitle> subs = null;
 
-    public JukeboxCastConsumer(Activity context, Movie currentMovie, String movieUri, List<String> subtitleUris) {
+    public JukeboxCastConsumer(
+            Activity context,
+            String title,
+            List<Subtitle> subs,
+            String movieUri,
+            List<String> subtitleUris) {
+
         mCastManager = VideoCastManager.getInstance();
         parentActivity = context;
-        this.currentMovie = currentMovie;
+        this.title = title;
+        this.subs = subs;
         this.movieUri = movieUri;
         this.subtitleUris = subtitleUris;
     }
@@ -121,10 +134,31 @@ public class JukeboxCastConsumer extends VideoCastConsumerImpl {
             String uri = String.format("file://192.168.1.120/%s", file);*/
 
             MediaMetadata md = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
-            md.putString(MediaMetadata.KEY_TITLE, this.currentMovie.getTitle());
+            md.putString(MediaMetadata.KEY_TITLE, this.title);
+
+            List<MediaTrack> tracks = new ArrayList<MediaTrack>();
+
+            for (int i=0;i<this.subtitleUris.size();i++) {
+                if (i<subs.size()) {
+                    Subtitle currentSub = subs.get(i);
+
+                    MediaTrack subtitle = new MediaTrack.Builder(i + 1, MediaTrack.TYPE_TEXT)
+                            .setContentId(this.subtitleUris.get(i))
+                            .setContentType("text/vtt")
+                            .setSubtype(MediaTrack.SUBTYPE_SUBTITLES)
+                            .setName(currentSub.getDescription())
+                            .setLanguage(currentSub.getLanguage())
+                            .build();
+
+                    tracks.add(subtitle);
+
+                }
+
+            }
 
             MediaInfo mi = new MediaInfo.Builder(this.movieUri)
                     .setMetadata(md)
+                    .setMediaTracks(tracks)
                     .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
                     .setContentType("video/mp4")
                     .build();
