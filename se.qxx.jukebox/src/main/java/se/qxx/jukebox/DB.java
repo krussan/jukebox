@@ -59,9 +59,9 @@ public class DB {
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Search
 	//---------------------------------------------------------------------------------------
-	public static List<Movie> searchMoviesByTitle(String searchString) {
+	public static List<Movie> searchMoviesByTitle(String searchString, boolean populateBlobs) {
 		try {
-			ProtoDB db = getProtoDBInstance();
+			ProtoDB db = getProtoDBInstance(populateBlobs);
 			
 			return 
 				db.find(JukeboxDomain.Movie.getDefaultInstance(), 
@@ -75,9 +75,9 @@ public class DB {
 		}	
 	}
 
-	public static List<Series> searchSeriesByTitle(String searchString) {
+	public static List<Series> searchSeriesByTitle(String searchString, boolean populateBlobs) {
 		try {
-			ProtoDB db = getProtoDBInstance();
+			ProtoDB db = getProtoDBInstance(populateBlobs);
 			
 			return 
 				db.find(JukeboxDomain.Series.getDefaultInstance(), 
@@ -443,7 +443,13 @@ public class DB {
 	}
 
 	private static ProtoDB getProtoDBInstance() {
-		return new ProtoDB(DB.getDatabaseFilename());
+		return getProtoDBInstance(true);
+	}
+	
+	private static ProtoDB getProtoDBInstance(boolean populateBlobs) {
+		ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+		db.setPopulateBlobs(populateBlobs);
+		return db;
 	}
 
 	private static List<MovieOrSeries> constructSubtitleQueue(List<Movie> movies, List<Series> series) {

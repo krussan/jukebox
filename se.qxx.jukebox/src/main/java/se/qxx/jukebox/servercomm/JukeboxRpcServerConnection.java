@@ -18,6 +18,7 @@ import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.DomainUtil;
 import se.qxx.jukebox.domain.JukeboxDomain.Empty;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
+import se.qxx.jukebox.domain.JukeboxDomain.Episode.Builder;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGeneral;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
@@ -57,12 +58,12 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		Log.Debug("ListMovies", LogType.COMM);
 		
 		String searchString = request.getSearchString();
-		List<Movie> list = DB.searchMoviesByTitle(searchString);
-		List<Series> listSeries = DB.searchSeriesByTitle(searchString);
+		List<Movie> list = DB.searchMoviesByTitle(searchString, true);
+		List<Series> listSeries = DB.searchSeriesByTitle(searchString, true);
 		
 		if (!request.getReturnFullSizePictures()) {
-			list = removeFullsizePictures(list);
-			listSeries = removeFullSizePictures(listSeries);
+			list = removeFullSizePicturesAndSubsFromMovies(list);
+			listSeries = removeFullSizePicturesAndSubsFromSeries(listSeries);
 		}
 		
 		JukeboxResponseListMovies lm = JukeboxResponseListMovies.newBuilder()
@@ -72,13 +73,21 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		done.run(lm);
 	}
 
-	private List<Series> removeFullSizePictures(List<Series> listSeries) {
+	private List<Series> removeFullSizePicturesAndSubsFromSeries(List<Series> listSeries) {
 		List<Series> listSeriesNoPics = new ArrayList<Series>();
 
 		for (Series s : listSeries) {
 			for (Season sn : s.getSeasonList()) {
 				for (Episode e : sn.getEpisodeList()) {
-					Episode e1 = Episode.newBuilder(e).setImage(ByteString.EMPTY).build();
+ 					
+ 					List<Media> newMediaList = removeSubs(e.getMediaList());
+ 					
+					Episode e1 = Episode.newBuilder(e)
+							.setImage(ByteString.EMPTY)
+							.clearMedia()
+							.addAllMedia(newMediaList)
+							.build();
+					
 					DomainUtil.updateEpisode(sn, e1);
 				}
 				
@@ -93,10 +102,33 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		return listSeriesNoPics;
 	}
 
-	private List<Movie> removeFullsizePictures(List<Movie> list) {
+	private List<Media> removeSubs(List<Media> mediaList) {
+		List<Media> newMediaList = new ArrayList<Media>();
+		
+		for (Media md : mediaList) {
+			newMediaList.add(removeSubs(md));
+		}
+	
+		return newMediaList;
+	}
+
+	private Media removeSubs(Media md) {
+		return Media.newBuilder(md).clearSubs().build();
+	}
+
+	private List<Movie> removeFullSizePicturesAndSubsFromMovies(List<Movie> listMovies) {
 		List<Movie> listNoPics = new ArrayList<Movie>();
-		for (Movie m : list)
-			listNoPics.add(Movie.newBuilder(m).setImage(ByteString.EMPTY).build());
+		for (Movie m : listMovies) {
+			List<Media> newMediaList = removeSubs(m.getMediaList());
+			
+			listNoPics.add(
+					Movie.newBuilder(m)
+					.setImage(ByteString.EMPTY)
+					.clearMedia()
+					.addAllMedia(newMediaList)
+					.build());
+		}
+		
 		return listNoPics;
 	}
  
@@ -139,7 +171,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 				uri = StreamingWebServer.get().registerFile(String.format("%s/%s", md.getFilepath(), md.getFilename()));
 				
 				for (Subtitle s : md.getSubsList()) {
-					String subFilename = StreamingWebServer.get().registerFile(s.getFilename());
+					String subFilename = StreamingWebServer.get().registerSubtitle(s);
 					subtitleUris.add(subFilename);
 				}
 				
