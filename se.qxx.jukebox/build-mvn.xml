@@ -12,7 +12,7 @@ fi
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH]]>
 </echo>
 
-	    <echo file="${script.file}" message="java -${run.type} 
+	    <echo file="${script.file}" message="java -Xmx1024m -${run.type} 
 ${jarFile} ${script.class} ${1+&quot;$@&quot;} &amp;${line.separator}" 
 	        append="true" />		
 

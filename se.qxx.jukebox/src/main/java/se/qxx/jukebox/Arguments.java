@@ -14,6 +14,7 @@ public class Arguments {
 	private boolean purgeSubtitles = false;
 	private boolean purgeSeries = false;
 	private boolean webServerEnabled = true;
+	private boolean watcherEnabled = true;
 	
 	private static Arguments _instance;
 	
@@ -92,6 +93,9 @@ public class Arguments {
 		
 		if (arguments.contains("--purgeSeries"))
 			_instance.setPurgeSeries(true);
+		
+		if (arguments.contains("-df"))
+			_instance.setWatcherEnabled(false);
 	}
 	
 	public static Arguments get() {
@@ -131,5 +135,13 @@ public class Arguments {
 
 	private void setPurgeSeries(boolean purgeSeries) {
 		this.purgeSeries = purgeSeries;
+	}
+
+	public boolean isWatcherEnabled() {
+		return watcherEnabled;
+	}
+
+	public void setWatcherEnabled(boolean watcherEnabled) {
+		this.watcherEnabled = watcherEnabled;
 	}
 }
