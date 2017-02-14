@@ -161,7 +161,13 @@ public class NowPlayingActivity extends AppCompatActivity
 			VideoCastManager mCastManager = VideoCastManager.getInstance();
 
             if (mCastManager != null) {
-				mCastConsumer = new JukeboxCastConsumer(this.parentContext, Model.get().getCurrentMovie(), response.getUri(), response.getSubtitleUrisList());
+				mCastConsumer = new JukeboxCastConsumer(
+                        this.parentContext,
+                        Model.get().getCurrentMovie().getTitle(),
+                        response.getSubtitleList(),
+                        response.getUri(),
+                        response.getSubtitleUrisList());
+
 				mCastManager.addVideoCastConsumer(mCastConsumer);
             }
         }

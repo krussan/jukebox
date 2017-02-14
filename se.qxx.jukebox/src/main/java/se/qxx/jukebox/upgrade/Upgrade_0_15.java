@@ -48,7 +48,7 @@ public class Upgrade_0_15 implements IIncrimentalUpgrade {
 		try {
 	
 			// create thumbnails for each movie,series,season,episode
-			List<Movie> movies = DB.searchMoviesByTitle(StringUtils.EMPTY, true);
+			List<Movie> movies = DB.searchMoviesByTitle(StringUtils.EMPTY, true, true);
 			for (Movie m: movies) {
 				if (!m.getImage().isEmpty()){
 					Movie m_new = Movie.newBuilder(m).setThumbnail(getScaledImage(m.getTitle(), m.getImage())).build();
@@ -56,7 +56,7 @@ public class Upgrade_0_15 implements IIncrimentalUpgrade {
 				}
 			}
 			
-			List<Series> series = DB.searchSeriesByTitle(StringUtils.EMPTY, true);
+			List<Series> series = DB.searchSeriesByTitle(StringUtils.EMPTY, true, true);
 			for (Series s : series) {
 				for (Season sn : s.getSeasonList()) {					
 					for (Episode e : sn.getEpisodeList()) {

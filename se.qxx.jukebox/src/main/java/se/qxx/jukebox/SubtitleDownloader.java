@@ -243,22 +243,30 @@ public class SubtitleDownloader implements Runnable {
 		String mediaPath = md.getFilepath();
 
 		File dir = new File(mediaPath);
-		List<SubFile> list = checkDirForSubs(mediaFilename, dir);
+		List<SubFile> list = new ArrayList<SubFile>();
 		
-		String[] dirs = dir.list(new FilenameFilter() {
+		if (dir != null && dir.exists()) {
+			list = checkDirForSubs(mediaFilename, dir);
+		
+			String[] dirs = dir.list(new FilenameFilter() {
+				
+				@Override
+				public boolean accept(File dir, String name) {
+					return name.equals("Subs") || name.equals("SubFiles");
+				}
+			});
 			
-			@Override
-			public boolean accept(File dir, String name) {
-				return name.equals("Subs") || name.equals("SubFiles");
+			if (dirs != null) {
+				for (String newDir : dirs) {
+					File subsDir = new File(newDir);
+					
+					if (subsDir.exists() && subsDir.isDirectory())
+						list.addAll(checkDirForSubs(mediaFilename, subsDir));
+				}
 			}
-		});
-		
-		for (String newDir : dirs) {
-			list.addAll(checkDirForSubs(mediaFilename, new File(newDir)));
-		}
-		
-		Log.Debug(String.format("Found %s subs for movie %s in movie folder", list.size(), mediaFilename), Log.LogType.SUBS);
 			
+			Log.Debug(String.format("Found %s subs for movie %s in movie folder", list.size(), mediaFilename), Log.LogType.SUBS);
+		}	
 		return list;
 	}
 
@@ -272,7 +280,7 @@ public class SubtitleDownloader implements Runnable {
 	 */
 	private List<SubFile> checkDirForSubs(String movieFilenameWithoutExt, File dir) {
 		List<SubFile> list = new ArrayList<SubFile>();
-		if (dir != null) {
+		if (dir != null && dir.exists()) {
 			String[] subs = dir.list(new FilenameFilter() {
 				
 				@Override
@@ -413,7 +421,8 @@ public class SubtitleDownloader implements Runnable {
 				return md;
 		}
 				
-		return null;
+		// else return the first media found...
+		return mos.getMedia();
 	}
 
 	/**

@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -105,12 +106,6 @@ public abstract class SubFinderBase {
 							, sf.getFile().getName())
 						, Log.LogType.SUBS);
 		
-					if (sf.getRating() == Rating.ExactMatch || sf.getRating() == Rating.PositiveMatch)  {
-						Log.Debug(String.format("%s :: Exact or positive match found. exiting...", 
-								this.getClassName()), 
-								Log.LogType.SUBS);
-						break;
-					}
 				}
 				
 				c++;
@@ -210,13 +205,36 @@ public abstract class SubFinderBase {
 		if (listSubs.size()==0)
 			Log.Debug(String.format("%s :: No subs found", this.getClassName()), Log.LogType.SUBS);
 
-		Collections.sort(listSubs);
-		
-		return listSubs;
+		return filterResult(listSubs);
 	}
 
 	
-	
+
+	/***
+	 * Filters a list of subfiles down to exact match or positive match if found.
+	 * Otherwise return all subs 
+	 * @param listSubs
+	 * @return
+	 */
+	private List<SubFile> filterResult(List<SubFile> listSubs) {
+		Collections.sort(listSubs);
+		
+		List<SubFile> result = new ArrayList<SubFile>();
+		
+		for(SubFile sf : listSubs) {
+			result.add(sf);
+			if (sf.getRating() == Rating.ExactMatch || sf.getRating() == Rating.PositiveMatch)  {
+				Log.Debug(String.format("%s :: Exact or positive match found. exiting...", 
+						this.getClassName()), 
+						Log.LogType.SUBS);
+				break;
+			}
+
+		}
+		
+		return result;
+	}
+
 	/**
 	 * Rates a sub file (or a string) depending on the all categories in the Movie
 	 * class

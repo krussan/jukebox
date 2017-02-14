@@ -59,13 +59,14 @@ public class DB {
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Search
 	//---------------------------------------------------------------------------------------
-	public static List<Movie> searchMoviesByTitle(String searchString, boolean filterBlobs) {
+
+	public static List<Movie> searchMoviesByTitle(String searchString, boolean populateBlobs, boolean filterSubs) {
 		try {
-			ProtoDB db = getProtoDBInstance();
+			ProtoDB db = getProtoDBInstance(populateBlobs);
 			
 			List<String> filterObjects = new ArrayList<String>();
 			
-			if (filterBlobs) {
+			if (filterSubs) {
 				filterObjects.add("media.subs.textdata");
 			}
 			
@@ -82,20 +83,22 @@ public class DB {
 		}	
 	}
 
-	public static List<Series> searchSeriesByTitle(String searchString, boolean filterBlobs) {
+
+	public static List<Series> searchSeriesByTitle(String searchString, boolean populateBlobs, boolean filterSubs) {
 		try {
-			ProtoDB db = getProtoDBInstance();
+			ProtoDB db = getProtoDBInstance(populateBlobs);
 
 			List<String> filterObjects = new ArrayList<String>();			
-			if (filterBlobs) {
+			if (filterSubs) {
 				filterObjects.add("season.episode.media.subs.textdata");
 			}
-
+			
 			return 
 				db.find(JukeboxDomain.Series.getDefaultInstance(), 
 					"title", 
 					"%" + searchString + "%", 
-					true);
+					true,
+					filterObjects);
 		}
 		catch (Exception e) {
 			Log.Error("Failed to retrieve series listing from DB", Log.LogType.MAIN, e);
@@ -457,7 +460,13 @@ public class DB {
 	}
 
 	private static ProtoDB getProtoDBInstance() {
-		return new ProtoDB(DB.getDatabaseFilename());
+		return getProtoDBInstance(true);
+	}
+	
+	private static ProtoDB getProtoDBInstance(boolean populateBlobs) {
+		ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+		db.setPopulateBlobs(populateBlobs);
+		return db;
 	}
 
 	private static List<MovieOrSeries> constructSubtitleQueue(List<Movie> movies, List<Series> series) {
