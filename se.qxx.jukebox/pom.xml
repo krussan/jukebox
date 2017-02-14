@@ -83,7 +83,7 @@
     <dependency>
       <groupId>se.qxx.protodb</groupId>
       <artifactId>protodb-java</artifactId>
-      <version>1.2</version>
+      <version>1.4</version>
     </dependency>
 
     <dependency>

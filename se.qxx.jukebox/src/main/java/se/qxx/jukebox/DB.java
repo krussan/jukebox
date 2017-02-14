@@ -59,15 +59,22 @@ public class DB {
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Search
 	//---------------------------------------------------------------------------------------
-	public static List<Movie> searchMoviesByTitle(String searchString) {
+	public static List<Movie> searchMoviesByTitle(String searchString, boolean filterBlobs) {
 		try {
 			ProtoDB db = getProtoDBInstance();
+			
+			List<String> filterObjects = new ArrayList<String>();
+			
+			if (filterBlobs) {
+				filterObjects.add("media.subs.textdata");
+			}
 			
 			return 
 				db.find(JukeboxDomain.Movie.getDefaultInstance(), 
 					"title", 
 					"%" + searchString + "%", 
-					true);
+					true,
+					filterObjects);
 		}
 		catch (Exception e) {
 			Log.Error("Failed to retrieve movie listing from DB", Log.LogType.MAIN, e);
@@ -75,10 +82,15 @@ public class DB {
 		}	
 	}
 
-	public static List<Series> searchSeriesByTitle(String searchString) {
+	public static List<Series> searchSeriesByTitle(String searchString, boolean filterBlobs) {
 		try {
 			ProtoDB db = getProtoDBInstance();
-			
+
+			List<String> filterObjects = new ArrayList<String>();			
+			if (filterBlobs) {
+				filterObjects.add("season.episode.media.subs.textdata");
+			}
+
 			return 
 				db.find(JukeboxDomain.Series.getDefaultInstance(), 
 					"title", 
@@ -421,6 +433,7 @@ public class DB {
 					"subtitleQueue.subtitleRetreiveResult", 
 					0, 
 					false,
+					null,
 					5);
 
 			// this is a bit dangerous.
@@ -431,6 +444,7 @@ public class DB {
 						"season.episode.subtitleQueue.subtitleRetreiveResult", 
 						0, 
 						false,
+						null,
 						5);
 
 			result = constructSubtitleQueue(movies, series);

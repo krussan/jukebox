@@ -57,8 +57,8 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		Log.Debug("ListMovies", LogType.COMM);
 		
 		String searchString = request.getSearchString();
-		List<Movie> list = DB.searchMoviesByTitle(searchString);
-		List<Series> listSeries = DB.searchSeriesByTitle(searchString);
+		List<Movie> list = DB.searchMoviesByTitle(searchString, true);
+		List<Series> listSeries = DB.searchSeriesByTitle(searchString, true);
 		
 		if (!request.getReturnFullSizePictures()) {
 			list = removeFullsizePictures(list);
