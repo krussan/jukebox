@@ -67,7 +67,7 @@ public class DB {
 			List<String> filterObjects = new ArrayList<String>();
 			
 			if (filterSubs) {
-				filterObjects.add("media.subs.textdata");
+				filterObjects.add("media.subs");
 			}
 			
 			return 
@@ -90,7 +90,7 @@ public class DB {
 
 			List<String> filterObjects = new ArrayList<String>();			
 			if (filterSubs) {
-				filterObjects.add("season.episode.media.subs.textdata");
+				filterObjects.add("season.episode.media.subs");
 			}
 			
 			return 
