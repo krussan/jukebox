@@ -167,13 +167,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			if (StringUtils.equalsIgnoreCase("Chromecast", request.getPlayerName())) {
 				//this is a chromecast request. Serve the file using http and return the uri.
 				//also serve the subtitles and return them
-				Media md = m.getMedia(0);
-				uri = StreamingWebServer.get().registerFile(String.format("%s/%s", md.getFilepath(), md.getFilename()));
-				
-				for (Subtitle s : md.getSubsList()) {
-					String subFilename = StreamingWebServer.get().registerSubtitle(s);
-					subtitleUris.add(subFilename);
-				}
+				uri = serveChromecast(m, subtitleUris);
 				
 				success = true;
 			}
@@ -199,6 +193,19 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			controller.setFailed("Error occured when connecting to target media player"); 
 		}		
 		
+	}
+
+	private String serveChromecast(Movie m, List<String> subtitleUris) {
+		String uri;
+		Media md = m.getMedia(0);
+		uri = StreamingWebServer.get().registerFile(String.format("%s/%s", md.getFilepath(), md.getFilename()));
+		
+		Log.Debug(String.format("Number of subtitles :: %s", md.getSubsCount()), LogType.COMM);
+		for (Subtitle s : md.getSubsList()) {
+			String subFilename = StreamingWebServer.get().registerSubtitle(s);
+			subtitleUris.add(subFilename);
+		}
+		return uri;
 	}
 
 	@Override

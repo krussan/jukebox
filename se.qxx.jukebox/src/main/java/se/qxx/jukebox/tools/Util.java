@@ -1,9 +1,15 @@
 package se.qxx.jukebox.tools;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -13,14 +19,27 @@ import java.util.regex.Pattern;
 
 import javax.swing.filechooser.FileSystemView;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.BOMInputStream;
+import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.codehaus.plexus.util.StringOutputStream;
 
+import fr.noop.subtitle.model.SubtitleObject;
+import fr.noop.subtitle.model.SubtitleParsingException;
+import fr.noop.subtitle.model.SubtitleWriter;
+import fr.noop.subtitle.srt.SrtParser;
+import fr.noop.subtitle.vtt.VttWriter;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.settings.JukeboxListenerSettings;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.watcher.ExtensionFileFilter;
+import se.qxx.jukebox.webserver.StreamingWebServer;
 
 public class Util {
 	/**
@@ -217,4 +236,48 @@ public class Util {
 		
 		return list;
 	}
+	
+	public static File writeSubtitleToTempFileVTT(Subtitle sub) throws FileNotFoundException, IOException, SubtitleParsingException {
+		File tempDir = FileUtils.getTempDirectory();
+		File tempFile = new File(String.format("%s/%s.vtt", tempDir.getAbsolutePath(), FilenameUtils.removeExtension(sub.getFilename())));
+
+		Log.Info(String.format("Writing sub to file :: %s", tempFile.getAbsolutePath()), LogType.WEBSERVER);
+		return Util.writeSubtitleToFileVTT(sub, tempFile);
+	}
+	
+	public static File writeSubtitleToFile(Subtitle sub, File destinationFile) throws IOException, SubtitleParsingException, FileNotFoundException {
+		StringBuilder sb = new StringBuilder();
+		BOMInputStream bom = new BOMInputStream(new ByteArrayInputStream(sub.getTextdata().toByteArray()));
+		
+		BufferedReader br = new BufferedReader(new InputStreamReader(bom, "utf-8"));
+		String line;
+		while ((line = br.readLine()) != null){
+			System.out.println(line);	
+		}
+		
+		
+		IOUtils.copy(bom, new FileOutputStream(destinationFile));
+		
+		return destinationFile;
+	}
+	
+
+	public static File writeSubtitleToFileVTT(Subtitle sub, File destinationFile) throws IOException, SubtitleParsingException, FileNotFoundException {
+		BOMInputStream bom = new BOMInputStream(new ByteArrayInputStream(sub.getTextdata().toByteArray()));
+		
+		//TODO: change this based on extension
+		SrtParser parser = new SrtParser("UTF-8");
+		SubtitleObject srt = parser.parse(bom);
+		
+		SubtitleWriter writer = new VttWriter("utf-8");
+		
+		FileOutputStream fos = new FileOutputStream(destinationFile);
+		writer.write(srt, fos);
+		
+		fos.flush();
+		fos.close();
+		
+		return destinationFile;
+	}
+	
 }

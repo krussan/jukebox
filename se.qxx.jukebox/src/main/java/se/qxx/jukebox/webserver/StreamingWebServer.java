@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,6 +38,7 @@ import fi.iki.elonen.NanoHTTPD.Response;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
+import se.qxx.jukebox.tools.Util;
 
 public class StreamingWebServer extends NanoHTTPD {
 
@@ -75,31 +77,17 @@ public class StreamingWebServer extends NanoHTTPD {
 
 		try {
 		
-			ByteArrayInputStream bais = new ByteArrayInputStream(sub.getTextdata().toByteArray());
-			
-			//TODO: change this based on extension
-			SrtParser parser = new SrtParser("utf-8");
-			SubtitleObject srt = parser.parse(bais);
-			
-			SubtitleWriter writer = new VttWriter("utf-8");
-			
-			File tempDir = FileUtils.getTempDirectory();
-			File tempFile = new File(String.format("%s/%s.vtt", tempDir.getAbsolutePath(), FilenameUtils.removeExtension(sub.getFilename())));
-			
-			FileOutputStream fos = new FileOutputStream(tempFile);
-			
-			writer.write(srt, fos);
-			
-			fos.close();
+			File tempFile = Util.writeSubtitleToTempFileVTT(sub);
 			
 			return registerFile(tempFile.getAbsolutePath());
 			
 		} catch (IOException | SubtitleParsingException e) {
-			Log.Error("Error while parsing and writing subtitle file", LogType.SUBS, e);
+			Log.Error("Error while parsing and writing subtitle file", LogType.WEBSERVER, e);
 		}
 		
 		return StringUtils.EMPTY;
 	}
+	
 
 	public Response serve(IHTTPSession session) {
 		
