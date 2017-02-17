@@ -7,6 +7,7 @@ import com.google.android.gms.cast.CastStatusCodes;
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaMetadata;
 import com.google.android.gms.cast.MediaTrack;
+import com.google.android.gms.cast.TextTrackStyle;
 import com.google.android.gms.cast.internal.ApplicationStatus;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager;
@@ -147,7 +148,7 @@ public class JukeboxCastConsumer extends VideoCastConsumerImpl {
                             .setContentType("text/vtt")
                             .setSubtype(MediaTrack.SUBTYPE_SUBTITLES)
                             .setName(currentSub.getDescription())
-                            .setLanguage(currentSub.getLanguage())
+                            .setLanguage("en-US")
                             .build();
 
                     tracks.add(subtitle);
@@ -156,14 +157,19 @@ public class JukeboxCastConsumer extends VideoCastConsumerImpl {
 
             }
 
+            TextTrackStyle tts = new TextTrackStyle();
+
             MediaInfo mi = new MediaInfo.Builder(this.movieUri)
                     .setMetadata(md)
                     .setMediaTracks(tracks)
                     .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
                     .setContentType("video/mp4")
+                    .setTextTrackStyle(tts)
                     .build();
 
+
             mCastManager.startVideoCastControllerActivity(this.parentActivity, mi, 0, true);
+            mCastManager.setActiveTrackIds(new long[] {1});
         }
     }
 

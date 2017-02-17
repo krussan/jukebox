@@ -114,7 +114,7 @@ public class StreamingWebServer extends NanoHTTPD {
         // This server only serves specific stream uri's  
         Log.Info(String.format("Requesting file :: %s", uri), LogType.WEBSERVER);
         
-        if (!uri.startsWith("stream") || (!uri.endsWith(".mp4") && !uri.endsWith(".srt"))) 
+        if (!uri.startsWith("stream") || (!uri.endsWith(".mp4") && !uri.endsWith(".vtt"))) 
         	return getForbiddenResponse("Won't serve anything else than registered files for streaming.");
 
         //TODO: If stream filename is not in one of the added files return
@@ -131,6 +131,9 @@ public class StreamingWebServer extends NanoHTTPD {
         String mimeTypeForFile = getMimeTypeForFile(uri);
 
         Response response = serveFile(uri, headers, f, mimeTypeForFile);
+        
+        // enable CORS
+        response.addHeader("Access-Control-Allow-Origin", "*");
         return response != null ? response : getNotFoundResponse();
     }
 
