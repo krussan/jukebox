@@ -1,5 +1,6 @@
 package se.qxx.android.jukebox.activities;
 
+import se.qxx.android.jukebox.ChromeCastConfiguration;
 import se.qxx.android.jukebox.JukeboxSettings;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.adapters.MediaSubsLayoutAdapter;
@@ -15,12 +16,14 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-public class SubSelectActivity extends Activity implements OnItemClickListener, OnDismissListener {
+public class SubSelectActivity extends AppCompatActivity implements OnItemClickListener, OnDismissListener {
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -30,6 +33,15 @@ public class SubSelectActivity extends Activity implements OnItemClickListener, 
         
         initializeView();
     }
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+
+		ChromeCastConfiguration.createMenu(getMenuInflater(), menu);
+
+		return true;
+	}
 
 	private void initializeView() {
 	    Media md = Model.get().getCurrentMedia();

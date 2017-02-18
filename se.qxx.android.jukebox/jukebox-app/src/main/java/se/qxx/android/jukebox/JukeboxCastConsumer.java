@@ -10,6 +10,7 @@ import com.google.android.gms.cast.MediaTrack;
 import com.google.android.gms.cast.TextTrackStyle;
 import com.google.android.gms.cast.internal.ApplicationStatus;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager;
 import com.google.android.libraries.cast.companionlibrary.cast.callbacks.VideoCastConsumerImpl;
 import com.google.android.libraries.cast.companionlibrary.cast.exceptions.CastException;
@@ -56,9 +57,6 @@ public class JukeboxCastConsumer extends VideoCastConsumerImpl {
     @Override
     public void onApplicationConnected(ApplicationMetadata appMetadata, String sessionId, boolean wasLaunched) {
         super.onApplicationConnected(appMetadata, sessionId, wasLaunched);
-
-        if (wasLaunched)
-            startCastVideo();
     }
 
     @Override
@@ -132,13 +130,6 @@ public class JukeboxCastConsumer extends VideoCastConsumerImpl {
 
     protected void startCastVideo() {
         if (mCastManager != null) {
-/*            String file = String.format("%s/%s", m.getMedia(0).getFilepath(), m.getMedia(0).getFilename());
-            file = file.substring(0, 1).equals("/") ? file = file.substring(1) : file;
-            file = file.substring(0, 2).equals("c/") ? file = file.substring(2) : file;
-
-
-            String uri = String.format("file://192.168.1.120/%s", file);*/
-
             MediaMetadata md = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
             md.putString(MediaMetadata.KEY_TITLE, this.title);
 
@@ -162,19 +153,14 @@ public class JukeboxCastConsumer extends VideoCastConsumerImpl {
 
             }
 
-            TextTrackStyle tts = new TextTrackStyle();
-
             MediaInfo mi = new MediaInfo.Builder(this.movieUri)
                     .setMetadata(md)
                     .setMediaTracks(tracks)
                     .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
                     .setContentType("video/mp4")
-                    .setTextTrackStyle(tts)
                     .build();
 
-
             mCastManager.startVideoCastControllerActivity(this.parentActivity, mi, 0, true);
-            mCastManager.setActiveTrackIds(new long[] {1});
 
         }
     }

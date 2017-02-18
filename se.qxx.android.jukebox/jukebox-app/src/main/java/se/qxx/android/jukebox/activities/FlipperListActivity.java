@@ -1,5 +1,6 @@
 package se.qxx.android.jukebox.activities;
 
+import se.qxx.android.jukebox.ChromeCastConfiguration;
 import se.qxx.android.jukebox.JukeboxSettings;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.adapters.JukeboxFragmentAdapter;
@@ -11,11 +12,14 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Toast;
 
-public class FlipperListActivity extends FragmentActivity 
-	implements OnPageChangeListener {
+import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager;
+
+public class FlipperListActivity extends AppCompatActivity {
 	ViewPager pager;
 
 	protected View getRootView() {
@@ -29,27 +33,22 @@ public class FlipperListActivity extends FragmentActivity
         
 		JukeboxSettings.init(this);
 
+		ChromeCastConfiguration.initialize(this);
         pager = (ViewPager)this.getRootView();
         
         JukeboxFragmentAdapter mfa = new JukeboxFragmentAdapter(getSupportFragmentManager());
         pager.setAdapter(mfa);
         
-        pager.setCurrentItem(Model.get().getCurrentMovieIndex());    
-        pager.setOnPageChangeListener(this);
+        pager.setCurrentItem(Model.get().getCurrentMovieIndex());
     }
-        	
 
 	@Override
-	public void onPageScrollStateChanged(int arg0) {	
-	}
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
 
-	@Override
-	public void onPageScrolled(int arg0, float arg1, int arg2) {
-	}
+		ChromeCastConfiguration.createMenu(getMenuInflater(), menu);
 
-	@Override
-	public void onPageSelected(int arg0) {
-		//Model.get().setCurrentMovie(arg0);
+		return true;
 	}
 
 	public void onButtonClicked(View v) {
