@@ -95,12 +95,17 @@ public class JukeboxCastConsumer extends VideoCastConsumerImpl {
     public void onMediaLoadResult(int statusCode) {
         super.onMediaLoadResult(statusCode);
 
-        if (statusCode != CastStatusCodes.SUCCESS) {
+        if (statusCode == CastStatusCodes.SUCCESS) {
+            if (this.subtitleUris.size() > 0)
+                mCastManager.setActiveTrackIds(new long[]{1});
+        }
+        else {
             Logger.Log().e(String.format("onMediaLoadResult :: %s - %s", statusCode, CastStatusCodes.getStatusCodeString(statusCode)));
 
-            if (mCastManager != null)
+            if (mCastManager != null) {
                 mCastManager.removeVideoCastConsumer(this);
                 mCastManager.disconnect();
+            }
         }
     }
 
@@ -170,6 +175,7 @@ public class JukeboxCastConsumer extends VideoCastConsumerImpl {
 
             mCastManager.startVideoCastControllerActivity(this.parentActivity, mi, 0, true);
             mCastManager.setActiveTrackIds(new long[] {1});
+
         }
     }
 
