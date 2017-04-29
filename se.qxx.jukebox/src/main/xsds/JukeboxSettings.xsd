@@ -117,6 +117,9 @@
 
             						<xs:attribute name="class"
             							type="xs:string" use="required" />
+
+									<xs:attribute name="enabled"
+										type="xs:boolean" use="required" />
             					</xs:complexType>
             				</xs:element>
             			</xs:sequence>

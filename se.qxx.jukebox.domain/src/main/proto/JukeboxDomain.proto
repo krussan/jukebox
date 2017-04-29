@@ -155,6 +155,8 @@ message Subtitle {
 	required Rating rating = 4;
 	required int32 mediaIndex = 5;
 	required string language = 6;
+	
+	required bytes textdata = 7;
 }
 
 message Media {

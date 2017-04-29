@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import javax.xml.bind.JAXBException;
 
-import se.qxx.jukebox.StreamingWebServer;
+import se.qxx.jukebox.webserver.StreamingWebServer;
 
 public class TestStreamingWebServer {
 

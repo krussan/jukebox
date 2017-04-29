@@ -9,8 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
-import se.qxx.jukebox.TcpClient;
-import se.qxx.jukebox.Util;
+import se.qxx.jukebox.servercomm.TcpClient;
+import se.qxx.jukebox.tools.Util;
 
 /**
  * Connection to a VLC player initialized with the RC interface

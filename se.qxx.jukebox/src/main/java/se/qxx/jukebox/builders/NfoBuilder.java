@@ -8,12 +8,12 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import se.qxx.jukebox.ExtensionFileFilter;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.builders.exceptions.SeriesNotSupportedException;
 import se.qxx.jukebox.domain.JukeboxDomain.Identifier;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.watcher.ExtensionFileFilter;
 import se.qxx.jukebox.domain.MovieOrSeries;
 
 public class NfoBuilder extends MovieBuilder {
@@ -128,15 +128,19 @@ public class NfoBuilder extends MovieBuilder {
 		File[] files = dir.listFiles(eff);
 		
 		String nfoFilename = StringUtils.EMPTY;
-		for (File f : files) {
-			String nfoFullPathFilename = f.getAbsolutePath();
-			
-			if (FilenameUtils.getExtension(nfoFullPathFilename).equalsIgnoreCase("nfo")) {
-				nfoFilename = FilenameUtils.getBaseName(nfoFullPathFilename);
-				if (StringUtils.startsWithIgnoreCase(nfoFilename, filenameWithoutExt))
-					return f;
+		
+		if (files != null) {
+			for (File f : files) {
+				String nfoFullPathFilename = f.getAbsolutePath();
+				
+				if (FilenameUtils.getExtension(nfoFullPathFilename).equalsIgnoreCase("nfo")) {
+					nfoFilename = FilenameUtils.getBaseName(nfoFullPathFilename);
+					if (StringUtils.startsWithIgnoreCase(nfoFilename, filenameWithoutExt))
+						return f;
+				}
 			}
 		}
+		
 		
 		return null;
 	}

@@ -2,7 +2,6 @@ package se.qxx.jukebox.subtitles;
 
 import java.io.File;
 
-import se.qxx.jukebox.Language;
 import se.qxx.jukebox.domain.JukeboxDomain.Rating;
 
 public class SubFile implements Comparable<SubFile> {

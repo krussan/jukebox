@@ -37,46 +37,50 @@
     </catalog>        
   </catalogs>
   <subFinders subsPath="/c/media/Subs" threadWaitSeconds="25">
-    <subFinder class="se.qxx.jukebox.subtitles.UndertexterSe">
+	<subFinder class="se.qxx.jukebox.subtitles.Subscene" enabled="true">
     	<subFinderSettings>
     		<setting>
-    			<key>regex</key>
-    			<value><![CDATA[<tr[^>]*?>.*?<td[^>]*?>.*?<a[^>]*?alt\s*=\s*"Ladda\sner\sundertext[^"]*?".*?href\s*=\s*\"([^\"]*?)\"[^>]*?>.*?Nedladdningar.*?<br>\s*([^<]*?)</td[^>]*?>.*?</tr[^>]*?>]]></value>    			   		
+    			<key>searchResultRegex</key>
+    			<value><![CDATA[<a\s*href=\"(/subtitles/[^\"]*)\">[^<]*</a>]]></value>    			   		
 			</setting>
 			<setting>
-			    <key>urlRegexGroup</key>
+			    <key>searchResultUrlGroup</key>
 			    <value>1</value>
 			</setting>
 			<setting>
-			    <key>nameRegexGroup</key>
-			    <value>2</value>
-			</setting>			
-    		<setting>
-    			<key>url</key>
-    			<value><![CDATA[http://www.undertexter.se/?p=soek&add=arkiv&str=__searchString__]]></value>
-    		</setting>
-    	</subFinderSettings>
-    </subFinder>
-    <subFinder class="se.qxx.jukebox.subtitles.EngsubNet">
-    	<subFinderSettings>
-    		<setting>
-    			<key>regex</key>
-    			<value><![CDATA[<tr>.*?<td[^>]*>.*?<a[^>]*href="([^"]*)"[^>]*>\s*<img\s*src="http://engsub.net/bilder/ladda_codec_mini.gif"[^>]*>\s*</a>.*?Downloads:\s*\d*\s*<br>\s*<img[^>]*>\s*<br>\s*(.*?)</td>]]></value>    			   		
-			</setting>
-			<setting>
-			    <key>urlRegexGroup</key>
+			    <key>searchResultUrlGroup</key>
 			    <value>1</value>
 			</setting>
 			<setting>
-			    <key>nameRegexGroup</key>
+				<key>listResultRegex</key>
+				<value><![CDATA[<td[^>]*>\s*<a\s*href="(\/subtitles[^"]*)">\s*<span[^>]*>([^<]*)</span>\s*<span[^>]*>([^<]*)</span>\s*<\/a>]]></value>
+			</setting>
+			<setting>
+			    <key>listResultUrlGroup</key>
+			    <value>1</value>
+			</setting>
+			<setting>
+			    <key>listResultLanguageGroup</key>
 			    <value>2</value>
+			</setting>
+			<setting>
+			    <key>listResultNameGroup</key>
+			    <value>3</value>
+			</setting>
+			<setting>
+				<key>downloadUrlRegex</key>
+				<value><![CDATA[<a\s*href="([^"]*)"[^>]*>\s*Download\s*[a-z]*\ssubtitle\s*.*?<\/a>]]></value>
+			</setting>
+			<setting>
+			    <key>downloadUrlGroup</key>
+			    <value>1</value>
 			</setting>			
     		<setting>
     			<key>url</key>
-    			<value><![CDATA[http://www.engsub.net/?p=eng_search&add=arkiv&str=__searchString__]]></value>
+    			<value><![CDATA[https://subscene.com/subtitles/title?q=__searchString__]]></value>
     		</setting>
     	</subFinderSettings>
-    </subFinder>
+    </subFinder>    
   </subFinders>
   <builders>
       <builder class="se.qxx.jukebox.builders.FilenameBuilder" enabled="false" weight="1" />

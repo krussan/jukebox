@@ -15,6 +15,10 @@ import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
+import se.qxx.jukebox.imdb.IMDBFinder;
+import se.qxx.jukebox.tools.MediaMetadata;
+import se.qxx.jukebox.tools.Util;
+import se.qxx.jukebox.watcher.FileRepresentation;
 
 public class MovieIdentifier implements Runnable {
 	
@@ -80,10 +84,14 @@ public class MovieIdentifier implements Runnable {
 		String filename = f.getName();
 		String path = f.getPath();
 		
+		
 		// Added ignore on all filename that contains the string sample
 		if (StringUtils.containsIgnoreCase(filename, "sample")) {
 			Log.Info(String.format("Ignoring %s as this appears to be a sample", filename), LogType.FIND);
-		}		
+		}
+		else if (f.getFileSize() < 104857600) {
+			Log.Info(String.format("Ignoring %s as this has a file size of less than 100MB", filename), LogType.FIND);
+		}
 		else {
 			//check if the same media already exist in db
 			Media dbMedia = DB.getMediaByFilename(filename);

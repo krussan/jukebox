@@ -1,4 +1,6 @@
 package se.qxx.jukebox.domain;
+import java.util.List;
+
 import se.qxx.jukebox.domain.DomainUtil;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Identifier;
@@ -112,6 +114,13 @@ public class MovieOrSeries {
 			return this.getMovie().getMedia(0);		
 	}
 	
+	public List<Media> getMediaList() {
+		if (this.isSeries())
+			return this.getEpisode().getMediaList();
+		else
+			return this.getMovie().getMediaList();				
+	}
+	
 	public void replaceMedia(Media md) {
 		if (this.isSeries()) {	
 			Series s = this.getSeries();
@@ -160,17 +169,17 @@ public class MovieOrSeries {
 		if (this.isSeries())
 			return this.getEpisode().getGroupName();
 		else
-			return this.getMovie().getTitle();
+			return this.getMovie().getGroupName();
 	}
 	
 	public String getFormat() { 
 		if (this.isSeries())
 			return this.getEpisode().getFormat();
 		else
-			return this.getMovie().getTitle();
+			return this.getMovie().getFormat();
 	}
 	
-	private Episode getEpisode() {
+	public Episode getEpisode() {
 		return this.getSeries().getSeason(0).getEpisode(0);
 	}
 	
@@ -187,4 +196,12 @@ public class MovieOrSeries {
 		else
 			return this.getMovie().getRating();
 	}
+	
+	public int getID() {
+		if (this.isSeries())
+			return this.getEpisode().getID();
+		else
+			return this.getMovie().getID();
+	}
+
 }

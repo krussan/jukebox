@@ -4,8 +4,10 @@ import java.util.EventObject;
 import java.util.List;
 
 import com.google.android.gms.cast.CastMediaControlIntent;
+import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager;
 import com.google.protobuf.RpcCallback;
 
+import se.qxx.android.jukebox.ChromeCastConfiguration;
 import se.qxx.android.jukebox.JukeboxSettings;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.adapters.PlayerLayoutAdapter;
@@ -19,14 +21,16 @@ import se.qxx.android.jukebox.model.ModelUpdatedType;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.media.MediaRouter;
+import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.support.v7.media.MediaRouteSelector;
 
-public class PlayerPickerActivity extends Activity implements ModelUpdatedEventListener, OnItemClickListener {
+public class PlayerPickerActivity extends AppCompatActivity implements ModelUpdatedEventListener, OnItemClickListener {
 
 	PlayerLayoutAdapter adapter;
 	List<String> values;
@@ -37,6 +41,8 @@ public class PlayerPickerActivity extends Activity implements ModelUpdatedEventL
 
         setContentView(R.layout.playerpicker);
 	    Model.get().addEventListener(this);
+
+		ChromeCastConfiguration.initialize(this);
 
 	    final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
 				JukeboxSettings.get().getServerIpAddress(),
@@ -68,6 +74,15 @@ public class PlayerPickerActivity extends Activity implements ModelUpdatedEventL
 
 	    listView.setAdapter(adapter);
 		listView.setOnItemClickListener(this);
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+
+		ChromeCastConfiguration.createMenu(getMenuInflater(), menu);
+
+		return true;
 	}
 
 	@Override

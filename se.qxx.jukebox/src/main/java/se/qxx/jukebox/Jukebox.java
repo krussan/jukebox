@@ -48,6 +48,7 @@ public class Jukebox {
 		System.out.println("\t-dt\tDisable tcp listener");
 		System.out.println("\t-dm\tDisable media info library");
 		System.out.println("\t-dw\tDisable streaming web server");
+		System.out.println("\t-df\tDisable search engine finder");
 		System.out.println("");
 		System.out.println("\t--purge\tPurges all content from database and exit");
 		System.out.println("\t--purgeSubs\tPurges all subtitles and queue from database");

@@ -6,14 +6,14 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import se.qxx.jukebox.HibernatorClientConnection;
 import se.qxx.jukebox.Log;
-import se.qxx.jukebox.WakeOnLan;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.Sorter;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
+import se.qxx.jukebox.servercomm.HibernatorClientConnection;
+import se.qxx.jukebox.servercomm.WakeOnLan;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog.LocalPaths.Path;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Players.Server;

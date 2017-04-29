@@ -19,6 +19,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.JukeboxDomain.SubtitleQueue;
+import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.protodb.ProtoDB;
 import se.qxx.protodb.exceptions.IDFieldNotFoundException;
 import se.qxx.protodb.exceptions.SearchFieldNotFoundException;
@@ -58,15 +59,23 @@ public class DB {
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Search
 	//---------------------------------------------------------------------------------------
-	public synchronized static List<Movie> searchMoviesByTitle(String searchString) {
+
+	public static List<Movie> searchMoviesByTitle(String searchString, boolean populateBlobs, boolean filterSubs) {
 		try {
-			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			ProtoDB db = getProtoDBInstance(populateBlobs);
+			
+			List<String> filterObjects = new ArrayList<String>();
+			
+			if (filterSubs) {
+				filterObjects.add("media.subs");
+			}
 			
 			return 
 				db.find(JukeboxDomain.Movie.getDefaultInstance(), 
 					"title", 
 					"%" + searchString + "%", 
-					true);
+					true,
+					filterObjects);
 		}
 		catch (Exception e) {
 			Log.Error("Failed to retrieve movie listing from DB", Log.LogType.MAIN, e);
@@ -74,30 +83,29 @@ public class DB {
 		}	
 	}
 
-	public synchronized static List<Series> searchSeriesByTitle(String searchString) {
+
+	public static List<Series> searchSeriesByTitle(String searchString, boolean populateBlobs, boolean filterSubs) {
 		try {
-			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			ProtoDB db = getProtoDBInstance(populateBlobs);
+
+			List<String> filterObjects = new ArrayList<String>();			
+			if (filterSubs) {
+				filterObjects.add("season.episode.media.subs");
+			}
 			
 			return 
 				db.find(JukeboxDomain.Series.getDefaultInstance(), 
 					"title", 
 					"%" + searchString + "%", 
-					true);
+					true,
+					filterObjects);
 		}
 		catch (Exception e) {
 			Log.Error("Failed to retrieve series listing from DB", Log.LogType.MAIN, e);
 			return new ArrayList<Series>();
 		}
 	}
-	
-	
-	protected static List<Media> __parseDynamicListToMedia(
-			List<DynamicMessage> result) throws InvalidProtocolBufferException {
-		List<Media> movieResult = new ArrayList<Media>();
-		for (DynamicMessage m : result)
-			movieResult.add(Media.parseFrom(m.toByteString()));
-		return movieResult;
-	}
+
 
 	private static String replaceSearchString(String searchString) {
 		String ret = searchString;
@@ -112,7 +120,7 @@ public class DB {
 //		Log.Debug(String.format("DB :: Database search string :: %s", searchString), LogType.MAIN);
 //				 
 //		try {
-//			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+//			ProtoDB db = getProtoDBInstance();
 //			List<Movie> result =
 //				db.find(JukeboxDomain.Movie.getDefaultInstance(), 
 //					"media.filename", 
@@ -131,13 +139,13 @@ public class DB {
 //		}
 //	}
 
-	public synchronized static Movie findMovie(String identifiedTitle) {
+	public static Movie findMovie(String identifiedTitle) {
 		String searchString = replaceSearchString(identifiedTitle) + "%";
 		
 		Log.Debug(String.format("DB :: Series search string :: %s", searchString), LogType.MAIN);
 		 
 		try {
-			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			ProtoDB db = getProtoDBInstance();
 			List<Movie> result =
 				db.find(JukeboxDomain.Movie.getDefaultInstance(), 
 					"identifiedTitle", 
@@ -157,13 +165,13 @@ public class DB {
 		}
 	}
 	
-	public synchronized static Series findSeries(String identifiedTitle) {
+	public static Series findSeries(String identifiedTitle) {
 		String searchString = replaceSearchString(identifiedTitle) + "%";
 		
 		Log.Debug(String.format("DB :: Series search string :: %s", searchString), LogType.MAIN);
 		 
 		try {
-			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			ProtoDB db = getProtoDBInstance();
 			List<Series> result =
 				db.find(JukeboxDomain.Series.getDefaultInstance(), 
 					"identifiedTitle", 
@@ -189,7 +197,7 @@ public class DB {
 
 	public synchronized static Movie getMovie(int id) {
 		try {
-			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			ProtoDB db = getProtoDBInstance();
 			return db.get(id, Movie.getDefaultInstance());
 		} catch (Exception e) {
 			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
@@ -202,7 +210,7 @@ public class DB {
 
 	public synchronized static Series getSeries(int id) {
 		try {
-			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			ProtoDB db = getProtoDBInstance();
 			return db.get(id, Series.getDefaultInstance());
 		} catch (Exception e) {
 			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
@@ -213,7 +221,7 @@ public class DB {
 
 	public synchronized static Season getSeason(int id) {
 		try {
-			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			ProtoDB db = getProtoDBInstance();
 			return db.get(id, Season.getDefaultInstance());
 		} catch (Exception e) {
 			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
@@ -224,7 +232,7 @@ public class DB {
 
 	public synchronized static Episode getEpisode(int id) {
 		try {
-			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			ProtoDB db = getProtoDBInstance();
 			return db.get(id, Episode.getDefaultInstance());
 		} catch (Exception e) {
 			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
@@ -239,7 +247,7 @@ public class DB {
 
 	public synchronized static Movie save(Movie m) {
 		try {
-			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			ProtoDB db = getProtoDBInstance();
 			
 			return db.save(m);
 		}
@@ -252,7 +260,7 @@ public class DB {
 
 	public synchronized static Media save(Media md) {
 		try {
-			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			ProtoDB db = getProtoDBInstance();
 			
 			return db.save(md);
 		}
@@ -265,7 +273,7 @@ public class DB {
 	
 	public synchronized static Episode save(Episode episode) {
 		try {
-			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			ProtoDB db = getProtoDBInstance();
 			
 			return db.save(episode);
 		}
@@ -278,7 +286,7 @@ public class DB {
 
 	public synchronized static Series save(Series series) {
 		try {
-			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			ProtoDB db = getProtoDBInstance();
 			
 			return db.save(series);
 		}
@@ -294,7 +302,7 @@ public class DB {
 	//---------------------------------------------------------------------------------------
 	public synchronized static void delete(Movie m) throws ClassNotFoundException, SQLException {
 		try {
-			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			ProtoDB db = getProtoDBInstance();
 			
 			db.delete(m);
 		}
@@ -307,7 +315,7 @@ public class DB {
 	
 	public synchronized static void delete(Series s) throws ClassNotFoundException, SQLException {
 		try {
-			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			ProtoDB db = getProtoDBInstance();
 			
 			db.delete(s);
 		}
@@ -320,7 +328,7 @@ public class DB {
 
 	public synchronized static void delete(Season sn) throws ClassNotFoundException, SQLException {
 		try {
-			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			ProtoDB db = getProtoDBInstance();
 			
 			db.delete(sn);
 		}
@@ -333,7 +341,7 @@ public class DB {
 
 	public synchronized static void delete(Episode ep) throws ClassNotFoundException, SQLException {
 		try {
-			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			ProtoDB db = getProtoDBInstance();
 			
 			db.delete(ep);
 		}
@@ -350,7 +358,7 @@ public class DB {
 	
 	public synchronized static void toggleWatched(Movie m) {
 		try {
-			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			ProtoDB db = getProtoDBInstance();
 
 			db.save(Movie.newBuilder(m).setWatched(!m.getWatched()).build());
 
@@ -367,7 +375,7 @@ public class DB {
 
 	public synchronized static Movie addMovieToSubtitleQueue(Movie m) {
 		try {
-			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			ProtoDB db = getProtoDBInstance();
 			
 			m = Movie.newBuilder(m).setSubtitleQueue(
 				SubtitleQueue.newBuilder()
@@ -384,26 +392,120 @@ public class DB {
 		}
 		return m;
 	}
+	
+	public synchronized static Episode addEpisodeToSubtitleQueue(Episode e) {
+		try {
+			ProtoDB db = getProtoDBInstance();
 			
+			e = Episode.newBuilder(e).setSubtitleQueue(
+					SubtitleQueue.newBuilder()
+						.setID(-1)
+						.setSubtitleRetreiveResult(0)				
+						.setSubtitleQueuedAt(DB.getCurrentUnixTimestamp())
+						.build())
+					.build();	
+			
+			return db.save(e);
+		}
+		catch (Exception ex) {
+			Log.Error("Failed to store epsiode to DB", Log.LogType.MAIN, ex);
+		}
+		return e;
+	}
+	
 	public static long getCurrentUnixTimestamp() {
 		return System.currentTimeMillis() / 1000L;
 	}
 
-	public synchronized static List<Movie> getSubtitleQueue() {
+	/***
+	 * Retrieves the subtitle queue as a list of MovieOrSeries objects
+	 * Due to the nature of the MovieOrSeries class all episodes needs
+	 * to be represented by a single series and a single season object
+	 * 
+	 * @return
+	 */
+	public static List<MovieOrSeries> getSubtitleQueue() {
+		List<MovieOrSeries> result = new ArrayList<MovieOrSeries>();
+		
 		try {
-			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
-			
-			return
+			ProtoDB db = getProtoDBInstance();
+			 
+			// Restrict result to 5. Since the list will be retrieved again it does not matter.
+			List<Movie> movies = 
 				db.find(JukeboxDomain.Movie.getDefaultInstance(), 
-					"SubtitleQueue.subtitleRetreiveResult", 
+					"subtitleQueue.subtitleRetreiveResult", 
 					0, 
-					false);
+					false,
+					null,
+					5);
 
+			// this is a bit dangerous.
+			// what if we cut a series/season in half and save the series (!)
+			// So to be sure we save _only_ the episode from the SubtitleDownloader.
+			List<Series> series = 
+					db.find(JukeboxDomain.Series.getDefaultInstance(), 
+						"season.episode.subtitleQueue.subtitleRetreiveResult", 
+						0, 
+						false,
+						null,
+						5);
+
+			result = constructSubtitleQueue(movies, series);
 		}
 		catch (Exception e) {
 			Log.Error("Failed to retrieve movie listing from DB", Log.LogType.MAIN, e);
-			return new ArrayList<Movie>();
 		}
+		
+		return result;
+	}
+
+	private static ProtoDB getProtoDBInstance() {
+		return getProtoDBInstance(true);
+	}
+	
+	private static ProtoDB getProtoDBInstance(boolean populateBlobs) {
+		ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+		db.setPopulateBlobs(populateBlobs);
+		return db;
+	}
+
+	private static List<MovieOrSeries> constructSubtitleQueue(List<Movie> movies, List<Series> series) {
+		List<MovieOrSeries> moss = new ArrayList<MovieOrSeries>();
+		
+		for (Movie m : movies) {
+			MovieOrSeries mos = new MovieOrSeries(m);
+			moss.add(mos);
+		}
+		
+		// we need to create a single Series object for every episode
+		// since the MovieOrSeries object is mainly used for identifying
+		moss.addAll(decoupleSeries(series));
+		
+		return moss;
+	}
+
+	private static List<MovieOrSeries> decoupleSeries(List<Series> series) {
+		List<MovieOrSeries> moss = new ArrayList<MovieOrSeries>();
+		
+		for (Series s : series) {
+			for (Season ss : s.getSeasonList()) {
+				for (Episode e : ss.getEpisodeList()) {
+					Series s2 = Series.newBuilder(s)
+							.clearSeason()
+							
+							.addSeason(Season.newBuilder(ss)
+								.clearEpisode()
+								.addEpisode(e)
+								.build())
+					
+							.build();
+					
+					moss.add(new MovieOrSeries(s2));
+				}
+			}
+		}
+		
+		return moss;
 	}
 
 	
@@ -413,7 +515,7 @@ public class DB {
 
 	public synchronized static void addToBlacklist(Movie m) {
 		try {
-			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			ProtoDB db = getProtoDBInstance();
 			m = Movie.newBuilder(m).addBlacklist(m.getImdbId()).build();			
 			
 			db.save(m);
@@ -587,7 +689,7 @@ public class DB {
 		try {
 			File f = new File(DB.getDatabaseFilename());
 			if (!f.exists()) {
-				ProtoDB db = new ProtoDB(DB.getDatabaseFilename());			
+				ProtoDB db = getProtoDBInstance();			
 				db.setupDatabase(Movie.getDefaultInstance());
 				db.setupDatabase(se.qxx.jukebox.domain.JukeboxDomain.Version.getDefaultInstance());
 				db.setupDatabase(Series.getDefaultInstance());
@@ -605,7 +707,7 @@ public class DB {
 
 	public static Movie getMovieByMediaID(int mediaID) {
 		try {
-			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			ProtoDB db = getProtoDBInstance();
 			List<Movie> result =
 				db.find(JukeboxDomain.Movie.getDefaultInstance(), 
 					"media.ID", 
@@ -629,7 +731,7 @@ public class DB {
 	
 	public static Media getMediaByFilename(String filename) {
 		try {
-			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			ProtoDB db = getProtoDBInstance();
 			List<Media> result =
 				db.find(JukeboxDomain.Media.getDefaultInstance(), 
 					"filename", 
@@ -653,7 +755,7 @@ public class DB {
 	
 	public static Media getMediaById(int mediaId) {
 		try {
-			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());			
+			ProtoDB db = getProtoDBInstance();			
 			return db.get(mediaId, Media.getDefaultInstance());
 		} catch (ClassNotFoundException | SQLException e) {
 			Log.Error(String.format("Failed to get media %s", mediaId), Log.LogType.MAIN, e);
@@ -666,7 +768,7 @@ public class DB {
 //		try {
 //			String searchString = replaceSearchString(mediaFilename) + "%";
 //			
-//			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+//			ProtoDB db = getProtoDBInstance();
 //			List<Media> result =
 //				db.find(JukeboxDomain.Media.getDefaultInstance(), 
 //					"filename", 
@@ -688,7 +790,7 @@ public class DB {
 		try {
 			String searchString = replaceSearchString(subsFilename) + "%";
 			
-			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			ProtoDB db = getProtoDBInstance();
 			List<Movie> result = 
 				db.find(JukeboxDomain.Movie.getDefaultInstance(), 
 					"media.subs.filename", 
@@ -707,7 +809,7 @@ public class DB {
 
 	public static void purgeSeries() {
 		try {
-			ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+			ProtoDB db = getProtoDBInstance();
 			List<Series> result =
 					db.find(JukeboxDomain.Series.getDefaultInstance(), 
 						"title", 

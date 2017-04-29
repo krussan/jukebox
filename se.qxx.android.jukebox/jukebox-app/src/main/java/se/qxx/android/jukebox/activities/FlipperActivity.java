@@ -1,6 +1,7 @@
 package se.qxx.android.jukebox.activities;
 
 import se.qxx.android.jukebox.ActionDialog;
+import se.qxx.android.jukebox.ChromeCastConfiguration;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.adapters.MovieFragmentAdapter;
 import se.qxx.android.jukebox.model.Model;
@@ -12,11 +13,15 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
 import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.widget.Toast;
 
-public class FlipperActivity extends FragmentActivity implements OnPageChangeListener, OnLongClickListener {
+import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager;
+
+public class FlipperActivity extends AppCompatActivity implements OnPageChangeListener, OnLongClickListener {
 	ViewPager pager;
 
 	protected View getRootView() {
@@ -28,15 +33,24 @@ public class FlipperActivity extends FragmentActivity implements OnPageChangeLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.itemwrapper);
         pager = (ViewPager)this.getRootView();
-        
+
+		ChromeCastConfiguration.initialize(this);
         MovieFragmentAdapter mfa = new MovieFragmentAdapter(getSupportFragmentManager());
+
         pager.setAdapter(mfa);
-        
-        pager.setCurrentItem(Model.get().getCurrentMovieIndex());    
-        pager.setOnPageChangeListener(this);
+
+        pager.setCurrentItem(Model.get().getCurrentMovieIndex());
         
         this.getRootView().setOnLongClickListener(this);
     }
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		ChromeCastConfiguration.createMenu(getMenuInflater(), menu);
+
+		return true;
+	}
         	
 	public void onButtonClicked(View v) {
 		int id = v.getId();
@@ -63,7 +77,7 @@ public class FlipperActivity extends FragmentActivity implements OnPageChangeLis
 	}
 
 	@Override
-	public void onPageScrollStateChanged(int arg0) {	
+	public void onPageScrollStateChanged(int arg0) {
 	}
 
 	@Override
