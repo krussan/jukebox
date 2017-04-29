@@ -51,13 +51,13 @@ public class MovieLayoutAdapter extends ModelMovieAdapter {
 	        	if (downloadFinished)
 	        		GUITools.hideView(R.id.imgDownloading, v);
 	        		
-	    	    if (!m.getThumbnail().isEmpty()) {
-	    	    	Bitmap image = GUITools.getBitmapFromByteArray(m.getThumbnail().toByteArray());
-	    	    	Bitmap scaledImage = GUITools.scaleImage(80, image, v.getContext());
-	    	    	GUITools.setImageOnImageView(R.id.imageView1, scaledImage, v);
+	    	    if (m.getThumbnail().isEmpty()) {
+					GUITools.setImageResourceOnImageView(R.id.imageView1, R.drawable.icon, v);
 	    	    }
 	    	    else {
-	    	    	GUITools.setImageResourceOnImageView(R.id.imageView1, R.drawable.icon, v);
+					Bitmap image = GUITools.getBitmapFromByteArray(m.getThumbnail().toByteArray());
+					Bitmap scaledImage = GUITools.scaleImage(80, image, v.getContext());
+					GUITools.setImageOnImageView(R.id.imageView1, scaledImage, v);
 	    	    }
 	    	    
 	    	    List<Subtitle> sortedSubtitles = Sorter.sortSubtitlesByRating(m.getMedia(0).getSubsList());

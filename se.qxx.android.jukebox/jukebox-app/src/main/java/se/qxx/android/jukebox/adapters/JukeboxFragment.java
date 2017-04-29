@@ -5,6 +5,7 @@ import java.util.EventObject;
 import se.qxx.android.jukebox.ActionDialog;
 import se.qxx.android.jukebox.Connector;
 import se.qxx.android.jukebox.activities.FlipperActivity;
+import se.qxx.android.jukebox.activities.FlipperListActivity;
 import se.qxx.android.jukebox.activities.JukeboxPreferenceActivity;
 import se.qxx.android.jukebox.activities.PlayerPickerActivity;
 import se.qxx.android.jukebox.R;
@@ -29,10 +30,13 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class JukeboxFragment extends ListFragment implements
 	ModelUpdatedEventListener, OnItemClickListener, OnItemLongClickListener, OnClickListener {
 		
 	private int position;
+    private String mode;
 	private MovieLayoutAdapter _jukeboxMovieLayoutAdapter;
 	private SeriesLayoutAdapter _seriesLayoutAdapter;
 	
@@ -50,11 +54,12 @@ public class JukeboxFragment extends ListFragment implements
 
 
 	
-	public static JukeboxFragment newInstance(int position) {
+	public static JukeboxFragment newInstance(int position, String mode) {
 		Bundle b = new Bundle();
 		JukeboxFragment mf = new JukeboxFragment();
 		
 		b.putInt("position", position);
+        b.putString("mode", mode);
 		mf.setArguments(b);
 		
 		return mf;
@@ -67,6 +72,7 @@ public class JukeboxFragment extends ListFragment implements
 		Bundle b = getArguments();
 		if (b != null) {
 			this.position = b.getInt("position");
+            this.mode = b.getString("mode");
 		}
 	}	
 	
@@ -78,10 +84,6 @@ public class JukeboxFragment extends ListFragment implements
 	}
 	
 	private void initializeView(View v, int position) {
-//		super.onCreate(savedInstanceState);
-//		setContentView(R.layout.main);
-//		JukeboxSettings.init(this);
-
 		ListView lv = (ListView) v.findViewById(R.id.listView1);
 		lv.setOnItemClickListener(this);
 		lv.setOnItemLongClickListener(this);
@@ -93,14 +95,20 @@ public class JukeboxFragment extends ListFragment implements
 		v.findViewById(R.id.btnOn).setOnClickListener(this);
 		v.findViewById(R.id.btnOff).setOnClickListener(this);
 
-		if (position == 0) {
-			_jukeboxMovieLayoutAdapter = new MovieLayoutAdapter(v.getContext());
-			lv.setAdapter(_jukeboxMovieLayoutAdapter);
-		}
-		else {
-			_seriesLayoutAdapter = new SeriesLayoutAdapter(v.getContext());
-			lv.setAdapter(_seriesLayoutAdapter);
-		}
+        if (StringUtils.equalsIgnoreCase(this.mode, "main")) {
+            if (position == 0) {
+                _jukeboxMovieLayoutAdapter = new MovieLayoutAdapter(v.getContext());
+                lv.setAdapter(_jukeboxMovieLayoutAdapter);
+            }
+            else {
+                _seriesLayoutAdapter = new SeriesLayoutAdapter(v.getContext());
+                lv.setAdapter(_seriesLayoutAdapter);
+            }
+        }
+
+        if (StringUtils.equalsIgnoreCase(this.mode, "season")) {
+
+        }
 
 		Model.get().addEventListener(this);
 
@@ -115,11 +123,18 @@ public class JukeboxFragment extends ListFragment implements
 	public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
 		if (this.position == 0) {
 			Model.get().setCurrentMovie(pos);
+
 			Intent i = new Intent(arg1.getContext(), FlipperActivity.class);
+            i.putExtra("mode", "Season");
 			startActivity(i);
 		}
 		else {
-			Toast.makeText(this.getActivity(), "Should display the new series!", Toast.LENGTH_SHORT).show();
+            Intent intentSeries = new Intent(this.getActivity(), FlipperListActivity.class);
+            intentSeries.set
+
+            startActivity(intentPreferences);
+
+            Toast.makeText(this.getActivity(), "Should display the new series!", Toast.LENGTH_SHORT).show();
 		}
 	}
 
