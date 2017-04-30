@@ -35,11 +35,14 @@ public class FlipperListActivity extends AppCompatActivity {
 
 		ChromeCastConfiguration.initialize(this);
         pager = (ViewPager)this.getRootView();
-        
-        JukeboxFragmentAdapter mfa = new JukeboxFragmentAdapter(getSupportFragmentManager(), "main");
+
+        String mode = "main";
+        if (getIntent() != null && getIntent().getExtras() != null)
+            mode = getIntent().getExtras().getString("mode", "main");
+
+        JukeboxFragmentAdapter mfa = new JukeboxFragmentAdapter(getSupportFragmentManager(), mode);
 
         pager.setAdapter(mfa);
-        
         pager.setCurrentItem(Model.get().getCurrentMovieIndex());
     }
 

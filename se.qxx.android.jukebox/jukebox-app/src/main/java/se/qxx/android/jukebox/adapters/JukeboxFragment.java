@@ -15,6 +15,7 @@ import se.qxx.android.jukebox.model.ModelUpdatedType;
 import se.qxx.android.jukebox.model.Model.ModelUpdatedEventListener;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
+import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
 
 import android.content.Intent;
@@ -37,9 +38,12 @@ public class JukeboxFragment extends ListFragment implements
 		
 	private int position;
     private String mode;
+
 	private MovieLayoutAdapter _jukeboxMovieLayoutAdapter;
 	private SeriesLayoutAdapter _seriesLayoutAdapter;
-	
+	private SeasonLayoutAdapter _seasonLayoutAdapter;
+    private EpisodeLayoutAdapter _episodeLayoutAdapter;
+
 	private Runnable modelResultUpdatedRunnable = new Runnable() {
 
 		@Override
@@ -49,6 +53,12 @@ public class JukeboxFragment extends ListFragment implements
 			
 			if (_seriesLayoutAdapter != null)
 				_seriesLayoutAdapter.notifyDataSetChanged();
+
+            if (_seasonLayoutAdapter != null)
+                _seasonLayoutAdapter.notifyDataSetChanged();
+
+            if (_episodeLayoutAdapter != null)
+                _episodeLayoutAdapter.notifyDataSetChanged();
 		}
 	};
 
@@ -107,7 +117,13 @@ public class JukeboxFragment extends ListFragment implements
         }
 
         if (StringUtils.equalsIgnoreCase(this.mode, "season")) {
+            _seasonLayoutAdapter = new SeasonLayoutAdapter(v.getContext(), Model.get().getCurrentSeries());
+            lv.setAdapter(_seasonLayoutAdapter);
+        }
 
+        if (StringUtils.equalsIgnoreCase(this.mode, "episode")) {
+            _episodeLayoutAdapter = new EpisodeLayoutAdapter(v.getContext(), Model.get().getCurrentSeason());
+            lv.setAdapter(_episodeLayoutAdapter);
         }
 
 		Model.get().addEventListener(this);
@@ -121,21 +137,30 @@ public class JukeboxFragment extends ListFragment implements
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
-		if (this.position == 0) {
-			Model.get().setCurrentMovie(pos);
+        if (StringUtils.equalsIgnoreCase(this.mode, "main")) {
+            if (this.position == 0) {
+                Model.get().setCurrentMovie(pos);
 
-			Intent i = new Intent(arg1.getContext(), FlipperActivity.class);
-            i.putExtra("mode", "Season");
-			startActivity(i);
-		}
-		else {
+                Intent i = new Intent(arg1.getContext(), FlipperActivity.class);
+                startActivity(i);
+            } else {
+                Model.get().setCurrentSeries(pos);
+                Intent intentSeries = new Intent(this.getActivity(), FlipperListActivity.class);
+                intentSeries.putExtra("mode", "Season");
+
+                startActivity(intentSeries);
+
+                //Toast.makeText(this.getActivity(), "Should display the new series!", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        if (StringUtils.equalsIgnoreCase(this.mode, "season")) {
+            Model.get().setCurrentSeason(pos);
             Intent intentSeries = new Intent(this.getActivity(), FlipperListActivity.class);
-            intentSeries.set
+            intentSeries.putExtra("mode", "episode");
 
-            startActivity(intentPreferences);
-
-            Toast.makeText(this.getActivity(), "Should display the new series!", Toast.LENGTH_SHORT).show();
-		}
+            startActivity(intentSeries);
+        }
 	}
 
 	@Override

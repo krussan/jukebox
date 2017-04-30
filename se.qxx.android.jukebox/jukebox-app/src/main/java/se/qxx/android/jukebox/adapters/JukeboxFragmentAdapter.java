@@ -8,7 +8,6 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 public class JukeboxFragmentAdapter extends FragmentStatePagerAdapter {
 
 	private String _mode = "Main";
-
 	private String getMode() {
 		return _mode;
 	}
@@ -25,7 +24,7 @@ public class JukeboxFragmentAdapter extends FragmentStatePagerAdapter {
 
 	@Override
 	public Fragment getItem(int position) {
-		return JukeboxFragment.newInstance(position);
+		return JukeboxFragment.newInstance(position, this.getMode());
 	}
 	
 }

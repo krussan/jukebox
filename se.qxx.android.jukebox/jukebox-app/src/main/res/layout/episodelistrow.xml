@@ -11,7 +11,9 @@
         android:layout_height="wrap_content"
         android:src="@drawable/icon" 
         android:contentDescription="@string/descPosterImage"
-        android:layout_margin="5dp"/>
+        android:layout_margin="5dp"
+    />
+
     <RelativeLayout
         android:id="@+id/relativeLayout1"
         android:layout_width="match_parent"
@@ -26,37 +28,24 @@
             android:layout_height="wrap_content"
             android:text="@string/lblTitle"
             android:textAppearance="?android:attr/textAppearanceLarge" />
-    
+
+
         <TextView
-            android:id="@+id/bottomtext"
+            android:id="@+id/txtDescription"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/toptext"
-            android:text="@string/lblYear" 
-            android:textAppearance="?android:attr/textAppearanceMedium"
-        />
-
-        <include layout="@layout/subtitlestars" 
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@id/bottomtext" />        
-
-        <TextView
-            android:id="@+id/txtRating"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:text="@string/lblRating" 
+            android:text="About"
         />        
 
         <ImageView
-            android:id="@+id/imgDownloading"
+            android:id="@+id/imgPlayEpisode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/toptext"
+            android:layout_alignRight="@id/toptext"
             android:layout_alignParentRight="true"
-            android:src="@android:drawable/stat_sys_download" 
+            android:layout_centerVertical="true"
+            android:src="@android:drawable/ic_media_play"
             android:contentDescription="@string/descDownloading"/>
 
 
@@ -66,7 +55,6 @@
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/txtRating"
             android:layout_below="@id/toptext"
-            android:layout_toLeftOf="@id/imgDownloading"
             android:src="@android:drawable/ic_menu_view"
             android:contentDescription="@string/descWatched" />
        
