@@ -38,7 +38,6 @@ public class FlipperActivity extends AppCompatActivity implements OnPageChangeLi
         MovieFragmentAdapter mfa = new MovieFragmentAdapter(getSupportFragmentManager());
 
         pager.setAdapter(mfa);
-
         pager.setCurrentItem(Model.get().getCurrentMovieIndex());
         
         this.getRootView().setOnLongClickListener(this);

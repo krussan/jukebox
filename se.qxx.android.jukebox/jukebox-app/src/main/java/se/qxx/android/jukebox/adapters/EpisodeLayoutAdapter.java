@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.model.ModelEpisodeAdapter;
@@ -37,7 +38,7 @@ public class EpisodeLayoutAdapter extends ModelEpisodeAdapter {
 	        if (ep != null) {
 	        	GUITools.setTextOnTextview(R.id.toptext, String.format("S%sE%s - %s", this.getSeason().getSeasonNumber(), ep.getEpisodeNumber(), ep.getTitle()), v);
 	        	GUITools.setTextOnTextview(R.id.txtDescription, ep.getStory(), v);
-	        	
+
 	    	    if (ep.getThumbnail().isEmpty()) {
 					GUITools.setImageResourceOnImageView(R.id.imageView1, R.drawable.icon, v);
 	    	    }
@@ -54,5 +55,6 @@ public class EpisodeLayoutAdapter extends ModelEpisodeAdapter {
 			
         return v;
 	}
+
 }
 	

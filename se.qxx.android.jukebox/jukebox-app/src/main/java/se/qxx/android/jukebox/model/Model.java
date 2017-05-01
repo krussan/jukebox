@@ -13,6 +13,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
+import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 
 public class Model {
@@ -26,6 +27,7 @@ public class Model {
 	private int currentMovieId = -1;
 	private int currentSeriesId = -1;
 	private int currentSeasonId = -1;
+    private int currentEpisodeId = -1;
 
 	private String currentSub = StringUtils.EMPTY;
 	private int currentMediaId = -1;
@@ -168,6 +170,23 @@ public class Model {
         return null;
     }
 
+    public int getCurrentEpsiodeIndex() {
+        return this.currentEpisodeId;
+    }
+
+    public Episode getCurrentEpisode() {
+        Season season = this.getCurrentSeason();
+
+        if (season != null) {
+            if (this.currentEpisodeId >= 0 && this.currentEpisodeId < season.getEpisodeCount())
+                return season.getEpisode(this.currentEpisodeId);
+            else
+                return null;
+        }
+
+        return null;
+    }
+
     public int getCurrentSeasonIndex() {
         return this.currentSeasonId;
     }
@@ -289,6 +308,11 @@ public class Model {
 
     public void setCurrentSeason(int index) {
         this.currentSeasonId = index;
+        this.currentMediaId = 0;
+    }
+
+    public void setCurrentEpisode(int index) {
+        this.currentEpisodeId = index;
         this.currentMediaId = 0;
     }
 

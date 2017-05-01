@@ -15,7 +15,6 @@ import se.qxx.android.jukebox.model.ModelUpdatedType;
 import se.qxx.android.jukebox.model.Model.ModelUpdatedEventListener;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
-import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
 
 import android.content.Intent;
@@ -142,6 +141,7 @@ public class JukeboxFragment extends ListFragment implements
                 Model.get().setCurrentMovie(pos);
 
                 Intent i = new Intent(arg1.getContext(), FlipperActivity.class);
+                i.putExtra("mode", "main");
                 startActivity(i);
             } else {
                 Model.get().setCurrentSeries(pos);
@@ -161,7 +161,15 @@ public class JukeboxFragment extends ListFragment implements
 
             startActivity(intentSeries);
         }
-	}
+
+        if (StringUtils.equalsIgnoreCase(this.mode, "epsiode")) {
+            Model.get().setCurrentEpisode(pos);
+
+            Intent i = new Intent(arg1.getContext(), FlipperActivity.class);
+            i.putExtra("mode", "episode");
+            startActivity(i);
+        }
+    }
 
 	@Override
 	public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int arg2,

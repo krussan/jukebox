@@ -4,7 +4,7 @@
      
       <groupId>se.qxx.jukebox</groupId>
       <artifactId>jukebox-comm</artifactId>
-      <version>1.0.19</version>
+      <version>1.0.21</version>
       <packaging>jar</packaging>
      
       <name>Jukebox communications library</name>
@@ -97,7 +97,7 @@
 				            <goal>increment</goal>
 				            <goal>commit</goal>
 					    </goals>
-					    <phase>install</phase>
+					    <phase>package</phase>
 					    <configuration>
 					            <autoIncrementVersion>true</autoIncrementVersion>
 					    </configuration>

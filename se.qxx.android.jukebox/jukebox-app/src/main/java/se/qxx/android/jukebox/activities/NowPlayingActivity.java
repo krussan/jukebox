@@ -20,7 +20,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseIsPlaying;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseStartMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
-
+import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -37,6 +37,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager;
+import com.google.protobuf.ByteString;
 import com.google.protobuf.RpcCallback;
 
 public class NowPlayingActivity extends AppCompatActivity
@@ -195,26 +196,43 @@ public class NowPlayingActivity extends AppCompatActivity
 
     private void initializeView() {
         try {
-            Movie m = Model.get().getCurrentMovie();
-            View rootView = GUITools.getRootView(this);
+            String mode = getIntent().getExtras().getString("mode");
 
-            if (!m.getImage().isEmpty()) {
-                Bitmap bm = GUITools.getBitmapFromByteArray(m.getImage().toByteArray());
-                Bitmap scaledImage = GUITools.scaleImage(300, bm, this);
-                GUITools.setImageOnImageView(R.id.imgNowPlaying, scaledImage, rootView);
+            if (StringUtils.equalsIgnoreCase(mode, "episode")) {
+                Episode ep = Model.get().getCurrentEpisode();
+                initializeView(String.format("S%sE%s - %s",
+                        Model.get().getCurrentSeason().getSeasonNumber(),
+                        ep.getEpisodeNumber(),
+                        ep.getTitle()),
+                    ep.getImage());
+
+            }
+            else {
+                Movie m = Model.get().getCurrentMovie();
+                initializeView(m.getTitle(), m.getImage());
             }
 
-            GUITools.setTextOnTextview(R.id.lblNowPlayingTitle, m.getTitle(), rootView);
-
-
             if (ChromeCastConfiguration.isChromeCastActive())
-                initializeChromecast(m);
+                initializeChromecast();
             else
                 initializeJukeboxCast();
 
         } catch (Exception e) {
             Logger.Log().e("Unable to initialize NowPlayingActivity", e);
         }
+    }
+
+    private void initializeView(String title, ByteString image) {
+        View rootView = GUITools.getRootView(this);
+
+        if (!image.isEmpty()) {
+            Bitmap bm = GUITools.getBitmapFromByteArray(image.toByteArray());
+            Bitmap scaledImage = GUITools.scaleImage(300, bm, this);
+            GUITools.setImageOnImageView(R.id.imgNowPlaying, scaledImage, rootView);
+        }
+
+        GUITools.setTextOnTextview(R.id.lblNowPlayingTitle, title, rootView);
+
     }
 
     private void initializeJukeboxCast() {
@@ -227,26 +245,15 @@ public class NowPlayingActivity extends AppCompatActivity
         comm.isPlaying(JukeboxSettings.get().getCurrentMediaPlayer(), new OnStatusComplete());
     }
 
-    private void initializeChromecast(Movie m) {
+    private void initializeChromecast() {
         ChromeCastConfiguration.initialize(this);
 
         comm.startMovie(
                 JukeboxSettings.get().getCurrentMediaPlayer(),
                 Model.get().getCurrentMovie(),
+                Model.get().getCurrentEpisode(),
                 new OnChromecastStartComplete(this));
 
-
-/*		m.getMedia(0).get
-        MediaInfo mi = new MediaInfo.Builder().build();
-
-
-		mCastManager.startVideoCastControllerActivity(this, mediaInfo, 0, true);*/
-		/*		mMediaRouter = MediaRouter.getInstance(getApplicationContext());
-		mMediaRouteSelector = new MediaRouteSelector.Builder()
-				.addControlCategory(CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID)
-				.build();
-
-		mChromecastCallback = new ChromecastCallback();*/
     }
 
     //endregion
