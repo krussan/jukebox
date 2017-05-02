@@ -50,6 +50,18 @@ public class NowPlayingActivity extends AppCompatActivity
     ChromecastCallback mChromecastCallback = null;
     JukeboxCastConsumer mCastConsumer = null;
 
+    private String getMode() {
+        return getIntent().getExtras().getString("mode");
+    }
+
+    private boolean isMovieMode() {
+        return StringUtils.equalsIgnoreCase(this.getMode(), "main");
+    }
+
+    private boolean isEpisodeMode() {
+        return StringUtils.equalsIgnoreCase(this.getMode(), "episode");
+    }
+
     //region --CALLBACKS--
 
     private class OnStatusComplete implements RpcCallback<JukeboxResponseIsPlaying> {
@@ -61,9 +73,7 @@ public class NowPlayingActivity extends AppCompatActivity
                 comm.getTitle(JukeboxSettings.get().getCurrentMediaPlayer(), new OnGetTitleComplete());
             } else {
                 Logger.Log().d("Request --- StartMovie");
-                comm.startMovie(
-                        JukeboxSettings.get().getCurrentMediaPlayer(),
-                        Model.get().getCurrentMovie(), new OnStartMovieComplete());
+                startMovie();
             }
         }
     }
@@ -169,7 +179,7 @@ public class NowPlayingActivity extends AppCompatActivity
                 @Override
                 public void run() {
                     Logger.Log().d("Request --- StartMovie");
-                    comm.startMovie(JukeboxSettings.get().getCurrentMediaPlayer(), Model.get().getCurrentMovie(), new OnStartMovieComplete());
+                    startMovie();
                 }
             });
             t.start();
@@ -196,7 +206,7 @@ public class NowPlayingActivity extends AppCompatActivity
 
     private void initializeView() {
         try {
-            String mode = getIntent().getExtras().getString("mode");
+            String mode = getMode()
 
             if (StringUtils.equalsIgnoreCase(mode, "episode")) {
                 Episode ep = Model.get().getCurrentEpisode();
@@ -248,11 +258,7 @@ public class NowPlayingActivity extends AppCompatActivity
     private void initializeChromecast() {
         ChromeCastConfiguration.initialize(this);
 
-        comm.startMovie(
-                JukeboxSettings.get().getCurrentMediaPlayer(),
-                Model.get().getCurrentMovie(),
-                Model.get().getCurrentEpisode(),
-                new OnChromecastStartComplete(this));
+        startMovie();
 
     }
 
@@ -403,15 +409,28 @@ public class NowPlayingActivity extends AppCompatActivity
     }
 
     private void startMovie() {
+        RpcCallback<JukeboxResponseStartMovie> callback;
+
         if (StringUtils.equalsIgnoreCase(JukeboxSettings.get().getCurrentMediaPlayer(), "ChromeCast")) {
-
-
+            callback = new OnChromecastStartComplete(this);
         } else {
-            comm.startMovie(
-                    JukeboxSettings.get().getCurrentMediaPlayer(),
-                    Model.get().getCurrentMovie(),
-                    new OnStartMovieComplete());
+            callback = new OnStartMovieComplete();
         }
+
+        Movie m = null;
+        Episode ep = null;
+        if (this.isMovieMode())
+            m = Model.get().getCurrentMovie();
+
+        if (this.isEpisodeMode())
+            ep = Model.get().getCurrentEpisode();
+
+        comm.startMovie(
+                JukeboxSettings.get().getCurrentMediaPlayer(),
+                m,
+                ep,
+                callback);
+
     }
 
     //endregion
