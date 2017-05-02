@@ -206,9 +206,7 @@ public class NowPlayingActivity extends AppCompatActivity
 
     private void initializeView() {
         try {
-            String mode = getMode()
-
-            if (StringUtils.equalsIgnoreCase(mode, "episode")) {
+            if (this.isEpisodeMode()) {
                 Episode ep = Model.get().getCurrentEpisode();
                 initializeView(String.format("S%sE%s - %s",
                         Model.get().getCurrentSeason().getSeasonNumber(),
