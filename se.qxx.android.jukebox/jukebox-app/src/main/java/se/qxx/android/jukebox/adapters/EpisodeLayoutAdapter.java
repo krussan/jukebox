@@ -1,6 +1,7 @@
 package se.qxx.android.jukebox.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,13 +9,15 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import se.qxx.android.jukebox.R;
+import se.qxx.android.jukebox.activities.NowPlayingActivity;
+import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.jukebox.model.ModelEpisodeAdapter;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 
-public class EpisodeLayoutAdapter extends ModelEpisodeAdapter {
+public class EpisodeLayoutAdapter extends ModelEpisodeAdapter implements View.OnClickListener {
 
 	private Context context;
 	public EpisodeLayoutAdapter(Context context, Season season) {
@@ -47,6 +50,11 @@ public class EpisodeLayoutAdapter extends ModelEpisodeAdapter {
 					Bitmap scaledImage = GUITools.scaleImage(80, image, v.getContext());
 					GUITools.setImageOnImageView(R.id.imageView1, scaledImage, v);
 	    	    }
+
+	    	    ImageButton btnPlayEpisode = (ImageButton) v.findViewById(R.id.btnPlayEpisode);
+                btnPlayEpisode.setTag(position);
+                btnPlayEpisode.setOnClickListener(this);
+
 	    	}
 		}
 		catch (Exception e) {
@@ -56,5 +64,19 @@ public class EpisodeLayoutAdapter extends ModelEpisodeAdapter {
         return v;
 	}
 
+	@Override
+	public void onClick(View view) {
+
+        int position = (int) view.getTag();
+        Model.get().setCurrentEpisode(position);
+
+		switch (view.getId()) {
+			case R.id.btnPlayEpisode:
+				Intent iPlay = new Intent(this.context, NowPlayingActivity.class);
+                iPlay.putExtra("mode", "episode");
+				context.startActivity(iPlay);
+				break;
+		}
+	}
 }
 	

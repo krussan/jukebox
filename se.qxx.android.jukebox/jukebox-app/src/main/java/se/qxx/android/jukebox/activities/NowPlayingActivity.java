@@ -55,12 +55,10 @@ public class NowPlayingActivity extends AppCompatActivity
     }
 
     private boolean isMovieMode() {
-        return StringUtils.equalsIgnoreCase(this.getMode(), "main");
+        return StringUtils.equalsIgnoreCase(this.getMode(), "main") || StringUtils.isEmpty(this.getMode());
     }
 
-    private boolean isEpisodeMode() {
-        return StringUtils.equalsIgnoreCase(this.getMode(), "episode");
-    }
+    private boolean isEpisodeMode() { return StringUtils.equalsIgnoreCase(this.getMode(), "episode"); }
 
     //region --CALLBACKS--
 
@@ -139,8 +137,11 @@ public class NowPlayingActivity extends AppCompatActivity
 
         private Activity parentContext;
 
-        public OnChromecastStartComplete(Activity parentContext) {
+        private String title;
+
+        public OnChromecastStartComplete(Activity parentContext, String title) {
             this.parentContext = parentContext;
+            this.title = title;
         }
 
         /***
@@ -160,7 +161,7 @@ public class NowPlayingActivity extends AppCompatActivity
 
                 mCastConsumer = new JukeboxCastConsumer(
                         this.parentContext,
-                        Model.get().getCurrentMovie().getTitle(),
+                        this.title,
                         response.getSubtitleList(),
                         response.getUri(),
                         response.getSubtitleUrisList());
@@ -168,6 +169,16 @@ public class NowPlayingActivity extends AppCompatActivity
                 mCastManager.addVideoCastConsumer(mCastConsumer);
             }
         }
+    }
+
+    private String getHeadTitle() {
+        if (this.isMovieMode())
+            return Model.get().getCurrentMovie().getTitle();
+
+        if (this.isEpisodeMode())
+            return Model.get().getCurrentEpisode().getTitle();
+
+        return StringUtils.EMPTY;
     }
 
     private class OnStopMovieComplete implements RpcCallback<Empty> {
@@ -410,7 +421,7 @@ public class NowPlayingActivity extends AppCompatActivity
         RpcCallback<JukeboxResponseStartMovie> callback;
 
         if (StringUtils.equalsIgnoreCase(JukeboxSettings.get().getCurrentMediaPlayer(), "ChromeCast")) {
-            callback = new OnChromecastStartComplete(this);
+            callback = new OnChromecastStartComplete(this, this.getHeadTitle());
         } else {
             callback = new OnStartMovieComplete();
         }

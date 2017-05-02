@@ -39,10 +39,10 @@
         />        
 
         <ImageButton
-            android:id="@+id/imgPlayEpisode"
+            android:id="@+id/btnPlayEpisode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignRight="@id/toptext"
+            android:layout_alignRight="@id/txtDescription"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:src="@android:drawable/ic_media_play"

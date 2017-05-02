@@ -53,6 +53,7 @@ dependencies {
     compile 'se.qxx.jukebox:jukebox-comm:1.0.20'
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'com.google.protobuf:protobuf-java:2.4.1'
+    compile 'com.googlecode:protobuf-socket-rpc:2.0'
     compile 'se.qxx.android.tools:android-tools:1.0.2'
     compile 'com.google.android.libraries.cast.companionlibrary:ccl:2.8.3'
 }
