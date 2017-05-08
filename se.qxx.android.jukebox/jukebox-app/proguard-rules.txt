@@ -5,4 +5,5 @@
 -dontwarn android.support.**
 
 -keep class se.qxx.jukebox.domain.** { *; }
--keep com.google.protobuf.** { *; }
+-keep class com.google.protobuf.** { *; }
+-keep class com.googlecode.protobuf.socketrpc.** { *; }
