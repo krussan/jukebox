@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.libraries.cast.companionlibrary.cast.CastConfiguration;
 import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager;
 
 public class FlipperListActivity extends AppCompatActivity {
@@ -35,10 +36,14 @@ public class FlipperListActivity extends AppCompatActivity {
 
 		ChromeCastConfiguration.initialize(this);
         pager = (ViewPager)this.getRootView();
-        
-        JukeboxFragmentAdapter mfa = new JukeboxFragmentAdapter(getSupportFragmentManager());
+
+        String mode = "main";
+        if (getIntent() != null && getIntent().getExtras() != null)
+            mode = getIntent().getExtras().getString("mode", "main");
+
+        JukeboxFragmentAdapter mfa = new JukeboxFragmentAdapter(getSupportFragmentManager(), mode);
+
         pager.setAdapter(mfa);
-        
         pager.setCurrentItem(Model.get().getCurrentMovieIndex());
     }
 
@@ -51,6 +56,20 @@ public class FlipperListActivity extends AppCompatActivity {
 		return true;
 	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
+
+		ChromeCastConfiguration.onResume();
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+
+		ChromeCastConfiguration.onPause();
+	}
+
 	public void onButtonClicked(View v) {
 		int id = v.getId();
 		GUITools.vibrate(28, v.getContext());
@@ -58,6 +77,7 @@ public class FlipperListActivity extends AppCompatActivity {
 		switch (id) {
 			case R.id.btnPlay:
 				Intent iPlay = new Intent(v.getContext(), NowPlayingActivity.class);
+				iPlay.putExtra("mode", "main");
 				startActivity(iPlay);
 				break;	
 			case R.id.btnViewInfo:

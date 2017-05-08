@@ -5,6 +5,7 @@ import java.util.EventObject;
 import se.qxx.android.jukebox.ActionDialog;
 import se.qxx.android.jukebox.Connector;
 import se.qxx.android.jukebox.activities.FlipperActivity;
+import se.qxx.android.jukebox.activities.FlipperListActivity;
 import se.qxx.android.jukebox.activities.JukeboxPreferenceActivity;
 import se.qxx.android.jukebox.activities.PlayerPickerActivity;
 import se.qxx.android.jukebox.R;
@@ -29,13 +30,19 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class JukeboxFragment extends ListFragment implements
 	ModelUpdatedEventListener, OnItemClickListener, OnItemLongClickListener, OnClickListener {
 		
 	private int position;
+    private String mode;
+
 	private MovieLayoutAdapter _jukeboxMovieLayoutAdapter;
 	private SeriesLayoutAdapter _seriesLayoutAdapter;
-	
+	private SeasonLayoutAdapter _seasonLayoutAdapter;
+    private EpisodeLayoutAdapter _episodeLayoutAdapter;
+
 	private Runnable modelResultUpdatedRunnable = new Runnable() {
 
 		@Override
@@ -45,16 +52,23 @@ public class JukeboxFragment extends ListFragment implements
 			
 			if (_seriesLayoutAdapter != null)
 				_seriesLayoutAdapter.notifyDataSetChanged();
+
+            if (_seasonLayoutAdapter != null)
+                _seasonLayoutAdapter.notifyDataSetChanged();
+
+            if (_episodeLayoutAdapter != null)
+                _episodeLayoutAdapter.notifyDataSetChanged();
 		}
 	};
 
 
 	
-	public static JukeboxFragment newInstance(int position) {
+	public static JukeboxFragment newInstance(int position, String mode) {
 		Bundle b = new Bundle();
 		JukeboxFragment mf = new JukeboxFragment();
 		
 		b.putInt("position", position);
+        b.putString("mode", mode);
 		mf.setArguments(b);
 		
 		return mf;
@@ -67,6 +81,7 @@ public class JukeboxFragment extends ListFragment implements
 		Bundle b = getArguments();
 		if (b != null) {
 			this.position = b.getInt("position");
+            this.mode = b.getString("mode");
 		}
 	}	
 	
@@ -78,10 +93,6 @@ public class JukeboxFragment extends ListFragment implements
 	}
 	
 	private void initializeView(View v, int position) {
-//		super.onCreate(savedInstanceState);
-//		setContentView(R.layout.main);
-//		JukeboxSettings.init(this);
-
 		ListView lv = (ListView) v.findViewById(R.id.listView1);
 		lv.setOnItemClickListener(this);
 		lv.setOnItemLongClickListener(this);
@@ -93,14 +104,26 @@ public class JukeboxFragment extends ListFragment implements
 		v.findViewById(R.id.btnOn).setOnClickListener(this);
 		v.findViewById(R.id.btnOff).setOnClickListener(this);
 
-		if (position == 0) {
-			_jukeboxMovieLayoutAdapter = new MovieLayoutAdapter(v.getContext());
-			lv.setAdapter(_jukeboxMovieLayoutAdapter);
-		}
-		else {
-			_seriesLayoutAdapter = new SeriesLayoutAdapter(v.getContext());
-			lv.setAdapter(_seriesLayoutAdapter);
-		}
+        if (StringUtils.equalsIgnoreCase(this.mode, "main")) {
+            if (position == 0) {
+                _jukeboxMovieLayoutAdapter = new MovieLayoutAdapter(v.getContext());
+                lv.setAdapter(_jukeboxMovieLayoutAdapter);
+            }
+            else {
+                _seriesLayoutAdapter = new SeriesLayoutAdapter(v.getContext());
+                lv.setAdapter(_seriesLayoutAdapter);
+            }
+        }
+
+        if (StringUtils.equalsIgnoreCase(this.mode, "season")) {
+            _seasonLayoutAdapter = new SeasonLayoutAdapter(v.getContext(), Model.get().getCurrentSeries());
+            lv.setAdapter(_seasonLayoutAdapter);
+        }
+
+        if (StringUtils.equalsIgnoreCase(this.mode, "episode")) {
+            _episodeLayoutAdapter = new EpisodeLayoutAdapter(v.getContext(), Model.get().getCurrentSeason());
+            lv.setAdapter(_episodeLayoutAdapter);
+        }
 
 		Model.get().addEventListener(this);
 
@@ -113,15 +136,40 @@ public class JukeboxFragment extends ListFragment implements
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
-		if (this.position == 0) {
-			Model.get().setCurrentMovie(pos);
-			Intent i = new Intent(arg1.getContext(), FlipperActivity.class);
-			startActivity(i);
-		}
-		else {
-			Toast.makeText(this.getActivity(), "Should display the new series!", Toast.LENGTH_SHORT).show();
-		}
-	}
+        if (StringUtils.equalsIgnoreCase(this.mode, "main")) {
+            if (this.position == 0) {
+                Model.get().setCurrentMovie(pos);
+
+                Intent i = new Intent(arg1.getContext(), FlipperActivity.class);
+                i.putExtra("mode", "main");
+                startActivity(i);
+            } else {
+                Model.get().setCurrentSeries(pos);
+                Intent intentSeries = new Intent(this.getActivity(), FlipperListActivity.class);
+                intentSeries.putExtra("mode", "Season");
+
+                startActivity(intentSeries);
+
+                //Toast.makeText(this.getActivity(), "Should display the new series!", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        if (StringUtils.equalsIgnoreCase(this.mode, "season")) {
+            Model.get().setCurrentSeason(pos);
+            Intent intentSeries = new Intent(this.getActivity(), FlipperListActivity.class);
+            intentSeries.putExtra("mode", "episode");
+
+            startActivity(intentSeries);
+        }
+
+        if (StringUtils.equalsIgnoreCase(this.mode, "epsiode")) {
+            Model.get().setCurrentEpisode(pos);
+
+            Intent i = new Intent(arg1.getContext(), FlipperActivity.class);
+            i.putExtra("mode", "episode");
+            startActivity(i);
+        }
+    }
 
 	@Override
 	public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int arg2,

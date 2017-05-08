@@ -1,6 +1,7 @@
 package se.qxx.android.jukebox;
 
 import android.app.Activity;
+import android.widget.Toast;
 
 import com.google.android.gms.cast.ApplicationMetadata;
 import com.google.android.gms.cast.CastStatusCodes;
@@ -98,11 +99,12 @@ public class JukeboxCastConsumer extends VideoCastConsumerImpl {
                 mCastManager.setActiveTrackIds(new long[]{1});
         }
         else {
+
+            Toast.makeText(this.parentActivity, String.format("Error loading file: %s", CastStatusCodes.getStatusCodeString(statusCode)), Toast.LENGTH_LONG);
             Logger.Log().e(String.format("onMediaLoadResult :: %s - %s", statusCode, CastStatusCodes.getStatusCodeString(statusCode)));
 
             if (mCastManager != null) {
                 mCastManager.removeVideoCastConsumer(this);
-                mCastManager.disconnect();
             }
         }
     }
@@ -128,7 +130,14 @@ public class JukeboxCastConsumer extends VideoCastConsumerImpl {
         Logger.Log().e(String.format("onDataMessageSendFailed :: %s", errorCode));
     }
 
-    protected void startCastVideo() {
+    public boolean isConnected() {
+        if (mCastManager == null)
+            return false;
+
+        return mCastManager.isConnected();
+    }
+
+    public void startCastVideo() {
         if (mCastManager != null) {
             MediaMetadata md = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
             md.putString(MediaMetadata.KEY_TITLE, this.title);

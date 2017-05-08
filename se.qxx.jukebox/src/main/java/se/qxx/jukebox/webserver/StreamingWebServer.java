@@ -64,7 +64,7 @@ public class StreamingWebServer extends NanoHTTPD {
 		String streamingFile = String.format("stream%s.%s", iter, extension);
 		streamingMap.put(streamingFile, file);
 		
-		Log.Info(String.format("Registering file %s", streamingFile), LogType.WEBSERVER);
+		Log.Info(String.format("Registering file %s :: %s", streamingFile, file), LogType.WEBSERVER);
 		
 		return getStreamUri(streamingFile);
 	}
@@ -114,7 +114,7 @@ public class StreamingWebServer extends NanoHTTPD {
         // This server only serves specific stream uri's  
         Log.Info(String.format("Requesting file :: %s", uri), LogType.WEBSERVER);
         
-        if (!uri.startsWith("stream") || (!uri.endsWith(".mp4") && !uri.endsWith(".vtt"))) 
+        if (!uri.startsWith("stream")) 
         	return getForbiddenResponse("Won't serve anything else than registered files for streaming.");
 
         //TODO: If stream filename is not in one of the added files return

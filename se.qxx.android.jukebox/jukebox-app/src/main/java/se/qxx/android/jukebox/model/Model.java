@@ -7,15 +7,28 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.Typed;
 
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
+import se.qxx.jukebox.domain.JukeboxDomain.Season;
+import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 
 public class Model {
-	
+
+    public enum ModelType {
+        Movie,
+        Series,
+        Season
+    }
+
 	private int currentMovieId = -1;
+	private int currentSeriesId = -1;
+	private int currentSeasonId = -1;
+    private int currentEpisodeId = -1;
+
 	private String currentSub = StringUtils.EMPTY;
 	private int currentMediaId = -1;
 	private boolean initialized = false;
@@ -133,7 +146,53 @@ public class Model {
 		return this.currentMovieId;
 	}
 
-	public Movie getPreviousMovie() {
+	public Series getCurrentSeries() {
+		if (this.currentSeriesId >= 0 && this.currentSeriesId < this._series.size())
+			return this._series.get(this.currentSeriesId);
+		else
+			return null;
+	}
+
+	public int getCurrentSeriesIndex() {
+		return this.currentSeriesId;
+	}
+
+    public Season getCurrentSeason() {
+        Series series = this.getCurrentSeries();
+
+        if (series != null) {
+            if (this.currentSeasonId >= 0 && this.currentSeasonId < series.getSeasonCount())
+                return series.getSeason(this.currentSeasonId);
+            else
+                return null;
+        }
+
+        return null;
+    }
+
+    public int getCurrentEpsiodeIndex() {
+        return this.currentEpisodeId;
+    }
+
+    public Episode getCurrentEpisode() {
+        Season season = this.getCurrentSeason();
+
+        if (season != null) {
+            if (this.currentEpisodeId >= 0 && this.currentEpisodeId < season.getEpisodeCount())
+                return season.getEpisode(this.currentEpisodeId);
+            else
+                return null;
+        }
+
+        return null;
+    }
+
+    public int getCurrentSeasonIndex() {
+        return this.currentSeasonId;
+    }
+
+
+    public Movie getPreviousMovie() {
 		if (this.currentMovieId == 0)
 			return this._movies.get(this._movies.size() == 0 ? 0 : this._movies.size() - 1);
 		else
@@ -145,9 +204,49 @@ public class Model {
 			return this._movies.get(0);
 		else
 			return this._movies.get(this.currentMovieId + 1);
-	}	
-	
-	public void currentMovieSetNext() {
+	}
+
+	public Series getPreviousSeries() {
+		if (this.currentSeriesId == 0)
+			return this._series.get(this._series.size() == 0 ? 0 : this._series.size() - 1);
+		else
+			return this._series.get(this.currentSeriesId - 1);
+	}
+
+	public Series getNextSeries() {
+		if (this.currentSeriesId == this._series.size() - 1)
+			return this._series.get(0);
+		else
+			return this._series.get(this.currentSeriesId + 1);
+	}
+
+    public Season getPreviousSeason() {
+        Series series = this.getCurrentSeries();
+
+        if (series != null) {
+            if (this.currentSeasonId == 0)
+                return series.getSeason(series.getSeasonCount() == 0 ? 0 : series.getSeasonCount() - 1);
+            else
+                return series.getSeason(this.currentSeasonId - 1);
+        }
+
+        return null;
+    }
+
+    public Season getNextSeason() {
+        Series series = this.getCurrentSeries();
+
+        if (series != null) {
+            if (this.currentSeasonId == series.getSeasonCount() - 1)
+                return series.getSeason(0);
+            else
+                return series.getSeason(this.currentSeasonId + 1);
+        }
+
+        return null;
+    }
+
+    public void currentMovieSetNext() {
 		this.currentMovieId++;
 		this.currentMediaId = 0;
 		if (this.currentMovieId == this._movies.size())
@@ -160,11 +259,62 @@ public class Model {
 		if (this.currentMovieId < 0)
 			this.currentMovieId = this._movies.size() == 0 ? 0 : this._movies.size() - 1;
 	}
-	
+
+	public void currentSeriesSetNext() {
+		this.currentSeriesId++;
+		this.currentMediaId = 0;
+		if (this.currentSeriesId == this._series.size())
+			this.currentSeriesId = 0;
+	}
+
+	public void currentSeriesSetPrevious() {
+		this.currentSeriesId--;
+		this.currentMediaId = 0;
+		if (this.currentSeriesId < 0)
+			this.currentSeriesId = this._series.size() == 0 ? 0 : this._series.size() - 1;
+	}
+
+    public void currentSeasonSetNext() {
+        Series series = this.getCurrentSeries();
+
+        if (series != null) {
+            this.currentSeasonId++;
+            this.currentMediaId = 0;
+            if (this.currentSeasonId == series.getSeasonCount())
+                this.currentSeasonId = 0;
+        }
+    }
+
+    public void currentSeasonSetPrevious() {
+        Series series = this.getCurrentSeries();
+
+        if (series != null) {
+            this.currentSeasonId--;
+            this.currentMediaId = 0;
+            if (this.currentSeasonId < 0)
+                this.currentSeasonId = series.getSeasonCount() == 0 ? 0 : series.getSeasonCount() - 1;
+            }
+    }
+
 	public void setCurrentMovie(int index) {
 		this.currentMovieId = index;
 		this.currentMediaId = 0;		
 	}
+
+	public void setCurrentSeries(int index) {
+		this.currentSeriesId = index;
+		this.currentMediaId = 0;
+	}
+
+    public void setCurrentSeason(int index) {
+        this.currentSeasonId = index;
+        this.currentMediaId = 0;
+    }
+
+    public void setCurrentEpisode(int index) {
+        this.currentEpisodeId = index;
+        this.currentMediaId = 0;
+    }
 
 	public void sortMovies() {
 		Collections.sort(_movies, new Comparator<Movie>() {

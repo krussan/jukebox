@@ -54,8 +54,8 @@ public class Distributor {
 		return list;
 	}
 	
-	public boolean startMovie(String hostName, Movie m) throws VLCConnectionNotFoundException {
-		return startMovie(hostName, m, StringUtils.EMPTY);
+	public boolean startMovie(String hostName, Media md) throws VLCConnectionNotFoundException {
+		return startMovie(hostName, md, StringUtils.EMPTY);
 	}
 	
 	/**
@@ -65,7 +65,7 @@ public class Distributor {
 	 * @return			True if the call succeeds
 	 * @throws VLCConnectionNotFoundException
 	 */
-	public boolean startMovie(String hostName, Movie m, String subFilename) throws VLCConnectionNotFoundException {
+	public boolean startMovie(String hostName, Media md, String subFilename) throws VLCConnectionNotFoundException {
 		if (!assertLiveConnection(hostName))
 			return false;
 		
@@ -74,36 +74,34 @@ public class Distributor {
 		String vlcSubsPath = vlcServer.getSubsPath();
 		String serverSubsPath = Settings.get().getSubFinders().getSubsPath();
 		
-		if (m != null) {
-			for (Media md : m.getMediaList()) {
-				String filepath = md.getFilepath();
-				for (Catalog c : Settings.get().getCatalogs().getCatalog()) {
-					Log.Debug(String.format("Comparing %s with %s", c.getPath(), filepath), Log.LogType.COMM);
-					if (filepath.startsWith(c.getPath())) {
-						Path vlcPath = findLocalPath(c, hostName);
-						if (vlcPath != null) {
-							String filename = filepath.replace(c.getPath(), vlcPath.getPath()) + "/" + md.getFilename();
-							String finalSubFilename = subFilename;
+		if (md != null) {
+			String filepath = md.getFilepath();
+			for (Catalog c : Settings.get().getCatalogs().getCatalog()) {
+				Log.Debug(String.format("Comparing %s with %s", c.getPath(), filepath), Log.LogType.COMM);
+				if (filepath.startsWith(c.getPath())) {
+					Path vlcPath = findLocalPath(c, hostName);
+					if (vlcPath != null) {
+						String filename = filepath.replace(c.getPath(), vlcPath.getPath()) + "/" + md.getFilename();
+						String finalSubFilename = subFilename;
+						
+						if (StringUtils.isEmpty(finalSubFilename)) {
+							// It appears that VLC RC interface only reads the first sub-file option specified
+							// in the command sent. No need to send more than one. We pick the top rated one by sorting
+							// the subtitles.
+							List<Subtitle> sortedSubtitles = Sorter.sortSubtitlesByRating(md.getSubsList());
 							
-							if (StringUtils.isEmpty(finalSubFilename)) {
-								// It appears that VLC RC interface only reads the first sub-file option specified
-								// in the command sent. No need to send more than one. We pick the top rated one by sorting
-								// the subtitles.
-								List<Subtitle> sortedSubtitles = Sorter.sortSubtitlesByRating(md.getSubsList());
-								
-								if (sortedSubtitles.size() > 0)
-									finalSubFilename = sortedSubtitles.get(0).getFilename();
-							}													
+							if (sortedSubtitles.size() > 0)
+								finalSubFilename = sortedSubtitles.get(0).getFilename();
+						}													
 
-							conn.enqueue(filename, finalSubFilename.replace(serverSubsPath, vlcSubsPath));
-							
-							return true;
-						}
-						else {
-							Log.Debug("Couldn't find vlc path in catalog", Log.LogType.COMM);
-						}
+						conn.enqueue(filename, finalSubFilename.replace(serverSubsPath, vlcSubsPath));
+						
+						return true;
 					}
-				} 
+					else {
+						Log.Debug("Couldn't find vlc path in catalog", Log.LogType.COMM);
+					}
+				}
 			}
 			Log.Debug("Couldn't find filepath in settings", Log.LogType.COMM);
 		}
@@ -196,7 +194,7 @@ public class Distributor {
 		return true; 
 	}
 	
-	public boolean restartWithSubtitle(String hostName, Movie m, String subFilename, boolean restartAtSamePosition) throws VLCConnectionNotFoundException {
+	public boolean restartWithSubtitle(String hostName, Media md, String subFilename, boolean restartAtSamePosition) throws VLCConnectionNotFoundException {
 		//get current time
 		String currentTime = getTime(hostName);
 		int seconds = Integer.parseInt(currentTime);
@@ -208,7 +206,7 @@ public class Distributor {
 		clearPlaylist(hostName);
 		
 		//add movie
-		startMovie(hostName, m, subFilename);
+		startMovie(hostName, md, subFilename);
 		
 		//seek
 		try {

@@ -86,6 +86,20 @@ public class PlayerPickerActivity extends AppCompatActivity implements ModelUpda
 	}
 
 	@Override
+	public void onResume() {
+		super.onResume();
+
+		ChromeCastConfiguration.onResume();
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+
+		ChromeCastConfiguration.onPause();
+	}
+
+	@Override
 	public void handleModelUpdatedEventListener(EventObject e) {
 		ModelUpdatedEvent ev = (ModelUpdatedEvent)e;
 
