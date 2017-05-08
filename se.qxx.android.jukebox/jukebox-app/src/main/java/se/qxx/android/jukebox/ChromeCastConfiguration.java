@@ -25,6 +25,7 @@ public class ChromeCastConfiguration {
                 .enableLockScreen()
                 .enableWifiReconnection()
                 .enableNotification()
+                .enableDebug()
                 .addNotificationAction(CastConfiguration.NOTIFICATION_ACTION_DISCONNECT, true)
                 .addNotificationAction(CastConfiguration.NOTIFICATION_ACTION_PLAY_PAUSE, true)
                 .build();
@@ -52,5 +53,13 @@ public class ChromeCastConfiguration {
             if (mCastManager != null)
                 mCastManager.addMediaRouterButton(menu, R.id.media_route_menu_item);
         }
+    }
+
+    public static void onResume() {
+        VideoCastManager.getInstance().incrementUiCounter();
+    }
+
+    public static void onPause() {
+        VideoCastManager.getInstance().decrementUiCounter();
     }
 }

@@ -50,14 +50,30 @@ public class FlipperActivity extends AppCompatActivity implements OnPageChangeLi
 
 		return true;
 	}
-        	
-	public void onButtonClicked(View v) {
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        ChromeCastConfiguration.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        ChromeCastConfiguration.onPause();
+    }
+
+
+    public void onButtonClicked(View v) {
 		int id = v.getId();
 		GUITools.vibrate(28, this);
 		
 		switch (id) {
 			case R.id.btnPlay:
 				Intent iPlay = new Intent(this, NowPlayingActivity.class);
+				iPlay.putExtra("mode", "main");
 				startActivity(iPlay);
 				break;	
 			case R.id.btnViewInfo:

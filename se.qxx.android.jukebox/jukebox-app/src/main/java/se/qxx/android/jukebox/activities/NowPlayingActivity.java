@@ -167,6 +167,9 @@ public class NowPlayingActivity extends AppCompatActivity
                         response.getSubtitleUrisList());
 
                 mCastManager.addVideoCastConsumer(mCastConsumer);
+
+                if (mCastManager.isConnected())
+                    mCastConsumer.startCastVideo();
             }
         }
     }
@@ -281,10 +284,7 @@ public class NowPlayingActivity extends AppCompatActivity
         if (seeker != null)
             seeker.stop();
 
-        VideoCastManager mCastManager = VideoCastManager.getInstance();
-
-        if (mCastManager != null)
-            mCastManager.decrementUiCounter();
+        ChromeCastConfiguration.onPause();
     }
 
     ;
@@ -300,17 +300,10 @@ public class NowPlayingActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
 
-        VideoCastManager mCastManager = VideoCastManager.getInstance();
+        if (seeker != null)
+            seeker.start();
 
-        if (mCastManager != null) {
-            // Start media router discovery
-            // mMediaRouter.addCallback( mMediaRouteSelector, mChromecastCallback, MediaRouter.CALLBACK_FLAG_PERFORM_ACTIVE_SCAN );
-            mCastManager = VideoCastManager.getInstance();
-            mCastManager.incrementUiCounter();
-        } else {
-            if (seeker != null)
-                seeker.start();
-        }
+        ChromeCastConfiguration.onResume();
     }
 
     ;
@@ -467,6 +460,7 @@ public class NowPlayingActivity extends AppCompatActivity
         ChromeCastConfiguration.createMenu(getMenuInflater(), menu);
         return true;
     }
+
 
     //endregion
 

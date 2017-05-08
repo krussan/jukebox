@@ -43,6 +43,20 @@ public class SubSelectActivity extends AppCompatActivity implements OnItemClickL
 		return true;
 	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
+
+		ChromeCastConfiguration.onResume();
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+
+		ChromeCastConfiguration.onPause();
+	}
+
 	private void initializeView() {
 	    Media md = Model.get().getCurrentMedia();
 	    View rootView = GUITools.getRootView(this);
