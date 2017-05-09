@@ -30,11 +30,11 @@ public class FlipperListActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.jukebox_main_wrapper);
-        
-		JukeboxSettings.init(this);
 
+		JukeboxSettings.init(this);
 		ChromeCastConfiguration.initialize(this);
+
+		setContentView(R.layout.jukebox_main_wrapper);
         pager = (ViewPager)this.getRootView();
 
         String mode = "main";

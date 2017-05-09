@@ -56,10 +56,17 @@ public class ChromeCastConfiguration {
     }
 
     public static void onResume() {
-        VideoCastManager.getInstance().incrementUiCounter();
+        if (isChromeCastActive()) {
+            VideoCastManager mCastManager = VideoCastManager.getInstance();
+
+            if (mCastManager != null)
+                mCastManager.incrementUiCounter();
+        }
     }
 
     public static void onPause() {
-        VideoCastManager.getInstance().decrementUiCounter();
+        if (isChromeCastActive()) {
+            VideoCastManager.getInstance().decrementUiCounter();
+        }
     }
 }

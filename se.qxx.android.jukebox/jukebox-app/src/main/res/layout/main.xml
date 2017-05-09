@@ -15,59 +15,77 @@
     <RelativeLayout 
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
-        <Button 
+
+        <ImageButton
             android:id="@+id/btnRefresh"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/btnrefresh"
-            android:onClick="onButtonClicked"
+            android:background="@null"
             android:layout_gravity="left"
-            />
+			android:src="@drawable/btnrefresh"
+			android:scaleType="centerInside"
+			android:gravity="center"
+        />
 
-		<Button 
+		<ImageButton
 		    android:id="@+id/btnSelectMediaPlayer" 
 		    android:layout_width="wrap_content" 
 		    android:layout_height="wrap_content"
 			android:onClick="onButtonClicked" 
 			android:layout_toRightOf="@id/btnRefresh"
-			android:background="@drawable/btnplayer"
+			android:src="@drawable/btnplayer"
+			android:scaleType="centerInside"
+			android:gravity="center"
+			android:background="@null"
 		/>
         
-		<Button 
+		<ImageButton
 		    android:id="@+id/btnCurrentMovie" 
 		    android:layout_width="wrap_content" 
 		    android:layout_height="wrap_content"
 			android:onClick="onButtonClicked" 
 			android:layout_toRightOf="@id/btnSelectMediaPlayer"
-			android:background="@drawable/btncurrent"
+			android:src="@drawable/btncurrent"
+			android:scaleType="centerInside"
+			android:gravity="center"
+			android:background="@null"
 		/>
 		
-		<Button 
+		<ImageButton
 		    android:id="@+id/btnPreferences" 
 		    android:layout_width="wrap_content" 
 		    android:layout_height="wrap_content"
 			android:onClick="onButtonClicked" 
 			android:layout_toRightOf="@id/btnCurrentMovie"
-			android:background="@drawable/btnsubtitles"
+			android:src="@drawable/btnsubtitles"
+			android:scaleType="centerInside"
+			android:gravity="center"
+			android:background="@null"
 		/>
 				
         
-		<Button 
-		    android:id="@+id/btnOn" 	
-		    android:layout_width="wrap_content" 
+		<ImageButton
+		    android:id="@+id/btnOn"
+		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
 			android:onClick="onButtonClicked"
-			android:background="@drawable/btnonoff"
+			android:src="@drawable/btnonoff"
 			android:layout_alignParentRight="true"
+			android:scaleType="centerInside"
+			android:gravity="center"
+			android:background="@null"
 		/>
 
-		<Button 
-		    android:id="@+id/btnOff" 	
-		    android:layout_width="wrap_content" 
+		<ImageButton
+		    android:id="@+id/btnOff"
+		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
 			android:onClick="onButtonClicked"
-			android:background="@drawable/btnonoffred"
+			android:src="@drawable/btnonoffred"
 			android:layout_alignParentRight="true"
+			android:scaleType="centerInside"
+			android:gravity="center"
+			android:background="@null"
 		/>
 		
 		<ListView
