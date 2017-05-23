@@ -3,7 +3,6 @@ package se.qxx.android.jukebox.activities;
 import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.android.jukebox.ChromeCastConfiguration;
-import se.qxx.android.jukebox.JukeboxCastConsumer;
 import se.qxx.android.jukebox.JukeboxSettings;
 import se.qxx.android.jukebox.OnListSubtitlesCompleteHandler;
 import se.qxx.android.jukebox.R;
@@ -14,6 +13,7 @@ import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
+import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Empty;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseGetTitle;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseIsPlaying;
@@ -36,9 +36,18 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.cast.MediaInfo;
+import com.google.android.gms.cast.MediaMetadata;
+import com.google.android.gms.cast.MediaTrack;
 import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager;
+import com.google.android.libraries.cast.companionlibrary.cast.exceptions.NoConnectionException;
+import com.google.android.libraries.cast.companionlibrary.cast.exceptions.TransientNetworkDisconnectionException;
+import com.google.android.libraries.cast.companionlibrary.cast.player.OnVideoCastControllerListener;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.RpcCallback;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class NowPlayingActivity extends AppCompatActivity
         implements OnSeekBarChangeListener, SeekerListener {
@@ -48,7 +57,6 @@ public class NowPlayingActivity extends AppCompatActivity
     private JukeboxConnectionHandler comm;
 
     ChromecastCallback mChromecastCallback = null;
-    JukeboxCastConsumer mCastConsumer = null;
 
     private String getMode() {
         return getIntent().getExtras().getString("mode");
@@ -59,6 +67,7 @@ public class NowPlayingActivity extends AppCompatActivity
     }
 
     private boolean isEpisodeMode() { return StringUtils.equalsIgnoreCase(this.getMode(), "episode"); }
+
 
     //region --CALLBACKS--
 
@@ -156,20 +165,7 @@ public class NowPlayingActivity extends AppCompatActivity
             VideoCastManager mCastManager = VideoCastManager.getInstance();
 
             if (mCastManager != null) {
-                if (mCastConsumer != null)
-                    mCastManager.removeVideoCastConsumer(mCastConsumer);
-
-                mCastConsumer = new JukeboxCastConsumer(
-                        this.parentContext,
-                        this.title,
-                        response.getSubtitleList(),
-                        response.getUri(),
-                        response.getSubtitleUrisList());
-
-                mCastManager.addVideoCastConsumer(mCastConsumer);
-
-                if (mCastManager.isConnected())
-                    mCastConsumer.startCastVideo();
+                startCastVideo(this.title, response.getSubtitleList(), response.getUri(), response.getSubtitleUrisList());
             }
         }
     }
@@ -464,4 +460,60 @@ public class NowPlayingActivity extends AppCompatActivity
 
     //endregion
 
+    //region -- CAST PLAYER --
+
+
+
+    public void startCastVideo(String title,
+                               List<JukeboxDomain.Subtitle> subs,
+                               String movieUri,
+                               List<String> subtitleUris) {
+
+        VideoCastManager mCastManager = VideoCastManager.getInstance();
+
+        if (mCastManager != null) {
+            MediaMetadata md = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
+            md.putString(MediaMetadata.KEY_TITLE, title);
+
+            List<MediaTrack> tracks = new ArrayList<MediaTrack>();
+
+            for (int i = 0; i < subtitleUris.size(); i++) {
+                if (i < subs.size()) {
+                    JukeboxDomain.Subtitle currentSub = subs.get(i);
+
+                    MediaTrack subtitle = new MediaTrack.Builder(i + 1, MediaTrack.TYPE_TEXT)
+                            .setContentId(subtitleUris.get(i))
+                            .setContentType("text/vtt")
+                            .setSubtype(MediaTrack.SUBTYPE_SUBTITLES)
+                            .setName(currentSub.getDescription())
+                            .setLanguage("en-US")
+                            .build();
+
+                    tracks.add(subtitle);
+
+                }
+
+            }
+
+            MediaInfo mi = new MediaInfo.Builder(movieUri)
+                    .setMetadata(md)
+                    .setMediaTracks(tracks)
+                    .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
+                    .setContentType("video/mp4")
+                    .build();
+
+            try {
+                mCastManager.loadMedia(mi, true, 0);
+
+            } catch (TransientNetworkDisconnectionException e) {
+                e.printStackTrace();
+            } catch (NoConnectionException e) {
+                e.printStackTrace();
+            }
+
+            //mCastManager.startVideoCastControllerActivity(this.parentActivity, mi, 0, true);
+
+        }
+    }
+        //endregion
 }
