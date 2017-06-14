@@ -186,6 +186,15 @@ public class NowPlayingActivity extends AppCompatActivity
 
                 if (mCastManager.isConnected())
                     startCastVideo(this.title, response.getUri(), response.getSubtitleUrisList(), response.getSubtitleList());
+
+                Thread t = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Logger.Log().d("Request --- ListSubtitles");
+                        comm.listSubtitles(Model.get().getCurrentMedia(), new OnListSubtitlesCompleteHandler());
+                    }
+                });
+                t.start();
             }
         }
     }
