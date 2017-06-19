@@ -8,6 +8,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.util.Collections;
@@ -20,6 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.commons.lang3.StringUtils;
 
 import fi.iki.elonen.InternalRewrite;
@@ -33,10 +36,16 @@ import fr.noop.subtitle.model.SubtitleWriter;
 import fr.noop.subtitle.srt.SrtObject;
 import fr.noop.subtitle.srt.SrtParser;
 import fr.noop.subtitle.vtt.VttWriter;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import freemarker.template.TemplateExceptionHandler;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import fi.iki.elonen.NanoHTTPD.Response;
+import se.qxx.jukebox.DB;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.tools.Util;
 
@@ -48,6 +57,8 @@ public class StreamingWebServer extends NanoHTTPD {
 	// maps stream name to actual file name
 	private Map<String, String> streamingMap = null;
 	private AtomicInteger streamingIterator;
+	
+	private Configuration templateConfig = null;
 	
 	public StreamingWebServer(String host, int port) {
 		super(host, port);
@@ -135,8 +146,8 @@ public class StreamingWebServer extends NanoHTTPD {
             return response != null ? response : getNotFoundResponse();        	
         }
 
-        if (uri.startsWith("index.html")) {
-        	
+        if (uri.equalsIgnoreCase("index.html")) {
+        	return serveRootHtml();
         }
 
         if (uri.startsWith("html")) {
@@ -151,7 +162,7 @@ public class StreamingWebServer extends NanoHTTPD {
         return getForbiddenResponse("Won't serve anything else than registered files for streaming.");
 
     }
-
+	
 	private String getUriWithoutArguments(String uri) {
 		// Remove URL arguments
         uri = uri.trim().replace(File.separatorChar, '/');
@@ -164,6 +175,17 @@ public class StreamingWebServer extends NanoHTTPD {
 		return uri;
 	}
 	
+	private Response serveRootHtml() {
+		List<Movie> movies = DB.searchMoviesByTitle("", false, true);
+		
+		try {
+			return createResponse(Response.Status.OK, NanoHTTPD.MIME_HTML, TemplateEngine.get().listMovies(movies));
+		} catch (IOException | TemplateException e) {
+			return createResponse(Response.Status.BAD_REQUEST, NanoHTTPD.MIME_PLAINTEXT, e.getMessage());
+		}
+		
+	}
+
 
     protected Response getForbiddenResponse(String s) {
         return createResponse(Response.Status.FORBIDDEN, NanoHTTPD.MIME_PLAINTEXT, "FORBIDDEN: "
