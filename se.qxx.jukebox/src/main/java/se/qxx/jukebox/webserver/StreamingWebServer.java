@@ -114,27 +114,42 @@ public class StreamingWebServer extends NanoHTTPD {
         // This server only serves specific stream uri's  
         Log.Info(String.format("Requesting file :: %s", uri), LogType.WEBSERVER);
         
-        if (!uri.startsWith("stream")) 
-        	return getForbiddenResponse("Won't serve anything else than registered files for streaming.");
+        if (uri.startsWith("stream")) {
+            //TODO: If stream filename is not in one of the added files return
+            // a not found response
+            if (!streamingMap.containsKey(uri))
+            	return getNotFoundResponse();
+            
+            // map the streaming uri to the actual file
+            File f = new File(streamingMap.get(uri));
+            
+            if (!f.exists())
+            	return getNotFoundResponse();
+            
+            String mimeTypeForFile = getMimeTypeForFile(uri);
 
-        //TODO: If stream filename is not in one of the added files return
-        // a not found response
-        if (!streamingMap.containsKey(uri))
-        	return getNotFoundResponse();
-        
-        // map the streaming uri to the actual file
-        File f = new File(streamingMap.get(uri));
-        
-        if (!f.exists())
-        	return getNotFoundResponse();
-        
-        String mimeTypeForFile = getMimeTypeForFile(uri);
+            Response response = serveFile(uri, headers, f, mimeTypeForFile);
+            
+            // enable CORS
+            response.addHeader("Access-Control-Allow-Origin", "*");
+            return response != null ? response : getNotFoundResponse();        	
+        }
 
-        Response response = serveFile(uri, headers, f, mimeTypeForFile);
-        
-        // enable CORS
-        response.addHeader("Access-Control-Allow-Origin", "*");
-        return response != null ? response : getNotFoundResponse();
+        if (uri.startsWith("index.html")) {
+        	
+        }
+
+        if (uri.startsWith("html")) {
+        	
+        }
+
+        if (uri.startsWith("image")) {
+        	
+        }
+        	
+        	
+        return getForbiddenResponse("Won't serve anything else than registered files for streaming.");
+
     }
 
 	private String getUriWithoutArguments(String uri) {
