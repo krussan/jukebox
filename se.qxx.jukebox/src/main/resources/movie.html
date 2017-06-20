@@ -1,0 +1,17 @@
+<html>
+	<head><link rel="stylesheet" href="css"></head>
+	<body>
+		<h1>${movie.title}</h1>
+		<div id="imgMovie">
+			<img src="image${movie.ID}"/>
+		</div>
+		<div id="movieInfo">
+			<ul>
+				<li>${movie.year}</li>
+				<li>${movie.type}</li>
+				<li>${movie.rating}</li>
+				<li><a href="http://imdb.com/${movie.imdbUrl}">imdb</a></li>
+			</ul>
+		</div>
+	</body>
+</html>

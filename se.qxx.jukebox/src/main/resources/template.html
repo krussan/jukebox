@@ -1,10 +1,10 @@
 <html>
-	<head></head>
+	<head><link rel="stylesheet" href="css"></head>
 	<body>
 		<h1>Jukebox repository<h1>
 		<table>
 			<#list movies as movie>
-				<tr><td><a href="movie${movie.ID}.html">${movie.title}</a></tr></td>
+				<tr><td><img src="thumb${movie.ID}"/><a href="movie${movie.ID}.html">${movie.title}</a></td></tr>
 			</#list>
 		</table>
 	</body>

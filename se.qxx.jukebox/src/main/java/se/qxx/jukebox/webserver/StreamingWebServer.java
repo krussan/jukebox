@@ -1,6 +1,7 @@
 package se.qxx.jukebox.webserver;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.Inet4Address;
@@ -19,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.xml.ws.soap.AddressingFeature.Responses;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -150,12 +154,30 @@ public class StreamingWebServer extends NanoHTTPD {
         	return serveRootHtml();
         }
 
-        if (uri.startsWith("html")) {
+        if (uri.startsWith("movie")) {
+        	int id = Integer.parseInt(uri.replaceAll("movie", "").replaceAll(".html", ""));
         	
+        	return serveMovieHtml(id);
+        }
+
+        if (uri.startsWith("thumb")) {
+        	int id = Integer.parseInt(uri.replaceAll("thumb", ""));
+        	
+        	return serveThumbnail(id);
         }
 
         if (uri.startsWith("image")) {
+        	int id = Integer.parseInt(uri.replaceAll("image", ""));
         	
+        	return serveImage(id);
+        }
+
+        if (uri.startsWith("css")) {
+        	try {
+				return serveCss();
+			} catch (IOException e) {
+				createResponse(Response.Status.BAD_REQUEST, NanoHTTPD.MIME_PLAINTEXT, e.getMessage());
+			}
         }
         	
         	
@@ -184,6 +206,48 @@ public class StreamingWebServer extends NanoHTTPD {
 			return createResponse(Response.Status.BAD_REQUEST, NanoHTTPD.MIME_PLAINTEXT, e.getMessage());
 		}
 		
+	}
+	
+	private Response serveMovieHtml(int id) {
+		Movie m = DB.getMovie(id);
+		try {
+			return createResponse(Response.Status.OK, NanoHTTPD.MIME_HTML, TemplateEngine.get().showMovieHtml(m));
+		} catch (TemplateException | IOException e) {
+			return createResponse(Response.Status.BAD_REQUEST, NanoHTTPD.MIME_PLAINTEXT, e.getMessage());
+		}
+	}
+	
+	private Response serveThumbnail(int id) {
+		Movie m = DB.getMovie(id);
+		
+		ByteArrayInputStream bis = new ByteArrayInputStream(m.getThumbnail().toByteArray());
+		
+		return createResponse(Response.Status.OK, "image/jpeg", bis);
+	}
+
+	private Response serveImage(int id) {
+		Movie m = DB.getMovie(id);
+		
+		ByteArrayInputStream bis = new ByteArrayInputStream(m.getImage().toByteArray());
+		
+		return createResponse(Response.Status.OK, "image/jpeg", bis);
+	}
+
+	private Response serveCss() throws IOException {
+		String css = readResource("style.css");
+		return createResponse(Response.Status.OK, "text/css", css);
+	}
+
+	private String readResource(String resourceName) throws IOException {
+		BufferedReader in = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream(resourceName)));
+		StringBuilder sb = new StringBuilder();
+
+		String line;
+		while ((line = in.readLine()) != null){
+			sb.append(line).append("\n");
+		}
+		
+		return sb.toString();	
 	}
 
 

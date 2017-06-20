@@ -45,13 +45,25 @@ public class TemplateEngine {
 		
 		Map<String, Object> root = new HashMap<String, Object>();
 		root.put("movies", movies);
+		return generateHtml(template, root);
 		
+	}
+	
+	public String showMovieHtml(Movie movie) throws TemplateException, IOException {
+		Template template = templateConfig.getTemplate("movie.html");
+		
+		Map<String, Object> root = new HashMap<String, Object>();
+		root.put("movie", movie);
+		return generateHtml(template, root);
+		
+	}
+	
+	private String generateHtml(Template template, Map<String, Object> map) throws TemplateException, IOException{
 		StringBuilder sb = new StringBuilder();
 		Writer out = new StringBuilderWriter(sb);			
-		template.process(root, out);
+		template.process(map, out);
 	
 		return sb.toString();
-		
 	}
 
 
