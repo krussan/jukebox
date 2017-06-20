@@ -1,5 +1,6 @@
 package se.qxx.jukebox.tools;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.imageio.ImageIO;
 import javax.swing.filechooser.FileSystemView;
 
 import org.apache.commons.io.FileUtils;
@@ -27,6 +29,9 @@ import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.codehaus.plexus.util.StringOutputStream;
+import org.imgscalr.Scalr;
+
+import com.google.protobuf.ByteString;
 
 import fr.noop.subtitle.model.SubtitleObject;
 import fr.noop.subtitle.model.SubtitleParsingException;
@@ -280,4 +285,17 @@ public class Util {
 		return destinationFile;
 	}
 	
+	public static ByteString getScaledImage(ByteString imagedata) throws IOException {
+		BufferedImage img = ImageIO.read(new ByteArrayInputStream(imagedata.toByteArray()));
+		BufferedImage scaled = Scalr.resize(img, 150);
+		return getByteStringFromImage(scaled);
+	}
+	
+	public static ByteString getByteStringFromImage(BufferedImage img) throws IOException {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ImageIO.write(img, "jpg", baos);
+		return ByteString.copyFrom(baos.toByteArray());
+		
+	}
+
 }

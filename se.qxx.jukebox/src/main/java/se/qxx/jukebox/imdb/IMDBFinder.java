@@ -243,8 +243,15 @@ public class IMDBFinder {
 			if (!StringUtils.isEmpty(preferredTitle)) 
 				b.setTitle(preferredTitle);
 			
-			if (rec.getImage() != null) 
-				b.setImage(ByteString.copyFrom(rec.getImage()));
+			if (rec.getImage() != null) {
+				ByteString image = ByteString.copyFrom(rec.getImage());
+				b.setImage(image);
+				try {
+					b.setThumbnail(Util.getScaledImage(image));
+				} catch (IOException e) {
+					Log.Error("Error when creating thumbnail", LogType.IMDB);
+				}
+			}
 			
 			if (m.getYear() == 0)
 				b.setYear(rec.getYear());
