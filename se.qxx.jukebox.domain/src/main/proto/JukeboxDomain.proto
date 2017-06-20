@@ -289,7 +289,8 @@ service JukeboxService {
 	rpc SetSubtitle(JukeboxRequestSetSubtitle) returns (Empty);
 	
 	rpc Wakeup(JukeboxRequestGeneral) returns (Empty);
-	rpc Suspend(JukeboxRequestGeneral) returns (Empty);		
+	rpc Suspend(JukeboxRequestGeneral) returns (Empty);
+	
 }
  
  

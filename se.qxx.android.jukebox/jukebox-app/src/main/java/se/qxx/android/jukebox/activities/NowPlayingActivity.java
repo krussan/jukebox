@@ -14,6 +14,7 @@ import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
+import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Empty;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseGetTitle;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseIsPlaying;
@@ -36,19 +37,29 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.cast.MediaInfo;
+import com.google.android.gms.cast.MediaMetadata;
+import com.google.android.gms.cast.MediaTrack;
 import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager;
+import com.google.android.libraries.cast.companionlibrary.cast.exceptions.CastException;
+import com.google.android.libraries.cast.companionlibrary.cast.exceptions.NoConnectionException;
+import com.google.android.libraries.cast.companionlibrary.cast.exceptions.TransientNetworkDisconnectionException;
+import com.google.android.libraries.cast.companionlibrary.widgets.ProgressWatcher;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.RpcCallback;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class NowPlayingActivity extends AppCompatActivity
-        implements OnSeekBarChangeListener, SeekerListener {
+        implements OnSeekBarChangeListener, SeekerListener, ProgressWatcher {
 
     private Seeker seeker;
     private boolean isManualSeeking = false;
     private JukeboxConnectionHandler comm;
 
     ChromecastCallback mChromecastCallback = null;
-    JukeboxCastConsumer mCastConsumer = null;
+//    JukeboxCastConsumer mCastConsumer = null;
 
     private String getMode() {
         return getIntent().getExtras().getString("mode");
@@ -59,6 +70,11 @@ public class NowPlayingActivity extends AppCompatActivity
     }
 
     private boolean isEpisodeMode() { return StringUtils.equalsIgnoreCase(this.getMode(), "episode"); }
+
+    @Override
+    public void setProgress(int currentPosition, int duration) {
+
+    }
 
     //region --CALLBACKS--
 
@@ -85,7 +101,7 @@ public class NowPlayingActivity extends AppCompatActivity
             if (md != null) {
                 //initialize seeker and get subtitles if app has been reinitialized
                 Model.get().setCurrentMedia(md);
-                initializeSeeker();
+                initializeSeeker(Model.get().getCurrentMedia().getMetaDuration());
 
                 Thread t1 = new Thread(new Runnable() {
                     @Override
@@ -117,9 +133,9 @@ public class NowPlayingActivity extends AppCompatActivity
             Logger.Log().d("Response --- StartMovie");
             Model.get().clearSubtitles();
             Model.get().addAllSubtitles(response.getSubtitleList());
-
             Model.get().setCurrentMedia(0);
-            initializeSeeker();
+            initializeSeeker(Model.get().getCurrentMedia().getMetaDuration());
+
             seeker.start();
 
             Thread t = new Thread(new Runnable() {
@@ -156,20 +172,29 @@ public class NowPlayingActivity extends AppCompatActivity
             VideoCastManager mCastManager = VideoCastManager.getInstance();
 
             if (mCastManager != null) {
-                if (mCastConsumer != null)
-                    mCastManager.removeVideoCastConsumer(mCastConsumer);
-
-                mCastConsumer = new JukeboxCastConsumer(
-                        this.parentContext,
-                        this.title,
-                        response.getSubtitleList(),
-                        response.getUri(),
-                        response.getSubtitleUrisList());
-
-                mCastManager.addVideoCastConsumer(mCastConsumer);
+//                if (mCastConsumer != null)
+//                    mCastManager.removeVideoCastConsumer(mCastConsumer);
+//
+//                mCastConsumer = new JukeboxCastConsumer(
+//                        this.parentContext,
+//                        this.title,
+//                        response.getSubtitleList(),
+//                        response.getUri(),
+//                        response.getSubtitleUrisList());
+//
+//                mCastManager.addVideoCastConsumer(mCastConsumer);
 
                 if (mCastManager.isConnected())
-                    mCastConsumer.startCastVideo();
+                    startCastVideo(this.title, response.getUri(), response.getSubtitleUrisList(), response.getSubtitleList());
+
+                Thread t = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Logger.Log().d("Request --- ListSubtitles");
+                        comm.listSubtitles(Model.get().getCurrentMedia(), new OnListSubtitlesCompleteHandler());
+                    }
+                });
+                t.start();
             }
         }
     }
@@ -234,6 +259,9 @@ public class NowPlayingActivity extends AppCompatActivity
                 initializeView(m.getTitle(), m.getImage());
             }
 
+            SeekBar sb = (SeekBar) findViewById(R.id.seekBarDuration);
+            sb.setOnSeekBarChangeListener(this);
+
             if (ChromeCastConfiguration.isChromeCastActive())
                 initializeChromecast();
             else
@@ -259,9 +287,6 @@ public class NowPlayingActivity extends AppCompatActivity
 
     private void initializeJukeboxCast() {
         seeker = new Seeker(this);
-
-        SeekBar sb = (SeekBar) findViewById(R.id.seekBarDuration);
-        sb.setOnSeekBarChangeListener(this);
 
         Logger.Log().d("Request -- IsPlaying");
         comm.isPlaying(JukeboxSettings.get().getCurrentMediaPlayer(), new OnStatusComplete());
@@ -333,7 +358,19 @@ public class NowPlayingActivity extends AppCompatActivity
         int seconds = seekBar.getProgress();
 
         Logger.Log().d("Request --- Seek");
-        comm.seek(JukeboxSettings.get().getCurrentMediaPlayer(), seconds);
+        if (ChromeCastConfiguration.isChromeCastActive()) {
+            comm.seek(JukeboxSettings.get().getCurrentMediaPlayer(), seconds);
+        }
+        else {
+            VideoCastManager mCastManager = VideoCastManager.getInstance();
+            if (mCastManager != null) {
+                try {
+                    mCastManager.seek(seconds);
+                } catch (TransientNetworkDisconnectionException | NoConnectionException e) {
+                    Logger.Log().e("Error while seeking", e);
+                }
+            }
+        }
 
         this.isManualSeeking = false;
     }
@@ -357,10 +394,10 @@ public class NowPlayingActivity extends AppCompatActivity
             runOnUiThread(new UpdateSeekIndicator(seconds + advanceSeconds, tv, seekBar));
     }
 
-    private void initializeSeeker() {
+    private void initializeSeeker(int duration) {
         SeekBar sb = (SeekBar) findViewById(R.id.seekBarDuration);
-        if (sb != null)
-            sb.setMax(Model.get().getCurrentMedia().getMetaDuration());
+        if (sb != null && sb.getMax() != duration)
+            sb.setMax(duration);
     }
 
 
@@ -371,7 +408,6 @@ public class NowPlayingActivity extends AppCompatActivity
     public void onButtonClicked(View v) {
         int id = v.getId();
         GUITools.vibrate(28, this);
-        String player = JukeboxSettings.get().getCurrentMediaPlayer();
 
         switch (id) {
             case R.id.btnPlay:
@@ -380,17 +416,15 @@ public class NowPlayingActivity extends AppCompatActivity
                 break;
             case R.id.btnFullscreen:
                 Logger.Log().d("Request --- ToggleFullScreen");
-                comm.toggleFullscreen(player);
+                setupFullscreen();
                 break;
             case R.id.btnPause:
                 Logger.Log().d("Request --- Pause");
-                seeker.toggle();
-                comm.pauseMovie(player);
+                pauseMovie();
                 break;
             case R.id.btnStop:
                 Logger.Log().d("Request --- StopMove");
-                seeker.stop();
-                comm.stopMovie(player, null);
+                stopMovie();
                 break;
             case R.id.btnViewInfo:
                 String url = Model.get().getCurrentMovie().getImdbUrl();
@@ -410,10 +444,63 @@ public class NowPlayingActivity extends AppCompatActivity
         }
     }
 
+    private void stopMovie() {
+        String player = JukeboxSettings.get().getCurrentMediaPlayer();
+        if (ChromeCastConfiguration.isChromeCastActive()) {
+            VideoCastManager mCastManager = VideoCastManager.getInstance();
+            mCastManager.removeProgressWatcher(this);
+
+            if (mCastManager != null) {
+                try {
+                    mCastManager.stop();
+                } catch (CastException | TransientNetworkDisconnectionException | NoConnectionException e) {
+                    Logger.Log().e("Error when stopping movie", e);
+                }
+            }
+        }
+        else {
+            seeker.stop();
+            comm.stopMovie(player, null);
+        }
+    }
+
+    private void pauseMovie() {
+        String player = JukeboxSettings.get().getCurrentMediaPlayer();
+        if (ChromeCastConfiguration.isChromeCastActive()) {
+            VideoCastManager mCastManager = VideoCastManager.getInstance();
+
+            if (mCastManager != null) {
+                try {
+                    if (mCastManager.isRemoteMediaPaused())
+                        mCastManager.play();
+                    else
+                        mCastManager.pause();
+
+                } catch (CastException | TransientNetworkDisconnectionException | NoConnectionException e) {
+                    Logger.Log().e("Error when pausing movie", e);
+                }
+            }
+        }
+        else {
+            seeker.toggle();
+            comm.pauseMovie(player);
+        }
+    }
+
+    private void setupFullscreen() {
+
+        String player = JukeboxSettings.get().getCurrentMediaPlayer();
+        if (!ChromeCastConfiguration.isChromeCastActive()) {
+            comm.toggleFullscreen(player);
+        }
+
+    }
+
+
     private void startMovie() {
         RpcCallback<JukeboxResponseStartMovie> callback;
 
-        if (StringUtils.equalsIgnoreCase(JukeboxSettings.get().getCurrentMediaPlayer(), "ChromeCast")) {
+        if (ChromeCastConfiguration.isChromeCastActive()) {
             callback = new OnChromecastStartComplete(this, this.getHeadTitle());
         } else {
             callback = new OnStartMovieComplete();
@@ -464,4 +551,57 @@ public class NowPlayingActivity extends AppCompatActivity
 
     //endregion
 
+    public void startCastVideo(String title, String movieUri, List<String> subtitleUris, List<JukeboxDomain.Subtitle> subs) {
+        VideoCastManager mCastManager = VideoCastManager.getInstance();
+
+        if (mCastManager != null) {
+            mCastManager.addProgressWatcher(this);
+
+            MediaMetadata md = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
+            md.putString(MediaMetadata.KEY_TITLE, title);
+
+            List<MediaTrack> tracks = new ArrayList<MediaTrack>();
+
+            for (int i=0;i<subtitleUris.size();i++) {
+                if (i<subs.size()) {
+                    JukeboxDomain.Subtitle currentSub = subs.get(i);
+
+                    MediaTrack subtitle = new MediaTrack.Builder(i + 1, MediaTrack.TYPE_TEXT)
+                            .setContentId(subtitleUris.get(i))
+                            .setContentType("text/vtt")
+                            .setSubtype(MediaTrack.SUBTYPE_SUBTITLES)
+                            .setName(currentSub.getDescription())
+                            .setLanguage("en-US")
+                            .build();
+
+                    tracks.add(subtitle);
+
+                }
+            }
+
+            long[] activeTrackIds = null;
+            if (subtitleUris.size() > 0)
+                activeTrackIds = new long[] {1};
+
+
+
+            MediaInfo mi = new MediaInfo.Builder(movieUri)
+                    .setMetadata(md)
+                    .setMediaTracks(tracks)
+                    .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
+                    .setContentType("video/mp4")
+                    .build();
+
+            try {
+                mCastManager.loadMedia(mi, activeTrackIds, true, 0, null);
+
+            } catch (TransientNetworkDisconnectionException e) {
+                Logger.Log().e("Error when loading media", e);
+            } catch (NoConnectionException e) {
+                Logger.Log().e("Error when loading media", e);
+            }
+            //mCastManager.startVideoCastControllerActivity(this.parentActivity, mi, 0, true);
+
+        }
+    }
 }

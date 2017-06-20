@@ -243,7 +243,7 @@ public class IMDBFinder {
 			if (!StringUtils.isEmpty(preferredTitle)) 
 				b.setTitle(preferredTitle);
 			
-			if (rec.getImage() != null)
+			if (rec.getImage() != null) 
 				b.setImage(ByteString.copyFrom(rec.getImage()));
 			
 			if (m.getYear() == 0)

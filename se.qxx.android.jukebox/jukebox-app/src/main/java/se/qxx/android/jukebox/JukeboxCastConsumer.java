@@ -79,8 +79,6 @@ public class JukeboxCastConsumer extends VideoCastConsumerImpl {
         super.onConnected();
 
         Logger.Log().i("onConnected");
-        startCastVideo();
-
     }
 
     @Override
@@ -137,41 +135,5 @@ public class JukeboxCastConsumer extends VideoCastConsumerImpl {
         return mCastManager.isConnected();
     }
 
-    public void startCastVideo() {
-        if (mCastManager != null) {
-            MediaMetadata md = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
-            md.putString(MediaMetadata.KEY_TITLE, this.title);
-
-            List<MediaTrack> tracks = new ArrayList<MediaTrack>();
-
-            for (int i=0;i<this.subtitleUris.size();i++) {
-                if (i<subs.size()) {
-                    Subtitle currentSub = subs.get(i);
-
-                    MediaTrack subtitle = new MediaTrack.Builder(i + 1, MediaTrack.TYPE_TEXT)
-                            .setContentId(this.subtitleUris.get(i))
-                            .setContentType("text/vtt")
-                            .setSubtype(MediaTrack.SUBTYPE_SUBTITLES)
-                            .setName(currentSub.getDescription())
-                            .setLanguage("en-US")
-                            .build();
-
-                    tracks.add(subtitle);
-
-                }
-
-            }
-
-            MediaInfo mi = new MediaInfo.Builder(this.movieUri)
-                    .setMetadata(md)
-                    .setMediaTracks(tracks)
-                    .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
-                    .setContentType("video/mp4")
-                    .build();
-
-            mCastManager.startVideoCastControllerActivity(this.parentActivity, mi, 0, true);
-
-        }
-    }
 
 }

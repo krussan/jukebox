@@ -4,7 +4,7 @@
 
   <groupId>se.qxx.jukebox</groupId>
   <artifactId>jukebox</artifactId>
-  <version>0.16.46</version>
+  <version>0.16.61</version>
   <packaging>jar</packaging>
 
   <name>jukebox</name>
@@ -134,6 +134,11 @@
 	    <version>0.9.4</version>
 	</dependency>
 
+	<dependency>
+	    <groupId>org.freemarker</groupId>
+	    <artifactId>freemarker</artifactId>
+	    <version>2.3.23</version>
+	</dependency>
 
   </dependencies>
 
