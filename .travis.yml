@@ -8,7 +8,7 @@ matrix:
     
   - language: android
     before_install:
-      - chmod +x gradlew
+      - chmod +x ./se.qxx.android.jukebox/gradlew
       - chmod +x ci/decrypt_files.sh
       - "./install-protobuf.sh"
       - "./ci/decrypt_files.sh"
