@@ -1,4 +1,4 @@
-sudo: true
+
 matrix:
   include:
   - language: java
@@ -7,9 +7,12 @@ matrix:
     - cd se.qxx.jukebox
     
   - language: android
+    sudo: true
+    
     before_install:
       - chmod +x ./se.qxx.android.jukebox/gradlew
       - chmod +x ci/decrypt_files.sh
+      - chmod +x install-protobuf.sh
       - "./install-protobuf.sh"
       - "./ci/decrypt_files.sh"
   
