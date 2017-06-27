@@ -1,23 +1,50 @@
 sudo: true
-matrix: 
+matrix:
   include:
-    - language: java
-      jdk: oraclejdk8
-      before_script:
-        - cd se.qxx.jukebox
+  - language: java
+    jdk: oraclejdk8
+    before_script:
+    - cd se.qxx.jukebox
+    
+  - language: android
+    before_install:
+      - chmod +x gradlew
+      - chmod +x ci/decrypt_files.sh
+      - "./install-protobuf.sh"
+      - "./ci/decrypt_files.sh"
+  
+    env:
+      global:
+      - RELEASE_STORE_FILE=${TRAVIS_BUILD_DIR}/ci/keystore
+      - RELEASE_KEY_ALIAS=android-signing
+      - secure: YfnoxwFzUd3CGx7G+mOLIwee0O9fFJH3To4lDIv2ws+sNEpSPlWWR+fZbrc/lu6qVTL8krMw4E52M+3TkUMnZokM7A486HsoeNXhFXnyl5Zqmh+sXUCl4G2Dvt3gF/W7IEi3W3oQeS2Hkz4jpcD2+WsMI1QqnwxcGElhMgxqKJWN4nGh3cP4H06DTOAEkZLhzWrBTIMQUGGpNoHqWJKjrTEy9GfEvHO7hNDcx5xo5NBhLjYWUPxM5eBlxQSx+n/WWLwuyCfJ7cQiwR9VgQoUJI2O9TEI1EdvWm8bqCDQpS/d5X9vmnR3LDIqD1V309EEupHO5SIyL9VbaMTzrdRigaE//GrE/qawWFv8pGuadVJZKyeEr2uq14NCT/iqAnM9vc/3xsHV4IEA/0dQ220V8Xr0L8Sq1xSCZePBnaYt2Iu7DmCKLkTnPMwmtlxZydA1QSsZgggREP9l8JqBH77xcV/hIBVV4fdXSnS7EiuRNqYLVblfI9tuppfPNWj2a5fagLLRckp11Gy4ZuP4u+3vXF6NgH6iHF1xQMOrZDcpBAC0SAuJsmKQ8QWEbhXp3SqTq3NJKrJ6t+2KuxYcx1PQLPNt4nqehXKK0/1rNj6y8Pxuv3w+j4wR+ORUQ4uFCxd6txy1HJCS+QUIj2Zq6S9tYNrnBAUEuH+MRnakaVstMlc=
+      - secure: mtk4hnkRIxdk2ANnVXRBD/CiWVIOSyn3U6U/k8i+su7GE4IBXEfNdjPzI4ZlR4IkGRZ2CDCkp9kv1mc+m9+FCDpBEDrStAPZp/DON4XBHYp6FxW/lAQwuTtCyu1fOZOtP+8S2DuLnkMOo31o7WZoove+0j32L3bspGVQ4PgP42DTEJn5dYgmJ502Mxt6+S+BFfPNhwFLJ/GYArQ3z1Yj+G9Ms7+f2m5OXxITfseMeOBVtRdNH20CZRnIZvpi5p2cS9yKgVrFDJNVV0Npc/vpeqdhzKbzK8g+Hvm+vVEpK60Bkhirw/hv/hTj/3LCh3wAXT5guF5tzepjpGnhK4+S+IqifZp9ew8DnzrR8QXnoKYCJ0vopfZ45noY7UchB9CXCl5VhzQj0FjRyxiStWHHf17Eq0qeOXymWy/ZKhwZpitxBBJ/ylfjLgR9KCyLYJrXN5SRfP40Xl5dXAn/gCa9znGdupkaTMF87aAvj8uGDtUJBPNoT12pfhkIRnjoS1jakkNqC0dgH+qlR1dGPphGLrlUZxzQDvzkDykNpsgpYYtqvYZTcStLy2u0qyMQG1TxnldUomDkb9SRY/FP2QLpWsRUq3u+kl27gfEcPGcht+0PvgTgSpk634JcdwCBdJczrYB2wJpIriTbGAdkxOUlq8pO/RjNcN9TFx9CvgqzIRY=
+      - secure: n9QZeDFUxgCkj7ngRlhyazAjVmuEU5kAqWR2yFJ6/hUOdM6vZMk+/cIyVCzABV/l6A5Id7azLcxhIcSWXAHPuKXeeVsXg6B6liA0Hn3fvKpjy0gEcCNgYOSdra65bCySZBtDXUDaBwJWGbaClKSh5cmgC57hfIXZ4KQUVPjS2JFiH5h5JgJJRI+K0o1xNkvL7+lJt16KXS+Ra5aFIDZSX4wc4/e3j16jtW1+sE2u8r/Fqb2+Cs4p5YghljnrEAtfmxJhA6rYCqMiYqvMYptRhd+sXoJDLc89E5NPcYr5Xg1mN/JZlmQR/OOzoqhWA0e7yItOP39IDoQ+1TsvaIwRLS/7cexPX8CUSxodnYhhFILEhMUqn5d+IRzGHVdYCA5B1QUAwJJfuSKyIvTleiHeDzOh7PkQGFThOTv6clDkX/jIyX88915QjCZ3sS6qj/sanbfH3Y9HWVCLTeViCiCzqGYSjeUTjN/iBaMkdNPTYjnOp56Cgedr1/PXvMQIlrbQzE3qeIhmWki+vf55Hzjd1faZU+AwcOocDuFtp4LL3UA3yqfglNKmiXEKqsXnhxwnTxGurnQVz+8tiSiny8Rcd+Kkln/GwzOeUL0jaYD3MG1xYCRaeipDQm+VgYtcyr5/jATCY4sfTDucE+AAlPaZt/MSWvgnEOFD05JwlKf/EF4=
 
-    - language: android
+    before_cache:
+      - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+      - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+      - rm -f  $HOME/.gradle/caches/3.3/classAnalysis/classAnalysis.lock
+      - rm -f  $HOME/.gradle/caches/3.3/jarSnapshots/jarSnapshots.*
 
-      before_script:
-        - cd se.qxx.android.jukebox
-      android:
-        components:
-          - tools
-          - tools
-          - platform-tools
-          - build-tools-25.0.0
-          - android-23
-          - addon_google_apis-google-23
-          - extra-android-m2repository
-        licenses:
-          - android.sdk-license-.+
+    cache:
+      directories:
+      - "$HOME/.m2"
+      - "$TRAVIS_BUILD_DIR/protobuf-2.4.1"
+      - "$HOME/.gradle/caches/"
+      - "$HOME/.gradle/wrapper/"
+      
+    before_script:
+      - cd se.qxx.android.jukebox
+    
+    android:
+      components:
+      - tools
+      - tools
+      - platform-tools
+      - build-tools-25.0.0
+      - android-23
+      - addon_google_apis-google-23
+      - extra-android-m2repository
+      licenses:
+      - android.sdk-license-.+
