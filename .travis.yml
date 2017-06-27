@@ -1,8 +1,7 @@
 matrix: 
   include:
     - language: java
-      jdk:
-        - openjdk8
+      jdk: oraclejdk8
       before_script:
         - cd se.qxx.jukebox
 
