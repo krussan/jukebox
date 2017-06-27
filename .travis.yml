@@ -1,3 +1,4 @@
+sudo: true
 matrix: 
   include:
     - language: java
@@ -6,11 +7,9 @@ matrix:
         - cd se.qxx.jukebox
 
     - language: android
-      sudo: true
 
       before_script:
         - cd se.qxx.android.jukebox
-
       android:
         components:
           - tools
@@ -20,6 +19,5 @@ matrix:
           - android-25
           - addon_google_apis-google-25
           - extra-android-m2repository
-
-       licenses:
+        licenses:
           - android.sdk-license-.+
