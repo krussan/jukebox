@@ -1,0 +1,24 @@
+body {
+	font-family: Verdana, Arial;
+}
+
+h1 {
+	font-size: 18px;
+}
+
+div#imgMovies {
+	float: left;
+	list-style-type: none;
+	box-sizing: border-box;
+}
+
+div#movieInfo {
+	float: left;
+	list-style-type: none;
+	box-sizing: border-box;
+}
+
+li {
+	font-size:12px;
+	display: inline;
+}

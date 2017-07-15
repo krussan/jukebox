@@ -62,12 +62,12 @@ public class SubSelectActivity extends AppCompatActivity implements OnItemClickL
 	    View rootView = GUITools.getRootView(this);
 
 	    GUITools.setTextOnTextview(R.id.lblSubpickerFilename, md.getFilename(), rootView);
-		MediaSubsLayoutAdapter adapter = new MediaSubsLayoutAdapter(this, md); 
+		MediaSubsLayoutAdapter adapter = new MediaSubsLayoutAdapter(this, Model.get().getSubtitles());
 		ListView v = (ListView)findViewById(R.id.listSubtitlePicker);
 		v.setAdapter(adapter);
 		v.setOnItemClickListener(this);
 	}
-	
+
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		final Subtitle sub = (Subtitle)arg0.getItemAtPosition(arg2);	

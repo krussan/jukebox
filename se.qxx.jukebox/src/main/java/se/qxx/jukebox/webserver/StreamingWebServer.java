@@ -1,6 +1,7 @@
 package se.qxx.jukebox.webserver;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,6 +9,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.util.Collections;
@@ -18,8 +22,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.xml.ws.soap.AddressingFeature.Responses;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.commons.lang3.StringUtils;
 
 import fi.iki.elonen.InternalRewrite;
@@ -33,10 +40,16 @@ import fr.noop.subtitle.model.SubtitleWriter;
 import fr.noop.subtitle.srt.SrtObject;
 import fr.noop.subtitle.srt.SrtParser;
 import fr.noop.subtitle.vtt.VttWriter;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import freemarker.template.TemplateExceptionHandler;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import fi.iki.elonen.NanoHTTPD.Response;
+import se.qxx.jukebox.DB;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.tools.Util;
 
@@ -48,6 +61,8 @@ public class StreamingWebServer extends NanoHTTPD {
 	// maps stream name to actual file name
 	private Map<String, String> streamingMap = null;
 	private AtomicInteger streamingIterator;
+	
+	private Configuration templateConfig = null;
 	
 	public StreamingWebServer(String host, int port) {
 		super(host, port);
@@ -114,29 +129,62 @@ public class StreamingWebServer extends NanoHTTPD {
         // This server only serves specific stream uri's  
         Log.Info(String.format("Requesting file :: %s", uri), LogType.WEBSERVER);
         
-        if (!uri.startsWith("stream")) 
-        	return getForbiddenResponse("Won't serve anything else than registered files for streaming.");
+        if (uri.startsWith("stream")) {
+            //TODO: If stream filename is not in one of the added files return
+            // a not found response
+            if (!streamingMap.containsKey(uri))
+            	return getNotFoundResponse();
+            
+            // map the streaming uri to the actual file
+            File f = new File(streamingMap.get(uri));
+            
+            if (!f.exists())
+            	return getNotFoundResponse();
+            
+            String mimeTypeForFile = getMimeTypeForFile(uri);
 
-        //TODO: If stream filename is not in one of the added files return
-        // a not found response
-        if (!streamingMap.containsKey(uri))
-        	return getNotFoundResponse();
-        
-        // map the streaming uri to the actual file
-        File f = new File(streamingMap.get(uri));
-        
-        if (!f.exists())
-        	return getNotFoundResponse();
-        
-        String mimeTypeForFile = getMimeTypeForFile(uri);
+            Response response = serveFile(uri, headers, f, mimeTypeForFile);
+            
+            // enable CORS
+            response.addHeader("Access-Control-Allow-Origin", "*");
+            return response != null ? response : getNotFoundResponse();        	
+        }
 
-        Response response = serveFile(uri, headers, f, mimeTypeForFile);
-        
-        // enable CORS
-        response.addHeader("Access-Control-Allow-Origin", "*");
-        return response != null ? response : getNotFoundResponse();
+        if (uri.equalsIgnoreCase("index.html")) {
+        	return serveRootHtml();
+        }
+
+        if (uri.startsWith("movie")) {
+        	int id = Integer.parseInt(uri.replaceAll("movie", "").replaceAll(".html", ""));
+        	
+        	return serveMovieHtml(id);
+        }
+
+        if (uri.startsWith("thumb")) {
+        	int id = Integer.parseInt(uri.replaceAll("thumb", ""));
+        	
+        	return serveThumbnail(id);
+        }
+
+        if (uri.startsWith("image")) {
+        	int id = Integer.parseInt(uri.replaceAll("image", ""));
+        	
+        	return serveImage(id);
+        }
+
+        if (uri.startsWith("css")) {
+        	try {
+				return serveCss();
+			} catch (IOException e) {
+				createResponse(Response.Status.BAD_REQUEST, NanoHTTPD.MIME_PLAINTEXT, e.getMessage());
+			}
+        }
+        	
+        	
+        return getForbiddenResponse("Won't serve anything else than registered files for streaming.");
+
     }
-
+	
 	private String getUriWithoutArguments(String uri) {
 		// Remove URL arguments
         uri = uri.trim().replace(File.separatorChar, '/');
@@ -149,6 +197,59 @@ public class StreamingWebServer extends NanoHTTPD {
 		return uri;
 	}
 	
+	private Response serveRootHtml() {
+		List<Movie> movies = DB.searchMoviesByTitle("", false, true);
+		
+		try {
+			return createResponse(Response.Status.OK, NanoHTTPD.MIME_HTML, TemplateEngine.get().listMovies(movies));
+		} catch (IOException | TemplateException e) {
+			return createResponse(Response.Status.BAD_REQUEST, NanoHTTPD.MIME_PLAINTEXT, e.getMessage());
+		}
+		
+	}
+	
+	private Response serveMovieHtml(int id) {
+		Movie m = DB.getMovie(id);
+		try {
+			return createResponse(Response.Status.OK, NanoHTTPD.MIME_HTML, TemplateEngine.get().showMovieHtml(m));
+		} catch (TemplateException | IOException e) {
+			return createResponse(Response.Status.BAD_REQUEST, NanoHTTPD.MIME_PLAINTEXT, e.getMessage());
+		}
+	}
+	
+	private Response serveThumbnail(int id) {
+		Movie m = DB.getMovie(id);
+		
+		ByteArrayInputStream bis = new ByteArrayInputStream(m.getThumbnail().toByteArray());
+		
+		return createResponse(Response.Status.OK, "image/jpeg", bis);
+	}
+
+	private Response serveImage(int id) {
+		Movie m = DB.getMovie(id);
+		
+		ByteArrayInputStream bis = new ByteArrayInputStream(m.getImage().toByteArray());
+		
+		return createResponse(Response.Status.OK, "image/jpeg", bis);
+	}
+
+	private Response serveCss() throws IOException {
+		String css = readResource("style.css");
+		return createResponse(Response.Status.OK, "text/css", css);
+	}
+
+	private String readResource(String resourceName) throws IOException {
+		BufferedReader in = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream(resourceName)));
+		StringBuilder sb = new StringBuilder();
+
+		String line;
+		while ((line = in.readLine()) != null){
+			sb.append(line).append("\n");
+		}
+		
+		return sb.toString();	
+	}
+
 
     protected Response getForbiddenResponse(String s) {
         return createResponse(Response.Status.FORBIDDEN, NanoHTTPD.MIME_PLAINTEXT, "FORBIDDEN: "
