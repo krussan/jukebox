@@ -2,6 +2,7 @@ package se.qxx.jukebox.webserver;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import se.qxx.jukebox.DB;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 
 public class TemplateEngine {
 	Configuration templateConfig = null;
@@ -54,6 +56,12 @@ public class TemplateEngine {
 		
 		Map<String, Object> root = new HashMap<String, Object>();
 		root.put("movie", movie);
+		
+		if (movie.getMediaCount() > 0)
+			root.put("subtitles", movie.getMedia(0).getSubsList());
+		else
+			root.put("subtitles", new ArrayList<Subtitle>());
+		
 		return generateHtml(template, root);
 		
 	}
