@@ -4,7 +4,7 @@
 
   <groupId>se.qxx.jukebox</groupId>
   <artifactId>jukebox</artifactId>
-  <version>0.16.63-null</version>
+  <version>0.16.64</version>
   <packaging>jar</packaging>
 
   <name>jukebox</name>
@@ -160,7 +160,8 @@
   </pluginRepositories>
 
 <build>
-
+	<finalName>${artifactId}-${version}-${git.branch}</finalName>
+	
     <pluginManagement>
         <plugins>
 
@@ -271,15 +272,16 @@
 	                    <goal>revision</goal>
 	                </goals>
 	            </execution>
-	            <execution>
-	                <id>validate-the-git-infos</id>
-	                <goals>
-	                    <goal>validateRevision</goal>
-	                </goals>
-	                <!-- *NOTE*: The default phase of validateRevision is verify, but in case you want to change it, you can do so by adding the phase here -->
-	                <phase>package</phase>
-	            </execution>
 	        </executions>
+			<configuration>
+	            <!--
+	                If you'd like to tell the plugin where your .git directory is,
+	                use this setting, otherwise we'll perform a search trying to
+	                figure out the right directory. It's better to add it explicitly IMHO.
+	            -->
+	            <dotGitDirectory>${project.basedir}/../.git</dotGitDirectory>
+	            <verbose>true</verbose>
+            </configuration>	        
         </plugin>		
 
 		<plugin>
