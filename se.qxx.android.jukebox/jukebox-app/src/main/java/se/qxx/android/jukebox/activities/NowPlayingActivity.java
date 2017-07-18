@@ -3,7 +3,6 @@ package se.qxx.android.jukebox.activities;
 import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.android.jukebox.ChromeCastConfiguration;
-import se.qxx.android.jukebox.JukeboxCastConsumer;
 import se.qxx.android.jukebox.JukeboxSettings;
 import se.qxx.android.jukebox.OnListSubtitlesCompleteHandler;
 import se.qxx.android.jukebox.R;

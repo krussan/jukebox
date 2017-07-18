@@ -23,6 +23,8 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
+import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager;
+
 public class SubSelectActivity extends AppCompatActivity implements OnItemClickListener, OnDismissListener {
 	
     @Override
@@ -73,18 +75,30 @@ public class SubSelectActivity extends AppCompatActivity implements OnItemClickL
 		final Subtitle sub = (Subtitle)arg0.getItemAtPosition(arg2);	
 		Logger.Log().d(String.format("Setting subtitle to %s", sub.getDescription()));
 		Model.get().setCurrentSubtitle(sub.getDescription());
-		
-		final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
-				JukeboxSettings.get().getServerIpAddress(),
-				JukeboxSettings.get().getServerPort(),				
-				JukeboxConnectionProgressDialog.build(this, "Setting subtitle ..."));
-		Thread t = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				jh.setSubtitle(JukeboxSettings.get().getCurrentMediaPlayer(), Model.get().getCurrentMedia(), sub);				
-			}
-		});
-		t.run();
+
+		if (ChromeCastConfiguration.isChromeCastActive()) {
+            VideoCastManager mCastManager = VideoCastManager.getInstance();
+
+            if (mCastManager != null) {
+                mCastManager.setActiveTrackIds(new long[] {(long)arg2});
+            }
+        }
+		else {
+			final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
+					JukeboxSettings.get().getServerIpAddress(),
+					JukeboxSettings.get().getServerPort(),
+					JukeboxConnectionProgressDialog.build(this, "Setting subtitle ..."));
+
+			Thread t = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					jh.setSubtitle(JukeboxSettings.get().getCurrentMediaPlayer(), Model.get().getCurrentMedia(), sub);
+				}
+			});
+			t.run();
+
+		}
+
 	}
 
 	@Override
