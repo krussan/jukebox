@@ -47,6 +47,13 @@ public class Version {
 	
 	public boolean isEqualTo(Version otherVersion) {
 		return this.getMajor() == otherVersion.getMajor() && this.getMinor() == otherVersion.getMinor();
+	
+	}
+	public boolean isLessThan(Version otherVersion) {
+		if (this.getMajor() > otherVersion.getMajor())
+			return false;
+					
+		return this.getMajor() < otherVersion.getMajor() || this.getMinor() < otherVersion.getMinor();
 	}
 	
 	public String toString() {
