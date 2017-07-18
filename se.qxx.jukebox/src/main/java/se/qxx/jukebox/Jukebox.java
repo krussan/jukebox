@@ -79,6 +79,9 @@ public class Jukebox {
 					
 					t.join();
 				}
+				else if (Upgrader.databaseIsLaterVersion()) {
+					System.out.println("Database is a later version!! Exiting .......");
+				}
 				else {
 					System.out.println("Upgrade required");
 					Upgrader.performUpgrade();

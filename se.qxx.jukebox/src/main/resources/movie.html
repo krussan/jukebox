@@ -5,13 +5,21 @@
 		<div id="imgMovie">
 			<img src="image${movie.ID}"/>
 		</div>
-		<div id="movieInfo">
+		<div id="divMovieInfo">
 			<ul>
-				<li>${movie.year}</li>
+				<li>${movie.year?c}</li>
 				<li>${movie.type}</li>
 				<li>${movie.rating}</li>
 				<li><a href="http://imdb.com/${movie.imdbUrl}">imdb</a></li>
 			</ul>
 		</div>
+		<div id="divSubtitles">
+			<ul>
+			<#list subtitles as subtitle>
+				<li>${subtitle.filename} - ${subtitle.rating}</li>
+			</#list>
+			</ul>
+		</div>
+		
 	</body>
 </html>
