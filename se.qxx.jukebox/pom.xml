@@ -4,7 +4,7 @@
 
   <groupId>se.qxx.jukebox</groupId>
   <artifactId>jukebox</artifactId>
-  <version>0.17.3</version>
+  <version>0.17.4</version>
   <packaging>jar</packaging>
 
   <name>jukebox</name>
@@ -280,7 +280,7 @@
 	                figure out the right directory. It's better to add it explicitly IMHO.
 	            -->
 	            <dotGitDirectory>${project.basedir}/../.git</dotGitDirectory>
-	            <verbose>true</verbose>
+	            <verbose>false</verbose>
             </configuration>	        
         </plugin>		
 
