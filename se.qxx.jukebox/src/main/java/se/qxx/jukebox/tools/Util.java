@@ -10,7 +10,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -25,10 +24,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BOMInputStream;
-import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
-import org.codehaus.plexus.util.StringOutputStream;
 import org.imgscalr.Scalr;
 
 import com.google.protobuf.ByteString;
@@ -44,7 +41,6 @@ import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.settings.JukeboxListenerSettings;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.watcher.ExtensionFileFilter;
-import se.qxx.jukebox.webserver.StreamingWebServer;
 
 public class Util {
 	/**
@@ -251,7 +247,6 @@ public class Util {
 	}
 	
 	public static File writeSubtitleToFile(Subtitle sub, File destinationFile) throws IOException, SubtitleParsingException, FileNotFoundException {
-		StringBuilder sb = new StringBuilder();
 		BOMInputStream bom = new BOMInputStream(new ByteArrayInputStream(sub.getTextdata().toByteArray()));
 		
 		BufferedReader br = new BufferedReader(new InputStreamReader(bom, "utf-8"));
