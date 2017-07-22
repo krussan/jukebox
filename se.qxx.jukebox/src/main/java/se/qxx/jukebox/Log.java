@@ -22,7 +22,8 @@ public class Log {
 		UPGRADE,
 		VLCRESPONSE,
 		IMDB,
-		WEBSERVER
+		WEBSERVER,
+		DB
 	}
 	
 	public static void Critical(String msg, LogType type) {
@@ -53,22 +54,55 @@ public class Log {
 		int msgLevel = getLevel(level);
 		String logMessage = getLogString(msg, level);
 		try {
-			for(JukeboxListenerSettings.Logs.Log l : Settings.get().getLogs().getLog()) {
-				LogType logType = LogType.valueOf(l.getLogs());
-				
-				if (logType == LogType.ALL || logType == type) {
-					int logLevel = getLevel(l);
-					if (logLevel >= msgLevel) {
-						if (l.getType().toLowerCase().equals("file"))
-							logToFile(l.getFilename(), logMessage);
-						else if (l.getType().toLowerCase().equals("console"))
-							logToConsole(logMessage);
-					}
+			
+			if (type == LogType.ALL) {
+				logToAll(msg, level);
+				return;
+			}
+			
+			JukeboxListenerSettings.Logs.Log l = getLogger(type);
+			
+			if (l != null) {
+				int logLevel = getLevel(l);
+				if (logLevel >= msgLevel) {
+					if (l.getType().toLowerCase().equals("file"))
+						logToFile(l.getFilename(), logMessage);
+					else if (l.getType().toLowerCase().equals("console"))
+						logToConsole(logMessage);
 				}
 			}
+			
 		} catch (Exception e) {
 			logToConsole(logMessage, e);
 		}
+	}
+	
+	private static void logToAll(String msg, String level) {
+		for(JukeboxListenerSettings.Logs.Log l : Settings.get().getLogs().getLog()) {
+			LogType logType = LogType.valueOf(l.getLogs());
+			
+			if (logType != LogType.ALL)
+				log(msg, logType, level);
+		}
+	}
+
+	public static JukeboxListenerSettings.Logs.Log getLogger(LogType type) {
+		for(JukeboxListenerSettings.Logs.Log l : Settings.get().getLogs().getLog()) {
+			LogType logType = LogType.valueOf(l.getLogs());
+			
+			if (logType == type)
+				return l;
+		}
+		
+		return null;
+	}
+	
+	public static String getLoggerFilename(LogType type) {
+		JukeboxListenerSettings.Logs.Log l = getLogger(type);
+		if (l != null)
+			return l.getFilename();
+		
+		return null;
 	}
 	
 	

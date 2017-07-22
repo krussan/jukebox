@@ -464,7 +464,14 @@ public class DB {
 	}
 	
 	private static ProtoDB getProtoDBInstance(boolean populateBlobs) {
-		ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+		ProtoDB db = null; 
+		String logFilename = Log.getLoggerFilename(LogType.DB);
+		
+		if (StringUtils.isEmpty(logFilename))
+			db = new ProtoDB(DB.getDatabaseFilename());
+		else
+			db = new ProtoDB(DB.getDatabaseFilename(), logFilename);
+		
 		db.setPopulateBlobs(populateBlobs);
 		return db;
 	}
