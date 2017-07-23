@@ -77,7 +77,7 @@
 			</setting>			
     		<setting>
     			<key>url</key>
-    			<value><![CDATA[https://subscene.com/subtitles/title?q=__searchString__]]></value>
+    			<value><![CDATA[https://subscene.com/subtitles/release?q=__searchString__]]></value>
     		</setting>
     	</subFinderSettings>
     </subFinder>    

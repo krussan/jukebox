@@ -4,7 +4,7 @@
 
   <groupId>se.qxx.jukebox</groupId>
   <artifactId>jukebox</artifactId>
-  <version>0.17.4</version>
+  <version>0.17.9</version>
   <packaging>jar</packaging>
 
   <name>jukebox</name>
@@ -160,7 +160,7 @@
   </pluginRepositories>
 
 <build>
-	<finalName>${artifactId}-${version}-${git.branch}</finalName>
+	<finalName>${project.artifactId}-${project.version}-${git.branch}</finalName>
 	
     <pluginManagement>
         <plugins>
