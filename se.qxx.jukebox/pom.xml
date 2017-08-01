@@ -4,7 +4,7 @@
 
   <groupId>se.qxx.jukebox</groupId>
   <artifactId>jukebox</artifactId>
-  <version>0.17.1</version>
+  <version>0.17.9</version>
   <packaging>jar</packaging>
 
   <name>jukebox</name>
@@ -83,7 +83,7 @@
     <dependency>
       <groupId>se.qxx.protodb</groupId>
       <artifactId>protodb-java</artifactId>
-      <version>1.4.2</version>
+      <version>1.4.3</version>
     </dependency>
 
     <dependency>
@@ -160,7 +160,7 @@
   </pluginRepositories>
 
 <build>
-	<finalName>${artifactId}-${version}-${git.branch}</finalName>
+	<finalName>${project.artifactId}-${project.version}-${git.branch}</finalName>
 	
     <pluginManagement>
         <plugins>
@@ -280,7 +280,7 @@
 	                figure out the right directory. It's better to add it explicitly IMHO.
 	            -->
 	            <dotGitDirectory>${project.basedir}/../.git</dotGitDirectory>
-	            <verbose>true</verbose>
+	            <verbose>false</verbose>
             </configuration>	        
         </plugin>		
 

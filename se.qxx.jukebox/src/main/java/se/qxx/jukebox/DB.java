@@ -20,6 +20,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.JukeboxDomain.SubtitleQueue;
 import se.qxx.jukebox.domain.MovieOrSeries;
+import se.qxx.protodb.DBStatement;
 import se.qxx.protodb.ProtoDB;
 import se.qxx.protodb.exceptions.IDFieldNotFoundException;
 import se.qxx.protodb.exceptions.SearchFieldNotFoundException;
@@ -830,6 +831,20 @@ public class DB {
 			
 		} catch (ClassNotFoundException | SQLException | SearchFieldNotFoundException e) {
 			Log.Error(String.format("Failed to purge series"), Log.LogType.MAIN, e);
+		}		
+	}
+
+	/***
+	 * This purges the subtitle queue from all items that are not present in
+	 * the Episode and the Movie objects any more
+	 */
+	public synchronized static void cleanSubtitleQueue() {
+		try {
+			ProtoDB db = getProtoDBInstance();
+			String sql = "UPDATE SubtitleQueue SET subtitleRetreiveResult = -2 WHERE ID NOT IN (SELECT _subtitleQueue_ID FROM Movie) AND ID NOT IN (SELECT _subtitleQueue_ID FROM Episode);";
+			db.executeNonQuery(sql);
+		} catch (Exception e) {
+			Log.Error(String.format("Failed to clean subtitle queue"), Log.LogType.MAIN, e);
 		}		
 	}
 	
