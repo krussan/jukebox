@@ -222,7 +222,7 @@ public abstract class SubFinderBase {
 		List<SubFile> result = new ArrayList<SubFile>();
 		
 		for(SubFile sf : listSubs) {
-			if (!StringUtils.containsIgnoreCase("season", sf.getFile().getName())) {
+			if (!StringUtils.containsIgnoreCase("season", sf.getDescription())) {
 				result.add(sf);
 			}
 			else {
