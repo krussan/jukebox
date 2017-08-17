@@ -41,7 +41,7 @@ public class Jukebox {
 		System.out.println("");
 		System.out.println("Jukebox starter - run.sh");
 		System.out.println("");
-		System.out.println("   run.sh [-ds] [-di] [-dt] [-dm] [--purge] [--help]");
+		System.out.println("   run.sh [-ds] [-di] [-dt] [-dm] [-dc] [--purge] [--help]");
 		System.out.println("");
 		System.out.println("\t-ds\tDisable subtitle downloader");
 		System.out.println("\t-di\tDisable imdb identifier");
@@ -49,6 +49,7 @@ public class Jukebox {
 		System.out.println("\t-dm\tDisable media info library");
 		System.out.println("\t-dw\tDisable streaming web server");
 		System.out.println("\t-df\tDisable search engine finder");
+		System.out.println("\t-dc\tDisable cleaning thread");
 		System.out.println("");
 		System.out.println("\t--purge\tPurges all content from database and exit");
 		System.out.println("\t--purgeSubs\tPurges all subtitles and queue from database");
