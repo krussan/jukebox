@@ -46,6 +46,7 @@ public class Main implements Runnable, INotifyClient
 			
 			if (Arguments.get().isCleanerEnabled()) {
 				Thread cleanerThread = new Thread(Cleaner.get());
+				cleanerThread.start();
 			}
 			
 			isRunning = true;
