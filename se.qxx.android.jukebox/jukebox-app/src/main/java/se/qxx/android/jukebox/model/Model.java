@@ -15,15 +15,16 @@ import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
+import se.qxx.jukebox.domain.MovieOrSeries;
 
 public class Model {
 
     public enum ModelType {
         Movie,
-        Series,
-        Season
+		Series
     }
 
+	private ModelType modelType = ModelType.Movie;
 	private int currentMovieId = -1;
 	private int currentSeriesId = -1;
 	private int currentSeasonId = -1;
@@ -86,7 +87,15 @@ public class Model {
 	public void setInitialized(boolean initialized) {
 		this.initialized = initialized;
 	}
-	
+
+	public ModelType getModelType() {
+		return modelType;
+	}
+
+	public void setModelType(ModelType modelType) {
+		this.modelType = modelType;
+	}
+
 	//---------------------------------------------------------------------------------------
 	// MOVIE
 	//---------------------------------------------------------------------------------------
@@ -297,21 +306,25 @@ public class Model {
     }
 
 	public void setCurrentMovie(int index) {
+        this.setModelType(ModelType.Movie);
 		this.currentMovieId = index;
 		this.currentMediaId = 0;		
 	}
 
 	public void setCurrentSeries(int index) {
+        this.setModelType(ModelType.Series);
 		this.currentSeriesId = index;
 		this.currentMediaId = 0;
 	}
 
     public void setCurrentSeason(int index) {
+        this.setModelType(ModelType.Series);
         this.currentSeasonId = index;
         this.currentMediaId = 0;
     }
 
     public void setCurrentEpisode(int index) {
+        this.setModelType(ModelType.Series);
         this.currentEpisodeId = index;
         this.currentMediaId = 0;
     }
@@ -353,80 +366,74 @@ public class Model {
 	//---------------------------------------------------------------------------------------
 	
 	public Media getCurrentMedia() {
-		Movie m = getCurrentMovie();
-		if (m != null) {
-			if (this.currentMediaId >= 0 && this.currentMediaId < m.getMediaList().size())
-				return m.getMediaList().get(this.currentMediaId);
-			else
-				return null;			
-		}
-		else {
-			return null;
-		}
+		List<Media> mediaList = getCurrentMediaList();
+
+        if (this.currentMediaId >= 0 && this.currentMediaId < mediaList.size())
+            return mediaList.get(this.currentMediaId);
+        else
+            return null;
 	}
 
 	public Media getPreviousMedia() {
-		Movie m = getCurrentMovie();
-		if (m != null) {
-			int size = m.getMediaList().size();
-			if (size == 0)
-				return null;
-			else {
-				if (this.currentMediaId == 0)
-					return m.getMedia(size - 1);
-				else
-					return m.getMedia(this.currentMediaId - 1);
-			}
-		}
-		else
-			return null;
+        List<Media> mediaList = getCurrentMediaList();
+
+        int size = mediaList.size();
+        if (size == 0)
+            return null;
+        else {
+            if (this.currentMediaId == 0)
+                return mediaList.get(size - 1);
+            else
+                return mediaList.get(this.currentMediaId - 1);
+        }
 	}
 	
 	public Media getNextMedia() {
-		Movie m = getCurrentMovie();
-		if (m!=null) {			
-			int size = m.getMediaList().size();
-			if (size == 0)
-				return null;
-			else {
-				if (this.currentMediaId == size - 1)
-					return m.getMedia(0);
-				else
-					return m.getMedia(this.currentMediaId + 1);
-			}
-		}
-		else {
-			return null;
-		}
-	}	
+        List<Media> mediaList = getCurrentMediaList();
+
+        int size = mediaList.size();
+        if (size == 0)
+            return null;
+        else {
+            if (this.currentMediaId == size - 1)
+                return mediaList.get(0);
+            else
+                return mediaList.get(this.currentMediaId + 1);
+        }
+	}
 	
 	public void currentMediaSetNext() {
 		this.currentMediaId++;
-		Movie m = getCurrentMovie();
-		if (m != null) {
-			if (this.currentMediaId == m.getMediaList().size())
-				this.currentMediaId = 0;
-		}
+		List<Media> mediaList = getCurrentMediaList();
+        if (this.currentMediaId == mediaList.size())
+            this.currentMediaId = 0;
 	}
 	
 	public void currentMediaSetPrevious() {
 		this.currentMediaId--;
-		Movie m = getCurrentMovie();
-		if (m != null) {
-			int size = m.getMediaList().size();
-			if (this.currentMediaId < 0)
-				this.currentMediaId = size == 0 ? 0 : size - 1;
-		}
+        List<Media> mediaList = getCurrentMediaList();
+        int size = mediaList.size();
+        if (this.currentMediaId < 0)
+            this.currentMediaId = size == 0 ? 0 : size - 1;
 	}
 	
 	public void setCurrentMedia(int index) {
 		this.currentMediaId = index;
 	}
-	
+
+	private List<Media> getCurrentMediaList() {
+        if (this.getModelType() == ModelType.Movie)
+            return this.getCurrentMovie().getMediaList();
+        else if (this.getModelType() == ModelType.Series && this.getCurrentEpisode() != null)
+            return this.getCurrentEpisode().getMediaList();
+
+        return new ArrayList<Media>();
+    }
+
 	public void setCurrentMedia(Media media) {
-		List<Media> listMedia = this.getCurrentMovie().getMediaList();
-		
-		for(int i=0;i<listMedia.size();i++) {
+		List<Media> listMedia = this.getCurrentMediaList();
+
+        for(int i=0;i<listMedia.size();i++) {
 			if (listMedia.get(i).getID() == media.getID()) {
 				this.setCurrentMedia(i);
 				break;
@@ -435,7 +442,7 @@ public class Model {
 	}
 	
 	public void setCurrentMedia(String filename) {
-		List<Media> listMedia = this.getCurrentMovie().getMediaList();
+		List<Media> listMedia = this.getCurrentMediaList();
 		
 		for(int i=0;i<listMedia.size();i++) {
 			if (StringUtils.equalsIgnoreCase(listMedia.get(i).getFilename(), filename)) {
@@ -527,6 +534,4 @@ public class Model {
 		return this.currentSub;
 	}
 
-
-	
 }
