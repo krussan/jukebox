@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.Typed;
 
+import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
@@ -118,7 +119,8 @@ public class Model {
 	
 	public void addAllSeries(List<Series> series) {
 		_series.addAll(series);
-		sortSeries(); 
+		sortSeries();
+		sortSeasonsAndEpisodes();
 		fireModelUpdatedEvent(ModelUpdatedType.Series);
 	}
 	
@@ -348,6 +350,45 @@ public class Model {
 			}
 		});
 	}
+
+	public void sortSeasonsAndEpisodes() {
+		List<Series> newList = new ArrayList<Series>();
+		for(Series s : _series) {
+            newList.add(Series.newBuilder(s).clearSeason().addAllSeason(sortSeasons(s)).build());
+		}
+
+		_series = newList;
+	}
+
+	public List<Season> sortSeasons(Series s) {
+        List<Season> list = new ArrayList<Season>(s.getSeasonList());
+
+        Collections.sort(list, new Comparator<Season>() {
+            @Override
+            public int compare(Season lhs, Season rhs) {
+                return Integer.compare(lhs.getSeasonNumber(), rhs.getSeasonNumber());
+            }
+        });
+
+        List<Season> newSeasonList = new ArrayList<Season>();
+        for (Season ss : list) {
+            newSeasonList.add(Season.newBuilder(ss).clearEpisode().addAllEpisode(sortEpisodes(ss)).build());
+        }
+
+        return newSeasonList;
+    }
+
+	public List<Episode> sortEpisodes(Season ss) {
+        List<Episode> episodeList = new ArrayList<Episode>(ss.getEpisodeList());
+        Collections.sort(episodeList, new Comparator<Episode>() {
+            @Override
+            public int compare(Episode lhs, Episode rhs) {
+                return Integer.compare(lhs.getEpisodeNumber(), rhs.getEpisodeNumber());
+            }
+        });
+
+        return episodeList;
+    }
 
 	//---------------------------------------------------------------------------------------
 	// SERIES
