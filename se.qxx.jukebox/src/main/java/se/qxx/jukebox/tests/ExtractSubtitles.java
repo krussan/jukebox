@@ -28,6 +28,7 @@ public class ExtractSubtitles {
  					if (md != null) { 
 						for (Subtitle sub : md.getSubsList()) {
 							Util.writeSubtitleToTempFile(sub);
+							Util.writeSubtitleToTempFileVTT(sub);
 						}
  					}
 					else 
