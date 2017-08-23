@@ -2,10 +2,12 @@ package se.qxx.android.jukebox;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.Menu;
 import android.view.MenuInflater;
 
 import com.google.android.gms.cast.CastMediaControlIntent;
+import com.google.android.gms.cast.TextTrackStyle;
 import com.google.android.libraries.cast.companionlibrary.cast.BaseCastManager;
 import com.google.android.libraries.cast.companionlibrary.cast.CastConfiguration;
 import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager;
@@ -68,5 +70,18 @@ public class ChromeCastConfiguration {
         if (isChromeCastActive()) {
             VideoCastManager.getInstance().decrementUiCounter();
         }
+    }
+
+    public static TextTrackStyle getTextStyle() {
+        TextTrackStyle style = new TextTrackStyle();
+        style.setBackgroundColor(Color.parseColor("#00FFFFFF"));
+        style.setFontGenericFamily(TextTrackStyle.FONT_FAMILY_SANS_SERIF);
+        style.setFontScale(0.8f);
+        style.setForegroundColor(Color.parseColor("#FFFFF000"));
+        style.setEdgeType(TextTrackStyle.EDGE_TYPE_OUTLINE);
+        style.setEdgeColor(Color.rgb(0,0,0));
+        style.setFontStyle(TextTrackStyle.FONT_STYLE_ITALIC);
+
+        return style;
     }
 }
