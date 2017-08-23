@@ -39,6 +39,7 @@ import android.widget.Toast;
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaMetadata;
 import com.google.android.gms.cast.MediaTrack;
+import com.google.android.gms.cast.TextTrackStyle;
 import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager;
 import com.google.android.libraries.cast.companionlibrary.cast.exceptions.CastException;
 import com.google.android.libraries.cast.companionlibrary.cast.exceptions.NoConnectionException;
@@ -583,12 +584,14 @@ public class NowPlayingActivity extends AppCompatActivity
                 activeTrackIds = new long[] {1};
 
 
+            TextTrackStyle style = ChromeCastConfiguration.getTextStyle();
 
             MediaInfo mi = new MediaInfo.Builder(movieUri)
                     .setMetadata(md)
                     .setMediaTracks(tracks)
                     .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
                     .setContentType("video/mp4")
+                    .setTextTrackStyle(style)
                     .build();
 
             try {
