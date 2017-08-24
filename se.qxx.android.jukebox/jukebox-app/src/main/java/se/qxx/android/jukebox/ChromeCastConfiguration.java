@@ -76,7 +76,7 @@ public class ChromeCastConfiguration {
         TextTrackStyle style = new TextTrackStyle();
         style.setBackgroundColor(Color.parseColor("#00FFFFFF"));
         style.setFontGenericFamily(TextTrackStyle.FONT_FAMILY_SANS_SERIF);
-        style.setFontScale(0.8f);
+        style.setFontScale(0.9f);
         style.setForegroundColor(Color.parseColor("#FFFFF000"));
         style.setEdgeType(TextTrackStyle.EDGE_TYPE_OUTLINE);
         style.setEdgeColor(Color.rgb(0,0,0));

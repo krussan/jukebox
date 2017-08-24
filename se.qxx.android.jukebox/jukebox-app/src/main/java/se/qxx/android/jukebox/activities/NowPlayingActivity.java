@@ -179,7 +179,7 @@ public class NowPlayingActivity extends AppCompatActivity
 //
 //                mCastManager.addVideoCastConsumer(mCastConsumer);
 
-                initializeSeeker(Model.get().getCurrentMedia().getMetaDuration() * 1000);
+                initializeSeeker(Model.get().getCurrentMedia().getMetaDuration());
 
                 if (mCastManager.isConnected())
                     startCastVideo(this.title, response.getUri(), response.getSubtitleUrisList(), response.getSubtitleList());
@@ -333,26 +333,29 @@ public class NowPlayingActivity extends AppCompatActivity
     @Override
     public void setProgress(int currentPosition, int duration) {
         // position and duration from cast libraries are in milliseconds
-        SeekBar sb = (SeekBar) findViewById(R.id.seekBarDuration);
-        if (sb != null) {
-            sb.setMax(duration / 1000);
-            sb.setProgress(currentPosition / 1000);
-        }
+        if (!this.isManualSeeking) {
+            SeekBar sb = (SeekBar) findViewById(R.id.seekBarDuration);
+            if (sb != null) {
+                //sb.setMax(duration / 1000);
+                sb.setProgress(currentPosition / 1000);
+            }
 
-        updateSeekbarText(currentPosition / 1000);
+            updateSeekbarText(currentPosition / 1000);
+        }
     }
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress,
                                   boolean fromUser) {
-        updateSeekbarText(progress);
+
+        if (this.isManualSeeking)
+            updateSeekbarText(progress);
     }
 
     private void updateSeekbarText(int progress) {
         final TextView tv = (TextView) findViewById(R.id.txtSeekIndicator);
 
-        if (this.isManualSeeking)
-            runOnUiThread(new UpdateSeekIndicator(progress, tv));
+        runOnUiThread(new UpdateSeekIndicator(progress, tv));
     }
 
     @Override
@@ -371,7 +374,7 @@ public class NowPlayingActivity extends AppCompatActivity
             VideoCastManager mCastManager = VideoCastManager.getInstance();
             if (mCastManager != null) {
                 try {
-                    mCastManager.seek(seconds);
+                    mCastManager.seek(seconds * 1000);
                 } catch (TransientNetworkDisconnectionException | NoConnectionException e) {
                     Logger.Log().e("Error while seeking", e);
                 }
@@ -434,6 +437,7 @@ public class NowPlayingActivity extends AppCompatActivity
             case R.id.btnStop:
                 Logger.Log().d("Request --- StopMove");
                 stopMovie();
+                this.finish();
                 break;
             case R.id.btnViewInfo:
                 String url = Model.get().getCurrentMovie().getImdbUrl();
