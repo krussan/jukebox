@@ -58,7 +58,7 @@ public class NowPlayingActivity extends AppCompatActivity
     private boolean isManualSeeking = false;
     private JukeboxConnectionHandler comm;
 
-    ChromecastCallback mChromecastCallback = null;
+    //ChromecastCallback mChromecastCallback = null;
 //    JukeboxCastConsumer mCastConsumer = null;
 
     private String getMode() {
@@ -73,7 +73,11 @@ public class NowPlayingActivity extends AppCompatActivity
 
     @Override
     public void setProgress(int currentPosition, int duration) {
-
+        SeekBar sb = (SeekBar) findViewById(R.id.seekBarDuration);
+        if (sb != null) {
+            sb.setMax(duration);
+            sb.setProgress(currentPosition);
+        }
     }
 
     //region --CALLBACKS--
@@ -225,10 +229,6 @@ public class NowPlayingActivity extends AppCompatActivity
         }
     }
 
-    private class ChromecastCallback extends MediaRouter.Callback {
-
-    }
-
     //endregion
 
     //region --Initialization--
@@ -359,9 +359,6 @@ public class NowPlayingActivity extends AppCompatActivity
 
         Logger.Log().d("Request --- Seek");
         if (ChromeCastConfiguration.isChromeCastActive()) {
-            comm.seek(JukeboxSettings.get().getCurrentMediaPlayer(), seconds);
-        }
-        else {
             VideoCastManager mCastManager = VideoCastManager.getInstance();
             if (mCastManager != null) {
                 try {
@@ -370,6 +367,9 @@ public class NowPlayingActivity extends AppCompatActivity
                     Logger.Log().e("Error while seeking", e);
                 }
             }
+        }
+        else {
+            comm.seek(JukeboxSettings.get().getCurrentMediaPlayer(), seconds);
         }
 
         this.isManualSeeking = false;
