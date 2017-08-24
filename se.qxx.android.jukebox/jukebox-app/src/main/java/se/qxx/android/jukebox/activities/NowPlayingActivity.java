@@ -71,15 +71,6 @@ public class NowPlayingActivity extends AppCompatActivity
 
     private boolean isEpisodeMode() { return StringUtils.equalsIgnoreCase(this.getMode(), "episode"); }
 
-    @Override
-    public void setProgress(int currentPosition, int duration) {
-        SeekBar sb = (SeekBar) findViewById(R.id.seekBarDuration);
-        if (sb != null) {
-            sb.setMax(duration);
-            sb.setProgress(currentPosition);
-        }
-    }
-
     //region --CALLBACKS--
 
     private class OnStatusComplete implements RpcCallback<JukeboxResponseIsPlaying> {
@@ -187,6 +178,8 @@ public class NowPlayingActivity extends AppCompatActivity
 //                        response.getSubtitleUrisList());
 //
 //                mCastManager.addVideoCastConsumer(mCastConsumer);
+
+                initializeSeeker(Model.get().getCurrentMedia().getMetaDuration() * 1000);
 
                 if (mCastManager.isConnected())
                     startCastVideo(this.title, response.getUri(), response.getSubtitleUrisList(), response.getSubtitleList());
@@ -338,8 +331,24 @@ public class NowPlayingActivity extends AppCompatActivity
     //region --SEEKBAR--
 
     @Override
+    public void setProgress(int currentPosition, int duration) {
+        // position and duration from cast libraries are in milliseconds
+        SeekBar sb = (SeekBar) findViewById(R.id.seekBarDuration);
+        if (sb != null) {
+            sb.setMax(duration / 1000);
+            sb.setProgress(currentPosition / 1000);
+        }
+
+        updateSeekbarText(currentPosition / 1000);
+    }
+
+    @Override
     public void onProgressChanged(SeekBar seekBar, int progress,
                                   boolean fromUser) {
+        updateSeekbarText(progress);
+    }
+
+    private void updateSeekbarText(int progress) {
         final TextView tv = (TextView) findViewById(R.id.txtSeekIndicator);
 
         if (this.isManualSeeking)
