@@ -66,7 +66,8 @@ public class Cleaner implements Runnable {
 					Log.Debug(String.format("#####!!!!!! Media %s was not found. Deleting .... ", md.getFilename()), LogType.FIND);
 					
 					try {
-						DB.delete(m);
+						if (!Arguments.get().isCleanerLogOnly())
+							DB.delete(m);
 					} catch (ClassNotFoundException | SQLException ex) {
 						Log.Error("Deletion of media failed", LogType.FIND, ex);
 					}
@@ -87,7 +88,8 @@ public class Cleaner implements Runnable {
 							Log.Debug(String.format("#####!!!!!! Media %s was not found. Deleting .... ", md.getFilename()), LogType.FIND);
 							
 							try {
-								DB.delete(e);
+								if (!Arguments.get().isCleanerLogOnly())
+									DB.delete(e);
 							} catch (ClassNotFoundException | SQLException ex) {
 								Log.Error("Deletion of media failed", LogType.FIND, ex);
 							}
