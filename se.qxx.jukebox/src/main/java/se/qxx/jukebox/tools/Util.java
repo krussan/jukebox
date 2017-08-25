@@ -1,6 +1,7 @@
 package se.qxx.jukebox.tools;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -245,16 +246,17 @@ public class Util {
 		Log.Info(String.format("Writing sub to file :: %s", tempFile.getAbsolutePath()), LogType.WEBSERVER);
 		return Util.writeSubtitleToFileVTT(sub, tempFile);
 	}
+
+	public static File writeSubtitleToTempFile(Subtitle sub) throws FileNotFoundException, IOException, SubtitleParsingException {
+		File tempDir = FileUtils.getTempDirectory();
+		File tempFile = new File(String.format("%s/%s", tempDir.getAbsolutePath(), sub.getFilename()));
+
+		Log.Info(String.format("Writing sub to file :: %s", tempFile.getAbsolutePath()), LogType.WEBSERVER);
+		return Util.writeSubtitleToFile(sub, tempFile);
+	}
 	
 	public static File writeSubtitleToFile(Subtitle sub, File destinationFile) throws IOException, SubtitleParsingException, FileNotFoundException {
 		BOMInputStream bom = new BOMInputStream(new ByteArrayInputStream(sub.getTextdata().toByteArray()));
-		
-		BufferedReader br = new BufferedReader(new InputStreamReader(bom, "utf-8"));
-		String line;
-		while ((line = br.readLine()) != null){
-			System.out.println(line);	
-		}
-		
 		
 		IOUtils.copy(bom, new FileOutputStream(destinationFile));
 		

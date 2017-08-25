@@ -4,7 +4,7 @@
 
   <groupId>se.qxx.jukebox</groupId>
   <artifactId>jukebox</artifactId>
-  <version>0.17.15</version>
+  <version>0.17.17</version>
   <packaging>jar</packaging>
 
   <name>jukebox</name>
@@ -131,7 +131,7 @@
 	<dependency>
 	    <groupId>fr.noop</groupId>
 	    <artifactId>subtitle</artifactId>
-	    <version>0.9.4</version>
+	    <version>0.9.5</version>
 	</dependency>
 
 	<dependency>
