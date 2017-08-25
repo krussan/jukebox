@@ -56,6 +56,7 @@ public class MovieIdentifier implements Runnable {
 			
 			if (f != null)
 				identify(f);
+			
 		}
 		
 		

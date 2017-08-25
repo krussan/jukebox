@@ -44,6 +44,11 @@ public class Main implements Runnable, INotifyClient
 				identifierThread.start();
 			}
 			
+			if (Arguments.get().isCleanerEnabled()) {
+				Thread cleanerThread = new Thread(Cleaner.get());
+				cleanerThread.start();
+			}
+			
 			isRunning = true;
 			
 			ExtensionFileFilter filter = new ExtensionFileFilter();
