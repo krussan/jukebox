@@ -49,11 +49,10 @@ public class Cleaner implements Runnable {
 			Log.Info("Starting up cleaner thread", LogType.FIND);
 			cleanMovies();	
 			cleanEpisodes();
-
 			cleanEmptySeries();
 			
 			try {
-				Thread.sleep(5000);
+				Thread.sleep(15000);
 			} catch (InterruptedException e) {
 				break;
 			}

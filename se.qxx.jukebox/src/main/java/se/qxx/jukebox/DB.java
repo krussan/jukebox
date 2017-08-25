@@ -61,7 +61,7 @@ public class DB {
 	//------------------------------------------------------------------------ Search
 	//---------------------------------------------------------------------------------------
 
-	public static List<Movie> searchMoviesByTitle(String searchString, boolean populateBlobs, boolean filterSubs) {
+	public synchronized static List<Movie> searchMoviesByTitle(String searchString, boolean populateBlobs, boolean filterSubs) {
 		try {
 			ProtoDB db = getProtoDBInstance(populateBlobs);
 			
@@ -85,7 +85,7 @@ public class DB {
 	}
 
 
-	public static List<Series> searchSeriesByTitle(String searchString, boolean populateBlobs, boolean filterSubs) {
+	public synchronized static List<Series> searchSeriesByTitle(String searchString, boolean populateBlobs, boolean filterSubs) {
 		try {
 			ProtoDB db = getProtoDBInstance(populateBlobs);
 
@@ -140,7 +140,7 @@ public class DB {
 //		}
 //	}
 
-	public static Movie findMovie(String identifiedTitle) {
+	public synchronized static Movie findMovie(String identifiedTitle) {
 		String searchString = replaceSearchString(identifiedTitle) + "%";
 		
 		Log.Debug(String.format("DB :: Series search string :: %s", searchString), LogType.MAIN);
@@ -166,7 +166,7 @@ public class DB {
 		}
 	}
 	
-	public static Series findSeries(String identifiedTitle) {
+	public synchronized static Series findSeries(String identifiedTitle) {
 		String searchString = replaceSearchString(identifiedTitle) + "%";
 		
 		Log.Debug(String.format("DB :: Series search string :: %s", searchString), LogType.MAIN);
@@ -425,7 +425,7 @@ public class DB {
 	 * 
 	 * @return
 	 */
-	public static List<MovieOrSeries> getSubtitleQueue() {
+	public synchronized static List<MovieOrSeries> getSubtitleQueue() {
 		List<MovieOrSeries> result = new ArrayList<MovieOrSeries>();
 		
 		try {
@@ -692,7 +692,7 @@ public class DB {
 		}
 	}
 
-	public static boolean setupDatabase() {
+	public synchronized static boolean setupDatabase() {
 		try {
 			File f = new File(DB.getDatabaseFilename());
 			if (!f.exists()) {
@@ -712,7 +712,7 @@ public class DB {
 		return false;
 	}
 
-	public static Movie getMovieByMediaID(int mediaID) {
+	public synchronized static Movie getMovieByMediaID(int mediaID) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			List<Movie> result =
@@ -736,7 +736,7 @@ public class DB {
 	}
 
 	
-	public static Media getMediaByFilename(String filename) {
+	public synchronized static Media getMediaByFilename(String filename) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			List<Media> result =
@@ -760,7 +760,7 @@ public class DB {
 	}
 
 	
-	public static Media getMediaById(int mediaId) {
+	public synchronized static Media getMediaById(int mediaId) {
 		try {
 			ProtoDB db = getProtoDBInstance();			
 			return db.get(mediaId, Media.getDefaultInstance());
@@ -793,7 +793,7 @@ public class DB {
 //		return null;
 //	}
 //	
-	public static Movie getMovieBySubfilename(String subsFilename) {
+	public synchronized static Movie getMovieBySubfilename(String subsFilename) {
 		try {
 			String searchString = replaceSearchString(subsFilename) + "%";
 			
@@ -814,7 +814,7 @@ public class DB {
 		return null;
 	}
 
-	public static void purgeSeries() {
+	public synchronized static void purgeSeries() {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			List<Series> result =
