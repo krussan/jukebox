@@ -4,7 +4,7 @@
 
   <groupId>se.qxx.jukebox</groupId>
   <artifactId>jukebox</artifactId>
-  <version>0.17.14</version>
+  <version>0.17.15</version>
   <packaging>jar</packaging>
 
   <name>jukebox</name>

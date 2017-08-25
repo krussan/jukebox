@@ -49,6 +49,8 @@ public class Cleaner implements Runnable {
 			Log.Info("Starting up cleaner thread", LogType.FIND);
 			cleanMovies();	
 			cleanEpisodes();
+
+			cleanEmptySeries();
 			
 			try {
 				Thread.sleep(5000);
@@ -100,6 +102,17 @@ public class Cleaner implements Runnable {
 		}
 	}
 
+	private void cleanEmptySeries() {
+//		List<Series> series = DB.searchSeriesByTitle("%", false, true);
+//		int countEpisodes = 0;
+//		int countSeasons = 0;
+//		
+//		for (Series s : series) {
+//			for (Season ss : s.getSeasonList()) {
+//			}
+//		}
+	}
+	
 	private boolean mediaExists(Media md) {
 		File f = new File(String.format("%s/%s", FilenameUtils.normalizeNoEndSeparator(md.getFilepath()), md.getFilename()));
 		return f.exists();
