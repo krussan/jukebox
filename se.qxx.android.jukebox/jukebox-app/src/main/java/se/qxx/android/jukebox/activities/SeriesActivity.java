@@ -29,4 +29,18 @@ public class SeriesActivity extends AppCompatActivity {
         return true;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        ChromeCastConfiguration.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        ChromeCastConfiguration.onPause();
+    }
+
 }

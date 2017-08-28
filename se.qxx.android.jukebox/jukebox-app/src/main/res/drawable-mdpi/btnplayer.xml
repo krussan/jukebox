@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/m_backward_down"
+    <item android:drawable="@mipmap/m_display_down"
           android:state_pressed="true" />
-    <item android:drawable="@drawable/m_backward" />
+    <item android:drawable="@mipmap/m_display" />
 </selector>

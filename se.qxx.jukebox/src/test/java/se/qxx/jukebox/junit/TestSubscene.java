@@ -105,8 +105,8 @@ public class TestSubscene {
 						.build())
 				.build();
 		
-		WebResult resultSearch = new WebResult(new URL("https://subscene.com/subtitles/title?q=Mockito"), searchResult, false);
-		Mockito.when(WebRetriever.getWebResult("https://subscene.com/subtitles/title?q=Mockito")).thenReturn(resultSearch);
+		WebResult resultSearch = new WebResult(new URL("https://subscene.com/subtitles/release?q=Mockito"), searchResult, false);
+		Mockito.when(WebRetriever.getWebResult("https://subscene.com/subtitles/release?q=Mockito")).thenReturn(resultSearch);
 												
 		WebResult resultList = new WebResult(new URL("https://subscene.com/subtitles/Mockito"), listResult, false);
 		Mockito.when(WebRetriever.getWebResult("https://subscene.com/subtitles/Mockito")).thenReturn(resultList);

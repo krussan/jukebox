@@ -6,6 +6,7 @@ import com.googlecode.protobuf.socketrpc.SocketRpcController;
 
 import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Empty;
+import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGeneral;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListSubtitles;
@@ -95,16 +96,23 @@ public class JukeboxConnectionHandler {
 		
 	}
 	
-	public void startMovie(final String playerName, final Movie m, final RpcCallback<JukeboxResponseStartMovie> callback) {
+	public void startMovie(
+			final String playerName, 
+			final Movie m,
+			final Episode ep,
+			final RpcCallback<JukeboxResponseStartMovie> callback) {
 		final RpcController controller = new SocketRpcController();
 
 		Thread t = new Thread() {
 			public void run() {
 				JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();				
+				int id = m == null ? ep.getID() : m.getID();
+				RequestType requestType = m == null ? RequestType.TypeEpisode : RequestType.TypeMovie;
 				
 				JukeboxRequestStartMovie request = JukeboxRequestStartMovie.newBuilder()
 						.setPlayerName(playerName)  // JukeboxSettings.get().getCurrentMediaPlayer()
-						.setMovieId(m.getID()) // Model.get().getCurrentMovie().getID()
+						.setMovieOrEpisodeId(id) // Model.get().getCurrentMovie().getID()
+						.setRequestType(requestType)
 						.build();		
 
 				service.startMovie(controller, request, new RpcCallback<JukeboxDomain.JukeboxResponseStartMovie>() {

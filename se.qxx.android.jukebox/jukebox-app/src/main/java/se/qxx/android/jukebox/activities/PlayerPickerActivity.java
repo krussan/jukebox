@@ -30,6 +30,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.support.v7.media.MediaRouteSelector;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class PlayerPickerActivity extends AppCompatActivity implements ModelUpdatedEventListener, OnItemClickListener {
 
 	PlayerLayoutAdapter adapter;
@@ -86,6 +88,20 @@ public class PlayerPickerActivity extends AppCompatActivity implements ModelUpda
 	}
 
 	@Override
+	public void onResume() {
+		super.onResume();
+
+		ChromeCastConfiguration.onResume();
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+
+		ChromeCastConfiguration.onPause();
+	}
+
+	@Override
 	public void handleModelUpdatedEventListener(EventObject e) {
 		ModelUpdatedEvent ev = (ModelUpdatedEvent)e;
 
@@ -108,6 +124,10 @@ public class PlayerPickerActivity extends AppCompatActivity implements ModelUpda
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		String playerName = (String)arg0.getItemAtPosition(arg2);
 		JukeboxSettings.get().setCurrentMediaPlayer(playerName);
+
+		if (StringUtils.equalsIgnoreCase(playerName, "Chromecast"))
+			ChromeCastConfiguration.initialize(this);
+
 		updateList();		
 	}
 

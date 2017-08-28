@@ -154,11 +154,11 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			RpcCallback<JukeboxResponseStartMovie> done) {
 
 		Log.Debug("StartMovie", LogType.COMM);
-		Log.Debug(String.format("Starting movie with ID: %s on player %s", request.getMovieId(), request.getPlayerName()), Log.LogType.COMM);
+		Log.Debug(String.format("Starting %s with ID: %s on player %s", request.getRequestType(), request.getMovieOrEpisodeId(), request.getPlayerName()), Log.LogType.COMM);
 		
 		try {
-			Movie m = DB.getMovie(request.getMovieId());
-			
+			Media md = getMedia(request);
+
 			boolean success = false;
 			
 			String uri = StringUtils.EMPTY;
@@ -167,16 +167,16 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			if (StringUtils.equalsIgnoreCase("Chromecast", request.getPlayerName())) {
 				//this is a chromecast request. Serve the file using http and return the uri.
 				//also serve the subtitles and return them
-				uri = serveChromecast(m, subtitleUris);
-				
+			
+				uri = serveChromecast(md, subtitleUris);
 				success = true;
 			}
 			else {
-				success = Distributor.get().startMovie(request.getPlayerName(), m);
+				success = Distributor.get().startMovie(request.getPlayerName(), md);
 			}
 			
 			if (success) {
-				List<Subtitle> subs = m.getMedia(0).getSubsList();
+				List<Subtitle> subs = md.getSubsList();
 				
 				JukeboxResponseStartMovie ls = JukeboxResponseStartMovie.newBuilder()
 						.addAllSubtitle(subs)
@@ -195,9 +195,21 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		
 	}
 
-	private String serveChromecast(Movie m, List<String> subtitleUris) {
+	private Media getMedia(JukeboxRequestStartMovie request) {
+		Media md = null;
+		if (request.getRequestType() == RequestType.TypeMovie) {
+			return DB.getMovie(request.getMovieOrEpisodeId()).getMedia(0);
+		}
+		else if (request.getRequestType() == RequestType.TypeEpisode) {
+			return DB.getEpisode(request.getMovieOrEpisodeId()).getMedia(0);
+		}
+		
+		return null;
+	}
+
+	private String serveChromecast(Media md, List<String> subtitleUris) {
 		String uri;
-		Media md = m.getMedia(0);
+
 		uri = StreamingWebServer.get().registerFile(String.format("%s/%s", md.getFilepath(), md.getFilename()));
 		
 		Log.Debug(String.format("Number of subtitles :: %s", md.getSubsCount()), LogType.COMM);
@@ -407,7 +419,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			if (subTrack != null) {
 				if (Distributor.get().restartWithSubtitle(
 						request.getPlayerName(), 
-						m, 
+						md, 
 						subTrack.getFilename(), 
 						true))
 					done.run(Empty.newBuilder().build());

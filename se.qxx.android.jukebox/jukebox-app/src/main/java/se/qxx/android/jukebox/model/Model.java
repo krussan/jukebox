@@ -7,15 +7,30 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.Typed;
 
+import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
+import se.qxx.jukebox.domain.JukeboxDomain.Season;
+import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
+import se.qxx.jukebox.domain.MovieOrSeries;
 
 public class Model {
-	
+
+    public enum ModelType {
+        Movie,
+		Series
+    }
+
+	private ModelType modelType = ModelType.Movie;
 	private int currentMovieId = -1;
+	private int currentSeriesId = -1;
+	private int currentSeasonId = -1;
+    private int currentEpisodeId = -1;
+
 	private String currentSub = StringUtils.EMPTY;
 	private int currentMediaId = -1;
 	private boolean initialized = false;
@@ -73,7 +88,15 @@ public class Model {
 	public void setInitialized(boolean initialized) {
 		this.initialized = initialized;
 	}
-	
+
+	public ModelType getModelType() {
+		return modelType;
+	}
+
+	public void setModelType(ModelType modelType) {
+		this.modelType = modelType;
+	}
+
 	//---------------------------------------------------------------------------------------
 	// MOVIE
 	//---------------------------------------------------------------------------------------
@@ -96,7 +119,8 @@ public class Model {
 	
 	public void addAllSeries(List<Series> series) {
 		_series.addAll(series);
-		sortSeries(); 
+		sortSeries();
+		sortSeasonsAndEpisodes();
 		fireModelUpdatedEvent(ModelUpdatedType.Series);
 	}
 	
@@ -133,7 +157,53 @@ public class Model {
 		return this.currentMovieId;
 	}
 
-	public Movie getPreviousMovie() {
+	public Series getCurrentSeries() {
+		if (this.currentSeriesId >= 0 && this.currentSeriesId < this._series.size())
+			return this._series.get(this.currentSeriesId);
+		else
+			return null;
+	}
+
+	public int getCurrentSeriesIndex() {
+		return this.currentSeriesId;
+	}
+
+    public Season getCurrentSeason() {
+        Series series = this.getCurrentSeries();
+
+        if (series != null) {
+            if (this.currentSeasonId >= 0 && this.currentSeasonId < series.getSeasonCount())
+                return series.getSeason(this.currentSeasonId);
+            else
+                return null;
+        }
+
+        return null;
+    }
+
+    public int getCurrentEpsiodeIndex() {
+        return this.currentEpisodeId;
+    }
+
+    public Episode getCurrentEpisode() {
+        Season season = this.getCurrentSeason();
+
+        if (season != null) {
+            if (this.currentEpisodeId >= 0 && this.currentEpisodeId < season.getEpisodeCount())
+                return season.getEpisode(this.currentEpisodeId);
+            else
+                return null;
+        }
+
+        return null;
+    }
+
+    public int getCurrentSeasonIndex() {
+        return this.currentSeasonId;
+    }
+
+
+    public Movie getPreviousMovie() {
 		if (this.currentMovieId == 0)
 			return this._movies.get(this._movies.size() == 0 ? 0 : this._movies.size() - 1);
 		else
@@ -145,9 +215,49 @@ public class Model {
 			return this._movies.get(0);
 		else
 			return this._movies.get(this.currentMovieId + 1);
-	}	
-	
-	public void currentMovieSetNext() {
+	}
+
+	public Series getPreviousSeries() {
+		if (this.currentSeriesId == 0)
+			return this._series.get(this._series.size() == 0 ? 0 : this._series.size() - 1);
+		else
+			return this._series.get(this.currentSeriesId - 1);
+	}
+
+	public Series getNextSeries() {
+		if (this.currentSeriesId == this._series.size() - 1)
+			return this._series.get(0);
+		else
+			return this._series.get(this.currentSeriesId + 1);
+	}
+
+    public Season getPreviousSeason() {
+        Series series = this.getCurrentSeries();
+
+        if (series != null) {
+            if (this.currentSeasonId == 0)
+                return series.getSeason(series.getSeasonCount() == 0 ? 0 : series.getSeasonCount() - 1);
+            else
+                return series.getSeason(this.currentSeasonId - 1);
+        }
+
+        return null;
+    }
+
+    public Season getNextSeason() {
+        Series series = this.getCurrentSeries();
+
+        if (series != null) {
+            if (this.currentSeasonId == series.getSeasonCount() - 1)
+                return series.getSeason(0);
+            else
+                return series.getSeason(this.currentSeasonId + 1);
+        }
+
+        return null;
+    }
+
+    public void currentMovieSetNext() {
 		this.currentMovieId++;
 		this.currentMediaId = 0;
 		if (this.currentMovieId == this._movies.size())
@@ -160,11 +270,66 @@ public class Model {
 		if (this.currentMovieId < 0)
 			this.currentMovieId = this._movies.size() == 0 ? 0 : this._movies.size() - 1;
 	}
-	
+
+	public void currentSeriesSetNext() {
+		this.currentSeriesId++;
+		this.currentMediaId = 0;
+		if (this.currentSeriesId == this._series.size())
+			this.currentSeriesId = 0;
+	}
+
+	public void currentSeriesSetPrevious() {
+		this.currentSeriesId--;
+		this.currentMediaId = 0;
+		if (this.currentSeriesId < 0)
+			this.currentSeriesId = this._series.size() == 0 ? 0 : this._series.size() - 1;
+	}
+
+    public void currentSeasonSetNext() {
+        Series series = this.getCurrentSeries();
+
+        if (series != null) {
+            this.currentSeasonId++;
+            this.currentMediaId = 0;
+            if (this.currentSeasonId == series.getSeasonCount())
+                this.currentSeasonId = 0;
+        }
+    }
+
+    public void currentSeasonSetPrevious() {
+        Series series = this.getCurrentSeries();
+
+        if (series != null) {
+            this.currentSeasonId--;
+            this.currentMediaId = 0;
+            if (this.currentSeasonId < 0)
+                this.currentSeasonId = series.getSeasonCount() == 0 ? 0 : series.getSeasonCount() - 1;
+            }
+    }
+
 	public void setCurrentMovie(int index) {
+        this.setModelType(ModelType.Movie);
 		this.currentMovieId = index;
 		this.currentMediaId = 0;		
 	}
+
+	public void setCurrentSeries(int index) {
+        this.setModelType(ModelType.Series);
+		this.currentSeriesId = index;
+		this.currentMediaId = 0;
+	}
+
+    public void setCurrentSeason(int index) {
+        this.setModelType(ModelType.Series);
+        this.currentSeasonId = index;
+        this.currentMediaId = 0;
+    }
+
+    public void setCurrentEpisode(int index) {
+        this.setModelType(ModelType.Series);
+        this.currentEpisodeId = index;
+        this.currentMediaId = 0;
+    }
 
 	public void sortMovies() {
 		Collections.sort(_movies, new Comparator<Movie>() {
@@ -186,6 +351,45 @@ public class Model {
 		});
 	}
 
+	public void sortSeasonsAndEpisodes() {
+		List<Series> newList = new ArrayList<Series>();
+		for(Series s : _series) {
+            newList.add(Series.newBuilder(s).clearSeason().addAllSeason(sortSeasons(s)).build());
+		}
+
+		_series = newList;
+	}
+
+	public List<Season> sortSeasons(Series s) {
+        List<Season> list = new ArrayList<Season>(s.getSeasonList());
+
+        Collections.sort(list, new Comparator<Season>() {
+            @Override
+            public int compare(Season lhs, Season rhs) {
+                return Integer.compare(lhs.getSeasonNumber(), rhs.getSeasonNumber());
+            }
+        });
+
+        List<Season> newSeasonList = new ArrayList<Season>();
+        for (Season ss : list) {
+            newSeasonList.add(Season.newBuilder(ss).clearEpisode().addAllEpisode(sortEpisodes(ss)).build());
+        }
+
+        return newSeasonList;
+    }
+
+	public List<Episode> sortEpisodes(Season ss) {
+        List<Episode> episodeList = new ArrayList<Episode>(ss.getEpisodeList());
+        Collections.sort(episodeList, new Comparator<Episode>() {
+            @Override
+            public int compare(Episode lhs, Episode rhs) {
+                return Integer.compare(lhs.getEpisodeNumber(), rhs.getEpisodeNumber());
+            }
+        });
+
+        return episodeList;
+    }
+
 	//---------------------------------------------------------------------------------------
 	// SERIES
 	//---------------------------------------------------------------------------------------
@@ -203,80 +407,74 @@ public class Model {
 	//---------------------------------------------------------------------------------------
 	
 	public Media getCurrentMedia() {
-		Movie m = getCurrentMovie();
-		if (m != null) {
-			if (this.currentMediaId >= 0 && this.currentMediaId < m.getMediaList().size())
-				return m.getMediaList().get(this.currentMediaId);
-			else
-				return null;			
-		}
-		else {
-			return null;
-		}
+		List<Media> mediaList = getCurrentMediaList();
+
+        if (this.currentMediaId >= 0 && this.currentMediaId < mediaList.size())
+            return mediaList.get(this.currentMediaId);
+        else
+            return null;
 	}
 
 	public Media getPreviousMedia() {
-		Movie m = getCurrentMovie();
-		if (m != null) {
-			int size = m.getMediaList().size();
-			if (size == 0)
-				return null;
-			else {
-				if (this.currentMediaId == 0)
-					return m.getMedia(size - 1);
-				else
-					return m.getMedia(this.currentMediaId - 1);
-			}
-		}
-		else
-			return null;
+        List<Media> mediaList = getCurrentMediaList();
+
+        int size = mediaList.size();
+        if (size == 0)
+            return null;
+        else {
+            if (this.currentMediaId == 0)
+                return mediaList.get(size - 1);
+            else
+                return mediaList.get(this.currentMediaId - 1);
+        }
 	}
 	
 	public Media getNextMedia() {
-		Movie m = getCurrentMovie();
-		if (m!=null) {			
-			int size = m.getMediaList().size();
-			if (size == 0)
-				return null;
-			else {
-				if (this.currentMediaId == size - 1)
-					return m.getMedia(0);
-				else
-					return m.getMedia(this.currentMediaId + 1);
-			}
-		}
-		else {
-			return null;
-		}
-	}	
+        List<Media> mediaList = getCurrentMediaList();
+
+        int size = mediaList.size();
+        if (size == 0)
+            return null;
+        else {
+            if (this.currentMediaId == size - 1)
+                return mediaList.get(0);
+            else
+                return mediaList.get(this.currentMediaId + 1);
+        }
+	}
 	
 	public void currentMediaSetNext() {
 		this.currentMediaId++;
-		Movie m = getCurrentMovie();
-		if (m != null) {
-			if (this.currentMediaId == m.getMediaList().size())
-				this.currentMediaId = 0;
-		}
+		List<Media> mediaList = getCurrentMediaList();
+        if (this.currentMediaId == mediaList.size())
+            this.currentMediaId = 0;
 	}
 	
 	public void currentMediaSetPrevious() {
 		this.currentMediaId--;
-		Movie m = getCurrentMovie();
-		if (m != null) {
-			int size = m.getMediaList().size();
-			if (this.currentMediaId < 0)
-				this.currentMediaId = size == 0 ? 0 : size - 1;
-		}
+        List<Media> mediaList = getCurrentMediaList();
+        int size = mediaList.size();
+        if (this.currentMediaId < 0)
+            this.currentMediaId = size == 0 ? 0 : size - 1;
 	}
 	
 	public void setCurrentMedia(int index) {
 		this.currentMediaId = index;
 	}
-	
+
+	private List<Media> getCurrentMediaList() {
+        if (this.getModelType() == ModelType.Movie)
+            return this.getCurrentMovie().getMediaList();
+        else if (this.getModelType() == ModelType.Series && this.getCurrentEpisode() != null)
+            return this.getCurrentEpisode().getMediaList();
+
+        return new ArrayList<Media>();
+    }
+
 	public void setCurrentMedia(Media media) {
-		List<Media> listMedia = this.getCurrentMovie().getMediaList();
-		
-		for(int i=0;i<listMedia.size();i++) {
+		List<Media> listMedia = this.getCurrentMediaList();
+
+        for(int i=0;i<listMedia.size();i++) {
 			if (listMedia.get(i).getID() == media.getID()) {
 				this.setCurrentMedia(i);
 				break;
@@ -285,7 +483,7 @@ public class Model {
 	}
 	
 	public void setCurrentMedia(String filename) {
-		List<Media> listMedia = this.getCurrentMovie().getMediaList();
+		List<Media> listMedia = this.getCurrentMediaList();
 		
 		for(int i=0;i<listMedia.size();i++) {
 			if (StringUtils.equalsIgnoreCase(listMedia.get(i).getFilename(), filename)) {
@@ -377,6 +575,4 @@ public class Model {
 		return this.currentSub;
 	}
 
-
-	
 }

@@ -19,6 +19,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
+import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.domain.DomainUtil;
 
 public class Upgrade_0_15 implements IIncrimentalUpgrade {
@@ -51,7 +52,7 @@ public class Upgrade_0_15 implements IIncrimentalUpgrade {
 			List<Movie> movies = DB.searchMoviesByTitle(StringUtils.EMPTY, true, true);
 			for (Movie m: movies) {
 				if (!m.getImage().isEmpty()){
-					Movie m_new = Movie.newBuilder(m).setThumbnail(getScaledImage(m.getTitle(), m.getImage())).build();
+					Movie m_new = Movie.newBuilder(m).setThumbnail(Util.getScaledImage(m.getImage())).build();
 					DB.save(m_new);
 				}
 			}
@@ -61,21 +62,21 @@ public class Upgrade_0_15 implements IIncrimentalUpgrade {
 				for (Season sn : s.getSeasonList()) {					
 					for (Episode e : sn.getEpisodeList()) {
 						if (!e.getImage().isEmpty()) {
-							Episode e_new = Episode.newBuilder(e).setThumbnail(getScaledImage(e.getTitle(), e.getImage())).build();
+							Episode e_new = Episode.newBuilder(e).setThumbnail(Util.getScaledImage(e.getImage())).build();
 							DomainUtil.updateEpisode(sn, e_new);
 						}
 					}
 					
 					Season sn_new = sn;
 					if (!sn.getImage().isEmpty())
-						sn_new = Season.newBuilder(sn).setThumbnail(getScaledImage(sn.getTitle(), sn.getImage())).build();
+						sn_new = Season.newBuilder(sn).setThumbnail(Util.getScaledImage(sn.getImage())).build();
 					
 					DomainUtil.updateSeason(s, sn_new);
 				}
 				
 				Series s_new = s;
 				if (!s.getImage().isEmpty())
-					s_new = Series.newBuilder(s).setThumbnail(getScaledImage(s.getTitle(), s.getImage())).build();
+					s_new = Series.newBuilder(s).setThumbnail(Util.getScaledImage(s.getImage())).build();
 				
 				DB.save(s_new);
 			}
@@ -86,17 +87,4 @@ public class Upgrade_0_15 implements IIncrimentalUpgrade {
 		}
 	}
 
-	private ByteString getScaledImage(String title, ByteString imagedata) throws IOException {
-		System.out.println(String.format("Creating thumbail for %s", title));
-		BufferedImage img = ImageIO.read(new ByteArrayInputStream(imagedata.toByteArray()));
-		BufferedImage scaled = Scalr.resize(img, 150);
-		return getByteStringFromImage(scaled);
-	}
-	
-	private ByteString getByteStringFromImage(BufferedImage img) throws IOException {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ImageIO.write(img, "jpg", baos);
-		return ByteString.copyFrom(baos.toByteArray());
-		
-	}
 }

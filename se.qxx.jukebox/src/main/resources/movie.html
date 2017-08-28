@@ -1,0 +1,25 @@
+<html>
+	<head><link rel="stylesheet" href="css"></head>
+	<body>
+		<h1>${movie.title}</h1>
+		<div id="imgMovie">
+			<img src="image${movie.ID}"/>
+		</div>
+		<div id="divMovieInfo">
+			<ul>
+				<li>${movie.year?c}</li>
+				<li>${movie.type}</li>
+				<li>${movie.rating}</li>
+				<li><a href="http://imdb.com/${movie.imdbUrl}">imdb</a></li>
+			</ul>
+		</div>
+		<div id="divSubtitles">
+			<ul>
+			<#list subtitles as subtitle>
+				<li>${subtitle.filename} - ${subtitle.rating}</li>
+			</#list>
+			</ul>
+		</div>
+		
+	</body>
+</html>

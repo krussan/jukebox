@@ -4,7 +4,7 @@ public class Version {
 	private int major;
 	private int minor;
 	
-	private static final String CURRENT_VERSION = "0.16";
+	private static final String CURRENT_VERSION = "0.17";
 	
 	public Version() {
 		parseVersion(CURRENT_VERSION);
@@ -47,6 +47,13 @@ public class Version {
 	
 	public boolean isEqualTo(Version otherVersion) {
 		return this.getMajor() == otherVersion.getMajor() && this.getMinor() == otherVersion.getMinor();
+	
+	}
+	public boolean isLessThan(Version otherVersion) {
+		if (this.getMajor() > otherVersion.getMajor())
+			return false;
+					
+		return this.getMajor() < otherVersion.getMajor() || this.getMinor() < otherVersion.getMinor();
 	}
 	
 	public String toString() {

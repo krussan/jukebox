@@ -41,4 +41,5 @@
     <string name="lblSubtitleLanguage">LANG</string>
     <string name="descWatched">Watched</string>
     <string name="title_activity_video">VideoActivity</string>
+    <string name="action_settings">Settings</string>
 </resources>

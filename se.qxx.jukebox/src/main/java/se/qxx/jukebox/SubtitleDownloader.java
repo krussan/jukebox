@@ -92,6 +92,8 @@ public class SubtitleDownloader implements Runnable {
 		long threadWaitSeconds = Settings.get().getSubFinders().getThreadWaitSeconds() * 1000;
 		
 		Log.Debug("Retrieving list to process", LogType.SUBS);
+		DB.cleanSubtitleQueue();
+		
 		List<MovieOrSeries> _listProcessing =  DB.getSubtitleQueue();				
 		
 		while (isRunning()) {

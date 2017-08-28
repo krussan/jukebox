@@ -20,6 +20,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.JukeboxDomain.SubtitleQueue;
 import se.qxx.jukebox.domain.MovieOrSeries;
+import se.qxx.protodb.DBStatement;
 import se.qxx.protodb.ProtoDB;
 import se.qxx.protodb.exceptions.IDFieldNotFoundException;
 import se.qxx.protodb.exceptions.SearchFieldNotFoundException;
@@ -60,7 +61,7 @@ public class DB {
 	//------------------------------------------------------------------------ Search
 	//---------------------------------------------------------------------------------------
 
-	public static List<Movie> searchMoviesByTitle(String searchString, boolean populateBlobs, boolean filterSubs) {
+	public synchronized static List<Movie> searchMoviesByTitle(String searchString, boolean populateBlobs, boolean filterSubs) {
 		try {
 			ProtoDB db = getProtoDBInstance(populateBlobs);
 			
@@ -84,7 +85,7 @@ public class DB {
 	}
 
 
-	public static List<Series> searchSeriesByTitle(String searchString, boolean populateBlobs, boolean filterSubs) {
+	public synchronized static List<Series> searchSeriesByTitle(String searchString, boolean populateBlobs, boolean filterSubs) {
 		try {
 			ProtoDB db = getProtoDBInstance(populateBlobs);
 
@@ -139,7 +140,7 @@ public class DB {
 //		}
 //	}
 
-	public static Movie findMovie(String identifiedTitle) {
+	public synchronized static Movie findMovie(String identifiedTitle) {
 		String searchString = replaceSearchString(identifiedTitle) + "%";
 		
 		Log.Debug(String.format("DB :: Series search string :: %s", searchString), LogType.MAIN);
@@ -165,7 +166,7 @@ public class DB {
 		}
 	}
 	
-	public static Series findSeries(String identifiedTitle) {
+	public synchronized static Series findSeries(String identifiedTitle) {
 		String searchString = replaceSearchString(identifiedTitle) + "%";
 		
 		Log.Debug(String.format("DB :: Series search string :: %s", searchString), LogType.MAIN);
@@ -424,7 +425,7 @@ public class DB {
 	 * 
 	 * @return
 	 */
-	public static List<MovieOrSeries> getSubtitleQueue() {
+	public synchronized static List<MovieOrSeries> getSubtitleQueue() {
 		List<MovieOrSeries> result = new ArrayList<MovieOrSeries>();
 		
 		try {
@@ -464,7 +465,14 @@ public class DB {
 	}
 	
 	private static ProtoDB getProtoDBInstance(boolean populateBlobs) {
-		ProtoDB db = new ProtoDB(DB.getDatabaseFilename());
+		ProtoDB db = null; 
+		String logFilename = Log.getLoggerFilename(LogType.DB);
+		
+		if (StringUtils.isEmpty(logFilename))
+			db = new ProtoDB(DB.getDatabaseFilename());
+		else
+			db = new ProtoDB(DB.getDatabaseFilename(), logFilename);
+		
 		db.setPopulateBlobs(populateBlobs);
 		return db;
 	}
@@ -507,7 +515,6 @@ public class DB {
 		
 		return moss;
 	}
-
 	
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Blacklist
@@ -685,7 +692,7 @@ public class DB {
 		}
 	}
 
-	public static boolean setupDatabase() {
+	public synchronized static boolean setupDatabase() {
 		try {
 			File f = new File(DB.getDatabaseFilename());
 			if (!f.exists()) {
@@ -705,7 +712,7 @@ public class DB {
 		return false;
 	}
 
-	public static Movie getMovieByMediaID(int mediaID) {
+	public synchronized static Movie getMovieByMediaID(int mediaID) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			List<Movie> result =
@@ -729,7 +736,7 @@ public class DB {
 	}
 
 	
-	public static Media getMediaByFilename(String filename) {
+	public synchronized static Media getMediaByFilename(String filename) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			List<Media> result =
@@ -753,7 +760,7 @@ public class DB {
 	}
 
 	
-	public static Media getMediaById(int mediaId) {
+	public synchronized static Media getMediaById(int mediaId) {
 		try {
 			ProtoDB db = getProtoDBInstance();			
 			return db.get(mediaId, Media.getDefaultInstance());
@@ -786,7 +793,7 @@ public class DB {
 //		return null;
 //	}
 //	
-	public static Movie getMovieBySubfilename(String subsFilename) {
+	public synchronized static Movie getMovieBySubfilename(String subsFilename) {
 		try {
 			String searchString = replaceSearchString(subsFilename) + "%";
 			
@@ -807,7 +814,7 @@ public class DB {
 		return null;
 	}
 
-	public static void purgeSeries() {
+	public synchronized static void purgeSeries() {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			List<Series> result =
@@ -823,6 +830,20 @@ public class DB {
 			
 		} catch (ClassNotFoundException | SQLException | SearchFieldNotFoundException e) {
 			Log.Error(String.format("Failed to purge series"), Log.LogType.MAIN, e);
+		}		
+	}
+
+	/***
+	 * This purges the subtitle queue from all items that are not present in
+	 * the Episode and the Movie objects any more
+	 */
+	public synchronized static void cleanSubtitleQueue() {
+		try {
+			ProtoDB db = getProtoDBInstance();
+			String sql = "UPDATE SubtitleQueue SET subtitleRetreiveResult = -2 WHERE ID NOT IN (SELECT _subtitleQueue_ID FROM Movie) AND ID NOT IN (SELECT _subtitleQueue_ID FROM Episode);";
+			db.executeNonQuery(sql);
+		} catch (Exception e) {
+			Log.Error(String.format("Failed to clean subtitle queue"), Log.LogType.MAIN, e);
 		}		
 	}
 	

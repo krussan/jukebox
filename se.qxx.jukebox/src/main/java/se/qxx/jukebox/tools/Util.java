@@ -1,5 +1,7 @@
 package se.qxx.jukebox.tools;
 
+import java.awt.image.BufferedImage;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -9,7 +11,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -17,16 +18,18 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.imageio.ImageIO;
 import javax.swing.filechooser.FileSystemView;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BOMInputStream;
-import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
-import org.codehaus.plexus.util.StringOutputStream;
+import org.imgscalr.Scalr;
+
+import com.google.protobuf.ByteString;
 
 import fr.noop.subtitle.model.SubtitleObject;
 import fr.noop.subtitle.model.SubtitleParsingException;
@@ -39,7 +42,6 @@ import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.settings.JukeboxListenerSettings;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.watcher.ExtensionFileFilter;
-import se.qxx.jukebox.webserver.StreamingWebServer;
 
 public class Util {
 	/**
@@ -244,17 +246,17 @@ public class Util {
 		Log.Info(String.format("Writing sub to file :: %s", tempFile.getAbsolutePath()), LogType.WEBSERVER);
 		return Util.writeSubtitleToFileVTT(sub, tempFile);
 	}
+
+	public static File writeSubtitleToTempFile(Subtitle sub) throws FileNotFoundException, IOException, SubtitleParsingException {
+		File tempDir = FileUtils.getTempDirectory();
+		File tempFile = new File(String.format("%s/%s", tempDir.getAbsolutePath(), sub.getFilename()));
+
+		Log.Info(String.format("Writing sub to file :: %s", tempFile.getAbsolutePath()), LogType.WEBSERVER);
+		return Util.writeSubtitleToFile(sub, tempFile);
+	}
 	
 	public static File writeSubtitleToFile(Subtitle sub, File destinationFile) throws IOException, SubtitleParsingException, FileNotFoundException {
-		StringBuilder sb = new StringBuilder();
 		BOMInputStream bom = new BOMInputStream(new ByteArrayInputStream(sub.getTextdata().toByteArray()));
-		
-		BufferedReader br = new BufferedReader(new InputStreamReader(bom, "utf-8"));
-		String line;
-		while ((line = br.readLine()) != null){
-			System.out.println(line);	
-		}
-		
 		
 		IOUtils.copy(bom, new FileOutputStream(destinationFile));
 		
@@ -280,4 +282,17 @@ public class Util {
 		return destinationFile;
 	}
 	
+	public static ByteString getScaledImage(ByteString imagedata) throws IOException {
+		BufferedImage img = ImageIO.read(new ByteArrayInputStream(imagedata.toByteArray()));
+		BufferedImage scaled = Scalr.resize(img, 150);
+		return getByteStringFromImage(scaled);
+	}
+	
+	public static ByteString getByteStringFromImage(BufferedImage img) throws IOException {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ImageIO.write(img, "jpg", baos);
+		return ByteString.copyFrom(baos.toByteArray());
+		
+	}
+
 }

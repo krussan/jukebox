@@ -35,8 +35,7 @@
             android:text="@string/lblYear" 
             android:textAppearance="?android:attr/textAppearanceMedium"
         />
-        
-        
+
         <include layout="@layout/subtitlestars" 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

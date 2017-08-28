@@ -195,8 +195,10 @@ message JukeboxRequestListMovies {
 }
 
 message JukeboxRequestStartMovie {
-	required int32 movieId = 1;
+	required int32 movieOrEpisodeId = 1;
 	optional string playerName = 2;
+	required RequestType requestType = 3;
+	
 }
 
 message JukeboxRequestSeek {
@@ -292,7 +294,8 @@ service JukeboxService {
 	rpc SetSubtitle(JukeboxRequestSetSubtitle) returns (Empty);
 	
 	rpc Wakeup(JukeboxRequestGeneral) returns (Empty);
-	rpc Suspend(JukeboxRequestGeneral) returns (Empty);		
+	rpc Suspend(JukeboxRequestGeneral) returns (Empty);
+	
 }
  
  

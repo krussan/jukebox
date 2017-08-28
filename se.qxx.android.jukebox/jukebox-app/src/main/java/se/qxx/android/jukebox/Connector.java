@@ -9,6 +9,7 @@ import android.widget.Toast;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
 import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
+import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
 
 public class Connector {

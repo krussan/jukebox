@@ -14,9 +14,9 @@ public abstract class ModelRatedSubtitleAdapter extends BaseAdapter {
 	private Media media = null;
 	private List<Subtitle> sortedSubtitles = null;
 	
-	public ModelRatedSubtitleAdapter(Media media) {
+	public ModelRatedSubtitleAdapter(List<Subtitle> subtitles) {
 		this.media = media;
-		sortedSubtitles = Sorter.sortSubtitlesByRating(this.media.getSubsList());
+		sortedSubtitles = Sorter.sortSubtitlesByRating(subtitles);
 	}
 	
 	@Override

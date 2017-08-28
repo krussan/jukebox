@@ -53,7 +53,7 @@ public class Subscene extends SubFinderBase {
 			List<String> languages) {
 
 		List<SubFile> files = new ArrayList<SubFile>(); 
-		String searchString = getSearchString(mos.getMainTitle());
+		String searchString = getSearchString(mos.getTitle());
 		
 		if (!StringUtils.isEmpty(searchString)) {
 			String url = this.getSetting(SETTING_URL).replaceAll("__searchString__", searchString);
