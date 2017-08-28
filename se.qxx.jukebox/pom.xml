@@ -101,7 +101,7 @@
     <dependency>
       <groupId>se.qxx.jukebox</groupId>
       <artifactId>jukebox-domain</artifactId>
-      <version>[0.1.2,)</version>
+      <version>0.1.22</version>
     </dependency>
     
     <dependency>

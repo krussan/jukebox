@@ -192,6 +192,8 @@ message JukeboxRequestListMovies {
 	optional int32 nrOfItems = 5;
 	optional RequestType requestType = 6;
 	
+	optional int32 seriesID = 7;
+	optional int32 seasonID = 8;
 }
 
 message JukeboxRequestStartMovie {
