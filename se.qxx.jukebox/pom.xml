@@ -200,7 +200,8 @@
 							<source>src/main/xsds/JukeboxSettings.xsd</source>
 						</sources>
 		             
-						<clearOutputDir>false</clearOutputDir>                
+						<clearOutputDir>false</clearOutputDir>
+						<extension>true</extension>     
 					</configuration>
 		        </execution>
 		           
@@ -218,7 +219,8 @@
 							<source>src/main/xsds/imdb.xsd</source>
 						</sources>
 		            
-						<clearOutputDir>false</clearOutputDir>                
+						<clearOutputDir>false</clearOutputDir>
+						<extension>true</extension>                
 					</configuration>
 				</execution>                
 		
@@ -238,6 +240,7 @@
 						</sources>                
 		              
 						<clearOutputDir>false</clearOutputDir>
+						<extension>true</extension>
 					</configuration>
 				</execution>                
 		
@@ -256,6 +259,7 @@
 		            	</sources>                
 		            
 		            	<clearOutputDir>false</clearOutputDir>
+		            	<extension>true</extension>
 					</configuration>
 				</execution> 
 			</executions>

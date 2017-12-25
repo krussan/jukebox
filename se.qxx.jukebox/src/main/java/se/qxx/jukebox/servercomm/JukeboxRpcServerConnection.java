@@ -79,8 +79,8 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		}
 		
 		if (!request.getReturnFullSizePictures()) {
-			movies = removeFullSizePicturesAndSubsFromMovies(list);
-			series = removeFullSizePicturesAndSubsFromSeries(listSeries);
+			movies = removeFullSizePicturesAndSubsFromMovies(movies);
+			series = removeFullSizePicturesAndSubsFromSeries(series);
 		}
 		
 		JukeboxResponseListMovies lm = JukeboxResponseListMovies.newBuilder()
