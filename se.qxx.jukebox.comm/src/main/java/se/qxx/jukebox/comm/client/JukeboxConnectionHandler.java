@@ -184,7 +184,19 @@ public class JukeboxConnectionHandler {
 		
 	}
 	
-	public void listMovies(String searchString, final RpcCallback<JukeboxResponseListMovies> callback) {
+	public void listMovies(String searchString, int nrOfItems, int offset, final RpcCallback<JukeboxResponseListMovies> callback) {
+		list(searchString, RequestType.TypeMovie, 0, 0, nrOfItems, offset, callback); 
+	}
+	
+	public void listSeries(String searchString, int seriesID, int nrOfItems, int offset, final RpcCallback<JukeboxResponseListMovies> callback) {
+		list(searchString, RequestType.TypeMovie, seriesID, 0, nrOfItems, offset, callback);
+	}
+
+	public void listSeason(String searchString, int seriesID, int seasonID, int nrOfItems, int offset, final RpcCallback<JukeboxResponseListMovies> callback) {
+		list(searchString, RequestType.TypeMovie, seriesID, seasonID, nrOfItems, offset, callback);
+	}
+
+	private void list(final String searchString, RequestType type, final int seriesID, final int seasonID, final int nrOfItems, final int offset, final RpcCallback<JukeboxResponseListMovies> callback) {
 		final RpcController controller = new SocketRpcController();
 
 		Thread t = new Thread() {
@@ -192,7 +204,12 @@ public class JukeboxConnectionHandler {
 				JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
 		 
 				JukeboxRequestListMovies request = JukeboxRequestListMovies.newBuilder()
-						.setSearchString("")
+						.setSearchString(searchString)
+						.setRequestType(RequestType.TypeMovie)
+						.setSeriesID(seriesID)
+						.setSeasonID(seasonID)
+						.setNrOfItems(nrOfItems)
+						.setStartIndex(offset)
 						.setReturnFullSizePictures(false)
 						.build();
 		
