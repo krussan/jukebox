@@ -65,10 +65,10 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		
 		switch (request.getRequestType()) {
 		case TypeMovie:
-			movies = DB.searchMoviesByTitle(searchString, true, true);
+			movies = DB.searchMoviesByTitle(searchString, true, true, request.getNrOfItems(), request.getStartIndex());
 			break;
 		case TypeSeries:
-			series = DB.searchSeriesByTitle(searchString, true, true);
+			series = DB.searchSeriesByTitle(searchString, true, true, request.getNrOfItems(), request.getStartIndex());
 			break;
 		case TypeSeason:
 			series.add(DB.getSeries(request.getSeriesID()));
