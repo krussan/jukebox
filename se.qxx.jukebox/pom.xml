@@ -4,7 +4,7 @@
 
   <groupId>se.qxx.jukebox</groupId>
   <artifactId>jukebox</artifactId>
-  <version>0.17.19</version>
+  <version>0.17.21</version>
   <packaging>jar</packaging>
 
   <name>jukebox</name>
@@ -83,7 +83,7 @@
     <dependency>
       <groupId>se.qxx.protodb</groupId>
       <artifactId>protodb-java</artifactId>
-      <version>1.5.2</version>
+      <version>1.5.3</version>
     </dependency>
 
     <dependency>
