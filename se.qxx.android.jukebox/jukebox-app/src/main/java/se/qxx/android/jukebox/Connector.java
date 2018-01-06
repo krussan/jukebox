@@ -15,7 +15,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
 
 public class Connector {
 
-	public static void connect(Activity a) {
+	public static void connect(Activity a, int offset, int nrOfItems) {
 		final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
 				JukeboxSettings.get().getServerIpAddress(), 
 				JukeboxSettings.get().getServerPort(),				
@@ -28,15 +28,15 @@ public class Connector {
 			if (m == Model.ModelType.Movie) {
 				Logger.Log().d("Listing movies");
 				jh.listMovies("",
-						Model.get().getNrOfItems(),
-						Model.get().getOffset(),
+						nrOfItems,
+						offset,
 						new RpcCallback<JukeboxResponseListMovies>() {
 
 							@Override
 							public void run(JukeboxResponseListMovies response) {
 								//TODO: if repsonse is null probably the server is down..
 								if (response != null) {
-									Model.get().clearMovies();
+									//Model.get().clearMovies(); //Dont clear movies when doing partial load
 									Model.get().clearSeries();
 									Model.get().addAllMovies(response.getMoviesList());
 									Model.get().setInitialized(true);
@@ -57,7 +57,7 @@ public class Connector {
 								//TODO: if repsonse is null probably the server is down..
 								if (response != null) {
 									Model.get().clearMovies();
-									Model.get().clearSeries();
+									//Model.get().clearSeries(); //Dont clear series when doing partial load
 									Model.get().addAllSeries(response.getSeriesList());
 									Model.get().setInitialized(true);
 								}
