@@ -18,9 +18,7 @@ public class Connector {
 	public static void connect(Activity a, int offset, int nrOfItems) {
 		final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
 				JukeboxSettings.get().getServerIpAddress(), 
-				JukeboxSettings.get().getServerPort(),				
-				JukeboxConnectionProgressDialog.build(a,
-						"Getting list of media ..."));
+				JukeboxSettings.get().getServerPort());
 
 		try {
 			Model.ModelType m = Model.get().getModelType();
