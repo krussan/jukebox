@@ -108,9 +108,11 @@ public class JukeboxFragment extends ListFragment implements
 		lv.setOnScrollListener(new EndlessScrollListener() {
             @Override
             public boolean onLoadMore(int page, int totalItemsCount) {
-                int itemsLoaded = loadMoreData(page * Model.get().getNrOfItems());
+                Model.get().setOffset(page * Model.get().getNrOfItems());
+                loadMoreData(page * Model.get().getNrOfItems());
 
-                return itemsLoaded > 0;
+
+                return true;
             }
         });
 
@@ -143,7 +145,7 @@ public class JukeboxFragment extends ListFragment implements
 	    //detector = new SimpleGestureFilter(this, this);
 	}
 
-	private int loadMoreData(int offset) {
+	private void loadMoreData(int offset) {
         Connector.connect(this.getActivity(), Model.get().getNrOfItems(), offset);
     }
 
@@ -224,7 +226,9 @@ public class JukeboxFragment extends ListFragment implements
 			Logger.Log().i("onConnectClicked");
 
 			Model.get().clearMovies();
-			Connector.connect(this.getActivity());
+            Model.get().clearSeries();
+
+			Connector.connect(this.getActivity(), Model.get().getOffset(), Model.get().getNrOfItems());
 			
 			break;
 		case R.id.btnSelectMediaPlayer:
