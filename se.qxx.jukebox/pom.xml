@@ -5,7 +5,6 @@
   <groupId>se.qxx.jukebox</groupId>
   <artifactId>jukebox</artifactId>
   <version>0.17.26</version>
-  <version>0.17.25</version>
   <packaging>jar</packaging>
 
   <name>jukebox</name>
