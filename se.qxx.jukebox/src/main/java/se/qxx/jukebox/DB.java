@@ -141,7 +141,7 @@ public class DB {
 //	}
 
 	public synchronized static Movie findMovie(String identifiedTitle) {
-		String searchString = replaceSearchString(identifiedTitle) + "%";
+		String searchString = replaceSearchString(identifiedTitle);
 		
 		Log.Debug(String.format("DB :: Series search string :: %s", searchString), LogType.MAIN);
 		 
@@ -437,19 +437,19 @@ public class DB {
 					"subtitleQueue.subtitleRetreiveResult", 
 					0, 
 					false,
-					null,
+					0,
 					5);
 
 			// this is a bit dangerous.
 			// what if we cut a series/season in half and save the series (!)
 			// So to be sure we save _only_ the episode from the SubtitleDownloader.
 			List<Series> series = 
-					db.find(JukeboxDomain.Series.getDefaultInstance(), 
-						"season.episode.subtitleQueue.subtitleRetreiveResult", 
-						0, 
-						false,
-						null,
-						5);
+				db.find(JukeboxDomain.Series.getDefaultInstance(), 
+					"season.episode.subtitleQueue.subtitleRetreiveResult", 
+					0, 
+					false,
+					0,
+					5);
 
 			result = constructSubtitleQueue(movies, series);
 		}
