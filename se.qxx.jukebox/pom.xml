@@ -4,11 +4,8 @@
 
   <groupId>se.qxx.jukebox</groupId>
   <artifactId>jukebox</artifactId>
-<<<<<<< HEAD
   <version>0.17.26</version>
-=======
   <version>0.17.25</version>
->>>>>>> master
   <packaging>jar</packaging>
 
   <name>jukebox</name>
