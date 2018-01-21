@@ -16,7 +16,7 @@ matrix:
 
     install: true
 
-    script: ci/build.sh    
+    script: ${TRAVIS_BUILD_DIR}/ci/build.sh    
 
     before_deploy:
      - ls -la target
