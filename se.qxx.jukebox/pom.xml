@@ -333,6 +333,7 @@
 							<echo message="Deploy server :: ${jukeboxDeployServer}" />							
 							<ant antfile="build-mvn.xml" target="createrunscript" />							
 							<ant antfile="build-mvn.xml" target="deploy"	/>							
+							<ant antfile="build-mvn.xml" target="bigzip"	/>							
 
 						</tasks>
 					</configuration>
