@@ -20,7 +20,7 @@ matrix:
 
     before_deploy:
      - ls -la target
-     - export RELEASE_PKG_FILE=`find target/ -name '*.jar' -exec basename {} \;`
+     - export RELEASE_PKG_FILE=`find target/ -name '*.zip' -exec basename {} \;`
      - export GIT_BASE=$HOME
      - echo "Deploying ${RELEASE_PKG_FILE} to GitHub releases"
      - ./ci/git-tag.sh
@@ -47,7 +47,6 @@ matrix:
     before_install:
      - chmod +x ./se.qxx.android.jukebox/gradlew
      - export LD_LIBRARY_PATH=$TRAVIS_BUILD_DIR/ci:$LD_LIBRARY_PATH
-     - unzip ci/protoc.zip -d ci
      - chmod 775 ci/*.sh
      - ci/decrypt_files.sh
 
