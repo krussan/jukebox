@@ -4,7 +4,11 @@
 
   <groupId>se.qxx.jukebox</groupId>
   <artifactId>jukebox</artifactId>
+<<<<<<< HEAD
   <version>0.17.26</version>
+=======
+  <version>0.17.25</version>
+>>>>>>> master
   <packaging>jar</packaging>
 
   <name>jukebox</name>
@@ -83,7 +87,7 @@
     <dependency>
       <groupId>se.qxx.protodb</groupId>
       <artifactId>protodb-java</artifactId>
-      <version>1.4.1</version>
+      <version>1.5.7</version>
     </dependency>
 
     <dependency>
@@ -131,7 +135,7 @@
 	<dependency>
 	    <groupId>fr.noop</groupId>
 	    <artifactId>subtitle</artifactId>
-	    <version>0.9.4</version>
+	    <version>0.9.5</version>
 	</dependency>
 
 	<dependency>
@@ -139,11 +143,18 @@
 	    <artifactId>freemarker</artifactId>
 	    <version>2.3.23</version>
 	</dependency>
+	
+	<dependency>
+	    <groupId>pl.project13.maven</groupId>
+	    <artifactId>git-commit-id-plugin</artifactId>
+	    <version>2.2.2</version>
+	</dependency>	
 
   </dependencies>
 
 <build>
-
+	<finalName>${project.artifactId}-${project.version}-${git.branch}</finalName>
+	
     <pluginManagement>
         <plugins>
 
@@ -165,7 +176,7 @@
 		<plugin>
 			<groupId>org.codehaus.mojo</groupId>
 			<artifactId>jaxb2-maven-plugin</artifactId>
-			<version>2.3</version>
+			<version>2.3.1</version>
 	  
 			<executions>
 				<execution>
@@ -242,6 +253,29 @@
 				</execution> 
 			</executions>
 		</plugin>
+		
+		<plugin>
+	        <groupId>pl.project13.maven</groupId>
+	        <artifactId>git-commit-id-plugin</artifactId>
+	        <version>2.2.1</version>
+	        <executions>
+	            <execution>
+	                <id>get-the-git-infos</id>
+	                <goals>
+	                    <goal>revision</goal>
+	                </goals>
+	            </execution>
+	        </executions>
+			<configuration>
+	            <!--
+	                If you'd like to tell the plugin where your .git directory is,
+	                use this setting, otherwise we'll perform a search trying to
+	                figure out the right directory. It's better to add it explicitly IMHO.
+	            -->
+	            <dotGitDirectory>${project.basedir}/../.git</dotGitDirectory>
+	            <verbose>false</verbose>
+            </configuration>	        
+        </plugin>		
 
 		<plugin>
 		  <groupId>org.apache.maven.plugins</groupId>

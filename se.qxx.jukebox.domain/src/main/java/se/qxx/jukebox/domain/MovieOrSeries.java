@@ -158,9 +158,9 @@ public class MovieOrSeries {
 	public String getTitle() {
 		if (this.isSeries())
 			return String.format("%s S%sE%s", 
-					this.getSeries().getTitle(), 
-					this.getSeries().getSeason(0).getSeasonNumber(),
-					this.getEpisode().getEpisodeNumber());
+					this.getSeries().getTitle().trim(), 
+					MovieOrSeries.padLeft(Integer.toString(this.getSeries().getSeason(0).getSeasonNumber()), 2),
+					MovieOrSeries.padLeft(Integer.toString(this.getEpisode().getEpisodeNumber()), 2));
 		else
 			return this.getMovie().getTitle();		
 	}
@@ -202,6 +202,14 @@ public class MovieOrSeries {
 			return this.getEpisode().getID();
 		else
 			return this.getMovie().getID();
+	}
+	
+	public static String padLeft(String text, int totalLength) {
+		if (totalLength <= text.length())
+			return text;
+		
+		String result = ("0000000000".substring(text.length()) + text);
+		return result.substring(result.length() - totalLength, result.length());
 	}
 
 }

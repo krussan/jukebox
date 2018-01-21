@@ -9,8 +9,13 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 
+import com.google.protobuf.ByteString;
+
 import freemarker.template.TemplateException;
+import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.domain.JukeboxDomain.Rating;
+import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.webserver.TemplateEngine;
 
 public class TestTemplatingEngine {
@@ -63,6 +68,21 @@ public class TestTemplatingEngine {
 		.setType("type2")
 		.setImdbUrl("/tt222")				
 		.setRating("6.8")
+		.addMedia(Media.newBuilder()
+				.setID(1)
+				.setFilename("movie2.avi")
+				.setFilepath("/video")
+				.setIndex(0)
+				.addSubs(Subtitle.newBuilder()
+						.setID(1)
+						.setRating(Rating.ExactMatch)
+						.setFilename("movie2.srt")
+						.setDescription("movie 2 srt")
+						.setMediaIndex(0)
+						.setLanguage("English")
+						.setTextdata(ByteString.EMPTY)
+						.build())
+				.build())
 		.build();
 		
 		String actual = TemplateEngine.get().showMovieHtml(m);
@@ -71,10 +91,10 @@ public class TestTemplatingEngine {
 		sb.append("	<head><link rel=\"stylesheet\" href=\"css\"></head>");
 		sb.append("	<body>");
 		sb.append("		<h1>Movie 2</h1>");
-		sb.append("		<div style=\"float:left;\">");
+		sb.append("		<div id=\"imgMovie\">");
 		sb.append("			<img src=\"image2\"/>");
 		sb.append("		</div>");
-		sb.append("		<div style=\"float:left;\">");
+		sb.append("		<div id=\"divMovieInfo\">");
 		sb.append("			<ul>");
 		sb.append("				<li>2017</li>");
 		sb.append("				<li>type2</li>");
@@ -82,9 +102,15 @@ public class TestTemplatingEngine {
 		sb.append("				<li><a href=\"http://imdb.com//tt222\">imdb</a></li>");
 		sb.append("			</ul>");
 		sb.append("		</div>");
+		sb.append("		<div id=\"divSubtitles\">");
+		sb.append("			<ul>");
+		sb.append("				<li>movie2.srt - ExactMatch</li>");
+		sb.append("			</ul>");
+		sb.append("		</div>");
 		sb.append("	</body>");
 		sb.append("</html>");
-		
+	
+		assertIgnoreWhitespace(sb.toString(), actual);
 	}
 
 	private String removeWhiteSpaces(String input) {

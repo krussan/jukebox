@@ -5,7 +5,7 @@ def appVersionCode = Integer.valueOf(System.env.TRAVIS_BUILD_NUMBER ?: 1)
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '25.0.0'
+    buildToolsVersion '26.0.1'
 
     defaultConfig {
         applicationId "se.qxx.android.jukebox"

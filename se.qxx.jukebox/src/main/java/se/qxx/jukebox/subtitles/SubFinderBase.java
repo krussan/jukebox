@@ -222,7 +222,15 @@ public abstract class SubFinderBase {
 		List<SubFile> result = new ArrayList<SubFile>();
 		
 		for(SubFile sf : listSubs) {
-			result.add(sf);
+			if (!StringUtils.containsIgnoreCase("season", sf.getDescription())) {
+				result.add(sf);
+			}
+			else {
+				Log.Debug(String.format("Ignoring file :: %s  - as this appear to be a full season package", 
+						sf.getFile().getName()), 
+						Log.LogType.SUBS);
+			}
+			
 			if (sf.getRating() == Rating.ExactMatch || sf.getRating() == Rating.PositiveMatch)  {
 				Log.Debug(String.format("%s :: Exact or positive match found. exiting...", 
 						this.getClassName()), 

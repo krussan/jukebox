@@ -18,6 +18,13 @@ public class Upgrader {
 		return !thisVersion.isEqualTo(currentVersion);
 	}
 	
+	public static boolean databaseIsLaterVersion() throws ClassNotFoundException, SQLException {
+		Version currentVersion = DB.getVersion();
+		Version thisVersion = new Version();
+
+		return thisVersion.isLessThan(currentVersion);
+	}
+	
 	public static void performUpgrade() 
 			throws ClassNotFoundException
 				 , SQLException
