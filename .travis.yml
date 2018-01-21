@@ -45,12 +45,12 @@ matrix:
     sudo: false
     
     before_install:
-    - chmod +x ./se.qxx.android.jukebox/gradlew
-    - chmod +x ci/decrypt_files.sh
-    - chmod +x install-protobuf.sh
-    - "./install-protobuf.sh"
-    - "./ci/decrypt_files.sh"
-      
+     - chmod +x ./se.qxx.android.jukebox/gradlew
+     - export LD_LIBRARY_PATH=$TRAVIS_BUILD_DIR/ci:$LD_LIBRARY_PATH
+     - unzip ci/protoc.zip -d ci
+     - chmod 775 ci/*.sh
+     - ci/decrypt_files.sh
+
     before_cache:
     - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
     - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
@@ -75,7 +75,6 @@ matrix:
     cache:
       directories:
       - "$HOME/.m2"
-      - "$TRAVIS_BUILD_DIR/protobuf-2.4.1"
       - "$HOME/.gradle/caches/"
       - "$HOME/.gradle/wrapper/"
       
