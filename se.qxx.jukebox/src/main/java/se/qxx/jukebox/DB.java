@@ -141,7 +141,7 @@ public class DB {
 //	}
 
 	public synchronized static Movie findMovie(String identifiedTitle) {
-		String searchString = replaceSearchString(identifiedTitle) + "%";
+		String searchString = replaceSearchString(identifiedTitle);
 		
 		Log.Debug(String.format("DB :: Series search string :: %s", searchString), LogType.MAIN);
 		 
