@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
 
 git config --global user.email "builds@travis-ci.com"
