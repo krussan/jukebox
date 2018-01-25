@@ -22,7 +22,7 @@ matrix:
      - ls -la target
      - export RELEASE_PKG_FILE=`find target/ -name '*.zip' -exec basename {} \;`
      - echo "Deploying ${RELEASE_PKG_FILE} to GitHub releases"
-     - ./ci/createtag.sh
+     - ${TRAVIS_BUILD_DIR}/ci/createtag.sh
 
     deploy:
       skip_cleanup: true
@@ -66,7 +66,7 @@ matrix:
      - ls -la target
      - export RELEASE_PKG_FILE=`find jukebox-app/build/outputs/apk/ -name '*release.apk' -exec basename {} \;`
      - echo "Deploying ${RELEASE_PKG_FILE} to GitHub releases"
-     - ./ci/createtag.sh
+     - ${TRAVIS_BUILD_DIR}/ci/createtag.sh
 
     deploy:
       skip_cleanup: true
