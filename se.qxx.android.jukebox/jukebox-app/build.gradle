@@ -1,5 +1,8 @@
 apply plugin: 'com.android.application'
 
+def appVersionName = version ?: '1.0'
+def appVersionCode = Integer.valueOf(System.env.TRAVIS_BUILD_NUMBER ?: 1)
+
 android {
     compileSdkVersion 23
     buildToolsVersion '26.0.1'
@@ -11,8 +14,8 @@ android {
 
         // Enabling multidex support.
         multiDexEnabled true
-        versionCode 1
-        versionName "1.0"
+        versionCode appVersionCode
+        versionName appVersionName
         setProperty("archivesBaseName", "jukebox-$versionName")
     }
 
