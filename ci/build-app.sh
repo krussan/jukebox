@@ -16,6 +16,6 @@ if [[ "$TRAVIS_PULL_REQUEST" == "false" ]] && [[ "$TRAVIS_BRANCH" == "master" ]]
    gradlew clean build connectedCheck packageRelease -Pversion=${JUKEBOX_VERSION}
 else 
    echo Running test ...
-   gradlew build connectedCheck
+   ./gradlew build connectedCheck
 fi
 
