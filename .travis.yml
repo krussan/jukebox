@@ -21,9 +21,8 @@ matrix:
     before_deploy:
      - ls -la target
      - export RELEASE_PKG_FILE=`find target/ -name '*.zip' -exec basename {} \;`
-     - export GIT_BASE=$HOME
      - echo "Deploying ${RELEASE_PKG_FILE} to GitHub releases"
-     - ./ci/git-tag.sh
+     - ./ci/createtag.sh
 
     deploy:
       skip_cleanup: true
@@ -50,6 +49,13 @@ matrix:
      - chmod 775 ci/*.sh
      - ci/decrypt_files.sh
 
+    install: true
+
+    before_script:
+    - cd se.qxx.android.jukebox
+
+    script: ${TRAVIS_BUILD_DIR}/ci/build-app.sh
+
     before_cache:
     - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
     - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
@@ -57,29 +63,33 @@ matrix:
     - rm -f  $HOME/.gradle/caches/3.3/jarSnapshots/jarSnapshots.*
     
     before_deploy:
-    - "./ci/createtag.sh"
-    
-    #deploy:
-    #  skip_cleanup: true
-    #  provider: releases
-    #  api_key:
-    #    secure: [redacted]
-    #  file_glob: true
-    #  file:
-    #    - file: "build/xxx/yyy*.apk"
-    #  on:
-    #    tags: false
-    #    all_branches: true
+     - ls -la target
+     - export RELEASE_PKG_FILE=`find jukebox-app/build/outputs/apk/ -name '*release.apk' -exec basename {} \;`
+     - echo "Deploying ${RELEASE_PKG_FILE} to GitHub releases"
+     - ./ci/createtag.sh
+
+    deploy:
+      skip_cleanup: true
+      provider: releases
+      api_key:
+        secure: vHL4QV+9xH+8QSCk5pSEAA3we5ly9u0ZXYxHnWK4PmgK2rZQKCmZdWpiNa/96X6ZjJo$
+      file_glob: true
+      file: "build/${RELEASE_PKG_FILE}"
+
+      on:
+        tags: false
+        branch: master
+
+    branches:
+      except:
+        - /^*-v[0-9]/
     
     cache:
       directories:
       - "$HOME/.m2"
       - "$HOME/.gradle/caches/"
       - "$HOME/.gradle/wrapper/"
-      
-    before_script:
-    - cd se.qxx.android.jukebox
-    
+          
     android:
       components:
       - tools
