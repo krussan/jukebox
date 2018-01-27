@@ -79,7 +79,7 @@ matrix:
         secure: brtK2i/AXZz9NyVf6iBzYQgJ1EpY1a21acmTyW4lqeAmuroRXERlu22k8Fw6G5Xsoi6uxcxpw3at5N8yg0ZOtkn6MT8l+w05vxB6mtxX97a8N/LW6L1xkEjLYH+Beu+9hwsMYLN3MZtMhsklvP6tXpy96KKLgSRXZ5P2sVWXtcvwCr7VK4Z9F0vtm4XsBbuNQtgwcsZDTBwp7D7KX6VxKtLvS6WDP6A54+jpOyCQtnwLKz1dxAtya2FF4eSJjf9HlOkAsAaZ/Sy1JdD6UqDQ42KC2FNdg0a+yvnpMND8HOYlfBULJpb5kShH23grgdGYNzpNRvSHyh/VEyu2kgUUzIiytvR1hq/WGrFrj1NyMDj7Ahp9PjwQdsckdwCSHHTaKtq90cL4lh7ZoNhdRDxzo9S+3qYAe62KbpU+7lfaQF2EoLRfxmzqhZTqCU2Sfr+R1hff0hv85C3vAGnF++4R32AHQhd6U3hFPE/73lWUU4zInWWnkgsIKI2d0tlwlbZ1Awx8UwoZB8WPBmO1r7XT5ySpB4usIMxJoSB1BcLRu9p6xnyMtwES8CLtR8XoNVTGv5avmxa8ZOEbczbPHViplHog0IXDkePDLiF7TNITBXVHWzfxMCY9y758LxuMAJWRyNkFlPm0KJqjJvMbiTJBMkQnq36ollkSNnfytIDz6gQ=
 
       file_glob: true
-      file: "build/${RELEASE_PKG_FILE}"
+      file: "jukebox-app/build/outputs/apk/${RELEASE_PKG_FILE}"
 
       on:
         tags: false
