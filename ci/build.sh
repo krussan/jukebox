@@ -1,7 +1,5 @@
 #!/bin/bash
 echo Initiating build ...
-echo Checking version ...
-JUKEBOX_VERSION=`cd ${TRAVIS_BUILD_DIR}/se.qxx.jukebox && mvn help:evaluate -Dexpression=project.version | grep -e '^[^\[]'`
 
 echo
 echo -----------------------------------------------------
