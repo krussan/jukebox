@@ -12,7 +12,7 @@ echo
 if [[ "$TRAVIS_BRANCH" == "master" ]];then
    echo Checking that the resulting tag does not exist
 
-   if git rev-parse -q --verify "refs/tags/v$JUKEBOX_VERSION" >/dev/null; then
+   if git rev-parse -q --verify "refs/tags/$JUKEBOX_TAG" >/dev/null; then
       echo ERROR! Tag $JUKEBOX_VERSION exist. Please modify pom and commit.
       exit 1
    fi
