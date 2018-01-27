@@ -10,6 +10,7 @@ matrix:
      - chmod 775 ci/*.sh
      - if [ ! -d ~/.m2 ]; then mkdir ~/.m2; fi
      - cp ci/settings.xml ~/.m2    
+     - ci/decrypt_files.sh
 
     before_script:
     - cd se.qxx.jukebox
@@ -63,7 +64,7 @@ matrix:
     - rm -f  $HOME/.gradle/caches/3.3/jarSnapshots/jarSnapshots.*
     
     before_deploy:
-     - ls -la target
+     - ls -la jukebox-app/build/outputs/apk
      - export RELEASE_PKG_FILE=`find jukebox-app/build/outputs/apk/ -name '*release.apk' -exec basename {} \;`
      - echo "Deploying ${RELEASE_PKG_FILE} to GitHub releases"
      - ${TRAVIS_BUILD_DIR}/ci/createtag.sh
