@@ -5,7 +5,7 @@ matrix:
     jdk: oraclejdk8
 
     before_install:
-     - export JUKEBOX_VERSION=`cd ${TRAVIS_BUILD_DIR}/se.qxx.jukebox && mvn help:evaluate -Dexpression=project.version | grep -e '^[^\[]'`
+     - export JUKEBOX_VERSION=`cd ${TRAVIS_BUILD_DIR}/se.qxx.jukebox && mvn -B help:evaluate -Dexpression=project.version | grep -e '^[^\[]'`
      - export JUKEBOX_TAG=v$JUKEBOX_VERSION
      - export LD_LIBRARY_PATH=$TRAVIS_BUILD_DIR/ci:$LD_LIBRARY_PATH
      - unzip ci/protoc.zip -d ci
@@ -52,7 +52,7 @@ matrix:
     sudo: false
     
     before_install:
-     - export JUKEBOX_VERSION=`cd ${TRAVIS_BUILD_DIR}/se.qxx.jukebox && mvn help:evaluate -Dexpression=project.version | grep -e '^[^\[]'`
+     - export JUKEBOX_VERSION=`cd ${TRAVIS_BUILD_DIR}/se.qxx.jukebox && mvn -B help:evaluate -Dexpression=project.version | grep -e '^[^\[]'`
      - export JUKEBOX_TAG=v$JUKEBOX_VERSION
      - chmod +x ./se.qxx.android.jukebox/gradlew
      - export LD_LIBRARY_PATH=$TRAVIS_BUILD_DIR/ci:$LD_LIBRARY_PATH
