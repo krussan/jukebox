@@ -43,7 +43,7 @@ matrix:
 
     branches:
       except:
-        - /^v[0-9]{0,3}\.[0-9]{0,3}.[0-9]{0,3}*/
+        - /^v[0-9]{0,3}\.[0-9]{0,3}.[0-9]{0,3}-server/
 
   - language: android
     sudo: false
@@ -90,7 +90,7 @@ matrix:
 
     branches:
       except:
-        - /^v[0-9]{0,3}\.[0-9]{0,3}.[0-9]{0,3}*/
+        - /^v[0-9]{0,3}\.[0-9]{0,3}.[0-9]{0,3}-app/
     
     cache:
       directories:
