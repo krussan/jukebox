@@ -1,0 +1,202 @@
+package se.qxx.jukebox.subtitles;
+
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.nio.ByteBuffer;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.commons.codec.binary.StringUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.codehaus.plexus.util.StringOutputStream;
+
+import com.google.protobuf.ByteString;
+import com.matthewn4444.ebml.Attachments;
+import com.matthewn4444.ebml.EBMLReader;
+import com.matthewn4444.ebml.subtitles.Caption;
+import com.matthewn4444.ebml.subtitles.SSASubtitles;
+import com.matthewn4444.ebml.subtitles.Subtitles;
+
+import fr.noop.subtitle.model.SubtitleParsingException;
+import fr.noop.subtitle.model.SubtitleText;
+import fr.noop.subtitle.model.SubtitleWriter;
+import fr.noop.subtitle.srt.SrtCue;
+import fr.noop.subtitle.srt.SrtObject;
+import fr.noop.subtitle.srt.SrtWriter;
+import fr.noop.subtitle.util.SubtitlePlainText;
+import fr.noop.subtitle.util.SubtitleTextLine;
+import fr.noop.subtitle.util.SubtitleTimeCode;
+import se.qxx.jukebox.domain.JukeboxDomain.Rating;
+import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
+import se.qxx.jukebox.tools.Util;
+
+public class MkvSubtitleReader {
+	public static void extractSubs(String filename, String outputPath) throws FileNotFoundException, IOException, SubtitleParsingException {
+		List<Subtitle> subs = MkvSubtitleReader.extractSubs(filename);
+		for (Subtitle s : subs) {
+			File destinationFile = new File(String.format("%s/%s", outputPath, s.getFilename()));
+			Util.writeSubtitleToFile(s, destinationFile);
+		}
+	}
+	
+	public static List<Subtitle> extractSubs(String filename) {
+		// Please run the code in a thread or AsyncTask (in Android)
+		// You must follow the order of function calls to read the subtitles and
+		// attachments successfully
+		EBMLReader reader = null;
+		List<Subtitle> result = new ArrayList<Subtitle>();
+		
+		try {
+		    reader = new EBMLReader(filename);
+
+		    // Check to see if this is a valid MKV file
+		    // The header contains information for where all the segments are located
+		    if (!reader.readHeader())
+	    		return result;
+
+		    // Read the tracks. This contains the details of video, audio and subtitles
+		    // in this file
+		    reader.readTracks();
+
+		    readAttachements(reader);
+
+		    // Check if there are any subtitles in this file
+		    int numSubtitles = reader.getSubtitles().size();
+		    if (numSubtitles == 0)
+		    	return result;
+
+		    // You need this to find the clusters scattered across the file to find
+		    // video, audio and subtitle data
+		    reader.readCues();
+
+		    // OPTIONAL: You can read the header of the subtitle if it is ASS/SSA format
+		    List<String> languages = readHeaders(reader);
+
+		    readCueFrames(reader);
+		    readSubs(reader, languages, result);
+		    
+		} catch (IOException e) {
+		    e.printStackTrace();
+		} finally {
+		    try {
+		        // Remember to close this!
+		        reader.close();
+		    } catch (Exception e) {}
+		}
+		
+		return result;
+	}
+
+	private static void readSubs(EBMLReader reader, List<String> languages, List<Subtitle> result) throws IOException {
+		// OPTIONAL: we get the subtitle data that was just read
+		for (int i = 0; i < reader.getSubtitles().size(); i++) {			    		    	
+		    List<Caption> subtitles = reader.getSubtitles().get(i).readUnreadSubtitles();
+		    String language = languages.get(i);
+		    if (language == null)
+		    	language = "English";
+		    
+		    // Do want you like with partial read of subtitles, you can technically
+		    // write the subtitles to file here
+		    
+		    //convert to srt here?
+		    SrtObject srt = getSubtitlesAsSrt(subtitles);
+
+			result.add(getSubtitle(srt, i, language));
+			
+		}
+	}
+
+	private static void readCueFrames(EBMLReader reader) throws IOException {
+		// Read all the subtitles from the file each from cue index.
+		// Once a cue is parsed, it is cached, so if you read the same cue again,
+		// it will not waste time.
+		// Performance-wise, this will take some time because it needs to read
+		// most of the file.
+		for (int i = 0; i < reader.getCuesCount();i++) {
+		    reader.readSubtitlesInCueFrame(i);
+		}
+	}
+
+	private static List<String> readHeaders(EBMLReader reader) {
+		List<String> languages = new ArrayList<String>();
+		for (int i = 0; i < reader.getSubtitles().size(); i++) {
+		    if (reader.getSubtitles().get(i) instanceof SSASubtitles) {
+		        SSASubtitles subs = (SSASubtitles) reader.getSubtitles().get(i);
+		        languages.add(subs.getLanguage());
+		    }
+		}
+		
+		return languages;
+	}
+
+	private static Subtitle getSubtitle(SrtObject srt, int i, String language) throws IOException {
+		SubtitleWriter writer = new SrtWriter("utf-8");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		writer.write(srt, baos);
+		
+		baos.flush();
+		baos.close();
+		
+		String filename = String.format("MkvFile-%s-%s.srt", i, language);
+		
+		return Subtitle.newBuilder()
+			.setID(-1)
+			.setRating(Rating.ExactMatch)
+			.setTextdata(ByteString.copyFrom(baos.toByteArray()))
+			.setLanguage(language)
+			.setDescription(filename)
+			.setFilename(filename)
+			.setMediaIndex(1)
+			.build();
+	}
+
+	private static void readAttachements(EBMLReader reader)
+			throws IOException, FileNotFoundException {
+		// Extract the attachments: fonts, images etc
+		// This function takes a couple of milliseconds usually less than 500ms
+		reader.readAttachments();
+		List<Attachments.FileAttachment> attachments = reader.getAttachments();
+
+		// Write each attachment to file
+		if (attachments != null) {
+		    for (Attachments.FileAttachment attachment : attachments) {
+		        //File filepath = new File(String.format("%s/%s", outputPath, attachment.getName()));
+		        //FileOutputStream fos = new FileOutputStream(filepath);
+		        
+	            // This will now allocate and copy data
+	            byte[] buffer = attachment.getData();
+	            //fos.write(buffer);
+		        
+		    }
+		}
+	}
+
+	private static SrtObject getSubtitlesAsSrt(List<Caption> subtitles) {
+		SrtObject srt = new SrtObject();
+		for (Caption cap : subtitles) {
+			SrtCue cue = new SrtCue();
+			String capline = cap.getFormattedVTT();
+			String[] lines = capline.split("\n");
+			
+			for (String line : lines) {
+		    	SubtitleTextLine textLine = new SubtitleTextLine();
+		    	SubtitleText text = new SubtitlePlainText(line);
+		    	textLine.addText(text);
+		    	cue.addLine(textLine);
+			}
+			
+			cue.setStartTime(new SubtitleTimeCode(cap.getStartTime().getTime()));
+			cue.setEndTime(new SubtitleTimeCode(cap.getEndTime().getTime()));
+			
+			srt.addCue(cue);
+		}
+		return srt;
+	}
+}

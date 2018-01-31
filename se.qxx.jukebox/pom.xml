@@ -146,6 +146,12 @@
 	    <version>2.2.2</version>
 	</dependency>	
 
+	<dependency>
+            <groupId>com.matthewn4444</groupId>
+            <artifactId>embl-java</artifactId>
+	    <version>1.0.0</version>
+	</dependency>	
+
   </dependencies>
 
 <build>

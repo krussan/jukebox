@@ -388,24 +388,9 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 
 		
 		Media media = DB.getMediaById(request.getMediaId());
-		
-		
-		String fullFilePath = String.format("%s/%s", md.getFilepath(), md.getFilename());
-		MediaMetadata meta = MediaMetadata.getMediaMetadata(fullFilePath);
-		
+
 		JukeboxResponseListSubtitles.Builder b = JukeboxResponseListSubtitles.newBuilder();
-				
-		if (meta.getSubtitles().size() > 0) {
-			for (String s : meta.getSubtitles()) {
-				b.addSubtitle(Subtitle.newBuilder()
-						.setLanguage(s)
-						.setDescription(s)
-						.setRating(Rating.ExactMatch));
-			}
-		}
-		else {
-			b.addAllSubtitle(media.getSubsList());
-		}
+		b.addAllSubtitle(media.getSubsList());
 	
 		done.run(b.build());
 	}

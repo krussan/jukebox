@@ -29,7 +29,7 @@ ${jarFile} ${script.class} ${1+&quot;$@&quot;} &amp;${line.separator}"
 	    </antcall>
 	    <echo file="${build.dir}/run.sh" append="true">echo $! > jukebox.pid</echo>
 
-	    <for list="TestMediaInfo,TestNfoScanner,TestImdbXmlReader,TestMovieBuilder,TestImdbFinder,TestParserBuilder,GenerateDatabase,TestWebResult,TestSeriesFinder,DeleteSeries,StreamingTest,TestSubscene,TestSubsConverter"
+	    <for list="TestMediaInfo,TestNfoScanner,TestImdbXmlReader,TestMovieBuilder,TestImdbFinder,TestParserBuilder,GenerateDatabase,TestWebResult,TestSeriesFinder,DeleteSeries,StreamingTest,TestSubscene,TestSubsConverter,TestExtractMkv"
 			delimiter=","
 	        param="param.class">
 			<sequential>
