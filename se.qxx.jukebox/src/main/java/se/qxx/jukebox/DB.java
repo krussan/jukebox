@@ -24,6 +24,7 @@ import se.qxx.protodb.DBStatement;
 import se.qxx.protodb.ProtoDB;
 import se.qxx.protodb.exceptions.IDFieldNotFoundException;
 import se.qxx.protodb.exceptions.SearchFieldNotFoundException;
+import se.qxx.protodb.model.ProtoDBSearchOperator;
 
 import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -759,7 +760,6 @@ public class DB {
 		}
 			
 	}
-
 	
 	public synchronized static Media getMediaById(int mediaId) {
 		try {

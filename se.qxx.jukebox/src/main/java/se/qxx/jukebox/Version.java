@@ -4,7 +4,7 @@ public class Version {
 	private int major;
 	private int minor;
 	
-	private static final String CURRENT_VERSION = "0.17";
+	private static final String CURRENT_VERSION = "0.18";
 	
 	public Version() {
 		parseVersion(CURRENT_VERSION);

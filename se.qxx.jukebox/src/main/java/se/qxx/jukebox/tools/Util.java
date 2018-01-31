@@ -38,6 +38,7 @@ import fr.noop.subtitle.srt.SrtParser;
 import fr.noop.subtitle.vtt.VttWriter;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.settings.JukeboxListenerSettings;
 import se.qxx.jukebox.settings.Settings;
@@ -293,6 +294,10 @@ public class Util {
 		ImageIO.write(img, "jpg", baos);
 		return ByteString.copyFrom(baos.toByteArray());
 		
+	}
+
+	public static boolean isMatroskaFile(Media md) {
+		return StringUtils.endsWithIgnoreCase(md.getFilename(), "mkv")
 	}
 
 }

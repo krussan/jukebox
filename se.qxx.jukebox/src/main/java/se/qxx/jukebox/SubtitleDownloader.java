@@ -42,6 +42,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.SubtitleQueue;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings;
 import se.qxx.jukebox.settings.Settings;
+import se.qxx.jukebox.subtitles.MkvSubtitleReader;
 import se.qxx.jukebox.subtitles.SubFile;
 import se.qxx.jukebox.subtitles.SubFinderBase;
 import se.qxx.jukebox.subtitles.Subs;
@@ -254,16 +255,47 @@ public class SubtitleDownloader implements Runnable {
 		// We only check if there exist subs for the first media file.
 		// If it does then it should exist from the others as well.
 		Media md = mos.getMedia();
-		List<SubFile> files = checkMovieDirForSubs(md);
-		
-		if (files.size() == 0) {
-			// use reflection to get all subfinders
-			// get files
-			files = callSubtitleDownloaders(mos);
-		}
 
-		// Extract files from rar/zip
-		extractSubs(mos, files);
+	
+		if (!checkMatroskaFile(md)) {			
+			List<SubFile> files = checkMovieDirForSubs(md);
+			
+			if (files.size() == 0) {
+				// use reflection to get all subfinders
+				// get files
+				files = callSubtitleDownloaders(mos);
+			}
+	
+			// Extract files from rar/zip
+			extractSubs(mos, files);
+		}
+	}
+	
+	/***
+	 * Checks if the media is a MKV file and has embedded subs
+	 * If so then save the subs in database for streaming use
+	 * @param md
+	 * @return
+	 */
+	private boolean checkMatroskaFile(Media md) {
+		
+		if (Util.isMatroskaFile(md)) {
+			String fullFilename = String.format("%s/%s", md.getFilepath(), md.getFilename());
+			List<Subtitle> subs = 
+				MkvSubtitleReader.extractSubs(fullFilename);
+			
+			if (subs == null || subs.size() == 0)
+				return false;
+
+			DB.save(
+				Media.newBuilder(md)
+					.addAllSubs(subs)
+					.build());
+			
+			return true;
+		}
+		
+		return false;
 	}
 
 	/**
