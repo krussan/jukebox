@@ -297,7 +297,7 @@ public class Util {
 	}
 
 	public static boolean isMatroskaFile(Media md) {
-		return StringUtils.endsWithIgnoreCase(md.getFilename(), "mkv")
+		return StringUtils.endsWithIgnoreCase(md.getFilename(), "mkv");
 	}
 
 }
