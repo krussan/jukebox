@@ -185,6 +185,46 @@ public class SubtitleDownloader implements Runnable {
 		} 
 	}
 	
+	public void reenlistMovie(Movie m) {
+		m = clearSubs(m);
+		addMovie(m);
+	}
+
+	public void reenlistEpisode(Episode ep) {
+		ep = clearSubs(ep);
+		addEpisode(ep);
+	}
+
+	private Movie clearSubs(Movie m) {
+		Movie.Builder mb = Movie.newBuilder(m);
+		
+		for (Media md : m.getMediaList()) {
+			mb.addMedia(
+					Media.newBuilder(md)
+					.clearSubs()
+					.build());		
+		}
+		
+		Movie newMovie = mb.build();
+
+		return DB.save(newMovie);
+	}
+
+	private Episode clearSubs(Episode ep) {
+		Episode.Builder epb = Episode.newBuilder(ep);
+		
+		for (Media md : ep.getMediaList()) {
+			epb.addMedia(
+					Media.newBuilder(md)
+					.clearSubs()
+					.build());		
+		}
+		
+		Episode newEpisode = epb.build();
+
+		return DB.save(newEpisode);
+	}
+
 	/**
 	 * Add an episode to the subtitile download queue.
 	 * The episode and series have to be saved separately

@@ -377,10 +377,11 @@ public class DB {
 	public synchronized static Movie addMovieToSubtitleQueue(Movie m) {
 		try {
 			ProtoDB db = getProtoDBInstance();
+			int id = m.hasSubtitleQueue() ? m.getSubtitleQueue().getID() : -1;
 			
 			m = Movie.newBuilder(m).setSubtitleQueue(
 				SubtitleQueue.newBuilder()
-					.setID(-1)
+					.setID(id)
 					.setSubtitleRetreiveResult(0)
 					.setSubtitleQueuedAt(getCurrentUnixTimestamp())
 					.build())
