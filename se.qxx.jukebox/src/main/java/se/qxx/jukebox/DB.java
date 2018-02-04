@@ -460,7 +460,7 @@ public class DB {
 					"subtitleQueue.subtitleRetreiveResult", 
 					0, 
 					false,
-					0,
+					null,
 					5,
 					0);
 
@@ -472,9 +472,9 @@ public class DB {
 					"season.episode.subtitleQueue.subtitleRetreiveResult", 
 					0, 
 					false,
-					0,
-						5,
-						0);
+					null,
+					5,
+					0);
 
 			result = constructSubtitleQueue(movies, series);
 		}
