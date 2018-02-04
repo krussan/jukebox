@@ -28,6 +28,38 @@ import se.qxx.jukebox.domain.DomainUtil;
 
 public class Upgrade_0_18 implements IIncrimentalUpgrade {
 	
+	private static String[] DbScripts = {
+			"UPDATE SubtitleQueue\r\n" + 
+			"SET subtitleretreivedat = 0\r\n" + 
+			" , subtitleretreiveresult = 0\r\n" + 
+			"WHERE ID IN (\r\n" + 
+			"  SELECT SQ.ID\r\n" + 
+			"  FROM Movie M\r\n" + 
+			"  INNER JOIN SubtitleQueue SQ\r\n" + 
+			"    ON M._subtitlequeue_ID = SQ.ID\r\n" + 
+			"  INNER JOIN MovieMedia_Media MDD\r\n" + 
+			"    ON MDD._movie_ID = M.ID\r\n" + 
+			"  INNER JOIN Media MD\r\n" + 
+			"    ON MDD._media_ID = MD.ID\r\n" + 
+			"  WHERE filename LIKE '%mkv'\r\n" + 
+			")\r\n" 
+			,
+					
+			"UPDATE SubtitleQueue\r\n" + 
+			"SET subtitleretreivedat = 0\r\n" + 
+			" , subtitleretreiveresult = 0\r\n" + 
+			"WHERE ID IN (\r\n" +
+			"  SELECT SQ.ID\r\n" + 			
+			"FROM Episode EP " + 
+			"INNER JOIN SubtitleQueue SQ " + 
+			"  ON EP._subtitlequeue_ID = SQ.ID " + 
+			"INNER JOIN EpisodeMedia_Media EMD " + 
+			"  ON EMD._episode_ID = EP.ID " + 
+			"INNER JOIN Media MD " + 
+			"  ON EMD._media_ID = MD.ID " + 
+			"  WHERE filename LIKE '%mkv'\r\n" + 
+			")\r\n"};
+	
 	@Override
 	public Version getThisVersion() {
 		return new Version(0,18);
@@ -39,40 +71,8 @@ public class Upgrade_0_18 implements IIncrimentalUpgrade {
 	}
 
 	@Override
-	public void performUpgrade() throws UpgradeFailedException, IOException, JAXBException {
-		// Find all media where the filename ends with mkv
-		// re-enlist those media to the subtitle downloader (triggering the extraction of embedded mkv subs)
-		
-		Settings.initialize();
-		
-		List<Movie> movies = DB.searchMoviesByTitle("%", true, false);
-		for (Movie m : movies) {
-			for (Media md : m.getMediaList()) {
-				System.out.println(String.format("Running matroska discovery on :: %s", md.getFilename()));
-				if (Util.isMatroskaFile(md)) {
-					System.out.println("---- MKV FOUND - reenlisting ---");
-					SubtitleDownloader.get().reenlistMovie(m);
-					break;
-				}
-			}
-		}
-		
-		List<Series> series = DB.searchSeriesByTitle("%", true, false);
-		for (Series s : series) {
-			for (Season ss : s.getSeasonList()) {
-				for (Episode ep : ss.getEpisodeList()) {
-					for (Media md : ep.getMediaList()) {
-						System.out.println(String.format("Running matroska discovery on :: %s", md.getFilename()));
-						if (Util.isMatroskaFile(md)) {
-							System.out.println("---- MKV FOUND - reenlisting ---");
-							SubtitleDownloader.get().reenlistEpisode(ep);
-							break;
-						}
-					}					
-				}
-			}
-		}
-		
+	public void performUpgrade() throws UpgradeFailedException {
+		Upgrader.runDatabasescripts(DbScripts);		
 	}
 
 }
