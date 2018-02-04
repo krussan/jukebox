@@ -34,6 +34,9 @@ public class Model {
 	private String currentSub = StringUtils.EMPTY;
 	private int currentMediaId = -1;
 	private boolean initialized = false;
+
+	private int offset = 0;
+	private int nrOfItems = 15;
 	
 	public interface ModelUpdatedEventListener {
 		public void handleModelUpdatedEventListener(java.util.EventObject e);
@@ -573,6 +576,22 @@ public class Model {
 	
 	public String getCurrentSubtitle() {
 		return this.currentSub;
+	}
+
+	public int getOffset() {
+		return offset;
+	}
+
+	public void setOffset(int offset) {
+		this.offset = offset;
+	}
+
+	public int getNrOfItems() {
+		return nrOfItems;
+	}
+
+	public void setNrOfItems(int nrOfItems) {
+		this.nrOfItems = nrOfItems;
 	}
 
 }

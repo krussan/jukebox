@@ -4,7 +4,7 @@
      
       <groupId>se.qxx.jukebox</groupId>
       <artifactId>jukebox-comm</artifactId>
-      <version>1.0.21</version>
+      <version>1.0.22</version>
       <packaging>jar</packaging>
      
       <name>Jukebox communications library</name>
@@ -42,7 +42,7 @@
         <dependency>
           <groupId>se.qxx.jukebox</groupId>
           <artifactId>jukebox-domain</artifactId>
-          <version>[0.1.2,)</version>
+          <version>0.1.22</version>
         </dependency>
 
 		<dependency>
@@ -109,8 +109,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.5.1</version>
-			</plugin>
+				</plugin>
 		</plugins>
 	</build>
 </project>

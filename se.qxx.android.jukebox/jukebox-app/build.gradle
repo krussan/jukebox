@@ -15,7 +15,7 @@ android {
         // Enabling multidex support.
         multiDexEnabled true
         versionCode appVersionCode
-        versionName appVersionName
+        versionName "${version}"
         setProperty("archivesBaseName", "jukebox-$versionName")
     }
 
@@ -90,8 +90,8 @@ variant.name.capitalize() + "Apk", Copy)
 }
 
 dependencies {
-    compile 'se.qxx.jukebox:jukebox-domain:0.1.+'
-    compile 'se.qxx.jukebox:jukebox-comm:1.0.20'
+    compile 'se.qxx.jukebox:jukebox-domain:0.1.22'
+    compile 'se.qxx.jukebox:jukebox-comm:1.0.21'
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'com.google.protobuf:protobuf-java:2.4.1'
     compile 'com.googlecode:protobuf-socket-rpc:2.0'

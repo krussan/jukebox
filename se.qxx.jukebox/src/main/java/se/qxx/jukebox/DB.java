@@ -24,6 +24,7 @@ import se.qxx.protodb.DBStatement;
 import se.qxx.protodb.ProtoDB;
 import se.qxx.protodb.exceptions.IDFieldNotFoundException;
 import se.qxx.protodb.exceptions.SearchFieldNotFoundException;
+import se.qxx.protodb.model.ProtoDBSearchOperator;
 
 import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -62,6 +63,9 @@ public class DB {
 	//---------------------------------------------------------------------------------------
 
 	public synchronized static List<Movie> searchMoviesByTitle(String searchString, boolean populateBlobs, boolean filterSubs) {
+		return searchMoviesByTitle(searchString, populateBlobs, filterSubs, -1, -1);
+	}
+	public synchronized static List<Movie> searchMoviesByTitle(String searchString, boolean populateBlobs, boolean filterSubs, int numberOfResults, int offset) {
 		try {
 			ProtoDB db = getProtoDBInstance(populateBlobs);
 			
@@ -70,13 +74,21 @@ public class DB {
 			if (filterSubs) {
 				filterObjects.add("media.subs");
 			}
-			
-			return 
-				db.find(JukeboxDomain.Movie.getDefaultInstance(), 
+
+			return db.search(JukeboxDomain.Movie.getDefaultInstance(), 
 					"title", 
-					"%" + searchString + "%", 
-					true,
-					filterObjects);
+					"%" + searchString + "%",
+					ProtoDBSearchOperator.Like, 
+					false, 
+					numberOfResults, 
+					offset);
+			
+//			return 
+//				db.find(JukeboxDomain.Movie.getDefaultInstance(), 
+//					"title", 
+//					"%" + searchString + "%", 
+//					true,
+//					filterObjects);
 		}
 		catch (Exception e) {
 			Log.Error("Failed to retrieve movie listing from DB", Log.LogType.MAIN, e);
@@ -84,8 +96,11 @@ public class DB {
 		}	
 	}
 
-
 	public synchronized static List<Series> searchSeriesByTitle(String searchString, boolean populateBlobs, boolean filterSubs) {
+		return searchSeriesByTitle(searchString, populateBlobs, filterSubs, -1, -1);		
+	}
+
+	public synchronized static List<Series> searchSeriesByTitle(String searchString, boolean populateBlobs, boolean filterSubs, int numberOfResults, int offset) {
 		try {
 			ProtoDB db = getProtoDBInstance(populateBlobs);
 
@@ -94,12 +109,20 @@ public class DB {
 				filterObjects.add("season.episode.media.subs");
 			}
 			
-			return 
-				db.find(JukeboxDomain.Series.getDefaultInstance(), 
+			return db.search(JukeboxDomain.Series.getDefaultInstance(), 
 					"title", 
-					"%" + searchString + "%", 
-					true,
-					filterObjects);
+					"%" + searchString + "%",
+					ProtoDBSearchOperator.Like,
+					false,
+					numberOfResults,
+					offset);
+			
+//			return 
+//				db.find(JukeboxDomain.Series.getDefaultInstance(), 
+//					"title", 
+//					"%" + searchString + "%", 
+//					true,
+//					filterObjects);
 		}
 		catch (Exception e) {
 			Log.Error("Failed to retrieve series listing from DB", Log.LogType.MAIN, e);
@@ -432,13 +455,14 @@ public class DB {
 			ProtoDB db = getProtoDBInstance();
 			 
 			// Restrict result to 5. Since the list will be retrieved again it does not matter.
-			List<Movie> movies = 
+			List<Movie> movies =
 				db.find(JukeboxDomain.Movie.getDefaultInstance(), 
 					"subtitleQueue.subtitleRetreiveResult", 
 					0, 
 					false,
-					0,
-					5);
+					null,
+					5,
+					0);
 
 			// this is a bit dangerous.
 			// what if we cut a series/season in half and save the series (!)
@@ -448,8 +472,9 @@ public class DB {
 					"season.episode.subtitleQueue.subtitleRetreiveResult", 
 					0, 
 					false,
-					0,
-					5);
+					null,
+					5,
+					0);
 
 			result = constructSubtitleQueue(movies, series);
 		}
