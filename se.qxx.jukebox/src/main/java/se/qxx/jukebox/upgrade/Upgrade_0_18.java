@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.imgscalr.Scalr;
@@ -21,6 +22,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
+import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.domain.DomainUtil;
 
@@ -37,9 +39,11 @@ public class Upgrade_0_18 implements IIncrimentalUpgrade {
 	}
 
 	@Override
-	public void performUpgrade() throws UpgradeFailedException {
+	public void performUpgrade() throws UpgradeFailedException, IOException, JAXBException {
 		// Find all media where the filename ends with mkv
 		// re-enlist those media to the subtitle downloader (triggering the extraction of embedded mkv subs)
+		
+		Settings.initialize();
 		
 		List<Movie> movies = DB.searchMoviesByTitle("%", true, false);
 		for (Movie m : movies) {
