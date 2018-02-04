@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 
 version = "${version != 'unspecified' ? version : '1.0'}"
 
+
 android {
     compileSdkVersion 23
     buildToolsVersion '26.0.1'
@@ -13,7 +14,7 @@ android {
 
         // Enabling multidex support.
         multiDexEnabled true
-        versionCode 1
+        versionCode appVersionCode
         versionName "${version}"
         setProperty("archivesBaseName", "jukebox-$versionName")
     }

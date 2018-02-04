@@ -49,6 +49,16 @@ ${jarFile} ${script.class} ${1+&quot;$@&quot;} &amp;${line.separator}"
 		<copy file="${base.dir}/stop.sh" todir="${build.dir}" />
 			
 	</target>	
+
+	<target name="bigzip">
+		<basename property="jar.basename" file="${jarFile}" suffix="-jar-with-dependencies.jar" />
+
+		<zip destfile="${build.dir}/${jar.basename}.zip">
+			<fileset dir="target" includes="*.sh" />
+			<fileset dir="target" includes="*.jar" />
+			<fileset dir="target" includes="*.xml" />
+		</zip>
+	</target>
     
 	<target name="deploy" if="${doDeploy}">
 		<echo message="Connecting..." />
