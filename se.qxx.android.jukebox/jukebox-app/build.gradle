@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
-version = "${version != 'unspecified' ? version : '1.0'}"
-
+def appVersionName = version ?: '1.0'
+def appVersionCode = Integer.valueOf(System.env.TRAVIS_BUILD_NUMBER ?: 1)
 
 android {
     compileSdkVersion 23
