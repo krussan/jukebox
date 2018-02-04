@@ -4,6 +4,7 @@ import java.util.EventObject;
 
 import se.qxx.android.jukebox.ActionDialog;
 import se.qxx.android.jukebox.Connector;
+import se.qxx.android.jukebox.EndlessScrollListener;
 import se.qxx.android.jukebox.activities.FlipperActivity;
 import se.qxx.android.jukebox.activities.FlipperListActivity;
 import se.qxx.android.jukebox.activities.JukeboxPreferenceActivity;
@@ -104,6 +105,17 @@ public class JukeboxFragment extends ListFragment implements
 		v.findViewById(R.id.btnOn).setOnClickListener(this);
 		v.findViewById(R.id.btnOff).setOnClickListener(this);
 
+		lv.setOnScrollListener(new EndlessScrollListener() {
+            @Override
+            public boolean onLoadMore(int page, int totalItemsCount) {
+                Model.get().setOffset(page * Model.get().getNrOfItems());
+                loadMoreData(page * Model.get().getNrOfItems());
+
+
+                return true;
+            }
+        });
+
         if (StringUtils.equalsIgnoreCase(this.mode, "main")) {
             if (position == 0) {
                 _jukeboxMovieLayoutAdapter = new MovieLayoutAdapter(v.getContext());
@@ -131,7 +143,11 @@ public class JukeboxFragment extends ListFragment implements
 
 	    
 	    //detector = new SimpleGestureFilter(this, this);
-	}    
+	}
+
+	private void loadMoreData(int offset) {
+        Connector.connect(this.getActivity(), Model.get().getNrOfItems(), offset);
+    }
 
 
 	@Override
@@ -210,7 +226,9 @@ public class JukeboxFragment extends ListFragment implements
 			Logger.Log().i("onConnectClicked");
 
 			Model.get().clearMovies();
-			Connector.connect(this.getActivity());
+            Model.get().clearSeries();
+
+			Connector.connect(this.getActivity(), Model.get().getOffset(), Model.get().getNrOfItems());
 			
 			break;
 		case R.id.btnSelectMediaPlayer:

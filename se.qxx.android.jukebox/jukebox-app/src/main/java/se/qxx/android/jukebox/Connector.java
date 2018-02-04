@@ -8,35 +8,61 @@ import android.view.View;
 import android.widget.Toast;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
+import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
 
 public class Connector {
 
-	public static void connect(Activity a) {
+	public static void connect(Activity a, int offset, int nrOfItems) {
 		final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
 				JukeboxSettings.get().getServerIpAddress(), 
-				JukeboxSettings.get().getServerPort(),				
-				JukeboxConnectionProgressDialog.build(a,
-						"Getting list of media ..."));
+				JukeboxSettings.get().getServerPort());
 
 		try {
-			jh.listMovies("", new RpcCallback<JukeboxResponseListMovies>() {
+			Model.ModelType m = Model.get().getModelType();
 
-				@Override
-				public void run(JukeboxResponseListMovies response) {
-					//TODO: if repsonse is null probably the server is down..
-					if (response != null) {
-						Model.get().clearMovies();
-						Model.get().clearSeries();
-						Model.get().addAllMovies(response.getMoviesList());
-						Model.get().addAllSeries(response.getSeriesList());
-						Model.get().setInitialized(true);
-					}
-				}
+			if (m == Model.ModelType.Movie) {
+				Logger.Log().d("Listing movies");
+				jh.listMovies("",
+						nrOfItems,
+						offset,
+						new RpcCallback<JukeboxResponseListMovies>() {
 
-			});
+							@Override
+							public void run(JukeboxResponseListMovies response) {
+								//TODO: if repsonse is null probably the server is down..
+								if (response != null) {
+									//Model.get().clearMovies(); //Dont clear movies when doing partial load
+									Model.get().clearSeries();
+									Model.get().addAllMovies(response.getMoviesList());
+									Model.get().setInitialized(true);
+								}
+							}
+
+						});
+			}
+			else if (m == Model.ModelType.Series) {
+				Logger.Log().d("Listing series");
+				jh.listMovies("",
+						Model.get().getNrOfItems(),
+						Model.get().getOffset(),
+						new RpcCallback<JukeboxResponseListMovies>() {
+
+							@Override
+							public void run(JukeboxResponseListMovies response) {
+								//TODO: if repsonse is null probably the server is down..
+								if (response != null) {
+									Model.get().clearMovies();
+									//Model.get().clearSeries(); //Dont clear series when doing partial load
+									Model.get().addAllSeries(response.getSeriesList());
+									Model.get().setInitialized(true);
+								}
+							}
+
+						});
+			}
 		} catch (Exception e) {
 			showMessage(a, "Connection failed. Check settings ...");
 

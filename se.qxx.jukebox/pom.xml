@@ -101,13 +101,13 @@
     <dependency>
       <groupId>se.qxx.jukebox</groupId>
       <artifactId>jukebox-domain</artifactId>
-      <version>[0.1.2,)</version>
+      <version>0.1.22</version>
     </dependency>
     
     <dependency>
       <groupId>se.qxx.jukebox</groupId>
       <artifactId>jukebox-comm</artifactId>
-      <version>[1.0.1,)</version>
+      <version>1.0.21</version>
     </dependency>
 
     <dependency>
@@ -195,7 +195,8 @@
 							<source>src/main/xsds/JukeboxSettings.xsd</source>
 						</sources>
 		             
-						<clearOutputDir>false</clearOutputDir>                
+						<clearOutputDir>false</clearOutputDir>
+						<extension>true</extension>     
 					</configuration>
 		        </execution>
 		           
@@ -213,7 +214,8 @@
 							<source>src/main/xsds/imdb.xsd</source>
 						</sources>
 		            
-						<clearOutputDir>false</clearOutputDir>                
+						<clearOutputDir>false</clearOutputDir>
+						<extension>true</extension>                
 					</configuration>
 				</execution>                
 		
@@ -233,6 +235,7 @@
 						</sources>                
 		              
 						<clearOutputDir>false</clearOutputDir>
+						<extension>true</extension>
 					</configuration>
 				</execution>                
 		
@@ -251,6 +254,7 @@
 		            	</sources>                
 		            
 		            	<clearOutputDir>false</clearOutputDir>
+		            	<extension>true</extension>
 					</configuration>
 				</execution> 
 			</executions>
