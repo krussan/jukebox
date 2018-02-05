@@ -305,7 +305,7 @@ public class SubtitleDownloader implements Runnable {
 	 * @param m
 	 * @return A list of subfiles for the movie
 	 */
-	private List<SubFile> checkMovieDirForSubs(Media md) {
+	public List<SubFile> checkMovieDirForSubs(Media md) {
 		// check if subs exist in directory. If so set that as the sub
 		// check file that begins with the same filename and has extension of
 		// sub, idx, srt
@@ -322,7 +322,7 @@ public class SubtitleDownloader implements Runnable {
 		List<SubFile> list = new ArrayList<SubFile>();
 		
 		if (dir != null && dir.exists()) {
-			list = checkDirForSubs(mediaFilename, dir);
+			list = checkDirForSubs(FilenameUtils.getBaseName(mediaFilename), dir);
 		
 			String[] dirs = dir.list(new FilenameFilter() {
 				

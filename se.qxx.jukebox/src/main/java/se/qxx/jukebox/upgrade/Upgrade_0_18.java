@@ -54,6 +54,14 @@ public class Upgrade_0_18 implements IIncrimentalUpgrade {
 		// get all media
 		// check with mediainfo if subs exist
 		// update those subtitlequeues
+		try {
+			Settings.initialize();
+		} catch (IOException | JAXBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new UpgradeFailedException();
+		}
+		
 		List<String> movieIds = new ArrayList<String>();
 		
 		List<Movie> movies = DB.searchMoviesByTitle("%", false, true);
