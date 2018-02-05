@@ -60,11 +60,10 @@ public class Subscene extends SubFinderBase {
 		
 		// if no match found - try searching on title
 		if (!containsMatch(listOnTitle)) {
-			searchString = FilenameUtils.getBaseName(mos.getMedia().getFilename());
+			searchString = getSearchString(FilenameUtils.getBaseName(mos.getMedia().getFilename()));
 			List<SubFile> listOnFilename = parseSubtitleList(searchString, mos, languages);
 			
-			if (containsMatch(listOnFilename))
-				return performDownload(mos, listOnFilename);
+			return performDownload(mos, listOnFilename);
 		}
 		
 		return performDownload(mos, listOnTitle);
