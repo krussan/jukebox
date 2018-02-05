@@ -107,9 +107,13 @@ public class TestSubscene {
 		
 		WebResult resultSearch = new WebResult(new URL("https://subscene.com/subtitles/release?q=Mockito"), searchResult, false);
 		Mockito.when(WebRetriever.getWebResult("https://subscene.com/subtitles/release?q=Mockito")).thenReturn(resultSearch);
-												
+
+		//WebResult resultSearchFilename = new WebResult(new URL("https://subscene.com/subtitles/release?q=Mockito.2014"), searchResult, false);
+		Mockito.when(WebRetriever.getWebResult("https://subscene.com/subtitles/release?q=Mockito.2014")).thenReturn(resultSearch);
+
 		WebResult resultList = new WebResult(new URL("https://subscene.com/subtitles/Mockito"), listResult, false);
 		Mockito.when(WebRetriever.getWebResult("https://subscene.com/subtitles/Mockito")).thenReturn(resultList);
+		Mockito.when(WebRetriever.getWebResult("https://subscene.com/subtitles/Mockito.2014")).thenReturn(resultList);
 
 		WebResult resultDownload1 = new WebResult(new URL("https://subscene.com/subtitles/Mockito/1023456"), download1Result, false);
 		Mockito.when(WebRetriever.getWebResult("https://subscene.com/subtitles/Mockito/1023456")).thenReturn(resultDownload1);

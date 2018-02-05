@@ -64,10 +64,10 @@ public class Subscene extends SubFinderBase {
 			List<SubFile> listOnFilename = parseSubtitleList(searchString, mos, languages);
 			
 			if (containsMatch(listOnFilename))
-				return downloadSubs(mos, listOnFilename);
+				return performDownload(mos, listOnFilename);
 		}
 		
-		return downloadSubs(mos, listOnTitle);
+		return performDownload(mos, listOnTitle);
 
 	}
 	
@@ -117,7 +117,7 @@ public class Subscene extends SubFinderBase {
 		return files;
 	}
 	
-	public List<SubFile> downloadSubs(MovieOrSeries mos, List<SubFile> listSubs) {
+	public List<SubFile> performDownload(MovieOrSeries mos, List<SubFile> listSubs) {
 		String url = this.getSetting(SETTING_URL);		
 		String baseUrl = getBaseUrl(url);
 		
