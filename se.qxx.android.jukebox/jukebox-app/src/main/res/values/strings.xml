@@ -42,4 +42,16 @@
     <string name="descWatched">Watched</string>
     <string name="title_activity_video">VideoActivity</string>
     <string name="action_settings">Settings</string>
+    <string-array name="actionDialogMenu">
+        <item>Blacklist</item>
+        <item>Toggle watched</item>
+        <item>Re-identify</item>
+        <item>Reenlist subtitles</item>
+    </string-array>
+    <string-array name="actionDialogStrings">
+        <item>Blacklisting...</item>
+        <item>Toggling watched status...</item>
+        <item>Marking object for re-identify...</item>
+        <item>Triggering subtitle downloader...</item>
+    </string-array>
 </resources>
