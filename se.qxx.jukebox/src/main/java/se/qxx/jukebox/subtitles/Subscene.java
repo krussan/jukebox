@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.Log;
@@ -49,11 +50,33 @@ public class Subscene extends SubFinderBase {
 
 	@Override
 	public List<SubFile> findSubtitles(
-			MovieOrSeries mos, 
+			MovieOrSeries mos,
+			List<String> languages) {
+		
+		String searchString = getSearchString(mos.getTitle());
+		
+		// find list on title
+		List<SubFile> listOnTitle = parseSubtitleList(searchString, mos, languages);
+		
+		// if no match found - try searching on title
+		if (!containsMatch(listOnTitle)) {
+			searchString = FilenameUtils.getBaseName(mos.getMedia().getFilename());
+			List<SubFile> listOnFilename = parseSubtitleList(searchString, mos, languages);
+			
+			if (containsMatch(listOnFilename))
+				return downloadSubs(mos, listOnFilename);
+		}
+		
+		return downloadSubs(mos, listOnTitle);
+
+	}
+	
+	public List<SubFile> parseSubtitleList(
+			String searchString,
+			MovieOrSeries mos,
 			List<String> languages) {
 
 		List<SubFile> files = new ArrayList<SubFile>(); 
-		String searchString = getSearchString(mos.getTitle());
 		
 		if (!StringUtils.isEmpty(searchString)) {
 			String url = this.getSetting(SETTING_URL).replaceAll("__searchString__", searchString);
@@ -80,23 +103,29 @@ public class Subscene extends SubFinderBase {
 			// Now we have a list of subs. But each download link is hidden one step below.
 			// The list is enough to rate the list at least.
 			if (!StringUtils.isEmpty(webResult)) {
-				List<SubFile> listSubs = collectSubFiles(
+				files = collectSubFiles(
 						mos, 
 						webResult, 
 						this.getSetting(SETTING_LISTRESULT_REGEX),
 						Integer.parseInt(this.getSetting(SETTING_LISTRESULT_URLGROUP)),
 						Integer.parseInt(this.getSetting(SETTING_LISTRESULT_NAMEGROUP)),
 						Integer.parseInt(this.getSetting(SETTING_LISTRESULT_LANGUAGEGROUP)));
-				
-				// We need to replace the download links in each and every subfile
-				// We get an error because listsubs is null
-				listSubs = replaceDownloadLinks(listSubs, baseUrl);
-				
-				files = downloadSubs(mos, listSubs);
+
 			}
 		}
 		
 		return files;
+	}
+	
+	public List<SubFile> downloadSubs(MovieOrSeries mos, List<SubFile> listSubs) {
+		String url = this.getSetting(SETTING_URL);		
+		String baseUrl = getBaseUrl(url);
+		
+		// We need to replace the download links in each and every subfile
+		// We get an error because listsubs is null
+		listSubs = replaceDownloadLinks(listSubs, baseUrl);
+		
+		return downloadSubs(mos, listSubs);
 	}
 	
 	private String getBaseUrl(String url) {

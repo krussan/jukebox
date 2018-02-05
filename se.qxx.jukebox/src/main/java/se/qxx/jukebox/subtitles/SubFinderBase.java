@@ -235,6 +235,16 @@ public abstract class SubFinderBase {
 	}
 
 	
+	protected boolean containsMatch(List<SubFile> subs) {
+		for (SubFile sf : subs) {
+			Rating r = sf.getRating();
+			if (r == Rating.SubsExist || r == Rating.ExactMatch || r == Rating.PositiveMatch)
+				return true;
+		}
+		
+		return false;
+	}
+	
 
 	/***
 	 * Filters a list of subfiles down to exact match or positive match if found.

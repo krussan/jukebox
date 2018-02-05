@@ -189,16 +189,20 @@ public class MkvSubtitleReader {
 			String[] lines = capline.split("\n");
 			
 			for (String line : lines) {
-		    	SubtitleTextLine textLine = new SubtitleTextLine();
-		    	SubtitleText text = new SubtitlePlainText(line);
-		    	textLine.addText(text);
-		    	cue.addLine(textLine);
+		    	if (!StringUtils.isBlank(line)) {
+			    	SubtitleTextLine textLine = new SubtitleTextLine();
+			    	SubtitleText text = new SubtitlePlainText(line);
+
+			    	textLine.addText(text);
+		    		cue.addLine(textLine);
+		    	}
 			}
 			
 			cue.setStartTime(new SubtitleTimeCode(cap.getStartTime().getTime()));
 			cue.setEndTime(new SubtitleTimeCode(cap.getEndTime().getTime()));
 			
-			srt.addCue(cue);
+			if (cue.getLines().size() > 0)
+				srt.addCue(cue);
 		}
 		return srt;
 	}
