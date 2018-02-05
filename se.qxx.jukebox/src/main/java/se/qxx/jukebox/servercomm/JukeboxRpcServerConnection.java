@@ -14,6 +14,7 @@ import com.google.protobuf.RpcController;
 import se.qxx.jukebox.DB;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.MovieIdentifier;
+import se.qxx.jukebox.SubtitleDownloader;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.DomainUtil;
 import se.qxx.jukebox.domain.JukeboxDomain.Empty;
@@ -48,6 +49,7 @@ import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.vlc.VLCConnectionNotFoundException;
 import se.qxx.jukebox.watcher.FileRepresentation;
 import se.qxx.jukebox.webserver.StreamingWebServer;
+import se.qxx.protodb.Logger;
 import se.qxx.jukebox.vlc.Distributor;
 
 public class JukeboxRpcServerConnection extends JukeboxService {
@@ -568,6 +570,28 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	private void reenlist(Movie m) {
 		for (Media md : m.getMediaList()) {
 			reenlist(md);
+		}
+	}
+	
+	@Override
+	public void reenlistSubtitles(RpcController controller,
+			JukeboxRequestID request, RpcCallback<Empty> done) {
+
+		try {
+			if (request.getRequestType() == RequestType.TypeMovie) {
+				Movie m = DB.getMovie(request.getId());
+				SubtitleDownloader.get().reenlistMovie(m);	
+			}
+			else if (request.getRequestType() == RequestType.TypeEpisode) {
+				Episode ep = DB.getEpisode(request.getId());
+				SubtitleDownloader.get().reenlistEpisode(ep);
+			}
+		
+			done.run(Empty.newBuilder().build());
+		}
+		catch (Exception e) {
+			Logger.log("Error occured in reenlistSubtitles", e);
+			controller.setFailed("Error occured when enlisting to subtitle downloader");
 		}
 	}
 	
