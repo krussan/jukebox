@@ -59,7 +59,9 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			JukeboxRequestListMovies request,
 			RpcCallback<JukeboxResponseListMovies> done) {
 
-		Log.Debug("ListMovies", LogType.COMM);
+		int nrOfItems = request.getNrOfItems();
+		int offset = request.getStartIndex();
+		Log.Debug(String.format("ListMovies :: Offset :: %s :: NrOfItems :: %s", offset, nrOfItems), LogType.COMM);
 		
 		
 		String searchString = request.getSearchString();
@@ -69,10 +71,10 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		
 		switch (request.getRequestType()) {
 		case TypeMovie:
-			movies = DB.searchMoviesByTitle(searchString, true, true, request.getNrOfItems(), request.getStartIndex());
+			movies = DB.searchMoviesByTitle(searchString, true, true, nrOfItems, offset);
 			break;
 		case TypeSeries:
-			series = DB.searchSeriesByTitle(searchString, true, true, request.getNrOfItems(), request.getStartIndex());
+			series = DB.searchSeriesByTitle(searchString, true, true, nrOfItems, offset);
 			break;
 		case TypeSeason:
 			series.add(DB.getSeries(request.getSeriesID()));
