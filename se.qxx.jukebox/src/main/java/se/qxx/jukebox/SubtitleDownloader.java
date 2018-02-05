@@ -42,6 +42,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.SubtitleQueue;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings;
 import se.qxx.jukebox.settings.Settings;
+import se.qxx.jukebox.subtitles.Language;
 import se.qxx.jukebox.subtitles.MkvSubtitleReader;
 import se.qxx.jukebox.subtitles.SubFile;
 import se.qxx.jukebox.subtitles.SubFinderBase;
@@ -370,6 +371,9 @@ public class SubtitleDownloader implements Runnable {
 					if (StringUtils.startsWithIgnoreCase(subFile, movieFilenameWithoutExt)) {
 						SubFile sf = new SubFile(new File(String.format("%s/%s", dir.getAbsolutePath(), subFile)));
 						sf.setRating(Rating.SubsExist);
+						sf.setDescription(movieFilenameWithoutExt);
+						sf.setLanguage(Language.Unknown);
+						
 						list.add(sf);
 					}
 				}
@@ -388,7 +392,7 @@ public class SubtitleDownloader implements Runnable {
 	private void extractSubs(MovieOrSeries mos, List<SubFile> files) {
 		String unpackPath = getUnpackedPath(mos);
 		String tempFilepath = SubFinderBase.createTempSubsPath(mos);
-		Log.Debug(String.format("Unpack path :ö: %s", unpackPath), LogType.SUBS);
+		Log.Debug(String.format("Unpack path :: %s", unpackPath), LogType.SUBS);
 		
 		int c = 0;
 		for (SubFile subfile : files) {
