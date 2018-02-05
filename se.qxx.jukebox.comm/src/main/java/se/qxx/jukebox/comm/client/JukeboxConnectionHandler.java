@@ -512,6 +512,33 @@ public class JukeboxConnectionHandler {
 		
 
 	}
+	
+	public void reenlistSub(final int id, final RequestType requestType) {
+		final RpcController controller = new SocketRpcController();
+
+		Thread t = new Thread() {
+			public void run() {
+				JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
+				
+				JukeboxRequestID request = JukeboxRequestID.newBuilder()
+						.setId(id)
+						.setRequestType(requestType)
+						.build();
+				
+				service.reenlistSubtitles(controller, request, new RpcCallback<JukeboxDomain.Empty>() {
+					@Override
+					public void run(Empty arg0) {
+						onRequestComplete(controller);
+					}
+				});
+				
+			}
+		};
+		t.start();
+		
+		
+	}
+
 
 	public JukeboxResponseListener getListener() {
 		return listener;
