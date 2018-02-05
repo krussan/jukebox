@@ -36,12 +36,14 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseTime;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxService;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.domain.JukeboxDomain.Rating;
 import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Players.Server;
+import se.qxx.jukebox.tools.MediaMetadata;
 import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.vlc.VLCConnectionNotFoundException;
 import se.qxx.jukebox.watcher.FileRepresentation;
@@ -227,7 +229,9 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	private String serveChromecast(Media md, List<String> subtitleUris) {
 		String uri;
 
-		uri = StreamingWebServer.get().registerFile(String.format("%s/%s", md.getFilepath(), md.getFilename()));
+		// if media contains subtitles (i.e. mkv) then extract the file and put it into a file for serving
+		// https://github.com/matthewn4444/EBMLReader ??
+		uri = StreamingWebServer.get().registerFile(Util.getFullFilePath(md));
 		
 		Log.Debug(String.format("Number of subtitles :: %s", md.getSubsCount()), LogType.COMM);
 		for (Subtitle s : md.getSubsList()) {
@@ -400,13 +404,12 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		Log.Debug(String.format("Getting list of subtitles for media ID :: %s", request.getMediaId()), Log.LogType.COMM);
 
 		
-		Media media = DB.getMediaById(request.getMediaId());		
+		Media media = DB.getMediaById(request.getMediaId());
+
+		JukeboxResponseListSubtitles.Builder b = JukeboxResponseListSubtitles.newBuilder();
+		b.addAllSubtitle(media.getSubsList());
 	
-		JukeboxResponseListSubtitles ls = JukeboxResponseListSubtitles.newBuilder()
-				.addAllSubtitle(media.getSubsList())
-				.build();
-					
-		done.run(ls);
+		done.run(b.build());
 	}
 
 	@Override
@@ -569,7 +572,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	}
 	
 	private void reenlist(Media md) {
-		File file = new File(String.format("%s/%s", md.getFilepath(), md.getFilename()));
+		File file = new File(Util.getFullFilePath(md));
 		
 		// create a file representation based on the values of the media object
 		FileRepresentation f = new FileRepresentation(md.getFilepath(), md.getFilename(), Util.getCurrentTimestamp(), file.length());

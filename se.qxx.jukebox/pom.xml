@@ -4,7 +4,7 @@
 
   <groupId>se.qxx.jukebox</groupId>
   <artifactId>jukebox</artifactId>
-  <version>0.17.27</version>
+  <version>0.18.1</version>
   <packaging>jar</packaging>
 
   <name>jukebox</name>
@@ -144,6 +144,12 @@
 	    <groupId>pl.project13.maven</groupId>
 	    <artifactId>git-commit-id-plugin</artifactId>
 	    <version>2.2.2</version>
+	</dependency>	
+
+	<dependency>
+            <groupId>com.matthewn4444</groupId>
+            <artifactId>embl-java</artifactId>
+	    <version>1.0.0</version>
 	</dependency>	
 
   </dependencies>

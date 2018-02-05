@@ -191,13 +191,17 @@ public abstract class SubFinderBase {
 			String description = matcher.group(nameGroup).trim();
 			String language = matcher.group(languageGroup).trim();
 
+			
 			if (languageGroup == 0 || StringUtils.equalsIgnoreCase(language, this.getLanguage().toString())) {
-				SubFile sf = new SubFile(urlString, description, this.getLanguage());
-				Rating r = this.rateSub(mos, description);
-				sf.setRating(r);
-				Log.Debug(String.format("%s :: Sub with description %s rated as %s", this.getClassName(), description, r.toString()), Log.LogType.SUBS);
-				
-				listSubs.add(sf);				
+				// remove duplicate links and descriptions matching whole season
+				if (!linksContains(listSubs, urlString) && !matchesWholeSeason(mos.isSeries(), description)) {
+					SubFile sf = new SubFile(urlString, description, this.getLanguage());
+					Rating r = this.rateSub(mos, description);
+					sf.setRating(r);
+					Log.Debug(String.format("%s :: Sub with description %s rated as %s", this.getClassName(), description, r.toString()), Log.LogType.SUBS);
+					
+					listSubs.add(sf);				
+				}
 			}
 				
 		}
@@ -207,7 +211,39 @@ public abstract class SubFinderBase {
 
 		return filterResult(listSubs);
 	}
+	
+	private boolean matchesWholeSeason(boolean isEpisode, String description) {
+		if (!isEpisode)
+			return false;
+		
+		Pattern pp = Pattern.compile("(S[0-9]*)(?!E[0-9]*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.UNICODE_CASE | Pattern.UNIX_LINES);
+		Matcher m = pp.matcher(description);
 
+		boolean containsSeasonString = StringUtils.containsIgnoreCase("season", description);
+		
+		return m.matches() || containsSeasonString;
+		
+	}
+
+	private boolean linksContains(List<SubFile> files, String url) {
+		for (SubFile f : files) {
+			if (StringUtils.equalsIgnoreCase(f.getUrl(), url))
+				return true;
+		}
+		
+		return false;
+	}
+
+	
+	protected boolean containsMatch(List<SubFile> subs) {
+		for (SubFile sf : subs) {
+			Rating r = sf.getRating();
+			if (r == Rating.SubsExist || r == Rating.ExactMatch || r == Rating.PositiveMatch)
+				return true;
+		}
+		
+		return false;
+	}
 	
 
 	/***

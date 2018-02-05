@@ -42,6 +42,8 @@ import se.qxx.jukebox.domain.JukeboxDomain.SubtitleQueue;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings;
 import se.qxx.jukebox.settings.Settings;
+import se.qxx.jukebox.subtitles.Language;
+import se.qxx.jukebox.subtitles.MkvSubtitleReader;
 import se.qxx.jukebox.subtitles.SubFile;
 import se.qxx.jukebox.subtitles.SubFinderBase;
 import se.qxx.jukebox.subtitles.Subs;
@@ -185,6 +187,46 @@ public class SubtitleDownloader implements Runnable {
 		} 
 	}
 	
+	public void reenlistMovie(Movie m) {
+		m = clearSubs(m);
+		addMovie(m);
+	}
+
+	public void reenlistEpisode(Episode ep) {
+		ep = clearSubs(ep);
+		addEpisode(ep);
+	}
+
+	private Movie clearSubs(Movie m) {
+		Movie.Builder mb = Movie.newBuilder(m);
+		
+		for (Media md : m.getMediaList()) {
+			mb.addMedia(
+					Media.newBuilder(md)
+					.clearSubs()
+					.build());		
+		}
+		
+		Movie newMovie = mb.build();
+
+		return DB.save(newMovie);
+	}
+
+	private Episode clearSubs(Episode ep) {
+		Episode.Builder epb = Episode.newBuilder(ep);
+		
+		for (Media md : ep.getMediaList()) {
+			epb.addMedia(
+					Media.newBuilder(md)
+					.clearSubs()
+					.build());		
+		}
+		
+		Episode newEpisode = epb.build();
+
+		return DB.save(newEpisode);
+	}
+
 	/**
 	 * Add an episode to the subtitile download queue.
 	 * The episode and series have to be saved separately
@@ -214,16 +256,49 @@ public class SubtitleDownloader implements Runnable {
 		// We only check if there exist subs for the first media file.
 		// If it does then it should exist from the others as well.
 		Media md = mos.getMedia();
-		List<SubFile> files = checkMovieDirForSubs(md);
-		
-		if (files.size() == 0) {
-			// use reflection to get all subfinders
-			// get files
-			files = callSubtitleDownloaders(mos);
-		}
 
-		// Extract files from rar/zip
-		extractSubs(mos, files);
+	
+		if (!checkMatroskaFile(md)) {			
+			List<SubFile> files = checkMovieDirForSubs(md);
+			
+			if (files.size() == 0) {
+				// use reflection to get all subfinders
+				// get files
+				files = callSubtitleDownloaders(mos);
+			}
+	
+			// Extract files from rar/zip
+			extractSubs(mos, files);
+		}
+	}
+	
+	/***
+	 * Checks if the media is a MKV file and has embedded subs
+	 * If so then save the subs in database for streaming use
+	 * @param md
+	 * @return
+	 */
+	private boolean checkMatroskaFile(Media md) {
+		
+		if (Util.isMatroskaFile(md)) {
+			Log.Debug(String.format("Checking mkv container for media %s",  md.getFilename()), LogType.SUBS);
+			
+			List<Subtitle> subs = 
+				MkvSubtitleReader.extractSubs(Util.getFullFilePath(md));
+			
+			if (subs == null || subs.size() == 0)
+				return false;
+
+			Log.Debug(String.format("%s subs found in container. Saving...", subs.size()), LogType.SUBS);
+			DB.save(
+				Media.newBuilder(md)
+					.addAllSubs(subs)
+					.build());
+			
+			return true;
+		}
+		
+		return false;
 	}
 
 	/**
@@ -231,7 +306,7 @@ public class SubtitleDownloader implements Runnable {
 	 * @param m
 	 * @return A list of subfiles for the movie
 	 */
-	private List<SubFile> checkMovieDirForSubs(Media md) {
+	public List<SubFile> checkMovieDirForSubs(Media md) {
 		// check if subs exist in directory. If so set that as the sub
 		// check file that begins with the same filename and has extension of
 		// sub, idx, srt
@@ -248,7 +323,7 @@ public class SubtitleDownloader implements Runnable {
 		List<SubFile> list = new ArrayList<SubFile>();
 		
 		if (dir != null && dir.exists()) {
-			list = checkDirForSubs(mediaFilename, dir);
+			list = checkDirForSubs(FilenameUtils.getBaseName(mediaFilename), dir);
 		
 			String[] dirs = dir.list(new FilenameFilter() {
 				
@@ -296,6 +371,9 @@ public class SubtitleDownloader implements Runnable {
 					if (StringUtils.startsWithIgnoreCase(subFile, movieFilenameWithoutExt)) {
 						SubFile sf = new SubFile(new File(String.format("%s/%s", dir.getAbsolutePath(), subFile)));
 						sf.setRating(Rating.SubsExist);
+						sf.setDescription(movieFilenameWithoutExt);
+						sf.setLanguage(Language.Unknown);
+						
 						list.add(sf);
 					}
 				}
@@ -314,7 +392,7 @@ public class SubtitleDownloader implements Runnable {
 	private void extractSubs(MovieOrSeries mos, List<SubFile> files) {
 		String unpackPath = getUnpackedPath(mos);
 		String tempFilepath = SubFinderBase.createTempSubsPath(mos);
-		Log.Debug(String.format("Unpack path :ö: %s", unpackPath), LogType.SUBS);
+		Log.Debug(String.format("Unpack path :: %s", unpackPath), LogType.SUBS);
 		
 		int c = 0;
 		for (SubFile subfile : files) {
