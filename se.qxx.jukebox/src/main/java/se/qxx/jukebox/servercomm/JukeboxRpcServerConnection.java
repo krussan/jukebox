@@ -231,7 +231,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 
 		// if media contains subtitles (i.e. mkv) then extract the file and put it into a file for serving
 		// https://github.com/matthewn4444/EBMLReader ??
-		uri = StreamingWebServer.get().registerFile(String.format("%s/%s", md.getFilepath(), md.getFilename()));
+		uri = StreamingWebServer.get().registerFile(Util.getFullFilePath(md));
 		
 		Log.Debug(String.format("Number of subtitles :: %s", md.getSubsCount()), LogType.COMM);
 		for (Subtitle s : md.getSubsList()) {
@@ -572,7 +572,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	}
 	
 	private void reenlist(Media md) {
-		File file = new File(String.format("%s/%s", md.getFilepath(), md.getFilename()));
+		File file = new File(Util.getFullFilePath(md));
 		
 		// create a file representation based on the values of the media object
 		FileRepresentation f = new FileRepresentation(md.getFilepath(), md.getFilename(), Util.getCurrentTimestamp(), file.length());

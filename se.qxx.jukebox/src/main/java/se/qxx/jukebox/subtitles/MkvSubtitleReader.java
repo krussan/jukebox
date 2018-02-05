@@ -96,11 +96,12 @@ public class MkvSubtitleReader {
 
 	private static void readSubs(EBMLReader reader, List<String> languages, List<Subtitle> result) throws IOException {
 		// OPTIONAL: we get the subtitle data that was just read
-		for (int i = 0; i < reader.getSubtitles().size(); i++) {			    		    	
+		for (int i = 0; i < reader.getSubtitles().size(); i++) {
 		    List<Caption> subtitles = reader.getSubtitles().get(i).readUnreadSubtitles();
-		    String language = languages.get(i);
-		    if (language == null)
-		    	language = "English";
+		    
+		    String language = "Unknown";
+		    if (i < languages.size())
+		    	language = languages.get(i);	
 		    
 		    // Do want you like with partial read of subtitles, you can technically
 		    // write the subtitles to file here
@@ -127,10 +128,9 @@ public class MkvSubtitleReader {
 	private static List<String> readHeaders(EBMLReader reader) {
 		List<String> languages = new ArrayList<String>();
 		for (int i = 0; i < reader.getSubtitles().size(); i++) {
-		    if (reader.getSubtitles().get(i) instanceof SSASubtitles) {
-		        SSASubtitles subs = (SSASubtitles) reader.getSubtitles().get(i);
-		        languages.add(subs.getLanguage());
-		    }
+			Subtitles ss = reader.getSubtitles().get(i);
+			if (ss != null && ss instanceof Subtitles)
+				languages.add(ss.getLanguage());
 		}
 		
 		return languages;

@@ -113,7 +113,7 @@ public class Cleaner implements Runnable {
 	}
 	
 	private boolean mediaExists(Media md) {
-		File f = new File(String.format("%s/%s", FilenameUtils.normalizeNoEndSeparator(md.getFilepath()), md.getFilename()));
+		File f = new File(Util.getFullFilePath(md));
 		return f.exists();
 	}
 }

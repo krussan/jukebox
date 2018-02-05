@@ -57,6 +57,21 @@ public class MediaMetadata {
 		this.setFramerate(frameRate);
 	}
 	
+	public static MediaMetadata getMediaMetadata(Media md) {
+		String fullFilePath = Util.getFullFilePath(md);
+		Log.Debug(String.format("Finding media meta data for file %s", md.getFilename()), LogType.FIND);
+
+		try {
+			MediaMetadata mm = MediaMetadata.getMediaMetadata(fullFilePath);
+			return mm;
+							
+		} catch (Exception e) {
+    		Log.Error(String.format("Error when retreiving media info from file %s", fullFilePath), LogType.FIND, e);
+		}
+
+		return null;		
+	}
+	
 	public static MediaMetadata getMediaMetadata(String fullFilePath) throws FileNotFoundException {
 	    MediaInfo MI = new MediaInfo();
 	    
@@ -88,20 +103,13 @@ public class MediaMetadata {
 	
 	
 	public static Media addMediaMetadata(Media md) {
-		String fullFilePath = String.format("%s/%s", md.getFilepath(), md.getFilename());
-		Log.Debug(String.format("Finding media meta data for file %s", md.getFilename()), LogType.FIND);
-
-		try {
-			MediaMetadata mm = MediaMetadata.getMediaMetadata(fullFilePath);
-			return Media.newBuilder(md)
-					.setMetaDuration(mm.getDurationSeconds())
-					.setMetaFramerate(mm.getFramerate())
-					.build();
-							
-		} catch (Exception e) {
-    		Log.Error(String.format("Error when retreiving media info from file %s", fullFilePath), LogType.FIND, e);
-		}
-
-		return md;
+		MediaMetadata mm = MediaMetadata.getMediaMetadata(md);
+		if (mm == null)
+			return md;
+		
+		return Media.newBuilder(md)
+				.setMetaDuration(mm.getDurationSeconds())
+				.setMetaFramerate(mm.getFramerate())
+				.build();
 	}
 }

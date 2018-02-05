@@ -299,5 +299,9 @@ public class Util {
 	public static boolean isMatroskaFile(Media md) {
 		return StringUtils.endsWithIgnoreCase(md.getFilename(), "mkv");
 	}
+	
+	public static String getFullFilePath(Media md) {
+		return String.format("%s/%s", FilenameUtils.normalizeNoEndSeparator(md.getFilepath()), md.getFilename());
+	}
 
 }

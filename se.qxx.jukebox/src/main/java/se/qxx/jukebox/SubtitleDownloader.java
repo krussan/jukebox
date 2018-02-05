@@ -280,13 +280,15 @@ public class SubtitleDownloader implements Runnable {
 	private boolean checkMatroskaFile(Media md) {
 		
 		if (Util.isMatroskaFile(md)) {
-			String fullFilename = String.format("%s/%s", md.getFilepath(), md.getFilename());
+			Log.Debug(String.format("Checking mkv container for media %s",  md.getFilename()), LogType.SUBS);
+			
 			List<Subtitle> subs = 
-				MkvSubtitleReader.extractSubs(fullFilename);
+				MkvSubtitleReader.extractSubs(Util.getFullFilePath(md));
 			
 			if (subs == null || subs.size() == 0)
 				return false;
 
+			Log.Debug(String.format("%s subs found in container. Saving...", subs.size()), LogType.SUBS);
 			DB.save(
 				Media.newBuilder(md)
 					.addAllSubs(subs)
