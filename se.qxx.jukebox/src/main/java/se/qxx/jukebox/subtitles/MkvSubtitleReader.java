@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.codec.binary.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.codehaus.plexus.util.StringOutputStream;
@@ -102,6 +102,9 @@ public class MkvSubtitleReader {
 		    String language = "Unknown";
 		    if (i < languages.size())
 		    	language = languages.get(i);	
+		    
+		    if (StringUtils.isEmpty(language))
+		    	language = "Unknown";
 		    
 		    // Do want you like with partial read of subtitles, you can technically
 		    // write the subtitles to file here
