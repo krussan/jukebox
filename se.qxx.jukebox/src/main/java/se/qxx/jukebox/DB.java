@@ -23,6 +23,7 @@ import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.protodb.DBStatement;
 import se.qxx.protodb.ProtoDB;
 import se.qxx.protodb.exceptions.IDFieldNotFoundException;
+import se.qxx.protodb.exceptions.ProtoDBParserException;
 import se.qxx.protodb.exceptions.SearchFieldNotFoundException;
 import se.qxx.protodb.model.ProtoDBSearchOperator;
 
@@ -725,6 +726,7 @@ public class DB {
 	public synchronized static Media getMediaByFilename(String filename) {
 		try {
 			ProtoDB db = getProtoDBInstance();
+			
 			List<Media> result =
 				db.search(JukeboxDomain.Media.getDefaultInstance(), 
 					"filename", 
@@ -770,7 +772,7 @@ public class DB {
 			if (result.size() > 0)
 				return result.get(0);
 			
-		} catch (ClassNotFoundException | SQLException | SearchFieldNotFoundException e) {
+		} catch (ClassNotFoundException | SQLException | SearchFieldNotFoundException | ProtoDBParserException e) {
 			Log.Error(String.format("Failed to get movie with subs filename %s", subsFilename), Log.LogType.MAIN, e);
 		}
 		
@@ -791,7 +793,7 @@ public class DB {
 				db.delete(s);
 			}
 			
-		} catch (ClassNotFoundException | SQLException | SearchFieldNotFoundException e) {
+		} catch (ClassNotFoundException | SQLException | SearchFieldNotFoundException | ProtoDBParserException e) {
 			Log.Error(String.format("Failed to purge series"), Log.LogType.MAIN, e);
 		}		
 	}
