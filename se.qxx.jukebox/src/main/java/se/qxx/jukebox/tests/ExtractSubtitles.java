@@ -5,6 +5,7 @@ import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang3.StringUtils;
 
+import se.qxx.jukebox.DB;
 import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
@@ -18,12 +19,12 @@ public class ExtractSubtitles {
 		if (args.length > 0) {
 			
 			try {
-				ProtoDB db = new ProtoDB("jukebox_proto.db");
 				
 				Media md = null;
 				
 				if (StringUtils.isNumeric(args[0])) {
-					md = db.get(Integer.parseInt(args[0]), JukeboxDomain.Media.getDefaultInstance());
+					int id = Integer.parseInt(args[0]);
+					md = DB.getMediaById(id);
 					
  					if (md != null) { 
 						for (Subtitle sub : md.getSubsList()) {

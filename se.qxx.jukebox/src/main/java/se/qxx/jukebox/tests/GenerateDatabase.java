@@ -17,7 +17,7 @@ public class GenerateDatabase {
 	public static void main(String[] args) throws IOException, JAXBException {
 		Version v = new Version();
 		
-		String filename = String.format("jukebox_clean_%s_%s.db", v.getMajor(), v.getMinor());
+		//String filename = String.format("jukebox_clean_%s_%s.db", v.getMajor(), v.getMinor());
 		ProtoDB db = new ProtoDB(filename);
 		try {
 			// generate main classes

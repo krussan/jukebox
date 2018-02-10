@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain;
@@ -19,9 +20,13 @@ import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.JukeboxDomain.SubtitleQueue;
+import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.protodb.DBStatement;
+import se.qxx.protodb.DBType;
 import se.qxx.protodb.ProtoDB;
+import se.qxx.protodb.ProtoDBFactory;
+import se.qxx.protodb.exceptions.DatabaseNotSupportedException;
 import se.qxx.protodb.exceptions.IDFieldNotFoundException;
 import se.qxx.protodb.exceptions.SearchFieldNotFoundException;
 import se.qxx.protodb.model.ProtoDBSearchOperator;
@@ -31,33 +36,10 @@ import com.google.protobuf.InvalidProtocolBufferException;
 
 public class DB {
      
-//	private final static String[] COLUMNS = {"ID", "title", "year",
-//			"type", "format", "sound", "language", "groupName", "imdburl", "duration",
-//			"rating", "director", "story", "identifier", "identifierRating", "watched",
-//			"isTvEpisode", "season", "episode", "firstAirDate", "episodeTitle"};
-//    " isTvEpisode bool NOT NULL DEFAULT 0," +
-//	" episode int NULL, " +
-//    " firstAirDate date NULL, " +
-//	" _season_ID int NULL",
-
-	private static String databaseFilename = "jukebox_proto.db";
-	
 	private DB() {
 		
 	} 
 
-	private static String getDatabaseFilename() {
-		return databaseFilename;
-	}
-
-	private static void setDatabaseFilename(String databaseFilename) {
-		DB.databaseFilename = databaseFilename;
-	}
-
-	public static void setDatabase(String databaseFilename) {
-		setDatabaseFilename(databaseFilename);
-	}
-	
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Search
 	//---------------------------------------------------------------------------------------
@@ -324,52 +306,52 @@ public class DB {
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Delete
 	//---------------------------------------------------------------------------------------
-	public synchronized static void delete(Movie m) throws ClassNotFoundException, SQLException {
+	public synchronized static void delete(Movie m) throws ClassNotFoundException, SQLException, DatabaseNotSupportedException {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			
 			db.delete(m);
 		}
-		catch (ClassNotFoundException | SQLException e) {
+		catch (ClassNotFoundException | SQLException | DatabaseNotSupportedException e) {
 			Log.Error("Failed to delete movie in DB", Log.LogType.MAIN, e);
 			
 			throw e;
 		}		
 	}
 	
-	public synchronized static void delete(Series s) throws ClassNotFoundException, SQLException {
+	public synchronized static void delete(Series s) throws ClassNotFoundException, SQLException, DatabaseNotSupportedException  {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			
 			db.delete(s);
 		}
-		catch (ClassNotFoundException | SQLException e) {
+		catch (ClassNotFoundException | SQLException | DatabaseNotSupportedException e) {
 			Log.Error("Failed to delete series in DB", Log.LogType.MAIN, e);
 			
 			throw e;
 		}			
 	}
 
-	public synchronized static void delete(Season sn) throws ClassNotFoundException, SQLException {
+	public synchronized static void delete(Season sn) throws ClassNotFoundException, SQLException,  DatabaseNotSupportedException  {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			
 			db.delete(sn);
 		}
-		catch (ClassNotFoundException | SQLException e) {
+		catch (ClassNotFoundException | SQLException |  DatabaseNotSupportedException  e) {
 			Log.Error("Failed to delete season in DB", Log.LogType.MAIN, e);
 			
 			throw e;
 		}			
 	}
 
-	public synchronized static void delete(Episode ep) throws ClassNotFoundException, SQLException {
+	public synchronized static void delete(Episode ep) throws ClassNotFoundException, SQLException, DatabaseNotSupportedException  {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			
 			db.delete(ep);
 		}
-		catch (ClassNotFoundException | SQLException e) {
+		catch (ClassNotFoundException | SQLException | DatabaseNotSupportedException  e) {
 			Log.Error("Failed to delete episode in DB", Log.LogType.MAIN, e);
 			
 			throw e;
@@ -486,18 +468,25 @@ public class DB {
 		return result;
 	}
 
-	private static ProtoDB getProtoDBInstance() {
+	private static ProtoDB getProtoDBInstance() throws DatabaseNotSupportedException {
 		return getProtoDBInstance(true);
 	}
 	
-	private static ProtoDB getProtoDBInstance(boolean populateBlobs) {
+	private static ProtoDB getProtoDBInstance(boolean populateBlobs) throws DatabaseNotSupportedException {
+		String driver = Settings.get().getDatabase().getDriver();
+		String connectionString = Settings.get().getDatabase().getConnectionString();
+
+		return getProtoDBInstance(driver, connectionString, populateBlobs);
+	}
+	
+	private static ProtoDB getProtoDBInstance(String driver, String connectionString, boolean populateBlobs) throws DatabaseNotSupportedException {
 		ProtoDB db = null; 
 		String logFilename = Log.getLoggerFilename(LogType.DB);
-		
+	
 		if (StringUtils.isEmpty(logFilename))
-			db = new ProtoDB(DB.getDatabaseFilename());
+			db = ProtoDBFactory.getInstance(driver, connectionString);
 		else
-			db = new ProtoDB(DB.getDatabaseFilename(), logFilename);
+			db = ProtoDBFactory.getInstance(driver, connectionString, logFilename);
 		
 		db.setPopulateBlobs(populateBlobs);
 		return db;
@@ -592,7 +581,7 @@ public class DB {
 		return new Version(major, minor);
 	}
 	
-	public synchronized static void setVersion(Version ver) throws ClassNotFoundException, SQLException {
+	public synchronized static void setVersion(Version ver) throws ClassNotFoundException, SQLException, DatabaseNotSupportedException {
 		Connection conn = null;
 		try {
 			conn = DB.initialize();
@@ -608,7 +597,7 @@ public class DB {
 		}
 	}
 	
-	private synchronized static void insertVersion(Version ver) throws ClassNotFoundException, SQLException {
+	private synchronized static void insertVersion(Version ver) throws ClassNotFoundException, SQLException, DatabaseNotSupportedException {
 		Connection conn = null;
 		try {
 			conn = DB.initialize();
@@ -624,27 +613,38 @@ public class DB {
 		}
 	}
 	
-	public static String backup() throws IOException {
-		String backupFilename = String.format("%s.bak", DB.getDatabaseFilename());
-		File backup = new File(backupFilename);
-		File current = new File(DB.getDatabaseFilename());
+	public static String backup() throws IOException, DatabaseNotSupportedException  {
+		String backupFilename = StringUtils.EMPTY;
 		
-		int i = 1;
-		while (backup.exists()) {
-			backupFilename = String.format("%s.bak.%s", DB.getDatabaseFilename(), i);
-			backup = new File(backupFilename);
-			i++;
+		ProtoDB db = getProtoDBInstance();
+		if (db.getDBType() == DBType.Sqlite) {
+			String[] splitted = StringUtils.split(db.getDatabaseBackend().getConnectionString(), ':');
+			ArrayUtils.reverse(splitted);
+			String databaseFilename = splitted[0];
+			
+			backupFilename = String.format("%s.bak", databaseFilename);
+			File backup = new File(backupFilename);
+			File current = new File(databaseFilename);
+			
+			int i = 1;
+			while (backup.exists()) {
+				backupFilename = String.format("%s.bak.%s", databaseFilename, i);
+				backup = new File(backupFilename);
+				i++;
+			}
+			
+			System.out.println(String.format("Making backup to :: %s", backupFilename));
+			FileUtils.copyFile(current, backup);
 		}
-		
-		System.out.println(String.format("Making backup to :: %s", backupFilename));
-		FileUtils.copyFile(current, backup);
-		
+		else {
+			System.out.println("Database is not Sqlite. Backup not available. Send a prayer to the data gods.");
+		}
 		return backupFilename;
 	}
 
 	public static void restore(String backupFilename) throws IOException {
 		File backup = new File(backupFilename);
-		File restoreFile = new File(DB.getDatabaseFilename());
+		File restoreFile = new File("jukebox_proto.db");
 		
 		if (restoreFile.exists())
 			restoreFile.delete();
@@ -690,9 +690,8 @@ public class DB {
 		}
 	}
 	
-	private static Connection initialize() throws ClassNotFoundException, SQLException {
-		Class.forName("org.sqlite.JDBC");
-	    return DriverManager.getConnection(String.format("jdbc:sqlite:%s", DB.databaseFilename));				
+	private static Connection initialize() throws ClassNotFoundException, SQLException, DatabaseNotSupportedException {
+		return DB.getProtoDBInstance().getConnection();
 	}
 	
 	private static void disconnect(Connection conn) {
@@ -705,8 +704,7 @@ public class DB {
 
 	public synchronized static boolean purgeDatabase() {
 		try {
-			File f = new File(databaseFilename);
-			f.delete();
+			DB.getProtoDBInstance().dropAllTables();
 		
 			setupDatabase();
 			
@@ -718,24 +716,17 @@ public class DB {
 		}
 	}
 
-	public synchronized static boolean setupDatabase() {
+	public synchronized static void setupDatabase() {
 		try {
-			File f = new File(DB.getDatabaseFilename());
-			if (!f.exists()) {
-				ProtoDB db = getProtoDBInstance();			
-				db.setupDatabase(Movie.getDefaultInstance());
-				db.setupDatabase(se.qxx.jukebox.domain.JukeboxDomain.Version.getDefaultInstance());
-				db.setupDatabase(Series.getDefaultInstance());
-				DB.insertVersion(new Version());
-			}
-			
-			return true;
+			ProtoDB db = getProtoDBInstance();			
+			db.setupDatabase(Movie.getDefaultInstance());
+			db.setupDatabase(se.qxx.jukebox.domain.JukeboxDomain.Version.getDefaultInstance());
+			db.setupDatabase(Series.getDefaultInstance());
+			DB.insertVersion(new Version());
 		} catch (ClassNotFoundException | SQLException
-				| IDFieldNotFoundException e) {
+				| IDFieldNotFoundException | DatabaseNotSupportedException e) {
 			Log.Error("Failed to setup database", Log.LogType.MAIN, e);
 		}
-		
-		return false;
 	}
 
 	public synchronized static Movie getMovieByMediaID(int mediaID) {
@@ -785,11 +776,11 @@ public class DB {
 			
 	}
 	
-	public synchronized static Media getMediaById(int mediaId) {
+	public synchronized static Media getMediaById(int mediaId)  {
 		try {
 			ProtoDB db = getProtoDBInstance();			
 			return db.get(mediaId, Media.getDefaultInstance());
-		} catch (ClassNotFoundException | SQLException e) {
+		} catch (ClassNotFoundException | SQLException | DatabaseNotSupportedException e) {
 			Log.Error(String.format("Failed to get media %s", mediaId), Log.LogType.MAIN, e);
 		}
 		
@@ -818,7 +809,7 @@ public class DB {
 //		return null;
 //	}
 //	
-	public synchronized static Movie getMovieBySubfilename(String subsFilename) {
+	public synchronized static Movie getMovieBySubfilename(String subsFilename) throws DatabaseNotSupportedException {
 		try {
 			String searchString = replaceSearchString(subsFilename) + "%";
 			
@@ -853,7 +844,7 @@ public class DB {
 				db.delete(s);
 			}
 			
-		} catch (ClassNotFoundException | SQLException | SearchFieldNotFoundException e) {
+		} catch (ClassNotFoundException | SQLException | SearchFieldNotFoundException | DatabaseNotSupportedException e) {
 			Log.Error(String.format("Failed to purge series"), Log.LogType.MAIN, e);
 		}		
 	}

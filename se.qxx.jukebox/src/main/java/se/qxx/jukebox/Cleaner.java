@@ -16,6 +16,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.tools.Util;
+import se.qxx.protodb.exceptions.DatabaseNotSupportedException;
 
 public class Cleaner implements Runnable {
 	private boolean isRunning;
@@ -69,7 +70,7 @@ public class Cleaner implements Runnable {
 					try {
 						if (!Arguments.get().isCleanerLogOnly())
 							DB.delete(m);
-					} catch (ClassNotFoundException | SQLException ex) {
+					} catch (ClassNotFoundException | SQLException | DatabaseNotSupportedException ex) {
 						Log.Error("Deletion of media failed", LogType.FIND, ex);
 					}
 				}
@@ -91,7 +92,7 @@ public class Cleaner implements Runnable {
 							try {
 								if (!Arguments.get().isCleanerLogOnly())
 									DB.delete(e);
-							} catch (ClassNotFoundException | SQLException ex) {
+							} catch (ClassNotFoundException | SQLException | DatabaseNotSupportedException ex) {
 								Log.Error("Deletion of media failed", LogType.FIND, ex);
 							}
 						}
