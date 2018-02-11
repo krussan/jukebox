@@ -468,18 +468,18 @@ public class DB {
 		return result;
 	}
 
-	private static ProtoDB getProtoDBInstance() throws DatabaseNotSupportedException {
+	public static ProtoDB getProtoDBInstance() throws DatabaseNotSupportedException {
 		return getProtoDBInstance(true);
 	}
 	
-	private static ProtoDB getProtoDBInstance(boolean populateBlobs) throws DatabaseNotSupportedException {
+	public static ProtoDB getProtoDBInstance(boolean populateBlobs) throws DatabaseNotSupportedException {
 		String driver = Settings.get().getDatabase().getDriver();
 		String connectionString = Settings.get().getDatabase().getConnectionString();
 
 		return getProtoDBInstance(driver, connectionString, populateBlobs);
 	}
 	
-	private static ProtoDB getProtoDBInstance(String driver, String connectionString, boolean populateBlobs) throws DatabaseNotSupportedException {
+	public static ProtoDB getProtoDBInstance(String driver, String connectionString, boolean populateBlobs) throws DatabaseNotSupportedException {
 		ProtoDB db = null; 
 		String logFilename = Log.getLoggerFilename(LogType.DB);
 	
@@ -716,17 +716,27 @@ public class DB {
 		}
 	}
 
-	public synchronized static void setupDatabase() {
+	public synchronized static boolean setupDatabase() throws ClassNotFoundException, SQLException, IDFieldNotFoundException, DatabaseNotSupportedException {
 		try {
-			ProtoDB db = getProtoDBInstance();			
-			db.setupDatabase(Movie.getDefaultInstance());
-			db.setupDatabase(se.qxx.jukebox.domain.JukeboxDomain.Version.getDefaultInstance());
-			db.setupDatabase(Series.getDefaultInstance());
-			DB.insertVersion(new Version());
+			Version ver = DB.getVersion();
+			if (ver.getMajor() == 0 && ver.getMinor() == 0) {
+				ProtoDB db = getProtoDBInstance();
+				
+				db.setupDatabase(Movie.getDefaultInstance());
+				db.setupDatabase(se.qxx.jukebox.domain.JukeboxDomain.Version.getDefaultInstance());
+				db.setupDatabase(Series.getDefaultInstance());
+				DB.insertVersion(new Version());
+				
+				return false;
+			}
 		} catch (ClassNotFoundException | SQLException
 				| IDFieldNotFoundException | DatabaseNotSupportedException e) {
 			Log.Error("Failed to setup database", Log.LogType.MAIN, e);
+			
+			throw e;
 		}
+		
+		return true;
 	}
 
 	public synchronized static Movie getMovieByMediaID(int mediaID) {
