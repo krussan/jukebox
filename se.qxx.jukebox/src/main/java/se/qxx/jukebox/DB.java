@@ -719,7 +719,7 @@ public class DB {
 	public synchronized static boolean setupDatabase() throws ClassNotFoundException, SQLException, IDFieldNotFoundException, DatabaseNotSupportedException {
 		try {
 			Version ver = DB.getVersion();
-			if (ver.getMajor() == 0 && ver.getMinor() == 0) {
+			if (ver.getMajor() == 0 && ver.getMinor() == 10) {
 				ProtoDB db = getProtoDBInstance();
 				
 				db.setupDatabase(Movie.getDefaultInstance());

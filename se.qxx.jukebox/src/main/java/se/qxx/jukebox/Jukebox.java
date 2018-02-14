@@ -1,6 +1,14 @@
 package se.qxx.jukebox;
 
+import java.io.IOException;
+import java.sql.SQLException;
+
+import javax.xml.bind.JAXBException;
+
+import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.upgrade.Upgrader;
+import se.qxx.protodb.exceptions.DatabaseNotSupportedException;
+import se.qxx.protodb.exceptions.IDFieldNotFoundException;
 
 public class Jukebox {
 
@@ -10,31 +18,52 @@ public class Jukebox {
 	public static void main(String[] args) {
 		Arguments.initialize(args);
 		 
+		
 		if (Arguments.get().isHelpRequested()) {
 			displayHelp(); 
 			return; 
 		}
 		
-		if (Arguments.get().isPurgeMode()) {
-			purge();
-			return;
-		}
+		try {
+			Settings.initialize();
 		
-		if (Arguments.get().isPurgeSubtitles()) {
-//			purgeSubs();
-			System.out.println("Purging of subtitles has been removed. Will maybe be implemented in the future...");
-			System.out.println("Exiting....");			
-			return;
-		}
-		
-		if (Arguments.get().isPurgeSeries()) {
-			System.out.println("Purging all series");
-			DB.purgeSeries();
-			return;
-		}
-					
-		startMainThread();
+			if (Arguments.get().isPurgeMode()) {
+				purge();
+				return;
+			}
 			
+			if (Arguments.get().isPurgeSubtitles()) {
+	//			purgeSubs();
+				System.out.println("Purging of subtitles has been removed. Will maybe be implemented in the future...");
+				System.out.println("Exiting....");			
+				return;
+			}
+			
+			if (Arguments.get().isPurgeSeries()) {
+				System.out.println("Purging all series");
+				DB.purgeSeries();
+				return;
+			}
+			
+			if (Arguments.get().isSetupDatabase()) {
+				try {
+					System.out.println("Setting up database...");
+				
+					DB.setupDatabase();
+				} catch (ClassNotFoundException | SQLException | IDFieldNotFoundException
+						| DatabaseNotSupportedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				System.out.println("Done!");
+				return;
+			}
+						
+			startMainThread();
+		} catch (IOException | JAXBException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}		
 	}
 	
 	private static void displayHelp() {
