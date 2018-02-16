@@ -14,6 +14,9 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
@@ -60,8 +63,14 @@ public class IMDBRecord {
 	private void parse(String webResult) {
 		Pattern p;
 		Matcher m;
-
+		
+		Document doc = Jsoup.parse(webResult);
 		Log.Debug(String.format("IMDBRECORD :: Initializing parsing"), LogType.IMDB);
+		
+		parseTitle(doc);
+		parseDirector(doc);
+		parseDuration(doc);
+		
 
 		List<InfoPattern> patterns = Settings.imdb().getInfoPatterns().getInfoPattern();
 		for (InfoPattern infoPattern : patterns) {
@@ -139,6 +148,42 @@ public class IMDBRecord {
 				catch (Exception e) {
 					Log.Error(String.format("IMDBFinder for url %s - unable to set %s", url, infoPattern.getType()), LogType.MAIN, e);					
 				}
+			}
+		}
+	}
+
+	private void parseDuration(Document doc) {
+		Elements elm = doc.getElementsByAttributeValue("itemprop", "director");
+		if (elm.size() > 0) {
+			Elements e = elm.get(0).getElementsByAttributeValue("itemprop", "name");
+			if (e.size() > 0) {
+				String unescapedValue = StringEscapeUtils.unescapeHtml4(e.get(0).text());				
+				Log.Debug(String.format("IMDBRECORD :: Setting duration :: %s", unescapedValue), LogType.IMDB);
+				this.setDurationMinutes(Integer.parseInt(unescapedValue));
+			}
+		}
+	}
+
+	private void parseDirector(Document doc) {
+		Elements elm = doc.getElementsByAttributeValue("itemprop", "director");
+		if (elm.size() > 0) {
+			Elements e = elm.get(0).getElementsByAttributeValue("itemprop", "name");
+			if (e.size() > 0) {
+				String unescapedValue = StringEscapeUtils.unescapeHtml4(e.get(0).text());				
+				Log.Debug(String.format("IMDBRECORD :: Setting director :: %s", unescapedValue), LogType.IMDB);
+				this.setDirector(unescapedValue);
+			}
+		}
+	}
+
+	private void parseTitle(Document doc) {
+		Elements elm = doc.getElementsByClass("title_wrapper");
+		if (elm.size() > 0) {
+			Elements elmTitle = elm.get(0).getElementsByAttributeValue("itemprop", "name");
+			if (elmTitle.size() > 0 ) {
+				String unescapedValue = StringEscapeUtils.unescapeHtml4(elmTitle.get(0).text());
+				Log.Debug(String.format("IMDBRECORD :: Setting title :: %s", unescapedValue), LogType.IMDB);
+				this.setTitle(unescapedValue);
 			}
 		}
 	}
