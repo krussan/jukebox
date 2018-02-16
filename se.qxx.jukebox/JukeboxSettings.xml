@@ -133,4 +133,8 @@
   	<log type="file" filename="webserver.log" level="DEBUG" logs="WEBSERVER" />
   	<!-- <log type="file" filename="db.log" level="DEBUG" logs="DB" /> -->
   </logs>  
+  <database>
+    <driver>com.mysql.jdbc.Driver</driver>
+    <connectionString>jdbc:mysql://192.168.1.120/jukebox?user=jukebox&amp;password=jukebox</connectionString>
+  </database>
 </JukeboxListenerSettings>

@@ -4,7 +4,7 @@
 
   <groupId>se.qxx.jukebox</groupId>
   <artifactId>jukebox</artifactId>
-  <version>0.18.1</version>
+  <version>0.18.2</version>
   <packaging>jar</packaging>
 
   <name>jukebox</name>
@@ -83,7 +83,7 @@
     <dependency>
       <groupId>se.qxx.protodb</groupId>
       <artifactId>protodb-java</artifactId>
-      <version>1.5.7</version>
+      <version>1.6.1</version>
     </dependency>
 
     <dependency>
@@ -120,6 +120,12 @@
         <groupId>org.xerial</groupId>
         <artifactId>sqlite-jdbc</artifactId>
         <version>3.8.11.2</version>
+    </dependency>
+
+    <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <version>5.1.45</version>
     </dependency>
 
 	<dependency>

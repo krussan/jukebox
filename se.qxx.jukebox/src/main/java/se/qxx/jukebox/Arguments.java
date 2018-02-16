@@ -17,6 +17,7 @@ public class Arguments {
 	private boolean watcherEnabled = true;
 	private boolean cleanerEnabled = true;
 	private boolean cleanerLogOnly = false;
+	private boolean setupDatabase = false;
 	
 	private static Arguments _instance;
 	
@@ -106,6 +107,10 @@ public class Arguments {
 			_instance.setCleanerEnabled(true);
 			_instance.setCleanerLogOnly(true);
 		}
+		
+		if (arguments.contains("--setupdb")) {
+			_instance.setSetupDatabase(true);
+		}
 
 	}
 	
@@ -170,5 +175,13 @@ public class Arguments {
 
 	public void setCleanerLogOnly(boolean cleanerLogOnly) {
 		this.cleanerLogOnly = cleanerLogOnly;
+	}
+
+	public boolean isSetupDatabase() {
+		return setupDatabase;
+	}
+
+	public void setSetupDatabase(boolean setupDatabase) {
+		this.setupDatabase = setupDatabase;
 	}
 }

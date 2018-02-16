@@ -8,6 +8,7 @@ import java.util.Stack;
 
 import se.qxx.jukebox.DB;
 import se.qxx.jukebox.Version;
+import se.qxx.protodb.exceptions.DatabaseNotSupportedException;
 
 public class Upgrader {
 
@@ -33,7 +34,7 @@ public class Upgrader {
 				 , IllegalArgumentException
 				 , InstantiationException
 				 , IllegalAccessException
-				 , InvocationTargetException {
+				 , InvocationTargetException, DatabaseNotSupportedException {
 		
 		Version currentVersion = DB.getVersion();
 		Version thisVersion = new Version();

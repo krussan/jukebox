@@ -10,14 +10,18 @@ import org.apache.commons.lang3.StringUtils;
 import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.protodb.ProtoDB;
+import se.qxx.protodb.ProtoDBFactory;
 
 public class TestSeriesFinder {
 
 	public static void main(String[] args) throws IOException, JAXBException {
-		if (args.length > 0) {
+		if (args.length > 3) {
+			String driver = args[0];
+			String connectionString = args[1];
+			int id = Integer.parseInt(args[2]);
 			
 			try {
-				ProtoDB db = new ProtoDB("jukebox_proto.db", "protodb_test.log");
+				ProtoDB db = ProtoDBFactory.getInstance(driver, connectionString, "protodb_test.log");
 				
 				Series s = null;
 				
