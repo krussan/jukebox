@@ -28,7 +28,24 @@ if [ "$FILE" != "" ] && [ "$MYSQL_USER" != "" ] && [ "$MYSQL_PASS" != "" ] && [ 
 
          echo "Importing table :: $tbl"
          mysql -h $MYSQL_HOST -u $MYSQL_USER --password=$MYSQL_PASS -D $MYSQL_DB -e "DELETE FROM $tbl"
-         mysql -h $MYSQL_HOST -u $MYSQL_USER --password=$MYSQL_PASS -D $MYSQL_DB < dump/$tbl.sql
+
+         if [ "$tbl" == "BlobData" ]; then
+            mkdir -p dump/data
+            cd dump/data
+            split -l 10 -a 4 -d ..\$tbl.sql
+            cd ../..
+            NRFILES=$(ls -la dump/data | wc -l)
+            C=0
+            for f in dump/data/*; do
+               C=$(($C + 1))
+               echo Importing $f [$C / $NRFILES]
+
+               mysql -h $MYSQL_HOST -u $MYSQL_USER --password=$MYSQL_PASS -D $MYSQL_DB < $f            
+
+            done
+         else 
+            mysql -h $MYSQL_HOST -u $MYSQL_USER --password=$MYSQL_PASS -D $MYSQL_DB < dump/$tbl.sql
+         fi
       fi
    done
 else
