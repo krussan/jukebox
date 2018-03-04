@@ -85,7 +85,7 @@ public class Upgrader {
 			
 			System.out.println("Upgrade complete. Please restart application");
 		
-		} catch (IOException e1) {
+		} catch (DatabaseNotSupportedException | IOException  e1) {
 			System.out.println("Error while managing backup of database. No upgrade performed. Exiting...");
 		}
 
