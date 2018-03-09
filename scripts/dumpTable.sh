@@ -5,7 +5,7 @@ TABLE=$2
 
 echo "-- $TABLE:";
 COLS=`"$SQLITE" "$DB" "pragma table_info($TABLE)" | cut -d'|' -f2 `
-COLS_CS=`echo $COLS | sed 's/ /,/g'`
+COLS_CS=`echo \\\`$COLS\\\` | sed 's/ /\\\`,\\\`/g'`
 
 if [ "$TABLE" != "BlobData" ]; then
     echo -e ".mode insert\nselect $COLS_CS from $TABLE;\n" | \
