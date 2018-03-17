@@ -28,6 +28,7 @@ import se.qxx.protodb.ProtoDB;
 import se.qxx.protodb.ProtoDBFactory;
 import se.qxx.protodb.exceptions.DatabaseNotSupportedException;
 import se.qxx.protodb.exceptions.IDFieldNotFoundException;
+import se.qxx.protodb.exceptions.ProtoDBParserException;
 import se.qxx.protodb.exceptions.SearchFieldNotFoundException;
 import se.qxx.protodb.model.ProtoDBSearchOperator;
 
@@ -65,12 +66,6 @@ public class DB {
 					numberOfResults, 
 					offset);
 			
-//			return 
-//				db.find(JukeboxDomain.Movie.getDefaultInstance(), 
-//					"title", 
-//					"%" + searchString + "%", 
-//					true,
-//					filterObjects);
 		}
 		catch (Exception e) {
 			Log.Error("Failed to retrieve movie listing from DB", Log.LogType.MAIN, e);
@@ -99,12 +94,6 @@ public class DB {
 					numberOfResults,
 					offset);
 			
-//			return 
-//				db.find(JukeboxDomain.Series.getDefaultInstance(), 
-//					"title", 
-//					"%" + searchString + "%", 
-//					true,
-//					filterObjects);
 		}
 		catch (Exception e) {
 			Log.Error("Failed to retrieve series listing from DB", Log.LogType.MAIN, e);
@@ -120,31 +109,6 @@ public class DB {
 		return StringUtils.trim(ret);
 	}
 	
-//	public synchronized static Movie getMovieByStartOfMediaFilename(String startOfMediaFilename) {
-//		String searchString = replaceSearchString(startOfMediaFilename) + "%";
-//		
-//		Log.Debug(String.format("DB :: Database search string :: %s", searchString), LogType.MAIN);
-//				 
-//		try {
-//			ProtoDB db = getProtoDBInstance();
-//			List<Movie> result =
-//				db.find(JukeboxDomain.Movie.getDefaultInstance(), 
-//					"media.filename", 
-//					searchString, 
-//					true);
-//			
-//			if (result.size() > 0)
-//				return result.get(0);
-//			else
-//				return null;
-//		} catch (Exception e) {
-//			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
-////			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
-//			
-//			return null;
-//		}
-//	}
-
 	public synchronized static Movie findMovie(String identifiedTitle) {
 		String searchString = replaceSearchString(identifiedTitle);
 		
@@ -153,10 +117,10 @@ public class DB {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			List<Movie> result =
-				db.find(JukeboxDomain.Movie.getDefaultInstance(), 
+				db.search(JukeboxDomain.Movie.getDefaultInstance(), 
 					"identifiedTitle", 
 					searchString, 
-					true);
+					ProtoDBSearchOperator.Like);
 			
 			if (result.size() > 0)
 				return result.get(0);
@@ -179,10 +143,11 @@ public class DB {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			List<Series> result =
-				db.find(JukeboxDomain.Series.getDefaultInstance(), 
-					"identifiedTitle", 
-					searchString, 
-					true);
+					db.search(
+							JukeboxDomain.Series.getDefaultInstance(), 
+							"identifiedTitle", 
+							searchString, 
+							ProtoDBSearchOperator.Like);
 			
 			if (result.size() > 0)
 				return result.get(0);
@@ -439,11 +404,10 @@ public class DB {
 			 
 			// Restrict result to 5. Since the list will be retrieved again it does not matter.
 			List<Movie> movies =
-				db.find(JukeboxDomain.Movie.getDefaultInstance(), 
+				db.search(JukeboxDomain.Movie.getDefaultInstance(), 
 					"subtitleQueue.subtitleRetreiveResult", 
 					0, 
-					false,
-					null,
+					ProtoDBSearchOperator.Equals,
 					5,
 					0);
 
@@ -451,11 +415,10 @@ public class DB {
 			// what if we cut a series/season in half and save the series (!)
 			// So to be sure we save _only_ the episode from the SubtitleDownloader.
 			List<Series> series = 
-				db.find(JukeboxDomain.Series.getDefaultInstance(), 
+				db.search(JukeboxDomain.Series.getDefaultInstance(), 
 					"season.episode.subtitleQueue.subtitleRetreiveResult", 
 					0, 
-					false,
-					null,
+					ProtoDBSearchOperator.Equals,
 					5,
 					0);
 
@@ -743,10 +706,10 @@ public class DB {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			List<Movie> result =
-				db.find(JukeboxDomain.Movie.getDefaultInstance(), 
+				db.search(JukeboxDomain.Movie.getDefaultInstance(), 
 					"media.ID", 
 					mediaID, 
-					false);
+					ProtoDBSearchOperator.Equals);
 			
 			if (result.size() > 0)
 				return result.get(0);
@@ -767,10 +730,10 @@ public class DB {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			List<Media> result =
-				db.find(JukeboxDomain.Media.getDefaultInstance(), 
+				db.search(JukeboxDomain.Media.getDefaultInstance(), 
 					"filename", 
 					filename, 
-					false);
+					ProtoDBSearchOperator.Equals);
 			
 			if (result.size() > 0)
 				return result.get(0);
@@ -797,43 +760,21 @@ public class DB {
 		return null;		
 	}
 
-//	public static Media getMediaByStartOfFilename(String mediaFilename) {
-//		try {
-//			String searchString = replaceSearchString(mediaFilename) + "%";
-//			
-//			ProtoDB db = getProtoDBInstance();
-//			List<Media> result =
-//				db.find(JukeboxDomain.Media.getDefaultInstance(), 
-//					"filename", 
-//					searchString, 
-//					true);
-//			
-//			if (result.size() > 0)
-//				return result.get(0);
-//			
-//		} catch (ClassNotFoundException | SQLException
-//				| SearchFieldNotFoundException e) {
-//			Log.Error(String.format("Failed to get media %s", mediaFilename), Log.LogType.MAIN, e);
-//		}
-//		
-//		return null;
-//	}
-//	
 	public synchronized static Movie getMovieBySubfilename(String subsFilename) throws DatabaseNotSupportedException {
 		try {
 			String searchString = replaceSearchString(subsFilename) + "%";
 			
 			ProtoDB db = getProtoDBInstance();
 			List<Movie> result = 
-				db.find(JukeboxDomain.Movie.getDefaultInstance(), 
+				db.search(JukeboxDomain.Movie.getDefaultInstance(), 
 					"media.subs.filename", 
 					searchString, 
-					true);
+					ProtoDBSearchOperator.Like);
 			
 			if (result.size() > 0)
 				return result.get(0);
 			
-		} catch (ClassNotFoundException | SQLException | SearchFieldNotFoundException e) {
+		} catch (ClassNotFoundException | SQLException | SearchFieldNotFoundException | ProtoDBParserException e) {
 			Log.Error(String.format("Failed to get movie with subs filename %s", subsFilename), Log.LogType.MAIN, e);
 		}
 		
@@ -844,17 +785,17 @@ public class DB {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			List<Series> result =
-					db.find(JukeboxDomain.Series.getDefaultInstance(), 
+					db.search(JukeboxDomain.Series.getDefaultInstance(), 
 						"title", 
 						"%", 
-						true);
+						ProtoDBSearchOperator.Like);
 			
 			for (Series s : result) {
 				System.out.println(String.format("Purging :: %s", s.getTitle()));
 				db.delete(s);
 			}
 			
-		} catch (ClassNotFoundException | SQLException | SearchFieldNotFoundException | DatabaseNotSupportedException e) {
+		} catch (ClassNotFoundException | SQLException | SearchFieldNotFoundException | DatabaseNotSupportedException | ProtoDBParserException e) {
 			Log.Error(String.format("Failed to purge series"), Log.LogType.MAIN, e);
 		}		
 	}
