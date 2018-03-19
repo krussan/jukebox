@@ -108,9 +108,11 @@ public class JukeboxFragment extends ListFragment implements
 		lv.setOnScrollListener(new EndlessScrollListener() {
             @Override
             public boolean onLoadMore(int page, int totalItemsCount) {
-                Model.get().setOffset(page * Model.get().getNrOfItems());
-                loadMoreData(page * Model.get().getNrOfItems());
-
+                if (!Model.get().isLoading()) {
+                    Model.get().setLoading(true);
+                    Model.get().setOffset(page * Model.get().getNrOfItems());
+                    loadMoreData(page * Model.get().getNrOfItems());
+                }
 
                 return true;
             }
@@ -225,6 +227,7 @@ public class JukeboxFragment extends ListFragment implements
 		case R.id.btnRefresh:
 			Logger.Log().i("onConnectClicked");
 
+			Model.get().setOffset(0);
 			Model.get().clearMovies();
             Model.get().clearSeries();
 

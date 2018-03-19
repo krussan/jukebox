@@ -38,6 +38,7 @@ public class Connector {
 									Model.get().clearSeries();
 									Model.get().addAllMovies(response.getMoviesList());
 									Model.get().setInitialized(true);
+									Model.get().setLoading(false);
 								}
 							}
 

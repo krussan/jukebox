@@ -37,7 +37,17 @@ public class Model {
 
 	private int offset = 0;
 	private int nrOfItems = 15;
-	
+
+	public boolean isLoading() {
+		return isLoading;
+	}
+
+	public void setLoading(boolean loading) {
+		isLoading = loading;
+	}
+
+	private boolean isLoading = false;
+
 	public interface ModelUpdatedEventListener {
 		public void handleModelUpdatedEventListener(java.util.EventObject e);
 	}
@@ -116,14 +126,11 @@ public class Model {
 	
 	public void addAllMovies(List<Movie> movies) {
 		_movies.addAll(movies);
-		sortMovies(); 
 		fireModelUpdatedEvent(ModelUpdatedType.Movies);
 	}
 	
 	public void addAllSeries(List<Series> series) {
 		_series.addAll(series);
-		sortSeries();
-		sortSeasonsAndEpisodes();
 		fireModelUpdatedEvent(ModelUpdatedType.Series);
 	}
 	
@@ -332,65 +339,6 @@ public class Model {
         this.setModelType(ModelType.Series);
         this.currentEpisodeId = index;
         this.currentMediaId = 0;
-    }
-
-	public void sortMovies() {
-		Collections.sort(_movies, new Comparator<Movie>() {
-			@Override
-			public int compare(Movie lhs, Movie rhs) {
-				
-				return lhs.getTitle().compareTo(rhs.getTitle());
-			}
-		});
-	}
-	
-	public void sortSeries() {
-		Collections.sort(_series, new Comparator<Series>() {
-			@Override
-			public int compare(Series lhs, Series rhs) {
-				
-				return lhs.getTitle().compareTo(rhs.getTitle());
-			}
-		});
-	}
-
-	public void sortSeasonsAndEpisodes() {
-		List<Series> newList = new ArrayList<Series>();
-		for(Series s : _series) {
-            newList.add(Series.newBuilder(s).clearSeason().addAllSeason(sortSeasons(s)).build());
-		}
-
-		_series = newList;
-	}
-
-	public List<Season> sortSeasons(Series s) {
-        List<Season> list = new ArrayList<Season>(s.getSeasonList());
-
-        Collections.sort(list, new Comparator<Season>() {
-            @Override
-            public int compare(Season lhs, Season rhs) {
-                return Integer.compare(lhs.getSeasonNumber(), rhs.getSeasonNumber());
-            }
-        });
-
-        List<Season> newSeasonList = new ArrayList<Season>();
-        for (Season ss : list) {
-            newSeasonList.add(Season.newBuilder(ss).clearEpisode().addAllEpisode(sortEpisodes(ss)).build());
-        }
-
-        return newSeasonList;
-    }
-
-	public List<Episode> sortEpisodes(Season ss) {
-        List<Episode> episodeList = new ArrayList<Episode>(ss.getEpisodeList());
-        Collections.sort(episodeList, new Comparator<Episode>() {
-            @Override
-            public int compare(Episode lhs, Episode rhs) {
-                return Integer.compare(lhs.getEpisodeNumber(), rhs.getEpisodeNumber());
-            }
-        });
-
-        return episodeList;
     }
 
 	//---------------------------------------------------------------------------------------
