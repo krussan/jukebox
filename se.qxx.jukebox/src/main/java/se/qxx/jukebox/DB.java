@@ -35,6 +35,7 @@ import se.qxx.protodb.model.ProtoDBSearchOperator;
 
 import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.Message;
 
 public class DB {
      
@@ -49,32 +50,17 @@ public class DB {
 	public synchronized static List<Movie> searchMoviesByTitle(String searchString, boolean populateBlobs, boolean filterSubs) {
 		return searchMoviesByTitle(searchString, populateBlobs, filterSubs, -1, -1);
 	}
+	
 	public synchronized static List<Movie> searchMoviesByTitle(String searchString, boolean populateBlobs, boolean filterSubs, int numberOfResults, int offset) {
-		try {
-			ProtoDB db = getProtoDBInstance(populateBlobs);
-			
-			List<String> filterObjects = new ArrayList<String>();
-			
-			if (filterSubs) {
-				filterObjects.add("media.subs");
-			}
-
-			return db.search(JukeboxDomain.Movie.getDefaultInstance(), 
-					"title", 
-					"%" + searchString + "%",
-					ProtoDBSearchOperator.Like, 
-					false, 
-					null,
-					numberOfResults, 
-					offset,
-					"identifiedTitle",
-					ProtoDBSort.Asc);
-			
-		}
-		catch (Exception e) {
-			Log.Error("Failed to retrieve movie listing from DB", Log.LogType.MAIN, e);
-			return new ArrayList<Movie>();
-		}	
+		return searchByTitle(JukeboxDomain.Movie.getDefaultInstance()
+				, "title"
+				, searchString
+				, numberOfResults
+				, offset
+				, populateBlobs
+				, filterSubs
+				, "media.subs"
+				, "identifiedTitle");
 	}
 
 	public synchronized static List<Series> searchSeriesByTitle(String searchString, boolean populateBlobs, boolean filterSubs) {
@@ -82,27 +68,56 @@ public class DB {
 	}
 
 	public synchronized static List<Series> searchSeriesByTitle(String searchString, boolean populateBlobs, boolean filterSubs, int numberOfResults, int offset) {
+		return searchByTitle(JukeboxDomain.Series.getDefaultInstance()
+				, "title"
+				, searchString
+				, numberOfResults
+				, offset
+				, populateBlobs
+				, filterSubs
+				, "season.episode.media.subs"
+				, "title");
+	}
+	
+	private static <T extends Message> List<T> searchByTitle(
+			T instance, 
+			String searchField, 
+			String searchString, 
+			int numberOfResults,
+			int offset,
+			boolean populateBlobs,
+			boolean filterSubs,
+			String filterSubsPath,
+			String sortField) {
 		try {
 			ProtoDB db = getProtoDBInstance(populateBlobs);
 
 			List<String> filterObjects = new ArrayList<String>();			
 			if (filterSubs) {
-				filterObjects.add("season.episode.media.subs");
+				filterObjects.add(filterSubsPath);
 			}
 			
-			return db.search(JukeboxDomain.Series.getDefaultInstance(), 
-					"title", 
-					"%" + searchString + "%",
+			if (StringUtils.isEmpty(searchString))
+				searchField = "";
+			else
+				searchString = "%" + searchString + "%"; 
+			
+			return db.search(instance, 
+					searchField, 
+					searchString,
 					ProtoDBSearchOperator.Like,
 					false,
+					null,
 					numberOfResults,
-					offset);
+					offset,
+					sortField,
+					ProtoDBSort.Asc);
 			
 		}
 		catch (Exception e) {
 			Log.Error("Failed to retrieve series listing from DB", Log.LogType.MAIN, e);
-			return new ArrayList<Series>();
-		}
+			return new ArrayList<T>();
+		}		
 	}
 
 

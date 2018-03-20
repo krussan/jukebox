@@ -83,7 +83,7 @@
     <dependency>
       <groupId>se.qxx.protodb</groupId>
       <artifactId>protodb-java</artifactId>
-      <version>1.6.6</version>
+      <version>1.6.7</version>
     </dependency>
 
     <dependency>
@@ -285,6 +285,7 @@
 	                figure out the right directory. It's better to add it explicitly IMHO.
 	            -->
 	            <dotGitDirectory>${project.basedir}/../.git</dotGitDirectory>
+	            <failOnUnableToExtractRepoInfo>false</failOnUnableToExtractRepoInfo>
 	            <verbose>false</verbose>
             </configuration>	        
         </plugin>		

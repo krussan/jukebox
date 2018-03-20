@@ -76,7 +76,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			series.add(DB.getSeries(request.getSeriesID()));
 			break;
 		case TypeEpisode:
-			//TODO!
+			//DB.findSeason(request.getSeasonID());
 			break;
 		}
 		
