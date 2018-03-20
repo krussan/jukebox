@@ -112,6 +112,7 @@ public class JukeboxFragment extends ListFragment implements
             @Override
             public boolean onLoadMore(int page, int totalItemsCount) {
                 if (!Model.get().isLoading()) {
+                    Model.get().setLoading(true);
                     Model.get().setOffset(page * Model.get().getNrOfItems());
                     loadMoreData(page * Model.get().getNrOfItems());
                 }

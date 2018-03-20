@@ -71,12 +71,12 @@ public abstract class GenericListLayoutAdapter extends BaseAdapter {
         View v = vi.inflate(R.layout.progresslistrow, null);
         View pb = v.findViewById(R.id.pbFooterProgress);
 
-        if (pb != null) {
-            if (Model.get().isLoading())
-                pb.setVisibility(View.VISIBLE);
-            else
-                pb.setVisibility(View.INVISIBLE);
-        }
+//        if (pb != null) {
+//            if (Model.get().isLoading())
+//                pb.setVisibility(View.VISIBLE);
+//            else
+//                pb.setVisibility(View.INVISIBLE);
+//        }
 
         return v;
     }
