@@ -1,18 +1,17 @@
 package se.qxx.android.jukebox.activities;
 
-import se.qxx.android.jukebox.ChromeCastConfiguration;
-import se.qxx.android.jukebox.JukeboxSettings;
+import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
+import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.jukebox.R;
-import se.qxx.android.jukebox.adapters.MediaSubsLayoutAdapter;
+import se.qxx.android.jukebox.adapters.support.SubtitleLayoutAdapter;
 import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
-import se.qxx.android.jukebox.JukeboxConnectionProgressDialog;
+import se.qxx.android.jukebox.dialogs.JukeboxConnectionProgressDialog;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
@@ -64,7 +63,7 @@ public class SubSelectActivity extends AppCompatActivity implements OnItemClickL
 	    View rootView = GUITools.getRootView(this);
 
 	    GUITools.setTextOnTextview(R.id.lblSubpickerFilename, md.getFilename(), rootView);
-		MediaSubsLayoutAdapter adapter = new MediaSubsLayoutAdapter(this, Model.get().getSubtitles());
+		SubtitleLayoutAdapter adapter = new SubtitleLayoutAdapter(this, Model.get().getSubtitles());
 		ListView v = (ListView)findViewById(R.id.listSubtitlePicker);
 		v.setAdapter(adapter);
 		v.setOnItemClickListener(this);

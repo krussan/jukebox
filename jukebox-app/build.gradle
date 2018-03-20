@@ -74,8 +74,14 @@ android {
 }
 
 def publish = project.tasks.create("publishAll");
-if (project.hasProperty("RELEASE_DEPLOY_PATH")) {
-    def deployPath = project.properties["RELEASE_DEPLOY_PATH"];
+def deployPath = "";
+
+if (project.hasProperty("RELEASE_DEPLOY_PATH"))
+    deployPath = project.properties["RELEASE_DEPLOY_PATH"];
+else if (System.env["RELEASE_DEPLOY_PATH"] != null)
+    deployPath = System.env["RELEASE_DEPLOY_PATH"];
+
+if (deployPath != "") {
     def folder = new File(deployPath)
 
     if (folder.exists()) {

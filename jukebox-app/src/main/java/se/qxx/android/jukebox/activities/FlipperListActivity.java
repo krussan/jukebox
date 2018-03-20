@@ -1,24 +1,19 @@
 package se.qxx.android.jukebox.activities;
 
-import se.qxx.android.jukebox.ChromeCastConfiguration;
-import se.qxx.android.jukebox.JukeboxSettings;
+import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
+import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.jukebox.R;
-import se.qxx.android.jukebox.adapters.JukeboxFragmentAdapter;
+import se.qxx.android.jukebox.adapters.viewmode.JukeboxFragmentAdapter;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Toast;
-
-import com.google.android.libraries.cast.companionlibrary.cast.CastConfiguration;
-import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager;
 
 public class FlipperListActivity extends AppCompatActivity {
 	ViewPager pager;

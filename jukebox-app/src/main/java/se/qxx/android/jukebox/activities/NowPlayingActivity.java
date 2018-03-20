@@ -2,13 +2,13 @@ package se.qxx.android.jukebox.activities;
 
 import org.apache.commons.lang3.StringUtils;
 
-import se.qxx.android.jukebox.ChromeCastConfiguration;
-import se.qxx.android.jukebox.JukeboxSettings;
-import se.qxx.android.jukebox.OnListSubtitlesCompleteHandler;
+import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
+import se.qxx.android.jukebox.settings.JukeboxSettings;
+import se.qxx.android.jukebox.comm.OnListSubtitlesCompleteHandler;
 import se.qxx.android.jukebox.R;
-import se.qxx.android.jukebox.Seeker;
-import se.qxx.android.jukebox.SeekerListener;
-import se.qxx.android.jukebox.UpdateSeekIndicator;
+import se.qxx.android.jukebox.widgets.Seeker;
+import se.qxx.android.jukebox.widgets.SeekerListener;
+import se.qxx.android.jukebox.widgets.UpdateSeekIndicator;
 import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
@@ -28,7 +28,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.media.MediaRouter;
 import android.view.Menu;
 import android.view.View;
 import android.widget.SeekBar;
