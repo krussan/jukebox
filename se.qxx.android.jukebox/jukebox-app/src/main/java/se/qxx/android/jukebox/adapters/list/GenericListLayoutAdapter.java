@@ -32,6 +32,9 @@ public abstract class GenericListLayoutAdapter extends BaseAdapter {
         return listItemId;
     }
 
+    private final int VIEWTYPE_ITEM = 0;
+	private final int VIEWTYPE_FOOTER = 1;
+
 	public GenericListLayoutAdapter(Context context, int listItemId) {
 		super();
 		this.context = context;
@@ -46,8 +49,8 @@ public abstract class GenericListLayoutAdapter extends BaseAdapter {
 	        if (v == null) {
 	            LayoutInflater vi = (LayoutInflater)this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-	            if (isLastItem(position) && position > 0)
-                    v = vi.inflate(R.layout.progresslistrow, null);
+	            if (getItemViewType(position) == VIEWTYPE_FOOTER)
+	                v = layoutProgress(vi);
                 else
 	                v = vi.inflate(getListItemId(), null);
 	        }
@@ -64,8 +67,23 @@ public abstract class GenericListLayoutAdapter extends BaseAdapter {
         return v;
 	}
 
-	public abstract void initializeView(View v, Object o);
+    private View layoutProgress(LayoutInflater vi) {
+        View v = vi.inflate(R.layout.progresslistrow, null);
+        View pb = v.findViewById(R.id.pbFooterProgress);
+
+        if (pb != null) {
+            if (Model.get().isLoading())
+                pb.setVisibility(View.VISIBLE);
+            else
+                pb.setVisibility(View.INVISIBLE);
+        }
+
+        return v;
+    }
+
+    public abstract void initializeView(View v, Object o);
 	public abstract int getItemCount();
+	public abstract Object getDataObject(int position);
 
 	@Override
     public int getCount() {
@@ -74,8 +92,36 @@ public abstract class GenericListLayoutAdapter extends BaseAdapter {
 
     public boolean isLastItem(int position) {
         int count = this.getItemCount();
-        return (position >= count);
+        return (position == count);
     }
 
+    @Override
+    public int getViewTypeCount() {
+        return 2;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+	    if (isLastItem(position))
+	        return VIEWTYPE_FOOTER;
+	    else
+	        return VIEWTYPE_ITEM;
+    }
+
+    @Override
+    public Object getItem(int position) {
+	    if (getItemViewType(position) == VIEWTYPE_ITEM)
+	        return getDataObject(position);
+	    else
+	        return null;
+    }
+
+    @Override
+    public long getItemId(int position) {
+        if (getItemViewType(position) == VIEWTYPE_ITEM)
+            return position;
+        else
+            return -1;
+    }
 }
 	

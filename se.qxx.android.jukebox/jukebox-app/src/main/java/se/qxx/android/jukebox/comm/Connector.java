@@ -25,6 +25,7 @@ public class Connector {
 
 		try {
 			Model.ModelType m = Model.get().getModelType();
+			Model.get().setLoading(true);
 
 			if (m == Model.ModelType.Movie) {
 				Logger.Log().d("Listing movies");
@@ -41,8 +42,10 @@ public class Connector {
 									Model.get().clearSeries();
 									Model.get().addAllMovies(response.getMoviesList());
 									Model.get().setInitialized(true);
-									Model.get().setLoading(false);
 								}
+
+								Model.get().setLoading(false);
+
 							}
 
 						});
@@ -72,6 +75,7 @@ public class Connector {
 
 		}
 
+		Model.get().setLoading(false);
 	}
 	
 	public static void showMessage(Activity a, final String message) {

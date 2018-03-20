@@ -112,7 +112,6 @@ public class JukeboxFragment extends ListFragment implements
             @Override
             public boolean onLoadMore(int page, int totalItemsCount) {
                 if (!Model.get().isLoading()) {
-                    Model.get().setLoading(true);
                     Model.get().setOffset(page * Model.get().getNrOfItems());
                     loadMoreData(page * Model.get().getNrOfItems());
                 }
@@ -153,7 +152,7 @@ public class JukeboxFragment extends ListFragment implements
 	}
 
 	private void loadMoreData(int offset) {
-        Connector.connect(this.getActivity(), Model.get().getNrOfItems(), offset);
+        Connector.connect(this.getActivity(), offset, Model.get().getNrOfItems());
     }
 
 
