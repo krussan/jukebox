@@ -57,7 +57,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			JukeboxRequestListMovies request,
 			RpcCallback<JukeboxResponseListMovies> done) {
 
-		Log.Debug("ListMovies", LogType.COMM);
+		Log.Debug(String.format("ListMovies :: %s", request.getRequestType()), LogType.COMM);
 		
 		
 		String searchString = request.getSearchString();
