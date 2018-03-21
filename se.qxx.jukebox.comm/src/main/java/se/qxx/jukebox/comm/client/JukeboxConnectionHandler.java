@@ -200,7 +200,7 @@ public class JukeboxConnectionHandler {
 		list(searchString, RequestType.TypeSeason, seriesID, seasonID, nrOfItems, offset, callback);
 	}
 
-	private void list(final String searchString, RequestType type, final int seriesID, final int seasonID, final int nrOfItems, final int offset, final RpcCallback<JukeboxResponseListMovies> callback) {
+	private void list(final String searchString, final RequestType type, final int seriesID, final int seasonID, final int nrOfItems, final int offset, final RpcCallback<JukeboxResponseListMovies> callback) {
 		final RpcController controller = new SocketRpcController();
 
 		Thread t = new Thread() {
@@ -209,7 +209,7 @@ public class JukeboxConnectionHandler {
 		 
 				JukeboxRequestListMovies request = JukeboxRequestListMovies.newBuilder()
 						.setSearchString(searchString)
-						.setRequestType(RequestType.TypeMovie)
+						.setRequestType(type)
 						.setSeriesID(seriesID)
 						.setSeasonID(seasonID)
 						.setNrOfItems(nrOfItems)
