@@ -18,7 +18,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
 
 public class Connector {
 
-	public static void connect(Activity a, int offset, int nrOfItems) {
+	public static void connect(int offset, int nrOfItems) {
 		final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
 				JukeboxSettings.get().getServerIpAddress(),
 				JukeboxSettings.get().getServerPort());
@@ -51,10 +51,9 @@ public class Connector {
 						});
 			}
 			else if (m == Model.ModelType.Series) {
-				Logger.Log().d("Listing series");
-				jh.listMovies("",
-						Model.get().getNrOfItems(),
-						Model.get().getOffset(),
+			    jh.listSeries("",
+                        Model.get().getNrOfItems(),
+                        Model.get().getOffset(),
 						new RpcCallback<JukeboxResponseListMovies>() {
 
 							@Override
@@ -62,16 +61,16 @@ public class Connector {
 								//TODO: if repsonse is null probably the server is down..
 								if (response != null) {
 									Model.get().clearMovies();
-									//Model.get().clearSeries(); //Dont clear series when doing partial load
 									Model.get().addAllSeries(response.getSeriesList());
 									Model.get().setInitialized(true);
 								}
+
+								Model.get().setLoading(false);
 							}
 
 						});
 			}
 		} catch (Exception e) {
-			showMessage(a, "Connection failed. Check settings ...");
 
 		}
 

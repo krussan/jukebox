@@ -3,6 +3,7 @@ package se.qxx.android.jukebox.adapters.viewmode;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewPager;
 
 public class JukeboxFragmentAdapter extends FragmentStatePagerAdapter {
 

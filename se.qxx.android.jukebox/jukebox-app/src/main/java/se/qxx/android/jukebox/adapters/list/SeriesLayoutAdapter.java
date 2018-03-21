@@ -13,68 +13,42 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-public class SeriesLayoutAdapter extends BaseAdapter {
-
-	private Context context;
+public class SeriesLayoutAdapter extends GenericListLayoutAdapter {
 
 	public SeriesLayoutAdapter(Context context) {
-		super();
-		this.context = context;
+		super(context, R.layout.movielistrow);
 	}
-
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		View v = convertView; 
-
-		try {
-			
-	        if (v == null) {
-	            LayoutInflater vi = (LayoutInflater)this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	            v = vi.inflate(R.layout.movielistrow, null);
-	        }
-			Context context = v.getContext();
-
-			Series m = (Series)this.getItem(position);
-	        if (m != null) {
-	        	GUITools.setTextOnTextview(R.id.toptext, m.getTitle(), v);
-	        	GUITools.setTextOnTextview(R.id.bottomtext, Integer.toString(m.getYear()), v);
-//	        	GUITools.setTextOnTextview(R.id.txtRating, m.getRating(), v);
-	        	
-	        	// If all media has a meta duration then hide the download icon
-        		GUITools.hideView(R.id.imgDownloading, v);
-	        		
-	    	    if (!m.getThumbnail().isEmpty()) {
-	    	    	Bitmap image = GUITools.getBitmapFromByteArray(m.getThumbnail().toByteArray());
-	    	    	Bitmap scaledImage = GUITools.scaleImage(80, image, v.getContext());
-	    	    	GUITools.setImageOnImageView(R.id.imageView1, scaledImage, v);
-	    	    }
-	    	    else {
-	    	    	GUITools.setImageResourceOnImageView(R.id.imageView1, R.drawable.icon, v);
-	    	    }
-	    	}
-		}
-		catch (Exception e) {
-			Logger.Log().e("Error occured while populating list", e);
-		}
-			
-        return v;
-	}
-
 
     @Override
-    public int getCount() {
+    public void initializeView(View v, Object o) {
+	    if (o != null && o instanceof Series) {
+	        Series m = (Series)o;
+
+            GUITools.setTextOnTextview(R.id.toptext, m.getTitle(), v);
+            GUITools.setTextOnTextview(R.id.bottomtext, Integer.toString(m.getYear()), v);
+
+            // If all media has a meta duration then hide the download icon
+            GUITools.hideView(R.id.imgDownloading, v);
+
+            if (!m.getThumbnail().isEmpty()) {
+                Bitmap image = GUITools.getBitmapFromByteArray(m.getThumbnail().toByteArray());
+                Bitmap scaledImage = GUITools.scaleImage(80, image, v.getContext());
+                GUITools.setImageOnImageView(R.id.imageView1, scaledImage, v);
+            }
+            else {
+                GUITools.setImageResourceOnImageView(R.id.imageView1, R.drawable.icon, v);
+            }
+        }
+    }
+
+    @Override
+    public int getItemCount() {
         return Model.get().countSeries();
     }
 
     @Override
-    public Object getItem(int position) {
-
+    public Object getDataObject(int position) {
         return Model.get().getSeries(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
     }
 
 }

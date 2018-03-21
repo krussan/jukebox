@@ -65,8 +65,6 @@ public class JukeboxFragment extends ListFragment implements
                 _episodeLayoutAdapter.notifyDataSetChanged();
 		}
 	};
-
-
 	
 	public static JukeboxFragment newInstance(int position, String mode) {
 		Bundle b = new Bundle();
@@ -75,7 +73,7 @@ public class JukeboxFragment extends ListFragment implements
 		b.putInt("position", position);
         b.putString("mode", mode);
 		mf.setArguments(b);
-		
+
 		return mf;
 	}
 	
@@ -153,7 +151,7 @@ public class JukeboxFragment extends ListFragment implements
 	}
 
 	private void loadMoreData(int offset) {
-        Connector.connect(this.getActivity(), offset, Model.get().getNrOfItems());
+        Connector.connect(offset, Model.get().getNrOfItems());
     }
 
 
@@ -236,7 +234,7 @@ public class JukeboxFragment extends ListFragment implements
 			Model.get().clearMovies();
             Model.get().clearSeries();
 
-			Connector.connect(this.getActivity(), Model.get().getOffset(), Model.get().getNrOfItems());
+			Connector.connect(Model.get().getOffset(), Model.get().getNrOfItems());
 			
 			break;
 		case R.id.btnSelectMediaPlayer:

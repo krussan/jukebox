@@ -1,6 +1,7 @@
 package se.qxx.android.jukebox.activities;
 
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
+import se.qxx.android.jukebox.comm.Connector;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.adapters.viewmode.JukeboxFragmentAdapter;
@@ -11,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Toast;
@@ -21,7 +23,10 @@ public class FlipperListActivity extends AppCompatActivity {
 	protected View getRootView() {
 		return findViewById(R.id.rootJukeboxViewPager);
 	}
-		
+
+	public final int VIEWMODE_MOVIE = 0;
+	public final int VIEWMODE_SERIES = 1;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +36,28 @@ public class FlipperListActivity extends AppCompatActivity {
 
 		setContentView(R.layout.jukebox_main_wrapper);
         pager = (ViewPager)this.getRootView();
+        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+			@Override
+			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+			}
+
+			@Override
+			public void onPageSelected(int position) {
+			    Model.get().setOffset(0);
+                if (position == VIEWMODE_MOVIE)
+                    Model.get().setModelType(Model.ModelType.Movie);
+                else
+                    Model.get().setModelType(Model.ModelType.Series);
+
+                Connector.connect(0, Model.get().getNrOfItems());
+            }
+
+			@Override
+			public void onPageScrollStateChanged(int state) {
+
+			}
+		});
 
         String mode = "main";
         if (getIntent() != null && getIntent().getExtras() != null)
