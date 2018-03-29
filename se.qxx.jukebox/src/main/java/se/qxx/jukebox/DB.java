@@ -49,35 +49,39 @@ public class DB {
 	//------------------------------------------------------------------------ Search
 	//---------------------------------------------------------------------------------------
 
-	public static List<Movie> searchMoviesByTitle(String searchString, boolean populateBlobs, boolean filterSubs) {
-		return searchMoviesByTitle(searchString, populateBlobs, filterSubs, -1, -1);
+	public static List<Movie> searchMoviesByTitle(String searchString) {
+		return searchMoviesByTitle(searchString, -1, -1);
 	}
 	
-	public static List<Movie> searchMoviesByTitle(String searchString, boolean populateBlobs, boolean filterSubs, int numberOfResults, int offset) {
+	public static List<Movie> searchMoviesByTitle(String searchString, int numberOfResults, int offset) {
+		List<String> excludedObjects = new ArrayList<String>();
+		excludedObjects.add("media.subs");
+		excludedObjects.add("image");
+		
 		return searchByTitle(JukeboxDomain.Movie.getDefaultInstance()
 				, "title"
 				, searchString
 				, numberOfResults
 				, offset
-				, populateBlobs
-				, filterSubs
-				, "media.subs"
+				, excludedObjects
 				, "identifiedTitle");
 	}
 
-	public static List<Series> searchSeriesByTitle(String searchString, boolean populateBlobs, boolean filterSubs) {
-		return searchSeriesByTitle(searchString, populateBlobs, filterSubs, -1, -1);		
+	public static List<Series> searchSeriesByTitle(String searchString) {
+		return searchSeriesByTitle(searchString, -1, -1);		
 	}
 
-	public static List<Series> searchSeriesByTitle(String searchString, boolean populateBlobs, boolean filterSubs, int numberOfResults, int offset) {
+	public static List<Series> searchSeriesByTitle(String searchString, int numberOfResults, int offset) {
+		List<String> excludedObjects = new ArrayList<String>();
+		excludedObjects.add("season"); // exclude underlying seasons
+		excludedObjects.add("image"); // exclude full size image
+		
 		return searchByTitle(JukeboxDomain.Series.getDefaultInstance()
 				, "title"
 				, searchString
 				, numberOfResults
 				, offset
-				, populateBlobs
-				, filterSubs
-				, "season.episode.media.subs"
+				, excludedObjects	
 				, "title");
 	}
 	
@@ -87,19 +91,13 @@ public class DB {
 			String searchString, 
 			int numberOfResults,
 			int offset,
-			boolean populateBlobs,
-			boolean filterSubs,
-			String filterSubsPath,
+			List<String> excludedObjects,
 			String sortField) {
 		try {
-			ProtoDB db = getProtoDBInstance(populateBlobs);
+			ProtoDB db = getProtoDBInstance(true);
 
 			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
 			
-				List<String> filterObjects = new ArrayList<String>();			
-				if (filterSubs) {
-					filterObjects.add(filterSubsPath);
-				}
 				
 				if (StringUtils.isEmpty(searchString))
 					searchField = "";
@@ -111,7 +109,7 @@ public class DB {
 						searchString,
 						ProtoDBSearchOperator.Like,
 						false,
-						filterObjects,
+						excludedObjects,
 						numberOfResults,
 						offset,
 						sortField,
@@ -216,7 +214,15 @@ public class DB {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
-				return db.get(id, Series.getDefaultInstance());
+				List<Series> result = db.search(JukeboxDomain.Series.getDefaultInstance(), 
+						"ID", 
+						id, 
+						ProtoDBSearchOperator.Equals);
+
+				if (result.size() > 0)
+					return result.get(0);
+				else
+					return null;
 			}
 		} catch (Exception e) {
 			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
@@ -229,7 +235,15 @@ public class DB {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
-				return db.get(id, Season.getDefaultInstance());
+				List<Season> result = db.search(JukeboxDomain.Season.getDefaultInstance(), 
+						"ID", 
+						id, 
+						ProtoDBSearchOperator.Equals);
+
+				if (result.size() > 0)
+					return result.get(0);
+				else
+					return null;
 			}
 		} catch (Exception e) {
 			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
@@ -803,11 +817,16 @@ public class DB {
 			ProtoDB db = getProtoDBInstance();
 			
 			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				List<String> excludedObjects = new ArrayList<String>();
+				excludedObjects.add("subs");
+				
 				List<Media> result =
 					db.search(JukeboxDomain.Media.getDefaultInstance(), 
 						"filename", 
 						filename, 
-						ProtoDBSearchOperator.Equals);
+						ProtoDBSearchOperator.Equals,
+						false,
+						excludedObjects);
 				
 				if (result.size() > 0)
 					return result.get(0);

@@ -198,7 +198,7 @@ public class StreamingWebServer extends NanoHTTPD {
 	}
 	
 	private Response serveRootHtml() {
-		List<Movie> movies = DB.searchMoviesByTitle("", false, true);
+		List<Movie> movies = DB.searchMoviesByTitle("");
 		
 		try {
 			return createResponse(Response.Status.OK, NanoHTTPD.MIME_HTML, TemplateEngine.get().listMovies(movies));

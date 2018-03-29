@@ -67,10 +67,10 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		
 		switch (request.getRequestType()) {
 		case TypeMovie:
-			movies = DB.searchMoviesByTitle(searchString, true, true, request.getNrOfItems(), request.getStartIndex());
+			movies = DB.searchMoviesByTitle(searchString, request.getNrOfItems(), request.getStartIndex());
 			break;
 		case TypeSeries:
-			series = DB.searchSeriesByTitle(searchString, true, true, request.getNrOfItems(), request.getStartIndex());
+			series = DB.searchSeriesByTitle(searchString, request.getNrOfItems(), request.getStartIndex());
 			break;
 		case TypeSeason:
 			series.add(DB.getSeries(request.getSeriesID()));
@@ -78,11 +78,6 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		case TypeEpisode:
 			//DB.findSeason(request.getSeasonID());
 			break;
-		}
-		
-		if (!request.getReturnFullSizePictures()) {
-			movies = removeFullSizePicturesAndSubsFromMovies(movies);
-			series = removeFullSizePicturesAndSubsFromSeries(series);
 		}
 		
 		JukeboxResponseListMovies lm = JukeboxResponseListMovies.newBuilder()

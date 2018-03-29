@@ -68,7 +68,7 @@ public class Cleaner implements Runnable {
 	}
 	
 	private void cleanMovies() {
-		List<Movie> movies = DB.searchMoviesByTitle("", false, true);
+		List<Movie> movies = DB.searchMoviesByTitle("");
 		for (Movie m : movies) {
 			for (Media md : m.getMediaList()) {
 				if (!mediaExists(md)) {
@@ -87,7 +87,7 @@ public class Cleaner implements Runnable {
 	}
 
 	private void cleanEpisodes() {
-		List<Series> series = DB.searchSeriesByTitle("", false, true);
+		List<Series> series = DB.searchSeriesByTitle("");
 		
 		for (Series s : series) {
 			for (Season ss : s.getSeasonList()) {
