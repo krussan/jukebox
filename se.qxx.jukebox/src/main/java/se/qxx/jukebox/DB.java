@@ -111,7 +111,7 @@ public class DB {
 						searchString,
 						ProtoDBSearchOperator.Like,
 						false,
-						null,
+						filterObjects,
 						numberOfResults,
 						offset,
 						sortField,
