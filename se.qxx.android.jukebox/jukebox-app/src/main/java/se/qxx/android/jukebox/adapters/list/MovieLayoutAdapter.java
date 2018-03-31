@@ -71,10 +71,6 @@ public class MovieLayoutAdapter extends GenericListLayoutAdapter {
         return Model.get().getMovie(position);
     }
 
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
 
 }
 	

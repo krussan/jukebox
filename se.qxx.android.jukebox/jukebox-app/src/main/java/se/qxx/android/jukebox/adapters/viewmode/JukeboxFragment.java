@@ -22,6 +22,7 @@ import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -85,6 +86,8 @@ public class JukeboxFragment extends ListFragment implements
 			this.position = b.getInt("position");
             this.mode = b.getString("mode");
 		}
+
+        Model.get().addEventListener(this);
 	}	
 	
 	@Override
@@ -142,7 +145,7 @@ public class JukeboxFragment extends ListFragment implements
             lv.setAdapter(_episodeLayoutAdapter);
         }
 
-		Model.get().addEventListener(this);
+
 
 		Connector.setupOnOffButton(v);
 
@@ -216,8 +219,11 @@ public class JukeboxFragment extends ListFragment implements
 	public void handleModelUpdatedEventListener(EventObject e) {
 		ModelUpdatedEvent ev = (ModelUpdatedEvent) e;
 
-		if (ev.getType() == ModelUpdatedType.Movies) {
-			getActivity().runOnUiThread(modelResultUpdatedRunnable);
+		if (ev.getType() == ModelUpdatedType.Movies || ev.getType() == ModelUpdatedType.Series) {
+			Activity a = this.getActivity();
+
+			if (a != null)
+				a.runOnUiThread(modelResultUpdatedRunnable);
 		}
 	}
 

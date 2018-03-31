@@ -56,8 +56,8 @@ public abstract class GenericListLayoutAdapter extends BaseAdapter {
 	        }
 
 	        if (!isLastItem(position)) {
-                Movie m = (Movie) this.getItem(position);
-                initializeView(v, m);
+                Object o = this.getItem(position);
+                initializeView(v, o);
             }
 		}
 		catch (Exception e) {

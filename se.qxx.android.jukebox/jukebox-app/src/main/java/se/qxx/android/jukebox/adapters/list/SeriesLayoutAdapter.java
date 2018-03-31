@@ -22,16 +22,16 @@ public class SeriesLayoutAdapter extends GenericListLayoutAdapter {
     @Override
     public void initializeView(View v, Object o) {
 	    if (o != null && o instanceof Series) {
-	        Series m = (Series)o;
+	        Series s = (Series)o;
 
-            GUITools.setTextOnTextview(R.id.toptext, m.getTitle(), v);
-            GUITools.setTextOnTextview(R.id.bottomtext, Integer.toString(m.getYear()), v);
+            GUITools.setTextOnTextview(R.id.toptext, s.getTitle(), v);
+            GUITools.setTextOnTextview(R.id.bottomtext, Integer.toString(s.getYear()), v);
 
             // If all media has a meta duration then hide the download icon
             GUITools.hideView(R.id.imgDownloading, v);
 
-            if (!m.getThumbnail().isEmpty()) {
-                Bitmap image = GUITools.getBitmapFromByteArray(m.getThumbnail().toByteArray());
+            if (!s.getThumbnail().isEmpty()) {
+                Bitmap image = GUITools.getBitmapFromByteArray(s.getThumbnail().toByteArray());
                 Bitmap scaledImage = GUITools.scaleImage(80, image, v.getContext());
                 GUITools.setImageOnImageView(R.id.imageView1, scaledImage, v);
             }
