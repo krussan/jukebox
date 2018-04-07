@@ -22,7 +22,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager;
+import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 
 public class SubSelectActivity extends AppCompatActivity implements OnItemClickListener, OnDismissListener {
 	
@@ -39,23 +39,9 @@ public class SubSelectActivity extends AppCompatActivity implements OnItemClickL
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 
-		ChromeCastConfiguration.createMenu(getMenuInflater(), menu);
+		ChromeCastConfiguration.createMenu(this, getMenuInflater(), menu);
 
 		return true;
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-
-		ChromeCastConfiguration.onResume();
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
-
-		ChromeCastConfiguration.onPause();
 	}
 
 	private void initializeView() {
@@ -76,10 +62,10 @@ public class SubSelectActivity extends AppCompatActivity implements OnItemClickL
 		Model.get().setCurrentSubtitle(sub.getDescription());
 
 		if (ChromeCastConfiguration.isChromeCastActive()) {
-            VideoCastManager mCastManager = VideoCastManager.getInstance();
+			RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(this.getApplicationContext());
 
-            if (mCastManager != null) {
-                mCastManager.setActiveTrackIds(new long[] {(long)arg2});
+            if (client != null) {
+            	client.setActiveMediaTracks(new long[] {(long)arg2});
             }
         }
 		else {

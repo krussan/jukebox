@@ -2,19 +2,19 @@ package se.qxx.android.jukebox.cast;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.view.Menu;
 import android.view.MenuInflater;
 
-import com.google.android.gms.cast.CastMediaControlIntent;
 import com.google.android.gms.cast.TextTrackStyle;
+import com.google.android.gms.cast.framework.CastButtonFactory;
+import com.google.android.gms.cast.framework.CastContext;
+import com.google.android.gms.cast.framework.CastSession;
+import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.libraries.cast.companionlibrary.cast.BaseCastManager;
-import com.google.android.libraries.cast.companionlibrary.cast.CastConfiguration;
-import com.google.android.libraries.cast.companionlibrary.cast.VideoCastManager;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -27,20 +27,20 @@ import se.qxx.android.jukebox.R;
 
 public class ChromeCastConfiguration {
 
-    public static CastConfiguration get() {
-        return new CastConfiguration.Builder(CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID)
-                .enableAutoReconnect()
-                .enableCaptionManagement()
-                .enableLockScreen()
-                .enableWifiReconnection()
-                .enableNotification()
+   /* public static CastConfiguration get() {
+            return new CastConfiguration.Builder(CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID)
+                    .enableAutoReconnect()
+                    .enableCaptionManagement()
+                    .enableLockScreen()
+                    .enableWifiReconnection()
+                    .enableNotification()
                 .enableDebug()
                 .addNotificationAction(CastConfiguration.NOTIFICATION_ACTION_DISCONNECT, true)
                 .addNotificationAction(CastConfiguration.NOTIFICATION_ACTION_PLAY_PAUSE, true)
                 .build();
-    }
+    }*/
 
-    public static void initialize(Activity activity) {
+    /*public static void initialize(Activity activity) {
         if (isChromeCastActive()) {
             ChromeCastConfiguration.checkGooglePlayServices(activity);
 
@@ -48,7 +48,7 @@ public class ChromeCastConfiguration {
 
             VideoCastManager.initialize(activity, options);
         }
-    }
+    }*/
 
     /**
      * A utility method to validate that the appropriate version of the Google Play Services is
@@ -81,28 +81,12 @@ public class ChromeCastConfiguration {
         return StringUtils.equalsIgnoreCase("Chromecast", JukeboxSettings.get().getCurrentMediaPlayer());
     }
 
-    public static void createMenu(MenuInflater inflater, Menu menu) {
+    public static void createMenu(Context context, MenuInflater inflater, Menu menu) {
         if (isChromeCastActive()) {
             inflater.inflate(R.menu.cast, menu);
-            VideoCastManager mCastManager = VideoCastManager.getInstance();
-
-            if (mCastManager != null)
-                mCastManager.addMediaRouterButton(menu, R.id.media_route_menu_item);
-        }
-    }
-
-    public static void onResume() {
-        if (isChromeCastActive()) {
-            VideoCastManager mCastManager = VideoCastManager.getInstance();
-
-            if (mCastManager != null)
-                mCastManager.incrementUiCounter();
-        }
-    }
-
-    public static void onPause() {
-        if (isChromeCastActive()) {
-            VideoCastManager.getInstance().decrementUiCounter();
+            CastButtonFactory.setUpMediaRouteButton(context.getApplicationContext(),
+                    menu,
+                    R.id.media_route_menu_item);
         }
     }
 
@@ -117,5 +101,13 @@ public class ChromeCastConfiguration {
         style.setFontStyle(TextTrackStyle.FONT_STYLE_ITALIC);
 
         return style;
+    }
+
+    public static RemoteMediaClient getRemoteMediaClient(Context context) {
+        CastSession castSession = CastContext.getSharedInstance(context)
+                .getSessionManager()
+                .getCurrentCastSession();
+
+        return castSession.getRemoteMediaClient();
     }
 }

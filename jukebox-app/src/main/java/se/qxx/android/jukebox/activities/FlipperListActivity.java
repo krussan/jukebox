@@ -32,7 +32,6 @@ public class FlipperListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
 		JukeboxSettings.init(this);
-		ChromeCastConfiguration.initialize(this);
 
 		setContentView(R.layout.jukebox_main_wrapper);
         pager = (ViewPager)this.getRootView();
@@ -73,23 +72,9 @@ public class FlipperListActivity extends AppCompatActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 
-		ChromeCastConfiguration.createMenu(getMenuInflater(), menu);
+		ChromeCastConfiguration.createMenu(this, getMenuInflater(), menu);
 
 		return true;
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-
-		ChromeCastConfiguration.onResume();
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
-
-		ChromeCastConfiguration.onPause();
 	}
 
 	public void onButtonClicked(View v) {

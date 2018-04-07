@@ -18,8 +18,11 @@ import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.widget.Toast;
 
+import com.google.android.gms.cast.framework.CastContext;
+
 public class FlipperActivity extends AppCompatActivity implements OnPageChangeListener, OnLongClickListener {
 	ViewPager pager;
+	private CastContext mCastContext;
 
 	protected View getRootView() {
 		return findViewById(R.id.rootViewPager);
@@ -31,7 +34,6 @@ public class FlipperActivity extends AppCompatActivity implements OnPageChangeLi
         setContentView(R.layout.itemwrapper);
         pager = (ViewPager)this.getRootView();
 
-		ChromeCastConfiguration.initialize(this);
         MovieFragmentAdapter mfa = new MovieFragmentAdapter(getSupportFragmentManager());
 
         pager.setAdapter(mfa);
@@ -43,25 +45,10 @@ public class FlipperActivity extends AppCompatActivity implements OnPageChangeLi
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		ChromeCastConfiguration.createMenu(getMenuInflater(), menu);
+		ChromeCastConfiguration.createMenu(this, getMenuInflater(), menu);
 
 		return true;
 	}
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        ChromeCastConfiguration.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        ChromeCastConfiguration.onPause();
-    }
-
 
     public void onButtonClicked(View v) {
 		int id = v.getId();

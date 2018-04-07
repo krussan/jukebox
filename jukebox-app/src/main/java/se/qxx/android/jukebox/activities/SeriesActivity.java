@@ -12,31 +12,15 @@ public class SeriesActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
         super.onCreate(savedInstanceState, persistentState);
-        ChromeCastConfiguration.initialize(this);
-
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
 
-        ChromeCastConfiguration.createMenu(getMenuInflater(), menu);
+        ChromeCastConfiguration.createMenu(this, getMenuInflater(), menu);
 
         return true;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        ChromeCastConfiguration.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        ChromeCastConfiguration.onPause();
     }
 
 }
