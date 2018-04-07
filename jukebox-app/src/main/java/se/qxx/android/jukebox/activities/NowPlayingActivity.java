@@ -13,6 +13,8 @@ import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
+import se.qxx.jukebox.comm.client.JukeboxConnectionMessage;
+import se.qxx.jukebox.comm.client.JukeboxResponseListener;
 import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Empty;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseGetTitle;
@@ -39,6 +41,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaMetadata;
+import com.google.android.gms.cast.MediaStatus;
 import com.google.android.gms.cast.MediaTrack;
 import com.google.android.gms.cast.TextTrackStyle;
 import com.google.android.gms.cast.framework.CastContext;
@@ -49,9 +52,10 @@ import com.google.protobuf.RpcCallback;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NowPlayingActivity extends AppCompatActivity
-        implements OnSeekBarChangeListener, SeekerListener,
-            RemoteMediaClient.ProgressListener {
+public class NowPlayingActivity
+    extends AppCompatActivity
+    implements OnSeekBarChangeListener, SeekerListener,
+        RemoteMediaClient.ProgressListener, JukeboxResponseListener, RemoteMediaClient.Listener {
 
     private Seeker seeker;
     private boolean isManualSeeking = false;
@@ -74,12 +78,14 @@ public class NowPlayingActivity extends AppCompatActivity
         @Override
         public void run(JukeboxResponseIsPlaying response) {
             Logger.Log().d("Response --- IsPlaying");
-            if (response.getIsPlaying()) {
-                Logger.Log().d("Request --- GetTitle");
-                comm.getTitle(JukeboxSettings.get().getCurrentMediaPlayer(), new OnGetTitleComplete());
-            } else {
-                Logger.Log().d("Request --- StartMovie");
-                startMovie();
+            if (response != null) {
+                if (response.getIsPlaying()) {
+                    Logger.Log().d("Request --- GetTitle");
+                    comm.getTitle(JukeboxSettings.get().getCurrentMediaPlayer(), new OnGetTitleComplete());
+                } else {
+                    Logger.Log().d("Request --- StartMovie");
+                    startMovie();
+                }
             }
         }
     }
@@ -88,24 +94,26 @@ public class NowPlayingActivity extends AppCompatActivity
         @Override
         public void run(JukeboxResponseGetTitle response) {
             Logger.Log().d("Response --- GetTitle");
-            String playerFilename = response.getTitle();
-            final Media md = matchCurrentFilenameAgainstMedia(playerFilename);
-            if (md != null) {
-                //initialize seeker and get subtitles if app has been reinitialized
-                Model.get().setCurrentMedia(md);
-                initializeSeeker(Model.get().getCurrentMedia().getMetaDuration());
+            if (response != null) {
+                String playerFilename = response.getTitle();
+                final Media md = matchCurrentFilenameAgainstMedia(playerFilename);
+                if (md != null) {
+                    //initialize seeker and get subtitles if app has been reinitialized
+                    Model.get().setCurrentMedia(md);
+                    initializeSeeker(Model.get().getCurrentMedia().getMetaDuration());
 
-                Thread t1 = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Logger.Log().d("Request --- ListSubtitles");
-                        comm.listSubtitles(md, new OnListSubtitlesCompleteHandler());
-                    }
-                });
-                t1.start();
+                    Thread t1 = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Logger.Log().d("Request --- ListSubtitles");
+                            comm.listSubtitles(md, new OnListSubtitlesCompleteHandler());
+                        }
+                    });
+                    t1.start();
 
-                //Start seeker and get time asap as the movie is playing
-                seeker.start(true);
+                    //Start seeker and get time asap as the movie is playing
+                    seeker.start(true);
+                }
             } else {
                 Thread t2 = new Thread(new Runnable() {
                     @Override
@@ -164,17 +172,19 @@ public class NowPlayingActivity extends AppCompatActivity
 
             initializeSeeker(Model.get().getCurrentMedia().getMetaDuration());
 
-            startCastVideo(this.title, response.getUri(), response.getSubtitleUrisList(), response.getSubtitleList());
+            if (response != null) {
+                startCastVideo(this.title, response.getUri(), response.getSubtitleUrisList(), response.getSubtitleList());
 
-            // update the subtitles out of sync
-            Thread t = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    Logger.Log().d("Request --- ListSubtitles");
-                    comm.listSubtitles(Model.get().getCurrentMedia(), new OnListSubtitlesCompleteHandler());
-                }
-            });
-            t.start();
+                // update the subtitles out of sync
+                Thread t = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Logger.Log().d("Request --- ListSubtitles");
+                        comm.listSubtitles(Model.get().getCurrentMedia(), new OnListSubtitlesCompleteHandler());
+                    }
+                });
+                t.start();
+            }
         }
     }
 
@@ -213,6 +223,8 @@ public class NowPlayingActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         comm = new JukeboxConnectionHandler(JukeboxSettings.get().getServerIpAddress(), JukeboxSettings.get().getServerPort());
+        comm.setListener(this);
+
         setContentView(R.layout.nowplaying);
 
         mCastContext = CastContext.getSharedInstance(this);
@@ -591,4 +603,59 @@ public class NowPlayingActivity extends AppCompatActivity
         mainHandler.post(myRunnable);
 
     }
+
+    public void onRequestComplete(JukeboxConnectionMessage message) {
+        if (!message.result()) {
+            Toast.makeText(this, "Failed :: " + message.getMessage(),Toast.LENGTH_LONG);
+        }
+    }
+
+    @Override
+    public void onPreloadStatusUpdated() {
+        RemoteMediaClient remoteMediaClient = ChromeCastConfiguration.getRemoteMediaClient(this.getApplicationContext());
+        if (remoteMediaClient == null) {
+            return;
+        }
+        MediaStatus mediaStatus = remoteMediaClient.getMediaStatus();
+        if (mediaStatus == null) {
+            return;
+        }
+
+    }
+
+    @Override
+    public void onQueueStatusUpdated() {
+
+
+    }
+
+    @Override
+    public void onStatusUpdated() {
+        RemoteMediaClient remoteMediaClient = ChromeCastConfiguration.getRemoteMediaClient(this.getApplicationContext());
+        if (remoteMediaClient == null) {
+            return;
+        }
+        MediaStatus mediaStatus = remoteMediaClient.getMediaStatus();
+        if (mediaStatus == null) {
+            return;
+        }
+    }
+
+    @Override
+    public void onMetadataUpdated() {
+        RemoteMediaClient remoteMediaClient = ChromeCastConfiguration.getRemoteMediaClient(this.getApplicationContext());
+        if (remoteMediaClient == null) {
+            return;
+        }
+        MediaStatus mediaStatus = remoteMediaClient.getMediaStatus();
+        if (mediaStatus == null) {
+            return;
+        }
+    }
+
+    @Override
+    public void onSendingRemoteMediaRequest() {
+    }
+
+
 }
