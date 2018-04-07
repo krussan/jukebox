@@ -204,6 +204,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			else
 				controller.setFailed("Error occured when connecting to target media player"); 
 		} catch (VLCConnectionNotFoundException e) {
+			Log.Error("Error occured when starting movie", LogType.COMM, e);
 			controller.setFailed("Error occured when connecting to target media player"); 
 		}		
 		
