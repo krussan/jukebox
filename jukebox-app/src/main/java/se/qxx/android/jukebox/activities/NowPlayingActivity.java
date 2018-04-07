@@ -39,6 +39,7 @@ import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaMetadata;
 import com.google.android.gms.cast.MediaTrack;
 import com.google.android.gms.cast.TextTrackStyle;
+import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.RpcCallback;
@@ -53,9 +54,7 @@ public class NowPlayingActivity extends AppCompatActivity
     private Seeker seeker;
     private boolean isManualSeeking = false;
     private JukeboxConnectionHandler comm;
-
-    //ChromecastCallback mChromecastCallback = null;
-//    JukeboxCastConsumer mCastConsumer = null;
+    private CastContext mCastContext;
 
     private String getMode() {
         return getIntent().getExtras().getString("mode");
@@ -216,6 +215,8 @@ public class NowPlayingActivity extends AppCompatActivity
 
         comm = new JukeboxConnectionHandler(JukeboxSettings.get().getServerIpAddress(), JukeboxSettings.get().getServerPort());
         setContentView(R.layout.nowplaying);
+
+        mCastContext = CastContext.getSharedInstance(this);
 
         initializeView();
     }

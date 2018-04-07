@@ -40,6 +40,8 @@ public class FlipperActivity extends AppCompatActivity implements OnPageChangeLi
         pager.setCurrentItem(Model.get().getCurrentMovieIndex());
         
         this.getRootView().setOnLongClickListener(this);
+
+        mCastContext = CastContext.getSharedInstance(this);
     }
 
 	@Override

@@ -65,11 +65,6 @@
             android:value="se.qxx.android.jukebox.cast.CastOptionsProvider"
         />
 
-        <receiver android:name="com.google.android.libraries.cast.companionlibrary.remotecontrol.VideoIntentReceiver" />
-
-        <service android:name="com.google.android.libraries.cast.companionlibrary.notification.VideoCastNotificationService" />
-
-
     </application>
 
 </manifest>

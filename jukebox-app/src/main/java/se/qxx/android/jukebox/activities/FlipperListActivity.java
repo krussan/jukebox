@@ -17,8 +17,11 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.cast.framework.CastContext;
+
 public class FlipperListActivity extends AppCompatActivity {
 	ViewPager pager;
+	private CastContext mCastContext;
 
 	protected View getRootView() {
 		return findViewById(R.id.rootJukeboxViewPager);
@@ -66,6 +69,8 @@ public class FlipperListActivity extends AppCompatActivity {
 
         pager.setAdapter(mfa);
         pager.setCurrentItem(Model.get().getCurrentMovieIndex());
+
+		mCastContext = CastContext.getSharedInstance(this);
     }
 
 	@Override

@@ -5,13 +5,18 @@ import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 
+import com.google.android.gms.cast.framework.CastContext;
+
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
 
 public class SeriesActivity extends AppCompatActivity {
+    private CastContext mCastContext;
 
     @Override
     public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
         super.onCreate(savedInstanceState, persistentState);
+
+        mCastContext = CastContext.getSharedInstance(this);
     }
 
     @Override

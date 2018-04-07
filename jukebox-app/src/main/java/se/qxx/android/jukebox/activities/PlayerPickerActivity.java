@@ -3,6 +3,7 @@ package se.qxx.android.jukebox.activities;
 import java.util.EventObject;
 import java.util.List;
 
+import com.google.android.gms.cast.framework.CastContext;
 import com.google.protobuf.RpcCallback;
 
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
@@ -31,6 +32,7 @@ public class PlayerPickerActivity extends AppCompatActivity implements ModelUpda
 
 	PlayerLayoutAdapter adapter;
 	List<String> values;
+	private CastContext mCastContext;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -39,9 +41,7 @@ public class PlayerPickerActivity extends AppCompatActivity implements ModelUpda
         setContentView(R.layout.playerpicker);
 	    Model.get().addEventListener(this);
 
-		ChromeCastConfiguration.initialize(this);
-
-	    final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
+		final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
 				JukeboxSettings.get().getServerIpAddress(),
 				JukeboxSettings.get().getServerPort(),	    		
 	    		JukeboxConnectionProgressDialog.build(this, "Getting list of players..."));
@@ -77,23 +77,9 @@ public class PlayerPickerActivity extends AppCompatActivity implements ModelUpda
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 
-		ChromeCastConfiguration.createMenu(getMenuInflater(), menu);
+		ChromeCastConfiguration.createMenu(this, getMenuInflater(), menu);
 
 		return true;
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-
-		ChromeCastConfiguration.onResume();
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
-
-		ChromeCastConfiguration.onPause();
 	}
 
 	@Override
@@ -120,8 +106,9 @@ public class PlayerPickerActivity extends AppCompatActivity implements ModelUpda
 		String playerName = (String)arg0.getItemAtPosition(arg2);
 		JukeboxSettings.get().setCurrentMediaPlayer(playerName);
 
-		if (StringUtils.equalsIgnoreCase(playerName, "Chromecast"))
-			ChromeCastConfiguration.initialize(this);
+		mCastContext = CastContext.getSharedInstance(this);
+//		if (StringUtils.equalsIgnoreCase(playerName, "Chromecast"))
+//			ChromeCastConfiguration.initialize(this);
 
 		updateList();		
 	}

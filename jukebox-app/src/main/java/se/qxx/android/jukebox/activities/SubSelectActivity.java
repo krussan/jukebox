@@ -22,16 +22,20 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
+import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 
 public class SubSelectActivity extends AppCompatActivity implements OnItemClickListener, OnDismissListener {
-	
+    private CastContext mCastContext;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.subtitlepicker);
-        
+
+        mCastContext = CastContext.getSharedInstance(this);
+
         initializeView();
     }
 
