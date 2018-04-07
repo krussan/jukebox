@@ -96,7 +96,7 @@ public class StreamingWebServer extends NanoHTTPD {
 			
 			return registerFile(tempFile.getAbsolutePath());
 			
-		} catch (IOException | SubtitleParsingException e) {
+		} catch (Exception e) {
 			Log.Error("Error while parsing and writing subtitle file", LogType.WEBSERVER, e);
 		}
 		

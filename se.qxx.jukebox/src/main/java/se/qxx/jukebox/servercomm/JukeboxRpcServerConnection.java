@@ -232,7 +232,9 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		Log.Debug(String.format("Number of subtitles :: %s", md.getSubsCount()), LogType.COMM);
 		for (Subtitle s : md.getSubsList()) {
 			String subFilename = StreamingWebServer.get().registerSubtitle(s);
-			subtitleUris.add(subFilename);
+			
+			if (StringUtils.isNotEmpty(subFilename))
+				subtitleUris.add(subFilename);
 		}
 		return uri;
 	}
