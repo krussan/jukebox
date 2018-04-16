@@ -31,6 +31,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.View;
@@ -45,7 +46,13 @@ import com.google.android.gms.cast.MediaStatus;
 import com.google.android.gms.cast.MediaTrack;
 import com.google.android.gms.cast.TextTrackStyle;
 import com.google.android.gms.cast.framework.CastContext;
+import com.google.android.gms.cast.framework.CastSession;
+import com.google.android.gms.cast.framework.CastState;
+import com.google.android.gms.cast.framework.CastStateListener;
+import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.RpcCallback;
 
@@ -55,12 +62,14 @@ import java.util.List;
 public class NowPlayingActivity
     extends AppCompatActivity
     implements OnSeekBarChangeListener, SeekerListener,
-        RemoteMediaClient.ProgressListener, JukeboxResponseListener, RemoteMediaClient.Listener {
+        RemoteMediaClient.ProgressListener, JukeboxResponseListener {
 
     private Seeker seeker;
     private boolean isManualSeeking = false;
     private JukeboxConnectionHandler comm;
     private CastContext mCastContext;
+    private SessionManagerListener mSessionManagerListener;
+    private CastSession mCastSession;
 
     private String getMode() {
         return getIntent().getExtras().getString("mode");
@@ -282,6 +291,7 @@ public class NowPlayingActivity
     }
 
     private void initializeChromecast() {
+        setupCastListener();
         startMovie();
 
     }
@@ -548,6 +558,7 @@ public class NowPlayingActivity
         Handler mainHandler = new Handler(this.getMainLooper());
         final Context mAppContext = this.getApplicationContext();
         final RemoteMediaClient.ProgressListener listener = this;
+        final Activity parentActivity = this;
 
         Runnable myRunnable = new Runnable() {
             @Override
@@ -579,6 +590,7 @@ public class NowPlayingActivity
                         }
                     }
 
+
                     long[] activeTrackIds = null;
                     if (subtitleUris.size() > 0)
                         activeTrackIds = new long[] {1};
@@ -594,68 +606,117 @@ public class NowPlayingActivity
                             .setTextTrackStyle(style)
                             .build();
 
-                    client.load(mi, true, 0, activeTrackIds, null);
+                    client.load(mi, true, 0, activeTrackIds, null)
+                            .setResultCallback(new ResultCallback<RemoteMediaClient.MediaChannelResult>() {
+
+                                @Override
+                                public void onResult(@NonNull RemoteMediaClient.MediaChannelResult mediaChannelResult) {
+                                    Status status = mediaChannelResult.getStatus();
+
+                                    if (status.isSuccess()) {
+                                        Logger.Log().d(String.format("MEDIALOAD -- Media load success :: %s", status.getStatusMessage()));
+                                    }
+                                    else {
+                                        Logger.Log().d(String.format("MEDIALOAD -- Media load FAILURE :: %s", status.getStatusMessage()));
+                                    }
+
+                                }
+                            });
 
                 }
 
-            } // This is your code
+            }
         };
         mainHandler.post(myRunnable);
 
     }
 
+    /***
+     * Handles request complete from JukeboxResponseListener
+     * @param message
+     */
     public void onRequestComplete(JukeboxConnectionMessage message) {
         if (!message.result()) {
             Toast.makeText(this, "Failed :: " + message.getMessage(),Toast.LENGTH_LONG);
         }
     }
 
-    @Override
-    public void onPreloadStatusUpdated() {
-        RemoteMediaClient remoteMediaClient = ChromeCastConfiguration.getRemoteMediaClient(this.getApplicationContext());
-        if (remoteMediaClient == null) {
-            return;
-        }
-        MediaStatus mediaStatus = remoteMediaClient.getMediaStatus();
-        if (mediaStatus == null) {
-            return;
-        }
 
+
+    private void setupCastListener() {
+        RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(this);
+
+        RemoteMediaClient.
+        final Context context = this.getApplicationContext();
+
+        client.addListener(new RemoteMediaClient.Listener() {
+            /***
+             * Handles status updates from RemoteMediaClient.Listener
+             */
+            @Override
+            public void onPreloadStatusUpdated() {
+                RemoteMediaClient remoteMediaClient = ChromeCastConfiguration.getRemoteMediaClient(context);
+
+                if (remoteMediaClient == null) {
+                    return;
+                }
+                MediaStatus mediaStatus = remoteMediaClient.getMediaStatus();
+                if (mediaStatus == null) {
+                    return;
+                }
+
+            }
+
+            /***
+             * Handles status updates from RemoteMediaClient.Listener
+             */
+            @Override
+            public void onQueueStatusUpdated() {
+
+            }
+
+            /***
+             * Handles status updates from RemoteMediaClient.Listener
+             */
+            @Override
+            public void onStatusUpdated() {
+                RemoteMediaClient remoteMediaClient = ChromeCastConfiguration.getRemoteMediaClient(context);
+
+                if (remoteMediaClient == null) {
+                    return;
+                }
+                MediaStatus mediaStatus = remoteMediaClient.getMediaStatus();
+                if (mediaStatus == null) {
+                    return;
+                }
+
+                Logger.Log().d(String.format("MEDIALOAD -- playerState -- %s", remoteMediaClient.getPlayerState()));
+                Logger.Log().d(String.format("MEDIALOAD -- idleReason -- %s", remoteMediaClient.getIdleReason()));
+
+            }
+
+
+            /***
+             * Handles status updates from RemoteMediaClient.Listener
+             */
+            @Override
+            public void onMetadataUpdated() {
+                RemoteMediaClient remoteMediaClient = ChromeCastConfiguration.getRemoteMediaClient(context);
+                if (remoteMediaClient == null) {
+                    return;
+                }
+                MediaStatus mediaStatus = remoteMediaClient.getMediaStatus();
+                if (mediaStatus == null) {
+                    return;
+                }
+            }
+
+            /***
+             * Handles status updates from RemoteMediaClient.Listener
+             */
+            @Override
+            public void onSendingRemoteMediaRequest() {
+            }
+        });
     }
-
-    @Override
-    public void onQueueStatusUpdated() {
-
-
-    }
-
-    @Override
-    public void onStatusUpdated() {
-        RemoteMediaClient remoteMediaClient = ChromeCastConfiguration.getRemoteMediaClient(this.getApplicationContext());
-        if (remoteMediaClient == null) {
-            return;
-        }
-        MediaStatus mediaStatus = remoteMediaClient.getMediaStatus();
-        if (mediaStatus == null) {
-            return;
-        }
-    }
-
-    @Override
-    public void onMetadataUpdated() {
-        RemoteMediaClient remoteMediaClient = ChromeCastConfiguration.getRemoteMediaClient(this.getApplicationContext());
-        if (remoteMediaClient == null) {
-            return;
-        }
-        MediaStatus mediaStatus = remoteMediaClient.getMediaStatus();
-        if (mediaStatus == null) {
-            return;
-        }
-    }
-
-    @Override
-    public void onSendingRemoteMediaRequest() {
-    }
-
-
 }
