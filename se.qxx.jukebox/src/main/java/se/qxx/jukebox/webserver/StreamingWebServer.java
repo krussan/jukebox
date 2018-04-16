@@ -52,6 +52,7 @@ import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.tools.Util;
+import se.qxx.protodb.Logger;
 
 public class StreamingWebServer extends NanoHTTPD {
 
@@ -116,7 +117,11 @@ public class StreamingWebServer extends NanoHTTPD {
 
 	private void logRequest(IHTTPSession session, Map<String, String> header, String uri) {
 		Log.Info(String.format("%s '%s'", session.getMethod(), uri), LogType.WEBSERVER);
-	    Iterator<String> e = header.keySet().iterator();
+	    logHeaders(header);
+	}
+
+	private void logHeaders(Map<String, String> header) {
+		Iterator<String> e = header.keySet().iterator();
 	    while (e.hasNext()) {
 	        String value = e.next();
 	        Log.Info(String.format("  HDR: '%s' = '%s'", value, header.get(value)), LogType.WEBSERVER);
@@ -143,10 +148,9 @@ public class StreamingWebServer extends NanoHTTPD {
             
             String mimeTypeForFile = getMimeTypeForFile(uri);
 
-            Response response = serveFile(uri, headers, f, mimeTypeForFile);
+            Response response = serveFile(headers, f, mimeTypeForFile);
+            logResponse(response);
             
-            // enable CORS
-            response.addHeader("Access-Control-Allow-Origin", "*");
             return response != null ? response : getNotFoundResponse();        	
         }
 
@@ -185,6 +189,14 @@ public class StreamingWebServer extends NanoHTTPD {
 
     }
 	
+	private void logResponse(Response response) {
+        Log.Debug("----- Response Headers ----", LogType.WEBSERVER);
+        Log.Debug(String.format("  Status :: %s", response.getStatus()), LogType.WEBSERVER);
+        Log.Debug(String.format("    Content-Length :: %s", response.getHeader("Content-Length")), LogType.WEBSERVER);
+        Log.Debug(String.format("    Content-Range  :: %s", response.getHeader("Content-Range")), LogType.WEBSERVER);
+        Log.Debug(String.format("    ETag           :: %s", response.getHeader("ETag")), LogType.WEBSERVER);
+	}
+
 	private String getUriWithoutArguments(String uri) {
 		// Remove URL arguments
         uri = uri.trim().replace(File.separatorChar, '/');
@@ -252,11 +264,13 @@ public class StreamingWebServer extends NanoHTTPD {
 
 
     protected Response getForbiddenResponse(String s) {
+    	Log.Error("FORBIDDEN", LogType.WEBSERVER);;
         return createResponse(Response.Status.FORBIDDEN, NanoHTTPD.MIME_PLAINTEXT, "FORBIDDEN: "
             + s);
     }
     
     protected Response getNotFoundResponse() {
+    	Log.Error("NOT FOUND", LogType.WEBSERVER);;
         return createResponse(Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT,
             "Error 404, file not found.");
     }
@@ -266,8 +280,10 @@ public class StreamingWebServer extends NanoHTTPD {
     private Response createResponse(Response.Status status, String mimeType, InputStream data) {
     	Response res = NanoHTTPD.newChunkedResponse(status, mimeType, data);
         res.addHeader("Accept-Ranges", "bytes");
+
         return res;
     }
+
     // Announce that the file server accepts partial content requests
     private Response createResponse(Response.Status status, String mimeType, String message) {
         Response res = NanoHTTPD.newFixedLengthResponse(status, mimeType, message);
@@ -278,14 +294,16 @@ public class StreamingWebServer extends NanoHTTPD {
     /**
      * Serves file from homeDir and its' subdirectories (only). Uses only URI, ignores all headers and HTTP parameters.
      */
-    private Response serveFile(String uri, Map<String, String> header, File file, String mime) {
+    public Response serveFile(Map<String, String> header, File file, String mime) {
         Response res;
         try {
             // Calculate etag
             String etag = Integer.toHexString((file.getAbsolutePath() + file.lastModified() + "" + file.length()).hashCode());
+            
             // Support (simple) skipping:
             long startFrom = 0;
             long endAt = -1;
+            
             String range = header.get("range");
             if (range != null) {
                 if (range.startsWith("bytes=")) {
@@ -300,8 +318,12 @@ public class StreamingWebServer extends NanoHTTPD {
                     }
                 }
             }
+
             // Change return code and add Content-Range header when skipping is requested
             long fileLen = file.length();
+
+            Log.Debug(String.format("startFrom :: %s, endAt :: %s, fileLen :: %s", startFrom, endAt, fileLen), LogType.WEBSERVER);
+            
             if (range != null && startFrom >= 0) {
                 if (startFrom >= fileLen) {
                     res = createResponse(Response.Status.RANGE_NOT_SATISFIABLE, NanoHTTPD.MIME_PLAINTEXT, "");
@@ -340,6 +362,9 @@ public class StreamingWebServer extends NanoHTTPD {
         } catch (IOException ioe) {
             res = getForbiddenResponse("Reading file failed.");
         }
+
+        // enable CORS
+        res.addHeader("Access-Control-Allow-Origin", "*");
         return res;
     }
 
