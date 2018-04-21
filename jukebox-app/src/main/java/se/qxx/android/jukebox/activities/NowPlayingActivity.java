@@ -53,9 +53,12 @@ import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.common.images.WebImage;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.RpcCallback;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -550,7 +553,7 @@ public class NowPlayingActivity
 
     //endregion
 
-    public void startCastVideo(final String title, final String movieUri, final List<String> subtitleUris, final List<JukeboxDomain.Subtitle> subs) {
+    public void startCastVideo(final String title, final String movieUrl, final List<String> subtitleUris, final List<JukeboxDomain.Subtitle> subs) {
         // Since this could be called from a callback we need to trigger it
         // on the main thread.
 
@@ -563,42 +566,19 @@ public class NowPlayingActivity
         Runnable myRunnable = new Runnable() {
             @Override
             public void run() {
-                RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(mAppContext);
+                final RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(mAppContext);
 
                 if (client != null) {
                     client.addProgressListener(listener, 300);
 
-                    MediaMetadata md = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
-                    md.putString(MediaMetadata.KEY_TITLE, title);
+                    MediaMetadata md = getMediaMetadata();
 
-                    List<MediaTrack> tracks = new ArrayList<MediaTrack>();
-
-                    for (int i=0;i<subtitleUris.size();i++) {
-                        if (i<subs.size()) {
-                            JukeboxDomain.Subtitle currentSub = subs.get(i);
-
-                            MediaTrack subtitle = new MediaTrack.Builder(i + 1, MediaTrack.TYPE_TEXT)
-                                    .setContentId(subtitleUris.get(i))
-                                    .setContentType("text/vtt")
-                                    .setSubtype(MediaTrack.SUBTYPE_SUBTITLES)
-                                    .setName(currentSub.getDescription())
-                                    .setLanguage("en-US")
-                                    .build();
-
-                            tracks.add(subtitle);
-
-                        }
-                    }
-
-
-                    long[] activeTrackIds = null;
-                    if (subtitleUris.size() > 0)
-                        activeTrackIds = new long[] {1};
-
+                    List<MediaTrack> tracks = getSubtitleTracks();
+                    long[] activeTrackIds = getActiveTracks();
 
                     TextTrackStyle style = ChromeCastConfiguration.getTextStyle();
 
-                    MediaInfo mi = new MediaInfo.Builder(movieUri)
+                    MediaInfo mi = new MediaInfo.Builder(movieUrl)
                             .setMetadata(md)
                             .setMediaTracks(tracks)
                             .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
@@ -606,7 +586,9 @@ public class NowPlayingActivity
                             .setTextTrackStyle(style)
                             .build();
 
-                    client.load(mi, true, 0, activeTrackIds, null)
+
+                    MediaLoadOptions mlo
+                    client.load(mi, false, 0, activeTrackIds, null)
                             .setResultCallback(new ResultCallback<RemoteMediaClient.MediaChannelResult>() {
 
                                 @Override
@@ -614,6 +596,10 @@ public class NowPlayingActivity
                                     Status status = mediaChannelResult.getStatus();
 
                                     if (status.isSuccess()) {
+                                        // on load success play the movie?
+                                        if (!client.isPlaying())
+                                            client.play();
+
                                         Logger.Log().d(String.format("MEDIALOAD -- Media load success :: %s", status.getStatusMessage()));
                                     }
                                     else {
@@ -625,6 +611,55 @@ public class NowPlayingActivity
 
                 }
 
+            }
+
+            @NonNull
+            private MediaMetadata getMediaMetadata() {
+                MediaMetadata md = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
+                md.putString(MediaMetadata.KEY_TITLE, title);
+
+//                    String baseUrl = StringUtils.EMPTY;
+//                    try {
+//                        URL movieUri = new URL(movieUrl);
+//                        String base = movieUri.getProtocol() + "://" + movieUri.getHost() + "/thumb";
+//                    } catch (MalformedURLException e) {
+//                    }
+
+//                    String base = movieUri.getProtocol() + "://" + url.getHost() + path;
+//                    md.addImage(new WebImage(new Uri(movieUri).get));
+
+
+                return md;
+            }
+
+            private long[] getActiveTracks() {
+                long[] activeTrackIds = null;
+                if (subtitleUris.size() > 0)
+                    activeTrackIds = new long[] {1};
+                return activeTrackIds;
+            }
+
+            private List<MediaTrack> getSubtitleTracks() {
+                List<MediaTrack> tracks = new ArrayList<MediaTrack>();
+
+                for (int i=0;i<subtitleUris.size();i++) {
+                    if (i<subs.size()) {
+                        JukeboxDomain.Subtitle currentSub = subs.get(i);
+
+                        MediaTrack subtitle = new MediaTrack.Builder(i + 1, MediaTrack.TYPE_TEXT)
+                                .setContentId(subtitleUris.get(i))
+                                .setContentType("text/vtt")
+                                .setSubtype(MediaTrack.SUBTYPE_SUBTITLES)
+                                .setName(currentSub.getDescription())
+                                .setLanguage("en-US")
+                                .build();
+
+                        tracks.add(subtitle);
+
+                    }
+                }
+
+                return tracks;
             }
         };
         mainHandler.post(myRunnable);
@@ -645,8 +680,6 @@ public class NowPlayingActivity
 
     private void setupCastListener() {
         RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(this);
-
-        RemoteMediaClient.
         final Context context = this.getApplicationContext();
 
         client.addListener(new RemoteMediaClient.Listener() {

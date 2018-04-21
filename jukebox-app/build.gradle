@@ -4,13 +4,13 @@ def appVersionName = version ?: '1.0'
 def appVersionCode = Integer.valueOf(System.env.TRAVIS_BUILD_NUMBER ?: 1)
 
 android {
-    compileSdkVersion 23
+    compileSdkVersion 25
     buildToolsVersion '27.0.3'
 
     defaultConfig {
         applicationId "se.qxx.android.jukebox"
         minSdkVersion 21
-        targetSdkVersion 23
+        targetSdkVersion 25
 
         // Enabling multidex support.
         multiDexEnabled true
@@ -107,7 +107,7 @@ dependencies {
     implementation 'com.google.protobuf:protobuf-java:2.4.1'
     implementation 'com.googlecode:protobuf-socket-rpc:2.0'
     implementation 'se.qxx.android.tools:android-tools:1.0.2'
-    implementation 'com.android.support:appcompat-v7:23.4.0'
-    implementation 'com.android.support:mediarouter-v7:23.4.0'
-    implementation 'com.google.android.gms:play-services-cast-framework:9.4.0'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:mediarouter-v7:27.1.1'
+    implementation 'com.google.android.gms:play-services-cast-framework:10.0.1'
 }
