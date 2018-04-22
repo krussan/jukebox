@@ -46,20 +46,14 @@ import com.google.android.gms.cast.MediaMetadata;
 import com.google.android.gms.cast.MediaStatus;
 import com.google.android.gms.cast.MediaTrack;
 import com.google.android.gms.cast.TextTrackStyle;
-import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
-import com.google.android.gms.cast.framework.CastState;
-import com.google.android.gms.cast.framework.CastStateListener;
 import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.common.images.WebImage;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.RpcCallback;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,12 +65,19 @@ public class NowPlayingActivity
     private Seeker seeker;
     private boolean isManualSeeking = false;
     private JukeboxConnectionHandler comm;
-    private CastContext mCastContext;
+
     private SessionManagerListener mSessionManagerListener;
     private CastSession mCastSession;
 
     private String getMode() {
-        return getIntent().getExtras().getString("mode");
+        Intent i = getIntent();
+        if (i != null) {
+            Bundle b = i.getExtras();
+            if (b != null) {
+                return b.getString("mode");
+            }
+        }
+        return StringUtils.EMPTY;
     }
 
     private boolean isMovieMode() {
@@ -240,7 +241,7 @@ public class NowPlayingActivity
 
         setContentView(R.layout.nowplaying);
 
-        mCastContext = CastContext.getSharedInstance(this);
+        //mCastContext = CastContext.getSharedInstance(this);
 
         initializeView();
     }
@@ -261,7 +262,7 @@ public class NowPlayingActivity
                 initializeView(m.getTitle(), m.getImage());
             }
 
-            SeekBar sb = (SeekBar) findViewById(R.id.seekBarDuration);
+            SeekBar sb = findViewById(R.id.seekBarDuration);
             sb.setOnSeekBarChangeListener(this);
 
             if (ChromeCastConfiguration.isChromeCastActive())
@@ -311,7 +312,6 @@ public class NowPlayingActivity
             seeker.stop();
     }
 
-    ;
 
     @Override
     protected void onStop() {
@@ -328,8 +328,6 @@ public class NowPlayingActivity
             seeker.start();
     }
 
-    ;
-
     //endregion
 
     //region --SEEKBAR--
@@ -338,7 +336,7 @@ public class NowPlayingActivity
     public void onProgressUpdated(long currentPosition, long duration) {
         // position and duration from cast libraries are in milliseconds
         if (!this.isManualSeeking) {
-            SeekBar sb = (SeekBar) findViewById(R.id.seekBarDuration);
+            SeekBar sb = findViewById(R.id.seekBarDuration);
             if (sb != null) {
                 //sb.setMax(duration / 1000);
                 sb.setProgress((int)currentPosition / 1000);
@@ -357,7 +355,7 @@ public class NowPlayingActivity
     }
 
     private void updateSeekbarText(int progress) {
-        final TextView tv = (TextView) findViewById(R.id.txtSeekIndicator);
+        final TextView tv = findViewById(R.id.txtSeekIndicator);
 
         runOnUiThread(new UpdateSeekIndicator(progress, tv));
     }
@@ -369,7 +367,7 @@ public class NowPlayingActivity
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-        final TextView tv = (TextView) findViewById(R.id.txtSeekIndicator);
+        final TextView tv = findViewById(R.id.txtSeekIndicator);
 
         int seconds = seekBar.getProgress();
 
@@ -390,8 +388,8 @@ public class NowPlayingActivity
 
     @Override
     public void updateSeeker(final int seconds) {
-        final TextView tv = (TextView) findViewById(R.id.txtSeekIndicator);
-        final SeekBar seekBar = (SeekBar) findViewById(R.id.seekBarDuration);
+        final TextView tv = findViewById(R.id.txtSeekIndicator);
+        final SeekBar seekBar = findViewById(R.id.seekBarDuration);
 
         if (!this.isManualSeeking)
             runOnUiThread(new UpdateSeekIndicator(seconds, tv, seekBar));
@@ -399,8 +397,8 @@ public class NowPlayingActivity
 
     @Override
     public void increaseSeeker(int advanceSeconds) {
-        final TextView tv = (TextView) findViewById(R.id.txtSeekIndicator);
-        final SeekBar seekBar = (SeekBar) findViewById(R.id.seekBarDuration);
+        final TextView tv = findViewById(R.id.txtSeekIndicator);
+        final SeekBar seekBar = findViewById(R.id.seekBarDuration);
         int seconds = seekBar.getProgress();
 
         if (!this.isManualSeeking)
@@ -408,7 +406,7 @@ public class NowPlayingActivity
     }
 
     private void initializeSeeker(int duration) {
-        SeekBar sb = (SeekBar) findViewById(R.id.seekBarDuration);
+        SeekBar sb = findViewById(R.id.seekBarDuration);
         if (sb != null && sb.getMax() != duration)
             sb.setMax(duration);
     }
@@ -562,7 +560,6 @@ public class NowPlayingActivity
         Handler mainHandler = new Handler(this.getMainLooper());
         final Context mAppContext = this.getApplicationContext();
         final RemoteMediaClient.ProgressListener listener = this;
-        final Activity parentActivity = this;
 
         Runnable myRunnable = new Runnable() {
             @Override
@@ -646,7 +643,7 @@ public class NowPlayingActivity
             }
 
             private List<MediaTrack> getSubtitleTracks() {
-                List<MediaTrack> tracks = new ArrayList<MediaTrack>();
+                List<MediaTrack> tracks = new ArrayList<>();
 
                 for (int i=0;i<subtitleUris.size();i++) {
                     if (i<subs.size()) {
@@ -678,7 +675,7 @@ public class NowPlayingActivity
      */
     public void onRequestComplete(JukeboxConnectionMessage message) {
         if (!message.result()) {
-            Toast.makeText(this, "Failed :: " + message.getMessage(),Toast.LENGTH_LONG);
+            Toast.makeText(this, "Failed :: " + message.getMessage(),Toast.LENGTH_LONG).show();
         }
     }
 
@@ -688,37 +685,11 @@ public class NowPlayingActivity
         RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(this);
         final Context context = this.getApplicationContext();
 
-        client.addListener(new RemoteMediaClient.Listener() {
-            /***
-             * Handles status updates from RemoteMediaClient.Listener
-             */
-            @Override
-            public void onPreloadStatusUpdated() {
-                RemoteMediaClient remoteMediaClient = ChromeCastConfiguration.getRemoteMediaClient(context);
-
-                if (remoteMediaClient == null) {
-                    return;
-                }
-                MediaStatus mediaStatus = remoteMediaClient.getMediaStatus();
-                if (mediaStatus == null) {
-                    return;
-                }
-
-            }
-
-            /***
-             * Handles status updates from RemoteMediaClient.Listener
-             */
-            @Override
-            public void onQueueStatusUpdated() {
-
-            }
-
-            /***
-             * Handles status updates from RemoteMediaClient.Listener
-             */
+        client.registerCallback(new RemoteMediaClient.Callback() {
             @Override
             public void onStatusUpdated() {
+                super.onStatusUpdated();
+
                 RemoteMediaClient remoteMediaClient = ChromeCastConfiguration.getRemoteMediaClient(context);
 
                 if (remoteMediaClient == null) {
@@ -733,29 +704,7 @@ public class NowPlayingActivity
                 Logger.Log().d(String.format("MEDIALOAD -- idleReason -- %s", remoteMediaClient.getIdleReason()));
 
             }
-
-
-            /***
-             * Handles status updates from RemoteMediaClient.Listener
-             */
-            @Override
-            public void onMetadataUpdated() {
-                RemoteMediaClient remoteMediaClient = ChromeCastConfiguration.getRemoteMediaClient(context);
-                if (remoteMediaClient == null) {
-                    return;
-                }
-                MediaStatus mediaStatus = remoteMediaClient.getMediaStatus();
-                if (mediaStatus == null) {
-                    return;
-                }
-            }
-
-            /***
-             * Handles status updates from RemoteMediaClient.Listener
-             */
-            @Override
-            public void onSendingRemoteMediaRequest() {
-            }
         });
+
     }
 }
