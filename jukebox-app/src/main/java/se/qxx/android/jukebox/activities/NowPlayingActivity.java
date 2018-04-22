@@ -41,6 +41,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.cast.MediaInfo;
+import com.google.android.gms.cast.MediaLoadOptions;
 import com.google.android.gms.cast.MediaMetadata;
 import com.google.android.gms.cast.MediaStatus;
 import com.google.android.gms.cast.MediaTrack;
@@ -586,9 +587,12 @@ public class NowPlayingActivity
                             .setTextTrackStyle(style)
                             .build();
 
+                    MediaLoadOptions mlo = new MediaLoadOptions.Builder()
+                            .setAutoplay(true)
+                            .setActiveTrackIds(activeTrackIds)
+                            .build();
 
-                    MediaLoadOptions mlo
-                    client.load(mi, false, 0, activeTrackIds, null)
+                    client.load(mi, mlo)
                             .setResultCallback(new ResultCallback<RemoteMediaClient.MediaChannelResult>() {
 
                                 @Override
@@ -608,6 +612,8 @@ public class NowPlayingActivity
 
                                 }
                             });
+
+
 
                 }
 
