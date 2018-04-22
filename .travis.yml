@@ -91,8 +91,8 @@ matrix:
       - tools
       - platform-tools
       - build-tools-27.0.3
-      - android-25
-      - addon_google_apis-google-25
+      - android-27
+      - addon_google_apis-google-27
       - extra-android-m2repository
       licenses:
       - android.sdk-license-.+
