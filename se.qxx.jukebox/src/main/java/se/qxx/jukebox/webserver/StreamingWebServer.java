@@ -141,13 +141,17 @@ public class StreamingWebServer extends NanoHTTPD {
             	return getNotFoundResponse();
             
             // map the streaming uri to the actual file
-            File f = new File(streamingMap.get(uri));
+            String filename = streamingMap.get(uri);
+            File f = new File(filename);
             
-            if (!f.exists())
+            Log.Debug(String.format("Serving file :: %s", filename), LogType.WEBSERVER);
+            if (!f.exists()) {
+            	Log.Debug("FILE DOES NOT EXIST", LogType.WEBSERVER);
             	return getNotFoundResponse();
+            }
             
-            String mimeTypeForFile = getMimeTypeForFile(uri);
-
+            String mimeTypeForFile = getMimeType(uri);
+            
             Response response = serveFile(headers, f, mimeTypeForFile);
             logResponse(response);
             
@@ -188,10 +192,18 @@ public class StreamingWebServer extends NanoHTTPD {
         return getForbiddenResponse("Won't serve anything else than registered files for streaming.");
 
     }
+
+	private String getMimeType(String uri) {
+		String mimeTypeForFile = getMimeTypeForFile(uri);
+		if (uri.endsWith("vtt"))
+			mimeTypeForFile = "text/vtt";
+		return mimeTypeForFile;
+	}
 	
 	private void logResponse(Response response) {
         Log.Debug("----- Response Headers ----", LogType.WEBSERVER);
         Log.Debug(String.format("  Status :: %s", response.getStatus()), LogType.WEBSERVER);
+        Log.Debug(String.format("    Content-Type   :: %s", response.getHeader("Content-Type")), LogType.WEBSERVER);
         Log.Debug(String.format("    Content-Length :: %s", response.getHeader("Content-Length")), LogType.WEBSERVER);
         Log.Debug(String.format("    Content-Range  :: %s", response.getHeader("Content-Range")), LogType.WEBSERVER);
         Log.Debug(String.format("    ETag           :: %s", response.getHeader("ETag")), LogType.WEBSERVER);
