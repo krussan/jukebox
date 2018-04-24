@@ -103,7 +103,7 @@ variant.name.capitalize() + "Apk", Copy)
 dependencies {
     implementation project(':se.qxx.jukebox.domain')
     implementation project(':se.qxx.jukebox.comm')
-    implementation 'org.apache.commons:commons-lang3:3.4'
+    implementation 'org.apache.commons:commons-lang3:3.7'
     implementation 'com.google.protobuf:protobuf-java:2.4.1'
     implementation 'com.googlecode:protobuf-socket-rpc:2.0'
     implementation 'se.qxx.android.tools:android-tools:1.0.2'
