@@ -19,8 +19,6 @@ allprojects {
         maven {
             url "https://raw.githubusercontent.com/krussan/maven-repo/master/"
         }
-        maven {
-            url "https://maven.google.com"
-        }
+        google()
     }
 }
