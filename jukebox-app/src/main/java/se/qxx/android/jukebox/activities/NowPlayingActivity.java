@@ -67,8 +67,7 @@ import java.util.List;
 
 public class NowPlayingActivity
     extends AppCompatActivity
-    implements OnSeekBarChangeListener, SeekerListener,
-        RemoteMediaClient.ProgressListener, JukeboxResponseListener {
+    implements OnSeekBarChangeListener, SeekerListener, JukeboxResponseListener {
 
     private Seeker seeker;
     private boolean isManualSeeking = false;
@@ -76,6 +75,8 @@ public class NowPlayingActivity
 
     private SessionManagerListener mSessionManagerListener;
     private CastSession mCastSession;
+
+    private CastProvider castProvider;
 
     private String getMode() {
         Intent i = getIntent();
@@ -239,7 +240,7 @@ public class NowPlayingActivity
             JukeboxConnectionProgressDialog dialog =
                     JukeboxConnectionProgressDialog.build(this, "Starting media ...");
 
-            CastProvider castProvider = CastProvider.getCaster(this, this.comm, dialog);
+            castProvider = CastProvider.getCaster(this, this.comm, dialog, this);
             castProvider.initialize(this.getHeadTitle());
 
         } catch (Exception e) {
@@ -265,16 +266,6 @@ public class NowPlayingActivity
 
         Logger.Log().d("Request -- IsPlaying");
         comm.isPlaying(JukeboxSettings.get().getCurrentMediaPlayer(), new OnStatusComplete());
-    }
-
-    private void startLocalMediaPlayer() {
-        startMovie();
-    }
-
-    private void initializeChromecast() {
-        setupCastListener();
-        startMovie();
-
     }
 
     //endregion
@@ -309,20 +300,6 @@ public class NowPlayingActivity
     //region --SEEKBAR--
 
     @Override
-    public void onProgressUpdated(long currentPosition, long duration) {
-        // position and duration from cast libraries are in milliseconds
-        if (!this.isManualSeeking) {
-            SeekBar sb = findViewById(R.id.seekBarDuration);
-            if (sb != null) {
-                //sb.setMax(duration / 1000);
-                sb.setProgress((int)currentPosition / 1000);
-            }
-
-            updateSeekbarText((int)currentPosition / 1000);
-        }
-    }
-
-    @Override
     public void onProgressChanged(SeekBar seekBar, int progress,
                                   boolean fromUser) {
 
@@ -348,12 +325,9 @@ public class NowPlayingActivity
         int seconds = seekBar.getProgress();
 
         Logger.Log().d("Request --- Seek");
-        if (ChromeCastConfiguration.isChromeCastActive()) {
-            RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(this.getApplicationContext());
+        castProvider.seek(seconds);
 
-            if (client != null) {
-                client.seek(seconds * 1000);
-            }
+        if (ChromeCastConfiguration.isChromeCastActive()) {
         }
         else {
             comm.seek(JukeboxSettings.get().getCurrentMediaPlayer(), seconds);
@@ -369,6 +343,7 @@ public class NowPlayingActivity
 
         if (!this.isManualSeeking)
             runOnUiThread(new UpdateSeekIndicator(seconds, tv, seekBar));
+
     }
 
     @Override
@@ -437,7 +412,6 @@ public class NowPlayingActivity
             RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(this.getApplicationContext());
 
             if (client != null) {
-                client.removeProgressListener(this);
                 client.stop();
             }
         }
@@ -473,19 +447,6 @@ public class NowPlayingActivity
 
 
     private void startMovie() {
-        RpcCallback<JukeboxResponseStartMovie> callback = null;
-
-
-        switch (ChromeCastConfiguration.getCastType()) {
-            case ChromeCast:
-            case Local:
-                callback = new OnChromecastStartComplete(this, this.getHeadTitle(), dialog);
-                break;
-            case JukeboxCast:
-                callback = new OnStartMovieComplete();
-                break;
-            default:
-        }
 
         Movie m = null;
         Episode ep = null;
@@ -499,7 +460,7 @@ public class NowPlayingActivity
                 JukeboxSettings.get().getCurrentMediaPlayer(),
                 m,
                 ep,
-                callback);
+                castProvider.getCallback());
 
     }
 
@@ -538,130 +499,6 @@ public class NowPlayingActivity
         mediaPlayer.start();
     }
 
-    public void startCastVideo(final int movieId, final String title, final String movieUrl, final List<String> subtitleUris, final List<JukeboxDomain.Subtitle> subs) {
-        // Since this could be called from a callback we need to trigger it
-        // on the main thread.
-
-        // Get a handler that can be used to post to the main thread
-        Handler mainHandler = new Handler(this.getMainLooper());
-        final Context mAppContext = this.getApplicationContext();
-        final RemoteMediaClient.ProgressListener listener = this;
-
-        Runnable myRunnable = new Runnable() {
-            @Override
-            public void run() {
-                final RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(mAppContext);
-
-                if (client != null) {
-                    client.addProgressListener(listener, 300);
-
-                    MediaMetadata md = getMediaMetadata();
-
-                    List<MediaTrack> tracks = getSubtitleTracks();
-                    long[] activeTrackIds = getActiveTracks();
-
-                    TextTrackStyle style = ChromeCastConfiguration.getTextStyle();
-
-                    MediaInfo mi = new MediaInfo.Builder(movieUrl)
-                            .setMetadata(md)
-                            .setMediaTracks(tracks)
-                            .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
-                            .setContentType("video/mp4")
-                            .setTextTrackStyle(style)
-                            .build();
-
-                    MediaLoadOptions mlo = new MediaLoadOptions.Builder()
-                            .setAutoplay(true)
-                            .setActiveTrackIds(activeTrackIds)
-                            .build();
-
-                    client.load(mi, mlo)
-                            .setResultCallback(new ResultCallback<RemoteMediaClient.MediaChannelResult>() {
-
-                                @Override
-                                public void onResult(@NonNull RemoteMediaClient.MediaChannelResult mediaChannelResult) {
-                                    Status status = mediaChannelResult.getStatus();
-
-                                    if (status.isSuccess()) {
-                                        Logger.Log().d(String.format("MEDIALOAD -- Media load success :: %s", status.getStatusMessage()));
-                                    }
-                                    else {
-                                        Logger.Log().d(String.format("MEDIALOAD -- Media load FAILURE :: %s", status.getStatusMessage()));
-                                    }
-
-                                }
-                            });
-
-
-
-                }
-
-            }
-
-            @NonNull
-            private MediaMetadata getMediaMetadata() {
-                MediaMetadata md = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
-                md.putString(MediaMetadata.KEY_TITLE, title);
-
-                int id = getId();
-
-                if (id > 0) {
-
-                    String baseUrl = StringUtils.EMPTY;
-
-                    try {
-                        URL movieUri = new URL(movieUrl);
-                        Uri imageUri =
-                            Uri.parse(String.format("%s://%s:%s/thumb%s"
-                                , movieUri.getProtocol()
-                                , movieUri.getHost()
-                                , movieUri.getPort()
-                                , id
-                                ));
-
-                        md.addImage(new WebImage(imageUri));
-                    } catch (MalformedURLException e) {
-                        Logger.Log().e("Could not load image", e);
-                    }
-
-                }
-
-                return md;
-            }
-
-            private long[] getActiveTracks() {
-                long[] activeTrackIds = null;
-                if (subtitleUris.size() > 0)
-                    activeTrackIds = new long[] {1};
-                return activeTrackIds;
-            }
-
-            private List<MediaTrack> getSubtitleTracks() {
-                List<MediaTrack> tracks = new ArrayList<>();
-
-                for (int i=0;i<subtitleUris.size();i++) {
-                    if (i<subs.size()) {
-                        JukeboxDomain.Subtitle currentSub = subs.get(i);
-
-                        MediaTrack subtitle = new MediaTrack.Builder(i + 1, MediaTrack.TYPE_TEXT)
-                                .setContentId(subtitleUris.get(i))
-                                .setContentType("text/vtt")
-                                .setSubtype(MediaTrack.SUBTYPE_SUBTITLES)
-                                .setName(currentSub.getDescription())
-                                .setLanguage("en-US")
-                                .build();
-
-                        tracks.add(subtitle);
-
-                    }
-                }
-
-                return tracks;
-            }
-        };
-        mainHandler.post(myRunnable);
-
-    }
 
     /***
      * Handles request complete from JukeboxResponseListener

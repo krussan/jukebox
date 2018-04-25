@@ -78,5 +78,6 @@ public abstract class CastProvider {
     }
 
     public abstract void initialize(String title);
+    public abstract void seek(long position);
     public abstract RpcCallback<JukeboxDomain.JukeboxResponseStartMovie> getCallback();
 }

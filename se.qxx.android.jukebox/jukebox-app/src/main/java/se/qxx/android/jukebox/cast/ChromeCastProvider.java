@@ -43,6 +43,16 @@ public class ChromeCastProvider extends CastProvider implements RemoteMediaClien
     }
 
     @Override
+    public void seek(long position) {
+        RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(
+                this.getParentContext().getApplicationContext());
+
+        if (client != null) {
+            client.seek(position * 1000);
+        }
+    }
+
+    @Override
     public RpcCallback<JukeboxDomain.JukeboxResponseStartMovie> getCallback() {
         return new RpcCallback<JukeboxDomain.JukeboxResponseStartMovie>() {
             @Override
@@ -62,7 +72,7 @@ public class ChromeCastProvider extends CastProvider implements RemoteMediaClien
 
                 }
             }
-        }
+        };
     }
 
     private void setupCastListener() {

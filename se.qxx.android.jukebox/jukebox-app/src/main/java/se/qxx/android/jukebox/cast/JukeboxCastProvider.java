@@ -21,6 +21,11 @@ class JukeboxCastProvider extends CastProvider {
 
     @Override
     public RpcCallback<JukeboxDomain.JukeboxResponseStartMovie> getCallback() {
-        return null;
+        return new RpcCallback<JukeboxDomain.JukeboxResponseStartMovie>() {
+            @Override
+            public void run(JukeboxDomain.JukeboxResponseStartMovie parameter) {
+                seeker.
+            }
+        }
     }
 }
