@@ -54,7 +54,6 @@ public class FlipperActivity extends AppCompatActivity implements OnPageChangeLi
 
     public void onButtonClicked(View v) {
 		int id = v.getId();
-		GUITools.vibrate(28, this);
 		
 		switch (id) {
 			case R.id.btnPlay:

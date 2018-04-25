@@ -84,7 +84,6 @@ public class FlipperListActivity extends AppCompatActivity {
 
 	public void onButtonClicked(View v) {
 		int id = v.getId();
-		GUITools.vibrate(28, v.getContext());
 		
 		switch (id) {
 			case R.id.btnPlay:

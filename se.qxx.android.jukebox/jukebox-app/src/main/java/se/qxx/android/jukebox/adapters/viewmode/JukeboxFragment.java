@@ -230,7 +230,6 @@ public class JukeboxFragment extends ListFragment implements
 	@Override
 	public void onClick(View v) {
 		int id = v.getId();
-		GUITools.vibrate(28, this.getActivity());
 
 		switch (id) {
 		case R.id.btnRefresh:

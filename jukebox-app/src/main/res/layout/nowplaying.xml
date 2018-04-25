@@ -24,21 +24,23 @@
                 android:src="@drawable/infoabout"
                 android:contentDescription="@string/descViewInfo" />
 
-	        <Button
+	        <ImageButton
 	            android:id="@+id/btnFullscreen"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
-	            android:background="@drawable/btnfullscreen"
+	            android:src="@drawable/btnfullscreen"
+				android:background="@null"
 	            android:hapticFeedbackEnabled="true"
 	            android:onClick="onButtonClicked"
 			/>
 	        
-	        <Button
+	        <ImageButton
 	            android:id="@+id/btnSubSelection"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
-	            android:background="@drawable/btnsubtitles"
+	            android:src="@drawable/btnsubtitles"
 	            android:hapticFeedbackEnabled="true"
+				android:background="@null"
 	            android:onClick="onButtonClicked"
 			/>
 	        	        
@@ -53,46 +55,50 @@
         android:layout_alignParentLeft="true"
         android:gravity="center_horizontal" >
 
-		<Button
+		<ImageButton
             android:id="@+id/btnBackward"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/btnbackward"
+            android:src="@drawable/btnbackward"
+			android:background="@null"
             android:hapticFeedbackEnabled="true"
             android:onClick="onButtonClicked"
 		/>        
         
-        <Button
+        <ImageButton
             android:id="@+id/btnPlay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/btnplay"
+            android:src="@drawable/btnplay"
+			android:background="@null"
             android:onClick="onButtonClicked"
         />
 
-        <Button
+        <ImageButton
             android:id="@+id/btnPause"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/btnpause"
+            android:src="@drawable/btnpause"
+			android:background="@null"
             android:hapticFeedbackEnabled="true"
-            android:onClick="onButtonClicked"
-            android:src="@drawable/pause" />
+            android:onClick="onButtonClicked" />
 
-        <Button
+        <ImageButton
             android:id="@+id/btnStop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/btnstop"
+            android:src="@drawable/btnstop"
+			android:background="@null"
             android:hapticFeedbackEnabled="true"
             android:onClick="onButtonClicked"
 		/>
 
-        <Button
+        <ImageButton
             android:id="@+id/btnForward"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/btnforward"
+            android:src="@drawable/btnforward"
+			android:background="@null"
             android:hapticFeedbackEnabled="true"
             android:onClick="onButtonClicked"
 		/>
