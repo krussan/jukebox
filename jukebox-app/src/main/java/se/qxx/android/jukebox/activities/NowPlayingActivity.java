@@ -33,6 +33,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.SeekBar;
@@ -51,9 +52,12 @@ import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.common.images.WebImage;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.RpcCallback;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -186,8 +190,10 @@ public class NowPlayingActivity
 
             initializeSeeker(Model.get().getCurrentMedia().getMetaDuration());
 
+            int movieID = Model.get().getCurrentMovie().getID();
+
             if (response != null) {
-                startCastVideo(this.title, response.getUri(), response.getSubtitleUrisList(), response.getSubtitleList());
+                startCastVideo(movieID, this.title, response.getUri(), response.getSubtitleUrisList(), response.getSubtitleList());
 
                 // update the subtitles out of sync
                 Thread t = new Thread(new Runnable() {
@@ -210,6 +216,16 @@ public class NowPlayingActivity
             return Model.get().getCurrentEpisode().getTitle();
 
         return StringUtils.EMPTY;
+    }
+
+    private int getId() {
+        if (this.isMovieMode())
+            return Model.get().getCurrentMovie().getID();
+
+        if (this.isEpisodeMode())
+            return Model.get().getCurrentEpisode().getID();
+
+        return -1;
     }
 
     private class OnStopMovieComplete implements RpcCallback<Empty> {
@@ -552,7 +568,7 @@ public class NowPlayingActivity
 
     //endregion
 
-    public void startCastVideo(final String title, final String movieUrl, final List<String> subtitleUris, final List<JukeboxDomain.Subtitle> subs) {
+    public void startCastVideo(final int movieId, final String title, final String movieUrl, final List<String> subtitleUris, final List<JukeboxDomain.Subtitle> subs) {
         // Since this could be called from a callback we need to trigger it
         // on the main thread.
 
@@ -597,10 +613,6 @@ public class NowPlayingActivity
                                     Status status = mediaChannelResult.getStatus();
 
                                     if (status.isSuccess()) {
-                                        // on load success play the movie?
-                                        if (!client.isPlaying())
-                                            client.play();
-
                                         Logger.Log().d(String.format("MEDIALOAD -- Media load success :: %s", status.getStatusMessage()));
                                     }
                                     else {
@@ -621,16 +633,28 @@ public class NowPlayingActivity
                 MediaMetadata md = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
                 md.putString(MediaMetadata.KEY_TITLE, title);
 
-//                    String baseUrl = StringUtils.EMPTY;
-//                    try {
-//                        URL movieUri = new URL(movieUrl);
-//                        String base = movieUri.getProtocol() + "://" + movieUri.getHost() + "/thumb";
-//                    } catch (MalformedURLException e) {
-//                    }
+                int id = getId();
 
-//                    String base = movieUri.getProtocol() + "://" + url.getHost() + path;
-//                    md.addImage(new WebImage(new Uri(movieUri).get));
+                if (id > 0) {
 
+                    String baseUrl = StringUtils.EMPTY;
+
+                    try {
+                        URL movieUri = new URL(movieUrl);
+                        Uri imageUri =
+                            Uri.parse(String.format("%s://%s:%s/thumb%s"
+                                , movieUri.getProtocol()
+                                , movieUri.getHost()
+                                , movieUri.getPort()
+                                , id
+                                ));
+
+                        md.addImage(new WebImage(imageUri));
+                    } catch (MalformedURLException e) {
+                        Logger.Log().e("Could not load image", e);
+                    }
+
+                }
 
                 return md;
             }
