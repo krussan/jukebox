@@ -54,6 +54,9 @@ public class PlayerPickerActivity extends AppCompatActivity implements ModelUpda
 					public void run(JukeboxResponseListPlayers response) {
 						// Add Jukebox central players
 						Model.get().clearPlayers();
+						// Add local player
+						Model.get().getPlayers().add("LOCAL");
+
 						Model.get().addAllPlayers(response.getHostnameList());
 
 						// Add chromecast players

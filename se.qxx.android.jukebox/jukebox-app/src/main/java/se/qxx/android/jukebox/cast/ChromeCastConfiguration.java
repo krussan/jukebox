@@ -78,7 +78,17 @@ public class ChromeCastConfiguration {
     }
 
     public static boolean isChromeCastActive() {
-        return StringUtils.equalsIgnoreCase("Chromecast", JukeboxSettings.get().getCurrentMediaPlayer());
+        return getCastType() == JukeboxCastType.ChromeCast;
+    }
+
+    public static JukeboxCastType getCastType() {
+        if (StringUtils.equalsIgnoreCase("Chromecast", JukeboxSettings.get().getCurrentMediaPlayer()))
+            return JukeboxCastType.ChromeCast;
+
+        if (StringUtils.equalsIgnoreCase("LOCAL", JukeboxSettings.get().getCurrentMediaPlayer()))
+            return JukeboxCastType.Local;
+
+        return JukeboxCastType.JukeboxCast;
     }
 
     public static void createMenu(Context context, MenuInflater inflater, Menu menu) {

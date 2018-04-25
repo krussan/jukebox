@@ -2,7 +2,10 @@ package se.qxx.android.jukebox.activities;
 
 import org.apache.commons.lang3.StringUtils;
 
+import se.qxx.android.jukebox.cast.CastProvider;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
+import se.qxx.android.jukebox.cast.JukeboxCastType;
+import se.qxx.android.jukebox.dialogs.JukeboxConnectionProgressDialog;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.jukebox.comm.OnListSubtitlesCompleteHandler;
 import se.qxx.android.jukebox.R;
@@ -28,6 +31,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -156,55 +160,6 @@ public class NowPlayingActivity
 
             seeker.start();
 
-            Thread t = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    Logger.Log().d("Request --- ListSubtitles");
-                    comm.listSubtitles(Model.get().getCurrentMedia(), new OnListSubtitlesCompleteHandler());
-                }
-            });
-            t.start();
-        }
-    }
-
-    private class OnChromecastStartComplete implements RpcCallback<JukeboxResponseStartMovie> {
-
-        private Activity parentContext;
-
-        private String title;
-
-        public OnChromecastStartComplete(Activity parentContext, String title) {
-            this.parentContext = parentContext;
-            this.title = title;
-        }
-
-        /***
-         * This is called when a movie was selected to play on a chromecast device
-         * and the file has successfully registered with the http server
-         * Sets up the chromecast stream.
-         *
-         * @param response
-         */
-        @Override
-        public void run(JukeboxResponseStartMovie response) {
-
-            initializeSeeker(Model.get().getCurrentMedia().getMetaDuration());
-
-            int movieID = Model.get().getCurrentMovie().getID();
-
-            if (response != null) {
-                startCastVideo(movieID, this.title, response.getUri(), response.getSubtitleUrisList(), response.getSubtitleList());
-
-                // update the subtitles out of sync
-                Thread t = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Logger.Log().d("Request --- ListSubtitles");
-                        comm.listSubtitles(Model.get().getCurrentMedia(), new OnListSubtitlesCompleteHandler());
-                    }
-                });
-                t.start();
-            }
         }
     }
 
@@ -281,10 +236,11 @@ public class NowPlayingActivity
             SeekBar sb = findViewById(R.id.seekBarDuration);
             sb.setOnSeekBarChangeListener(this);
 
-            if (ChromeCastConfiguration.isChromeCastActive())
-                initializeChromecast();
-            else
-                initializeJukeboxCast();
+            JukeboxConnectionProgressDialog dialog =
+                    JukeboxConnectionProgressDialog.build(this, "Starting media ...");
+
+            CastProvider castProvider = CastProvider.getCaster(this, this.comm, dialog);
+            castProvider.initialize(this.getHeadTitle());
 
         } catch (Exception e) {
             Logger.Log().e("Unable to initialize NowPlayingActivity", e);
@@ -309,6 +265,10 @@ public class NowPlayingActivity
 
         Logger.Log().d("Request -- IsPlaying");
         comm.isPlaying(JukeboxSettings.get().getCurrentMediaPlayer(), new OnStatusComplete());
+    }
+
+    private void startLocalMediaPlayer() {
+        startMovie();
     }
 
     private void initializeChromecast() {
@@ -513,12 +473,18 @@ public class NowPlayingActivity
 
 
     private void startMovie() {
-        RpcCallback<JukeboxResponseStartMovie> callback;
+        RpcCallback<JukeboxResponseStartMovie> callback = null;
 
-        if (ChromeCastConfiguration.isChromeCastActive()) {
-            callback = new OnChromecastStartComplete(this, this.getHeadTitle());
-        } else {
-            callback = new OnStartMovieComplete();
+
+        switch (ChromeCastConfiguration.getCastType()) {
+            case ChromeCast:
+            case Local:
+                callback = new OnChromecastStartComplete(this, this.getHeadTitle(), dialog);
+                break;
+            case JukeboxCast:
+                callback = new OnStartMovieComplete();
+                break;
+            default:
         }
 
         Movie m = null;
@@ -566,6 +532,11 @@ public class NowPlayingActivity
 
 
     //endregion
+
+    public void startLocalVideo(final int movieId, final String title, final String movieUrl, final List<String> subtitleUris, final List<JukeboxDomain.Subtitle> subs) {
+        MediaPlayer mediaPlayer = MediaPlayer.create(this, Uri.parse(movieUrl));
+        mediaPlayer.start();
+    }
 
     public void startCastVideo(final int movieId, final String title, final String movieUrl, final List<String> subtitleUris, final List<JukeboxDomain.Subtitle> subs) {
         // Since this could be called from a callback we need to trigger it

@@ -44,4 +44,8 @@ public class JukeboxConnectionProgressDialog implements JukeboxResponseListener 
 			});
 		}		
 	}
+
+	public void close() {
+		this.dialog.dismiss();
+	}
 }
