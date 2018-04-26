@@ -35,6 +35,11 @@ import se.qxx.jukebox.domain.JukeboxDomain;
 public class ChromeCastProvider extends CastProvider implements RemoteMediaClient.ProgressListener {
 
     @Override
+    public void initialize() {
+
+    }
+
+    @Override
     public void seek(int position) {
         RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(
                 this.getParentContext().getApplicationContext());

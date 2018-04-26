@@ -47,6 +47,11 @@ class JukeboxCastProvider extends CastProvider {
         initializeJukeboxCast();
     }
 
+    @Override
+    public void initialize() {
+
+    }
+
     private void startJukeboxCastMovie() {
         super.startMovie();
     }

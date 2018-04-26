@@ -4,6 +4,8 @@ import android.app.Activity;
 
 import com.google.protobuf.RpcCallback;
 
+import org.apache.commons.lang3.StringUtils;
+
 import se.qxx.android.jukebox.comm.OnListSubtitlesCompleteHandler;
 import se.qxx.android.jukebox.dialogs.JukeboxConnectionProgressDialog;
 import se.qxx.android.jukebox.model.Model;
@@ -110,6 +112,7 @@ public abstract class CastProvider {
                 provider = new LocalCastProvider();
         }
         provider.setup(parentContext, comm, dialog, listener);
+        provider.initialize();
 
         return provider;
     }
@@ -128,8 +131,15 @@ public abstract class CastProvider {
     }
 
     public void startMovie() {
+        // override local player with chromecast in server (move this to server in time)
+        // this to force a publish of the streams
+
+        String player = JukeboxSettings.get().getCurrentMediaPlayer();
+        if (StringUtils.equalsIgnoreCase(player, "local"))
+            player = "ChromeCast";
+
         comm.startMovie(
-                JukeboxSettings.get().getCurrentMediaPlayer(),
+                player,
                 this.getMovie(),
                 this.getEpisode(),
                 getCallback());
@@ -159,6 +169,7 @@ public abstract class CastProvider {
         this.seekerListener = seekerListener;
     }
 
+    public abstract void initialize();
     public abstract void seek(int position);
     public abstract RpcCallback<JukeboxDomain.JukeboxResponseStartMovie> getCallback();
     public abstract void stop();
