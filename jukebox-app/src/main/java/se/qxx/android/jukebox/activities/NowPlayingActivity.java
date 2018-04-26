@@ -75,7 +75,6 @@ public class NowPlayingActivity
 
     private SessionManagerListener mSessionManagerListener;
     private CastSession mCastSession;
-
     private CastProvider castProvider;
 
     private String getMode() {
@@ -89,118 +88,8 @@ public class NowPlayingActivity
         return StringUtils.EMPTY;
     }
 
-    private boolean isMovieMode() {
-        return StringUtils.equalsIgnoreCase(this.getMode(), "main") || StringUtils.isEmpty(this.getMode());
-    }
 
     private boolean isEpisodeMode() { return StringUtils.equalsIgnoreCase(this.getMode(), "episode"); }
-
-    //region --CALLBACKS--
-
-    private class OnStatusComplete implements RpcCallback<JukeboxResponseIsPlaying> {
-        @Override
-        public void run(JukeboxResponseIsPlaying response) {
-            Logger.Log().d("Response --- IsPlaying");
-            if (response != null) {
-                if (response.getIsPlaying()) {
-                    Logger.Log().d("Request --- GetTitle");
-                    comm.getTitle(JukeboxSettings.get().getCurrentMediaPlayer(), new OnGetTitleComplete());
-                } else {
-                    Logger.Log().d("Request --- StartMovie");
-                    startMovie();
-                }
-            }
-        }
-    }
-
-    private class OnGetTitleComplete implements RpcCallback<JukeboxResponseGetTitle> {
-        @Override
-        public void run(JukeboxResponseGetTitle response) {
-            Logger.Log().d("Response --- GetTitle");
-            if (response != null) {
-                String playerFilename = response.getTitle();
-                final Media md = matchCurrentFilenameAgainstMedia(playerFilename);
-                if (md != null) {
-                    //initialize seeker and get subtitles if app has been reinitialized
-                    Model.get().setCurrentMedia(md);
-                    initializeSeeker(Model.get().getCurrentMedia().getMetaDuration());
-
-                    Thread t1 = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Logger.Log().d("Request --- ListSubtitles");
-                            comm.listSubtitles(md, new OnListSubtitlesCompleteHandler());
-                        }
-                    });
-                    t1.start();
-
-                    //Start seeker and get time asap as the movie is playing
-                    seeker.start(true);
-                }
-            } else {
-                Thread t2 = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Logger.Log().d("Request --- StopMovie");
-                        comm.stopMovie(JukeboxSettings.get().getCurrentMediaPlayer(), new OnStopMovieComplete());
-                    }
-                });
-                t2.start();
-            }
-        }
-    }
-
-    private class OnStartMovieComplete implements RpcCallback<JukeboxResponseStartMovie> {
-        @Override
-        public void run(JukeboxResponseStartMovie response) {
-            Logger.Log().d("Response --- StartMovie");
-            Model.get().clearSubtitles();
-            Model.get().addAllSubtitles(response.getSubtitleList());
-            Model.get().setCurrentMedia(0);
-            initializeSeeker(Model.get().getCurrentMedia().getMetaDuration());
-
-            seeker.start();
-
-        }
-    }
-
-    private String getHeadTitle() {
-        if (this.isMovieMode())
-            return Model.get().getCurrentMovie().getTitle();
-
-        if (this.isEpisodeMode())
-            return Model.get().getCurrentEpisode().getTitle();
-
-        return StringUtils.EMPTY;
-    }
-
-    private int getId() {
-        if (this.isMovieMode())
-            return Model.get().getCurrentMovie().getID();
-
-        if (this.isEpisodeMode())
-            return Model.get().getCurrentEpisode().getID();
-
-        return -1;
-    }
-
-    private class OnStopMovieComplete implements RpcCallback<Empty> {
-        @Override
-        public void run(Empty arg0) {
-            Logger.Log().d("Response --- StopMovie");
-
-            Thread t = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    Logger.Log().d("Request --- StartMovie");
-                    startMovie();
-                }
-            });
-            t.start();
-        }
-    }
-
-    //endregion
 
     //region --Initialization--
 
@@ -213,35 +102,41 @@ public class NowPlayingActivity
 
         setContentView(R.layout.nowplaying);
 
-        //mCastContext = CastContext.getSharedInstance(this);
-
         initializeView();
     }
 
     private void initializeView() {
         try {
-            if (this.isEpisodeMode()) {
-                Episode ep = Model.get().getCurrentEpisode();
-                initializeView(String.format("S%sE%s - %s",
-                        Model.get().getCurrentSeason().getSeasonNumber(),
-                        ep.getEpisodeNumber(),
-                        ep.getTitle()),
-                    ep.getImage());
-
-            }
-            else {
-                Movie m = Model.get().getCurrentMovie();
-                initializeView(m.getTitle(), m.getImage());
-            }
-
             SeekBar sb = findViewById(R.id.seekBarDuration);
             sb.setOnSeekBarChangeListener(this);
+
+            seeker = new Seeker(this);
 
             JukeboxConnectionProgressDialog dialog =
                     JukeboxConnectionProgressDialog.build(this, "Starting media ...");
 
             castProvider = CastProvider.getCaster(this, this.comm, dialog, this);
-            castProvider.initialize(this.getHeadTitle());
+
+            if (this.isEpisodeMode()) {
+                Episode ep = Model.get().getCurrentEpisode();
+                initializeView(
+                        String.format("S%sE%s - %s",
+                        Model.get().getCurrentSeason().getSeasonNumber(),
+                        ep.getEpisodeNumber(),
+                        ep.getTitle()),
+                        ep.getImage());
+
+                castProvider.initialize(ep);
+
+            }
+            else {
+                Movie m = Model.get().getCurrentMovie();
+                initializeView(m.getTitle(), m.getImage());
+                castProvider.initialize(m);
+            }
+
+            castProvider.startMovie();
+
 
         } catch (Exception e) {
             Logger.Log().e("Unable to initialize NowPlayingActivity", e);
@@ -259,13 +154,6 @@ public class NowPlayingActivity
 
         GUITools.setTextOnTextview(R.id.lblNowPlayingTitle, title, rootView);
 
-    }
-
-    private void initializeJukeboxCast() {
-        seeker = new Seeker(this);
-
-        Logger.Log().d("Request -- IsPlaying");
-        comm.isPlaying(JukeboxSettings.get().getCurrentMediaPlayer(), new OnStatusComplete());
     }
 
     //endregion
@@ -327,12 +215,6 @@ public class NowPlayingActivity
         Logger.Log().d("Request --- Seek");
         castProvider.seek(seconds);
 
-        if (ChromeCastConfiguration.isChromeCastActive()) {
-        }
-        else {
-            comm.seek(JukeboxSettings.get().getCurrentMediaPlayer(), seconds);
-        }
-
         this.isManualSeeking = false;
     }
 
@@ -356,10 +238,21 @@ public class NowPlayingActivity
             runOnUiThread(new UpdateSeekIndicator(seconds + advanceSeconds, tv, seekBar));
     }
 
-    private void initializeSeeker(int duration) {
+    @Override
+    public void setDuration(int seconds) {
         SeekBar sb = findViewById(R.id.seekBarDuration);
-        if (sb != null && sb.getMax() != duration)
-            sb.setMax(duration);
+        if (sb != null && sb.getMax() != seconds)
+            sb.setMax(seconds);
+    }
+
+    @Override
+    public void startSeekerTimer() {
+        seeker.start();
+    }
+
+    @Override
+    public void stopSeekerTimer() {
+        seeker.stop();
     }
 
 
@@ -373,7 +266,7 @@ public class NowPlayingActivity
         switch (id) {
             case R.id.btnPlay:
                 Logger.Log().d("Request --- StartMovie");
-                startMovie();
+                castProvider.startMovie();
                 break;
             case R.id.btnFullscreen:
                 Logger.Log().d("Request --- ToggleFullScreen");
@@ -385,7 +278,7 @@ public class NowPlayingActivity
                 break;
             case R.id.btnStop:
                 Logger.Log().d("Request --- StopMove");
-                stopMovie();
+                castProvider.stop();
                 this.finish();
                 break;
             case R.id.btnViewInfo:
@@ -403,21 +296,6 @@ public class NowPlayingActivity
                 break;
             default:
                 break;
-        }
-    }
-
-    private void stopMovie() {
-        String player = JukeboxSettings.get().getCurrentMediaPlayer();
-        if (ChromeCastConfiguration.isChromeCastActive()) {
-            RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(this.getApplicationContext());
-
-            if (client != null) {
-                client.stop();
-            }
-        }
-        else {
-            seeker.stop();
-            comm.stopMovie(player, null);
         }
     }
 
@@ -445,38 +323,6 @@ public class NowPlayingActivity
 
     }
 
-
-    private void startMovie() {
-
-        Movie m = null;
-        Episode ep = null;
-        if (this.isMovieMode())
-            m = Model.get().getCurrentMovie();
-
-        if (this.isEpisodeMode())
-            ep = Model.get().getCurrentEpisode();
-
-        comm.startMovie(
-                JukeboxSettings.get().getCurrentMediaPlayer(),
-                m,
-                ep,
-                castProvider.getCallback());
-
-    }
-
-    //endregion
-
-    //region --HELPERS--
-
-    protected Media matchCurrentFilenameAgainstMedia(String playerFilename) {
-        for (Media md : Model.get().getCurrentMovie().getMediaList()) {
-            if (StringUtils.equalsIgnoreCase(playerFilename, md.getFilename())) {
-                return md;
-            }
-        }
-
-        return null;
-    }
 
     //endregion
 

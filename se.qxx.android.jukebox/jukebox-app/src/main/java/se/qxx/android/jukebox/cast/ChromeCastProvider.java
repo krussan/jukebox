@@ -33,17 +33,9 @@ import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
 public class ChromeCastProvider extends CastProvider implements RemoteMediaClient.ProgressListener {
-    public ChromeCastProvider(Activity parentContext, JukeboxConnectionHandler comm, JukeboxConnectionProgressDialog dialog, SeekerListener listener) {
-        super(parentContext, comm, dialog, listener);
-    }
 
     @Override
-    public void initialize(String title) {
-        this.setTitle(title);
-    }
-
-    @Override
-    public void seek(long position) {
+    public void seek(int position) {
         RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(
                 this.getParentContext().getApplicationContext());
 
@@ -70,9 +62,19 @@ public class ChromeCastProvider extends CastProvider implements RemoteMediaClien
                             response.getSubtitleUrisList(),
                             response.getSubtitleList());
 
+                    initializeSubtitles();
                 }
             }
         };
+    }
+
+    @Override
+    public void stop() {
+        RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(
+                this.getParentContext().getApplicationContext());
+
+        if (client != null)
+            client.stop();
     }
 
     private void setupCastListener() {
@@ -119,10 +121,10 @@ public class ChromeCastProvider extends CastProvider implements RemoteMediaClien
                 if (client != null) {
                     client.addProgressListener(listener, 300);
 
-                    MediaMetadata md = getMediaMetadata();
+                    MediaMetadata md = getMediaMetadata(title, movieUrl);
 
                     List<MediaTrack> tracks = getSubtitleTracks();
-                    long[] activeTrackIds = getActiveTracks();
+                    long[] activeTrackIds = getActiveTracks(subtitleUris);
 
                     TextTrackStyle style = ChromeCastConfiguration.getTextStyle();
 
@@ -156,49 +158,10 @@ public class ChromeCastProvider extends CastProvider implements RemoteMediaClien
                                 }
                             });
 
-
-
                 }
 
             }
 
-            @NonNull
-            private MediaMetadata getMediaMetadata() {
-                MediaMetadata md = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
-                md.putString(MediaMetadata.KEY_TITLE, title);
-
-                int id = getId();
-
-                if (id > 0) {
-
-                    String baseUrl = StringUtils.EMPTY;
-
-                    try {
-                        URL movieUri = new URL(movieUrl);
-                        Uri imageUri =
-                                Uri.parse(String.format("%s://%s:%s/thumb%s"
-                                        , movieUri.getProtocol()
-                                        , movieUri.getHost()
-                                        , movieUri.getPort()
-                                        , id
-                                ));
-
-                        md.addImage(new WebImage(imageUri));
-                    } catch (MalformedURLException e) {
-                        Logger.Log().e("Could not load image", e);
-                    }
-
-                }
-
-                return md;
-            }
-
-            private long[] getActiveTracks() {
-                long[] activeTrackIds = null;
-                if (subtitleUris.size() > 0)
-                    activeTrackIds = new long[] {1};
-                return activeTrackIds;
-            }
 
             private List<MediaTrack> getSubtitleTracks() {
                 List<MediaTrack> tracks = new ArrayList<>();
@@ -232,4 +195,44 @@ public class ChromeCastProvider extends CastProvider implements RemoteMediaClien
         if (getSeekerListener() != null)
             getSeekerListener().updateSeeker((int)currentPosition / 1000);
     }
+
+    private MediaMetadata getMediaMetadata(String title, String movieUrl) {
+        MediaMetadata md = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
+        md.putString(MediaMetadata.KEY_TITLE, title);
+
+        int id = getID();
+
+        if (id > 0) {
+
+            String baseUrl = StringUtils.EMPTY;
+
+            try {
+                URL movieUri = new URL(movieUrl);
+                Uri imageUri =
+                        Uri.parse(String.format("%s://%s:%s/thumb%s"
+                                , movieUri.getProtocol()
+                                , movieUri.getHost()
+                                , movieUri.getPort()
+                                , id
+                        ));
+
+                md.addImage(new WebImage(imageUri));
+            } catch (MalformedURLException e) {
+                Logger.Log().e("Could not load image", e);
+            }
+
+        }
+
+        return md;
+    }
+
+    @NonNull
+    private long[] getActiveTracks(List<String> subtitleUris) {
+        long[] activeTrackIds = null;
+        if (subtitleUris.size() > 0)
+            activeTrackIds = new long[] {1};
+        return activeTrackIds;
+    }
+
+
 }

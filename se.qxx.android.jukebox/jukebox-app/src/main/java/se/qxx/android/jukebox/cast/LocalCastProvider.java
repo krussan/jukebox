@@ -1,6 +1,7 @@
 package se.qxx.android.jukebox.cast;
 
 import android.app.Activity;
+import android.media.MediaPlayer;
 
 import com.google.protobuf.RpcCallback;
 
@@ -11,17 +12,20 @@ import se.qxx.jukebox.domain.JukeboxDomain;
 
 class LocalCastProvider extends CastProvider {
 
-    public LocalCastProvider(Activity parentContext, JukeboxConnectionHandler comm, JukeboxConnectionProgressDialog dialog, SeekerListener listener) {
-        super(parentContext, comm, dialog, listener);
-    }
+    MediaPlayer mediaPlayer = null;
 
     @Override
-    public void initialize() {
+    public void seek(int position) {
 
     }
 
     @Override
     public RpcCallback<JukeboxDomain.JukeboxResponseStartMovie> getCallback() {
         return null;
+    }
+
+    @Override
+    public void stop() {
+
     }
 }

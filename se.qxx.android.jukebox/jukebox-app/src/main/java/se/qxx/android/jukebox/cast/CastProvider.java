@@ -7,6 +7,8 @@ import com.google.protobuf.RpcCallback;
 import se.qxx.android.jukebox.comm.OnListSubtitlesCompleteHandler;
 import se.qxx.android.jukebox.dialogs.JukeboxConnectionProgressDialog;
 import se.qxx.android.jukebox.model.Model;
+import se.qxx.android.jukebox.settings.JukeboxSettings;
+import se.qxx.android.jukebox.widgets.Seeker;
 import se.qxx.android.jukebox.widgets.SeekerListener;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
@@ -14,11 +16,20 @@ import se.qxx.jukebox.domain.JukeboxDomain;
 
 public abstract class CastProvider {
 
+    public enum CastProviderMode  {
+        Movie,
+        Episode
+    }
+
     private Activity parentContext;
     private JukeboxConnectionProgressDialog dialog;
     private JukeboxConnectionHandler comm;
     private String title;
     private SeekerListener seekerListener;
+    private int ID;
+    private CastProviderMode mode;
+    private JukeboxDomain.Movie movie;
+    private JukeboxDomain.Episode episode;
 
     public Activity getParentContext() {
         return this.parentContext;
@@ -44,24 +55,63 @@ public abstract class CastProvider {
         this.title = title;
     }
 
-    public CastProvider(Activity parentContext, JukeboxConnectionHandler comm, JukeboxConnectionProgressDialog dialog, SeekerListener seekerListener) {
-        this.parentContext = parentContext;
-        this.dialog = dialog;
-        this.comm = comm;
-        this.seekerListener = seekerListener;
+    public int getID() {
+        return this.ID;
     }
 
-    public static CastProvider getCaster(Activity parentContext, JukeboxConnectionHandler comm, JukeboxConnectionProgressDialog dialog, SeekerListener listener) {
+    public void setID(int ID) {
+        this.ID = ID;
+    }
+
+    private void setCastProviderMode(CastProviderMode mode) {
+        this.mode = mode;
+    }
+
+    public CastProviderMode getCastProviderMode() {
+        return mode;
+    }
+
+    public JukeboxDomain.Movie getMovie() {
+        return movie;
+    }
+
+    public void setMovie(JukeboxDomain.Movie movie) {
+        this.movie = movie;
+    }
+
+    public JukeboxDomain.Episode getEpisode() {
+        return episode;
+    }
+
+    public void setEpisode(JukeboxDomain.Episode episode) {
+        this.episode = episode;
+    }
+
+    protected CastProvider() {
+
+    }
+
+
+    public static CastProvider getCaster(
+            Activity parentContext,
+            JukeboxConnectionHandler comm,
+            JukeboxConnectionProgressDialog dialog,
+            SeekerListener listener) {
+
+        CastProvider provider = null;
         switch (ChromeCastConfiguration.getCastType()) {
             case ChromeCast:
-                return new ChromeCastProvider(parentContext, comm, dialog, listener);
-            case Local:
-                return new LocalCastProvider(parentContext, comm, dialog, listener);
+                provider = new ChromeCastProvider();
+                break;
             case JukeboxCast:
-                return new JukeboxCastProvider(parentContext, comm, dialog, listener);
+                provider = new JukeboxCastProvider();
+                break;
+            default:
+                provider = new LocalCastProvider();
         }
+        provider.setup(parentContext, comm, dialog, listener);
 
-        return null;
+        return provider;
     }
 
     protected void initializeSubtitles() {
@@ -77,7 +127,39 @@ public abstract class CastProvider {
 
     }
 
-    public abstract void initialize(String title);
-    public abstract void seek(long position);
+    public void startMovie() {
+        comm.startMovie(
+                JukeboxSettings.get().getCurrentMediaPlayer(),
+                this.getMovie(),
+                this.getEpisode(),
+                getCallback());
+    }
+
+
+    public void initialize(JukeboxDomain.Movie movie){
+        this.setTitle(movie.getIdentifiedTitle());
+        this.setID(movie.getID());
+
+    }
+
+    public void initialize(JukeboxDomain.Episode episode) {
+        this.setTitle(episode.getTitle());
+        this.setID(episode.getID());
+    }
+
+    private void setup(
+            Activity parentContext,
+            JukeboxConnectionHandler comm,
+            JukeboxConnectionProgressDialog dialog,
+            SeekerListener listener) {
+
+        this.parentContext = parentContext;
+        this.dialog = dialog;
+        this.comm = comm;
+        this.seekerListener = seekerListener;
+    }
+
+    public abstract void seek(int position);
     public abstract RpcCallback<JukeboxDomain.JukeboxResponseStartMovie> getCallback();
+    public abstract void stop();
 }
