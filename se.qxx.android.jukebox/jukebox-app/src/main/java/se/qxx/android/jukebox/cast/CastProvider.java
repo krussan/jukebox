@@ -149,12 +149,13 @@ public abstract class CastProvider {
     public void initialize(JukeboxDomain.Movie movie){
         this.setTitle(movie.getIdentifiedTitle());
         this.setID(movie.getID());
-
+        this.setMovie(movie);
     }
 
     public void initialize(JukeboxDomain.Episode episode) {
         this.setTitle(episode.getTitle());
         this.setID(episode.getID());
+        this.setEpisode(episode);
     }
 
     private void setup(
@@ -167,6 +168,11 @@ public abstract class CastProvider {
         this.dialog = dialog;
         this.comm = comm;
         this.seekerListener = seekerListener;
+    }
+
+    protected void closeDialog() {
+        if (this.getDialog() != null)
+            this.getDialog().close();
     }
 
     public abstract void initialize();

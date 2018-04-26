@@ -112,10 +112,10 @@ public class NowPlayingActivity
 
             seeker = new Seeker(this);
 
-            JukeboxConnectionProgressDialog dialog =
-                    JukeboxConnectionProgressDialog.build(this, "Starting media ...");
+            //JukeboxConnectionProgressDialog dialog =
+//                    JukeboxConnectionProgressDialog.build(this, "Starting media ...");
 
-            castProvider = CastProvider.getCaster(this, this.comm, dialog, this);
+            castProvider = CastProvider.getCaster(this, this.comm, null, this);
 
             if (this.isEpisodeMode()) {
                 Episode ep = Model.get().getCurrentEpisode();
@@ -358,30 +358,4 @@ public class NowPlayingActivity
 
 
 
-    private void setupCastListener() {
-        RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(this);
-        final Context context = this.getApplicationContext();
-
-        client.registerCallback(new RemoteMediaClient.Callback() {
-            @Override
-            public void onStatusUpdated() {
-                super.onStatusUpdated();
-
-                RemoteMediaClient remoteMediaClient = ChromeCastConfiguration.getRemoteMediaClient(context);
-
-                if (remoteMediaClient == null) {
-                    return;
-                }
-                MediaStatus mediaStatus = remoteMediaClient.getMediaStatus();
-                if (mediaStatus == null) {
-                    return;
-                }
-
-                Logger.Log().d(String.format("MEDIALOAD -- playerState -- %s", remoteMediaClient.getPlayerState()));
-                Logger.Log().d(String.format("MEDIALOAD -- idleReason -- %s", remoteMediaClient.getIdleReason()));
-
-            }
-        });
-
-    }
 }

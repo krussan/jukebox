@@ -36,7 +36,6 @@ class LocalCastProvider extends CastProvider {
         return new RpcCallback<JukeboxDomain.JukeboxResponseStartMovie>() {
             @Override
             public void run(JukeboxDomain.JukeboxResponseStartMovie response) {
-                getDialog().close();
                 int movieID = Model.get().getCurrentMovie().getID();
 
                 if (response != null) {
@@ -66,6 +65,7 @@ class LocalCastProvider extends CastProvider {
 
     @Override
     public void stop() {
-
+        mediaPlayer.stop();
+        mediaPlayer.release();
     }
 }
