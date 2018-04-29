@@ -38,7 +38,7 @@ public class ChromeCastProvider extends CastProvider implements RemoteMediaClien
 
     @Override
     public void initialize() {
-        
+
     }
 
     @Override

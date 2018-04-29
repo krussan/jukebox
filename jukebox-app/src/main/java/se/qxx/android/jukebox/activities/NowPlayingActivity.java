@@ -39,6 +39,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -424,6 +425,15 @@ public class NowPlayingActivity
                 }
             });
         }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+        if (castProvider.usesMediaController())
+            mcontroller.show();
+
+        return false;
     }
 
 
