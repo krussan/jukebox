@@ -49,7 +49,7 @@ class JukeboxCastProvider extends CastProvider {
 
     @Override
     public void initialize() {
-
+        this.getSeekerListener().initializeSeeker();
     }
 
     private void startJukeboxCastMovie() {

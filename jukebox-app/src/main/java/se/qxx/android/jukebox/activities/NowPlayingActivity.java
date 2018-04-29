@@ -110,7 +110,7 @@ public class NowPlayingActivity
             SeekBar sb = findViewById(R.id.seekBarDuration);
             sb.setOnSeekBarChangeListener(this);
 
-            seeker = new Seeker(this);
+
 
             //JukeboxConnectionProgressDialog dialog =
 //                    JukeboxConnectionProgressDialog.build(this, "Starting media ...");
@@ -243,6 +243,11 @@ public class NowPlayingActivity
         SeekBar sb = findViewById(R.id.seekBarDuration);
         if (sb != null && sb.getMax() != seconds)
             sb.setMax(seconds);
+    }
+
+    @Override
+    public void initializeSeeker() {
+        seeker = new Seeker(this);
     }
 
     @Override
