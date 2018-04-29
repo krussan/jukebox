@@ -42,6 +42,7 @@ import android.view.Menu;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.MediaController;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -69,7 +70,7 @@ import java.util.List;
 
 public class NowPlayingActivity
     extends AppCompatActivity
-    implements OnSeekBarChangeListener, SeekerListener, JukeboxResponseListener {
+        implements OnSeekBarChangeListener, SeekerListener, JukeboxResponseListener, MediaPlayer.OnPreparedListener {
 
     private Seeker seeker;
     private boolean isManualSeeking = false;
@@ -78,6 +79,7 @@ public class NowPlayingActivity
     private SessionManagerListener mSessionManagerListener;
     private CastSession mCastSession;
     private CastProvider castProvider;
+    MediaController mcontroller ;
 
     private String getMode() {
         Intent i = getIntent();
@@ -99,7 +101,9 @@ public class NowPlayingActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        comm = new JukeboxConnectionHandler(JukeboxSettings.get().getServerIpAddress(), JukeboxSettings.get().getServerPort());
+        comm = new JukeboxConnectionHandler(
+                JukeboxSettings.get().getServerIpAddress(),
+                JukeboxSettings.get().getServerPort());
         comm.setListener(this);
 
         setContentView(R.layout.nowplaying);
@@ -111,7 +115,7 @@ public class NowPlayingActivity
         try {
             SeekBar sb = findViewById(R.id.seekBarDuration);
             sb.setOnSeekBarChangeListener(this);
-
+            sb.setVisibility(View.VISIBLE);
 
 
             //JukeboxConnectionProgressDialog dialog =
@@ -119,7 +123,13 @@ public class NowPlayingActivity
 
 
             SurfaceHolder holder = getSurfaceHolder();
-            castProvider = CastProvider.getCaster(this, this.comm, null, this, holder);
+            castProvider = CastProvider.getCaster(
+                    this,
+                    this.comm,
+                    null,
+                    this,
+                    holder,
+                    this);
 
             if (this.isEpisodeMode()) {
                 Episode ep = Model.get().getCurrentEpisode();
@@ -139,11 +149,20 @@ public class NowPlayingActivity
                 castProvider.initialize(m);
             }
 
+            initializeMediaController();
+
             castProvider.startMovie();
 
 
         } catch (Exception e) {
             Logger.Log().e("Unable to initialize NowPlayingActivity", e);
+        }
+    }
+
+    private void initializeMediaController() {
+        if (castProvider.usesMediaController()) {
+            mcontroller = new MediaController(this);
+            mcontroller.setMediaPlayer(castProvider);
         }
     }
 
@@ -240,7 +259,7 @@ public class NowPlayingActivity
         int seconds = seekBar.getProgress();
 
         Logger.Log().d("Request --- Seek");
-        castProvider.seek(seconds);
+        castProvider.seekTo(seconds);
 
         this.isManualSeeking = false;
     }
@@ -388,6 +407,24 @@ public class NowPlayingActivity
         }
     }
 
+    @Override
+    public void onPrepared(MediaPlayer mediaPlayer) {
+        // TODO Auto-generated method stub
+        if (castProvider.usesMediaController()) {
+            SeekBar sb = findViewById(R.id.seekBarDuration);
+            sb.setVisibility(View.GONE);
+
+            mcontroller.setMediaPlayer(castProvider);
+            mcontroller.setAnchorView(findViewById(R.id.surfaceview));
+            mcontroller.setEnabled(true);
+
+            new Handler().post(new Runnable() {
+                public void run() {
+                    mcontroller.show();
+                }
+            });
+        }
+    }
 
 
 }

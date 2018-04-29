@@ -34,19 +34,11 @@ import se.qxx.jukebox.domain.JukeboxDomain;
 
 public class ChromeCastProvider extends CastProvider implements RemoteMediaClient.ProgressListener {
 
+    RemoteMediaClient client;
+
     @Override
     public void initialize() {
-
-    }
-
-    @Override
-    public void seek(int position) {
-        RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(
-                this.getParentContext().getApplicationContext());
-
-        if (client != null) {
-            client.seek(position * 1000);
-        }
+        
     }
 
     @Override
@@ -80,6 +72,11 @@ public class ChromeCastProvider extends CastProvider implements RemoteMediaClien
 
         if (client != null)
             client.stop();
+    }
+
+    @Override
+    public boolean usesMediaController() {
+        return false;
     }
 
     private void setupCastListener() {
@@ -240,4 +237,66 @@ public class ChromeCastProvider extends CastProvider implements RemoteMediaClien
     }
 
 
+    @Override
+    public void start() {
+        RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(
+                this.getParentContext().getApplicationContext());
+
+        client.play();
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public int getDuration() {
+        return 0;
+    }
+
+    @Override
+    public int getCurrentPosition() {
+        return 0;
+    }
+
+    @Override
+    public void seekTo(int position) {
+        RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(
+                this.getParentContext().getApplicationContext());
+
+        if (client != null) {
+            client.seek(position * 1000);
+        }
+    }
+
+    @Override
+    public boolean isPlaying() {
+        return false;
+    }
+
+    @Override
+    public int getBufferPercentage() {
+        return 0;
+    }
+
+    @Override
+    public boolean canPause() {
+        return false;
+    }
+
+    @Override
+    public boolean canSeekBackward() {
+        return false;
+    }
+
+    @Override
+    public boolean canSeekForward() {
+        return false;
+    }
+
+    @Override
+    public int getAudioSessionId() {
+        return 0;
+    }
 }

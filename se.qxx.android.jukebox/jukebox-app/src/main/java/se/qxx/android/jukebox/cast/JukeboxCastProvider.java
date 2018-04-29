@@ -14,13 +14,6 @@ import se.qxx.jukebox.domain.JukeboxDomain;
 class JukeboxCastProvider extends CastProvider {
 
     @Override
-    public void seek(int position) {
-        this.getJukeboxConnectionHandler().seek(
-                JukeboxSettings.get().getCurrentMediaPlayer(),
-                position);
-    }
-
-    @Override
     public RpcCallback<JukeboxDomain.JukeboxResponseStartMovie> getCallback() {
         return new RpcCallback<JukeboxDomain.JukeboxResponseStartMovie>() {
             @Override
@@ -43,6 +36,11 @@ class JukeboxCastProvider extends CastProvider {
     }
 
     @Override
+    public boolean usesMediaController() {
+        return false;
+    }
+
+    @Override
     public void startMovie() {
         initializeJukeboxCast();
     }
@@ -61,6 +59,63 @@ class JukeboxCastProvider extends CastProvider {
         this.getJukeboxConnectionHandler().isPlaying(
                 JukeboxSettings.get().getCurrentMediaPlayer(),
                 new OnStatusComplete());
+    }
+
+    @Override
+    public void start() {
+
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public int getDuration() {
+        return 0;
+    }
+
+    @Override
+    public int getCurrentPosition() {
+        return 0;
+    }
+
+    @Override
+    public void seekTo(int position) {
+        this.getJukeboxConnectionHandler().seek(
+                JukeboxSettings.get().getCurrentMediaPlayer(),
+                position);
+    }
+
+    @Override
+    public boolean isPlaying() {
+        return false;
+    }
+
+    @Override
+    public int getBufferPercentage() {
+        return 0;
+    }
+
+    @Override
+    public boolean canPause() {
+        return false;
+    }
+
+    @Override
+    public boolean canSeekBackward() {
+        return false;
+    }
+
+    @Override
+    public boolean canSeekForward() {
+        return false;
+    }
+
+    @Override
+    public int getAudioSessionId() {
+        return 0;
     }
 
     private class OnStatusComplete implements RpcCallback<JukeboxDomain.JukeboxResponseIsPlaying> {

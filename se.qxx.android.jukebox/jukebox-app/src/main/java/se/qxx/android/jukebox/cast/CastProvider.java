@@ -1,8 +1,10 @@
 package se.qxx.android.jukebox.cast;
 
 import android.app.Activity;
+import android.media.MediaPlayer;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.MediaController;
 
 import com.google.protobuf.RpcCallback;
 
@@ -18,7 +20,7 @@ import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
-public abstract class CastProvider {
+public abstract class CastProvider implements MediaController.MediaPlayerControl {
 
     public enum CastProviderMode  {
         Movie,
@@ -35,6 +37,7 @@ public abstract class CastProvider {
     private JukeboxDomain.Movie movie;
     private JukeboxDomain.Episode episode;
     private SurfaceHolder display;
+    private MediaPlayer.OnPreparedListener onPreparedListener;
 
     public Activity getParentContext() {
         return this.parentContext;
@@ -100,6 +103,10 @@ public abstract class CastProvider {
         this.display = display;
     }
 
+    public MediaPlayer.OnPreparedListener getOnPreparedListener() {
+        return this.onPreparedListener;
+    }
+
     protected CastProvider() {
 
     }
@@ -110,7 +117,8 @@ public abstract class CastProvider {
             JukeboxConnectionHandler comm,
             JukeboxConnectionProgressDialog dialog,
             SeekerListener listener,
-            SurfaceHolder display) {
+            SurfaceHolder display,
+            MediaPlayer.OnPreparedListener onPreparedListener) {
 
         CastProvider provider = null;
         switch (ChromeCastConfiguration.getCastType()) {
@@ -123,7 +131,7 @@ public abstract class CastProvider {
             default:
                 provider = new LocalCastProvider();
         }
-        provider.setup(parentContext, comm, dialog, listener, display);
+        provider.setup(parentContext, comm, dialog, listener, display, onPreparedListener);
         provider.initialize();
 
         return provider;
@@ -175,13 +183,15 @@ public abstract class CastProvider {
             JukeboxConnectionHandler comm,
             JukeboxConnectionProgressDialog dialog,
             SeekerListener listener,
-            SurfaceHolder display) {
+            SurfaceHolder display,
+            MediaPlayer.OnPreparedListener onPreparedListener) {
 
         this.parentContext = parentContext;
         this.dialog = dialog;
         this.comm = comm;
         this.seekerListener = seekerListener;
         this.display = display;
+        this.onPreparedListener = onPreparedListener;
     }
 
     protected void closeDialog() {
@@ -190,7 +200,7 @@ public abstract class CastProvider {
     }
 
     public abstract void initialize();
-    public abstract void seek(int position);
     public abstract RpcCallback<JukeboxDomain.JukeboxResponseStartMovie> getCallback();
     public abstract void stop();
+    public abstract boolean usesMediaController();
 }
