@@ -21,7 +21,7 @@ class LocalCastProvider extends CastProvider implements MediaPlayer.OnBufferingU
     @Override
     public void initialize() {
         // set landscape mode for local playback
-        //this.getParentContext().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        this.getParentContext().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
     }
 
     @Override
