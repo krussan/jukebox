@@ -43,6 +43,7 @@ class LocalCastProvider extends CastProvider {
                     Uri uri = Uri.parse(response.getUri());
 
                     mediaPlayer = MediaPlayer.create(context, uri);
+                    //mediaPlayer.setDisplay();
                     for (String subUri : response.getSubtitleUrisList()) {
                         try {
                             mediaPlayer.addTimedTextSource(context, Uri.parse(subUri), "text/vtt");
@@ -54,6 +55,7 @@ class LocalCastProvider extends CastProvider {
                     if (response.getSubtitleUrisCount() > 0)
                         mediaPlayer.selectTrack(1);
 
+                    mediaPlayer.setDisplay(getDisplay());
                     mediaPlayer.start();
 
                     initializeSubtitles();

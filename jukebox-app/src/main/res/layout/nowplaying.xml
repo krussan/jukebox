@@ -132,6 +132,11 @@
                 
     </LinearLayout>
 
+    <SurfaceView
+        android:id="@+id/surfaceview"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"/>
+
     <SeekBar
         android:id="@+id/seekBarDuration"
         android:layout_width="match_parent"

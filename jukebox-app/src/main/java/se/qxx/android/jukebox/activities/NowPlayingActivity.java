@@ -39,6 +39,8 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -115,7 +117,9 @@ public class NowPlayingActivity
             //JukeboxConnectionProgressDialog dialog =
 //                    JukeboxConnectionProgressDialog.build(this, "Starting media ...");
 
-            castProvider = CastProvider.getCaster(this, this.comm, null, this);
+
+            SurfaceHolder holder = getSurfaceHolder();
+            castProvider = CastProvider.getCaster(this, this.comm, null, this, holder);
 
             if (this.isEpisodeMode()) {
                 Episode ep = Model.get().getCurrentEpisode();
@@ -141,6 +145,29 @@ public class NowPlayingActivity
         } catch (Exception e) {
             Logger.Log().e("Unable to initialize NowPlayingActivity", e);
         }
+    }
+
+    @NonNull
+    private SurfaceHolder getSurfaceHolder() {
+        SurfaceView view = findViewById(R.id.surfaceview);
+        SurfaceHolder holder = view.getHolder();
+        holder.addCallback(new SurfaceHolder.Callback() {
+            @Override
+            public void surfaceCreated(SurfaceHolder surfaceHolder) {
+
+            }
+
+            @Override
+            public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
+
+            }
+        });
+        return holder;
     }
 
     private void initializeView(String title, ByteString image) {

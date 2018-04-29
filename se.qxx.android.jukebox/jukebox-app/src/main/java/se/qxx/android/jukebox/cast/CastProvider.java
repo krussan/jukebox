@@ -1,6 +1,8 @@
 package se.qxx.android.jukebox.cast;
 
 import android.app.Activity;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 
 import com.google.protobuf.RpcCallback;
 
@@ -32,6 +34,7 @@ public abstract class CastProvider {
     private CastProviderMode mode;
     private JukeboxDomain.Movie movie;
     private JukeboxDomain.Episode episode;
+    private SurfaceHolder display;
 
     public Activity getParentContext() {
         return this.parentContext;
@@ -89,6 +92,14 @@ public abstract class CastProvider {
         this.episode = episode;
     }
 
+    public SurfaceHolder getDisplay() {
+        return display;
+    }
+
+    public void setDisplay(SurfaceHolder display) {
+        this.display = display;
+    }
+
     protected CastProvider() {
 
     }
@@ -98,7 +109,8 @@ public abstract class CastProvider {
             Activity parentContext,
             JukeboxConnectionHandler comm,
             JukeboxConnectionProgressDialog dialog,
-            SeekerListener listener) {
+            SeekerListener listener,
+            SurfaceHolder display) {
 
         CastProvider provider = null;
         switch (ChromeCastConfiguration.getCastType()) {
@@ -111,7 +123,7 @@ public abstract class CastProvider {
             default:
                 provider = new LocalCastProvider();
         }
-        provider.setup(parentContext, comm, dialog, listener);
+        provider.setup(parentContext, comm, dialog, listener, display);
         provider.initialize();
 
         return provider;
@@ -162,12 +174,14 @@ public abstract class CastProvider {
             Activity parentContext,
             JukeboxConnectionHandler comm,
             JukeboxConnectionProgressDialog dialog,
-            SeekerListener listener) {
+            SeekerListener listener,
+            SurfaceHolder display) {
 
         this.parentContext = parentContext;
         this.dialog = dialog;
         this.comm = comm;
         this.seekerListener = seekerListener;
+        this.display = display;
     }
 
     protected void closeDialog() {
