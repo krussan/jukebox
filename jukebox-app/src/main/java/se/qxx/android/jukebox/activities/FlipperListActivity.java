@@ -87,7 +87,7 @@ public class FlipperListActivity extends AppCompatActivity {
 		
 		switch (id) {
 			case R.id.btnPlay:
-				Intent iPlay = new Intent(v.getContext(), NowPlayingActivity.class);
+				Intent iPlay = new Intent(this, NowPlayingActivity.class);
 				iPlay.putExtra("mode", "main");
 				startActivity(iPlay);
 				break;	
