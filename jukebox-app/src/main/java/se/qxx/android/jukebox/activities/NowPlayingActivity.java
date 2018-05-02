@@ -4,10 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.android.jukebox.cast.CastProvider;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
-import se.qxx.android.jukebox.cast.JukeboxCastType;
-import se.qxx.android.jukebox.dialogs.JukeboxConnectionProgressDialog;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
-import se.qxx.android.jukebox.comm.OnListSubtitlesCompleteHandler;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.widgets.Seeker;
 import se.qxx.android.jukebox.widgets.SeekerListener;
@@ -19,16 +16,9 @@ import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.comm.client.JukeboxConnectionMessage;
 import se.qxx.jukebox.comm.client.JukeboxResponseListener;
 import se.qxx.jukebox.domain.JukeboxDomain;
-import se.qxx.jukebox.domain.JukeboxDomain.Empty;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseGetTitle;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseIsPlaying;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseStartMovie;
-import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
@@ -37,7 +27,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -49,24 +38,11 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.cast.MediaInfo;
-import com.google.android.gms.cast.MediaLoadOptions;
-import com.google.android.gms.cast.MediaMetadata;
-import com.google.android.gms.cast.MediaStatus;
-import com.google.android.gms.cast.MediaTrack;
-import com.google.android.gms.cast.TextTrackStyle;
 import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.common.images.WebImage;
 import com.google.protobuf.ByteString;
-import com.google.protobuf.RpcCallback;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 public class NowPlayingActivity
@@ -81,6 +57,8 @@ public class NowPlayingActivity
     private CastSession mCastSession;
     private CastProvider castProvider;
     MediaController mcontroller ;
+
+    private static boolean screenChange = false;
 
     private String getMode() {
         Intent i = getIntent();
@@ -105,11 +83,14 @@ public class NowPlayingActivity
         comm = new JukeboxConnectionHandler(
                 JukeboxSettings.get().getServerIpAddress(),
                 JukeboxSettings.get().getServerPort());
+
         comm.setListener(this);
 
         setContentView(R.layout.nowplaying);
 
         initializeView();
+
+        screenChange = false;
     }
 
     private void initializeView() {
@@ -117,11 +98,6 @@ public class NowPlayingActivity
             SeekBar sb = findViewById(R.id.seekBarDuration);
             sb.setOnSeekBarChangeListener(this);
             sb.setVisibility(View.VISIBLE);
-
-
-            //JukeboxConnectionProgressDialog dialog =
-//                    JukeboxConnectionProgressDialog.build(this, "Starting media ...");
-
 
             SurfaceHolder holder = getSurfaceHolder();
             castProvider = CastProvider.getCaster(
@@ -152,8 +128,8 @@ public class NowPlayingActivity
 
             initializeMediaController();
 
-            castProvider.startMovie();
-
+            if (screenChange)
+                castProvider.startMovie();
 
         } catch (Exception e) {
             Logger.Log().e("Unable to initialize NowPlayingActivity", e);
@@ -161,9 +137,19 @@ public class NowPlayingActivity
     }
 
     private void initializeMediaController() {
+        SeekBar sb = findViewById(R.id.seekBarDuration);
+        SurfaceView sv = findViewById(R.id.surfaceview);
+
         if (castProvider.usesMediaController()) {
+            sb.setVisibility(View.GONE);
+            sv.setVisibility(View.VISIBLE);
+
             mcontroller = new MediaController(this);
             mcontroller.setMediaPlayer(castProvider);
+        }
+        else {
+            sb.setVisibility(View.VISIBLE);
+            sv.setVisibility(View.GONE);
         }
     }
 
@@ -410,10 +396,7 @@ public class NowPlayingActivity
 
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
-        // TODO Auto-generated method stub
         if (castProvider.usesMediaController()) {
-            SeekBar sb = findViewById(R.id.seekBarDuration);
-            sb.setVisibility(View.GONE);
 
             mcontroller.setMediaPlayer(castProvider);
             mcontroller.setAnchorView(findViewById(R.id.surfaceview));
@@ -437,4 +420,10 @@ public class NowPlayingActivity
     }
 
 
+    @Override
+    protected void onSaveInstanceState(Bundle b){
+        super.onSaveInstanceState(b);
+
+        screenChange = true;
+    }
 }

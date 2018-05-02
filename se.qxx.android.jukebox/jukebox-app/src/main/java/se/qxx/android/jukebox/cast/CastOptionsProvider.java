@@ -19,7 +19,8 @@ import java.util.List;
  */
 
 public class CastOptionsProvider implements OptionsProvider {
-    public static final String JUKEBOX_APPLICATION_ID = "EC008005";
+    public static final String JUKEBOX_APP_ID = "EC008005";
+    public static final String JUKEBOX_DEBUG_APP_ID = "C702B5E4";
 
     @Override
     public CastOptions getCastOptions(Context context) {
@@ -36,7 +37,7 @@ public class CastOptionsProvider implements OptionsProvider {
                 .build();
 
         return new CastOptions.Builder()
-                .setReceiverApplicationId(JUKEBOX_APPLICATION_ID)
+                .setReceiverApplicationId(JUKEBOX_APP_ID)
                 .setCastMediaOptions(mediaOptions)
                 .build();
 

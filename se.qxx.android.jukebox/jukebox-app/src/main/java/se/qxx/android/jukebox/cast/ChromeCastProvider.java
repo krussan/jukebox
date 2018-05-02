@@ -47,7 +47,9 @@ public class ChromeCastProvider extends CastProvider implements RemoteMediaClien
             @Override
             public void run(JukeboxDomain.JukeboxResponseStartMovie response) {
 
-                getDialog().close();
+                JukeboxConnectionProgressDialog dialog = getDialog();
+                if (dialog != null)
+                    dialog.close();
 
                 int movieID = Model.get().getCurrentMovie().getID();
 
