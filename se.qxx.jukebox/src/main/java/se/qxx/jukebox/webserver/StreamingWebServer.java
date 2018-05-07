@@ -151,6 +151,8 @@ public class StreamingWebServer extends NanoHTTPD {
             }
             
             String mimeTypeForFile = getMimeType(uri);
+            // and that does not fit well with some video players
+            String mimeTypeForFile = "video/mp4"; //getMimeTypeForFile(uri);
             
             Response response = serveFile(headers, f, mimeTypeForFile);
             logResponse(response);
