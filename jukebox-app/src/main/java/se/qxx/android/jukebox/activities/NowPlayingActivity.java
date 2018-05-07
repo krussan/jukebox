@@ -128,7 +128,8 @@ public class NowPlayingActivity
 
             initializeMediaController();
 
-            if (screenChange)
+
+            if (!screenChange )
                 castProvider.startMovie();
 
         } catch (Exception e) {
