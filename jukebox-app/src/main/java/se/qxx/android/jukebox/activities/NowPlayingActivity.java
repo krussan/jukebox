@@ -389,9 +389,17 @@ public class NowPlayingActivity
      * Handles request complete from JukeboxResponseListener
      * @param message
      */
-    public void onRequestComplete(JukeboxConnectionMessage message) {
+    public void onRequestComplete(final JukeboxConnectionMessage message) {
         if (!message.result()) {
-            Toast.makeText(this, "Failed :: " + message.getMessage(),Toast.LENGTH_LONG).show();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(NowPlayingActivity.this,
+                            "Failed :: " + message.getMessage(),
+                            Toast.LENGTH_LONG).show();
+                }
+            });
+
         }
     }
 
