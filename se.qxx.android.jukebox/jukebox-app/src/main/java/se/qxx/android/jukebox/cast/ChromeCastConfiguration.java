@@ -8,6 +8,8 @@ import android.graphics.Color;
 import android.view.Menu;
 import android.view.MenuInflater;
 
+import com.google.android.gms.cast.CastRemoteDisplayClient;
+import com.google.android.gms.cast.CastRemoteDisplayLocalService;
 import com.google.android.gms.cast.TextTrackStyle;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
@@ -26,29 +28,6 @@ import se.qxx.android.jukebox.R;
  */
 
 public class ChromeCastConfiguration {
-
-   /* public static CastConfiguration get() {
-            return new CastConfiguration.Builder(CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID)
-                    .enableAutoReconnect()
-                    .enableCaptionManagement()
-                    .enableLockScreen()
-                    .enableWifiReconnection()
-                    .enableNotification()
-                .enableDebug()
-                .addNotificationAction(CastConfiguration.NOTIFICATION_ACTION_DISCONNECT, true)
-                .addNotificationAction(CastConfiguration.NOTIFICATION_ACTION_PLAY_PAUSE, true)
-                .build();
-    }*/
-
-    /*public static void initialize(Activity activity) {
-        if (isChromeCastActive()) {
-            ChromeCastConfiguration.checkGooglePlayServices(activity);
-
-            CastConfiguration options = ChromeCastConfiguration.get();
-
-            VideoCastManager.initialize(activity, options);
-        }
-    }*/
 
     /**
      * A utility method to validate that the appropriate version of the Google Play Services is
@@ -118,6 +97,17 @@ public class ChromeCastConfiguration {
                 .getSessionManager()
                 .getCurrentCastSession();
 
+        if (castSession == null)
+            return null;
+
         return castSession.getRemoteMediaClient();
+    }
+
+    public static boolean isChromecastConnected() {
+        CastSession castSession = CastContext.getSharedInstance()
+                .getSessionManager()
+                .getCurrentCastSession();
+
+        return castSession != null;
     }
 }

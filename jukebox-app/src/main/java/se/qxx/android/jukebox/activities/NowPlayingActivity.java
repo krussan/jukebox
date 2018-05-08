@@ -32,13 +32,19 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
+import com.google.android.gms.cast.CastStatusCodes;
+import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
+import com.google.android.gms.cast.framework.Session;
+import com.google.android.gms.cast.framework.SessionManager;
 import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.google.protobuf.ByteString;
@@ -47,14 +53,12 @@ import java.util.List;
 
 public class NowPlayingActivity
     extends AppCompatActivity
-        implements OnSeekBarChangeListener, SeekerListener, JukeboxResponseListener, MediaPlayer.OnPreparedListener {
+        implements OnSeekBarChangeListener, SeekerListener, JukeboxResponseListener, MediaPlayer.OnPreparedListener, SessionManagerListener<Session> {
 
     private Seeker seeker;
     private boolean isManualSeeking = false;
     private JukeboxConnectionHandler comm;
 
-    private SessionManagerListener mSessionManagerListener;
-    private CastSession mCastSession;
     private CastProvider castProvider;
     MediaController mcontroller ;
 
@@ -99,14 +103,7 @@ public class NowPlayingActivity
             sb.setOnSeekBarChangeListener(this);
             sb.setVisibility(View.VISIBLE);
 
-            SurfaceHolder holder = getSurfaceHolder();
-            castProvider = CastProvider.getCaster(
-                    this,
-                    this.comm,
-                    null,
-                    this,
-                    holder,
-                    this);
+            initializeCastProvider();
 
             if (this.isEpisodeMode()) {
                 Episode ep = Model.get().getCurrentEpisode();
@@ -128,6 +125,7 @@ public class NowPlayingActivity
 
             initializeMediaController();
 
+            initializeSessionManager();
 
             if (!screenChange )
                 castProvider.startMovie();
@@ -137,21 +135,58 @@ public class NowPlayingActivity
         }
     }
 
+    private void initializeCastProvider() {
+        SurfaceHolder holder = getSurfaceHolder();
+
+        castProvider = CastProvider.getCaster(
+                this,
+                this.comm,
+                null,
+                this,
+                holder,
+                this);
+    }
+
+    private void initializeSessionManager() {
+        SessionManager sessionManager = CastContext.getSharedInstance().getSessionManager();
+
+        if (sessionManager != null) {
+            sessionManager.addSessionManagerListener(this);
+        }
+    }
+
     private void initializeMediaController() {
-        SeekBar sb = findViewById(R.id.seekBarDuration);
+
         SurfaceView sv = findViewById(R.id.surfaceview);
+        boolean surfaceViewVisible = castProvider.usesMediaController();
+        setVisibility(surfaceViewVisible);
 
-        if (castProvider.usesMediaController()) {
-            sb.setVisibility(View.GONE);
-            sv.setVisibility(View.VISIBLE);
-
+        if (surfaceViewVisible) {
             mcontroller = new MediaController(this);
             mcontroller.setMediaPlayer(castProvider);
         }
-        else {
-            sb.setVisibility(View.VISIBLE);
-            sv.setVisibility(View.GONE);
-        }
+    }
+
+    private void setVisibility(boolean surfaceViewVisible) {
+        SurfaceView sv = findViewById(R.id.surfaceview);
+
+        SeekBar sb = findViewById(R.id.seekBarDuration);
+        LinearLayout linearLayout2 = findViewById(R.id.linearLayout2);
+        LinearLayout linearLayout1 = findViewById(R.id.linearLayout1);
+        LinearLayout linearLayoutButtons1 = findViewById(R.id.linearLayoutButtons1);
+        TextView txtSeekIndicator = findViewById(R.id.txtSeekIndicator);
+
+        int standardControlsMode = surfaceViewVisible ? View.GONE : View.VISIBLE;
+        int mediaControllerMode = surfaceViewVisible ? View.VISIBLE : View.GONE;
+
+        sb.setVisibility(standardControlsMode);
+        linearLayout1.setVisibility(standardControlsMode);
+        linearLayout2.setVisibility(standardControlsMode);
+        linearLayoutButtons1.setVisibility(standardControlsMode);
+        txtSeekIndicator.setVisibility(standardControlsMode);
+
+        sv.setVisibility(mediaControllerMode);
+
     }
 
     @NonNull
@@ -406,8 +441,8 @@ public class NowPlayingActivity
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
         if (castProvider.usesMediaController()) {
-
             mcontroller.setMediaPlayer(castProvider);
+
             mcontroller.setAnchorView(findViewById(R.id.surfaceview));
             mcontroller.setEnabled(true);
 
@@ -434,5 +469,68 @@ public class NowPlayingActivity
         super.onSaveInstanceState(b);
 
         screenChange = true;
+    }
+
+    @Override
+    public void onSessionStarting(Session session) {
+        // stop the current cast provider
+        if (castProvider != null) {
+            castProvider.stop();
+        }
+    }
+
+    @Override
+    public void onSessionStarted(Session session, String s) {
+        initializeCastProvider();
+        // start movie and seek?
+    }
+
+    @Override
+    public void onSessionStartFailed(Session session, int i) {
+
+    }
+
+    @Override
+    public void onSessionEnding(Session session) {
+    }
+
+    @Override
+    public void onSessionEnded(Session session, int i) {
+        // stop the current cast provider
+        if (castProvider != null) {
+            if (castProvider.isPlaying()) {
+                castProvider.stop();
+                initializeCastProvider();
+            }
+        }
+
+        // start movie and seek?
+    }
+
+    @Override
+    public void onSessionResuming(Session session, String s) {
+
+    }
+
+    @Override
+    public void onSessionResumed(Session session, boolean b) {
+
+    }
+
+    @Override
+    public void onSessionResumeFailed(Session session, int i) {
+
+    }
+
+    @Override
+    public void onSessionSuspended(Session session, int i) {
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        CastContext.getSharedInstance().getSessionManager().removeSessionManagerListener(this);
     }
 }

@@ -280,7 +280,12 @@ public class ChromeCastProvider extends CastProvider implements RemoteMediaClien
 
     @Override
     public boolean isPlaying() {
-        return false;
+        RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(getParentContext());
+
+        if (client == null)
+            return false;
+
+        return client.isPlaying();
     }
 
     @Override
@@ -290,17 +295,17 @@ public class ChromeCastProvider extends CastProvider implements RemoteMediaClien
 
     @Override
     public boolean canPause() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean canSeekBackward() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean canSeekForward() {
-        return false;
+        return true;
     }
 
     @Override

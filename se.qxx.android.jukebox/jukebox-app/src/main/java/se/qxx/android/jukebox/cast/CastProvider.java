@@ -6,6 +6,8 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.MediaController;
 
+import com.google.android.gms.cast.CastRemoteDisplayLocalService;
+import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.google.protobuf.RpcCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -123,7 +125,10 @@ public abstract class CastProvider implements MediaController.MediaPlayerControl
         CastProvider provider = null;
         switch (ChromeCastConfiguration.getCastType()) {
             case ChromeCast:
-                provider = new ChromeCastProvider();
+                if (ChromeCastConfiguration.isChromecastConnected())
+                    provider = new ChromeCastProvider();
+                else
+                    provider = new LocalCastProvider();
                 break;
             case JukeboxCast:
                 provider = new JukeboxCastProvider();
