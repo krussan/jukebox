@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.view.Surface;
+import android.view.SurfaceView;
 
 import com.google.protobuf.RpcCallback;
 
@@ -17,6 +19,7 @@ import se.qxx.jukebox.domain.JukeboxDomain;
 class LocalCastProvider extends CastProvider implements MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnVideoSizeChangedListener {
 
     MediaPlayer mediaPlayer = null;
+    SurfaceView surfaceView = null;
 
     @Override
     public void initialize() {
@@ -50,6 +53,8 @@ class LocalCastProvider extends CastProvider implements MediaPlayer.OnBufferingU
                         mediaPlayer.selectTrack(1);
 
                     mediaPlayer.setDisplay(getDisplay());
+                    setViewLayoutRatio();
+
                     mediaPlayer.start();
 
                     initializeSubtitles();
@@ -150,5 +155,41 @@ class LocalCastProvider extends CastProvider implements MediaPlayer.OnBufferingU
     @Override
     public void onVideoSizeChanged(MediaPlayer mediaPlayer, int i, int i1) {
 
+    }
+
+    @Override
+    public void surfaceCreated(SurfaceView view) {
+        surfaceView = view;
+    }
+
+    public void setViewLayoutRatio() {
+
+        if (mediaPlayer != null && surfaceView != null) {
+            //Get the dimensions of the video
+            final int videoWidth = mediaPlayer.getVideoWidth();
+            final int videoHeight = mediaPlayer.getVideoHeight();
+
+            //Get the width of the screen
+            final int screenWidth = getParentContext().getWindowManager().getDefaultDisplay().getWidth();
+
+
+            getParentContext().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    //Get the SurfaceView layout parameters
+                    android.view.ViewGroup.LayoutParams lp = surfaceView.getLayoutParams();
+
+                    //Set the width of the SurfaceView to the width of the screen
+                    lp.width = screenWidth;
+
+                    //Set the height of the SurfaceView to match the aspect ratio of the video
+                    //be sure to cast these as floats otherwise the calculation will likely be 0
+                    lp.height = (int) (((float) videoHeight / (float) videoWidth) * (float) screenWidth);
+
+                    //Commit the layout parameters
+                    surfaceView.setLayoutParams(lp);
+                }
+            });
+        }
     }
 }

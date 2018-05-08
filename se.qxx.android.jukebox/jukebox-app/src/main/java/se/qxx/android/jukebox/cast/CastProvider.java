@@ -203,4 +203,5 @@ public abstract class CastProvider implements MediaController.MediaPlayerControl
     public abstract RpcCallback<JukeboxDomain.JukeboxResponseStartMovie> getCallback();
     public abstract void stop();
     public abstract boolean usesMediaController();
+    public abstract void surfaceCreated(SurfaceView view);
 }

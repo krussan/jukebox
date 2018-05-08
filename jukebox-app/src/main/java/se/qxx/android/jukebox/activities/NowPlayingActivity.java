@@ -156,12 +156,12 @@ public class NowPlayingActivity
 
     @NonNull
     private SurfaceHolder getSurfaceHolder() {
-        SurfaceView view = findViewById(R.id.surfaceview);
+        final SurfaceView view = findViewById(R.id.surfaceview);
         SurfaceHolder holder = view.getHolder();
         holder.addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder surfaceHolder) {
-
+                castProvider.surfaceCreated(view);
             }
 
             @Override

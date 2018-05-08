@@ -1,6 +1,7 @@
 package se.qxx.android.jukebox.cast;
 
 import android.app.Activity;
+import android.view.SurfaceView;
 
 import com.google.protobuf.RpcCallback;
 
@@ -187,5 +188,9 @@ class JukeboxCastProvider extends CastProvider {
         return null;
     }
 
+    @Override
+    public void surfaceCreated(SurfaceView view) {
+
+    }
 
 }

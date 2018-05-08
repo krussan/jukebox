@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.view.SurfaceView;
 
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaLoadOptions;
@@ -270,6 +271,11 @@ public class ChromeCastProvider extends CastProvider implements RemoteMediaClien
         if (client != null) {
             client.seek(position * 1000);
         }
+    }
+
+    @Override
+    public void surfaceCreated(SurfaceView view) {
+
     }
 
     @Override
