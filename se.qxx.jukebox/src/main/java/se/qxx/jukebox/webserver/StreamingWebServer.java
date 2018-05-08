@@ -198,11 +198,19 @@ public class StreamingWebServer extends NanoHTTPD {
         // and that does not fit well with some video players
 
 		//String mimeTypeForFile = getMimeTypeForFile(uri);
-		if (uri.endsWith("vtt"))
+		String uriLower = uri.toLowerCase();
+		
+		if (uriLower.endsWith("vtt"))
 			return "text/vtt";
 		
-		if (uri.endsWith("mkv") || uri.endsWith("avi") || uri.endsWith("mp4"))
+		if (uriLower.endsWith("mp4"))
 			return "video/mp4";
+		
+		if (uriLower.endsWith("avi"))
+			return "video/avi";
+		
+		if (uriLower.endsWith("mkv"))
+			return "video/x-matroska";
 		
 		return getMimeTypeForFile(uri);
 	}
