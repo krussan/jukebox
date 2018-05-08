@@ -151,8 +151,6 @@ public class StreamingWebServer extends NanoHTTPD {
             }
             
             String mimeTypeForFile = getMimeType(uri);
-            // and that does not fit well with some video players
-            String mimeTypeForFile = "video/mp4"; //getMimeTypeForFile(uri);
             
             Response response = serveFile(headers, f, mimeTypeForFile);
             logResponse(response);
@@ -196,10 +194,17 @@ public class StreamingWebServer extends NanoHTTPD {
     }
 
 	private String getMimeType(String uri) {
-		String mimeTypeForFile = getMimeTypeForFile(uri);
+        //use mp4 for now. Default seems to be octet-stream for unknown file types 
+        // and that does not fit well with some video players
+
+		//String mimeTypeForFile = getMimeTypeForFile(uri);
 		if (uri.endsWith("vtt"))
-			mimeTypeForFile = "text/vtt";
-		return mimeTypeForFile;
+			return "text/vtt";
+		
+		if (uri.endsWith("mkv") || uri.endsWith("avi") || uri.endsWith("mp4"))
+			return "video/mp4";
+		
+		return getMimeTypeForFile(uri);
 	}
 	
 	private void logResponse(Response response) {
