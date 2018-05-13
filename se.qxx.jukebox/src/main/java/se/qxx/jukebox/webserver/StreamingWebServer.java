@@ -419,6 +419,9 @@ public class StreamingWebServer extends NanoHTTPD {
         } catch (IOException ioe) {
             res = getForbiddenResponse("Reading file failed.");
         }
+        
+        // enable CORS	
+    	res.addHeader("Access-Control-Allow-Origin", "*");
 
         return res;
     }
