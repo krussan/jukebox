@@ -48,11 +48,11 @@ public class FlipperListActivity extends AppCompatActivity {
 			public void onPageSelected(int position) {
 			    Model.get().setOffset(0);
                 if (position == VIEWMODE_MOVIE)
-                    Model.get().setModelType(Model.ModelType.Movie);
-                else
-                    Model.get().setModelType(Model.ModelType.Series);
+					Connector.connect(0, Model.get().getNrOfItems(), Model.ModelType.Movie);
+                else if (position == VIEWMODE_SERIES)
+					Connector.connect(0, Model.get().getNrOfItems(), Model.ModelType.Series);
 
-                Connector.connect(0, Model.get().getNrOfItems());
+
             }
 
 			@Override

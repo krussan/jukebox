@@ -22,7 +22,8 @@ public class Model {
 
     public enum ModelType {
         Movie,
-		Series
+		Series,
+		Season
     }
 
 	private ModelType modelType = ModelType.Movie;
@@ -71,14 +72,22 @@ public class Model {
 		}
 	}
 
-	
-	
-		
 	private static Model _instance;
 	private List<Movie> _movies;
 	private List<String> _players;
 	private List<Subtitle> _subs;
 	private List<Series> _series;
+
+    public Season getSeason() {
+        return _season;
+    }
+
+    public void setSeason(Season _season) {
+        this._season = _season;
+        fireModelUpdatedEvent(ModelUpdatedType.Season);
+    }
+
+    private Season _season;
 	
 	private Model() {
 		_movies = new ArrayList<Movie>();
@@ -133,6 +142,8 @@ public class Model {
 		_series.addAll(series);
 		fireModelUpdatedEvent(ModelUpdatedType.Series);
 	}
+
+
 	
 	public void clearMovies() {
 		_movies.clear();
@@ -143,8 +154,8 @@ public class Model {
 		_series.clear();
 		fireModelUpdatedEvent(ModelUpdatedType.Series);
 	}
-	
-	public Movie getMovie(int position) {
+
+    public Movie getMovie(int position) {
 		return _movies.get(position);
 	}
 	

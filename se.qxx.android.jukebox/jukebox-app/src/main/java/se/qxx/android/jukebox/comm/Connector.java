@@ -18,16 +18,16 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
 
 public class Connector {
 
-	public static void connect(int offset, int nrOfItems) {
+	public static void connect(int offset, int nrOfItems, Model.ModelType modelType) {
+		Model.get().setModelType(modelType);
 		final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
 				JukeboxSettings.get().getServerIpAddress(),
 				JukeboxSettings.get().getServerPort());
 
 		try {
-			Model.ModelType m = Model.get().getModelType();
 			Model.get().setLoading(true);
 
-			if (m == Model.ModelType.Movie) {
+			if (modelType == Model.ModelType.Movie) {
 				Logger.Log().d("Listing movies");
 				jh.listMovies("",
 						nrOfItems,
@@ -50,7 +50,7 @@ public class Connector {
 
 						});
 			}
-			else if (m == Model.ModelType.Series) {
+			else if (modelType == Model.ModelType.Series) {
 			    jh.listSeries("",
                         Model.get().getNrOfItems(),
                         Model.get().getOffset(),
@@ -70,6 +70,29 @@ public class Connector {
 
 						});
 			}
+            else if (modelType == Model.ModelType.Season) {
+                jh.listSeasons("",
+                        Model.get().getCurrentSeries().getID(),
+                        Model.get().getNrOfItems(),
+                        Model.get().getOffset(),
+                        new RpcCallback<JukeboxResponseListMovies>() {
+
+                            @Override
+                            public void run(JukeboxResponseListMovies response) {
+                                //TODO: if repsonse is null probably the server is down..
+                                if (response != null) {
+                                    Model.get().getCurrentSeries().
+                                    Model.get().clearMovies();
+                                    Model.get().addAllSeries(response.getSeriesList());
+                                    Model.get().setInitialized(true);
+                                }
+
+                                Model.get().setLoading(false);
+                            }
+
+                        });
+            }
+
 		} catch (Exception e) {
 
 		}
