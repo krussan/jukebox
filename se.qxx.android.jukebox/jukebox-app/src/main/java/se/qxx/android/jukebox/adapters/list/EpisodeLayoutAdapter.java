@@ -11,6 +11,7 @@ import android.widget.ImageButton;
 
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.NowPlayingActivity;
+import se.qxx.android.jukebox.activities.ViewMode;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
@@ -80,7 +81,7 @@ public class EpisodeLayoutAdapter extends BaseAdapter implements View.OnClickLis
 		switch (view.getId()) {
 			case R.id.btnPlayEpisode:
 				Intent iPlay = new Intent(this.context, NowPlayingActivity.class);
-                iPlay.putExtra("mode", "episode");
+                iPlay.putExtra("mode", ViewMode.Episode);
 				context.startActivity(iPlay);
 				break;
 		}

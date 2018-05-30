@@ -64,19 +64,17 @@ public class NowPlayingActivity
 
     private static boolean screenChange = false;
 
-    private String getMode() {
+    private ViewMode getMode() {
         Intent i = getIntent();
         if (i != null) {
             Bundle b = i.getExtras();
             if (b != null) {
-                return b.getString("mode");
+                return (ViewMode)b.getSerializable("mode");
             }
         }
-        return StringUtils.EMPTY;
+        return ViewMode.Movie;
     }
 
-
-    private boolean isEpisodeMode() { return StringUtils.equalsIgnoreCase(this.getMode(), "episode"); }
 
     //region --Initialization--
 
@@ -105,7 +103,7 @@ public class NowPlayingActivity
 
             initializeCastProvider();
 
-            if (this.isEpisodeMode()) {
+            if (this.getMode() == ViewMode.Episode) {
                 Episode ep = Model.get().getCurrentEpisode();
                 initializeView(
                         String.format("S%sE%s - %s",

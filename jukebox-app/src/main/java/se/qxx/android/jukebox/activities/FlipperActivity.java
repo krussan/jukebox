@@ -24,10 +24,19 @@ public class FlipperActivity extends AppCompatActivity implements OnPageChangeLi
 	ViewPager pager;
 	private CastContext mCastContext;
 
+	private ViewMode mode = ViewMode.Movie;
 	protected View getRootView() {
 		return findViewById(R.id.rootViewPager);
 	}
-		
+
+	public ViewMode getMode() {
+		return mode;
+	}
+
+	public void setMode(ViewMode mode) {
+		this.mode = mode;
+	}
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +51,11 @@ public class FlipperActivity extends AppCompatActivity implements OnPageChangeLi
         this.getRootView().setOnLongClickListener(this);
 
         mCastContext = CastContext.getSharedInstance(this);
-    }
+
+		if (getIntent() != null && getIntent().getExtras() != null)
+			this.setMode((ViewMode)getIntent().getExtras().getSerializable("mode"));
+
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -58,7 +71,7 @@ public class FlipperActivity extends AppCompatActivity implements OnPageChangeLi
 		switch (id) {
 			case R.id.btnPlay:
 				Intent iPlay = new Intent(this, NowPlayingActivity.class);
-				iPlay.putExtra("mode", "main");
+				iPlay.putExtra("mode", this.getMode());
 				startActivity(iPlay);
 				break;	
 			case R.id.btnViewInfo:

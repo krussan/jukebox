@@ -81,7 +81,7 @@ public class Connector {
                             public void run(JukeboxResponseListMovies response) {
                                 //TODO: if repsonse is null probably the server is down..
                                 if (response != null) {
-                                    Model.get().getCurrentSeries().
+                                    Model.get().clearSeries();
                                     Model.get().clearMovies();
                                     Model.get().addAllSeries(response.getSeriesList());
                                     Model.get().setInitialized(true);
