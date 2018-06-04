@@ -79,7 +79,7 @@ public class FlipperListActivity extends AppCompatActivity {
 			}
 		});
 
-        JukeboxFragmentAdapter mfa = new JukeboxFragmentAdapter(getSupportFragmentManager(), this.getMode(), this);
+        JukeboxFragmentAdapter mfa = new JukeboxFragmentAdapter(getSupportFragmentManager(), this);
 
         pager.setAdapter(mfa);
         pager.setCurrentItem(Model.get().getCurrentMovieIndex());

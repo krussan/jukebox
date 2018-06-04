@@ -14,16 +14,7 @@ import se.qxx.android.jukebox.activities.ViewMode;
 
 public class JukeboxFragmentAdapter extends FragmentStatePagerAdapter {
 
-	private ViewMode mode = ViewMode.Movie;
     private Context context;
-
-	private ViewMode getMode() {
-		return mode;
-	}
-
-    public void setMode(ViewMode mode) {
-        this.mode = mode;
-    }
 
     public Context getContext() {
         return context;
@@ -33,20 +24,19 @@ public class JukeboxFragmentAdapter extends FragmentStatePagerAdapter {
         this.context = context;
     }
 
-    public JukeboxFragmentAdapter(FragmentManager fm, ViewMode mode, Context context) {
+    public JukeboxFragmentAdapter(FragmentManager fm, Context context) {
 		super(fm);
-		this.setMode(mode);
 		this.setContext(context);
 	}
 
 	@Override
 	public int getCount() {
-		return 2;
+        return 2;
 	}
 
 	@Override
 	public Fragment getItem(int position) {
-		return JukeboxFragment.newInstance(position, this.getMode());
+		return JukeboxFragment.newInstance(position);
 	}
 
     @Override
@@ -54,12 +44,8 @@ public class JukeboxFragmentAdapter extends FragmentStatePagerAdapter {
 	    if (this.getContext() != null) {
             if (position == 0)
                 return this.getContext().getResources().getString(R.string.tabMovies);
-            else {
-                if (this.getMode() == ViewMode.Season)
-                    return this.getContext().getResources().getString(R.string.tabSeason);
-                else
-                    return this.getContext().getResources().getString(R.string.tabSeries);
-            }
+            else
+                return this.getContext().getResources().getString(R.string.tabSeries);
         }
 
         return StringUtils.EMPTY;

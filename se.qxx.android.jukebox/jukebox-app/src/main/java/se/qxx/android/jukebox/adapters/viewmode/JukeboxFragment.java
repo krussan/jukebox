@@ -2,6 +2,7 @@ package se.qxx.android.jukebox.adapters.viewmode;
 
 import java.util.EventObject;
 
+import se.qxx.android.jukebox.activities.ListActivity;
 import se.qxx.android.jukebox.activities.ViewMode;
 import se.qxx.android.jukebox.dialogs.ActionDialog;
 import se.qxx.android.jukebox.comm.Connector;
@@ -45,6 +46,7 @@ public class JukeboxFragment extends ListFragment implements
 
 	private MovieLayoutAdapter _jukeboxMovieLayoutAdapter;
 	private SeriesLayoutAdapter _seriesLayoutAdapter;
+    private EndlessScrollListener scrollListener;
 
     public ViewMode getMode() {
         return mode;
@@ -54,9 +56,6 @@ public class JukeboxFragment extends ListFragment implements
         this.mode = mode;
     }
 
-    private SeasonLayoutAdapter _seasonLayoutAdapter;
-    private EpisodeLayoutAdapter _episodeLayoutAdapter;
-    private EndlessScrollListener scrollListener;
 
 	private Runnable modelResultUpdatedRunnable = new Runnable() {
 
@@ -68,32 +67,23 @@ public class JukeboxFragment extends ListFragment implements
 			if (_seriesLayoutAdapter != null)
 				_seriesLayoutAdapter.notifyDataSetChanged();
 
-            if (_seasonLayoutAdapter != null)
-                _seasonLayoutAdapter.notifyDataSetChanged();
-
-            if (_episodeLayoutAdapter != null)
-                _episodeLayoutAdapter.notifyDataSetChanged();
 		}
 	};
 
-	private static ViewMode getViewMode(int position, ViewMode mode) {
+	private static ViewMode getViewMode(int position) {
         // position 0 in horizontal scroll is movie
         // position 0 is series OR season
 
         if (position == 0)
             return ViewMode.Movie;
-        else {
-            if (mode == ViewMode.Movie)
-                return ViewMode.Series;
-            else
-                return mode;
-        }
+        else
+            return ViewMode.Series;
     }
 
-	public static JukeboxFragment newInstance(int position, ViewMode mode) {
+	public static JukeboxFragment newInstance(int position) {
 		Bundle b = new Bundle();
 		JukeboxFragment mf = new JukeboxFragment();
-        b.putSerializable("mode", getViewMode(position, mode));
+        b.putSerializable("mode", getViewMode(position));
 
 		mf.setArguments(b);
 
@@ -155,10 +145,6 @@ public class JukeboxFragment extends ListFragment implements
             _seriesLayoutAdapter = new SeriesLayoutAdapter(v.getContext());
             lv.setAdapter(_seriesLayoutAdapter);
         }
-        else if (this.getMode() == ViewMode.Season) {
-            _seasonLayoutAdapter = new SeasonLayoutAdapter(v.getContext(), Model.get().getCurrentSeries());
-            lv.setAdapter(_seasonLayoutAdapter);
-        }
 
 		Connector.setupOnOffButton(v);
 
@@ -182,19 +168,12 @@ public class JukeboxFragment extends ListFragment implements
         }
         else if (this.getMode() == ViewMode.Series) {
             Model.get().setCurrentSeries(pos);
-            Intent intentSeries = new Intent(this.getActivity(), FlipperListActivity.class);
+            Intent intentSeries = new Intent(this.getActivity(), ListActivity.class);
             intentSeries.putExtra("mode", ViewMode.Season);
 
             startActivity(intentSeries);
 
             //Toast.makeText(this.getActivity(), "Should display the new series!", Toast.LENGTH_SHORT).show();
-        }
-        else if (this.getMode() == ViewMode.Season) {
-            Model.get().setCurrentSeason(pos);
-            Intent intentSeries = new Intent(this.getActivity(), FlipperListActivity.class);
-            intentSeries.putExtra("mode", ViewMode.Season);
-
-            startActivity(intentSeries);
         }
     }
 
