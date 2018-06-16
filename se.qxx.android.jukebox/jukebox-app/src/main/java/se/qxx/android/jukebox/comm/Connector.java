@@ -7,19 +7,75 @@ import android.content.Context;
 import android.view.View;
 import android.widget.Toast;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Predicate;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
 import se.qxx.android.jukebox.dialogs.JukeboxConnectionProgressDialog;
+import se.qxx.android.jukebox.model.ModelUpdatedEvent;
+import se.qxx.android.jukebox.model.ModelUpdatedType;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
+import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
 
 public class Connector {
+    public interface ConnectorCallbackEventListener {
+        void handleMoviesUpdated(List<JukeboxDomain.Movie> movies);
+        void handleSeriesUpdated(List<JukeboxDomain.Series> series);
+        void handleSeasonsUpdated(List<JukeboxDomain.Season> seasons);
+        void handleEpisodesUpdated(List<JukeboxDomain.Episode> episodes);
+    }
 
-	public static void connect(int offset, int nrOfItems, Model.ModelType modelType) {
+    public synchronized void addEventListener(ConnectorCallbackEventListener listener) {
+        _listeners.add(listener);
+    }
+
+    private static List<ConnectorCallbackEventListener> _listeners = new ArrayList<ConnectorCallbackEventListener>();
+
+    public static synchronized void removeEventListener(ConnectorCallbackEventListener listener) {
+        _listeners.remove(listener);
+    }
+
+    private static final synchronized void fireMoviesUpdated(List<JukeboxDomain.Movie> movies){
+        Iterator<ConnectorCallbackEventListener> i = _listeners.iterator();
+
+        while(i.hasNext())
+            i.next().handleMoviesUpdated(movies);
+
+    }
+    private static final synchronized void fireSeriesUpdated(List<JukeboxDomain.Series> series) {
+        Iterator<ConnectorCallbackEventListener> i = _listeners.iterator();
+
+        while(i.hasNext())
+            i.next().handleSeriesUpdated(series);
+    }
+
+    private static final void fireSeasonsUpdated(List<JukeboxDomain.Season> seasons) {
+        Iterator<ConnectorCallbackEventListener> i = _listeners.iterator();
+
+        while(i.hasNext())
+            i.next().handleSeasonsUpdated(seasons);
+    }
+
+    private static final void fireEpisodesUpdated(List<JukeboxDomain.Episode> episodes) {
+        Iterator<ConnectorCallbackEventListener> i = _listeners.iterator();
+
+        while(i.hasNext())
+            i.next().handleEpisodesUpdated(episodes);
+    }
+
+	public static void connect(final int offset, final int nrOfItems, Model.ModelType modelType, final int seriesID, int seasonID) {
 		Model.get().setModelType(modelType);
+
 		final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
 				JukeboxSettings.get().getServerIpAddress(),
 				JukeboxSettings.get().getServerPort());
@@ -39,8 +95,7 @@ public class Connector {
 								//TODO: if repsonse is null probably the server is down..
 								if (response != null) {
 									//Model.get().clearMovies(); //Dont clear movies when doing partial load
-									Model.get().clearSeries();
-									Model.get().addAllMovies(response.getMoviesList());
+                                    fireMoviesUpdated(response.getMoviesList());
 									Model.get().setInitialized(true);
 								}
 
@@ -52,16 +107,15 @@ public class Connector {
 			}
 			else if (modelType == Model.ModelType.Series) {
 			    jh.listSeries("",
-                        Model.get().getNrOfItems(),
-                        Model.get().getOffset(),
+                        nrOfItems,
+                        offset,
 						new RpcCallback<JukeboxResponseListMovies>() {
 
 							@Override
 							public void run(JukeboxResponseListMovies response) {
 								//TODO: if repsonse is null probably the server is down..
 								if (response != null) {
-									Model.get().clearMovies();
-									Model.get().addAllSeries(response.getSeriesList());
+								    fireSeriesUpdated(response.getSeriesList());
 									Model.get().setInitialized(true);
 								}
 
@@ -72,18 +126,18 @@ public class Connector {
 			}
             else if (modelType == Model.ModelType.Season) {
                 jh.listSeasons("",
-                        Model.get().getCurrentSeries().getID(),
-                        Model.get().getNrOfItems(),
-                        Model.get().getOffset(),
+                        seriesID,
+                        nrOfItems,
+                        offset,
                         new RpcCallback<JukeboxResponseListMovies>() {
 
                             @Override
                             public void run(JukeboxResponseListMovies response) {
                                 //TODO: if repsonse is null probably the server is down..
                                 if (response != null) {
-                                    Model.get().clearSeries();
-                                    Model.get().clearMovies();
-                                    Model.get().addAllSeries(response.getSeriesList());
+                                    if (response.getSeriesList().size() > 0)
+                                        fireSeasonsUpdated(response.getSeries(0).getSeasonList());
+
                                     Model.get().setInitialized(true);
                                 }
 
@@ -92,6 +146,34 @@ public class Connector {
 
                         });
             }
+			else if (modelType == Model.ModelType.Episode) {
+				jh.listEpisodes("",
+						seriesID,
+						seasonID,
+						nrOfItems,
+						offset,
+						new RpcCallback<JukeboxResponseListMovies>() {
+
+							@Override
+							public void run(JukeboxResponseListMovies response) {
+								//TODO: if repsonse is null probably the server is down..
+								if (response != null) {
+                                    if (response.getSeriesList().size() > 0) {
+                                        List<JukeboxDomain.Season> seasons = response.getSeries(0).getSeasonList();
+                                        if (seasons.size() > 0) {
+                                            fireEpisodesUpdated(seasons.get(0).getEpisodeList());
+                                        }
+                                    }
+
+									Model.get().setInitialized(true);
+								}
+
+								Model.get().setLoading(false);
+							}
+
+						});
+
+			}
 
 		} catch (Exception e) {
 
@@ -99,6 +181,7 @@ public class Connector {
 
 		Model.get().setLoading(false);
 	}
+
 	
 	public static void showMessage(Activity a, final String message) {
 		final Context c = (Context)a;

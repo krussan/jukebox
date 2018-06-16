@@ -21,6 +21,9 @@ public class SeasonLayoutAdapter extends BaseAdapter {
 	private Series getSeries() {
 		return series;
 	}
+	public void setSeries(Series series) {
+		this.series = series;
+	}
 
 	public SeasonLayoutAdapter(Context context, Series series) {
 		super();

@@ -101,6 +101,8 @@ public class JukeboxFragment extends ListFragment implements
 		}
 
         Model.get().addEventListener(this);
+
+		loadMoreData(0);
 	}	
 	
 	@Override

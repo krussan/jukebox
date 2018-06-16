@@ -16,7 +16,7 @@ public enum ViewMode {
         else if (mode == ViewMode.Season)
             return Model.ModelType.Season;
         else
-            return Model.ModelType.Season;
+            return Model.ModelType.Episode;
     }
 
 }

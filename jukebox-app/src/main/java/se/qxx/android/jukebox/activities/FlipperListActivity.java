@@ -1,23 +1,19 @@
 package se.qxx.android.jukebox.activities;
 
-import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
-import se.qxx.android.jukebox.comm.Connector;
-import se.qxx.android.jukebox.settings.JukeboxSettings;
-import se.qxx.android.jukebox.R;
-import se.qxx.android.jukebox.adapters.viewmode.JukeboxFragmentAdapter;
-import se.qxx.android.jukebox.model.Model;
-import se.qxx.android.tools.GUITools;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.android.gms.cast.framework.CastContext;
+
+import se.qxx.android.jukebox.R;
+import se.qxx.android.jukebox.adapters.viewmode.JukeboxFragmentAdapter;
+import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
+import se.qxx.android.jukebox.comm.Connector;
+import se.qxx.android.jukebox.model.Model;
+import se.qxx.android.jukebox.settings.JukeboxSettings;
 
 public class FlipperListActivity extends AppCompatActivity {
 	ViewPager pager;
@@ -70,7 +66,9 @@ public class FlipperListActivity extends AppCompatActivity {
                 Connector.connect(
                         0,
                         Model.get().getNrOfItems(),
-                        ViewMode.getModelType(getViewMode(position)));
+                        ViewMode.getModelType(getViewMode(position)),
+                        -1,
+                        -1);
             }
 
 			@Override
@@ -82,17 +80,9 @@ public class FlipperListActivity extends AppCompatActivity {
         JukeboxFragmentAdapter mfa = new JukeboxFragmentAdapter(getSupportFragmentManager(), this);
 
         pager.setAdapter(mfa);
-        pager.setCurrentItem(Model.get().getCurrentMovieIndex());
 
 		mCastContext = CastContext.getSharedInstance(this);
 
-        if (this.getMode() == ViewMode.Season) {
-            // trigger an update if we are on a season list
-            Connector.connect(
-                    0,
-                    Model.get().getNrOfItems(),
-                    ViewMode.getModelType(this.getMode()));
-        }
     }
 
 	@Override
@@ -104,28 +94,5 @@ public class FlipperListActivity extends AppCompatActivity {
 		return true;
 	}
 
-	public void onButtonClicked(View v) {
-		int id = v.getId();
-		
-		switch (id) {
-			case R.id.btnPlay:
-				Intent iPlay = new Intent(this, NowPlayingActivity.class);
-				iPlay.putExtra("mode", ViewMode.Movie);
-				startActivity(iPlay);
-				break;	
-			case R.id.btnViewInfo:
-				String url = Model.get().getCurrentMovie().getImdbUrl();
-				if (url != null && url.length() > 0) {
-					Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-					startActivity(browserIntent);
-				}
-				else {
-					Toast.makeText(v.getContext(), "No IMDB link available", Toast.LENGTH_SHORT).show();
-				}
-				break;
-			default:
-				break;
-		}
-	}
 
 }

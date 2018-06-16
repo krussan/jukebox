@@ -1,10 +1,8 @@
 package se.qxx.android.jukebox.activities;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.View;
@@ -15,25 +13,23 @@ import android.widget.Toast;
 import com.google.android.gms.cast.framework.CastContext;
 
 import java.util.EventObject;
+import java.util.List;
 
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.adapters.list.EpisodeLayoutAdapter;
-import se.qxx.android.jukebox.adapters.list.MovieLayoutAdapter;
 import se.qxx.android.jukebox.adapters.list.SeasonLayoutAdapter;
-import se.qxx.android.jukebox.adapters.list.SeriesLayoutAdapter;
 import se.qxx.android.jukebox.adapters.support.EndlessScrollListener;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
 import se.qxx.android.jukebox.comm.Connector;
 import se.qxx.android.jukebox.dialogs.ActionDialog;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.jukebox.model.ModelUpdatedEvent;
-import se.qxx.android.jukebox.model.ModelUpdatedType;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
 public class ListActivity extends AppCompatActivity implements
-    Model.ModelUpdatedEventListener, AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, View.OnClickListener {
+    AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, View.OnClickListener, Connector.ConnectorCallbackEventListener {
 
 	private CastContext mCastContext;
 	private SeasonLayoutAdapter _seasonLayoutAdapter;
@@ -42,7 +38,7 @@ public class ListActivity extends AppCompatActivity implements
 	private ViewMode mode;
 
     protected View getRootView() {
-		return findViewById(R.id.rootJukeboxViewPager);
+		return findViewById(R.id.rootMain);
 	}
 
 	public ViewMode getMode() {
@@ -53,17 +49,6 @@ public class ListActivity extends AppCompatActivity implements
 		this.mode = mode;
 	}
 
-    private Runnable modelResultUpdatedRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-        if (_seasonLayoutAdapter != null)
-            _seasonLayoutAdapter.notifyDataSetChanged();
-
-        if (_episodeLayoutAdapter != null)
-            _episodeLayoutAdapter.notifyDataSetChanged();
-        }
-    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -74,18 +59,12 @@ public class ListActivity extends AppCompatActivity implements
         if (getIntent() != null && getIntent().getExtras() != null)
             this.setMode((ViewMode)getIntent().getExtras().getSerializable("mode"));
 
-		setContentView(R.layout.jukebox_main_wrapper);
+		setContentView(R.layout.main);
 		initializeView();
 
 		mCastContext = CastContext.getSharedInstance(this);
 
-        if (this.getMode() == ViewMode.Season) {
-            // trigger an update if we are on a season list
-            Connector.connect(
-                    0,
-                    Model.get().getNrOfItems(),
-                    ViewMode.getModelType(this.getMode()));
-        }
+		loadMoreData(0);
     }
 
 	@Override
@@ -196,15 +175,6 @@ public class ListActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void handleModelUpdatedEventListener(EventObject e) {
-        ModelUpdatedEvent ev = (ModelUpdatedEvent) e;
-
-        if (ev.getType() == ModelUpdatedType.Movies || ev.getType() == ModelUpdatedType.Series || ev.getType() == ModelUpdatedType.Season) {
-            runOnUiThread(modelResultUpdatedRunnable);
-        }
-    }
-
-    @Override
     public void onClick(View v) {
         int id = v.getId();
 
@@ -240,4 +210,39 @@ public class ListActivity extends AppCompatActivity implements
         }
     }
 
+    @Override
+    public void handleMoviesUpdated(List<JukeboxDomain.Movie> movies) {
+        //should not happen in this activity
+    }
+
+    @Override
+    public void handleSeriesUpdated(List<JukeboxDomain.Series> series) {
+        //should not happen in this activity
+    }
+    private Runnable modelResultUpdatedRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            if (_seasonLayoutAdapter != null)
+                _seasonLayoutAdapter.notifyDataSetChanged();
+
+            if (_episodeLayoutAdapter != null)
+                _episodeLayoutAdapter.notifyDataSetChanged();
+        }
+    };
+
+    @Override
+    public void handleSeasonsUpdated(final List<JukeboxDomain.Season> seasons) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                _seasonLayoutAdapter.setSeries();
+            }
+        });
+    }
+
+    @Override
+    public void handleEpisodesUpdated(List<JukeboxDomain.Episode> episodes) {
+        runOnUiThread(modelResultUpdatedRunnable);
+    }
 }
