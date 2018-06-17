@@ -1,6 +1,8 @@
 package se.qxx.android.jukebox.adapters.viewmode;
 
+import java.util.ArrayList;
 import java.util.EventObject;
+import java.util.List;
 
 import se.qxx.android.jukebox.activities.ListActivity;
 import se.qxx.android.jukebox.activities.ViewMode;
@@ -16,12 +18,14 @@ import se.qxx.android.jukebox.adapters.list.EpisodeLayoutAdapter;
 import se.qxx.android.jukebox.adapters.list.MovieLayoutAdapter;
 import se.qxx.android.jukebox.adapters.list.SeasonLayoutAdapter;
 import se.qxx.android.jukebox.adapters.list.SeriesLayoutAdapter;
+import se.qxx.android.jukebox.model.Constants;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.jukebox.model.ModelUpdatedEvent;
 import se.qxx.android.jukebox.model.ModelUpdatedType;
 import se.qxx.android.jukebox.model.Model.ModelUpdatedEventListener;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
+import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
 
 import android.app.Activity;
@@ -40,13 +44,14 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import org.apache.commons.lang3.StringUtils;
 
 public class JukeboxFragment extends ListFragment implements
-	ModelUpdatedEventListener, OnItemClickListener, OnItemLongClickListener, OnClickListener {
+	OnItemClickListener, OnItemLongClickListener, OnClickListener, Connector.ConnectorCallbackEventListener {
 
     private ViewMode mode;
 
 	private MovieLayoutAdapter _jukeboxMovieLayoutAdapter;
 	private SeriesLayoutAdapter _seriesLayoutAdapter;
     private EndlessScrollListener scrollListener;
+    private int offset;
 
     public ViewMode getMode() {
         return mode;
@@ -56,6 +61,13 @@ public class JukeboxFragment extends ListFragment implements
         this.mode = mode;
     }
 
+    public int getOffset() {
+        return offset;
+    }
+
+    public void setOffset(int offset) {
+        this.offset = offset;
+    }
 
 	private Runnable modelResultUpdatedRunnable = new Runnable() {
 
@@ -100,7 +112,8 @@ public class JukeboxFragment extends ListFragment implements
             this.setMode((ViewMode)b.getSerializable("mode"));
 		}
 
-        Model.get().addEventListener(this);
+		Connector.addEventListener(this);
+
 
 		loadMoreData(0);
 	}	
@@ -124,13 +137,16 @@ public class JukeboxFragment extends ListFragment implements
 		v.findViewById(R.id.btnOn).setOnClickListener(this);
 		v.findViewById(R.id.btnOff).setOnClickListener(this);
 
-		scrollListener = new EndlessScrollListener() {
+		scrollListener = new EndlessScrollListener(this) {
             @Override
             public boolean onLoadMore(int page, int totalItemsCount) {
                 if (!Model.get().isLoading()) {
                     Model.get().setLoading(true);
-                    Model.get().setOffset(page * Model.get().getNrOfItems());
-                    loadMoreData(page * Model.get().getNrOfItems());
+
+                    ((JukeboxFragment)this.getParent())
+                            .setOffset(page * Constants.NR_OF_ITEMS);
+
+                    loadMoreData(page * Constants.NR_OF_ITEMS);
                 }
 
                 return true;
@@ -140,11 +156,11 @@ public class JukeboxFragment extends ListFragment implements
 		lv.setOnScrollListener(scrollListener);
 
 		if (this.getMode() == ViewMode.Movie) {
-            _jukeboxMovieLayoutAdapter = new MovieLayoutAdapter(v.getContext());
+            _jukeboxMovieLayoutAdapter = new MovieLayoutAdapter(v.getContext(), new ArrayList<JukeboxDomain.Movie>());
             lv.setAdapter(_jukeboxMovieLayoutAdapter);
         }
         else if (this.getMode() == ViewMode.Series) {
-            _seriesLayoutAdapter = new SeriesLayoutAdapter(v.getContext());
+            _seriesLayoutAdapter = new SeriesLayoutAdapter(v.getContext(), new ArrayList<JukeboxDomain.Series>());
             lv.setAdapter(_seriesLayoutAdapter);
         }
 
@@ -155,59 +171,56 @@ public class JukeboxFragment extends ListFragment implements
 	}
 
 	private void loadMoreData(int offset) {
-        Connector.connect(offset, Model.get().getNrOfItems(), ViewMode.getModelType(this.getMode()));
+        Connector.connect(
+                offset,
+                Constants.NR_OF_ITEMS,
+                ViewMode.getModelType(this.getMode()),
+                -1,
+                -1);
     }
 
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
         if (this.getMode() == ViewMode.Movie) {
-            Model.get().setCurrentMovie(pos);
-
             Intent i = new Intent(arg1.getContext(), FlipperActivity.class);
             i.putExtra("mode", ViewMode.Movie);
+            i.putExtra("movie", (JukeboxDomain.Movie)_jukeboxMovieLayoutAdapter.getItem(pos));
+
             startActivity(i);
         }
         else if (this.getMode() == ViewMode.Series) {
-            Model.get().setCurrentSeries(pos);
             Intent intentSeries = new Intent(this.getActivity(), ListActivity.class);
             intentSeries.putExtra("mode", ViewMode.Season);
+            intentSeries.putExtra("series", (JukeboxDomain.Series)_seriesLayoutAdapter.getItem(pos));
 
             startActivity(intentSeries);
-
-            //Toast.makeText(this.getActivity(), "Should display the new series!", Toast.LENGTH_SHORT).show();
         }
     }
 
 	@Override
-	public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int arg2,
+	public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int pos,
 			long arg3) {
 		
 		ActionDialog d = null;
 
         if (this.getMode() == ViewMode.Movie) {
-            d = new ActionDialog(this.getActivity(), Model.get().getMovie(arg2).getID(), RequestType.TypeMovie);
+            d = new ActionDialog(
+                    this.getActivity(),
+                    _jukeboxMovieLayoutAdapter.getItemId(pos),
+                    RequestType.TypeMovie);
         }
         else if (this.getMode() == ViewMode.Series) {
-            d = new ActionDialog(this.getActivity(), Model.get().getSeries(arg2).getID(), RequestType.TypeSeries);
+            d = new ActionDialog(
+                    this.getActivity(),
+                    _seriesLayoutAdapter.getItemId(pos),
+                    RequestType.TypeSeries);
         }
 
 		if (d != null)
 			d.show();
 		
 		return false;
-	}
-
-	@Override
-	public void handleModelUpdatedEventListener(EventObject e) {
-		ModelUpdatedEvent ev = (ModelUpdatedEvent) e;
-
-		if (ev.getType() == ModelUpdatedType.Movies || ev.getType() == ModelUpdatedType.Series || ev.getType() == ModelUpdatedType.Season) {
-			Activity a = this.getActivity();
-
-			if (a != null)
-				a.runOnUiThread(modelResultUpdatedRunnable);
-		}
 	}
 
 	@Override
@@ -218,12 +231,10 @@ public class JukeboxFragment extends ListFragment implements
 		case R.id.btnRefresh:
 			Logger.Log().i("onConnectClicked");
 
-			Model.get().setOffset(0);
-			Model.get().clearMovies();
-            Model.get().clearSeries();
 
-			Connector.connect(Model.get().getOffset(), Model.get().getNrOfItems(), ViewMode.getModelType(this.getMode()));
-			
+			this.setOffset(0);
+			loadMoreData(0);
+
 			break;
 		case R.id.btnSelectMediaPlayer:
 			Logger.Log().i("selectMediaPlayerClicked");
@@ -246,7 +257,44 @@ public class JukeboxFragment extends ListFragment implements
 		}	
 	}
 
-	
 
-	
+    @Override
+    public void handleMoviesUpdated(List<JukeboxDomain.Movie> movies) {
+	    if (_jukeboxMovieLayoutAdapter != null) {
+            _jukeboxMovieLayoutAdapter.setMovies(movies);
+	        this.getActivity().runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    _jukeboxMovieLayoutAdapter.notifyDataSetChanged();
+                }
+            });
+        }
+    }
+
+    @Override
+    public void handleSeriesUpdated(List<JukeboxDomain.Series> series) {
+        if (_seriesLayoutAdapter != null) {
+            _seriesLayoutAdapter.setSeries(series);
+            this.getActivity().runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    _seriesLayoutAdapter.notifyDataSetChanged();
+                }
+            });
+        }
+    }
+
+    @Override
+    public void handleSeasonsUpdated(List<JukeboxDomain.Season> seasons) {
+
+    }
+
+    @Override
+    public void handleEpisodesUpdated(List<JukeboxDomain.Episode> episodes) {
+
+    }
+
+
 }

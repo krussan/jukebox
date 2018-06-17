@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import java.util.List;
+
 import se.qxx.android.jukebox.R;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
@@ -16,21 +18,28 @@ import se.qxx.jukebox.domain.JukeboxDomain.Series;
 public class SeasonLayoutAdapter extends BaseAdapter {
 
 	private Context context;
-	private Series series;
+	private List<Season> seasons;
 
-	private Series getSeries() {
-		return series;
-	}
-	public void setSeries(Series series) {
-		this.series = series;
-	}
+    public List<Season> getSeasons() {
+        return seasons;
+    }
+
+    public void setSeasons(List<Season> seasons) {
+        this.seasons = seasons;
+    }
 
 	public SeasonLayoutAdapter(Context context, Series series) {
 		super();
 		this.context = context;
-		this.series = series;
+		this.setSeasons(series.getSeasonList());
 	}
-	
+
+    public SeasonLayoutAdapter(Context context, List<Season> seasns) {
+        super();
+        this.context = context;
+        this.setSeasons(seasons);
+    }
+
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View v = convertView; 
@@ -71,18 +80,20 @@ public class SeasonLayoutAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		return this.getSeries().getSeasonCount();
+		return this.getSeasons().size();
 	}
 
 	@Override
 	public Object getItem(int position) {
-		return this.getSeries().getSeason(position);
+		return this.getSeasons().get(position);
 	}
 
 	@Override
 	public long getItemId(int position) {
 		return position;
 	}
+
+
 
 }
 	

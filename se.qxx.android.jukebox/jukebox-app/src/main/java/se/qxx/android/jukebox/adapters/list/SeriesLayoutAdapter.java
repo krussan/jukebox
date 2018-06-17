@@ -13,10 +13,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import java.util.List;
+
 public class SeriesLayoutAdapter extends GenericListLayoutAdapter {
 
-	public SeriesLayoutAdapter(Context context) {
+    private List<Series> series;
+
+
+    public List<Series> getSeries() {
+        return series;
+    }
+
+    public void setSeries(List<Series> series) {
+        this.series = series;
+    }
+
+	public SeriesLayoutAdapter(Context context, List<Series> series) {
 		super(context, R.layout.movielistrow);
+		this.setSeries(series);
 	}
 
     @Override
@@ -43,12 +57,12 @@ public class SeriesLayoutAdapter extends GenericListLayoutAdapter {
 
     @Override
     public int getItemCount() {
-        return Model.get().countSeries();
+        return this.getSeries().size();
     }
 
     @Override
     public Object getDataObject(int position) {
-        return Model.get().getSeries(position);
+        return this.getSeries().get(position);
     }
 
 }

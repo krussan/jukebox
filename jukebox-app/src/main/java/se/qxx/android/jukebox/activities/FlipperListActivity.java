@@ -49,8 +49,10 @@ public class FlipperListActivity extends AppCompatActivity {
 
 		JukeboxSettings.init(this);
 
-        if (getIntent() != null && getIntent().getExtras() != null)
-            this.setMode((ViewMode)getIntent().getExtras().getSerializable("mode"));
+        if (getIntent() != null && getIntent().getExtras() != null) {
+            Bundle b = getIntent().getExtras();
+			this.setMode((ViewMode) b.getSerializable("mode"));
+		}
 
 		setContentView(R.layout.jukebox_main_wrapper);
         pager = (ViewPager)this.getRootView();

@@ -51,7 +51,7 @@ public class Model {
 	private boolean isLoading = false;
 
 	public interface ModelUpdatedEventListener {
-		public void handleModelUpdatedEventListener(java.util.EventObject e, List<Object> objects);
+		public void handleModelUpdatedEventListener(java.util.EventObject e);
 	}
 
 	private List<ModelUpdatedEventListener> _listeners = new ArrayList<Model.ModelUpdatedEventListener>();
@@ -120,166 +120,10 @@ public class Model {
 	}
 
 
-	public Series getCurrentSeries() {
-		if (this.currentSeriesId >= 0 && this.currentSeriesId < this._series.size())
-			return this._series.get(this.currentSeriesId);
-		else
-			return null;
-	}
-
-	public int getCurrentSeriesIndex() {
-		return this.currentSeriesId;
-	}
-
-    public Season getCurrentSeason() {
-        Series series = this.getCurrentSeries();
-
-        if (series != null) {
-            if (this.currentSeasonId >= 0 && this.currentSeasonId < series.getSeasonCount())
-                return series.getSeason(this.currentSeasonId);
-            else
-                return null;
-        }
-
-        return null;
-    }
-
-    public int getCurrentEpsiodeIndex() {
-        return this.currentEpisodeId;
-    }
-
-    public Episode getCurrentEpisode() {
-        Season season = this.getCurrentSeason();
-
-        if (season != null) {
-            if (this.currentEpisodeId >= 0 && this.currentEpisodeId < season.getEpisodeCount())
-                return season.getEpisode(this.currentEpisodeId);
-            else
-                return null;
-        }
-
-        return null;
-    }
-
-    public int getCurrentSeasonIndex() {
-        return this.currentSeasonId;
-    }
-
-
-
-	public Series getPreviousSeries() {
-		if (this.currentSeriesId == 0)
-			return this._series.get(this._series.size() == 0 ? 0 : this._series.size() - 1);
-		else
-			return this._series.get(this.currentSeriesId - 1);
-	}
-
-	public Series getNextSeries() {
-		if (this.currentSeriesId == this._series.size() - 1)
-			return this._series.get(0);
-		else
-			return this._series.get(this.currentSeriesId + 1);
-	}
-
-    public Season getPreviousSeason() {
-        Series series = this.getCurrentSeries();
-
-        if (series != null) {
-            if (this.currentSeasonId == 0)
-                return series.getSeason(series.getSeasonCount() == 0 ? 0 : series.getSeasonCount() - 1);
-            else
-                return series.getSeason(this.currentSeasonId - 1);
-        }
-
-        return null;
-    }
-
-    public Season getNextSeason() {
-        Series series = this.getCurrentSeries();
-
-        if (series != null) {
-            if (this.currentSeasonId == series.getSeasonCount() - 1)
-                return series.getSeason(0);
-            else
-                return series.getSeason(this.currentSeasonId + 1);
-        }
-
-        return null;
-    }
-
-
-	public void currentSeriesSetNext() {
-		this.currentSeriesId++;
-		this.currentMediaId = 0;
-		if (this.currentSeriesId == this._series.size())
-			this.currentSeriesId = 0;
-	}
-
-	public void currentSeriesSetPrevious() {
-		this.currentSeriesId--;
-		this.currentMediaId = 0;
-		if (this.currentSeriesId < 0)
-			this.currentSeriesId = this._series.size() == 0 ? 0 : this._series.size() - 1;
-	}
-
-    public void currentSeasonSetNext() {
-        Series series = this.getCurrentSeries();
-
-        if (series != null) {
-            this.currentSeasonId++;
-            this.currentMediaId = 0;
-            if (this.currentSeasonId == series.getSeasonCount())
-                this.currentSeasonId = 0;
-        }
-    }
-
-    public void currentSeasonSetPrevious() {
-        Series series = this.getCurrentSeries();
-
-        if (series != null) {
-            this.currentSeasonId--;
-            this.currentMediaId = 0;
-            if (this.currentSeasonId < 0)
-                this.currentSeasonId = series.getSeasonCount() == 0 ? 0 : series.getSeasonCount() - 1;
-            }
-    }
-
-	public void setCurrentMovie(int index) {
-        this.setModelType(ModelType.Movie);
-		this.currentMovieId = index;
-		this.currentMediaId = 0;		
-	}
-
-	public void setCurrentSeries(int index) {
-        this.setModelType(ModelType.Series);
-		this.currentSeriesId = index;
-		this.currentMediaId = 0;
-	}
-
-    public void setCurrentSeason(int index) {
-        this.setModelType(ModelType.Series);
-        this.currentSeasonId = index;
-        this.currentMediaId = 0;
-    }
-
-    public void setCurrentEpisode(int index) {
-        this.setModelType(ModelType.Series);
-        this.currentEpisodeId = index;
-        this.currentMediaId = 0;
-    }
-
 	//---------------------------------------------------------------------------------------
 	// SERIES
 	//---------------------------------------------------------------------------------------
 
-	public int countSeries() {
-		return this._series.size();
-	}
-
-	public Series getSeries(int position) {
-		return _series.get(position);
-	}
-	
 	//---------------------------------------------------------------------------------------
 	// MEDIA
 	//---------------------------------------------------------------------------------------
@@ -368,20 +212,5 @@ public class Model {
 		return this.currentSub;
 	}
 
-	public int getOffset() {
-		return offset;
-	}
-
-	public void setOffset(int offset) {
-		this.offset = offset;
-	}
-
-	public int getNrOfItems() {
-		return nrOfItems;
-	}
-
-	public void setNrOfItems(int nrOfItems) {
-		this.nrOfItems = nrOfItems;
-	}
 
 }

@@ -1,5 +1,7 @@
 package se.qxx.android.jukebox.adapters.support;
 
+import android.support.v4.app.ListFragment;
+import android.view.View;
 import android.widget.AbsListView;
 
 /**
@@ -19,7 +21,10 @@ public abstract class EndlessScrollListener implements AbsListView.OnScrollListe
     // Sets the starting page index
     private int startingPageIndex = 0;
 
-    public EndlessScrollListener() {
+    private IOffsetHandler handler;
+
+    public EndlessScrollListener(IOffsetHandler handler) {
+        this.setHandler(handler);
     }
 
     public EndlessScrollListener(int visibleThreshold) {
@@ -70,5 +75,13 @@ public abstract class EndlessScrollListener implements AbsListView.OnScrollListe
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
         // Don't take any action on changed
+    }
+
+    public IOffsetHandler getHandler() {
+        return handler;
+    }
+
+    public void setHandler(IOffsetHandler handler) {
+        this.handler = handler;
     }
 }

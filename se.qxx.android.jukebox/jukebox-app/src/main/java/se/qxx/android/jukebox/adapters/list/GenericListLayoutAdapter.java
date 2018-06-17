@@ -27,6 +27,7 @@ public abstract class GenericListLayoutAdapter extends BaseAdapter {
 
 	private Context context;
     private int listItemId;
+
 	protected Context getContext() { return context; }
     protected int getListItemId() {
         return listItemId;
@@ -84,6 +85,7 @@ public abstract class GenericListLayoutAdapter extends BaseAdapter {
     public abstract void initializeView(View v, Object o);
 	public abstract int getItemCount();
 	public abstract Object getDataObject(int position);
+	public abstract long getObjectId(int position);
 
 	@Override
     public int getCount() {
@@ -119,7 +121,7 @@ public abstract class GenericListLayoutAdapter extends BaseAdapter {
     @Override
     public long getItemId(int position) {
         if (getItemViewType(position) == VIEWTYPE_ITEM)
-            return position;
+            return getObjectId(position);
         else
             return -1;
     }

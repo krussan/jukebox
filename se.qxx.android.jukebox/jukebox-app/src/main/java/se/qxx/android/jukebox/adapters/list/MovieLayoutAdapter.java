@@ -23,8 +23,19 @@ import android.widget.BaseAdapter;
  */
 public class MovieLayoutAdapter extends GenericListLayoutAdapter {
 
-	public MovieLayoutAdapter(Context context) {
+    private List<Movie> movies;
+
+    public List<Movie> getMovies() {
+        return movies;
+    }
+
+    public void setMovies(List<Movie> movies) {
+        this.movies = movies;
+    }
+
+	public MovieLayoutAdapter(Context context, List<Movie> movies) {
 		super(context, R.layout.movielistrow);
+		this.setMovies(movies);
 	}
 
 	@Override
@@ -63,12 +74,17 @@ public class MovieLayoutAdapter extends GenericListLayoutAdapter {
 
     @Override
     public int getItemCount() {
-        return Model.get().countMovies();
+        return this.getMovies().size();
     }
 
     @Override
     public Object getDataObject(int position) {
-        return Model.get().getMovie(position);
+        return this.getMovies().get(position);
+    }
+
+    @Override
+    public long getObjectId(int position) {
+        return ((Movie)getDataObject(position)).getID();
     }
 
 

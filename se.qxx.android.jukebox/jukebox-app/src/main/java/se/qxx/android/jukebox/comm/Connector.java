@@ -35,7 +35,7 @@ public class Connector {
         void handleEpisodesUpdated(List<JukeboxDomain.Episode> episodes);
     }
 
-    public synchronized void addEventListener(ConnectorCallbackEventListener listener) {
+    public static synchronized void addEventListener(ConnectorCallbackEventListener listener) {
         _listeners.add(listener);
     }
 

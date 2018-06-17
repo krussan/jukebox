@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 
+import java.util.List;
+
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.NowPlayingActivity;
 import se.qxx.android.jukebox.activities.ViewMode;
@@ -21,16 +23,30 @@ import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 public class EpisodeLayoutAdapter extends BaseAdapter implements View.OnClickListener {
 
 	private Context context;
-    private Season season;
+    private List<Episode> episodes;
+    private int seasonNumber;
 
-    public Season getSeason() {
-        return season;
+    public List<Episode> getEpisodes() {
+		return episodes;
+	}
+
+	public void setEpisodes(List<Episode> episodes) {
+		this.episodes = episodes;
+	}
+
+    public int getSeasonNumber() {
+        return seasonNumber;
     }
 
-    public EpisodeLayoutAdapter(Context context, Season season) {
+    public void setSeasonNumber(int seasonNumber) {
+        this.seasonNumber = seasonNumber;
+    }
+
+    public EpisodeLayoutAdapter(Context context, int seasonNumber, List<Episode> episodes) {
 		super();
 		this.context = context;
-		this.season = season;
+		this.setSeasonNumber(seasonNumber);
+		this.setEpisodes(episodes);
 	}
 
 	@Override
@@ -47,7 +63,7 @@ public class EpisodeLayoutAdapter extends BaseAdapter implements View.OnClickLis
 
 			Episode ep = (Episode)this.getItem(position);
 	        if (ep != null) {
-	        	GUITools.setTextOnTextview(R.id.toptext, String.format("S%sE%s - %s", this.getSeason().getSeasonNumber(), ep.getEpisodeNumber(), ep.getTitle()), v);
+	        	GUITools.setTextOnTextview(R.id.toptext, String.format("S%sE%s - %s", this.getSeasonNumber(), ep.getEpisodeNumber(), ep.getTitle()), v);
 	        	GUITools.setTextOnTextview(R.id.txtDescription, ep.getStory(), v);
 
 	    	    if (ep.getThumbnail().isEmpty()) {
@@ -90,18 +106,20 @@ public class EpisodeLayoutAdapter extends BaseAdapter implements View.OnClickLis
 
 	@Override
 	public int getCount() {
-		return this.getSeason().getEpisodeCount();
+		return this.getEpisodes().size();
 	}
 
 	@Override
 	public Object getItem(int position) {
-		return this.getSeason().getEpisode(position);
+		return this.getEpisodes().get(position);
 	}
 
 	@Override
 	public long getItemId(int position) {
 		return position;
 	}
+
+
 
 }
 	

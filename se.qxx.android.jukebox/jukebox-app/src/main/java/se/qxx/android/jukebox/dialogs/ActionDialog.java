@@ -9,7 +9,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 
 public class ActionDialog implements OnClickListener{
-	int id;
+	long id;
 	RequestType reqType;
 	Activity activity;
 	
@@ -19,7 +19,7 @@ public class ActionDialog implements OnClickListener{
 		"Re-identify"
 	};
 	
-	public ActionDialog(Activity activity, int id, RequestType requestType) {
+	public ActionDialog(Activity activity, long id, RequestType requestType) {
 		this.reqType = requestType;
 		this.id = id;
 		this.activity = activity;
