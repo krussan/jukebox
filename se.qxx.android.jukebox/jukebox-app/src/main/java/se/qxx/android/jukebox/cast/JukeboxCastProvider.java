@@ -16,15 +16,12 @@ class JukeboxCastProvider extends CastProvider {
 
     @Override
     public RpcCallback<JukeboxDomain.JukeboxResponseStartMovie> getCallback() {
-        return new RpcCallback<JukeboxDomain.JukeboxResponseStartMovie>() {
-            @Override
-            public void run(JukeboxDomain.JukeboxResponseStartMovie parameter) {
-                Logger.Log().d("Response --- StartMovie");
-                initializeSubtitles();
-                Model.get().setCurrentMedia(0);
-                getSeekerListener().setDuration(Model.get().getCurrentMedia().getMetaDuration());
-                getSeekerListener().startSeekerTimer();
-            }
+        return parameter -> {
+            Logger.Log().d("Response --- StartMovie");
+            initializeSubtitles();
+
+            getSeekerListener().setDuration(this.getCurrentMedia().getMetaDuration());
+            getSeekerListener().startSeekerTimer();
         };
     }
 
@@ -141,11 +138,11 @@ class JukeboxCastProvider extends CastProvider {
             Logger.Log().d("Response --- GetTitle");
             if (response != null) {
                 String playerFilename = response.getTitle();
-                final JukeboxDomain.Media md = matchCurrentFilenameAgainstMedia(playerFilename);
-                if (md != null) {
+                int mediaIndex = matchCurrentFilenameAgainstMedia(playerFilename);
+                if (mediaIndex >= 0) {
                     //initialize seeker and get subtitles if app has been reinitialized
-                    Model.get().setCurrentMedia(md);
-                    getSeekerListener().setDuration(Model.get().getCurrentMedia().getMetaDuration());
+                    setCurrentMediaIndex(mediaIndex);
+                    getSeekerListener().setDuration(getCurrentMedia().getMetaDuration());
 
                     //Start seeker and get time asap as the movie is playing
                     getSeekerListener().startSeekerTimer();
@@ -177,15 +174,14 @@ class JukeboxCastProvider extends CastProvider {
     }
 
 
-
-    protected JukeboxDomain.Media matchCurrentFilenameAgainstMedia(String playerFilename) {
-        for (JukeboxDomain.Media md : Model.get().getCurrentMovie().getMediaList()) {
-            if (StringUtils.equalsIgnoreCase(playerFilename, md.getFilename())) {
-                return md;
+    protected int matchCurrentFilenameAgainstMedia(String playerFilename) {
+        for (int i = 0; i < this.getMediaList().size(); i++) {
+            if (StringUtils.equalsIgnoreCase(playerFilename, this.getMediaList().get(i).getFilename())) {
+                return i;
             }
         }
 
-        return null;
+        return -1;
     }
 
     @Override

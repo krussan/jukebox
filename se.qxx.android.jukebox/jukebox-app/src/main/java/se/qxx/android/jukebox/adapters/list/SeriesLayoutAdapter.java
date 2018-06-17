@@ -65,5 +65,10 @@ public class SeriesLayoutAdapter extends GenericListLayoutAdapter {
         return this.getSeries().get(position);
     }
 
+    @Override
+    public long getObjectId(int position) {
+        return this.getSeries().get(position).getID();
+    }
+
 }
 	

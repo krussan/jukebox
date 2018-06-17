@@ -6,23 +6,38 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.MediaController;
 
-import com.google.android.gms.cast.CastRemoteDisplayLocalService;
-import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.google.protobuf.RpcCallback;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import se.qxx.android.jukebox.comm.OnListSubtitlesCompleteHandler;
 import se.qxx.android.jukebox.dialogs.JukeboxConnectionProgressDialog;
-import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
-import se.qxx.android.jukebox.widgets.Seeker;
 import se.qxx.android.jukebox.widgets.SeekerListener;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
 public abstract class CastProvider implements MediaController.MediaPlayerControl {
+
+    public int getCurrentMediaIndex() {
+        return currentMediaIndex;
+    }
+
+    public void setCurrentMediaIndex(int currentMediaIndex) {
+        this.currentMediaIndex = currentMediaIndex;
+    }
+
+    public List<JukeboxDomain.Media> getMediaList() {
+        return mediaList;
+    }
+
+    public void setMediaList(List<JukeboxDomain.Media> mediaList) {
+        this.mediaList = mediaList;
+    }
 
     public enum CastProviderMode  {
         Movie,
@@ -40,6 +55,13 @@ public abstract class CastProvider implements MediaController.MediaPlayerControl
     private JukeboxDomain.Episode episode;
     private SurfaceHolder display;
     private MediaPlayer.OnPreparedListener onPreparedListener;
+    private List<JukeboxDomain.Media> mediaList = new ArrayList<>();
+    private int currentMediaIndex = 0;
+
+
+    public JukeboxDomain.Media getCurrentMedia() {
+        return this.getMediaList().get(this.getCurrentMediaIndex());
+    }
 
     public Activity getParentContext() {
         return this.parentContext;
@@ -116,6 +138,7 @@ public abstract class CastProvider implements MediaController.MediaPlayerControl
 
     public static CastProvider getCaster(
             Activity parentContext,
+            List<JukeboxDomain.Media> mediaList,
             JukeboxConnectionHandler comm,
             JukeboxConnectionProgressDialog dialog,
             SeekerListener listener,
@@ -136,7 +159,8 @@ public abstract class CastProvider implements MediaController.MediaPlayerControl
             default:
                 provider = new LocalCastProvider();
         }
-        provider.setup(parentContext, comm, dialog, listener, display, onPreparedListener);
+
+        provider.setup(parentContext, mediaList, comm, dialog, listener, display, onPreparedListener);
         provider.initialize();
 
         return provider;
@@ -144,12 +168,9 @@ public abstract class CastProvider implements MediaController.MediaPlayerControl
 
     protected void initializeSubtitles() {
         // update the subtitles out of sync
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Logger.Log().d("Request --- ListSubtitles");
-                comm.listSubtitles(Model.get().getCurrentMedia(), new OnListSubtitlesCompleteHandler());
-            }
+        Thread t = new Thread(() -> {
+            Logger.Log().d("Request --- ListSubtitles");
+            comm.listSubtitles(getCurrentMedia(), new OnListSubtitlesCompleteHandler());
         });
         t.start();
 
@@ -185,12 +206,15 @@ public abstract class CastProvider implements MediaController.MediaPlayerControl
 
     private void setup(
             Activity parentContext,
+            List<JukeboxDomain.Media> mediaList,
             JukeboxConnectionHandler comm,
             JukeboxConnectionProgressDialog dialog,
             SeekerListener listener,
             SurfaceHolder display,
             MediaPlayer.OnPreparedListener onPreparedListener) {
 
+        this.setMediaList(mediaList);
+        this.setCurrentMediaIndex(0);
         this.parentContext = parentContext;
         this.dialog = dialog;
         this.comm = comm;

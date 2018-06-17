@@ -30,18 +30,15 @@ public class Seeker implements Runnable {
        			JukeboxSettings.get().getServerIpAddress()
        			, JukeboxSettings.get().getServerPort());
        	
-       	h.getTime(JukeboxSettings.get().getCurrentMediaPlayer(), new RpcCallback<JukeboxResponseTime>() {
-			@Override
-			public void run(JukeboxResponseTime response) {				
-				// The time command also returns the name of the currently playing file.
-				// If it differs from the model then set the current media
-				if (!StringUtils.equalsIgnoreCase(response.getFilename(), Model.get().getCurrentMedia().getFilename()))
-					Model.get().setCurrentMedia(response.getFilename());
-				
-				if (listener != null)
-					listener.updateSeeker(response.getSeconds());				
-			}
-		});
+       	h.getTime(JukeboxSettings.get().getCurrentMediaPlayer(), response -> {
+               // The time command also returns the name of the currently playing file.
+               // If it differs from the model then set the current media
+               //if (!StringUtils.equalsIgnoreCase(response.getFilename(), Model.get().getCurrentMedia().getFilename()))
+				// Model.get().setCurrentMedia(response.getFilename());
+
+               if (listener != null)
+                   listener.updateSeeker(response.getSeconds());
+           });
 	}
 
 	@Override

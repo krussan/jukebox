@@ -55,36 +55,37 @@ public class EpisodeLayoutAdapter extends BaseAdapter implements View.OnClickLis
 
 		try {
 
-	        if (v == null) {
-	            LayoutInflater vi = (LayoutInflater)this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	            v = vi.inflate(R.layout.episodelistrow, null);
-	        }
-			Context context = v.getContext();
+            if (v == null) {
+                LayoutInflater vi = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                v = vi.inflate(R.layout.episodelistrow, parent);
+            }
 
-			Episode ep = (Episode)this.getItem(position);
-	        if (ep != null) {
-	        	GUITools.setTextOnTextview(R.id.toptext, String.format("S%sE%s - %s", this.getSeasonNumber(), ep.getEpisodeNumber(), ep.getTitle()), v);
-	        	GUITools.setTextOnTextview(R.id.txtDescription, ep.getStory(), v);
+            if (v != null) {
+                Episode ep = (Episode) this.getItem(position);
+                if (ep != null) {
+                    GUITools.setTextOnTextview(R.id.toptext, String.format("S%sE%s - %s", this.getSeasonNumber(), ep.getEpisodeNumber(), ep.getTitle()), v);
+                    GUITools.setTextOnTextview(R.id.txtDescription, ep.getStory(), v);
 
-	    	    if (ep.getThumbnail().isEmpty()) {
-					GUITools.setImageResourceOnImageView(R.id.imageView1, R.drawable.icon, v);
-	    	    }
-	    	    else {
-					Bitmap image = GUITools.getBitmapFromByteArray(ep.getThumbnail().toByteArray());
-					Bitmap scaledImage = GUITools.scaleImage(80, image, v.getContext());
-					GUITools.setImageOnImageView(R.id.imageView1, scaledImage, v);
-	    	    }
+                    if (ep.getThumbnail().isEmpty()) {
+                        GUITools.setImageResourceOnImageView(R.id.imageView1, R.drawable.icon, v);
+                    } else {
+                        Bitmap image = GUITools.getBitmapFromByteArray(ep.getThumbnail().toByteArray());
+                        Bitmap scaledImage = GUITools.scaleImage(80, image, v.getContext());
+                        GUITools.setImageOnImageView(R.id.imageView1, scaledImage, v);
+                    }
 
-	    	    ImageButton btnPlayEpisode = (ImageButton) v.findViewById(R.id.btnPlayEpisode);
-                btnPlayEpisode.setTag(position);
-                btnPlayEpisode.setOnClickListener(this);
+                    ImageButton btnPlayEpisode = v.findViewById(R.id.btnPlayEpisode);
+                    btnPlayEpisode.setTag(position);
+                    btnPlayEpisode.setOnClickListener(this);
 
-	    	}
-		}
-		catch (Exception e) {
-			Logger.Log().e("Error occured while populating list", e);
-		}
-			
+                }
+            }
+        }
+        catch(Exception e){
+            Logger.Log().e("Error occured while populating list", e);
+        }
+
+
         return v;
 	}
 
@@ -92,12 +93,13 @@ public class EpisodeLayoutAdapter extends BaseAdapter implements View.OnClickLis
 	public void onClick(View view) {
 
         int position = (int) view.getTag();
-        Model.get().setCurrentEpisode(position);
 
 		switch (view.getId()) {
 			case R.id.btnPlayEpisode:
 				Intent iPlay = new Intent(this.context, NowPlayingActivity.class);
                 iPlay.putExtra("mode", ViewMode.Episode);
+                iPlay.putExtra("episode", getEpisodes().get(position));
+
 				context.startActivity(iPlay);
 				break;
 		}

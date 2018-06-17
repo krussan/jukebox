@@ -34,7 +34,7 @@ public class ActionDialog implements OnClickListener{
 
 	@Override
 	public void onClick(DialogInterface dialog, int which) {
-		final int id = this.id;
+		final long id = this.id;
 		final RequestType requestType = this.reqType;
 		final int choice = which;		
 		
@@ -48,7 +48,7 @@ public class ActionDialog implements OnClickListener{
 			Thread t1 = new Thread(new Runnable() {
 				@Override
 				public void run() {
-					jh1.blacklist(id, requestType);			
+					jh1.blacklist((int)id, requestType);
 				}
 			});
 			t1.start();
@@ -58,12 +58,7 @@ public class ActionDialog implements OnClickListener{
 					JukeboxSettings.get().getServerIpAddress(), 
 					JukeboxSettings.get().getServerPort(),
 					JukeboxConnectionProgressDialog.build(this.activity, "Toggling watched status..."));
-			Thread t2 = new Thread(new Runnable() {
-				@Override
-				public void run() {
-					jh2.toggleWatched(id, requestType);				
-				}
-			});			
+			Thread t2 = new Thread(() -> jh2.toggleWatched((int)id, requestType));
 			t2.start();
 			break;
 		case 2:
@@ -71,12 +66,7 @@ public class ActionDialog implements OnClickListener{
 					JukeboxSettings.get().getServerIpAddress(), 
 					JukeboxSettings.get().getServerPort(),
 					JukeboxConnectionProgressDialog.build(this.activity, "Marking object for re-identify..."));
-			Thread t3 = new Thread(new Runnable() {
-				@Override
-				public void run() {
-					jh3.reIdentify(id, requestType);				
-				}
-			});			
+			Thread t3 = new Thread(() -> jh3.reIdentify((int)id, requestType));
 			t3.start();
 			break;
 		}	

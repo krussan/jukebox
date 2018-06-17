@@ -44,26 +44,20 @@ public class ChromeCastProvider extends CastProvider implements RemoteMediaClien
 
     @Override
     public RpcCallback<JukeboxDomain.JukeboxResponseStartMovie> getCallback() {
-        return new RpcCallback<JukeboxDomain.JukeboxResponseStartMovie>() {
-            @Override
-            public void run(JukeboxDomain.JukeboxResponseStartMovie response) {
+        return response -> {
 
-                JukeboxConnectionProgressDialog dialog = getDialog();
-                if (dialog != null)
-                    dialog.close();
+            JukeboxConnectionProgressDialog dialog = getDialog();
+            if (dialog != null)
+                dialog.close();
 
-                int movieID = Model.get().getCurrentMovie().getID();
+            if (response != null) {
+                startCastVideo(
+                        getTitle(),
+                        response.getUri(),
+                        response.getSubtitleUrisList(),
+                        response.getSubtitleList());
 
-                if (response != null) {
-                    startCastVideo(
-                            movieID,
-                            getTitle(),
-                            response.getUri(),
-                            response.getSubtitleUrisList(),
-                            response.getSubtitleList());
-
-                    initializeSubtitles();
-                }
+                initializeSubtitles();
             }
         };
     }
@@ -109,7 +103,7 @@ public class ChromeCastProvider extends CastProvider implements RemoteMediaClien
 
     }
 
-    public void startCastVideo(final int movieId, final String title, final String movieUrl, final List<String> subtitleUris, final List<JukeboxDomain.Subtitle> subs) {
+    public void startCastVideo(final String title, final String movieUrl, final List<String> subtitleUris, final List<JukeboxDomain.Subtitle> subs) {
         // Since this could be called from a callback we need to trigger it
         // on the main thread.
 

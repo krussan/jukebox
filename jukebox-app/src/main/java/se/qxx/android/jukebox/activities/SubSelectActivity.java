@@ -49,7 +49,7 @@ public class SubSelectActivity extends AppCompatActivity implements OnItemClickL
 	}
 
 	private void initializeView() {
-	    Media md = Model.get().getCurrentMedia();
+	    Media md = getMedia();
 	    View rootView = GUITools.getRootView(this);
 
 	    GUITools.setTextOnTextview(R.id.lblSubpickerFilename, md.getFilename(), rootView);
@@ -81,7 +81,7 @@ public class SubSelectActivity extends AppCompatActivity implements OnItemClickL
 			Thread t = new Thread(new Runnable() {
 				@Override
 				public void run() {
-					jh.setSubtitle(JukeboxSettings.get().getCurrentMediaPlayer(), Model.get().getCurrentMedia(), sub);
+					jh.setSubtitle(JukeboxSettings.get().getCurrentMediaPlayer(), getMedia(), sub);
 				}
 			});
 			t.run();
@@ -94,5 +94,15 @@ public class SubSelectActivity extends AppCompatActivity implements OnItemClickL
 	public void onDismiss(DialogInterface dialog) {
 		this.finish();
 	}
+
+	public Media getMedia() {
+        Bundle b = getIntent().getExtras();
+
+        if (b != null) {
+            return (Media)b.getSerializable("media");
+        }
+
+        return null;
+    }
 	
 }

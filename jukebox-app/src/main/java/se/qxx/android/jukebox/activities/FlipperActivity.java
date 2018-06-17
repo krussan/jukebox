@@ -6,6 +6,7 @@ import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.adapters.detail.MovieFragmentAdapter;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
+import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
 import android.content.Intent;
 import android.net.Uri;
@@ -20,6 +21,9 @@ import android.widget.Toast;
 
 import com.google.android.gms.cast.framework.CastContext;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class FlipperActivity extends AppCompatActivity implements OnPageChangeListener, OnLongClickListener {
 	ViewPager pager;
 	private CastContext mCastContext;
@@ -28,14 +32,15 @@ public class FlipperActivity extends AppCompatActivity implements OnPageChangeLi
 	protected View getRootView() {
 		return findViewById(R.id.rootViewPager);
 	}
+	private int currentPosition = 0;
 
-	public ViewMode getMode() {
-		return mode;
-	}
+    public int getCurrentPosition() {
+        return currentPosition;
+    }
 
-	public void setMode(ViewMode mode) {
-		this.mode = mode;
-	}
+    public void setCurrentPosition(int currentPosition) {
+        this.currentPosition = currentPosition;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,17 +48,14 @@ public class FlipperActivity extends AppCompatActivity implements OnPageChangeLi
         setContentView(R.layout.itemwrapper);
         pager = (ViewPager)this.getRootView();
 
-        MovieFragmentAdapter mfa = new MovieFragmentAdapter(getSupportFragmentManager());
+        MovieFragmentAdapter mfa = new MovieFragmentAdapter(getSupportFragmentManager(), this.getMovies());
 
         pager.setAdapter(mfa);
-        pager.setCurrentItem(Model.get().getCurrentMovieIndex());
+        pager.setCurrentItem(getPosition());
         
         this.getRootView().setOnLongClickListener(this);
 
         mCastContext = CastContext.getSharedInstance(this);
-
-		if (getIntent() != null && getIntent().getExtras() != null)
-			this.setMode((ViewMode)getIntent().getExtras().getSerializable("mode"));
 
 	}
 
@@ -75,7 +77,7 @@ public class FlipperActivity extends AppCompatActivity implements OnPageChangeLi
 				startActivity(iPlay);
 				break;	
 			case R.id.btnViewInfo:
-				String url = Model.get().getCurrentMovie().getImdbUrl();
+				String url = this.getCurrentMovie().getImdbUrl();
 				if (url != null && url.length() > 0) {
 					Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
 					startActivity(browserIntent);
@@ -99,13 +101,51 @@ public class FlipperActivity extends AppCompatActivity implements OnPageChangeLi
 
 	@Override
 	public void onPageSelected(int arg0) {
-		Model.get().setCurrentMovie(arg0);
+		this.setCurrentPosition(arg0);
 	}
 
 	@Override
 	public boolean onLongClick(View v) {
-		ActionDialog d = new ActionDialog(this, Model.get().getCurrentMovie().getID(), RequestType.TypeMovie);
+		ActionDialog d = new ActionDialog(
+		        this,
+                this.getCurrentMovie().getID(),
+                RequestType.TypeMovie);
+
 		d.show();
 		return false;
 	}
+
+	private int getPosition() {
+		Bundle b = getIntent().getExtras();
+		if (b != null) {
+			return b.getInt("position");
+		}
+
+		return 0;
+	}
+
+	private ViewMode getMode() {
+		Bundle b = getIntent().getExtras();
+		if (b != null) {
+			return (ViewMode)b.getSerializable("mode");
+		}
+
+		return ViewMode.Movie;
+	}
+
+
+	private List<JukeboxDomain.Movie> getMovies() {
+	    Bundle b = getIntent().getExtras();
+
+	    if (b != null) {
+	        return (List<JukeboxDomain.Movie>)b.getSerializable("movies");
+        }
+
+        return new ArrayList<JukeboxDomain.Movie>();
+    }
+
+    private JukeboxDomain.Movie getCurrentMovie() {
+        return this.getMovies().get(this.getCurrentPosition());
+    }
+
 }

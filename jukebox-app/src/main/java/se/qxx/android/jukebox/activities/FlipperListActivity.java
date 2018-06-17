@@ -12,6 +12,7 @@ import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.adapters.viewmode.JukeboxFragmentAdapter;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
 import se.qxx.android.jukebox.comm.Connector;
+import se.qxx.android.jukebox.model.Constants;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 
@@ -64,10 +65,9 @@ public class FlipperListActivity extends AppCompatActivity {
 
 			@Override
 			public void onPageSelected(int position) {
-			    Model.get().setOffset(0);
                 Connector.connect(
                         0,
-                        Model.get().getNrOfItems(),
+                        Constants.NR_OF_ITEMS,
                         ViewMode.getModelType(getViewMode(position)),
                         -1,
                         -1);
@@ -95,6 +95,7 @@ public class FlipperListActivity extends AppCompatActivity {
 
 		return true;
 	}
+
 
 
 }

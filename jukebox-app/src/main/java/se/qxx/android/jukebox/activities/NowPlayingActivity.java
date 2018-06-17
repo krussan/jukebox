@@ -61,6 +61,8 @@ public class NowPlayingActivity
 
     private CastProvider castProvider;
     MediaController mcontroller ;
+    private List<JukeboxDomain.Media> mediaList;
+    private int currentMediaIndex = 0;
 
     private static boolean screenChange = false;
 
@@ -97,6 +99,7 @@ public class NowPlayingActivity
 
     private void initializeView() {
         try {
+
             SeekBar sb = findViewById(R.id.seekBarDuration);
             sb.setOnSeekBarChangeListener(this);
             sb.setVisibility(View.VISIBLE);
@@ -104,21 +107,30 @@ public class NowPlayingActivity
             initializeCastProvider();
 
             if (this.getMode() == ViewMode.Episode) {
-                Episode ep = Model.get().getCurrentEpisode();
-                initializeView(
-                        String.format("S%sE%s - %s",
-                        Model.get().getCurrentSeason().getSeasonNumber(),
-                        ep.getEpisodeNumber(),
-                        ep.getTitle()),
-                        ep.getImage());
+                Episode ep = getEpisode();
+                JukeboxDomain.Season ss = getSeason();
 
-                castProvider.initialize(ep);
+                if (ep != null && ss != null) {
+                    this.setMediaList(ep.getMediaList());
+                    this.setCurrentMediaIndex(0);
+                    initializeView(
+                            String.format("S%sE%s - %s",
+                                    ss.getSeasonNumber(),
+                                    ep.getEpisodeNumber(),
+                                    ep.getTitle()),
+                            ep.getImage());
 
+                    castProvider.initialize(ep);
+                }
             }
             else {
-                Movie m = Model.get().getCurrentMovie();
-                initializeView(m.getTitle(), m.getImage());
-                castProvider.initialize(m);
+                Movie m = getMovie();
+                if (m != null) {
+                    this.setMediaList(m.getMediaList());
+                    this.setCurrentMediaIndex(0);
+                    initializeView(m.getTitle(), m.getImage());
+                    castProvider.initialize(m);
+                }
             }
 
             initializeMediaController();
@@ -138,6 +150,7 @@ public class NowPlayingActivity
 
         castProvider = CastProvider.getCaster(
                 this,
+                this.getMediaList(),
                 this.comm,
                 null,
                 this,
@@ -275,8 +288,6 @@ public class NowPlayingActivity
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-        final TextView tv = findViewById(R.id.txtSeekIndicator);
-
         int seconds = seekBar.getProgress();
 
         Logger.Log().d("Request --- Seek");
@@ -354,16 +365,21 @@ public class NowPlayingActivity
                 this.finish();
                 break;
             case R.id.btnViewInfo:
-                String url = Model.get().getCurrentMovie().getImdbUrl();
-                if (url != null && url.length() > 0) {
-                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                    startActivity(browserIntent);
-                } else {
-                    Toast.makeText(this, "No IMDB link available", Toast.LENGTH_SHORT).show();
+                Movie m = getMovie();
+
+                if (m != null) {
+                    String url = m.getImdbUrl();
+                    if (url != null && url.length() > 0) {
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        startActivity(browserIntent);
+                    } else {
+                        Toast.makeText(this, "No IMDB link available", Toast.LENGTH_SHORT).show();
+                    }
                 }
                 break;
             case R.id.btnSubSelection:
                 Intent i = new Intent(this, SubSelectActivity.class);
+                i.putExtra("media", this.getMediaList().get(this.getCurrentMediaIndex()));
                 startActivity(i);
                 break;
             default:
@@ -530,5 +546,45 @@ public class NowPlayingActivity
         super.onDestroy();
 
         CastContext.getSharedInstance().getSessionManager().removeSessionManagerListener(this);
+    }
+
+    private Movie getMovie() {
+        Bundle b = getIntent().getExtras();
+        if (b != null)
+            return (Movie)b.getSerializable("movie");
+
+        return null;
+    }
+
+    private JukeboxDomain.Season getSeason() {
+        Bundle b = getIntent().getExtras();
+        if (b != null)
+            return (JukeboxDomain.Season) b.getSerializable("season");
+
+        return null;
+    }
+
+    private Episode getEpisode() {
+        Bundle b = getIntent().getExtras();
+        if (b != null)
+            return (Episode)b.getSerializable("episode");
+
+        return null;
+    }
+
+    public List<JukeboxDomain.Media> getMediaList() {
+        return mediaList;
+    }
+
+    public void setMediaList(List<JukeboxDomain.Media> mediaList) {
+        this.mediaList = mediaList;
+    }
+
+    public int getCurrentMediaIndex() {
+        return currentMediaIndex;
+    }
+
+    public void setCurrentMediaIndex(int currentMediaIndex) {
+        this.currentMediaIndex = currentMediaIndex;
     }
 }

@@ -6,6 +6,7 @@ import java.util.List;
 
 import se.qxx.android.jukebox.activities.ListActivity;
 import se.qxx.android.jukebox.activities.ViewMode;
+import se.qxx.android.jukebox.adapters.support.IOffsetHandler;
 import se.qxx.android.jukebox.dialogs.ActionDialog;
 import se.qxx.android.jukebox.comm.Connector;
 import se.qxx.android.jukebox.adapters.support.EndlessScrollListener;
@@ -44,7 +45,7 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import org.apache.commons.lang3.StringUtils;
 
 public class JukeboxFragment extends ListFragment implements
-	OnItemClickListener, OnItemLongClickListener, OnClickListener, Connector.ConnectorCallbackEventListener {
+	OnItemClickListener, OnItemLongClickListener, OnClickListener, Connector.ConnectorCallbackEventListener, IOffsetHandler {
 
     private ViewMode mode;
 
@@ -55,6 +56,16 @@ public class JukeboxFragment extends ListFragment implements
 
     public ViewMode getMode() {
         return mode;
+    }
+
+    @Override
+    public JukeboxDomain.Season getSeason() {
+        return null;
+    }
+
+    @Override
+    public JukeboxDomain.Series getSeries() {
+        return null;
     }
 
     public void setMode(ViewMode mode) {
@@ -143,8 +154,7 @@ public class JukeboxFragment extends ListFragment implements
                 if (!Model.get().isLoading()) {
                     Model.get().setLoading(true);
 
-                    ((JukeboxFragment)this.getParent())
-                            .setOffset(page * Constants.NR_OF_ITEMS);
+                    this.getHandler().setOffset(page * Constants.NR_OF_ITEMS);
 
                     loadMoreData(page * Constants.NR_OF_ITEMS);
                 }
@@ -185,6 +195,7 @@ public class JukeboxFragment extends ListFragment implements
         if (this.getMode() == ViewMode.Movie) {
             Intent i = new Intent(arg1.getContext(), FlipperActivity.class);
             i.putExtra("mode", ViewMode.Movie);
+            i.putExtra("position", pos);
             i.putExtra("movie", (JukeboxDomain.Movie)_jukeboxMovieLayoutAdapter.getItem(pos));
 
             startActivity(i);

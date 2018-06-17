@@ -1,14 +1,12 @@
 package se.qxx.android.jukebox.activities;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.google.android.gms.cast.framework.CastContext;
 
@@ -18,6 +16,7 @@ import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.adapters.list.EpisodeLayoutAdapter;
 import se.qxx.android.jukebox.adapters.list.SeasonLayoutAdapter;
 import se.qxx.android.jukebox.adapters.support.EndlessScrollListener;
+import se.qxx.android.jukebox.adapters.support.IOffsetHandler;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
 import se.qxx.android.jukebox.comm.Connector;
 import se.qxx.android.jukebox.dialogs.ActionDialog;
@@ -26,7 +25,6 @@ import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain;
-import se.qxx.android.jukebox.adapters.support.IOffsetHandler;
 
 public class ListActivity extends AppCompatActivity implements
     AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, View.OnClickListener, Connector.ConnectorCallbackEventListener, IOffsetHandler {
@@ -36,8 +34,7 @@ public class ListActivity extends AppCompatActivity implements
 	private CastContext mCastContext;
 	private SeasonLayoutAdapter _seasonLayoutAdapter;
 	private EpisodeLayoutAdapter _episodeLayoutAdapter;
-	private EndlessScrollListener scrollListener;
-	private ViewMode mode;
+    private ViewMode mode;
 	private int offset;
 	private JukeboxDomain.Series series;
 	private JukeboxDomain.Season season;
@@ -78,13 +75,23 @@ public class ListActivity extends AppCompatActivity implements
         this.season = season;
     }
 
+    public int getSeriesID() {
+        if (this.getSeries() != null)
+            return this.getSeries().getID();
+        else
+            return -1;
+    }
+
+    public int getSeasonID() {
+        if (this.getSeason() != null)
+            return this.getSeason().getID();
+        else
+            return -1;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        JukeboxDomain.Series series = (JukeboxDomain.Series)getIntent().getExtras().getSerializable("series");
-        JukeboxDomain.Season season = (JukeboxDomain.Season)getIntent().getExtras().getSerializable("season");
 
 		JukeboxSettings.init(this);
 
@@ -92,6 +99,7 @@ public class ListActivity extends AppCompatActivity implements
             Bundle b = getIntent().getExtras();
             this.setMode(
                     (ViewMode) getIntent().getExtras().getSerializable("mode"));
+
             this.setSeries((JukeboxDomain.Series) b.getSerializable("series"));
             this.setSeason((JukeboxDomain.Season) b.getSerializable("season"));
         }
@@ -101,7 +109,7 @@ public class ListActivity extends AppCompatActivity implements
 
 		mCastContext = CastContext.getSharedInstance(this);
 
-		loadMoreData(0);
+		loadMoreData(0, getSeriesID(), getSeasonID());
     }
 
 	@Override
@@ -115,7 +123,7 @@ public class ListActivity extends AppCompatActivity implements
 	}
 
 	private void initializeView() {
-		ListView lv = (ListView) findViewById(R.id.listView1);
+		ListView lv = findViewById(R.id.listView1);
 		lv.setOnItemClickListener(this);
 		lv.setOnItemLongClickListener(this);
 
@@ -126,36 +134,44 @@ public class ListActivity extends AppCompatActivity implements
 		findViewById(R.id.btnOn).setOnClickListener(this);
 		findViewById(R.id.btnOff).setOnClickListener(this);
 
-		scrollListener = new EndlessScrollListener() {
-			@Override
-			public boolean onLoadMore(int page, int totalItemsCount) {
-				if (!Model.get().isLoading()) {
-				    int offset = page * Constants.NR_OF_ITEMS;
-					this.getHandler().setOffset(offset);
+        EndlessScrollListener scrollListener = new EndlessScrollListener(this) {
+            @Override
+            public boolean onLoadMore(int page, int totalItemsCount) {
+                if (!Model.get().isLoading()) {
+                    int offset = page * Constants.NR_OF_ITEMS;
+                    this.getHandler().setOffset(offset);
 
-					if (this.getHandler().getMode() == ViewMode.Season)
-					    loadMoreData(
-					            offset,
+                    if (this.getHandler().getMode() == ViewMode.Season)
+                        loadMoreData(
+                                offset,
                                 this.getHandler().getSeries().getID());
-					else if (this.getHandler().getMode() == ViewMode.Episode)
+                    else if (this.getHandler().getMode() == ViewMode.Episode)
                         loadMoreData(
                                 offset,
                                 this.getHandler().getSeries().getID(),
                                 this.getHandler().getSeason().getID());
-				}
+                }
 
-				return true;
-			}
-		};
+                return true;
+            }
+        };
 
 		lv.setOnScrollListener(scrollListener);
 
         if (this.getMode() == ViewMode.Season) {
-            _seasonLayoutAdapter = new SeasonLayoutAdapter(this.getApplicationContext(), Model.get().getCurrentSeries());
+            _seasonLayoutAdapter = new SeasonLayoutAdapter(
+                    this.getApplicationContext(),
+                    this.getSeries());
+
             lv.setAdapter(_seasonLayoutAdapter);
         }
         else if (this.getMode() == ViewMode.Episode) {
-            _episodeLayoutAdapter = new EpisodeLayoutAdapter(this.getApplicationContext(), Model.get().getCurrentSeason());
+            _episodeLayoutAdapter =
+                new EpisodeLayoutAdapter(
+                        this.getApplicationContext(),
+                        this.getSeason().getSeasonNumber(),
+                        this.getSeason().getEpisodeList());
+
             lv.setAdapter(_episodeLayoutAdapter);
         }
 
@@ -174,26 +190,33 @@ public class ListActivity extends AppCompatActivity implements
     @Override
     public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
         if (this.getMode() == ViewMode.Season) {
-            Model.get().setCurrentSeason(pos); //bundle the
+
             Intent intentSeries = new Intent(this, ListActivity.class);
             intentSeries.putExtra("mode", ViewMode.Episode);
-            intentSeries.putExtra("season", )
+            intentSeries.putExtra("series", this.getSeries());
+            intentSeries.putExtra("season", (JukeboxDomain.Season)_seasonLayoutAdapter.getItem(pos));
 
             startActivity(intentSeries);
         }
     }
 
     @Override
-    public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int arg2,
+    public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int position,
                                    long arg3) {
 
         ActionDialog d = null;
 
-        if (this.getMode() == ViewMode.Movie) {
-            d = new ActionDialog(this, Model.get().getMovie(arg2).getID(), JukeboxDomain.RequestType.TypeMovie);
+        if (this.getMode() == ViewMode.Season) {
+            d = new ActionDialog(
+                    this,
+                    this.getSeries().getSeason(position).getID(),
+                    JukeboxDomain.RequestType.TypeMovie);
         }
-        else if (this.getMode() == ViewMode.Series) {
-            d = new ActionDialog(this, Model.get().getSeries(arg2).getID(), JukeboxDomain.RequestType.TypeSeries);
+        else if (this.getMode() == ViewMode.Episode) {
+            d = new ActionDialog(
+                    this,
+                    this.getSeason().getEpisode(position).getID(),
+                    JukeboxDomain.RequestType.TypeSeries);
         }
 
         if (d != null)
@@ -210,11 +233,9 @@ public class ListActivity extends AppCompatActivity implements
             case R.id.btnRefresh:
                 Logger.Log().i("onConnectClicked");
 
-                Model.get().setOffset(0);
-                Model.get().clearMovies();
-                Model.get().clearSeries();
+                this.setOffset(0);
 
-                Connector.connect(Model.get().getOffset(), Model.get().getNrOfItems(), ViewMode.getModelType(this.getMode()));
+                loadMoreData(0, getSeriesID(), getSeasonID());
 
                 break;
             case R.id.btnSelectMediaPlayer:
@@ -247,40 +268,24 @@ public class ListActivity extends AppCompatActivity implements
     public void handleSeriesUpdated(List<JukeboxDomain.Series> series) {
         //should not happen in this activity
     }
-    private Runnable modelResultUpdatedRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-            if (_seasonLayoutAdapter != null)
-                _seasonLayoutAdapter.notifyDataSetChanged();
-
-            if (_episodeLayoutAdapter != null)
-                _episodeLayoutAdapter.notifyDataSetChanged();
-        }
-    };
 
     @Override
     public void handleSeasonsUpdated(final List<JukeboxDomain.Season> seasons) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (_seasonLayoutAdapter != null) {
-                    _seasonLayoutAdapter.setSeasons(seasons);
-                   _seasonLayoutAdapter.notifyDataSetChanged();
-                }
-            }
-        });
+        runOnUiThread(
+                () -> {
+                    if (_seasonLayoutAdapter != null) {
+                        _seasonLayoutAdapter.setSeasons(seasons);
+                       _seasonLayoutAdapter.notifyDataSetChanged();
+                    }
+                });
     }
 
     @Override
     public void handleEpisodesUpdated(List<JukeboxDomain.Episode> episodes) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (_episodeLayoutAdapter != null) {
-                    _episodeLayoutAdapter.setEpisodes(seasons);
-                    _episodeLayoutAdapter.notifyDataSetChanged();
-                }
+        runOnUiThread(() -> {
+            if (_episodeLayoutAdapter != null) {
+                _episodeLayoutAdapter.setEpisodes(episodes);
+                _episodeLayoutAdapter.notifyDataSetChanged();
             }
         });
     }
