@@ -118,7 +118,7 @@ public class FlipperActivity extends AppCompatActivity implements OnPageChangeLi
 	private int getPosition() {
 		Bundle b = getIntent().getExtras();
 		if (b != null) {
-			return b.getInt("position");
+		    return b.getInt("position");
 		}
 
 		return 0;
@@ -127,7 +127,9 @@ public class FlipperActivity extends AppCompatActivity implements OnPageChangeLi
 	private ViewMode getMode() {
 		Bundle b = getIntent().getExtras();
 		if (b != null) {
-			return (ViewMode)b.getSerializable("mode");
+		    ViewMode mode = (ViewMode)b.getSerializable("mode");
+		    if (mode != null)
+		        return mode;
 		}
 
 		return ViewMode.Movie;
@@ -138,10 +140,12 @@ public class FlipperActivity extends AppCompatActivity implements OnPageChangeLi
 	    Bundle b = getIntent().getExtras();
 
 	    if (b != null) {
-	        return (List<JukeboxDomain.Movie>)b.getSerializable("movies");
+            List<JukeboxDomain.Movie> movies = (List<JukeboxDomain.Movie>)b.getSerializable("movies");
+	        if (movies != null)
+	            return movies;
         }
 
-        return new ArrayList<JukeboxDomain.Movie>();
+        return new ArrayList<>();
     }
 
     private JukeboxDomain.Movie getCurrentMovie() {

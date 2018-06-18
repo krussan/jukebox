@@ -57,27 +57,6 @@ public class FlipperListActivity extends AppCompatActivity {
 
 		setContentView(R.layout.jukebox_main_wrapper);
         pager = (ViewPager)this.getRootView();
-        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-			@Override
-			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-			}
-
-			@Override
-			public void onPageSelected(int position) {
-                Connector.connect(
-                        0,
-                        Constants.NR_OF_ITEMS,
-                        ViewMode.getModelType(getViewMode(position)),
-                        -1,
-                        -1);
-            }
-
-			@Override
-			public void onPageScrollStateChanged(int state) {
-
-			}
-		});
 
         JukeboxFragmentAdapter mfa = new JukeboxFragmentAdapter(getSupportFragmentManager(), this);
 

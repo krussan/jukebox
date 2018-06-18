@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /***
@@ -14,7 +15,7 @@ import java.util.List;
  */
 public class MovieFragmentAdapter extends FragmentStatePagerAdapter {
 
-    private List<JukeboxDomain.Movie> movies;
+    private List<JukeboxDomain.Movie> movies = new ArrayList<>();
 
     public List<JukeboxDomain.Movie> getMovies() {
         return movies;

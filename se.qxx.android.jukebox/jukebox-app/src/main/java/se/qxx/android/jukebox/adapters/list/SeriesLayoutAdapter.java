@@ -13,24 +13,30 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SeriesLayoutAdapter extends GenericListLayoutAdapter {
 
-    private List<Series> series;
+    private List<Series> series = new ArrayList<>();
 
 
     public List<Series> getSeries() {
         return series;
     }
 
-    public void setSeries(List<Series> series) {
-        this.series = series;
+    public void addSeries(List<Series> series) {
+        this.getSeries().addAll(series);
+    }
+
+    public void clearSeries() {
+        this.getSeries().clear();
     }
 
 	public SeriesLayoutAdapter(Context context, List<Series> series) {
 		super(context, R.layout.movielistrow);
-		this.setSeries(series);
+		this.clearSeries();
+		this.addSeries(series);
 	}
 
     @Override

@@ -1,5 +1,6 @@
 package se.qxx.android.jukebox.adapters.list;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import se.qxx.android.jukebox.activities.IncludeSubtitleRating;
@@ -23,19 +24,24 @@ import android.widget.BaseAdapter;
  */
 public class MovieLayoutAdapter extends GenericListLayoutAdapter {
 
-    private List<Movie> movies;
+    private List<Movie> movies = new ArrayList<>();
 
     public List<Movie> getMovies() {
         return movies;
     }
 
-    public void setMovies(List<Movie> movies) {
-        this.movies = movies;
+    public void addMovies(List<Movie> movies) {
+        this.getMovies().addAll(movies);
+    }
+
+    public void clearMovies() {
+        this.getMovies().clear();
     }
 
 	public MovieLayoutAdapter(Context context, List<Movie> movies) {
 		super(context, R.layout.movielistrow);
-		this.setMovies(movies);
+		this.clearMovies();
+		this.addMovies(movies);
 	}
 
 	@Override

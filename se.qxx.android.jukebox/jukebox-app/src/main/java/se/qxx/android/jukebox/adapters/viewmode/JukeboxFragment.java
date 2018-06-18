@@ -80,19 +80,6 @@ public class JukeboxFragment extends ListFragment implements
         this.offset = offset;
     }
 
-	private Runnable modelResultUpdatedRunnable = new Runnable() {
-
-		@Override
-		public void run() {
-			if (_jukeboxMovieLayoutAdapter != null)
-				_jukeboxMovieLayoutAdapter.notifyDataSetChanged();
-			
-			if (_seriesLayoutAdapter != null)
-				_seriesLayoutAdapter.notifyDataSetChanged();
-
-		}
-	};
-
 	private static ViewMode getViewMode(int position) {
         // position 0 in horizontal scroll is movie
         // position 0 is series OR season
@@ -116,19 +103,40 @@ public class JukeboxFragment extends ListFragment implements
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		Bundle b = getArguments();
+        super.onCreate(savedInstanceState);
+        setUserVisibleHint(false);
 
-		if (b != null) {
-            this.setMode((ViewMode)b.getSerializable("mode"));
-		}
+        Bundle b = getArguments();
 
-		Connector.addEventListener(this);
+        if (b != null) {
+            this.setMode((ViewMode) b.getSerializable("mode"));
+        }
 
+        Connector.addEventListener(this);
 
-		loadMoreData(0);
-	}	
-	
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean visible)
+    {
+        super.setUserVisibleHint(visible);
+        if (visible && isResumed())
+        {
+            //Only manually call onResume if fragment is already visible
+            //Otherwise allow natural fragment lifecycle to call onResume
+            onResume();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (getUserVisibleHint()) {
+            clearData();
+            loadMoreData(0);
+        }
+    }
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.main, container, false);
@@ -196,7 +204,7 @@ public class JukeboxFragment extends ListFragment implements
             Intent i = new Intent(arg1.getContext(), FlipperActivity.class);
             i.putExtra("mode", ViewMode.Movie);
             i.putExtra("position", pos);
-            i.putExtra("movie", (JukeboxDomain.Movie)_jukeboxMovieLayoutAdapter.getItem(pos));
+            i.putExtra("movies", (ArrayList<JukeboxDomain.Movie>)_jukeboxMovieLayoutAdapter.getMovies());
 
             startActivity(i);
         }
@@ -243,7 +251,7 @@ public class JukeboxFragment extends ListFragment implements
 			Logger.Log().i("onConnectClicked");
 
 
-			this.setOffset(0);
+			clearData();
 			loadMoreData(0);
 
 			break;
@@ -272,28 +280,28 @@ public class JukeboxFragment extends ListFragment implements
     @Override
     public void handleMoviesUpdated(List<JukeboxDomain.Movie> movies) {
 	    if (_jukeboxMovieLayoutAdapter != null) {
-            _jukeboxMovieLayoutAdapter.setMovies(movies);
-	        this.getActivity().runOnUiThread(new Runnable() {
-
-                @Override
-                public void run() {
-                    _jukeboxMovieLayoutAdapter.notifyDataSetChanged();
-                }
-            });
+            _jukeboxMovieLayoutAdapter.addMovies(movies);
+            notifyMovieList();
         }
+    }
+
+    public void notifyMovieList() {
+        if (_jukeboxMovieLayoutAdapter != null)
+            this.getActivity().runOnUiThread(() -> _jukeboxMovieLayoutAdapter.notifyDataSetChanged());
+
+    }
+
+    public void notifySeriesList() {
+        if (_seriesLayoutAdapter != null)
+            this.getActivity().runOnUiThread(() -> _seriesLayoutAdapter.notifyDataSetChanged());
+
     }
 
     @Override
     public void handleSeriesUpdated(List<JukeboxDomain.Series> series) {
         if (_seriesLayoutAdapter != null) {
-            _seriesLayoutAdapter.setSeries(series);
-            this.getActivity().runOnUiThread(new Runnable() {
-
-                @Override
-                public void run() {
-                    _seriesLayoutAdapter.notifyDataSetChanged();
-                }
-            });
+            _seriesLayoutAdapter.addSeries(series);
+            notifySeriesList();
         }
     }
 
@@ -307,5 +315,17 @@ public class JukeboxFragment extends ListFragment implements
 
     }
 
+
+    private void clearData() {
+        this.setOffset(0);
+	    if (this.getMode() == ViewMode.Movie && _jukeboxMovieLayoutAdapter != null) {
+            _jukeboxMovieLayoutAdapter.clearMovies();
+            notifyMovieList();
+        }
+        else if (this.getMode() == ViewMode.Series && _seriesLayoutAdapter != null) {
+	        _seriesLayoutAdapter.clearSeries();
+	        notifySeriesList();
+        }
+    }
 
 }
