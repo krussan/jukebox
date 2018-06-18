@@ -35,6 +35,7 @@ public class ListActivity extends AppCompatActivity implements
 	private SeasonLayoutAdapter _seasonLayoutAdapter;
 	private EpisodeLayoutAdapter _episodeLayoutAdapter;
 	private int offset;
+	private boolean firstIsLast = false;
 
     protected View getRootView() {
 		return findViewById(R.id.rootMain);
@@ -136,8 +137,9 @@ public class ListActivity extends AppCompatActivity implements
         EndlessScrollListener scrollListener = new EndlessScrollListener(this) {
             @Override
             public boolean onLoadMore(int page, int totalItemsCount) {
-                if (!Model.get().isLoading()) {
+                if (!Model.get().isLoading() && !isFirstIsLast()) {
                     int offset = page * Constants.NR_OF_ITEMS;
+
                     this.getHandler().setOffset(offset);
 
                     if (this.getHandler().getMode() == ViewMode.Season)
@@ -145,10 +147,7 @@ public class ListActivity extends AppCompatActivity implements
                                 offset,
                                 this.getHandler().getSeries().getID());
                     else if (this.getHandler().getMode() == ViewMode.Episode)
-                        loadMoreData(
-                                offset,
-                                this.getHandler().getSeries().getID(),
-                                this.getHandler().getSeason().getID());
+                        return false;
                 }
 
                 return true;
@@ -286,6 +285,9 @@ public class ListActivity extends AppCompatActivity implements
         if (_seasonLayoutAdapter != null)
             _seasonLayoutAdapter.addSeasons(seasons);
 
+        if (this.getOffset() == 0 && seasons.size() <= Constants.NR_OF_ITEMS)
+            this.setFirstIsLast(true);
+
         notifySeasons();
     }
 
@@ -293,6 +295,9 @@ public class ListActivity extends AppCompatActivity implements
     public void handleEpisodesUpdated(List<JukeboxDomain.Episode> episodes) {
         if (_episodeLayoutAdapter != null)
             _episodeLayoutAdapter.addEpisodes(episodes);
+
+        if (this.getOffset() == 0 && episodes.size() <= Constants.NR_OF_ITEMS)
+            this.setFirstIsLast(true);
 
         notifyEpisodes();
     }
@@ -306,6 +311,13 @@ public class ListActivity extends AppCompatActivity implements
             runOnUiThread(() -> _episodeLayoutAdapter.notifyDataSetChanged());
     }
 
+    public boolean isFirstIsLast() {
+        return firstIsLast;
+    }
+
+    public void setFirstIsLast(boolean firstIsLast) {
+        this.firstIsLast = firstIsLast;
+    }
 }
 
 

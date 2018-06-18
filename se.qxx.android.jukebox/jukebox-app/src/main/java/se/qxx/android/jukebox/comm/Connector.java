@@ -148,31 +148,6 @@ public class Connector {
                         });
             }
 			else if (modelType == Model.ModelType.Episode) {
-				jh.listEpisodes("",
-						seriesID,
-						seasonID,
-						nrOfItems,
-						offset,
-						new RpcCallback<JukeboxResponseListMovies>() {
-
-							@Override
-							public void run(JukeboxResponseListMovies response) {
-								//TODO: if repsonse is null probably the server is down..
-								if (response != null) {
-                                    if (response.getSeriesList().size() > 0) {
-                                        List<JukeboxDomain.Season> seasons = response.getSeries(0).getSeasonList();
-                                        if (seasons.size() > 0) {
-                                            fireEpisodesUpdated(seasons.get(0).getEpisodeList());
-                                        }
-                                    }
-
-									Model.get().setInitialized(true);
-								}
-
-								Model.get().setLoading(false);
-							}
-
-						});
 
 			}
 

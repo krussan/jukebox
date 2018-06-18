@@ -286,13 +286,13 @@ public class JukeboxFragment extends ListFragment implements
     }
 
     public void notifyMovieList() {
-        if (_jukeboxMovieLayoutAdapter != null)
+        if (_jukeboxMovieLayoutAdapter != null && this.getActivity() != null)
             this.getActivity().runOnUiThread(() -> _jukeboxMovieLayoutAdapter.notifyDataSetChanged());
 
     }
 
     public void notifySeriesList() {
-        if (_seriesLayoutAdapter != null)
+        if (_seriesLayoutAdapter != null && this.getActivity() != null)
             this.getActivity().runOnUiThread(() -> _seriesLayoutAdapter.notifyDataSetChanged());
 
     }
