@@ -34,21 +34,21 @@ public class ListActivity extends AppCompatActivity implements
 	private CastContext mCastContext;
 	private SeasonLayoutAdapter _seasonLayoutAdapter;
 	private EpisodeLayoutAdapter _episodeLayoutAdapter;
-    private ViewMode mode;
 	private int offset;
-	private JukeboxDomain.Series series;
-	private JukeboxDomain.Season season;
 
     protected View getRootView() {
 		return findViewById(R.id.rootMain);
 	}
 
 	public ViewMode getMode() {
-		return mode;
-	}
+		Bundle b = getIntent().getExtras();
+		if (b != null) {
+		    ViewMode mode = (ViewMode) b.getSerializable("mode");
+		    if (mode != null)
+		        return mode;
+        }
 
-	public void setMode(ViewMode mode) {
-		this.mode = mode;
+        return ViewMode.Season;
 	}
 
     public int getOffset() {
@@ -60,19 +60,19 @@ public class ListActivity extends AppCompatActivity implements
     }
 
     public JukeboxDomain.Series getSeries() {
-        return series;
-    }
+        Bundle b = getIntent().getExtras();
+        if (b != null)
+            return (JukeboxDomain.Series) b.getSerializable("series");
 
-    public void setSeries(JukeboxDomain.Series series) {
-        this.series = series;
+        return null;
     }
-
     public JukeboxDomain.Season getSeason() {
-        return season;
-    }
 
-    public void setSeason(JukeboxDomain.Season season) {
-        this.season = season;
+        Bundle b = getIntent().getExtras();
+        if (b != null)
+            return (JukeboxDomain.Season) b.getSerializable("season");
+
+        return null;
     }
 
     public int getSeriesID() {
@@ -95,21 +95,20 @@ public class ListActivity extends AppCompatActivity implements
 
 		JukeboxSettings.init(this);
 
-        if (getIntent() != null && getIntent().getExtras() != null) {
-            Bundle b = getIntent().getExtras();
-            this.setMode(
-                    (ViewMode) getIntent().getExtras().getSerializable("mode"));
-
-            this.setSeries((JukeboxDomain.Series) b.getSerializable("series"));
-            this.setSeason((JukeboxDomain.Season) b.getSerializable("season"));
-        }
-
 		setContentView(R.layout.main);
 		initializeView();
 
 		mCastContext = CastContext.getSharedInstance(this);
+        Connector.addEventListener(this);
 
 		loadMoreData(0, getSeriesID(), getSeasonID());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+
     }
 
 	@Override
@@ -233,8 +232,8 @@ public class ListActivity extends AppCompatActivity implements
             case R.id.btnRefresh:
                 Logger.Log().i("onConnectClicked");
 
-                this.setOffset(0);
 
+                clearData();
                 loadMoreData(0, getSeriesID(), getSeasonID());
 
                 break;
@@ -259,6 +258,19 @@ public class ListActivity extends AppCompatActivity implements
         }
     }
 
+    private void clearData() {
+        this.setOffset(0);
+        ViewMode mode = this.getMode();
+        if (mode == ViewMode.Season && _seasonLayoutAdapter != null) {
+            _seasonLayoutAdapter.clearSeasons();
+            notifySeasons();
+        }
+        else if (mode == ViewMode.Episode && _episodeLayoutAdapter != null) {
+            _episodeLayoutAdapter.clearEpisodes();
+            notifyEpisodes();
+        }
+    }
+
     @Override
     public void handleMoviesUpdated(List<JukeboxDomain.Movie> movies) {
         //should not happen in this activity
@@ -271,25 +283,29 @@ public class ListActivity extends AppCompatActivity implements
 
     @Override
     public void handleSeasonsUpdated(final List<JukeboxDomain.Season> seasons) {
-        runOnUiThread(
-                () -> {
-                    if (_seasonLayoutAdapter != null) {
-                        _seasonLayoutAdapter.setSeasons(seasons);
-                       _seasonLayoutAdapter.notifyDataSetChanged();
-                    }
-                });
+        if (_seasonLayoutAdapter != null)
+            _seasonLayoutAdapter.addSeasons(seasons);
+
+        notifySeasons();
     }
 
     @Override
     public void handleEpisodesUpdated(List<JukeboxDomain.Episode> episodes) {
-        runOnUiThread(() -> {
-            if (_episodeLayoutAdapter != null) {
-                _episodeLayoutAdapter.setEpisodes(episodes);
-                _episodeLayoutAdapter.notifyDataSetChanged();
-            }
-        });
+        if (_episodeLayoutAdapter != null)
+            _episodeLayoutAdapter.addEpisodes(episodes);
+
+        notifyEpisodes();
     }
 
-
+    private void notifySeasons() {
+        if (_seasonLayoutAdapter != null)
+            runOnUiThread(() -> _seasonLayoutAdapter.notifyDataSetChanged());
+    }
+    private void notifyEpisodes() {
+        if (_episodeLayoutAdapter != null)
+            runOnUiThread(() -> _episodeLayoutAdapter.notifyDataSetChanged());
+    }
 
 }
+
+

@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import se.qxx.android.jukebox.R;
@@ -18,26 +19,32 @@ import se.qxx.jukebox.domain.JukeboxDomain.Series;
 public class SeasonLayoutAdapter extends BaseAdapter {
 
 	private Context context;
-	private List<Season> seasons;
+	private List<Season> seasons = new ArrayList<>();
 
     public List<Season> getSeasons() {
         return seasons;
     }
 
-    public void setSeasons(List<Season> seasons) {
-        this.seasons = seasons;
+    public void addSeasons(List<Season> seasons) {
+        this.getSeasons().addAll(seasons);
+    }
+
+    public void clearSeasons() {
+        this.getSeasons().clear();
     }
 
 	public SeasonLayoutAdapter(Context context, Series series) {
 		super();
 		this.context = context;
-		this.setSeasons(series.getSeasonList());
+		this.clearSeasons();
+		this.addSeasons(series.getSeasonList());
 	}
 
     public SeasonLayoutAdapter(Context context, List<Season> seasns) {
         super();
         this.context = context;
-        this.setSeasons(seasons);
+        this.clearSeasons();
+        this.addSeasons(seasons);
     }
 
 	@Override

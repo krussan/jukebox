@@ -36,6 +36,12 @@ public class Connector {
     }
 
     public static synchronized void addEventListener(ConnectorCallbackEventListener listener) {
+        // only add once
+        for (ConnectorCallbackEventListener l : _listeners) {
+            if (l.equals(listener))
+                return;
+        }
+
         _listeners.add(listener);
     }
 
@@ -129,21 +135,16 @@ public class Connector {
                         seriesID,
                         nrOfItems,
                         offset,
-                        new RpcCallback<JukeboxResponseListMovies>() {
+                        response -> {
+                            //TODO: if repsonse is null probably the server is down..
+                            if (response != null) {
+                                if (response.getSeriesList().size() > 0)
+                                    fireSeasonsUpdated(response.getSeries(0).getSeasonList());
 
-                            @Override
-                            public void run(JukeboxResponseListMovies response) {
-                                //TODO: if repsonse is null probably the server is down..
-                                if (response != null) {
-                                    if (response.getSeriesList().size() > 0)
-                                        fireSeasonsUpdated(response.getSeries(0).getSeasonList());
-
-                                    Model.get().setInitialized(true);
-                                }
-
-                                Model.get().setLoading(false);
+                                Model.get().setInitialized(true);
                             }
 
+                            Model.get().setLoading(false);
                         });
             }
 			else if (modelType == Model.ModelType.Episode) {

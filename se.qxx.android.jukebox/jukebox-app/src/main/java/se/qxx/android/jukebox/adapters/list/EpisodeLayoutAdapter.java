@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import se.qxx.android.jukebox.R;
@@ -23,16 +24,20 @@ import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 public class EpisodeLayoutAdapter extends BaseAdapter implements View.OnClickListener {
 
 	private Context context;
-    private List<Episode> episodes;
+    private List<Episode> episodes = new ArrayList<>();
     private int seasonNumber;
 
     public List<Episode> getEpisodes() {
 		return episodes;
 	}
 
-	public void setEpisodes(List<Episode> episodes) {
-		this.episodes = episodes;
+	public void addEpisodes(List<Episode> episodes) {
+        this.getEpisodes().addAll(episodes);
 	}
+
+	public void clearEpisodes() {
+        this.getEpisodes().clear();
+    }
 
     public int getSeasonNumber() {
         return seasonNumber;
@@ -46,7 +51,8 @@ public class EpisodeLayoutAdapter extends BaseAdapter implements View.OnClickLis
 		super();
 		this.context = context;
 		this.setSeasonNumber(seasonNumber);
-		this.setEpisodes(episodes);
+		this.clearEpisodes();
+		this.addEpisodes(episodes);
 	}
 
 	@Override
