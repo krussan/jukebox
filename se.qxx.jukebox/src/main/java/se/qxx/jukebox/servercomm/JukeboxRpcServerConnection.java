@@ -58,33 +58,53 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			RpcCallback<JukeboxResponseListMovies> done) {
 
 		Log.Debug(String.format("ListMovies :: %s", request.getRequestType()), LogType.COMM);
-		
-		
 		String searchString = request.getSearchString();
 		
-		List<Movie> movies = new ArrayList<Movie>();
-		List<Series> series = new ArrayList<Series>(); 
+		JukeboxResponseListMovies.Builder b = JukeboxResponseListMovies.newBuilder();
 		
 		switch (request.getRequestType()) {
 		case TypeMovie:
-			movies = DB.searchMoviesByTitle(searchString, request.getNrOfItems(), request.getStartIndex());
+			b.addAllMovies(
+				DB.searchMoviesByTitle(
+						searchString, 
+						request.getNrOfItems(), 
+						request.getStartIndex()));
+			
+			b.setTotalMovies(
+				DB.getTotalNrOfMovies());
+			
 			break;
 		case TypeSeries:
-			series = DB.searchSeriesByTitle(searchString, request.getNrOfItems(), request.getStartIndex());
+			b.addAllSeries(
+				DB.searchSeriesByTitle(
+						searchString, 
+						request.getNrOfItems(), 
+						request.getStartIndex()));
+			
+			b.setTotalSeries(
+				DB.getTotalNrOfSeries());
+			
 			break;
 		case TypeSeason:
-			series.add(DB.getSeries(request.getSeriesID()));
+			b.addSeries(
+				DB.getSeries(
+						request.getSeriesID()));
+			
+			b.setTotalSeasons(
+				DB.getTotalNrOfSeries());
+				
 			break;
 		case TypeEpisode:
 			//DB.findSeason(request.getSeasonID());
+			b.setTotalEpisodes(
+				DB.getTotalNrOfEpisodes(
+						request.getSeasonID()));
+			
 			break;
 		}
 		
-		JukeboxResponseListMovies lm = JukeboxResponseListMovies.newBuilder()
-				.addAllMovies(movies)
-				.addAllSeries(series)
-				.build();
-		done.run(lm);
+		done.run(
+			b.build());
 	}
 
 	private List<Series> removeFullSizePicturesAndSubsFromSeries(List<Series> listSeries) {

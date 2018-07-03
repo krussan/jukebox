@@ -929,4 +929,63 @@ public class DB {
 		}		
 	}
 	
+	public static int getTotalNrOfMovies() {
+		try {
+			ProtoDB db = getProtoDBInstance();
+			
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				String sql = "SELECT COUNT(1) FROM Movie;";
+				return db.executeScalar(sql);
+			}
+		} catch (Exception e) {
+			Log.Error(String.format("Failed to clean subtitle queue"), Log.LogType.MAIN, e);
+		}		
+		
+		return 0;
+	}
+
+	public static int getTotalNrOfSeries() {
+		try {
+			ProtoDB db = getProtoDBInstance();
+			
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				String sql = "SELECT COUNT(1) FROM Series;";
+				return db.executeScalar(sql);
+			}
+		} catch (Exception e) {
+			Log.Error(String.format("Failed to clean subtitle queue"), Log.LogType.MAIN, e);
+		}		
+		
+		return 0;
+	}
+	
+	public static int getTotlaNrOfSeasons(int seriesID) {
+		try {
+			ProtoDB db = getProtoDBInstance();
+			
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				String sql = String.format("SELECT COUNT(1) FROM SeriesSeason_Season SS INNER JOIN Season S ON SS._season_ID = S.ID WHERE _series_ID = %s;", seriesID);
+				return db.executeScalar(sql);
+			}
+		} catch (Exception e) {
+			Log.Error(String.format("Failed to clean subtitle queue"), Log.LogType.MAIN, e);
+		}		
+		
+		return 0;		
+	}
+	
+	public static int getTotalNrOfEpisodes(int seasonID) {
+		try {
+			ProtoDB db = getProtoDBInstance();
+			
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				String sql = String.format("SELECT COUNT(1) FROM SeasonEpisode_Episode SS INNER JOIN Episode E ON SS._episode_ID = E.ID WHERE _season_ID = %s;", seasonID);
+				return db.executeScalar(sql);
+			}
+		} catch (Exception e) {
+			Log.Error(String.format("Failed to clean subtitle queue"), Log.LogType.MAIN, e);
+		}		
+		
+		return 0;				
+	}
 }
