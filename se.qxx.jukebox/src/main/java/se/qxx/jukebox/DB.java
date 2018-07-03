@@ -112,6 +112,7 @@ public class DB {
 						.addSearchArgument(searchString)
 						.addOperator(ProtoDBSearchOperator.Like)
 						.setShallow(false)
+						.setOffset(offset)
 						.setNumberOfResults(numberOfResults)
 						.setSortField(sortField)
 						.setSortOrder(ProtoDBSort.Asc)
