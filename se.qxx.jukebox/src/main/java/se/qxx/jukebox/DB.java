@@ -960,7 +960,7 @@ public class DB {
 		return 0;
 	}
 	
-	public static int getTotlaNrOfSeasons(int seriesID) {
+	public static int getTotalNrOfSeasons(int seriesID) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			

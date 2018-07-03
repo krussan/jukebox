@@ -91,7 +91,8 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 						request.getSeriesID()));
 			
 			b.setTotalSeasons(
-				DB.getTotalNrOfSeries());
+				DB.getTotalNrOfSeasons(
+						request.getSeriesID()));
 				
 			break;
 		case TypeEpisode:
@@ -103,8 +104,37 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			break;
 		}
 		
+		JukeboxResponseListMovies response = b.build();
+		logResponse(response);
+		
 		done.run(
 			b.build());
+	}
+
+	private void logResponse(JukeboxResponseListMovies response) {
+		Log.Debug(String.format("Movie count :: %s ", response.getMoviesCount()), LogType.COMM);
+		Log.Debug(String.format("Series count :: %s ", response.getSeriesCount()), LogType.COMM);
+		logSeasons(response);
+		logEpisodes(response);
+	}
+
+	private void logSeasons(JukeboxResponseListMovies response) {
+		int c = 0;
+		for (Series s : response.getSeriesList())
+			c += s.getSeasonCount();
+		
+		Log.Debug(String.format("Season count :: %s ", c), LogType.COMM);
+	}
+	
+	private void logEpisodes (JukeboxResponseListMovies response) {
+		int c = 0;
+		for (Series s : response.getSeriesList()) {
+			for (Season ss : s.getSeasonList()) {
+				c += ss.getEpisodeCount();
+			}
+		}
+		
+		Log.Debug(String.format("Episode count :: %s ", c), LogType.COMM);
 	}
 
 	private List<Series> removeFullSizePicturesAndSubsFromSeries(List<Series> listSeries) {
