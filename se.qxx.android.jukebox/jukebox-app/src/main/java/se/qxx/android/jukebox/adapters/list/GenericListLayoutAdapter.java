@@ -23,7 +23,7 @@ import se.qxx.jukebox.domain.Sorter;
 /***
  * Responsible of the list view showing all movies
  */
-public abstract class GenericListLayoutAdapter extends BaseAdapter {
+public abstract class GenericListLayoutAdapter<T> extends BaseAdapter {
 
 	private Context context;
     private int listItemId;
@@ -86,9 +86,9 @@ public abstract class GenericListLayoutAdapter extends BaseAdapter {
         return v;
     }
 
-    public abstract void initializeView(View v, Object o);
+    public abstract void initializeView(View v, T o);
 	public abstract int getItemCount();
-	public abstract Object getDataObject(int position);
+	public abstract T getDataObject(int position);
 	public abstract long getObjectId(int position);
 
 	@Override
@@ -109,7 +109,7 @@ public abstract class GenericListLayoutAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int position) {
+    public T getItem(int position) {
 	    if (getItemViewType(position) == VIEWTYPE_ITEM)
 	        return getDataObject(position);
 	    else

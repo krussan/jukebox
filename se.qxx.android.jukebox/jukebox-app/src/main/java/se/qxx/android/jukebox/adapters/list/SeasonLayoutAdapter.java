@@ -16,7 +16,7 @@ import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 
-public class SeasonLayoutAdapter extends GenericListLayoutAdapter {
+public class SeasonLayoutAdapter extends GenericListLayoutAdapter<Season> {
 
 	private Context context;
 	private List<Season> seasons = new ArrayList<>();
@@ -48,7 +48,7 @@ public class SeasonLayoutAdapter extends GenericListLayoutAdapter {
     }
 
 	@Override
-	public void initializeView(View v, Object o) {
+	public void initializeView(View v, Season o) {
 		try {
 
 			if (v == null) {
@@ -57,20 +57,19 @@ public class SeasonLayoutAdapter extends GenericListLayoutAdapter {
 			}
 			Context context = v.getContext();
 
-			Season ss = (Season)o;
-			if (ss != null) {
-				GUITools.setTextOnTextview(R.id.toptext, String.format("Season %s - %s", ss.getSeasonNumber(), ss.getTitle()), v);
-				GUITools.setTextOnTextview(R.id.bottomtext, Integer.toString(ss.getYear()), v);
+			if (o != null) {
+				GUITools.setTextOnTextview(R.id.toptext, String.format("Season %s - %s", o.getSeasonNumber(), o.getTitle()), v);
+				GUITools.setTextOnTextview(R.id.bottomtext, Integer.toString(o.getYear()), v);
 //	        	GUITools.setTextOnTextview(R.id.txtRating, m.getRating(), v);
 
 				// If all media has a meta duration then hide the download icon
 				GUITools.hideView(R.id.imgDownloading, v);
 
-				if (ss.getThumbnail().isEmpty()) {
+				if (o.getThumbnail().isEmpty()) {
 					GUITools.setImageResourceOnImageView(R.id.imageView1, R.drawable.icon, v);
 				}
 				else {
-					Bitmap image = GUITools.getBitmapFromByteArray(ss.getThumbnail().toByteArray());
+					Bitmap image = GUITools.getBitmapFromByteArray(o.getThumbnail().toByteArray());
 					Bitmap scaledImage = GUITools.scaleImage(80, image, v.getContext());
 					GUITools.setImageOnImageView(R.id.imageView1, scaledImage, v);
 				}
@@ -83,35 +82,18 @@ public class SeasonLayoutAdapter extends GenericListLayoutAdapter {
 
 	@Override
 	public int getItemCount() {
-		return 0;
-	}
-
-	@Override
-	public Object getDataObject(int position) {
-		return null;
-	}
-
-	@Override
-	public long getObjectId(int position) {
-		return 0;
-	}
-
-	@Override
-	public int getCount() {
 		return this.getSeasons().size();
 	}
 
 	@Override
-	public Object getItem(int position) {
+	public Season getDataObject(int position) {
 		return this.getSeasons().get(position);
 	}
 
 	@Override
-	public long getItemId(int position) {
-		return position;
+	public long getObjectId(int position) {
+		return this.getDataObject(position).getID();
 	}
-
-
 
 }
 	

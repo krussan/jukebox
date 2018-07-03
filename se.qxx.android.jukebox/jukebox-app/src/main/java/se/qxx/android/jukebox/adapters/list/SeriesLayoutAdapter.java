@@ -16,10 +16,9 @@ import android.widget.BaseAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SeriesLayoutAdapter extends GenericListLayoutAdapter {
+public class SeriesLayoutAdapter extends GenericListLayoutAdapter<Series> {
 
     private List<Series> series = new ArrayList<>();
-
 
     public List<Series> getSeries() {
         return series;
@@ -40,10 +39,8 @@ public class SeriesLayoutAdapter extends GenericListLayoutAdapter {
 	}
 
     @Override
-    public void initializeView(View v, Object o) {
-	    if (o != null && o instanceof Series) {
-	        Series s = (Series)o;
-
+    public void initializeView(View v, Series s) {
+	    if (s != null) {
             GUITools.setTextOnTextview(R.id.toptext, s.getTitle(), v);
             GUITools.setTextOnTextview(R.id.bottomtext, Integer.toString(s.getYear()), v);
 
@@ -67,7 +64,7 @@ public class SeriesLayoutAdapter extends GenericListLayoutAdapter {
     }
 
     @Override
-    public Object getDataObject(int position) {
+    public Series getDataObject(int position) {
         return this.getSeries().get(position);
     }
 

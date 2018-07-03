@@ -10,6 +10,8 @@ import android.widget.ListView;
 
 import com.google.android.gms.cast.framework.CastContext;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 import java.util.List;
 
 import se.qxx.android.jukebox.R;
@@ -111,7 +113,7 @@ public class ListActivity extends AppCompatActivity implements
 		mCastContext = CastContext.getSharedInstance(this);
         Connector.addEventListener(this);
 
-		loadMoreData(0, getSeriesID(), getSeasonID());
+        loadMoreData(0, getSeriesID(), getSeasonID());
     }
 
     @Override
@@ -188,12 +190,12 @@ public class ListActivity extends AppCompatActivity implements
         Connector.setupOnOffButton(this.getRootView());
 	}
 
-    private void loadMoreData(int offset, int seriesID, int seasonID) {
-        Connector.connect(offset, NR_OF_ITEMS, ViewMode.getModelType(this.getMode()), seriesID, seasonID);
-    }
-
     private void loadMoreData(int offset, int seriesID) {
         Connector.connect(offset, NR_OF_ITEMS, ViewMode.getModelType(this.getMode()), seriesID, -1);
+    }
+
+    private void loadMoreData(int offset, int seriesID, int seasonID) {
+        Connector.connect(offset, NR_OF_ITEMS, ViewMode.getModelType(this.getMode()), seriesID, seasonID);
     }
 
 

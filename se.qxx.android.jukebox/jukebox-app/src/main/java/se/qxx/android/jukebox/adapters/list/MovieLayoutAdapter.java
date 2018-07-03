@@ -22,7 +22,7 @@ import android.widget.BaseAdapter;
 /***
  * Responsible of the list view showing all movies
  */
-public class MovieLayoutAdapter extends GenericListLayoutAdapter {
+public class MovieLayoutAdapter extends GenericListLayoutAdapter<Movie> {
 
     private List<Movie> movies = new ArrayList<>();
 
@@ -45,10 +45,8 @@ public class MovieLayoutAdapter extends GenericListLayoutAdapter {
 	}
 
 	@Override
-	public void initializeView(View v, Object o) {
-		if (o != null && o instanceof Movie) {
-		    Movie m = (Movie)o;
-
+	public void initializeView(View v, Movie m) {
+		if (m != null) {
             GUITools.setTextOnTextview(R.id.toptext, m.getTitle(), v);
             GUITools.setTextOnTextview(R.id.bottomtext, Integer.toString(m.getYear()), v);
             GUITools.setTextOnTextview(R.id.txtRating, m.getRating(), v);
@@ -84,7 +82,7 @@ public class MovieLayoutAdapter extends GenericListLayoutAdapter {
     }
 
     @Override
-    public Object getDataObject(int position) {
+    public Movie getDataObject(int position) {
         return this.getMovies().get(position);
     }
 
