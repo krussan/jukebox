@@ -53,6 +53,15 @@ public class JukeboxFragment extends ListFragment implements
 	private SeriesLayoutAdapter _seriesLayoutAdapter;
     private EndlessScrollListener scrollListener;
     private int offset;
+    private int totalItems;
+
+    public int getTotalItems() {
+        return totalItems;
+    }
+
+    public void setTotalItems(int totalItems) {
+        this.totalItems = totalItems;
+    }
 
     public ViewMode getMode() {
         return mode;
@@ -159,6 +168,9 @@ public class JukeboxFragment extends ListFragment implements
 		scrollListener = new EndlessScrollListener(this) {
             @Override
             public boolean onLoadMore(int page, int totalItemsCount) {
+                if (totalItemsCount >= getTotalItems())
+                    return false;
+
                 if (!Model.get().isLoading()) {
                     Model.get().setLoading(true);
 
@@ -278,9 +290,11 @@ public class JukeboxFragment extends ListFragment implements
 
 
     @Override
-    public void handleMoviesUpdated(List<JukeboxDomain.Movie> movies) {
+    public void handleMoviesUpdated(List<JukeboxDomain.Movie> movies, int totalMovies) {
+        this.setTotalItems(totalMovies);
 	    if (_jukeboxMovieLayoutAdapter != null) {
             _jukeboxMovieLayoutAdapter.addMovies(movies);
+            _jukeboxMovieLayoutAdapter.setServerListSize(totalMovies);
             notifyMovieList();
         }
     }
@@ -298,20 +312,22 @@ public class JukeboxFragment extends ListFragment implements
     }
 
     @Override
-    public void handleSeriesUpdated(List<JukeboxDomain.Series> series) {
+    public void handleSeriesUpdated(List<JukeboxDomain.Series> series, int totalSeries) {
+        this.setTotalItems(totalSeries);
         if (_seriesLayoutAdapter != null) {
             _seriesLayoutAdapter.addSeries(series);
+            _seriesLayoutAdapter.setServerListSize(totalSeries);
             notifySeriesList();
         }
     }
 
     @Override
-    public void handleSeasonsUpdated(List<JukeboxDomain.Season> seasons) {
+    public void handleSeasonsUpdated(List<JukeboxDomain.Season> seasons, int totalSeasons) {
 
     }
 
     @Override
-    public void handleEpisodesUpdated(List<JukeboxDomain.Episode> episodes) {
+    public void handleEpisodesUpdated(List<JukeboxDomain.Episode> episodes, int totalEpisodes) {
 
     }
 

@@ -36,6 +36,7 @@ public class ListActivity extends AppCompatActivity implements
 	private EpisodeLayoutAdapter _episodeLayoutAdapter;
 	private int offset;
 	private boolean firstIsLast = false;
+	private int totalItems = 0;
 
     protected View getRootView() {
 		return findViewById(R.id.rootMain);
@@ -90,6 +91,14 @@ public class ListActivity extends AppCompatActivity implements
             return -1;
     }
 
+    public int getTotalItems() {
+        return totalItems;
+    }
+
+    public void setTotalItems(int totalItems) {
+        this.totalItems = totalItems;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -137,6 +146,9 @@ public class ListActivity extends AppCompatActivity implements
         EndlessScrollListener scrollListener = new EndlessScrollListener(this) {
             @Override
             public boolean onLoadMore(int page, int totalItemsCount) {
+                if (totalItemsCount >= getTotalItems())
+                    return false;
+
                 if (!Model.get().isLoading() && !isFirstIsLast()) {
                     int offset = page * Constants.NR_OF_ITEMS;
 
@@ -271,17 +283,18 @@ public class ListActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void handleMoviesUpdated(List<JukeboxDomain.Movie> movies) {
+    public void handleMoviesUpdated(List<JukeboxDomain.Movie> movies, int totalMovies) {
         //should not happen in this activity
     }
 
     @Override
-    public void handleSeriesUpdated(List<JukeboxDomain.Series> series) {
+    public void handleSeriesUpdated(List<JukeboxDomain.Series> series, int totalSeries) {
         //should not happen in this activity
     }
 
     @Override
-    public void handleSeasonsUpdated(final List<JukeboxDomain.Season> seasons) {
+    public void handleSeasonsUpdated(final List<JukeboxDomain.Season> seasons, int totalSeasons) {
+        this.setTotalItems(totalSeasons);
         if (_seasonLayoutAdapter != null)
             _seasonLayoutAdapter.addSeasons(seasons);
 
@@ -292,7 +305,8 @@ public class ListActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void handleEpisodesUpdated(List<JukeboxDomain.Episode> episodes) {
+    public void handleEpisodesUpdated(List<JukeboxDomain.Episode> episodes, int totalEpisodes) {
+        this.setTotalItems(totalEpisodes);
         if (_episodeLayoutAdapter != null)
             _episodeLayoutAdapter.addEpisodes(episodes);
 

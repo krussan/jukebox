@@ -27,6 +27,9 @@ public abstract class GenericListLayoutAdapter extends BaseAdapter {
 
 	private Context context;
     private int listItemId;
+    // the serverListSize is the total number of items on the server side,
+    // which should be returned from the web request results
+    protected int serverListSize = -1;
 
 	protected Context getContext() { return context; }
     protected int getListItemId() {
@@ -36,48 +39,49 @@ public abstract class GenericListLayoutAdapter extends BaseAdapter {
     private final int VIEWTYPE_ITEM = 0;
 	private final int VIEWTYPE_FOOTER = 1;
 
+    public void setServerListSize(int serverListSize){
+        this.serverListSize = serverListSize;
+    }
+
 	public GenericListLayoutAdapter(Context context, int listItemId) {
 		super();
 		this.context = context;
 		this.listItemId = listItemId;
 	}
-	
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		View v = convertView;
 
-		try {
-	        if (v == null) {
-	            LayoutInflater vi = (LayoutInflater)this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    @Override
+    public boolean isEnabled(int position) {
+        return getItemViewType(position) == VIEWTYPE_ITEM;
+    }
 
-	            if (getItemViewType(position) == VIEWTYPE_FOOTER)
-	                v = layoutProgress(vi);
-                else
-	                v = vi.inflate(getListItemId(), null);
-	        }
+    /**
+     *  returns the correct view
+     */
+    @Override
+    public  View getView(int position, View convertView, ViewGroup parent){
+        LayoutInflater vi = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-	        if (!isLastItem(position)) {
-                Object o = this.getItem(position);
-                initializeView(v, o);
-            }
-		}
-		catch (Exception e) {
-			Logger.Log().e("Error occured while populating list", e);
-		}
-			
-        return v;
-	}
+        if (getItemViewType(position) == VIEWTYPE_FOOTER) {
+            // display the last row
+            return layoutProgress(vi);
+        }
+        else {
+            View v = vi.inflate(getListItemId(), null);
+            initializeView(v, this.getItem(position));
+            return v;
+        }
+    };
 
     private View layoutProgress(LayoutInflater vi) {
         View v = vi.inflate(R.layout.progresslistrow, null);
         View pb = v.findViewById(R.id.pbFooterProgress);
 
-//        if (pb != null) {
-//            if (Model.get().isLoading())
-//                pb.setVisibility(View.VISIBLE);
-//            else
-//                pb.setVisibility(View.INVISIBLE);
-//        }
+        if (pb != null) {
+            if (Model.get().isLoading())
+                pb.setVisibility(View.VISIBLE);
+            else
+                pb.setVisibility(View.INVISIBLE);
+        }
 
         return v;
     }
@@ -92,11 +96,6 @@ public abstract class GenericListLayoutAdapter extends BaseAdapter {
         return getItemCount() + 1; // add one to insert loading footer
     }
 
-    public boolean isLastItem(int position) {
-        int count = this.getItemCount();
-        return (position == count);
-    }
-
     @Override
     public int getViewTypeCount() {
         return 2;
@@ -104,10 +103,9 @@ public abstract class GenericListLayoutAdapter extends BaseAdapter {
 
     @Override
     public int getItemViewType(int position) {
-	    if (isLastItem(position))
-	        return VIEWTYPE_FOOTER;
-	    else
-	        return VIEWTYPE_ITEM;
+        // TODO Auto-generated method stub
+        return (position >= this.getItemCount()) ? VIEWTYPE_FOOTER
+                : VIEWTYPE_ITEM;
     }
 
     @Override
@@ -118,6 +116,7 @@ public abstract class GenericListLayoutAdapter extends BaseAdapter {
 	        return null;
     }
 
+
     @Override
     public long getItemId(int position) {
         if (getItemViewType(position) == VIEWTYPE_ITEM)
@@ -126,4 +125,3 @@ public abstract class GenericListLayoutAdapter extends BaseAdapter {
             return -1;
     }
 }
-	

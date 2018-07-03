@@ -29,10 +29,10 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
 
 public class Connector {
     public interface ConnectorCallbackEventListener {
-        void handleMoviesUpdated(List<JukeboxDomain.Movie> movies);
-        void handleSeriesUpdated(List<JukeboxDomain.Series> series);
-        void handleSeasonsUpdated(List<JukeboxDomain.Season> seasons);
-        void handleEpisodesUpdated(List<JukeboxDomain.Episode> episodes);
+        void handleMoviesUpdated(List<JukeboxDomain.Movie> movies, int totalMovies);
+        void handleSeriesUpdated(List<JukeboxDomain.Series> series, int totalSeries);
+        void handleSeasonsUpdated(List<JukeboxDomain.Season> seasons, int totalSeasons);
+        void handleEpisodesUpdated(List<JukeboxDomain.Episode> episodes, int totalEpisodes);
     }
 
     public static synchronized void addEventListener(ConnectorCallbackEventListener listener) {
@@ -51,32 +51,32 @@ public class Connector {
         _listeners.remove(listener);
     }
 
-    private static final synchronized void fireMoviesUpdated(List<JukeboxDomain.Movie> movies){
+    private static final synchronized void fireMoviesUpdated(List<JukeboxDomain.Movie> movies, int totalMovies){
         Iterator<ConnectorCallbackEventListener> i = _listeners.iterator();
 
         while(i.hasNext())
-            i.next().handleMoviesUpdated(movies);
+            i.next().handleMoviesUpdated(movies, totalMovies);
 
     }
-    private static final synchronized void fireSeriesUpdated(List<JukeboxDomain.Series> series) {
+    private static final synchronized void fireSeriesUpdated(List<JukeboxDomain.Series> series, int totalSeries) {
         Iterator<ConnectorCallbackEventListener> i = _listeners.iterator();
 
         while(i.hasNext())
-            i.next().handleSeriesUpdated(series);
+            i.next().handleSeriesUpdated(series, totalSeries);
     }
 
-    private static final void fireSeasonsUpdated(List<JukeboxDomain.Season> seasons) {
+    private static final void fireSeasonsUpdated(List<JukeboxDomain.Season> seasons, int totalSeasons) {
         Iterator<ConnectorCallbackEventListener> i = _listeners.iterator();
 
         while(i.hasNext())
-            i.next().handleSeasonsUpdated(seasons);
+            i.next().handleSeasonsUpdated(seasons, totalSeasons);
     }
 
-    private static final void fireEpisodesUpdated(List<JukeboxDomain.Episode> episodes) {
+    private static final void fireEpisodesUpdated(List<JukeboxDomain.Episode> episodes, int totalEpisodes) {
         Iterator<ConnectorCallbackEventListener> i = _listeners.iterator();
 
         while(i.hasNext())
-            i.next().handleEpisodesUpdated(episodes);
+            i.next().handleEpisodesUpdated(episodes, totalEpisodes);
     }
 
 	public static void connect(final int offset, final int nrOfItems, Model.ModelType modelType, final int seriesID, int seasonID) {
@@ -101,7 +101,7 @@ public class Connector {
 								//TODO: if repsonse is null probably the server is down..
 								if (response != null) {
 									//Model.get().clearMovies(); //Dont clear movies when doing partial load
-                                    fireMoviesUpdated(response.getMoviesList());
+                                    fireMoviesUpdated(response.getMoviesList(), response.getTotalMovies());
 									Model.get().setInitialized(true);
 								}
 
@@ -121,7 +121,7 @@ public class Connector {
 							public void run(JukeboxResponseListMovies response) {
 								//TODO: if repsonse is null probably the server is down..
 								if (response != null) {
-								    fireSeriesUpdated(response.getSeriesList());
+								    fireSeriesUpdated(response.getSeriesList(), response.getTotalSeries());
 									Model.get().setInitialized(true);
 								}
 
@@ -139,7 +139,7 @@ public class Connector {
                             //TODO: if repsonse is null probably the server is down..
                             if (response != null) {
                                 if (response.getSeriesList().size() > 0)
-                                    fireSeasonsUpdated(response.getSeries(0).getSeasonList());
+                                    fireSeasonsUpdated(response.getSeries(0).getSeasonList(), response.getTotalSeasons());
 
                                 Model.get().setInitialized(true);
                             }
