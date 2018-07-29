@@ -85,6 +85,6 @@ Specifies the log files to log to
   * [A] _logs_ - Defines the type of logging messages to log. One of the following: MAIN,SUBS,FIND,COMM,UPGRADE,IMDB,WEBSERVER,DB
 
 ## Work to do
-Ther is still a lot of work to do to get this up and running.
+There is still a lot of work to do to get this up and running.
 Browse the github repository for all issues currently under consideration or review.
 
