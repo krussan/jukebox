@@ -488,6 +488,7 @@ public class DB {
 						.addSearchArgument(0)
 						.addOperator(ProtoDBSearchOperator.Equals)
 						.setNumberOfResults(5)
+						.addExcludedObject("media.subs")
 						.setOffset(0));
 	
 				// this is a bit dangerous.
@@ -500,6 +501,7 @@ public class DB {
 						.addSearchArgument(0)
 						.addOperator(ProtoDBSearchOperator.Equals)
 						.setNumberOfResults(5)
+						.addExcludedObject("season.episode.media.subs")
 						.setOffset(0));
 	
 			}
