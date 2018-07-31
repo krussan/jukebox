@@ -10,8 +10,6 @@ import android.widget.ListView;
 
 import com.google.android.gms.cast.framework.CastContext;
 
-import org.apache.commons.collections4.CollectionUtils;
-
 import java.util.List;
 
 import se.qxx.android.jukebox.R;
@@ -198,6 +196,12 @@ public class ListActivity extends AppCompatActivity implements
         Connector.connect(offset, NR_OF_ITEMS, ViewMode.getModelType(this.getMode()), seriesID, seasonID);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        Connector.removeEventListener(this);
+    }
 
     @Override
     public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
@@ -296,26 +300,32 @@ public class ListActivity extends AppCompatActivity implements
 
     @Override
     public void handleSeasonsUpdated(final List<JukeboxDomain.Season> seasons, int totalSeasons) {
-        this.setTotalItems(totalSeasons);
-        if (_seasonLayoutAdapter != null)
-            _seasonLayoutAdapter.addSeasons(seasons);
+        if (this.getMode() == ViewMode.Season) {
+            this.setTotalItems(totalSeasons);
+            if (_seasonLayoutAdapter != null) {
+                _seasonLayoutAdapter.addSeasons(seasons);
 
-        if (this.getOffset() == 0 && seasons.size() <= Constants.NR_OF_ITEMS)
-            this.setFirstIsLast(true);
+                if (this.getOffset() == 0 && seasons.size() <= Constants.NR_OF_ITEMS)
+                    this.setFirstIsLast(true);
 
-        notifySeasons();
+                notifySeasons();
+            }
+        }
     }
 
     @Override
     public void handleEpisodesUpdated(List<JukeboxDomain.Episode> episodes, int totalEpisodes) {
-        this.setTotalItems(totalEpisodes);
-        if (_episodeLayoutAdapter != null)
-            _episodeLayoutAdapter.addEpisodes(episodes);
+        if (this.getMode() == ViewMode.Episode) {
+            this.setTotalItems(totalEpisodes);
+            if (_episodeLayoutAdapter != null) {
+                _episodeLayoutAdapter.addEpisodes(episodes);
 
-        if (this.getOffset() == 0 && episodes.size() <= Constants.NR_OF_ITEMS)
-            this.setFirstIsLast(true);
+                if (this.getOffset() == 0 && episodes.size() <= Constants.NR_OF_ITEMS)
+                    this.setFirstIsLast(true);
 
-        notifyEpisodes();
+                notifyEpisodes();
+            }
+        }
     }
 
     private void notifySeasons() {

@@ -197,7 +197,7 @@ public class JukeboxConnectionHandler {
 	}
 
 	public void listEpisodes(String searchString, int seriesID, int seasonID, int nrOfItems, int offset, final RpcCallback<JukeboxResponseListMovies> callback) {
-		list(searchString, RequestType.TypeSeason, seriesID, seasonID, nrOfItems, offset, callback);
+		list(searchString, RequestType.TypeEpisode, seriesID, seasonID, nrOfItems, offset, callback);
 	}
 
 	private void list(final String searchString, final RequestType type, final int seriesID, final int seasonID, final int nrOfItems, final int offset, final RpcCallback<JukeboxResponseListMovies> callback) {

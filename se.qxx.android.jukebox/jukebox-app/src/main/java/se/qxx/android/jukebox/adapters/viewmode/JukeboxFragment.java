@@ -1,35 +1,5 @@
 package se.qxx.android.jukebox.adapters.viewmode;
 
-import java.util.ArrayList;
-import java.util.EventObject;
-import java.util.List;
-
-import se.qxx.android.jukebox.activities.ListActivity;
-import se.qxx.android.jukebox.activities.ViewMode;
-import se.qxx.android.jukebox.adapters.support.IOffsetHandler;
-import se.qxx.android.jukebox.dialogs.ActionDialog;
-import se.qxx.android.jukebox.comm.Connector;
-import se.qxx.android.jukebox.adapters.support.EndlessScrollListener;
-import se.qxx.android.jukebox.activities.FlipperActivity;
-import se.qxx.android.jukebox.activities.FlipperListActivity;
-import se.qxx.android.jukebox.activities.JukeboxPreferenceActivity;
-import se.qxx.android.jukebox.activities.PlayerPickerActivity;
-import se.qxx.android.jukebox.R;
-import se.qxx.android.jukebox.adapters.list.EpisodeLayoutAdapter;
-import se.qxx.android.jukebox.adapters.list.MovieLayoutAdapter;
-import se.qxx.android.jukebox.adapters.list.SeasonLayoutAdapter;
-import se.qxx.android.jukebox.adapters.list.SeriesLayoutAdapter;
-import se.qxx.android.jukebox.model.Constants;
-import se.qxx.android.jukebox.model.Model;
-import se.qxx.android.jukebox.model.ModelUpdatedEvent;
-import se.qxx.android.jukebox.model.ModelUpdatedType;
-import se.qxx.android.jukebox.model.Model.ModelUpdatedEventListener;
-import se.qxx.android.tools.GUITools;
-import se.qxx.android.tools.Logger;
-import se.qxx.jukebox.domain.JukeboxDomain;
-import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
-
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -38,11 +8,30 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.ListView;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.ArrayList;
+import java.util.List;
+
+import se.qxx.android.jukebox.R;
+import se.qxx.android.jukebox.activities.FlipperActivity;
+import se.qxx.android.jukebox.activities.JukeboxPreferenceActivity;
+import se.qxx.android.jukebox.activities.ListActivity;
+import se.qxx.android.jukebox.activities.PlayerPickerActivity;
+import se.qxx.android.jukebox.activities.ViewMode;
+import se.qxx.android.jukebox.adapters.list.MovieLayoutAdapter;
+import se.qxx.android.jukebox.adapters.list.SeriesLayoutAdapter;
+import se.qxx.android.jukebox.adapters.support.EndlessScrollListener;
+import se.qxx.android.jukebox.adapters.support.IOffsetHandler;
+import se.qxx.android.jukebox.comm.Connector;
+import se.qxx.android.jukebox.dialogs.ActionDialog;
+import se.qxx.android.jukebox.model.Constants;
+import se.qxx.android.jukebox.model.Model;
+import se.qxx.android.tools.Logger;
+import se.qxx.jukebox.domain.JukeboxDomain;
+import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
 
 public class JukeboxFragment extends ListFragment implements
 	OnItemClickListener, OnItemLongClickListener, OnClickListener, Connector.ConnectorCallbackEventListener, IOffsetHandler {
@@ -123,6 +112,13 @@ public class JukeboxFragment extends ListFragment implements
 
         Connector.addEventListener(this);
 
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        Connector.removeEventListener(this);
     }
 
     @Override

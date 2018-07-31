@@ -1,31 +1,22 @@
 package se.qxx.android.jukebox.comm;
 
-import com.google.protobuf.RpcCallback;
-
 import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import android.widget.Toast;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.Predicate;
-
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import se.qxx.android.jukebox.dialogs.JukeboxConnectionProgressDialog;
-import se.qxx.android.jukebox.model.ModelUpdatedEvent;
-import se.qxx.android.jukebox.model.ModelUpdatedType;
-import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.jukebox.R;
+import se.qxx.android.jukebox.dialogs.JukeboxConnectionProgressDialog;
 import se.qxx.android.jukebox.model.Model;
+import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.jukebox.domain.JukeboxDomain;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
 
 public class Connector {
     public interface ConnectorCallbackEventListener {
@@ -101,7 +92,7 @@ public class Connector {
 								//TODO: if repsonse is null probably the server is down..
 								if (response != null) {
 									//Model.get().clearMovies(); //Dont clear movies when doing partial load
-                                    fireMoviesUpdated(response.getMoviesList(), response.getTotalMovies());
+								fireMoviesUpdated(response.getMoviesList(), response.getTotalMovies());
 									Model.get().setInitialized(true);
 								}
 
@@ -138,7 +129,7 @@ public class Connector {
                         response -> {
                             //TODO: if repsonse is null probably the server is down..
                             if (response != null) {
-                                if (response.getSeriesList().size() > 0)
+                                if (response.getSeriesCount() > 0)
                                     fireSeasonsUpdated(response.getSeries(0).getSeasonList(), response.getTotalSeasons());
 
                                 Model.get().setInitialized(true);
@@ -148,7 +139,19 @@ public class Connector {
                         });
             }
 			else if (modelType == Model.ModelType.Episode) {
+			    jh.listEpisodes("",
+                        seriesID,
+                        seasonID,
+                        nrOfItems,
+                        offset,
+                        response -> {
+			                if (response != null) {
+                                if (response.getSeasonCount() > 0)
+                                    fireEpisodesUpdated(response.getSeason(0).getEpisodeList(), response.getTotalEpisodes());
 
+                                Model.get().setInitialized(true);
+                            }
+                        });
 			}
 
 		} catch (Exception e) {
