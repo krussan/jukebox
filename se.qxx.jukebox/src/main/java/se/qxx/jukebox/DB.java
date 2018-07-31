@@ -195,6 +195,66 @@ public class DB {
 			return null;
 		}
 	}
+	
+	/***
+	 * Uses search method to find a specific Series by ID.
+	 * Includes episodes but exludes images on series and season
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public static Series searchSeriesById(int id) {
+		try {
+			ProtoDB db = getProtoDBInstance();
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				List<Series> result = 
+					db.search(SearchOptions.newBuilder(JukeboxDomain.Series.getDefaultInstance()) 
+						.addFieldName("ID") 
+						.addSearchArgument(id) 
+						.addOperator(ProtoDBSearchOperator.Equals)
+						.addExcludedObject("season.episode")
+						.addExcludedObject("image")
+						.addExcludedObject("season.image"));
+					
+
+				if (result.size() > 0)
+					return result.get(0);
+				else
+					return null;
+			}
+		} catch (Exception e) {
+			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
+		}
+		
+		return null;
+	}
+
+	public static Season searchSeasonById(int id) {
+		try {
+			ProtoDB db = getProtoDBInstance();
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				List<Season> result = 
+					db.search(SearchOptions.newBuilder(JukeboxDomain.Season.getDefaultInstance()) 
+						.addFieldName("ID") 
+						.addSearchArgument(id) 
+						.addOperator(ProtoDBSearchOperator.Equals)
+						.addExcludedObject("image")
+						.addExcludedObject("episode.image")
+						.addExcludedObject("episode.media.subs"));
+				
+					
+
+				if (result.size() > 0)
+					return result.get(0);
+				else
+					return null;
+			}
+		} catch (Exception e) {
+			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
+		}
+		
+		return null;
+	}
 
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Get
@@ -214,6 +274,9 @@ public class DB {
 		
 		return null;
 	}
+
+	
+
 
 	public static Series getSeries(int id) {
 		try {

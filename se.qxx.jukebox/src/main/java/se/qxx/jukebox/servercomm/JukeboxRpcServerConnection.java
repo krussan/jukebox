@@ -87,7 +87,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			break;
 		case TypeSeason:
 			b.addSeries(
-				DB.getSeries(
+				DB.searchSeriesById(
 						request.getSeriesID()));
 			
 			b.setTotalSeasons(
@@ -96,7 +96,9 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 				
 			break;
 		case TypeEpisode:
-			//DB.findSeason(request.getSeasonID());
+			b.addSeason(
+				DB.searchSeasonById(request.getSeasonID()));
+				
 			b.setTotalEpisodes(
 				DB.getTotalNrOfEpisodes(
 						request.getSeasonID()));

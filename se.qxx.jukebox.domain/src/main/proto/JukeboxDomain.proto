@@ -242,10 +242,11 @@ message JukeboxFrontSetSubtitle {
 message JukeboxResponseListMovies {
 	repeated Movie movies = 1;
 	repeated Series series = 2;
-	optional int32 totalMovies = 3;
-	optional int32 totalSeries = 4;
-	optional int32 totalSeasons = 5;
-	optional int32 totalEpisodes = 6;  
+	repeated Season season = 3;
+	optional int32 totalMovies = 4;
+	optional int32 totalSeries = 5;
+	optional int32 totalSeasons = 6;
+	optional int32 totalEpisodes = 7;  
 }
 
 message JukeboxResponseListPlayers {
