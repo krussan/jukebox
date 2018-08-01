@@ -138,7 +138,6 @@ public abstract class CastProvider implements MediaController.MediaPlayerControl
 
     public static CastProvider getCaster(
             Activity parentContext,
-            List<JukeboxDomain.Media> mediaList,
             JukeboxConnectionHandler comm,
             JukeboxConnectionProgressDialog dialog,
             SeekerListener listener,
@@ -160,7 +159,7 @@ public abstract class CastProvider implements MediaController.MediaPlayerControl
                 provider = new LocalCastProvider();
         }
 
-        provider.setup(parentContext, mediaList, comm, dialog, listener, display, onPreparedListener);
+        provider.setup(parentContext, comm, dialog, listener, display, onPreparedListener);
         provider.initialize();
 
         return provider;
@@ -170,7 +169,7 @@ public abstract class CastProvider implements MediaController.MediaPlayerControl
         // update the subtitles out of sync
         Thread t = new Thread(() -> {
             Logger.Log().d("Request --- ListSubtitles");
-            comm.listSubtitles(getCurrentMedia(), new OnListSubtitlesCompleteHandler());
+            comm.listSubtitles(CastProvider.this.getCurrentMedia(), new OnListSubtitlesCompleteHandler());
         });
         t.start();
 
@@ -196,17 +195,18 @@ public abstract class CastProvider implements MediaController.MediaPlayerControl
         this.setTitle(movie.getIdentifiedTitle());
         this.setID(movie.getID());
         this.setMovie(movie);
+        this.setMediaList(movie.getMediaList());
     }
 
     public void initialize(JukeboxDomain.Episode episode) {
         this.setTitle(episode.getTitle());
         this.setID(episode.getID());
         this.setEpisode(episode);
+        this.setMediaList(episode.getMediaList());
     }
 
     private void setup(
             Activity parentContext,
-            List<JukeboxDomain.Media> mediaList,
             JukeboxConnectionHandler comm,
             JukeboxConnectionProgressDialog dialog,
             SeekerListener listener,

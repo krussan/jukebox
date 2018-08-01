@@ -1,24 +1,5 @@
 package se.qxx.android.jukebox.activities;
 
-import org.apache.commons.lang3.StringUtils;
-
-import se.qxx.android.jukebox.cast.CastProvider;
-import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
-import se.qxx.android.jukebox.settings.JukeboxSettings;
-import se.qxx.android.jukebox.R;
-import se.qxx.android.jukebox.widgets.Seeker;
-import se.qxx.android.jukebox.widgets.SeekerListener;
-import se.qxx.android.jukebox.widgets.UpdateSeekIndicator;
-import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
-import se.qxx.android.jukebox.model.Model;
-import se.qxx.android.tools.GUITools;
-import se.qxx.android.tools.Logger;
-import se.qxx.jukebox.comm.client.JukeboxConnectionMessage;
-import se.qxx.jukebox.comm.client.JukeboxResponseListener;
-import se.qxx.jukebox.domain.JukeboxDomain;
-import se.qxx.jukebox.domain.JukeboxDomain.Movie;
-import se.qxx.jukebox.domain.JukeboxDomain.Episode;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
@@ -38,11 +19,8 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
 
-import com.google.android.gms.cast.CastStatusCodes;
 import com.google.android.gms.cast.framework.CastContext;
-import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.Session;
 import com.google.android.gms.cast.framework.SessionManager;
 import com.google.android.gms.cast.framework.SessionManagerListener;
@@ -50,6 +28,22 @@ import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.google.protobuf.ByteString;
 
 import java.util.List;
+
+import se.qxx.android.jukebox.R;
+import se.qxx.android.jukebox.cast.CastProvider;
+import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
+import se.qxx.android.jukebox.settings.JukeboxSettings;
+import se.qxx.android.jukebox.widgets.Seeker;
+import se.qxx.android.jukebox.widgets.SeekerListener;
+import se.qxx.android.jukebox.widgets.UpdateSeekIndicator;
+import se.qxx.android.tools.GUITools;
+import se.qxx.android.tools.Logger;
+import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
+import se.qxx.jukebox.comm.client.JukeboxConnectionMessage;
+import se.qxx.jukebox.comm.client.JukeboxResponseListener;
+import se.qxx.jukebox.domain.JukeboxDomain;
+import se.qxx.jukebox.domain.JukeboxDomain.Episode;
+import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 
 public class NowPlayingActivity
     extends AppCompatActivity
@@ -108,14 +102,13 @@ public class NowPlayingActivity
 
             if (this.getMode() == ViewMode.Episode) {
                 Episode ep = getEpisode();
-                JukeboxDomain.Season ss = getSeason();
 
-                if (ep != null && ss != null) {
+                if (ep != null) {
                     this.setMediaList(ep.getMediaList());
                     this.setCurrentMediaIndex(0);
                     initializeView(
                             String.format("S%sE%s - %s",
-                                    ss.getSeasonNumber(),
+                                    this.getSeasonNumber(),
                                     ep.getEpisodeNumber(),
                                     ep.getTitle()),
                             ep.getImage());
@@ -125,6 +118,7 @@ public class NowPlayingActivity
             }
             else {
                 Movie m = getMovie();
+
                 if (m != null) {
                     this.setMediaList(m.getMediaList());
                     this.setCurrentMediaIndex(0);
@@ -150,7 +144,6 @@ public class NowPlayingActivity
 
         castProvider = CastProvider.getCaster(
                 this,
-                this.getMediaList(),
                 this.comm,
                 null,
                 this,
@@ -556,12 +549,12 @@ public class NowPlayingActivity
         return null;
     }
 
-    private JukeboxDomain.Season getSeason() {
+    private int getSeasonNumber() {
         Bundle b = getIntent().getExtras();
         if (b != null)
-            return (JukeboxDomain.Season) b.getSerializable("season");
+            return b.getInt("seasonNumber");
 
-        return null;
+        return 0;
     }
 
     private Episode getEpisode() {

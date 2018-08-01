@@ -15,10 +15,8 @@ import java.util.List;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.NowPlayingActivity;
 import se.qxx.android.jukebox.activities.ViewMode;
-import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
-import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 
 public class EpisodeLayoutAdapter extends BaseAdapter implements View.OnClickListener {
@@ -63,7 +61,7 @@ public class EpisodeLayoutAdapter extends BaseAdapter implements View.OnClickLis
 
             if (v == null) {
                 LayoutInflater vi = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                v = vi.inflate(R.layout.episodelistrow, parent);
+                v = vi.inflate(R.layout.episodelistrow, parent, false);
             }
 
             if (v != null) {
@@ -105,6 +103,7 @@ public class EpisodeLayoutAdapter extends BaseAdapter implements View.OnClickLis
 				Intent iPlay = new Intent(this.context, NowPlayingActivity.class);
                 iPlay.putExtra("mode", ViewMode.Episode);
                 iPlay.putExtra("episode", getEpisodes().get(position));
+                iPlay.putExtra("seasonNumber", getSeasonNumber());
 
 				context.startActivity(iPlay);
 				break;

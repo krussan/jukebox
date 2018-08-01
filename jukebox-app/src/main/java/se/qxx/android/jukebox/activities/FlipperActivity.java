@@ -1,13 +1,5 @@
 package se.qxx.android.jukebox.activities;
 
-import se.qxx.android.jukebox.dialogs.ActionDialog;
-import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
-import se.qxx.android.jukebox.R;
-import se.qxx.android.jukebox.adapters.detail.MovieFragmentAdapter;
-import se.qxx.android.jukebox.model.Model;
-import se.qxx.android.tools.GUITools;
-import se.qxx.jukebox.domain.JukeboxDomain;
-import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,6 +15,13 @@ import com.google.android.gms.cast.framework.CastContext;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import se.qxx.android.jukebox.R;
+import se.qxx.android.jukebox.adapters.detail.MovieFragmentAdapter;
+import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
+import se.qxx.android.jukebox.dialogs.ActionDialog;
+import se.qxx.jukebox.domain.JukeboxDomain;
+import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
 
 public class FlipperActivity extends AppCompatActivity implements OnPageChangeListener, OnLongClickListener {
 	ViewPager pager;
@@ -46,12 +45,14 @@ public class FlipperActivity extends AppCompatActivity implements OnPageChangeLi
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.itemwrapper);
-        pager = (ViewPager)this.getRootView();
+
+        this.setCurrentPosition(getPosition());
 
         MovieFragmentAdapter mfa = new MovieFragmentAdapter(getSupportFragmentManager(), this.getMovies());
-
+        pager = (ViewPager)this.getRootView();
         pager.setAdapter(mfa);
         pager.setCurrentItem(getPosition());
+        pager.addOnPageChangeListener(this);
         
         this.getRootView().setOnLongClickListener(this);
 
@@ -74,6 +75,7 @@ public class FlipperActivity extends AppCompatActivity implements OnPageChangeLi
 			case R.id.btnPlay:
 				Intent iPlay = new Intent(this, NowPlayingActivity.class);
 				iPlay.putExtra("mode", this.getMode());
+				iPlay.putExtra("movie", this.getCurrentMovie());
 				startActivity(iPlay);
 				break;	
 			case R.id.btnViewInfo:
@@ -91,6 +93,7 @@ public class FlipperActivity extends AppCompatActivity implements OnPageChangeLi
 		}
 	}
 
+
 	@Override
 	public void onPageScrollStateChanged(int arg0) {
 	}
@@ -101,7 +104,8 @@ public class FlipperActivity extends AppCompatActivity implements OnPageChangeLi
 
 	@Override
 	public void onPageSelected(int arg0) {
-		this.setCurrentPosition(arg0);
+        this.setCurrentPosition(arg0);
+
 	}
 
 	@Override
