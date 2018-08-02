@@ -264,7 +264,9 @@ public class DB {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
-				return db.get(id, Movie.getDefaultInstance());
+				return db.get(
+					id, 
+					Movie.getDefaultInstance());
 			}
 		} catch (Exception e) {
 			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
