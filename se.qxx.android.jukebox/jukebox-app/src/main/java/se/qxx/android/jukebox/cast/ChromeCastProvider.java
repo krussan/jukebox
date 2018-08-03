@@ -199,10 +199,11 @@ public class ChromeCastProvider extends CastProvider implements RemoteMediaClien
             try {
                 URL movieUri = new URL(movieUrl);
                 Uri imageUri =
-                        Uri.parse(String.format("%s://%s:%s/thumb%s"
+                        Uri.parse(String.format("%s://%s:%s/%sthumb%s"
                                 , movieUri.getProtocol()
                                 , movieUri.getHost()
                                 , movieUri.getPort()
+                                , this.getCastProviderMode() == CastProviderMode.Movie ? "" : "epi"
                                 , id
                         ));
 
@@ -256,6 +257,7 @@ public class ChromeCastProvider extends CastProvider implements RemoteMediaClien
         if (client != null) {
             client.seek(position * 1000);
         }
+
     }
 
     @Override
