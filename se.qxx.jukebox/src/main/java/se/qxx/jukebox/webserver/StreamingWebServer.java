@@ -29,6 +29,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.protobuf.ByteString;
+
 import fi.iki.elonen.InternalRewrite;
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.WebServerPlugin;
@@ -50,6 +52,7 @@ import fi.iki.elonen.NanoHTTPD.Response.Status;
 import se.qxx.jukebox.DB;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.tools.Util;
@@ -169,6 +172,18 @@ public class StreamingWebServer extends NanoHTTPD {
         	return serveMovieHtml(id);
         }
 
+        if (uri.startsWith("epithumb")) {
+        	int id = Integer.parseInt(uri.replaceAll("epithumb", ""));
+        	
+        	return serveEpisodeThumbnail(id);
+        }
+
+        if (uri.startsWith("epiimage")) {
+        	int id = Integer.parseInt(uri.replaceAll("epiimage", ""));
+        	
+        	return serveEpisodeImage(id);
+        }
+        
         if (uri.startsWith("thumb")) {
         	int id = Integer.parseInt(uri.replaceAll("thumb", ""));
         	
@@ -178,7 +193,7 @@ public class StreamingWebServer extends NanoHTTPD {
         if (uri.startsWith("image")) {
         	int id = Integer.parseInt(uri.replaceAll("image", ""));
         	
-        	return serveImage(id);
+        	return serveMovieImage(id);
         }
 
         if (uri.startsWith("css")) {
@@ -255,21 +270,50 @@ public class StreamingWebServer extends NanoHTTPD {
 		Movie m = DB.getMovie(id);
 		
 		if (m != null && m.getThumbnail() != null) {
-			ByteArrayInputStream bis = new ByteArrayInputStream(m.getThumbnail().toByteArray());
+			serveImage(m.getThumbnail());
+		}
 		
-			return createResponse(Response.Status.OK, "image/jpeg", bis);
-		}
-		else {
-			return getNotFoundResponse();
-		}
+		return emptyResponse(); 
 	}
 
-	private Response serveImage(int id) {
-		Movie m = DB.getMovie(id);
+	private Response serveEpisodeThumbnail(int id) {
+		Episode ep = DB.getEpisode(id);
 		
-		ByteArrayInputStream bis = new ByteArrayInputStream(m.getImage().toByteArray());
-		
+		if (ep != null && ep.getThumbnail() != null) {
+			return serveImage(ep.getThumbnail());
+		}
+		else {
+			return emptyResponse();
+		}
+	}
+	
+	private Response emptyResponse() {
+		ByteArrayInputStream bis = new ByteArrayInputStream(new byte[0]);
 		return createResponse(Response.Status.OK, "image/jpeg", bis);
+	}
+
+	private Response serveImage(ByteString bytes) {
+		ByteArrayInputStream bis = new ByteArrayInputStream(bytes.toByteArray());
+
+		return createResponse(Response.Status.OK, "image/jpeg", bis);
+	}
+
+	private Response serveMovieImage(int id) {
+		Movie m = DB.getMovie(id);
+
+		if (m != null && m.getImage() != null) 
+			serveImage(m.getImage());
+		
+		return emptyResponse();
+	}
+
+	private Response serveEpisodeImage(int id) {
+		Episode m = DB.getEpisode(id);
+
+		if (m != null && m.getImage() != null) 
+			serveImage(m.getImage());
+		
+		return emptyResponse();
 	}
 
 	private Response serveCss() throws IOException {
