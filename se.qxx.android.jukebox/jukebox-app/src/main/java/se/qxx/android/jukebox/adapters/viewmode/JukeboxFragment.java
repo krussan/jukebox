@@ -112,6 +112,8 @@ public class JukeboxFragment extends ListFragment implements
 
         Connector.addEventListener(this);
 
+        clearData();
+        loadMoreData(0);
     }
 
     @Override
@@ -136,10 +138,7 @@ public class JukeboxFragment extends ListFragment implements
     @Override
     public void onResume() {
         super.onResume();
-        if (getUserVisibleHint()) {
-            clearData();
-            loadMoreData(0);
-        }
+
     }
 
 	@Override

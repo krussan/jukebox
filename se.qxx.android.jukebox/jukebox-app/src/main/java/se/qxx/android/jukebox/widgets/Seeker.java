@@ -2,14 +2,8 @@ package se.qxx.android.jukebox.widgets;
 
 import java.util.Date;
 
-import org.apache.commons.lang3.StringUtils;
-
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
-import se.qxx.android.jukebox.model.Model;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseTime;
-
-import com.google.protobuf.RpcCallback;
 
 public class Seeker implements Runnable {
 
@@ -37,7 +31,7 @@ public class Seeker implements Runnable {
 				// Model.get().setCurrentMedia(response.getFilename());
 
                if (listener != null)
-                   listener.updateSeeker(response.getSeconds());
+                   listener.updateSeeker(response.getSeconds(), 0);
            });
 	}
 

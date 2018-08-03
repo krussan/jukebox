@@ -1,18 +1,15 @@
 package se.qxx.android.jukebox.cast;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.view.Surface;
 import android.view.SurfaceView;
 
 import com.google.protobuf.RpcCallback;
 
 import java.io.IOException;
 
-import se.qxx.android.jukebox.model.Model;
+import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
@@ -158,15 +155,13 @@ class LocalCastProvider extends CastProvider implements MediaPlayer.OnBufferingU
     }
 
     public void setViewLayoutRatio() {
-
         if (mediaPlayer != null && surfaceView != null) {
             //Get the dimensions of the video
             final int videoWidth = mediaPlayer.getVideoWidth();
             final int videoHeight = mediaPlayer.getVideoHeight();
 
             //Get the width of the screen
-            final int screenWidth = getParentContext().getWindowManager().getDefaultDisplay().getWidth();
-
+            final int screenWidth = GUITools.getDisplayMetrics(getParentContext()).widthPixels;
 
             getParentContext().runOnUiThread(new Runnable() {
                 @Override

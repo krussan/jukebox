@@ -218,7 +218,7 @@ public abstract class CastProvider implements MediaController.MediaPlayerControl
         this.parentContext = parentContext;
         this.dialog = dialog;
         this.comm = comm;
-        this.seekerListener = seekerListener;
+        this.seekerListener = listener;
         this.display = display;
         this.onPreparedListener = onPreparedListener;
     }

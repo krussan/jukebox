@@ -265,13 +265,13 @@ public class NowPlayingActivity
                                   boolean fromUser) {
 
         if (this.isManualSeeking)
-            updateSeekbarText(progress);
+            updateSeekbarText(progress, seekBar.getMax());
     }
 
-    private void updateSeekbarText(int progress) {
+    private void updateSeekbarText(long progress, long duration) {
         final TextView tv = findViewById(R.id.txtSeekIndicator);
 
-        runOnUiThread(new UpdateSeekIndicator(progress, tv));
+        runOnUiThread(new UpdateSeekIndicator(progress, duration, tv));
     }
 
     @Override
@@ -290,12 +290,14 @@ public class NowPlayingActivity
     }
 
     @Override
-    public void updateSeeker(final int seconds) {
+    public void updateSeeker(final long seconds, final long duration) {
         final TextView tv = findViewById(R.id.txtSeekIndicator);
         final SeekBar seekBar = findViewById(R.id.seekBarDuration);
 
+        final long actualDuration = duration == 0 ? seekBar.getMax() : duration;
+
         if (!this.isManualSeeking)
-            runOnUiThread(new UpdateSeekIndicator(seconds, tv, seekBar));
+            runOnUiThread(new UpdateSeekIndicator(seconds, actualDuration, tv, seekBar));
 
     }
 
@@ -306,7 +308,7 @@ public class NowPlayingActivity
         int seconds = seekBar.getProgress();
 
         if (!this.isManualSeeking)
-            runOnUiThread(new UpdateSeekIndicator(seconds + advanceSeconds, tv, seekBar));
+            runOnUiThread(new UpdateSeekIndicator(seconds + advanceSeconds, seekBar.getMax(), tv, seekBar));
     }
 
     @Override

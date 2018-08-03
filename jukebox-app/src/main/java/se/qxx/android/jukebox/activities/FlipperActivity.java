@@ -140,6 +140,7 @@ public class FlipperActivity extends AppCompatActivity implements OnPageChangeLi
 	}
 
 
+	@SuppressWarnings("unchecked")
 	private List<JukeboxDomain.Movie> getMovies() {
 	    Bundle b = getIntent().getExtras();
 

@@ -1,6 +1,5 @@
 package se.qxx.android.jukebox.cast;
 
-import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
@@ -14,7 +13,6 @@ import com.google.android.gms.cast.MediaStatus;
 import com.google.android.gms.cast.MediaTrack;
 import com.google.android.gms.cast.TextTrackStyle;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
-import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.common.images.WebImage;
 import com.google.protobuf.RpcCallback;
@@ -27,10 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.qxx.android.jukebox.dialogs.JukeboxConnectionProgressDialog;
-import se.qxx.android.jukebox.model.Model;
-import se.qxx.android.jukebox.widgets.SeekerListener;
 import se.qxx.android.tools.Logger;
-import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
 public class ChromeCastProvider extends CastProvider implements RemoteMediaClient.ProgressListener {
@@ -141,20 +136,16 @@ public class ChromeCastProvider extends CastProvider implements RemoteMediaClien
                             .build();
 
                     client.load(mi, mlo)
-                            .setResultCallback(new ResultCallback<RemoteMediaClient.MediaChannelResult>() {
+                            .setResultCallback(mediaChannelResult -> {
+                                Status status = mediaChannelResult.getStatus();
 
-                                @Override
-                                public void onResult(@NonNull RemoteMediaClient.MediaChannelResult mediaChannelResult) {
-                                    Status status = mediaChannelResult.getStatus();
-
-                                    if (status.isSuccess()) {
-                                        Logger.Log().d(String.format("MEDIALOAD -- Media load success :: %s", status.getStatusMessage()));
-                                    }
-                                    else {
-                                        Logger.Log().d(String.format("MEDIALOAD -- Media load FAILURE :: %s", status.getStatusMessage()));
-                                    }
-
+                                if (status.isSuccess()) {
+                                    Logger.Log().d(String.format("MEDIALOAD -- Media load success :: %s", status.getStatusMessage()));
                                 }
+                                else {
+                                    Logger.Log().d(String.format("MEDIALOAD -- Media load FAILURE :: %s", status.getStatusMessage()));
+                                }
+
                             });
 
                 }
@@ -192,7 +183,7 @@ public class ChromeCastProvider extends CastProvider implements RemoteMediaClien
     @Override
     public void onProgressUpdated(long currentPosition, long duration) {
         if (getSeekerListener() != null)
-            getSeekerListener().updateSeeker((int)currentPosition / 1000);
+            getSeekerListener().updateSeeker((int)currentPosition / 1000, (int)duration / 1000);
     }
 
     private MediaMetadata getMediaMetadata(String title, String movieUrl) {
