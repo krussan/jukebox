@@ -204,15 +204,9 @@ public class StreamingWebServer extends NanoHTTPD {
 		if (uriLower.endsWith("vtt"))
 			return "text/vtt";
 		
-		if (uriLower.endsWith("mp4"))
+		if (uri.endsWith("mkv") || uri.endsWith("avi") || uri.endsWith("mp4"))
 			return "video/mp4";
-		
-		if (uriLower.endsWith("avi"))
-			return "video/avi";
-		
-		if (uriLower.endsWith("mkv"))
-			return "video/x-matroska";
-		
+
 		return getMimeTypeForFile(uri);
 	}
 	
@@ -260,9 +254,14 @@ public class StreamingWebServer extends NanoHTTPD {
 	private Response serveThumbnail(int id) {
 		Movie m = DB.getMovie(id);
 		
-		ByteArrayInputStream bis = new ByteArrayInputStream(m.getThumbnail().toByteArray());
+		if (m != null && m.getThumbnail() != null) {
+			ByteArrayInputStream bis = new ByteArrayInputStream(m.getThumbnail().toByteArray());
 		
-		return createResponse(Response.Status.OK, "image/jpeg", bis);
+			return createResponse(Response.Status.OK, "image/jpeg", bis);
+		}
+		else {
+			return getNotFoundResponse();
+		}
 	}
 
 	private Response serveImage(int id) {
