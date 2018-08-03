@@ -91,7 +91,7 @@ public class StreamingWebServer extends NanoHTTPD {
 
 	private String getOverrideExtension(String file) {
 		String extension = FilenameUtils.getExtension(file).toLowerCase();
-		if (extension == "mkv" || extension == "avi")
+		if (extension.equals("mkv") || extension.equals("avi"))
 			extension = "mp4";
 		
 		return extension;
