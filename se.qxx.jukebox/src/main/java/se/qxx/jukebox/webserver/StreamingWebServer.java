@@ -79,7 +79,7 @@ public class StreamingWebServer extends NanoHTTPD {
 	public String registerFile(String file) {
 		int iter = streamingIterator.incrementAndGet();
 		
-		String extension = FilenameUtils.getExtension(file);
+		String extension = getOverrideExtension(file);
 		
 		String streamingFile = String.format("stream%s.%s", iter, extension);
 		streamingMap.put(streamingFile, file);
@@ -87,6 +87,14 @@ public class StreamingWebServer extends NanoHTTPD {
 		Log.Info(String.format("Registering file %s :: %s", streamingFile, file), LogType.WEBSERVER);
 		
 		return getStreamUri(streamingFile);
+	}
+
+	private String getOverrideExtension(String file) {
+		String extension = FilenameUtils.getExtension(file).toLowerCase();
+		if (extension == "mkv" || extension == "avi")
+			extension = "mp4";
+		
+		return extension;
 	}
 	
 	public void deregisterFile(String streamingFile) {
