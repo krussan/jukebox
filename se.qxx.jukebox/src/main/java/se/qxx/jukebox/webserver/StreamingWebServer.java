@@ -1,17 +1,13 @@
 package se.qxx.jukebox.webserver;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.util.Collections;
@@ -22,32 +18,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.xml.ws.soap.AddressingFeature.Responses;
-
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.commons.lang3.StringUtils;
-
 import com.google.protobuf.ByteString;
 
-import fi.iki.elonen.InternalRewrite;
 import fi.iki.elonen.NanoHTTPD;
-import fi.iki.elonen.WebServerPlugin;
-import fi.iki.elonen.util.ServerRunner;
-import fr.noop.subtitle.model.SubtitleObject;
-import fr.noop.subtitle.model.SubtitleParser;
-import fr.noop.subtitle.model.SubtitleParsingException;
-import fr.noop.subtitle.model.SubtitleWriter;
-import fr.noop.subtitle.srt.SrtObject;
-import fr.noop.subtitle.srt.SrtParser;
-import fr.noop.subtitle.vtt.VttWriter;
 import freemarker.template.Configuration;
-import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import freemarker.template.TemplateExceptionHandler;
-import fi.iki.elonen.NanoHTTPD.IHTTPSession;
-import fi.iki.elonen.NanoHTTPD.Response;
 import fi.iki.elonen.NanoHTTPD.Response.Status;
 import se.qxx.jukebox.DB;
 import se.qxx.jukebox.Log;
@@ -56,12 +33,23 @@ import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.tools.Util;
-import se.qxx.protodb.Logger;
 
 public class StreamingWebServer extends NanoHTTPD {
 
 	private static StreamingWebServer _instance;
+	private static final Map<String, String> mimeTypeMap;
+	private static final Map<String, String> overrideExtensionMap;
 	
+	static {
+		mimeTypeMap = new HashMap<String, String>();
+		mimeTypeMap.put("mkv", "video/mp4");
+		mimeTypeMap.put("avi", "video/mp4");
+		mimeTypeMap.put("mp4", "video/mp4");
+		
+		overrideExtensionMap = new HashMap<String, String>();
+		overrideExtensionMap.put("mkv", "mkv");
+		overrideExtensionMap.put("avi", "mp4");
+	}
 	
 	// maps stream name to actual file name
 	private Map<String, String> streamingMap = null;
@@ -91,8 +79,8 @@ public class StreamingWebServer extends NanoHTTPD {
 
 	private String getOverrideExtension(String file) {
 		String extension = FilenameUtils.getExtension(file).toLowerCase();
-		if (extension.equals("mkv") || extension.equals("avi"))
-			extension = "mp4";
+		if (overrideExtensionMap.containsKey(extension))
+			return overrideExtensionMap.get(extension);
 		
 		return extension;
 	}
@@ -223,13 +211,11 @@ public class StreamingWebServer extends NanoHTTPD {
 
 		//String mimeTypeForFile = getMimeTypeForFile(uri);
 		String uriLower = uri.toLowerCase();
+		String extension = uriLower.substring(uriLower.lastIndexOf('.') + 1);
 		
-		if (uriLower.endsWith("vtt"))
-			return "text/vtt";
+		if (mimeTypeMap.containsKey(extension))
+			return mimeTypeMap.get(extension);
 		
-		if (uri.endsWith("mkv") || uri.endsWith("avi") || uri.endsWith("mp4"))
-			return "video/mp4";
-
 		return getMimeTypeForFile(uri);
 	}
 	
