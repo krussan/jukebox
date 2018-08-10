@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,24 +33,14 @@ import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
+import se.qxx.jukebox.settings.JukeboxListenerSettings;
+import se.qxx.jukebox.settings.JukeboxListenerSettings.WebServer.MimeTypeMap.Extension;
+import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.tools.Util;
 
 public class StreamingWebServer extends NanoHTTPD {
 
 	private static StreamingWebServer _instance;
-	private static final Map<String, String> mimeTypeMap;
-	private static final Map<String, String> overrideExtensionMap;
-	
-	static {
-		mimeTypeMap = new HashMap<String, String>();
-		mimeTypeMap.put("mkv", "video/mp4");
-		mimeTypeMap.put("avi", "video/mp4");
-		mimeTypeMap.put("mp4", "video/mp4");
-		
-		overrideExtensionMap = new HashMap<String, String>();
-		overrideExtensionMap.put("mkv", "mkv");
-		overrideExtensionMap.put("avi", "mp4");
-	}
 	
 	// maps stream name to actual file name
 	private Map<String, String> streamingMap = null;
@@ -79,8 +70,14 @@ public class StreamingWebServer extends NanoHTTPD {
 
 	private String getOverrideExtension(String file) {
 		String extension = FilenameUtils.getExtension(file).toLowerCase();
-		if (overrideExtensionMap.containsKey(extension))
-			return overrideExtensionMap.get(extension);
+		for (se.qxx.jukebox.settings.JukeboxListenerSettings.WebServer.ExtensionOverrideMap.Extension e : 
+			Settings.get().getWebServer().getExtensionOverrideMap().getExtension()) {
+			
+			if (StringUtils.equalsIgnoreCase(e.getValue(), extension)) {
+				Log.Debug(String.format("Overriding extension :: %s", e.getOverride()), LogType.WEBSERVER);
+				return e.getOverride();
+			}
+		}
 		
 		return extension;
 	}
@@ -209,12 +206,16 @@ public class StreamingWebServer extends NanoHTTPD {
         //use mp4 for now. Default seems to be octet-stream for unknown file types 
         // and that does not fit well with some video players
 
-		//String mimeTypeForFile = getMimeTypeForFile(uri);
 		String uriLower = uri.toLowerCase();
 		String extension = uriLower.substring(uriLower.lastIndexOf('.') + 1);
-		
-		if (mimeTypeMap.containsKey(extension))
-			return mimeTypeMap.get(extension);
+
+		//String mimeTypeForFile = getMimeTypeForFile(uri);
+		for (Extension e : Settings.get().getWebServer().getMimeTypeMap().getExtension() ) {
+			if (StringUtils.equalsIgnoreCase(e.getValue(), extension)) {
+				Log.Debug(String.format("Overriding mime type :: %s", e.getMimeType()), LogType.WEBSERVER);
+				return e.getMimeType();
+			}
+		}
 		
 		return getMimeTypeForFile(uri);
 	}
@@ -362,28 +363,15 @@ public class StreamingWebServer extends NanoHTTPD {
      */
     Response serveFile(Map<String, String> header, File file, String mime) {
         Response res;
+
+        // Calculate etag
+        String etag = Integer.toHexString((file.getAbsolutePath() + file.lastModified() + "" + file.length()).hashCode());
+
         try {
-            // Calculate etag
-            String etag = Integer.toHexString((file.getAbsolutePath() + file.lastModified() + "" + file.length()).hashCode());
-
             // Support (simple) skipping:
-            long startFrom = 0;
-            long endAt = -1;
-            String range = header.get("range");
-            if (range != null) {
-                if (range.startsWith("bytes=")) {
-                    range = range.substring("bytes=".length());
-                    int minus = range.indexOf('-');
-                    try {
-                        if (minus > 0) {
-                            startFrom = Long.parseLong(range.substring(0, minus));
-                            endAt = Long.parseLong(range.substring(minus + 1));
-                        }
-                    } catch (NumberFormatException ignored) {
-                    }
-                }
-            }
-
+            String range = header.get("range");            
+            Range r = Range.parse(range, file.length());
+            
             // get if-range header. If present, it must match etag or else we
             // should ignore the range request
             String ifRange = header.get("if-range");
@@ -394,9 +382,8 @@ public class StreamingWebServer extends NanoHTTPD {
 
             // Change return code and add Content-Range header when skipping is
             // requested
-            long fileLen = file.length();
 
-            if (headerIfRangeMissingOrMatching && range != null && startFrom >= 0 && startFrom < fileLen) {
+            if (headerIfRangeMissingOrMatching && range != null && r.getStartFrom() >= 0 && r.getStartFrom() < r.getFileLength()) {
                 // range request that matches current etag
                 // and the startFrom of the range is satisfiable
                 if (headerIfNoneMatchPresentAndMatching) {
@@ -404,64 +391,76 @@ public class StreamingWebServer extends NanoHTTPD {
                     // and the startFrom of the range is satisfiable
                     // would return range from file
                     // respond with not-modified
+                	Log.Debug("Response type 1", LogType.WEBSERVER);
                     res = newFixedLengthResponse(Status.NOT_MODIFIED, mime, "");
-                    res.addHeader("ETag", etag);
                 } else {
-                    if (endAt < 0) {
-                        endAt = fileLen - 1;
-                    }
-                    long newLen = endAt - startFrom + 1;
-                    if (newLen < 0) {
-                        newLen = 0;
-                    }
-
-                    FileInputStream fis = new FileInputStream(file);
-                    fis.skip(startFrom);
-
-                    //res = Response.newChunkedResponse(Status.PARTIAL_CONTENT, mime, fis);
-                    res = NanoHTTPD.newFixedLengthResponse(Status.PARTIAL_CONTENT, mime, fis, newLen);
-                    res.addHeader("Accept-Ranges", "bytes");
-                    res.addHeader("Content-Length", "" + newLen);
-                    res.addHeader("Content-Range", "bytes " + startFrom + "-" + endAt + "/" + fileLen);
-                    res.addHeader("ETag", etag);
+                	Log.Debug("Response type 2", LogType.WEBSERVER);
+                	res = getRangedResponse(file, mime, r);
                 }
             } else {
 
-                if (headerIfRangeMissingOrMatching && range != null && startFrom >= fileLen) {
+                if (headerIfRangeMissingOrMatching && range != null && r.getStartFrom() >= r.getFileLength()) {
                     // return the size of the file
                     // 4xx responses are not trumped by if-none-match
+                	Log.Debug("Response type 3", LogType.WEBSERVER);
                     res = newFixedLengthResponse(Status.RANGE_NOT_SATISFIABLE, NanoHTTPD.MIME_PLAINTEXT, "");
-                    res.addHeader("Content-Range", "bytes */" + fileLen);
-                    res.addHeader("ETag", etag);
+                    res.addHeader("Content-Range", String.format("bytes */%s", r.getFileLength()));
                 } else if (range == null && headerIfNoneMatchPresentAndMatching) {
                     // full-file-fetch request
                     // would return entire file
                     // respond with not-modified
+                	Log.Debug("Response type 4", LogType.WEBSERVER);
                     res = newFixedLengthResponse(Status.NOT_MODIFIED, mime, "");
-                    res.addHeader("ETag", etag);
                 } else if (!headerIfRangeMissingOrMatching && headerIfNoneMatchPresentAndMatching) {
                     // range request that doesn't match current etag
                     // would return entire (different) file
                     // respond with not-modified
-
+                	Log.Debug("Response type 5", LogType.WEBSERVER);
                     res = newFixedLengthResponse(Status.NOT_MODIFIED, mime, "");
-                    res.addHeader("ETag", etag);
                 } else {
                     // supply the file
+                	Log.Debug("Response type 6", LogType.WEBSERVER);
                     res = newFixedFileResponse(file, mime);
-                    res.addHeader("Content-Length", "" + fileLen);
-                    res.addHeader("ETag", etag);
+                    res.addHeader("Content-Length", "" + r.getFileLength());
                 }
             }
         } catch (IOException ioe) {
             res = getForbiddenResponse("Reading file failed.");
         }
         
-        // enable CORS	
+        // enable CORS
+        res.addHeader("ETag", etag);
     	res.addHeader("Access-Control-Allow-Origin", "*");
 
         return res;
     }
+
+	private Response getRangedResponse(File file, String mime, Range r)
+			throws FileNotFoundException, IOException {
+		
+		FileInputStream fis = getRangedFileStream(file, r);
+		fis.skip(r.getStartFrom());
+
+		Response res = NanoHTTPD.newChunkedResponse(Status.PARTIAL_CONTENT, mime, fis);
+		//Response res = NanoHTTPD.newFixedLengthResponse(Status.PARTIAL_CONTENT, mime, fis, r.getLength());
+		res.addHeader("Accept-Ranges", "bytes");
+		res.addHeader("Content-Length", "" + r.getLength());
+		res.addHeader("Content-Range", r.getContentRange());
+		
+		return res;
+	}
+
+	private FileInputStream getRangedFileStream(File file, Range r) throws FileNotFoundException {
+		final long newLen = r.getLength();
+		FileInputStream fis = new FileInputStream(file) {
+			@Override
+			public int available() throws IOException {
+				// TODO Auto-generated method stub
+				return (int)newLen;
+			}                    	
+		};
+		return fis;
+	}
     
     private Response newFixedFileResponse(File file, String mime) throws FileNotFoundException {
         Response res;

@@ -137,4 +137,16 @@
     <driver>com.mysql.jdbc.Driver</driver>
     <connectionString>jdbc:mysql://192.168.1.120/jukebox?user=jukebox&amp;password=jukebox</connectionString>
   </database>
+  <webServer>
+  	<mimeTypeMap>
+		<extension value="mkv" mimeType="video/mp4" />
+        <extension value="avi" mimeType="video/mp4" />
+        <extension value="mp4" mimeType="video/mp4" />
+        <extension value="vtt" mimeType="text/vtt" />  		
+  	</mimeTypeMap>
+  	<extensionOverrideMap>
+  		<!-- <extension value="mkv" override="mp4" /> -->
+  	</extensionOverrideMap>
+  	
+  </webServer>
 </JukeboxListenerSettings>
