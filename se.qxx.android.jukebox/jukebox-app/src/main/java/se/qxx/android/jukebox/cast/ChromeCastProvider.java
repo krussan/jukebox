@@ -50,7 +50,8 @@ public class ChromeCastProvider extends CastProvider implements RemoteMediaClien
                         getTitle(),
                         response.getUri(),
                         response.getSubtitleUrisList(),
-                        response.getSubtitleList());
+                        response.getSubtitleList(),
+                        response.getMimeType());
 
                 initializeSubtitles();
             }
@@ -98,7 +99,7 @@ public class ChromeCastProvider extends CastProvider implements RemoteMediaClien
 
     }
 
-    public void startCastVideo(final String title, final String movieUrl, final List<String> subtitleUris, final List<JukeboxDomain.Subtitle> subs) {
+    public void startCastVideo(final String title, final String movieUrl, final List<String> subtitleUris, final List<JukeboxDomain.Subtitle> subs, final String mimeType) {
         // Since this could be called from a callback we need to trigger it
         // on the main thread.
 

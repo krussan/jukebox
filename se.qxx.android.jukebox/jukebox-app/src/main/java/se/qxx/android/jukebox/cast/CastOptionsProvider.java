@@ -2,8 +2,6 @@ package se.qxx.android.jukebox.cast;
 
 import android.content.Context;
 
-import com.google.android.gms.cast.CastMediaControlIntent;
-import com.google.android.gms.cast.LaunchOptions;
 import com.google.android.gms.cast.framework.CastOptions;
 import com.google.android.gms.cast.framework.OptionsProvider;
 import com.google.android.gms.cast.framework.SessionProvider;
@@ -37,6 +35,7 @@ public class CastOptionsProvider implements OptionsProvider {
                 .build();
 
         return new CastOptions.Builder()
+                //.setReceiverApplicationId(CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID)
                 .setReceiverApplicationId(JUKEBOX_APP_ID)
                 .setCastMediaOptions(mediaOptions)
                 .build();
