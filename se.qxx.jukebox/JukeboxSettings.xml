@@ -145,7 +145,7 @@
         <extension value="vtt" mimeType="text/vtt" />  		
   	</mimeTypeMap>
   	<extensionOverrideMap>
-  		<!-- <extension value="mkv" override="mp4" /> -->
+  		<extension value="mkv" override="mp4" />
   	</extensionOverrideMap>
   	
   </webServer>

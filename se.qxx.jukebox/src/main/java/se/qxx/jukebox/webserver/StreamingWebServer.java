@@ -84,8 +84,10 @@ public class StreamingWebServer extends NanoHTTPD {
 	private String getOverrideExtension(String file) {
 		String extension = FilenameUtils.getExtension(file).toLowerCase();
 		
-		if (extensionMap.containsKey(extension))
+		if (extensionMap.containsKey(extension)) {
+			Log.Debug(String.format("Overriding extension %s -> %s", extension, extensionMap.get(extension)), LogType.WEBSERVER);
 			return extensionMap.get(extension);
+		}
 		
 		return extension;
 	}
@@ -215,8 +217,11 @@ public class StreamingWebServer extends NanoHTTPD {
         // and that does not fit well with some video players
 
 		String extension = FilenameUtils.getExtension(filename);
-		if (mimeTypeMap.containsKey(extension))
+		if (mimeTypeMap.containsKey(extension)) {
+			Log.Debug(String.format("Overriding mimeType %s -> %s", extension, mimeTypeMap.get(extension)), LogType.WEBSERVER);
 			return mimeTypeMap.get(extension);
+		}
+			
 
 		return getMimeTypeForFile(uri);
 	}
