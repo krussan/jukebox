@@ -11,14 +11,11 @@ import java.io.InputStreamReader;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import com.google.protobuf.ByteString;
@@ -33,10 +30,10 @@ import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
-import se.qxx.jukebox.settings.JukeboxListenerSettings;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.WebServer.MimeTypeMap.Extension;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.tools.Util;
+import se.qxx.protodb.model.CaseInsensitiveMap;
 
 public class StreamingWebServer extends NanoHTTPD {
 
@@ -44,6 +41,9 @@ public class StreamingWebServer extends NanoHTTPD {
 	
 	// maps stream name to actual file name
 	private Map<String, String> streamingMap = null;
+	private Map<String, String> mimeTypeMap = null;
+	private Map<String, String> extensionMap = null;
+	
 	private AtomicInteger streamingIterator;
 	
 	private Configuration templateConfig = null;
@@ -53,6 +53,19 @@ public class StreamingWebServer extends NanoHTTPD {
 		
 		streamingIterator = new AtomicInteger();
 		streamingMap = new ConcurrentHashMap<String, String>();
+		mimeTypeMap = new CaseInsensitiveMap();
+		
+		for (Extension e : Settings.get().getWebServer().getMimeTypeMap().getExtension() ) {
+			mimeTypeMap.put(e.getValue(), e.getMimeType());
+		}
+	
+		for (se.qxx.jukebox.settings.JukeboxListenerSettings.WebServer.ExtensionOverrideMap.Extension e : 
+			Settings.get().getWebServer().getExtensionOverrideMap().getExtension()) {
+			extensionMap.put(e.getValue(), e.getOverride());
+		}
+		
+
+		
 	}
 	
 	public String registerFile(String file) {
@@ -70,14 +83,9 @@ public class StreamingWebServer extends NanoHTTPD {
 
 	private String getOverrideExtension(String file) {
 		String extension = FilenameUtils.getExtension(file).toLowerCase();
-		for (se.qxx.jukebox.settings.JukeboxListenerSettings.WebServer.ExtensionOverrideMap.Extension e : 
-			Settings.get().getWebServer().getExtensionOverrideMap().getExtension()) {
-			
-			if (StringUtils.equalsIgnoreCase(e.getValue(), extension)) {
-				Log.Debug(String.format("Overriding extension :: %s", e.getOverride()), LogType.WEBSERVER);
-				return e.getOverride();
-			}
-		}
+		
+		if (extensionMap.containsKey(extension))
+			return extensionMap.get(extension);
 		
 		return extension;
 	}
@@ -147,7 +155,7 @@ public class StreamingWebServer extends NanoHTTPD {
             	return getNotFoundResponse();
             }
             
-            String mimeTypeForFile = getMimeType(uri);
+            String mimeTypeForFile = getMimeType(uri, filename);
             
             Response response = serveFile(headers, f, mimeTypeForFile);
             logResponse(response);
@@ -202,21 +210,14 @@ public class StreamingWebServer extends NanoHTTPD {
 
     }
 
-	private String getMimeType(String uri) {
+	private String getMimeType(String uri, String filename) {
         //use mp4 for now. Default seems to be octet-stream for unknown file types 
         // and that does not fit well with some video players
 
-		String uriLower = uri.toLowerCase();
-		String extension = uriLower.substring(uriLower.lastIndexOf('.') + 1);
+		String extension = FilenameUtils.getExtension(filename);
+		if (mimeTypeMap.containsKey(extension))
+			return mimeTypeMap.get(extension);
 
-		//String mimeTypeForFile = getMimeTypeForFile(uri);
-		for (Extension e : Settings.get().getWebServer().getMimeTypeMap().getExtension() ) {
-			if (StringUtils.equalsIgnoreCase(e.getValue(), extension)) {
-				Log.Debug(String.format("Overriding mime type :: %s", e.getMimeType()), LogType.WEBSERVER);
-				return e.getMimeType();
-			}
-		}
-		
 		return getMimeTypeForFile(uri);
 	}
 	
