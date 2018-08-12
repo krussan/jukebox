@@ -54,6 +54,7 @@ public class StreamingWebServer extends NanoHTTPD {
 		streamingIterator = new AtomicInteger();
 		streamingMap = new ConcurrentHashMap<String, String>();
 		mimeTypeMap = new CaseInsensitiveMap();
+		extensionMap = new CaseInsensitiveMap();
 		
 		for (Extension e : Settings.get().getWebServer().getMimeTypeMap().getExtension() ) {
 			mimeTypeMap.put(e.getValue(), e.getMimeType());
