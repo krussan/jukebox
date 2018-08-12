@@ -47,6 +47,7 @@ import se.qxx.jukebox.tools.MediaMetadata;
 import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.vlc.VLCConnectionNotFoundException;
 import se.qxx.jukebox.watcher.FileRepresentation;
+import se.qxx.jukebox.webserver.StreamingFile;
 import se.qxx.jukebox.webserver.StreamingWebServer;
 import se.qxx.jukebox.vlc.Distributor;
 
@@ -226,15 +227,15 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			Media md = getMedia(request);
 
 			boolean success = false;
-			
-			String uri = StringUtils.EMPTY;
+
+			StreamingFile streamingFile = null;
 			List<String> subtitleUris = new ArrayList<String>();
 			
 			if (StringUtils.equalsIgnoreCase("Chromecast", request.getPlayerName())) {
 				//this is a chromecast request. Serve the file using http and return the uri.
 				//also serve the subtitles and return them
 			
-				uri = serveChromecast(md, subtitleUris);
+				streamingFile = serveChromecast(md, subtitleUris);
 				success = true;
 			}
 			else {
@@ -244,13 +245,17 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			if (success) {
 				List<Subtitle> subs = md.getSubsList();
 				
-				JukeboxResponseStartMovie ls = JukeboxResponseStartMovie.newBuilder()
+				JukeboxResponseStartMovie.Builder b = JukeboxResponseStartMovie.newBuilder()
 						.addAllSubtitle(subs)
-						.setUri(uri)
-						.addAllSubtitleUris(subtitleUris)
-						.build();
+						.addAllSubtitleUris(subtitleUris);
+				
+				if (streamingFile != null) {
+					b.setUri(streamingFile.getUri())
+						.setMimeType(streamingFile.getMimeType());
+				}
 									
-				done.run(ls);
+				done.run(
+					b.build());
 				
 			}
 			else
@@ -274,21 +279,20 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		return null;
 	}
 
-	private String serveChromecast(Media md, List<String> subtitleUris) {
-		String uri;
-
+	private StreamingFile serveChromecast(Media md, List<String> subtitleUris) {
 		// if media contains subtitles (i.e. mkv) then extract the file and put it into a file for serving
 		// https://github.com/matthewn4444/EBMLReader ??
-		uri = StreamingWebServer.get().registerFile(Util.getFullFilePath(md));
+		StreamingFile streamingFile = StreamingWebServer.get().registerFile(Util.getFullFilePath(md));
 		
 		Log.Debug(String.format("Number of subtitles :: %s", md.getSubsCount()), LogType.COMM);
 		for (Subtitle s : md.getSubsList()) {
-			String subFilename = StreamingWebServer.get().registerSubtitle(s);
+			StreamingFile subFile = StreamingWebServer.get().registerSubtitle(s);
 			
-			if (StringUtils.isNotEmpty(subFilename))
-				subtitleUris.add(subFilename);
+			if (subFile != null)
+				subtitleUris.add(subFile.getUri());
 		}
-		return uri;
+		
+		return streamingFile;
 	}
 
 	@Override

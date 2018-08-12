@@ -69,17 +69,19 @@ public class StreamingWebServer extends NanoHTTPD {
 		
 	}
 	
-	public String registerFile(String file) {
+	public StreamingFile registerFile(String filename) {
 		int iter = streamingIterator.incrementAndGet();
 		
-		String extension = getOverrideExtension(file);
-		
+		String extension = getOverrideExtension(filename);
 		String streamingFile = String.format("stream%s.%s", iter, extension);
-		streamingMap.put(streamingFile, file);
 		
-		Log.Info(String.format("Registering file %s :: %s", streamingFile, file), LogType.WEBSERVER);
+		streamingMap.put(streamingFile, filename);
 		
-		return getStreamUri(streamingFile);
+		Log.Info(String.format("Registering file %s :: %s", streamingFile, filename), LogType.WEBSERVER);
+		
+		String uri = getStreamUri(streamingFile);		
+		return new StreamingFile(uri, getMimeType(uri, filename));
+		
 	}
 
 	private String getOverrideExtension(String file) {
@@ -97,7 +99,7 @@ public class StreamingWebServer extends NanoHTTPD {
 		streamingMap.remove(streamingFile);
 	}
 	
-	public String registerSubtitle(Subtitle sub) {
+	public StreamingFile registerSubtitle(Subtitle sub) {
 
 		try {
 		
@@ -109,7 +111,7 @@ public class StreamingWebServer extends NanoHTTPD {
 			Log.Error("Error while parsing and writing subtitle file", LogType.WEBSERVER, e);
 		}
 		
-		return StringUtils.EMPTY;
+		return null;
 	}
 	
 
@@ -213,7 +215,7 @@ public class StreamingWebServer extends NanoHTTPD {
 
     }
 
-	private String getMimeType(String uri, String filename) {
+	public String getMimeType(String uri, String filename) {
         //use mp4 for now. Default seems to be octet-stream for unknown file types 
         // and that does not fit well with some video players
 
