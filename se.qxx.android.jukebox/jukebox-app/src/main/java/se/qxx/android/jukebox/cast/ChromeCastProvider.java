@@ -127,7 +127,7 @@ public class ChromeCastProvider extends CastProvider implements RemoteMediaClien
                             .setMetadata(md)
                             .setMediaTracks(tracks)
                             .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
-                            .setContentType("video/mp4")
+                            .setContentType(mimeType)
                             .setTextTrackStyle(style)
                             .build();
 
