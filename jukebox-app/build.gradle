@@ -109,6 +109,6 @@ dependencies {
     implementation 'se.qxx.android.tools:android-tools:1.0.2'
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support:mediarouter-v7:27.1.1'
-    implementation 'com.google.android.gms:play-services-cast-framework:15.0.0'
+    implementation 'com.google.android.gms:play-services-cast-framework:16.0.1'
     implementation 'org.apache.commons:commons-collections4:4.1'
 }
