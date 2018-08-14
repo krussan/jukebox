@@ -1,0 +1,52 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>se.qxx.jukebox</groupId>
+  <artifactId>jukebox</artifactId>
+  <version>0.18.4</version>
+  <packaging>pom</packaging>
+
+  <name>jukebox</name>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <fully.qualified.main.class>se.qxx.jukebox.Jukebox</fully.qualified.main.class>
+    <script.file>run.sh</script.file>
+    <powermock.version>1.6.6</powermock.version>
+  </properties>
+
+  <repositories>
+    <repository>
+      <id>krussan</id>
+      <name>krussans maven repo</name>
+      <url>https://raw.githubusercontent.com/krussan/maven-repo/master/</url>
+    </repository>
+  </repositories>
+
+
+<build>
+	<finalName>${project.artifactId}-${project.version}-${git.branch}</finalName>
+	
+    <pluginManagement>
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.5.1</version>
+                <configuration>
+                   <source>1.7</source>
+                   <target>1.7</target>
+                </configuration>
+            </plugin>
+            
+ 		</plugins>
+    </pluginManagement>
+
+</build>
+<modules>
+   <module>se.qxx.jukebox.domain</module>
+</modules>
+</project>
