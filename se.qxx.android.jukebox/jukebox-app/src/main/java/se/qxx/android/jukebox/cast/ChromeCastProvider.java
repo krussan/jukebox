@@ -118,7 +118,7 @@ public class ChromeCastProvider extends CastProvider implements RemoteMediaClien
 
                     MediaMetadata md = getMediaMetadata(title, movieUrl);
 
-                    List<MediaTrack> tracks = getSubtitleTracks();
+                    List<MediaTrack> tracks = getSubtitleTracks(subs, subtitleUris);
                     long[] activeTrackIds = getActiveTracks(subtitleUris);
 
                     TextTrackStyle style = ChromeCastConfiguration.getTextStyle();
@@ -154,31 +154,33 @@ public class ChromeCastProvider extends CastProvider implements RemoteMediaClien
             }
 
 
-            private List<MediaTrack> getSubtitleTracks() {
-                List<MediaTrack> tracks = new ArrayList<>();
 
-                for (int i=0;i<subtitleUris.size();i++) {
-                    if (i<subs.size()) {
-                        JukeboxDomain.Subtitle currentSub = subs.get(i);
-
-                        MediaTrack subtitle = new MediaTrack.Builder(i + 1, MediaTrack.TYPE_TEXT)
-                                .setContentId(subtitleUris.get(i))
-                                .setContentType("text/vtt")
-                                .setSubtype(MediaTrack.SUBTYPE_SUBTITLES)
-                                .setName(currentSub.getDescription())
-                                .setLanguage("en-US")
-                                .build();
-
-                        tracks.add(subtitle);
-
-                    }
-                }
-
-                return tracks;
-            }
         };
         mainHandler.post(myRunnable);
 
+    }
+
+    private List<MediaTrack> getSubtitleTracks(List<JukeboxDomain.Subtitle> subs, List<String> subtitleUris) {
+        List<MediaTrack> tracks = new ArrayList<>();
+
+        for (int i=0;i<subtitleUris.size();i++) {
+            if (i<subs.size()) {
+                JukeboxDomain.Subtitle currentSub = subs.get(i);
+
+                MediaTrack subtitle = new MediaTrack.Builder(i + 1, MediaTrack.TYPE_TEXT)
+                        .setContentId(subtitleUris.get(i))
+                        .setContentType("text/vtt")
+                        .setSubtype(MediaTrack.SUBTYPE_SUBTITLES)
+                        .setName(currentSub.getDescription())
+                        .setLanguage("en-US")
+                        .build();
+
+                tracks.add(subtitle);
+
+            }
+        }
+
+        return tracks;
     }
 
     @Override
@@ -224,10 +226,10 @@ public class ChromeCastProvider extends CastProvider implements RemoteMediaClien
 
     @NonNull
     private long[] getActiveTracks(List<String> subtitleUris) {
-        long[] activeTrackIds = null;
         if (subtitleUris.size() > 0)
-            activeTrackIds = new long[] {1};
-        return activeTrackIds;
+            return new long[] {1};
+        else
+            return new long[] {};
     }
 
 
