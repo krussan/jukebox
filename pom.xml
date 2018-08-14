@@ -3,11 +3,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>se.qxx.jukebox</groupId>
-  <artifactId>jukebox</artifactId>
+  <artifactId>jukebox-master</artifactId>
   <version>0.18.4</version>
   <packaging>pom</packaging>
 
-  <name>jukebox</name>
+  <name>jukebox-master</name>
   <url>http://maven.apache.org</url>
 
   <properties>
@@ -47,6 +47,8 @@
 
 </build>
 <modules>
+   <module>se.qxx.jukebox.comm</module>
    <module>se.qxx.jukebox.domain</module>
+   <module>se.qxx.jukebox</module>
 </modules>
 </project>

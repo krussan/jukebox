@@ -14,16 +14,13 @@ matrix:
      - cp ci/settings.xml ~/.m2    
      - ci/decrypt_files.sh
 
-    before_script:
-    - cd se.qxx.jukebox
-
     install: true
 
     script: ${TRAVIS_BUILD_DIR}/ci/build.sh    
 
     before_deploy:
-     - ls -la target
-     - export RELEASE_PKG_FILE=`find target/ -name '*.zip' -exec basename {} \;`
+     - ls -la se.qxx.jukebox/target
+     - export RELEASE_PKG_FILE=`find se.qxx.jukebox/target/ -name '*.zip' -exec basename {} \;`
      - echo "Deploying ${RELEASE_PKG_FILE} to GitHub releases"
      - ${TRAVIS_BUILD_DIR}/ci/createtag.sh
 
@@ -35,7 +32,7 @@ matrix:
         secure: brtK2i/AXZz9NyVf6iBzYQgJ1EpY1a21acmTyW4lqeAmuroRXERlu22k8Fw6G5Xsoi6uxcxpw3at5N8yg0ZOtkn6MT8l+w05vxB6mtxX97a8N/LW6L1xkEjLYH+Beu+9hwsMYLN3MZtMhsklvP6tXpy96KKLgSRXZ5P2sVWXtcvwCr7VK4Z9F0vtm4XsBbuNQtgwcsZDTBwp7D7KX6VxKtLvS6WDP6A54+jpOyCQtnwLKz1dxAtya2FF4eSJjf9HlOkAsAaZ/Sy1JdD6UqDQ42KC2FNdg0a+yvnpMND8HOYlfBULJpb5kShH23grgdGYNzpNRvSHyh/VEyu2kgUUzIiytvR1hq/WGrFrj1NyMDj7Ahp9PjwQdsckdwCSHHTaKtq90cL4lh7ZoNhdRDxzo9S+3qYAe62KbpU+7lfaQF2EoLRfxmzqhZTqCU2Sfr+R1hff0hv85C3vAGnF++4R32AHQhd6U3hFPE/73lWUU4zInWWnkgsIKI2d0tlwlbZ1Awx8UwoZB8WPBmO1r7XT5ySpB4usIMxJoSB1BcLRu9p6xnyMtwES8CLtR8XoNVTGv5avmxa8ZOEbczbPHViplHog0IXDkePDLiF7TNITBXVHWzfxMCY9y758LxuMAJWRyNkFlPm0KJqjJvMbiTJBMkQnq36ollkSNnfytIDz6gQ=
 
       file_glob: true
-      file: "target/${RELEASE_PKG_FILE}"
+      file: "se.qxx.jukebox/target/${RELEASE_PKG_FILE}"
 
       on:
         tags: false
@@ -54,9 +51,6 @@ matrix:
      - ci/decrypt_files.sh
 
     install: true
-
-    before_script:
-    - cd se.qxx.android.jukebox
 
     script: ${TRAVIS_BUILD_DIR}/ci/build-app.sh
 

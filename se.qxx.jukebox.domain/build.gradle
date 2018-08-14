@@ -1,0 +1,10 @@
+apply plugin: 'java'
+
+group = 'se.qxx.jukebox'
+version = '1.0-SNAPSHOT'
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'net.petrikainulainen.gradle.HelloWorld'
+    }
+}
