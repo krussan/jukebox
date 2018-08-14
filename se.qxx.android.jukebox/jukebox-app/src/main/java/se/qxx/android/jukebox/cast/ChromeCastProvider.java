@@ -191,6 +191,12 @@ public class ChromeCastProvider extends CastProvider implements RemoteMediaClien
         MediaMetadata md = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
         md.putString(MediaMetadata.KEY_TITLE, title);
 
+        //addMetadataImage(movieUrl, md);
+
+        return md;
+    }
+
+    private void addMetadataImage(String movieUrl, MediaMetadata md) {
         int id = getID();
 
         if (id > 0) {
@@ -214,8 +220,6 @@ public class ChromeCastProvider extends CastProvider implements RemoteMediaClien
             }
 
         }
-
-        return md;
     }
 
     @NonNull
