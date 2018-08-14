@@ -11,7 +11,6 @@ matrix:
      - unzip ci/protoc.zip -d ci
      - chmod 775 ci/*.sh
      - if [ ! -d ~/.m2 ]; then mkdir ~/.m2; fi
-     - cp ci/settings.xml ~/.m2    
      - ci/decrypt_files.sh
 
     install: true

@@ -51,4 +51,21 @@
    <module>se.qxx.jukebox.domain</module>
    <module>se.qxx.jukebox</module>
 </modules>
+
+  <profiles>
+    <profile>
+      <id>travis-build</id>
+      <properties>
+        <protoc.exec>${env.TRAVIS_BUILD_DIR}/ci/protoc</protoc.exec>
+      </properties>
+      <activation>
+         <property>
+            <name>environment</name>
+            <value>travis</value>
+	 </property>
+      </activation>
+    </profile>
+  </profiles>
+
+
 </project>

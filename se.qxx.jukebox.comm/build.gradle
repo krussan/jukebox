@@ -1,0 +1,16 @@
+apply plugin: 'java'
+
+group = 'se.qxx.jukebox'
+version = '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+jar {
+}
+
+dependencies {
+   compile project(':se.qxx.jukebox.domain')
+   compile 'com.google.protobuf:protobuf-java:2.4.1'
+   compile 'com.googlecode:protobuf-socket-rpc:2.0'
+}

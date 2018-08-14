@@ -17,6 +17,7 @@
     <version>${project.version}</version>
     <packaging>${project.packaging}</packaging>
     <file>target/${project.artifactId}-${project.version}.jar</file>
+    <protoc.exec>/usr/bin/protoc</protoc.exec>
   </properties>
   
   <repositories>
@@ -78,7 +79,7 @@
                 <artifactId>protobuf-maven-plugin</artifactId>
                 <version>0.5.0</version>
                 <configuration>
-                  <protocExecutable>protoc</protocExecutable>
+                  <protocExecutable>${protoc.exec}</protocExecutable>
                 </configuration>
                 <executions>
                   <execution>

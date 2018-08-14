@@ -1,10 +1,27 @@
 apply plugin: 'java'
+apply plugin: 'com.google.protobuf'
 
 group = 'se.qxx.jukebox'
 version = '1.0-SNAPSHOT'
 
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+def protocExec = System.env.protocExec ?: '/usr/bin/protoc'
+
 jar {
     manifest {
-        attributes 'Main-Class': 'net.petrikainulainen.gradle.HelloWorld'
     }
+}
+
+protobuf {
+  // Configure the protoc executable
+  protoc {
+    path = protocExec
+  }
+}
+
+dependencies {
+   compile 'com.google.protobuf:protobuf-java:2.4.1'
+   testCompile 'junit:junit:4.12'
 }

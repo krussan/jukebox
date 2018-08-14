@@ -17,6 +17,10 @@ android {
         versionCode appVersionCode
         versionName "${version}"
         setProperty("archivesBaseName", "jukebox-$versionName")
+
+	jackOptions {
+	   enabled true
+	}
     }
 
     signingConfigs {
@@ -66,6 +70,10 @@ android {
         disable 'GoogleAppIndexingWarning'
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 def publish = project.tasks.create("publishAll");
@@ -90,8 +98,8 @@ variant.name.capitalize() + "Apk", Copy)
 }
 
 dependencies {
-    compile 'se.qxx.jukebox:jukebox-domain:1.0-SNAPSHOT'
-    compile 'se.qxx.jukebox:jukebox-comm:1.0-SNAPSHOT'
+    compile project(':se.qxx.jukebox.domain')
+    compile project(':se.qxx.jukebox.comm')
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'com.google.protobuf:protobuf-java:2.4.1'
     compile 'com.googlecode:protobuf-socket-rpc:2.0'
