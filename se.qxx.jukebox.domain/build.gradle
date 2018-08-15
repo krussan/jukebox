@@ -9,11 +9,6 @@ targetCompatibility = 1.8
 
 def appProtocExec = project.findProperty('protocExec') ?: '/usr/bin/protoc'
 
-jar {
-    manifest {
-    }
-}
-
 protobuf {
   // Configure the protoc executable
   protoc {
