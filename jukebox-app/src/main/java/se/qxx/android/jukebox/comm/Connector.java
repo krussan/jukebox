@@ -5,6 +5,8 @@ import android.content.Context;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.protobuf.RpcCallback;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -85,41 +87,31 @@ public class Connector {
 				jh.listMovies("",
 						nrOfItems,
 						offset,
-						new RpcCallback<JukeboxResponseListMovies>() {
+						response -> {
+                            //TODO: if repsonse is null probably the server is down..
+                            if (response != null) {
+                                //Model.get().clearMovies(); //Dont clear movies when doing partial load
+                            fireMoviesUpdated(response.getMoviesList(), response.getTotalMovies());
+                                Model.get().setInitialized(true);
+                            }
 
-							@Override
-							public void run(JukeboxResponseListMovies response) {
-								//TODO: if repsonse is null probably the server is down..
-								if (response != null) {
-									//Model.get().clearMovies(); //Dont clear movies when doing partial load
-								fireMoviesUpdated(response.getMoviesList(), response.getTotalMovies());
-									Model.get().setInitialized(true);
-								}
+                            Model.get().setLoading(false);
 
-								Model.get().setLoading(false);
-
-							}
-
-						});
+                        });
 			}
 			else if (modelType == Model.ModelType.Series) {
 			    jh.listSeries("",
                         nrOfItems,
                         offset,
-						new RpcCallback<JukeboxResponseListMovies>() {
+						response -> {
+                            //TODO: if repsonse is null probably the server is down..
+                            if (response != null) {
+                                fireSeriesUpdated(response.getSeriesList(), response.getTotalSeries());
+                                Model.get().setInitialized(true);
+                            }
 
-							@Override
-							public void run(JukeboxResponseListMovies response) {
-								//TODO: if repsonse is null probably the server is down..
-								if (response != null) {
-								    fireSeriesUpdated(response.getSeriesList(), response.getTotalSeries());
-									Model.get().setInitialized(true);
-								}
-
-								Model.get().setLoading(false);
-							}
-
-						});
+                            Model.get().setLoading(false);
+                        });
 			}
             else if (modelType == Model.ModelType.Season) {
                 jh.listSeasons("",
@@ -164,12 +156,7 @@ public class Connector {
 	
 	public static void showMessage(Activity a, final String message) {
 		final Context c = (Context)a;
-		a.runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				Toast.makeText(c, message, Toast.LENGTH_SHORT).show();
-			}
-		});
+		a.runOnUiThread(() -> Toast.makeText(c, message, Toast.LENGTH_SHORT).show());
 	}
 
 	public static void onoff(Activity a) {
@@ -185,15 +172,12 @@ public class Connector {
 						isOnline ? "Suspending target media player..."
 								: "Waking up..."));
 	
-		Thread t = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				if (isOnline)
-					jh.suspend(currentMediaPlayer);
-				else
-					jh.wakeup(currentMediaPlayer);
-			}
-		});
+		Thread t = new Thread(() -> {
+            if (isOnline)
+                jh.suspend(currentMediaPlayer);
+            else
+                jh.wakeup(currentMediaPlayer);
+        });
 		t.start();
 	
 		JukeboxSettings.get().setIsCurrentMediaPlayerOn(!isOnline);
