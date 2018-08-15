@@ -90,7 +90,7 @@ matrix:
       - tools
       - tools
       - platform-tools
-      - build-tools-26.0.1
+      - build-tools-27.0.3
       - android-23
       - addon_google_apis-google-23
       - extra-android-m2repository
