@@ -1,0 +1,27 @@
+apply plugin: 'java'
+apply plugin: 'com.google.protobuf'
+
+group = 'se.qxx.jukebox'
+version = '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+def appProtocExec = project.findProperty('protocExec') ?: '/usr/bin/protoc'
+
+jar {
+    manifest {
+    }
+}
+
+protobuf {
+  // Configure the protoc executable
+  protoc {
+    path = appProtocExec
+  }
+}
+
+dependencies {
+   implementation 'com.google.protobuf:protobuf-java:2.4.1'
+   testImplementation 'junit:junit:4.12'
+}
