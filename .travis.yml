@@ -44,7 +44,7 @@ matrix:
     before_install:
      - export JUKEBOX_VERSION=`cd ${TRAVIS_BUILD_DIR}/se.qxx.jukebox && mvn -B help:evaluate -Dexpression=project.version | grep -e '^[^\[]'`
      - export JUKEBOX_TAG=v$JUKEBOX_VERSION-app
-     - chmod +x ./se.qxx.android.jukebox/gradlew
+     - chmod +x ./gradlew
      - export LD_LIBRARY_PATH=$TRAVIS_BUILD_DIR/ci:$LD_LIBRARY_PATH
      - chmod 775 ci/*.sh
      - ci/decrypt_files.sh
