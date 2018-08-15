@@ -5,7 +5,7 @@ def appVersionCode = Integer.valueOf(System.env.TRAVIS_BUILD_NUMBER ?: 1)
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '26.0.1'
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
         applicationId "se.qxx.android.jukebox"
@@ -18,9 +18,6 @@ android {
         versionName "${version}"
         setProperty("archivesBaseName", "jukebox-$versionName")
 
-	jackOptions {
-	   enabled true
-	}
     }
 
     signingConfigs {
@@ -98,11 +95,11 @@ variant.name.capitalize() + "Apk", Copy)
 }
 
 dependencies {
-    compile project(':se.qxx.jukebox.domain')
-    compile project(':se.qxx.jukebox.comm')
-    compile 'org.apache.commons:commons-lang3:3.4'
-    compile 'com.google.protobuf:protobuf-java:2.4.1'
-    compile 'com.googlecode:protobuf-socket-rpc:2.0'
-    compile 'se.qxx.android.tools:android-tools:1.0.2'
-    compile 'com.google.android.libraries.cast.companionlibrary:ccl:2.8.3'
+    implementation project(':se.qxx.jukebox.domain')
+    implementation project(':se.qxx.jukebox.comm')
+    implementation 'org.apache.commons:commons-lang3:3.4'
+    implementation 'com.google.protobuf:protobuf-java:2.4.1'
+    implementation 'com.googlecode:protobuf-socket-rpc:2.0'
+    implementation 'se.qxx.android.tools:android-tools:1.0.2'
+    implementation 'com.google.android.libraries.cast.companionlibrary:ccl:2.8.3'
 }

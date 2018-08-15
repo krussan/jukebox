@@ -30,3 +30,5 @@ target
 *.bak*
 .gradle
 bin
+local.properties
+*.iml
