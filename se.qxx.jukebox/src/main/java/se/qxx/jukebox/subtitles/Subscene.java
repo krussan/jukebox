@@ -13,11 +13,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
-import se.qxx.jukebox.domain.JukeboxDomain.Movie;
-import se.qxx.jukebox.domain.JukeboxDomain.Rating;
 import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings;
-import se.qxx.jukebox.tools.Util;
 
 public class Subscene extends SubFinderBase {
 
@@ -134,7 +131,6 @@ public class Subscene extends SubFinderBase {
 			fullUrl = new URL(url);
 			result = String.format("%s://%s", fullUrl.getProtocol(), fullUrl.getHost());
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
 			Log.Error("Illegal url in subfinder", LogType.SUBS);
 		}
 		

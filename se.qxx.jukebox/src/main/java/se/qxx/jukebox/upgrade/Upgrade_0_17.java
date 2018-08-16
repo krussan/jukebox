@@ -1,18 +1,9 @@
 package se.qxx.jukebox.upgrade;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-import javax.imageio.ImageIO;
-
 import org.apache.commons.lang3.StringUtils;
-import org.imgscalr.Scalr;
-
-import com.google.protobuf.ByteString;
-
 import se.qxx.jukebox.DB;
 import se.qxx.jukebox.Version;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
@@ -78,7 +69,6 @@ public class Upgrade_0_17 implements IIncrimentalUpgrade {
 				DB.save(s_new);
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new UpgradeFailedException();
 		}

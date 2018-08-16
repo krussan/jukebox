@@ -52,7 +52,6 @@ public class Jukebox {
 					DB.setupDatabase();
 				} catch (ClassNotFoundException | SQLException | IDFieldNotFoundException
 						| DatabaseNotSupportedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				System.out.println("Done!");
@@ -61,7 +60,6 @@ public class Jukebox {
 						
 			startMainThread();
 		} catch (IOException | JAXBException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}		
 	}

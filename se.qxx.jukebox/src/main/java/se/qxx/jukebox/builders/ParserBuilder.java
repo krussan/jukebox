@@ -14,7 +14,6 @@ import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.settings.parser.ParserSettings;
 import se.qxx.jukebox.settings.parser.ParserType;
 import se.qxx.jukebox.settings.parser.WordType;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class ParserBuilder extends MovieBuilder {
 
@@ -139,7 +138,7 @@ public class ParserBuilder extends MovieBuilder {
 			pm.addMovieNameToken(resultingToken);
 			break;
 		default:
-			throw new NotImplementedException();
+			break;
 		}
 
 		if (recursiveCount > 1) {

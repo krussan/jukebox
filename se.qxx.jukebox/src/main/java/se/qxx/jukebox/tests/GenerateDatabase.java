@@ -6,10 +6,8 @@ import java.sql.SQLException;
 import javax.xml.bind.JAXBException;
 
 import se.qxx.jukebox.Version;
-import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
-import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.protodb.ProtoDB;
 import se.qxx.protodb.ProtoDBFactory;
 import se.qxx.protodb.exceptions.DatabaseNotSupportedException;
@@ -35,6 +33,13 @@ public class GenerateDatabase {
 				db.setupDatabase(se.qxx.jukebox.domain.JukeboxDomain.Version.getDefaultInstance());
 				
 				db.setupDatabase(Series.getDefaultInstance());
+				se.qxx.jukebox.domain.JukeboxDomain.Version ver = 
+						se.qxx.jukebox.domain.JukeboxDomain.Version.newBuilder()
+						.setMajor(v.getMajor())
+						.setMinor(v.getMinor())
+						.build();
+
+				db.save(ver);
 				
 			} catch (ClassNotFoundException | SQLException
 					| IDFieldNotFoundException e) {

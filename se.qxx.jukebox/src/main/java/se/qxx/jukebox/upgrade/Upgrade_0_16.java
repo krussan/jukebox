@@ -1,27 +1,13 @@
 package se.qxx.jukebox.upgrade;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.List;
 
-import javax.imageio.ImageIO;
-
-import org.apache.commons.lang3.StringUtils;
-import org.imgscalr.Scalr;
-
-import com.google.protobuf.ByteString;
-
 import se.qxx.jukebox.DB;
-import se.qxx.jukebox.SubtitleDownloader;
 import se.qxx.jukebox.Version;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
-import se.qxx.jukebox.domain.JukeboxDomain.SubtitleQueue;
-import se.qxx.jukebox.domain.DomainUtil;
 
 public class Upgrade_0_16 implements IIncrimentalUpgrade {
 

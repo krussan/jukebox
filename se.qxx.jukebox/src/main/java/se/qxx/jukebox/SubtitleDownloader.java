@@ -2,31 +2,15 @@ package se.qxx.jukebox;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-
 import com.google.protobuf.ByteString;
 
 import se.qxx.jukebox.Log.LogType;
@@ -36,7 +20,6 @@ import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Rating;
-import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.domain.JukeboxDomain.SubtitleQueue;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder;
@@ -46,20 +29,10 @@ import se.qxx.jukebox.subtitles.Language;
 import se.qxx.jukebox.subtitles.MkvSubtitleReader;
 import se.qxx.jukebox.subtitles.SubFile;
 import se.qxx.jukebox.subtitles.SubFinderBase;
-import se.qxx.jukebox.subtitles.Subs;
 import se.qxx.jukebox.tools.Unpacker;
 import se.qxx.jukebox.tools.Util;
 
 public class SubtitleDownloader implements Runnable {
-
-	// TODO: total rewrite. ! The thing to download all offline maybe not the best.
-	// let the user decide?
-	// TODO: store them in the database to avoid discrepancies
-	// TODO: add event listeners that listens for that subtitles for a specific
-	
-	// movie
-	// has been downloaded
-
 
 	private String subsPath = StringUtils.EMPTY;
 	private static SubtitleDownloader _instance;
@@ -394,7 +367,6 @@ public class SubtitleDownloader implements Runnable {
 		String tempFilepath = SubFinderBase.createTempSubsPath(mos);
 		Log.Debug(String.format("Unpack path :: %s", unpackPath), LogType.SUBS);
 		
-		int c = 0;
 		for (SubFile subfile : files) {
 			try {
 				File f = subfile.getFile();
@@ -407,8 +379,6 @@ public class SubtitleDownloader implements Runnable {
 						Media md = matchFileToMedia(mos, unpackedFile);
 						
 						if (md != null) {
-							c++;
-	
 							// read file
 							String textdata = readSubFile(unpackedFile);
 							
