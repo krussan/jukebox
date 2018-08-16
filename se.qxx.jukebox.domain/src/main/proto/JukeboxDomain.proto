@@ -29,6 +29,14 @@ enum RequestType {
 	TypeEpisode = 4;
 }
 
+enum MediaConverterState {
+	NotNeeded = 1;
+	Queued = 2;
+	Completed = 3;
+	Converting = 4;
+	Failed = 5;
+}
+
 //---------------------------------------------------------------------------------------
 //----------------------------------------------------------------------- Objects
 //---------------------------------------------------------------------------------------
@@ -167,6 +175,8 @@ message Media {
 	optional int32 metaDuration = 5;
 	optional string metaFramerate = 6;
 	repeated Subtitle subs = 7;
+	optional MediaConverterState converterState = 8;
+	optional string convertedFileName = 9;
 }
 
 //---------------------------------------------------------------------------------------
@@ -242,11 +252,6 @@ message JukeboxFrontSetSubtitle {
 message JukeboxResponseListMovies {
 	repeated Movie movies = 1;
 	repeated Series series = 2;
-	repeated Season season = 3;
-	optional int32 totalMovies = 4;
-	optional int32 totalSeries = 5;
-	optional int32 totalSeasons = 6;
-	optional int32 totalEpisodes = 7;  
 }
 
 message JukeboxResponseListPlayers {
@@ -261,7 +266,6 @@ message JukeboxResponseStartMovie {
 	repeated Subtitle subtitle = 1;
 	optional string uri = 2;
 	repeated string subtitleUris = 3;
-	optional string mimeType = 4;
 }
 
 message JukeboxResponseTime {
