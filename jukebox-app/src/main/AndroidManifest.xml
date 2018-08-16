@@ -5,12 +5,9 @@
     android:versionName="1.1">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
         android:allowBackup="false"
@@ -45,36 +42,15 @@
         <activity
             android:name=".activities.SeriesActivity"
             android:theme="@style/Theme.AppCompat" />
-        <activity android:name="com.google.android.libraries.cast.companionlibrary.cast.player.VideoCastControllerActivity"
-            android:screenOrientation="portrait"
-            android:label="@string/app_name"
-            android:launchMode="singleTask"
-            android:parentActivityName=".activities.NowPlayingActivity"
-            android:theme="@style/Theme.AppCompat">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITTY"
-                android:value=".activities.NowPlayingActivity" />
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-
-        </activity>
-
         <activity
-            android:name="com.google.android.libraries.cast.companionlibrary.cast.tracks.CaptionsPreferenceActivity"
-            android:label="@string/action_settings">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-        </activity>
+            android:name=".activities.ListActivity"
+            android:theme="@style/Theme.AppCompat" />
 
-        <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
-
-        <receiver android:name="com.google.android.libraries.cast.companionlibrary.remotecontrol.VideoIntentReceiver" />
-
-        <service android:name="com.google.android.libraries.cast.companionlibrary.notification.VideoCastNotificationService" />
-        <service android:name="com.google.android.libraries.cast.companionlibrary.cast.reconnection.ReconnectionService"/>
+        <meta-data
+            android:name=
+                "com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
+            android:value="se.qxx.android.jukebox.cast.CastOptionsProvider"
+        />
 
     </application>
 

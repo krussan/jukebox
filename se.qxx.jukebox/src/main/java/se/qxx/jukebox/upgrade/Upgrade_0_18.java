@@ -48,7 +48,7 @@ public class Upgrade_0_18 implements IIncrimentalUpgrade {
 		
 		List<String> movieIds = new ArrayList<String>();
 		
-		List<Movie> movies = DB.searchMoviesByTitle("%", false, true);
+		List<Movie> movies = DB.searchMoviesByTitle("");
 		for (Movie m : movies) {
 			for (Media md : m.getMediaList()) {
 				if (md.getFilename().endsWith("mkv")) {
@@ -62,7 +62,7 @@ public class Upgrade_0_18 implements IIncrimentalUpgrade {
 			}
 		}
 		
-		List<Series> series = DB.searchSeriesByTitle("%", false, true);
+		List<Series> series = DB.searchSeriesByTitle("");
 		for (Series s : series) {
 			for (Season ss : s.getSeasonList()) {
 				for (Episode ep : ss.getEpisodeList()) {

@@ -5,5 +5,6 @@ public enum ModelUpdatedType {
 	Players,
 	Subs,
 	CurrentSub,
-	Series
+	Series,
+	Season
 }

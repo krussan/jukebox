@@ -1,0 +1,11 @@
+.background {
+  background: center no-repeat url(background.png);
+}
+
+.logo {
+  background-image: url(https://raw.githubusercontent.com/krussan/jukebox/ccl-to-caf/documents/logo.png);
+}
+
+.progressBar {
+  background-color: rgb(0, 153, 204);
+}

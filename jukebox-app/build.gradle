@@ -4,18 +4,18 @@ def appVersionName = version ?: '1.0'
 def appVersionCode = Integer.valueOf(System.env.TRAVIS_BUILD_NUMBER ?: 1)
 
 android {
-    compileSdkVersion 23
+    compileSdkVersion 27
     buildToolsVersion '27.0.3'
 
     defaultConfig {
         applicationId "se.qxx.android.jukebox"
         minSdkVersion 21
-        targetSdkVersion 23
+        targetSdkVersion 27
 
         // Enabling multidex support.
         multiDexEnabled true
         versionCode appVersionCode
-        versionName "${version}"
+        versionName appVersionName
         setProperty("archivesBaseName", "jukebox-$versionName")
 
     }
@@ -73,9 +73,15 @@ android {
     }
 }
 
-def publish = project.tasks.create("publishAll");
-if (project.hasProperty("RELEASE_DEPLOY_PATH")) {
-    def deployPath = project.properties["RELEASE_DEPLOY_PATH"];
+def publish = project.tasks.create("publishAll")
+def deployPath = ""
+
+if (project.hasProperty("RELEASE_DEPLOY_PATH"))
+    deployPath = project.properties["RELEASE_DEPLOY_PATH"]
+else if (System.env["RELEASE_DEPLOY_PATH"] != null)
+    deployPath = System.env["RELEASE_DEPLOY_PATH"]
+
+if (deployPath != "") {
     def folder = new File(deployPath)
 
     if (folder.exists()) {
@@ -97,9 +103,14 @@ variant.name.capitalize() + "Apk", Copy)
 dependencies {
     implementation project(':se.qxx.jukebox.domain')
     implementation project(':se.qxx.jukebox.comm')
-    implementation 'org.apache.commons:commons-lang3:3.4'
+    implementation 'org.apache.commons:commons-lang3:3.7'
     implementation 'com.google.protobuf:protobuf-java:2.4.1'
     implementation 'com.googlecode:protobuf-socket-rpc:2.0'
     implementation 'se.qxx.android.tools:android-tools:1.0.2'
-    implementation 'com.google.android.libraries.cast.companionlibrary:ccl:2.8.3'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:recyclerview-v7:27.1.1'
+    implementation 'com.android.support:support-v4:27.1.1'
+    implementation 'com.android.support:mediarouter-v7:27.1.1'
+    implementation 'com.google.android.gms:play-services-cast-framework:16.0.1'
+    implementation 'org.apache.commons:commons-collections4:4.1'
 }

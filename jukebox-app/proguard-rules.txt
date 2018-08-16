@@ -14,3 +14,4 @@
 -keep class se.qxx.jukebox.domain.** { *; }
 -keep class com.google.protobuf.** { *; }
 -keep class com.googlecode.protobuf.socketrpc.** { *; }
+-keep class se.qxx.android.jukebox.cast.CastOptionsProvider
