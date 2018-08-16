@@ -470,6 +470,33 @@ public class DB {
 
 	}		
 
+	public static List<Media> getConverterQueue() {         
+       try {
+           ProtoDB db = getProtoDBInstance();
+               
+           synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+                               
+                       // Restrict result to 1.  
+                       return
+                           db.search(
+                    		   SearchOptions.newBuilder(JukeboxDomain.Media.getDefaultInstance())
+                    		   	.addFieldName("converterState")
+                    		   	.addOperator(ProtoDBSearchOperator.Equals)
+                    		   	.addSearchArgument("Queued")
+                    		   	.setNumberOfResults(5)
+                    		   	.setOffset(0));
+                   
+               }
+       }
+       catch (Exception e) {
+           Log.Error("Failed to retrieve movie listing from DB", LogType.MAIN, e);
+       }
+       
+       return new ArrayList<Media>();
+	
+	}
+
+
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Subtitles
 	//---------------------------------------------------------------------------------------
