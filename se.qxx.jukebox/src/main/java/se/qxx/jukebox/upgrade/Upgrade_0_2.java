@@ -27,29 +27,5 @@ public class Upgrade_0_2 implements IIncrimentalUpgrade {
 	public void performUpgrade() throws UpgradeFailedException {
 		Upgrader.runDatabasescripts(DbScripts);
 
-		//TODO: perform upgrade for version 0.2
-		/*List<Movie> list = DB.searchMovies("");
-
-		
-		int nrOfMovies = list.size();
-		int iterator = 1;
-		for(Movie m : list) {
-			System.out.println(String.format("Searching IMDB for additional info [%s/%s]", iterator, nrOfMovies));
-			Movie newMovie;
-			try {
-				newMovie = IMDBFinder.Search(m);
-				DB.updateMovie(newMovie);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				System.out.println(String.format("Failed to update movie %s", m.getTitle()));
-			}
-			
-		}*/
-		
-		// get duration	
-		// update genres
-		// get rating
-		// get director
-		// get story
 	}
 }

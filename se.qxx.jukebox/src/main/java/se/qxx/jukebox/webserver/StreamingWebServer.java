@@ -1,51 +1,27 @@
 package se.qxx.jukebox.webserver;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.xml.ws.soap.AddressingFeature.Responses;
-
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.commons.lang3.StringUtils;
 
-import fi.iki.elonen.InternalRewrite;
 import fi.iki.elonen.NanoHTTPD;
-import fi.iki.elonen.WebServerPlugin;
-import fi.iki.elonen.util.ServerRunner;
-import fr.noop.subtitle.model.SubtitleObject;
-import fr.noop.subtitle.model.SubtitleParser;
 import fr.noop.subtitle.model.SubtitleParsingException;
-import fr.noop.subtitle.model.SubtitleWriter;
-import fr.noop.subtitle.srt.SrtObject;
-import fr.noop.subtitle.srt.SrtParser;
-import fr.noop.subtitle.vtt.VttWriter;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import freemarker.template.TemplateExceptionHandler;
-import fi.iki.elonen.NanoHTTPD.IHTTPSession;
-import fi.iki.elonen.NanoHTTPD.Response;
 import se.qxx.jukebox.DB;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
@@ -61,8 +37,6 @@ public class StreamingWebServer extends NanoHTTPD {
 	// maps stream name to actual file name
 	private Map<String, String> streamingMap = null;
 	private AtomicInteger streamingIterator;
-	
-	private Configuration templateConfig = null;
 	
 	public StreamingWebServer(String host, int port) {
 		super(host, port);
@@ -130,7 +104,7 @@ public class StreamingWebServer extends NanoHTTPD {
         Log.Info(String.format("Requesting file :: %s", uri), LogType.WEBSERVER);
         
         if (uri.startsWith("stream")) {
-            //TODO: If stream filename is not in one of the added files return
+            // If stream filename is not in one of the added files return
             // a not found response
             if (!streamingMap.containsKey(uri))
             	return getNotFoundResponse();
@@ -349,7 +323,6 @@ public class StreamingWebServer extends NanoHTTPD {
 		try {
 			_instance.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -362,12 +335,10 @@ public class StreamingWebServer extends NanoHTTPD {
 	}
 
 	private String getStreamUri(String streamingFile) {
-		String uri = streamingFile;
 		String ipAddress = "127.0.0.1";
 		try {
 			ipAddress = Inet4Address.getLocalHost().getHostAddress();
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
 			Log.Error("Unknown host while getting ip number", LogType.WEBSERVER, e);
 		}
 		

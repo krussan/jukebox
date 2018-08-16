@@ -42,9 +42,7 @@ public class IMDBRecord {
 	private IMDBRecord(String url) {
 		this.url = url;
 		
-		
-		//TODO: Extract all regex:es to config file in case IMDB decides to change layout
-		try {
+	try {
 			Log.Debug(String.format("IMDBRECORD :: Making web request to url :: %s", url), LogType.IMDB);
 
 			String webResult = WebRetriever.getWebResult(url).getResult();
@@ -133,6 +131,10 @@ public class IMDBRecord {
 							this.seasons.add(String.format("http://www.imdb.com%s", value));
 						}
 						
+						break;
+					case VALUE:
+						break;
+					default:
 						break;
 					}
 				}

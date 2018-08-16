@@ -6,9 +6,7 @@ import javax.xml.bind.JAXBException;
 import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.DB;
-import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
-import se.qxx.protodb.ProtoDB;
 
 public class DeleteSeries {
 

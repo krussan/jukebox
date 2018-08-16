@@ -1,27 +1,17 @@
 package se.qxx.jukebox.subtitles;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.StringWriter;
-import java.nio.ByteBuffer;
-import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.codehaus.plexus.util.StringOutputStream;
-
 import com.google.protobuf.ByteString;
 import com.matthewn4444.ebml.Attachments;
 import com.matthewn4444.ebml.EBMLReader;
 import com.matthewn4444.ebml.subtitles.Caption;
-import com.matthewn4444.ebml.subtitles.SSASubtitles;
 import com.matthewn4444.ebml.subtitles.Subtitles;
 
 import fr.noop.subtitle.model.SubtitleParsingException;
@@ -174,7 +164,7 @@ public class MkvSubtitleReader {
 		        //FileOutputStream fos = new FileOutputStream(filepath);
 		        
 	            // This will now allocate and copy data
-	            byte[] buffer = attachment.getData();
+	            attachment.getData();
 	            //fos.write(buffer);
 		        
 		    }
