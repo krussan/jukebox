@@ -1,25 +1,12 @@
 package se.qxx.jukebox.upgrade;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.xml.bind.JAXBException;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.imgscalr.Scalr;
-
-import com.google.protobuf.ByteString;
-
-import net.sourceforge.filebot.mediainfo.MediaInfo;
 import se.qxx.jukebox.DB;
-import se.qxx.jukebox.SubtitleDownloader;
 import se.qxx.jukebox.Version;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
@@ -28,8 +15,6 @@ import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.tools.MediaMetadata;
-import se.qxx.jukebox.tools.Util;
-import se.qxx.jukebox.domain.DomainUtil;
 
 public class Upgrade_0_18 implements IIncrimentalUpgrade {
 	
@@ -57,7 +42,6 @@ public class Upgrade_0_18 implements IIncrimentalUpgrade {
 		try {
 			Settings.initialize();
 		} catch (IOException | JAXBException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new UpgradeFailedException();
 		}

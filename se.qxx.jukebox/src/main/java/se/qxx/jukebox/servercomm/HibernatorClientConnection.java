@@ -1,7 +1,6 @@
 package se.qxx.jukebox.servercomm;
 
 import se.qxx.jukebox.Log;
-import se.qxx.jukebox.Log.LogType;
 
 public class HibernatorClientConnection extends TcpClient {
 		

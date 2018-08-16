@@ -4,17 +4,12 @@ import java.io.File;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.apache.commons.io.FilenameUtils;
-
-import com.sun.jna.platform.FileUtils;
-
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
-import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.tools.Util;
 import se.qxx.protodb.exceptions.DatabaseNotSupportedException;
 

@@ -7,7 +7,7 @@ version = '1.0-SNAPSHOT'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-def protocExec = System.env.protocExec ?: '/usr/bin/protoc'
+def appProtocExec = protocExec ?: '/usr/bin/protoc'
 
 jar {
     manifest {
@@ -17,7 +17,7 @@ jar {
 protobuf {
   // Configure the protoc executable
   protoc {
-    path = protocExec
+    path = appProtocExec
   }
 }
 

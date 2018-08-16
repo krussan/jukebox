@@ -14,7 +14,6 @@ public class Sorter {
 		Collections.sort(sortedSubtitles, new Comparator<Subtitle>() {
 			@Override
 			public int compare(Subtitle lhs, Subtitle rhs) {
-				// TODO Auto-generated method stub
 				return rhs.getRating().getNumber() - lhs.getRating().getNumber();
 			}
 		});		

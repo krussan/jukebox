@@ -18,7 +18,6 @@ import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.DomainUtil;
 import se.qxx.jukebox.domain.JukeboxDomain.Empty;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
-import se.qxx.jukebox.domain.JukeboxDomain.Episode.Builder;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGeneral;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
@@ -36,14 +35,12 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseTime;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxService;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
-import se.qxx.jukebox.domain.JukeboxDomain.Rating;
 import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Players.Server;
-import se.qxx.jukebox.tools.MediaMetadata;
 import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.vlc.VLCConnectionNotFoundException;
 import se.qxx.jukebox.watcher.FileRepresentation;
@@ -76,7 +73,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			series.add(DB.getSeries(request.getSeriesID()));
 			break;
 		case TypeEpisode:
-			//TODO!
+			//TODO: Should this be implemented?
 			break;
 		}
 		
@@ -215,7 +212,6 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	}
 
 	private Media getMedia(JukeboxRequestStartMovie request) {
-		Media md = null;
 		if (request.getRequestType() == RequestType.TypeMovie) {
 			return DB.getMovie(request.getMovieOrEpisodeId()).getMedia(0);
 		}
@@ -364,7 +360,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	public void getTitle(RpcController controller,
 			JukeboxRequestGeneral request,
 			RpcCallback<JukeboxResponseGetTitle> done) {
-		// TODO Auto-generated method stub
+		// TODO: Implement
 		
 		Log.Debug("GetTitle -- EMPTY", LogType.COMM);
 	}
@@ -391,7 +387,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	@Override
 	public void toggleWatched(RpcController controller,
 			JukeboxRequestID request, RpcCallback<Empty> done) {
-		// TODO Auto-generated method stub
+		// TODO: Implement
 		
 		Log.Debug("ToggleWatched -- EMPTY", LogType.COMM);
 	}
