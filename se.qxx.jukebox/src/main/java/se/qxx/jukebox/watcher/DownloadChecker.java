@@ -14,7 +14,24 @@ public class DownloadChecker implements Runnable {
 	
 	private Map<String, FileRepresentation> files = new HashMap<String, FileRepresentation>();
 	// <string, string>
-	// <filename - FileRepresentation, state>
+	// <filename - FileRepresentation, state, exist in db?, downloadflag from db>
+	
+	// initialization -- setup all
+	// file, initialized
+	// file changed
+	
+	// when addFile is triggered store the filerepresentation. state INIT.
+	
+	// check if file exist in mapping
+	// -- yes ->
+	// ---- state = WATCH? ->
+	// ------ 
+	
+	// -- no ->
+	// -- check if file exist in DB
+	// ----no -> state => WAIT_FOR_WATCHER
+	// ----yes ->
+	// ------state WATCH
 	
 	
 	public boolean isRunning() {
