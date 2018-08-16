@@ -106,7 +106,7 @@ public class Main implements Runnable, INotifyClient
 			File path = new File(c.getPath());
 			
 			if (path.exists()) {
-				FileSystemWatcher f = new FileSystemWatcher(c.getPath(), ff, true, false);
+				FileSystemWatcher f = new FileSystemWatcher(c.getPath(), ff, true, true);
 			
 				Log.Debug(String.format("Starting listening on :: %s", c.getPath()), Log.LogType.FIND);
 			

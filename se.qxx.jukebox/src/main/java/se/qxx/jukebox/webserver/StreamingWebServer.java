@@ -53,6 +53,11 @@ public class StreamingWebServer extends NanoHTTPD {
 		
 		streamingIterator = new AtomicInteger();
 		streamingMap = new ConcurrentHashMap<String, String>();
+		
+		initializeMappings();
+	}
+
+	public void initializeMappings() {
 		mimeTypeMap = new CaseInsensitiveMap();
 		extensionMap = new CaseInsensitiveMap();
 		
@@ -64,9 +69,6 @@ public class StreamingWebServer extends NanoHTTPD {
 			Settings.get().getWebServer().getExtensionOverrideMap().getExtension()) {
 			extensionMap.put(e.getValue(), e.getOverride());
 		}
-		
-
-		
 	}
 	
 	public StreamingFile registerFile(String filename) {
@@ -487,6 +489,10 @@ public class StreamingWebServer extends NanoHTTPD {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public static boolean isInitialized() {
+		return _instance != null;
 	}
 	
 	public static StreamingWebServer get() {

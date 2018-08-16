@@ -470,29 +470,30 @@ public class DB {
 
 	}		
 
-	public static List<Media> getConverterQueue() {         
+	public static List<Media> getConverterQueue() {
+		List<Media> result = new ArrayList<Media>();
        try {
            ProtoDB db = getProtoDBInstance();
                
            synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
                                
-                       // Restrict result to 1.  
-                       return
-                           db.search(
-                    		   SearchOptions.newBuilder(JukeboxDomain.Media.getDefaultInstance())
-                    		   	.addFieldName("converterState")
-                    		   	.addOperator(ProtoDBSearchOperator.Equals)
-                    		   	.addSearchArgument("Queued")
-                    		   	.setNumberOfResults(5)
-                    		   	.setOffset(0));
-                   
-               }
+               // Restrict result to 5.
+    	   	   // should only have the queue state Queued if download completed
+               result = db.search(
+        		   SearchOptions.newBuilder(JukeboxDomain.Media.getDefaultInstance())
+        		   	.addFieldName("converterState")
+        		   	.addOperator(ProtoDBSearchOperator.Equals)
+        		   	.addSearchArgument("Queued")
+        		   	.setNumberOfResults(5)
+        		   	.setOffset(0));
+     
+           }
        }
        catch (Exception e) {
            Log.Error("Failed to retrieve movie listing from DB", LogType.MAIN, e);
        }
        
-       return new ArrayList<Media>();
+       return result;
 	
 	}
 
