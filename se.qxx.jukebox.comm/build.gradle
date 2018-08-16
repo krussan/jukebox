@@ -10,7 +10,7 @@ jar {
 }
 
 dependencies {
-   compile project(':se.qxx.jukebox.domain')
-   compile 'com.google.protobuf:protobuf-java:2.4.1'
-   compile 'com.googlecode:protobuf-socket-rpc:2.0'
+   implementation project(':se.qxx.jukebox.domain')
+   implementation 'com.google.protobuf:protobuf-java:2.4.1'
+   implementation 'com.googlecode:protobuf-socket-rpc:2.0'
 }

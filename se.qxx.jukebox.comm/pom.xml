@@ -30,7 +30,7 @@
         <dependency>
           <groupId>se.qxx.jukebox</groupId>
           <artifactId>jukebox-domain</artifactId>
-          <version>0.1.22</version>
+          <version>1.0-SNAPSHOT</version>
         </dependency>
 
 		<dependency>

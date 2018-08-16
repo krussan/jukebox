@@ -47,8 +47,8 @@
 
 </build>
 <modules>
-   <module>se.qxx.jukebox.comm</module>
    <module>se.qxx.jukebox.domain</module>
+   <module>se.qxx.jukebox.comm</module>
    <module>se.qxx.jukebox</module>
 </modules>
 

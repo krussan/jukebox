@@ -46,6 +46,7 @@ matrix:
      - export JUKEBOX_TAG=v$JUKEBOX_VERSION-app
      - chmod +x ./gradlew
      - export LD_LIBRARY_PATH=$TRAVIS_BUILD_DIR/ci:$LD_LIBRARY_PATH
+     - unzip ci/protoc.zip -d ci
      - chmod 775 ci/*.sh
      - ci/decrypt_files.sh
 
@@ -89,7 +90,7 @@ matrix:
       - tools
       - tools
       - platform-tools
-      - build-tools-26.0.1
+      - build-tools-27.0.3
       - android-23
       - addon_google_apis-google-23
       - extra-android-m2repository

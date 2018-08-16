@@ -7,7 +7,7 @@ version = '1.0-SNAPSHOT'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-def appProtocExec = protocExec ?: '/usr/bin/protoc'
+def appProtocExec = project.findProperty('protocExec') ?: '/usr/bin/protoc'
 
 jar {
     manifest {
@@ -22,6 +22,6 @@ protobuf {
 }
 
 dependencies {
-   compile 'com.google.protobuf:protobuf-java:2.4.1'
-   testCompile 'junit:junit:4.12'
+   implementation 'com.google.protobuf:protobuf-java:2.4.1'
+   testImplementation 'junit:junit:4.12'
 }
