@@ -5,14 +5,18 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
+import se.qxx.jukebox.DB;
 import se.qxx.jukebox.MovieIdentifier;
+import se.qxx.jukebox.converter.FileChangedState;
+import se.qxx.jukebox.converter.FileRepresentationState;
+import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.tools.Util;
 
 public class DownloadChecker implements Runnable {
 	private static DownloadChecker _instance;
 	private boolean isRunning;
 	
-	private Map<String, FileRepresentation> files = new HashMap<String, FileRepresentation>();
+	private Map<String, FileRepresentationState> files = new HashMap<String, FileRepresentationState>();
 	// <string, string>
 	// <filename - FileRepresentation, state, exist in db?, downloadflag from db>
 	
@@ -61,31 +65,127 @@ public class DownloadChecker implements Runnable {
 	}
 	
 	private void mainLoop() {
-		while(this.isRunning()) {	
-				try { 
-					// check file sizes every 5 minutes
-					Thread.sleep(300000);
-				} 
-				catch (InterruptedException e) {}
+		while(this.isRunning()) {
+			// check all files in map that is not marked as DONE
+			for (String filename : this.files.keySet()) {
+				FileRepresentationState fs = this.files.get(filename);
+				switch (fs.getState()) {
+				case CHANGED:
+					// reset state to INIT 
+					resetFile(fs, filename);
+					break;
+				case INIT:
+					// if nothing happened on the file then mark it as completed
+					markCompleted(fs, filename);
+					break;
+				case WAIT:
+					// check DB again. If present change to INIT
+					checkFileNotPresentInMap(fs, filename);
+					break;
+				case DONE:
+					// do nothing. Done files are not handled
+					break;					
+				default:
+					break;
+				
+				}
 			}
-		
-		
-//			FileRepresentation f = this.files.poll();
-//			
-//			if (f != null)
-//				identify(f);
+			
+			try { Thread.sleep(300000); } 
+			catch (InterruptedException e) {
+				this.setRunning(false);
+			}
+		}
 			
 	}
 	
 	
-	public void addFile(FileRepresentation f)  {
-//		if (!files.contains(f)) {
-//			synchronized(_instance) {
-//				this.files.add(f);
-//				_instance.notify();
-//			}
-//		}
+	private void resetFile(FileRepresentationState fs, String filename) {
+		fs.setState(FileChangedState.INIT);
+		store(fs, filename);
 	}
 
+	private void markCompleted(FileRepresentationState fs, String filename) {
+		fs.setState(FileChangedState.DONE);
+		
+		Media md = DB.getMediaByFilename(fs.getName());
+		
+		// should never be null, but anywhay
+		if (md != null) {
+			DB.save(
+				Media.newBuilder(md)
+				.setDownloadComplete(true)
+				.build());
+		}
+		
+		store(fs, filename);
+		
+	}
+
+	public void checkFile(FileRepresentation f)  {
+		FileRepresentationState fs = new FileRepresentationState(f);
+		String filename = f.getFullPath().toLowerCase();
+		
+		if (files.containsKey(filename)) {
+			checkFilePresentInMap(fs, filename);
+		}
+		else {
+			checkFileNotPresentInMap(fs, filename);
+		}
+	}
+
+	/***
+	 * File exist in map and has changed. Set to CHANGED and replace it in MAP.
+	 * @param fs
+	 * @param filename
+	 */
+	private void checkFilePresentInMap(FileRepresentationState fs, String filename) {
+		FileRepresentationState fsOld = this.files.get(filename);
+		
+		if (fsOld.getState() != FileChangedState.DONE && fsOld.getState() != FileChangedState.WAIT) {
+			fs.setState(FileChangedState.CHANGED);
+			store(fs, filename);
+		}
+		
+	}
+
+	
+	/***
+	 * File was not present in map.
+	 * If media exist in DB then set state to INIT
+	 * else set it to WAIT
+	 * Store the representation in the map
+	 * 
+	 * @param fs
+	 * @param filename
+	 */
+	private void checkFileNotPresentInMap(FileRepresentationState fs, String filename) {
+		//check DB flag
+		Media md = DB.getMediaByFilename(fs.getName());
+		if (md != null) {
+			// media exist. set State to INIT
+			// check if download is marked as complete already
+			if (md.getDownloadComplete()) {
+				fs.setState(FileChangedState.DONE);
+			}
+			else {
+				fs.setState(FileChangedState.INIT);
+			}
+		}
+		else {
+			// media does not exist. Not handled by identifier yet
+			// set state to wait
+			fs.setState(FileChangedState.WAIT);
+		}
+		
+		store(fs, filename);
+		
+	}
+
+	private void store(FileRepresentationState fs, String filename) {
+		synchronized(_instance) {
+			this.files.put(filename, fs);
+		}
+	}
 
 }

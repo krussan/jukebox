@@ -178,6 +178,7 @@ message Media {
 	repeated Subtitle subs = 7;
     optional MediaConverterState converterState = 8;
     optional string convertedFileName = 9;	
+    required bool downloadComplete = 10 [default=false];
 }
 
 //---------------------------------------------------------------------------------------
