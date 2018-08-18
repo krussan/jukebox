@@ -237,6 +237,7 @@ public abstract class MovieBuilder {
 				.setFilename(filename)
 				.setFilepath(filepath)
 				.setIndex(1)
+				.setDownloadComplete(false)
 				.build();
 	}
 	

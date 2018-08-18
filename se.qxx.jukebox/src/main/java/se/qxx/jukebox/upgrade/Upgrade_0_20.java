@@ -39,31 +39,11 @@ public class Upgrade_0_20 implements IIncrimentalUpgrade {
 
 	@Override
 	public void performUpgrade() throws UpgradeFailedException {
-				
-		
 		try {
 			DatabaseBackend db = DB.getProtoDBInstance().getDatabaseBackend();
-			String tableName = "MediaConverterState";
+			List<String> updateScripts = getDatabaseUpgradeScripts(db);
 			
-			List<String> updateScripts = new ArrayList<String>();
-			updateScripts.add(
-					String.format("CREATE TABLE %s%s%s (%s, value TEXT NOT NULL)",
-						db.getStartBracket(),
-						tableName,
-						db.getEndBracket(),
-						db.getIdentityDefinition()));
-			
-			for (EnumValueDescriptor value : MediaConverterState.getDescriptor().getValues()) {
-				String sql = "INSERT INTO %s (value) VALUES (%s%s%s)";
-				updateScripts.add(
-						String.format(
-								sql,
-								db.getStartBracket(),
-								value.getName(),
-								db.getEndBracket()));
-			}
-			
-			Upgrader.runDatabasescripts((String[])updateScripts.toArray());
+			executeScripts(updateScripts);
 							
 		} catch (DatabaseNotSupportedException e) {
 			e.printStackTrace();
@@ -72,6 +52,47 @@ public class Upgrade_0_20 implements IIncrimentalUpgrade {
 		
 
 		
+	}
+
+	public List<String> getDatabaseUpgradeScripts(DatabaseBackend db) throws DatabaseNotSupportedException {
+		String tableName = "MediaConverterState";
+		
+		List<String> updateScripts = new ArrayList<String>();
+		String quotedTableName = String.format("%s%s%s",
+				db.getStartBracket(),
+				tableName,
+				db.getEndBracket());
+		
+		updateScripts.add(
+				String.format("CREATE TABLE %s (%s, value TEXT NOT NULL)",
+					quotedTableName,
+					db.getIdentityDefinition()));
+		
+		for (EnumValueDescriptor value : MediaConverterState.getDescriptor().getValues()) {
+			String sql = "INSERT INTO %s (value) VALUES ('%s')";
+			updateScripts.add(
+					String.format(
+							sql,
+							quotedTableName,
+							value.getName()));
+		}
+		
+		updateScripts.add(
+			String.format("ALTER TABLE %1$sMedia%2$s ADD COLUMN %1$s_downloadcomplete_ID%2$s INTEGER NULL REFERENCES %1$sMediaConverterState%2$s(ID)",
+					db.getStartBracket(),
+					db.getEndBracket()));
+		
+		updateScripts.add(
+				String.format("UPDATE %1$sMedia%2$s SET _downloadcomplete_ID = 2",
+						db.getStartBracket(),
+						db.getEndBracket()));
+		
+
+		return updateScripts;
+	}
+
+	public void executeScripts(List<String> updateScripts) throws UpgradeFailedException {
+		Upgrader.runDatabasescripts((String[])updateScripts.toArray());
 	}
 
 }
