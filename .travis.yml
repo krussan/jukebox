@@ -40,6 +40,7 @@ matrix:
 
   - language: android
     sudo: false
+    jdk: oraclejdk8
     
     before_install:
      - export JUKEBOX_VERSION=`cd ${TRAVIS_BUILD_DIR}/se.qxx.jukebox && mvn -B help:evaluate -Dexpression=project.version | grep -e '^[^\[]'`
