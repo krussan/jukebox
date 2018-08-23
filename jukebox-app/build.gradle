@@ -2,8 +2,9 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.github.triplet.play'
 
 def appVersionName = version ?: '1.0'
-def appVersionCode = Integer.valueOf(System.env.TRAVIS_BUILD_NUMBER ?: 1)
-def appJsonFile = project.findProperty('apiJsonFile') ?: 'ci/api.json'
+def appVersionCode = Integer.valueOf(System.env.TRAVIS_BUILD_NUMBER ?: project.findProperty('versionCode') ?: 1)
+
+def appJsonFile = project.findProperty('apiJsonFile') ?: '../ci/api.json'
 
 android {
     compileSdkVersion 27
