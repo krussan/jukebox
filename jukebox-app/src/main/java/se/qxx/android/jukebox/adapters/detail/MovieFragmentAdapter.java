@@ -3,6 +3,8 @@ package se.qxx.android.jukebox.adapters.detail;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -40,5 +42,10 @@ public class MovieFragmentAdapter extends FragmentStatePagerAdapter {
         return MovieFragment.newInstance(this.getMovies().get(position));
     }
 
-
+    @Override
+    public Parcelable saveState() {
+        Bundle bundle = (Bundle) super.saveState();
+        bundle.putParcelableArray("states", null); // Never maintain any states from the base class, just null it out
+        return bundle;
+    }
 }

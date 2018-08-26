@@ -11,12 +11,10 @@ import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.adapters.support.PlayerLayoutAdapter;
 import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
+import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers;
 import se.qxx.android.jukebox.dialogs.JukeboxConnectionProgressDialog;
 import se.qxx.android.jukebox.model.Model;
-import se.qxx.android.jukebox.model.Model.ModelUpdatedEventListener;
-import se.qxx.android.jukebox.model.ModelUpdatedEvent;
-import se.qxx.android.jukebox.model.ModelUpdatedType;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -28,7 +26,7 @@ import android.widget.ListView;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class PlayerPickerActivity extends AppCompatActivity implements ModelUpdatedEventListener, OnItemClickListener {
+public class PlayerPickerActivity extends AppCompatActivity implements OnItemClickListener {
 
 	PlayerLayoutAdapter adapter;
 	List<String> values;
@@ -39,41 +37,22 @@ public class PlayerPickerActivity extends AppCompatActivity implements ModelUpda
 	    super.onCreate(savedInstanceState);
 
         setContentView(R.layout.playerpicker);
-	    Model.get().addEventListener(this);
 
 		final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
 				JukeboxSettings.get().getServerIpAddress(),
 				JukeboxSettings.get().getServerPort(),	    		
 	    		JukeboxConnectionProgressDialog.build(this, "Getting list of players..."));
 
-		Thread t = new Thread(new Runnable(){
-			@Override
-			public void run() {
-			    jh.listPlayers(new RpcCallback<JukeboxResponseListPlayers>() {
-					@Override
-					public void run(JukeboxResponseListPlayers response) {
-						// Add Jukebox central players
-						Model.get().clearPlayers();
-						// Add local player
-						Model.get().getPlayers().add("LOCAL");
+        adapter = new PlayerLayoutAdapter(this);
+        ListView listView = (ListView)findViewById(R.id.listPlayers);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(this);
 
-						Model.get().addAllPlayers(response.getHostnameList());
-
-						// Add chromecast players
-                        Model.get().getPlayers().add("Chromecast");
-					}
-				});
-			}
-		});
+        Thread t = new Thread(() -> jh.listPlayers((RpcCallback<JukeboxResponseListPlayers>) response -> {
+            updateList(response.getHostnameList());
+        }));
 		t.start();
 
-
-
-		adapter = new PlayerLayoutAdapter(this);
-	    ListView listView = (ListView)findViewById(R.id.listPlayers);	    
-
-	    listView.setAdapter(adapter);
-		listView.setOnItemClickListener(this);
 	}
 
 	@Override
@@ -85,23 +64,12 @@ public class PlayerPickerActivity extends AppCompatActivity implements ModelUpda
 		return true;
 	}
 
-	@Override
-	public void handleModelUpdatedEventListener(EventObject e) {
-		ModelUpdatedEvent ev = (ModelUpdatedEvent)e;
-
-		if (ev.getType() == ModelUpdatedType.Players) {
-			updateList();
-		}		
-	}
-	
-	private void updateList() {
-		runOnUiThread(new Runnable() {
-			
-			@Override
-			public void run() {
-				adapter.notifyDataSetChanged();
-			}
-		});		
+	private void updateList(List<String> players) {
+	    adapter.clarPlayers();
+	    adapter.addPlayer("LOCAL");
+	    adapter.addPlayers(players);
+	    adapter.addPlayer("ChromeCast");
+		runOnUiThread(() -> adapter.notifyDataSetChanged());
 	}
 
 	@Override
@@ -110,10 +78,7 @@ public class PlayerPickerActivity extends AppCompatActivity implements ModelUpda
 		JukeboxSettings.get().setCurrentMediaPlayer(playerName);
 
 		mCastContext = CastContext.getSharedInstance(this);
-//		if (StringUtils.equalsIgnoreCase(playerName, "Chromecast"))
-//			ChromeCastConfiguration.initialize(this);
-
-		updateList();		
+		//updateList();
 	}
 
 }

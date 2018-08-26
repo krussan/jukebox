@@ -9,9 +9,6 @@ public class OnListSubtitlesCompleteHandler implements RpcCallback<JukeboxRespon
 
 	@Override
 	public void run(JukeboxResponseListSubtitles response) {
-		// TODO Auto-generated method stub
-		Model.get().clearSubtitles();
-		Model.get().addAllSubtitles(response.getSubtitleList());
 	}
 
 }

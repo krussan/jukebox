@@ -165,15 +165,6 @@ public abstract class CastProvider implements MediaController.MediaPlayerControl
         return provider;
     }
 
-    protected void initializeSubtitles() {
-        // update the subtitles out of sync
-        Thread t = new Thread(() -> {
-            Logger.Log().d("Request --- ListSubtitles");
-            comm.listSubtitles(CastProvider.this.getCurrentMedia(), new OnListSubtitlesCompleteHandler());
-        });
-        t.start();
-
-    }
 
     public void startMovie() {
         // override local player with chromecast in server (move this to server in time)
@@ -226,6 +217,10 @@ public abstract class CastProvider implements MediaController.MediaPlayerControl
     protected void closeDialog() {
         if (this.getDialog() != null)
             this.getDialog().close();
+    }
+
+    protected void initializeSubtitles() {
+
     }
 
     public abstract void initialize();
