@@ -1,13 +1,11 @@
 package se.qxx.android.jukebox.activities;
 
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
-import se.qxx.android.jukebox.comm.OnListSubtitlesCompleteHandler;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.adapters.support.SubtitleLayoutAdapter;
 import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.android.jukebox.dialogs.JukeboxConnectionProgressDialog;
-import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
@@ -54,10 +52,7 @@ public class SubSelectActivity extends AppCompatActivity implements OnItemClickL
 
 	    GUITools.setTextOnTextview(R.id.lblSubpickerFilename, md.getFilename(), rootView);
 
-		SubtitleLayoutAdapter adapter = new SubtitleLayoutAdapter(this, this.getMedia().getSubsList());
-		ListView v = (ListView)findViewById(R.id.listSubtitlePicker);
-		v.setAdapter(adapter);
-		v.setOnItemClickListener(this);
+	    initializeSubtitles();
 	}
 
     protected void initializeSubtitles() {
@@ -65,9 +60,15 @@ public class SubSelectActivity extends AppCompatActivity implements OnItemClickL
                 JukeboxSettings.get().getServerIpAddress(),
                 JukeboxSettings.get().getServerPort());
 
+        final ListView v = (ListView)findViewById(R.id.listSubtitlePicker);
+		v.setOnItemClickListener(this);
+
         jh.listSubtitles(
             this.getMedia(),
-            new OnListSubtitlesCompleteHandler());
+				(response) -> {
+					SubtitleLayoutAdapter adapter = new SubtitleLayoutAdapter(this, response.getSubtitleList());
+					v.setAdapter(adapter);
+				});
 
     }
 
