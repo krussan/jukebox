@@ -48,8 +48,9 @@ public class PlayerPickerActivity extends AppCompatActivity implements OnItemCli
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
 
-        Thread t = new Thread(() -> jh.listPlayers((RpcCallback<JukeboxResponseListPlayers>) response -> {
-            updateList(response.getHostnameList());
+        Thread t = new Thread(() -> jh.listPlayers(response -> {
+        	if (response != null)
+            	updateList(response.getHostnameList());
         }));
 		t.start();
 
