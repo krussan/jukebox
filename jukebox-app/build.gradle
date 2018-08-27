@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'idea'
 
 def appVersionName = version ?: '1.0'
 def appVersionCode = Integer.valueOf(System.env.TRAVIS_BUILD_NUMBER ?: 1)
