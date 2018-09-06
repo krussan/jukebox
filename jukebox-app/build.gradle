@@ -105,7 +105,7 @@ variant.name.capitalize() + "Apk", Copy)
 }
 
 play {
-    track = "alpha"
+    track = "internal"
     jsonFile = file(appJsonFile)
 }
 
