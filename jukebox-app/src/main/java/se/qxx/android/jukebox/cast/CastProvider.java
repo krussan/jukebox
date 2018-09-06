@@ -13,11 +13,9 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.qxx.android.jukebox.comm.OnListSubtitlesCompleteHandler;
 import se.qxx.android.jukebox.dialogs.JukeboxConnectionProgressDialog;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.jukebox.widgets.SeekerListener;
-import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
