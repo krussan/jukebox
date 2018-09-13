@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import se.qxx.android.jukebox.R;
+import se.qxx.android.jukebox.activities.ViewMode;
 import se.qxx.android.jukebox.dialogs.JukeboxConnectionProgressDialog;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
@@ -21,6 +22,17 @@ import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
 public class Connector {
+
+    private ConnectorCallbackEventListener callback;
+
+    public ConnectorCallbackEventListener getCallback() {
+        return callback;
+    }
+
+    public void setCallback(ConnectorCallbackEventListener callback) {
+        this.callback = callback;
+    }
+
     public interface ConnectorCallbackEventListener {
         void handleMoviesUpdated(List<JukeboxDomain.Movie> movies, int totalMovies);
         void handleSeriesUpdated(List<JukeboxDomain.Series> series, int totalSeries);
@@ -28,22 +40,10 @@ public class Connector {
         void handleEpisodesUpdated(List<JukeboxDomain.Episode> episodes, int totalEpisodes);
     }
 
-    public static synchronized void addEventListener(ConnectorCallbackEventListener listener) {
-        // only add once
-        for (ConnectorCallbackEventListener l : _listeners) {
-            if (l.equals(listener))
-                return;
-        }
-
-        _listeners.add(listener);
+    public Connector(ConnectorCallbackEventListener callback) {
+        this.setCallback(callback);
     }
-
-    private static List<ConnectorCallbackEventListener> _listeners = new ArrayList<ConnectorCallbackEventListener>();
-
-    public static synchronized void removeEventListener(ConnectorCallbackEventListener listener) {
-        _listeners.remove(listener);
-    }
-
+/*
     private static final synchronized void fireMoviesUpdated(List<JukeboxDomain.Movie> movies, int totalMovies){
         Iterator<ConnectorCallbackEventListener> i = _listeners.iterator();
 
@@ -71,10 +71,9 @@ public class Connector {
         while(i.hasNext())
             i.next().handleEpisodesUpdated(episodes, totalEpisodes);
     }
+*/
 
-	public static void connect(final int offset, final int nrOfItems, Model.ModelType modelType, final int seriesID, int seasonID) {
-		Model.get().setModelType(modelType);
-
+	public void connect(final int offset, final int nrOfItems, ViewMode modelType, final int seriesID, int seasonID) {
 		final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
 				JukeboxSettings.get().getServerIpAddress(),
 				JukeboxSettings.get().getServerPort());
@@ -82,7 +81,7 @@ public class Connector {
 		try {
 			Model.get().setLoading(true);
 
-			if (modelType == Model.ModelType.Movie) {
+			if (modelType == ViewMode.Movie) {
 				Logger.Log().d("Listing movies");
 				jh.listMovies("",
 						nrOfItems,
@@ -91,7 +90,7 @@ public class Connector {
                             //TODO: if repsonse is null probably the server is down..
                             if (response != null) {
                                 //Model.get().clearMovies(); //Dont clear movies when doing partial load
-                            fireMoviesUpdated(response.getMoviesList(), response.getTotalMovies());
+                                this.getCallback().handleMoviesUpdated(response.getMoviesList(), response.getTotalMovies());
                                 Model.get().setInitialized(true);
                             }
 
@@ -99,21 +98,21 @@ public class Connector {
 
                         });
 			}
-			else if (modelType == Model.ModelType.Series) {
+			else if (modelType == ViewMode.Series) {
 			    jh.listSeries("",
                         nrOfItems,
                         offset,
 						response -> {
                             //TODO: if repsonse is null probably the server is down..
                             if (response != null) {
-                                fireSeriesUpdated(response.getSeriesList(), response.getTotalSeries());
+                                this.getCallback().handleSeriesUpdated(response.getSeriesList(), response.getTotalSeries());
                                 Model.get().setInitialized(true);
                             }
 
                             Model.get().setLoading(false);
                         });
 			}
-            else if (modelType == Model.ModelType.Season) {
+            else if (modelType == ViewMode.Season) {
                 jh.listSeasons("",
                         seriesID,
                         nrOfItems,
@@ -122,7 +121,7 @@ public class Connector {
                             //TODO: if repsonse is null probably the server is down..
                             if (response != null) {
                                 if (response.getSeriesCount() > 0)
-                                    fireSeasonsUpdated(response.getSeries(0).getSeasonList(), response.getTotalSeasons());
+                                    this.getCallback().handleSeasonsUpdated(response.getSeries(0).getSeasonList(), response.getTotalSeasons());
 
                                 Model.get().setInitialized(true);
                             }
@@ -130,7 +129,7 @@ public class Connector {
                             Model.get().setLoading(false);
                         });
             }
-			else if (modelType == Model.ModelType.Episode) {
+			else if (modelType == ViewMode.Episode) {
 			    jh.listEpisodes("",
                         seriesID,
                         seasonID,
@@ -139,7 +138,7 @@ public class Connector {
                         response -> {
 			                if (response != null) {
                                 if (response.getSeasonCount() > 0)
-                                    fireEpisodesUpdated(response.getSeason(0).getEpisodeList(), response.getTotalEpisodes());
+                                    this.getCallback().handleEpisodesUpdated(response.getSeason(0).getEpisodeList(), response.getTotalEpisodes());
 
                                 Model.get().setInitialized(true);
                             }
@@ -154,12 +153,12 @@ public class Connector {
 	}
 
 	
-	public static void showMessage(Activity a, final String message) {
+	public void showMessage(Activity a, final String message) {
 		final Context c = (Context)a;
 		a.runOnUiThread(() -> Toast.makeText(c, message, Toast.LENGTH_SHORT).show());
 	}
 
-	public static void onoff(Activity a) {
+	public void onoff(Activity a) {
 		// TODO: Check if computer is live.
 		final boolean isOnline = JukeboxSettings.get().isCurrentMediaPlayerOn();
 		final String currentMediaPlayer = JukeboxSettings.get()
@@ -183,7 +182,7 @@ public class Connector {
 		JukeboxSettings.get().setIsCurrentMediaPlayerOn(!isOnline);
 	}
 	
-	public static void setupOnOffButton(View v) {
+	public void setupOnOffButton(View v) {
 		if (JukeboxSettings.get().isCurrentMediaPlayerOn()) {
 			GUITools.showView(R.id.btnOff, v);
 			GUITools.hideView(R.id.btnOn, v);

@@ -1,4 +1,5 @@
-# jukebox
+# tazMo jukebox server
+
 Yes. It's another movie jukebox identifier.
 
 Still an early alpha version release.

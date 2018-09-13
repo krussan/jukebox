@@ -37,6 +37,7 @@ public class ListActivity extends AppCompatActivity implements
 	private int offset;
 	private boolean firstIsLast = false;
 	private int totalItems = 0;
+	private Connector connector;
 
     protected View getRootView() {
 		return findViewById(R.id.rootMain);
@@ -109,7 +110,7 @@ public class ListActivity extends AppCompatActivity implements
 		initializeView();
 
 		mCastContext = CastContext.getSharedInstance(this);
-        Connector.addEventListener(this);
+		connector = new Connector(this);
 
         loadMoreData(0, getSeriesID(), getSeasonID());
     }
@@ -185,22 +186,15 @@ public class ListActivity extends AppCompatActivity implements
             lv.setAdapter(_episodeLayoutAdapter);
         }
 
-        Connector.setupOnOffButton(this.getRootView());
+        connector.setupOnOffButton(this.getRootView());
 	}
 
     private void loadMoreData(int offset, int seriesID) {
-        Connector.connect(offset, NR_OF_ITEMS, ViewMode.getModelType(this.getMode()), seriesID, -1);
+        connector.connect(offset, NR_OF_ITEMS, this.getMode(), seriesID, -1);
     }
 
     private void loadMoreData(int offset, int seriesID, int seasonID) {
-        Connector.connect(offset, NR_OF_ITEMS, ViewMode.getModelType(this.getMode()), seriesID, seasonID);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        Connector.removeEventListener(this);
+        connector.connect(offset, NR_OF_ITEMS, this.getMode(), seriesID, seasonID);
     }
 
     @Override
@@ -262,8 +256,8 @@ public class ListActivity extends AppCompatActivity implements
                 break;
             case R.id.btnOn:
             case R.id.btnOff:
-                Connector.onoff(this);
-                Connector.setupOnOffButton(getRootView());
+                connector.onoff(this);
+                connector.setupOnOffButton(getRootView());
                 break;
             case R.id.btnPreferences:
                 Intent intentPreferences = new Intent(this, JukeboxPreferenceActivity.class);

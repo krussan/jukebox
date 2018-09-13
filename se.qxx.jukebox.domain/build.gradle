@@ -1,5 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'com.google.protobuf'
+apply plugin: 'idea'
 
 group = 'se.qxx.jukebox'
 version = '1.0-SNAPSHOT'

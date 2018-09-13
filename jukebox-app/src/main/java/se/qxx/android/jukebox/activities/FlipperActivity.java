@@ -13,21 +13,24 @@ import android.widget.Toast;
 
 import com.google.android.gms.cast.framework.CastContext;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.adapters.detail.MovieFragmentAdapter;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
+import se.qxx.android.jukebox.comm.Connector;
 import se.qxx.android.jukebox.dialogs.ActionDialog;
+import se.qxx.android.jukebox.model.Model;
 import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
 
-public class FlipperActivity extends AppCompatActivity implements OnPageChangeListener, OnLongClickListener {
+public class FlipperActivity extends AppCompatActivity implements OnPageChangeListener, OnLongClickListener, Connector.ConnectorCallbackEventListener {
 	ViewPager pager;
 	private CastContext mCastContext;
+    MovieFragmentAdapter mfa;
+    Connector connector;
 
-	private ViewMode mode = ViewMode.Movie;
+    private ViewMode mode = ViewMode.Movie;
 	protected View getRootView() {
 		return findViewById(R.id.rootViewPager);
 	}
@@ -45,22 +48,31 @@ public class FlipperActivity extends AppCompatActivity implements OnPageChangeLi
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.itemwrapper);
-
         this.setCurrentPosition(getPosition());
 
-        MovieFragmentAdapter mfa = new MovieFragmentAdapter(getSupportFragmentManager(), this.getMovies());
-        pager = (ViewPager)this.getRootView();
-        pager.setAdapter(mfa);
-        pager.setCurrentItem(getPosition());
-        pager.addOnPageChangeListener(this);
-        
+		connector = new Connector(this);
+        connector.connect(0, -1, this.getMode(), -1, -1);
+
         this.getRootView().setOnLongClickListener(this);
+
+        pager = (ViewPager)getRootView();
+        pager.addOnPageChangeListener(this);
 
         mCastContext = CastContext.getSharedInstance(this);
 
 	}
 
-	@Override
+    private void initializePager(List<JukeboxDomain.Movie> movies) {
+        runOnUiThread(() -> {
+            mfa = new MovieFragmentAdapter(getSupportFragmentManager(), movies);
+
+            pager = (ViewPager)getRootView();
+            pager.setAdapter(mfa);
+            pager.setCurrentItem(getPosition());
+        });
+    }
+
+    @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		ChromeCastConfiguration.createMenu(this, getMenuInflater(), menu);
@@ -139,22 +151,30 @@ public class FlipperActivity extends AppCompatActivity implements OnPageChangeLi
 		return ViewMode.Movie;
 	}
 
+	@Override
+	public void handleMoviesUpdated(List<JukeboxDomain.Movie> movies, int totalMovies) {
+        initializePager(movies);
+	}
 
-	@SuppressWarnings("unchecked")
-	private List<JukeboxDomain.Movie> getMovies() {
-	    Bundle b = getIntent().getExtras();
+	@Override
+	public void handleSeriesUpdated(List<JukeboxDomain.Series> series, int totalSeries) {
 
-	    if (b != null) {
-            List<JukeboxDomain.Movie> movies = (List<JukeboxDomain.Movie>)b.getSerializable("movies");
-	        if (movies != null)
-	            return movies;
-        }
+	}
 
-        return new ArrayList<>();
+	@Override
+	public void handleSeasonsUpdated(List<JukeboxDomain.Season> seasons, int totalSeasons) {
+
+	}
+
+	@Override
+	public void handleEpisodesUpdated(List<JukeboxDomain.Episode> episodes, int totalEpisodes) {
+
+	}
+
+	public JukeboxDomain.Movie getCurrentMovie() {
+        if (mfa != null)
+            return mfa.getMovies().get(this.getCurrentPosition());
+        else
+            return null;
     }
-
-    private JukeboxDomain.Movie getCurrentMovie() {
-        return this.getMovies().get(this.getCurrentPosition());
-    }
-
 }

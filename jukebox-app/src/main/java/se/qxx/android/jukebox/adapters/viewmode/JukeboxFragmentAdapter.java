@@ -2,6 +2,8 @@ package se.qxx.android.jukebox.adapters.viewmode;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -50,4 +52,12 @@ public class JukeboxFragmentAdapter extends FragmentStatePagerAdapter {
 
         return StringUtils.EMPTY;
     }
+
+    @Override
+    public Parcelable saveState() {
+        Bundle bundle = (Bundle) super.saveState();
+        bundle.putParcelableArray("states", null); // Never maintain any states from the base class, just null it out
+        return bundle;
+    }
+
 }

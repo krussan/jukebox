@@ -43,6 +43,7 @@ public class JukeboxFragment extends ListFragment implements
     private EndlessScrollListener scrollListener;
     private int offset;
     private int totalItems;
+    private Connector connector;
 
     public int getTotalItems() {
         return totalItems;
@@ -110,17 +111,11 @@ public class JukeboxFragment extends ListFragment implements
             this.setMode((ViewMode) b.getSerializable("mode"));
         }
 
-        Connector.addEventListener(this);
+        connector = new Connector(this);
 
         clearData();
+        Logger.Log().d("Initializing - loading data");
         loadMoreData(0);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        Connector.removeEventListener(this);
     }
 
     @Override
@@ -171,6 +166,7 @@ public class JukeboxFragment extends ListFragment implements
 
                     this.getHandler().setOffset(page * Constants.NR_OF_ITEMS);
 
+                    Logger.Log().d("EndlessScroll event - Loading more data");
                     loadMoreData(page * Constants.NR_OF_ITEMS);
                 }
 
@@ -189,17 +185,17 @@ public class JukeboxFragment extends ListFragment implements
             lv.setAdapter(_seriesLayoutAdapter);
         }
 
-		Connector.setupOnOffButton(v);
+        connector.setupOnOffButton(v);
 
 	    
 	    //detector = new SimpleGestureFilter(this, this);
 	}
 
 	private void loadMoreData(int offset) {
-        Connector.connect(
+        connector.connect(
                 offset,
                 Constants.NR_OF_ITEMS,
-                ViewMode.getModelType(this.getMode()),
+                this.getMode(),
                 -1,
                 -1);
     }
@@ -211,7 +207,7 @@ public class JukeboxFragment extends ListFragment implements
             Intent i = new Intent(arg1.getContext(), FlipperActivity.class);
             i.putExtra("mode", ViewMode.Movie);
             i.putExtra("position", pos);
-            i.putExtra("movies", (ArrayList<JukeboxDomain.Movie>)_jukeboxMovieLayoutAdapter.getMovies());
+            //i.putExtra("movies", (ArrayList<JukeboxDomain.Movie>)_jukeboxMovieLayoutAdapter.getMovies());
 
             startActivity(i);
         }
@@ -258,6 +254,7 @@ public class JukeboxFragment extends ListFragment implements
 			Logger.Log().i("onConnectClicked");
 
 
+			Logger.Log().d("Button clicked - Loading data");
 			clearData();
 			loadMoreData(0);
 
@@ -270,8 +267,8 @@ public class JukeboxFragment extends ListFragment implements
 			break;
 		case R.id.btnOn:
 		case R.id.btnOff:
-			Connector.onoff(this.getActivity());
-			Connector.setupOnOffButton(this.getView());
+			connector.onoff(this.getActivity());
+			connector.setupOnOffButton(this.getView());
 			break;
 		case R.id.btnPreferences:
 			Intent intentPreferences = new Intent(this.getActivity(), JukeboxPreferenceActivity.class);

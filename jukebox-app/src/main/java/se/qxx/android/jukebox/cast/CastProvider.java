@@ -13,11 +13,9 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.qxx.android.jukebox.comm.OnListSubtitlesCompleteHandler;
 import se.qxx.android.jukebox.dialogs.JukeboxConnectionProgressDialog;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.jukebox.widgets.SeekerListener;
-import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
@@ -165,15 +163,6 @@ public abstract class CastProvider implements MediaController.MediaPlayerControl
         return provider;
     }
 
-    protected void initializeSubtitles() {
-        // update the subtitles out of sync
-        Thread t = new Thread(() -> {
-            Logger.Log().d("Request --- ListSubtitles");
-            comm.listSubtitles(CastProvider.this.getCurrentMedia(), new OnListSubtitlesCompleteHandler());
-        });
-        t.start();
-
-    }
 
     public void startMovie() {
         // override local player with chromecast in server (move this to server in time)
@@ -226,6 +215,10 @@ public abstract class CastProvider implements MediaController.MediaPlayerControl
     protected void closeDialog() {
         if (this.getDialog() != null)
             this.getDialog().close();
+    }
+
+    protected void initializeSubtitles() {
+
     }
 
     public abstract void initialize();
