@@ -6,7 +6,6 @@ import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.adapters.support.SubtitleLayoutAdapter;
 import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.android.jukebox.dialogs.JukeboxConnectionProgressDialog;
-import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
@@ -33,7 +32,6 @@ public class SubSelectActivity extends AppCompatActivity implements OnItemClickL
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.subtitlepicker);
-
         mCastContext = CastContext.getSharedInstance(this);
 
         initializeView();
@@ -53,17 +51,31 @@ public class SubSelectActivity extends AppCompatActivity implements OnItemClickL
 	    View rootView = GUITools.getRootView(this);
 
 	    GUITools.setTextOnTextview(R.id.lblSubpickerFilename, md.getFilename(), rootView);
-		SubtitleLayoutAdapter adapter = new SubtitleLayoutAdapter(this, Model.get().getSubtitles());
-		ListView v = (ListView)findViewById(R.id.listSubtitlePicker);
-		v.setAdapter(adapter);
-		v.setOnItemClickListener(this);
+
+	    initializeSubtitles();
 	}
 
-	@Override
+    protected void initializeSubtitles() {
+        final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
+                JukeboxSettings.get().getServerIpAddress(),
+                JukeboxSettings.get().getServerPort());
+
+        final ListView v = (ListView)findViewById(R.id.listSubtitlePicker);
+		v.setOnItemClickListener(this);
+
+        jh.listSubtitles(
+            this.getMedia(),
+				(response) -> {
+					SubtitleLayoutAdapter adapter = new SubtitleLayoutAdapter(this, response.getSubtitleList());
+					v.setAdapter(adapter);
+				});
+
+    }
+
+    @Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		final Subtitle sub = (Subtitle)arg0.getItemAtPosition(arg2);	
 		Logger.Log().d(String.format("Setting subtitle to %s", sub.getDescription()));
-		Model.get().setCurrentSubtitle(sub.getDescription());
 
 		if (ChromeCastConfiguration.isChromeCastActive()) {
 			RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(this.getApplicationContext());
@@ -78,12 +90,11 @@ public class SubSelectActivity extends AppCompatActivity implements OnItemClickL
 					JukeboxSettings.get().getServerPort(),
 					JukeboxConnectionProgressDialog.build(this, "Setting subtitle ..."));
 
-			Thread t = new Thread(new Runnable() {
-				@Override
-				public void run() {
-					jh.setSubtitle(JukeboxSettings.get().getCurrentMediaPlayer(), getMedia(), sub);
-				}
-			});
+			Thread t = new Thread(() ->
+                    jh.setSubtitle(
+                            JukeboxSettings.get().getCurrentMediaPlayer(),
+                            getMedia(),
+                            sub));
 			t.run();
 
 		}

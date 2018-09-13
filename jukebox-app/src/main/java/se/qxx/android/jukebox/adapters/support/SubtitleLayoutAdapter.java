@@ -29,8 +29,7 @@ public class SubtitleLayoutAdapter extends BaseAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View v = convertView;
-		Model.get().getSubtitles();
-
+		
 		try {
 	        if (v == null) {
 	            LayoutInflater vi = (LayoutInflater)this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

@@ -11,13 +11,35 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class PlayerLayoutAdapter extends BaseAdapter {
 
 	private Context context;
+	private List<String> players = new ArrayList<String>();
+
 	public PlayerLayoutAdapter(Context context) {
 		super();
 		this.context = context;
 	}
+
+	public void addPlayer(String player) {
+	    this.players.add(player);
+    }
+
+	public void addPlayers(List<String> players) {
+		this.players.addAll(players);
+	}
+
+	public void clarPlayers() {
+		this.players.clear();
+	}
+
+	public List<String> getPlayers() {
+	    return this.players;
+    }
+
 	
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -48,13 +70,13 @@ public class PlayerLayoutAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		return Model.get().countPlayers();
+		return this.getPlayers().size();
 	}
 
 	@Override
 	public Object getItem(int position) {
 
-		return Model.get().getPlayer(position);
+		return this.getPlayers().get(position);
 	}
 
 	@Override
