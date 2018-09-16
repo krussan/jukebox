@@ -26,14 +26,8 @@ public class TestUpgrade {
 		Upgrade_0_20 up = new Upgrade_0_20();
 		List<String> dbScripts = up.getDatabaseUpgradeScripts(db);
 		
-		assertEquals(8, dbScripts.size());
-		assertEquals("CREATE TABLE MediaConverterState (ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY, value TEXT NOT NULL)", dbScripts.get(0));
-		assertEquals("INSERT INTO MediaConverterState (value) VALUES ('NotNeeded')", dbScripts.get(1));
-		assertEquals("INSERT INTO MediaConverterState (value) VALUES ('Queued')", dbScripts.get(2));
-		assertEquals("INSERT INTO MediaConverterState (value) VALUES ('Completed')", dbScripts.get(3));
-		assertEquals("INSERT INTO MediaConverterState (value) VALUES ('Converting')", dbScripts.get(4));
-		assertEquals("INSERT INTO MediaConverterState (value) VALUES ('Failed')", dbScripts.get(5));
-		assertEquals("ALTER TABLE Media ADD COLUMN _downloadcomplete_ID INTEGER NULL REFERENCES MediaConverterState(ID)", dbScripts.get(6));
-		assertEquals("UPDATE Media SET _downloadcomplete_ID = 2", dbScripts.get(7));
+		assertEquals(2, dbScripts.size());
+		assertEquals(String.format("UPDATE %1$sMedia%2$s SET _converterstate_ID = 2", db.getStartBracket(), db.getEndBracket()), dbScripts.get(0));
+		assertEquals(String.format("UPDATE %1$sMedia%2$s SET downloadComplete = 0", db.getStartBracket(), db.getEndBracket()), dbScripts.get(1));
 	}
 }
