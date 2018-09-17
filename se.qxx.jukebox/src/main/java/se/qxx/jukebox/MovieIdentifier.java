@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.Queue;
+
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.Log.LogType;
@@ -92,6 +94,9 @@ public class MovieIdentifier implements Runnable {
 		}
 		else if (f.getFileSize() < 104857600) {
 			Log.Info(String.format("Ignoring %s as this has a file size of less than 100MB", filename), LogType.FIND);
+		}
+		else if (FilenameUtils.removeExtension(f.getName()).endsWith("[tazmo]")) {
+			Log.Info(String.format("Ignoring %s as this is a converted file", filename), LogType.FIND);
 		}
 		else {
 			//check if the same media already exist in db

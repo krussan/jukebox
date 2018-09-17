@@ -5,12 +5,14 @@ import java.util.ArrayList;
 
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
 import se.qxx.jukebox.tools.Util;
+import se.qxx.jukebox.watcher.DownloadChecker;
 import se.qxx.jukebox.watcher.ExtensionFileFilter;
 import se.qxx.jukebox.watcher.FileCreatedHandler;
 import se.qxx.jukebox.watcher.FileRepresentation;
 import se.qxx.jukebox.watcher.FileSystemWatcher;
 import se.qxx.jukebox.watcher.INotifyClient;
 import se.qxx.jukebox.webserver.StreamingWebServer;
+import se.qxx.jukebox.converter.MediaConverter;
 import se.qxx.jukebox.servercomm.TcpListener;
 import se.qxx.jukebox.settings.Settings;
 
@@ -25,32 +27,53 @@ public class Main implements Runnable, INotifyClient
 	public void run() {
 		
 		try {
+			System.out.println("Initializing settings");
 			Settings.initialize();
 			
-			if (Arguments.get().isTcpListenerEnabled())
+			System.out.println("Starting threads ...");
+			if (Arguments.get().isTcpListenerEnabled()) {
+				System.out.println("Starting TCP listener");
 				setupListening();
+			}
 			
 			if (Arguments.get().isSubtitleDownloaderEnabled()) {
+				System.out.println("Starting subtitle downloader");
 				Thread subtitleDownloaderThread = new Thread(SubtitleDownloader.get());
 				subtitleDownloaderThread.start();
 			}
 			
 			if (Arguments.get().isWebServerEnabled()) {
+				System.out.println("Starting web server");
 				StreamingWebServer.setup("0.0.0.0", 8001);
 			}
 			
 			if (Arguments.get().isWatcherEnabled()) {
+				System.out.println("Starting watcher thread");
 				Thread identifierThread = new Thread(MovieIdentifier.get());
 				identifierThread.start();
 			}
 			
 			if (Arguments.get().isCleanerEnabled()) {
+				System.out.println("Starting cleaner thread");
 				Thread cleanerThread = new Thread(Cleaner.get());
 				cleanerThread.start();
 			}
 			
+			if (Arguments.get().isMediaConverterEnabled()) {
+				System.out.println("Starting media converter");
+				Thread mediaConverterThread = new Thread(MediaConverter.get());
+				mediaConverterThread.start();
+			}
+			
+			if (Arguments.get().isDownloadCheckerEnabled()) {
+				System.out.println("Starting download checker");
+				Thread downloadCheckerThread = new Thread(DownloadChecker.get());
+				downloadCheckerThread.start();
+			}
+			
 			isRunning = true;
 			
+			System.out.println("Setting watcher on configuration file");
 			ExtensionFileFilter filter = new ExtensionFileFilter();
 			filter.addExtension("xml");
 			FileSystemWatcher w = new  FileSystemWatcher(".", filter, false, true);
@@ -60,8 +83,10 @@ public class Main implements Runnable, INotifyClient
 			s.acquire();
 
 			while (isRunning) {
-				if (Arguments.get().isWatcherEnabled())
+				if (Arguments.get().isWatcherEnabled()) {
+					System.out.println("Starting up watcher thred");
 					setupCatalogs();
+				}
 
 				// acquire a new to block this thread until it is released by another thread (by calling stop)
 				s.acquire();
@@ -87,7 +112,6 @@ public class Main implements Runnable, INotifyClient
 	}
 	
 	public void fileCreated(FileRepresentation f){
-		
 	}
 	
 	private void setupCatalogs(){
