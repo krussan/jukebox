@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <JukeboxListenerSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="JukeboxSettings.xsd">
   <catalogs>
-    <catalog includeSubdirectories="true" path="/c/media/BitTorrent">
+    <catalog includeSubdirectories="true" path="/media/ultra/BitTorrent">
       <localPaths>
       	<path player="vlc_main" path="file:///media/ultra/BitTorrent" />
       	<path player="black_hell_front" path="file:///Z:/BitTorrent" />
@@ -36,7 +36,7 @@
       </extensions>
     </catalog>        
   </catalogs>
-  <subFinders subsPath="/c/media/Subs" threadWaitSeconds="25">
+  <subFinders subsPath="/media/ultra/Subs" threadWaitSeconds="25">
 	<subFinder class="se.qxx.jukebox.subtitles.Subscene" enabled="true">
     	<subFinderSettings>
     		<setting>
