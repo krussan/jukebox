@@ -18,8 +18,8 @@ public class Arguments {
 	private boolean cleanerEnabled = true;
 	private boolean cleanerLogOnly = false;
 	private boolean setupDatabase = false;
-	private boolean downloadCheckerEnabled = false;
-	private boolean mediaConverterEnabled = false;
+	private boolean downloadCheckerEnabled = true;
+	private boolean mediaConverterEnabled = true;
 	
 	private static Arguments _instance;
 	
