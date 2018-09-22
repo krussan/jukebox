@@ -282,7 +282,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	private StreamingFile serveChromecast(Media md, List<String> subtitleUris) {
 		// if media contains subtitles (i.e. mkv) then extract the file and put it into a file for serving
 		// https://github.com/matthewn4444/EBMLReader ??
-		StreamingFile streamingFile = StreamingWebServer.get().registerFile(Util.getFullFilePath(md));
+		StreamingFile streamingFile = StreamingWebServer.get().registerFile(md);
 		
 		Log.Debug(String.format("Number of subtitles :: %s", md.getSubsCount()), LogType.COMM);
 		for (Subtitle s : md.getSubsList()) {

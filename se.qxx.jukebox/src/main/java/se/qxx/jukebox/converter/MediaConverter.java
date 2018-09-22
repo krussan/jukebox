@@ -55,8 +55,10 @@ public class MediaConverter implements Runnable {
 	}
 
 	protected void mainLoop() {
+		Log.Debug("Cleaning up converter queue ..", LogType.CONVERTER);
+		DB.cleanupConverterQueue();
+		
 		Log.Debug("Retrieving list to process", LogType.CONVERTER);
-
 		List<Media> _listProcessing = DB.getConverterQueue();
 
 		while (isRunning()) {
@@ -121,8 +123,8 @@ public class MediaConverter implements Runnable {
 				.setInput(filename)
 				.addOutput(newFilepath)
 				.setFormat("mp4")
-//				.setVideoCodec("libx264")
-//				.setAudioCodec("aac")
+				.setVideoCodec("copy")
+				.setAudioCodec("copy")
 
 				.done();
 

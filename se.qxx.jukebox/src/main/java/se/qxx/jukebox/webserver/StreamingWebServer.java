@@ -28,6 +28,8 @@ import se.qxx.jukebox.DB;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
+import se.qxx.jukebox.domain.JukeboxDomain.Media;
+import se.qxx.jukebox.domain.JukeboxDomain.MediaConverterState;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.WebServer.MimeTypeMap.Extension;
@@ -83,7 +85,22 @@ public class StreamingWebServer extends NanoHTTPD {
 		
 		String uri = getStreamUri(streamingFile);		
 		return new StreamingFile(uri, getMimeType(uri, filename));
-		
+	}
+	
+	public StreamingFile registerFile(Media md) {
+		String filename = getStreamingFilename(md);
+		return registerFile(filename);
+	}
+
+	public String getStreamingFilename(Media md) {
+		String filename;
+		if (md.getConverterState() == MediaConverterState.Completed && !StringUtils.isEmpty(md.getConvertedFileName())) {
+			filename = Util.getConvertedFullFilepath(md);
+		}
+		else {
+			filename = Util.getFullFilePath(md);
+		}
+		return filename;
 	}
 
 	private String getOverrideExtension(String file) {

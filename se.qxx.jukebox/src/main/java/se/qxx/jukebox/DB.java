@@ -497,6 +497,20 @@ public class DB {
 	
 	}
 
+	public  static void cleanupConverterQueue() {
+		try {
+			ProtoDB db = getProtoDBInstance();
+			
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				String sql = "UPDATE Media SET _converterstate_ID = 2 WHERE _converterstate_ID = 3";
+				db.executeNonQuery(sql);
+			}
+		} catch (Exception e) {
+			Log.Error(String.format("Failed to clean subtitle queue"), Log.LogType.MAIN, e);
+		}		
+	}
+
+
 
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Subtitles

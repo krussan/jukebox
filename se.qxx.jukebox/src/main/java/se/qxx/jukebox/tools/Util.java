@@ -298,7 +298,15 @@ public class Util {
 	}
 	
 	public static String getFullFilePath(Media md) {
-		return String.format("%s/%s", FilenameUtils.normalizeNoEndSeparator(md.getFilepath()), md.getFilename());
+		return getFilePath(FilenameUtils.normalizeNoEndSeparator(md.getFilepath()), md.getFilename());
+	}
+	
+	public static String getConvertedFullFilepath(Media md) {
+		return getFilePath(FilenameUtils.normalizeNoEndSeparator(md.getFilepath()), md.getConvertedFileName());
+	}
+	
+	private static String getFilePath(String filepath, String filename) {
+		return String.format("%s/%s", filepath, filename);
 	}
 
 }
