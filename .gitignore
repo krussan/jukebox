@@ -30,3 +30,8 @@ target
 *.bak*
 .gradle
 bin
+local.properties
+*.iml
+scripts/dump
+scripts/local*.sh
+api.json

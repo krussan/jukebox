@@ -47,6 +47,7 @@ import se.qxx.jukebox.tools.MediaMetadata;
 import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.vlc.VLCConnectionNotFoundException;
 import se.qxx.jukebox.watcher.FileRepresentation;
+import se.qxx.jukebox.webserver.StreamingFile;
 import se.qxx.jukebox.webserver.StreamingWebServer;
 import se.qxx.jukebox.vlc.Distributor;
 
@@ -57,39 +58,86 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			JukeboxRequestListMovies request,
 			RpcCallback<JukeboxResponseListMovies> done) {
 
-		Log.Debug("ListMovies", LogType.COMM);
-		
-		
+		Log.Debug(String.format("ListMovies :: %s", request.getRequestType()), LogType.COMM);
 		String searchString = request.getSearchString();
 		
-		List<Movie> movies = new ArrayList<Movie>();
-		List<Series> series = new ArrayList<Series>(); 
+		JukeboxResponseListMovies.Builder b = JukeboxResponseListMovies.newBuilder();
 		
 		switch (request.getRequestType()) {
 		case TypeMovie:
-			movies = DB.searchMoviesByTitle(searchString, true, true, request.getNrOfItems(), request.getStartIndex());
+			b.addAllMovies(
+				DB.searchMoviesByTitle(
+						searchString, 
+						request.getNrOfItems(), 
+						request.getStartIndex()));
+			
+			b.setTotalMovies(
+				DB.getTotalNrOfMovies());
+			
 			break;
 		case TypeSeries:
-			series = DB.searchSeriesByTitle(searchString, true, true, request.getNrOfItems(), request.getStartIndex());
+			b.addAllSeries(
+				DB.searchSeriesByTitle(
+						searchString, 
+						request.getNrOfItems(), 
+						request.getStartIndex()));
+			
+			b.setTotalSeries(
+				DB.getTotalNrOfSeries());
+			
 			break;
 		case TypeSeason:
-			series.add(DB.getSeries(request.getSeriesID()));
+			b.addSeries(
+				DB.searchSeriesById(
+						request.getSeriesID()));
+			
+			b.setTotalSeasons(
+				DB.getTotalNrOfSeasons(
+						request.getSeriesID()));
+				
 			break;
 		case TypeEpisode:
-			//TODO!
+			b.addSeason(
+				DB.searchSeasonById(request.getSeasonID()));
+				
+			b.setTotalEpisodes(
+				DB.getTotalNrOfEpisodes(
+						request.getSeasonID()));
+			
 			break;
 		}
 		
-		if (!request.getReturnFullSizePictures()) {
-			movies = removeFullSizePicturesAndSubsFromMovies(movies);
-			series = removeFullSizePicturesAndSubsFromSeries(series);
+		JukeboxResponseListMovies response = b.build();
+		logResponse(response);
+		
+		done.run(
+			b.build());
+	}
+
+	private void logResponse(JukeboxResponseListMovies response) {
+		Log.Debug(String.format("Movie count :: %s ", response.getMoviesCount()), LogType.COMM);
+		Log.Debug(String.format("Series count :: %s ", response.getSeriesCount()), LogType.COMM);
+		logSeasons(response);
+		logEpisodes(response);
+	}
+
+	private void logSeasons(JukeboxResponseListMovies response) {
+		int c = 0;
+		for (Series s : response.getSeriesList())
+			c += s.getSeasonCount();
+		
+		Log.Debug(String.format("Season count :: %s ", c), LogType.COMM);
+	}
+	
+	private void logEpisodes (JukeboxResponseListMovies response) {
+		int c = 0;
+		for (Series s : response.getSeriesList()) {
+			for (Season ss : s.getSeasonList()) {
+				c += ss.getEpisodeCount();
+			}
 		}
 		
-		JukeboxResponseListMovies lm = JukeboxResponseListMovies.newBuilder()
-				.addAllMovies(movies)
-				.addAllSeries(series)
-				.build();
-		done.run(lm);
+		Log.Debug(String.format("Episode count :: %s ", c), LogType.COMM);
 	}
 
 	private List<Series> removeFullSizePicturesAndSubsFromSeries(List<Series> listSeries) {
@@ -179,15 +227,15 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			Media md = getMedia(request);
 
 			boolean success = false;
-			
-			String uri = StringUtils.EMPTY;
+
+			StreamingFile streamingFile = null;
 			List<String> subtitleUris = new ArrayList<String>();
 			
 			if (StringUtils.equalsIgnoreCase("Chromecast", request.getPlayerName())) {
 				//this is a chromecast request. Serve the file using http and return the uri.
 				//also serve the subtitles and return them
 			
-				uri = serveChromecast(md, subtitleUris);
+				streamingFile = serveChromecast(md, subtitleUris);
 				success = true;
 			}
 			else {
@@ -197,18 +245,23 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			if (success) {
 				List<Subtitle> subs = md.getSubsList();
 				
-				JukeboxResponseStartMovie ls = JukeboxResponseStartMovie.newBuilder()
+				JukeboxResponseStartMovie.Builder b = JukeboxResponseStartMovie.newBuilder()
 						.addAllSubtitle(subs)
-						.setUri(uri)
-						.addAllSubtitleUris(subtitleUris)
-						.build();
+						.addAllSubtitleUris(subtitleUris);
+				
+				if (streamingFile != null) {
+					b.setUri(streamingFile.getUri())
+						.setMimeType(streamingFile.getMimeType());
+				}
 									
-				done.run(ls);
+				done.run(
+					b.build());
 				
 			}
 			else
 				controller.setFailed("Error occured when connecting to target media player"); 
 		} catch (VLCConnectionNotFoundException e) {
+			Log.Error("Error occured when starting movie", LogType.COMM, e);
 			controller.setFailed("Error occured when connecting to target media player"); 
 		}		
 		
@@ -226,19 +279,20 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		return null;
 	}
 
-	private String serveChromecast(Media md, List<String> subtitleUris) {
-		String uri;
-
+	private StreamingFile serveChromecast(Media md, List<String> subtitleUris) {
 		// if media contains subtitles (i.e. mkv) then extract the file and put it into a file for serving
 		// https://github.com/matthewn4444/EBMLReader ??
-		uri = StreamingWebServer.get().registerFile(Util.getFullFilePath(md));
+		StreamingFile streamingFile = StreamingWebServer.get().registerFile(Util.getFullFilePath(md));
 		
 		Log.Debug(String.format("Number of subtitles :: %s", md.getSubsCount()), LogType.COMM);
 		for (Subtitle s : md.getSubsList()) {
-			String subFilename = StreamingWebServer.get().registerSubtitle(s);
-			subtitleUris.add(subFilename);
+			StreamingFile subFile = StreamingWebServer.get().registerSubtitle(s);
+			
+			if (subFile != null)
+				subtitleUris.add(subFile.getUri());
 		}
-		return uri;
+		
+		return streamingFile;
 	}
 
 	@Override

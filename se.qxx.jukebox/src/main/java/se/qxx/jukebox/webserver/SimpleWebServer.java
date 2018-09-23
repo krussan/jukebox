@@ -171,15 +171,15 @@ public class SimpleWebServer extends NanoHTTPD {
         mimeTypeHandlers.put(mimeType, plugin);
         plugin.initialize(commandLineOptions);
     }
-    private File getRootDir() {
-        return rootDirs.get(0);
-    }
+//    private File getRootDir() {
+//        return rootDirs.get(0);
+//    }
     private List<File> getRootDirs() {
         return rootDirs;
     }
-    private void addWwwRootDir(File wwwroot) {
-        rootDirs.add(wwwroot);
-    }
+//    private void addWwwRootDir(File wwwroot) {
+//        rootDirs.add(wwwroot);
+//    }
     /**
      * URL-encodes everything between "/"-characters. Encodes spaces as '%20' instead of '+'.
      */
@@ -201,9 +201,13 @@ public class SimpleWebServer extends NanoHTTPD {
         }
         return newUri;
     }
+    
     public Response serve(IHTTPSession session) {
         Map<String, String> header = session.getHeaders();
-        Map<String, String> parms = session.getParms();
+        
+        @SuppressWarnings("deprecation")
+		Map<String, String> parms = session.getParms();
+        
         String uri = session.getUri();
         if (!quiet) {
             System.out.println(session.getMethod() + " '" + uri + "' ");

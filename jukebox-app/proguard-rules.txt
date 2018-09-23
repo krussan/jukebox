@@ -1,0 +1,17 @@
+-keep public class com.google.android.gms.** { public *; }
+-dontnote org.apache.commons.lang3.reflect.**
+-dontnote com.google.android.gms.internal.zzlh
+
+-dontwarn android.support.**
+-keep public class android.support.v7.widget.** { *; }
+-keep public class android.support.v7.internal.widget.** { *; }
+-keep public class android.support.v7.internal.view.menu.** { *; }
+
+-keep public class * extends android.support.v4.view.ActionProvider {
+    public <init>(android.content.Context);
+}
+
+-keep class se.qxx.jukebox.domain.** { *; }
+-keep class com.google.protobuf.** { *; }
+-keep class com.googlecode.protobuf.socketrpc.** { *; }
+-keep class se.qxx.android.jukebox.cast.CastOptionsProvider

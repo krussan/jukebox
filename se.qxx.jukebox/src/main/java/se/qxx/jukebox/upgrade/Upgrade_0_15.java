@@ -1,18 +1,9 @@
 package se.qxx.jukebox.upgrade;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-import javax.imageio.ImageIO;
-
 import org.apache.commons.lang3.StringUtils;
-import org.imgscalr.Scalr;
-
-import com.google.protobuf.ByteString;
-
 import se.qxx.jukebox.DB;
 import se.qxx.jukebox.Version;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
@@ -49,7 +40,7 @@ public class Upgrade_0_15 implements IIncrimentalUpgrade {
 		try {
 	
 			// create thumbnails for each movie,series,season,episode
-			List<Movie> movies = DB.searchMoviesByTitle(StringUtils.EMPTY, true, true);
+			List<Movie> movies = DB.searchMoviesByTitle(StringUtils.EMPTY);
 			for (Movie m: movies) {
 				if (!m.getImage().isEmpty()){
 					Movie m_new = Movie.newBuilder(m).setThumbnail(Util.getScaledImage(m.getImage())).build();
@@ -57,7 +48,7 @@ public class Upgrade_0_15 implements IIncrimentalUpgrade {
 				}
 			}
 			
-			List<Series> series = DB.searchSeriesByTitle(StringUtils.EMPTY, true, true);
+			List<Series> series = DB.searchSeriesByTitle(StringUtils.EMPTY);
 			for (Series s : series) {
 				for (Season sn : s.getSeasonList()) {					
 					for (Episode e : sn.getEpisodeList()) {
@@ -81,7 +72,6 @@ public class Upgrade_0_15 implements IIncrimentalUpgrade {
 				DB.save(s_new);
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new UpgradeFailedException();
 		}

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rootMain"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+        <ImageButton
+            android:id="@+id/btnRefresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/btnrefresh"
+			android:background="@null"
+            android:onClick="onButtonClicked"
+            android:layout_gravity="left"
+            />
+
+		<ImageButton
+		    android:id="@+id/btnSelectMediaPlayer" 
+		    android:layout_width="wrap_content" 
+		    android:layout_height="wrap_content"
+			android:onClick="onButtonClicked" 
+			android:layout_toRightOf="@id/btnRefresh"
+			android:background="@null"
+			android:src="@drawable/btnplayer"
+		/>
+
+		<ImageButton
+		    android:id="@+id/btnCurrentMovie"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+			android:onClick="onButtonClicked"
+			android:layout_toRightOf="@id/btnSelectMediaPlayer"
+			android:background="@null"
+			android:src="@drawable/btncurrent"
+		/>
+
+		<ImageButton
+		    android:id="@+id/btnPreferences" 
+		    android:layout_width="wrap_content" 
+		    android:layout_height="wrap_content"
+			android:onClick="onButtonClicked" 
+			android:layout_toRightOf="@id/btnCurrentMovie"
+			android:background="@null"
+			android:src="@drawable/btnsubtitles"
+		/>
+				
+        
+		<ImageButton
+		    android:id="@+id/btnOn" 	
+		    android:layout_width="wrap_content" 
+		    android:layout_height="wrap_content"
+			android:onClick="onButtonClicked"
+			android:src="@drawable/btnonoff"
+			android:background="@null"
+			android:layout_alignParentRight="true"
+		/>
+
+		<ImageButton
+		    android:id="@+id/btnOff" 	
+		    android:layout_width="wrap_content" 
+		    android:layout_height="wrap_content"
+			android:onClick="onButtonClicked"
+			android:src="@drawable/btnonoffred"
+			android:background="@null"
+			android:layout_alignParentRight="true"
+		/>
+    </RelativeLayout>
+
+	<ListView
+	    android:id="@+id/listView1"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content">
+	</ListView>
+
+</LinearLayout>

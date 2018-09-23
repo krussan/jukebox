@@ -4,7 +4,7 @@
 
   <groupId>se.qxx.jukebox</groupId>
   <artifactId>jukebox-domain</artifactId>
-  <version>0.1.23</version>
+  <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>domain-model</name>
@@ -17,6 +17,7 @@
     <version>${project.version}</version>
     <packaging>${project.packaging}</packaging>
     <file>target/${project.artifactId}-${project.version}.jar</file>
+    <protoc.exec>/usr/bin/protoc</protoc.exec>
   </properties>
   
   <repositories>
@@ -43,18 +44,6 @@
 
   </dependencies>
 
-  <pluginRepositories>
-    <pluginRepository>
-      <id>autoincrement-versions-maven-plugin</id>
-      <name>autoincrement-versions-maven-plugin</name>
-      <url>http://autoincrement-versions-maven-plugin.googlecode.com/svn/repo</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </pluginRepository>
-  </pluginRepositories>
-
-
 <build>
 
     <pluginManagement>
@@ -64,8 +53,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.5.1</version>
                 <configuration>
-                   <source>1.7</source>
-                   <target>1.7</target>
+                   <source>1.8</source>
+                   <target>1.8</target>
                 </configuration>
             </plugin>
         
@@ -90,7 +79,7 @@
                 <artifactId>protobuf-maven-plugin</artifactId>
                 <version>0.5.0</version>
                 <configuration>
-                  <protocExecutable>protoc</protocExecutable>
+                  <protocExecutable>${protoc.exec}</protocExecutable>
                 </configuration>
                 <executions>
                   <execution>
@@ -102,25 +91,6 @@
                 </executions>
             </plugin>
             
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>autoincrement-versions-maven-plugin</artifactId>
-                <version>2.0-SNAPSHOT</version>
-                <executions>
-                  <execution>
-                    <id>update-pom-versions</id>
-                    <goals>
-                      <goal>increment</goal>
-                      <goal>commit</goal>
-                    </goals>
-                    <phase>package</phase>
-                    <configuration>
-                      <autoIncrementVersion>true</autoIncrementVersion>
-                    </configuration>
-                  </execution>
-                </executions>
-             </plugin>
-
     </plugins>
 
   </build>

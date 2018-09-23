@@ -188,15 +188,19 @@ public class JukeboxConnectionHandler {
 		list(searchString, RequestType.TypeMovie, 0, 0, nrOfItems, offset, callback); 
 	}
 	
-	public void listSeries(String searchString, int seriesID, int nrOfItems, int offset, final RpcCallback<JukeboxResponseListMovies> callback) {
-		list(searchString, RequestType.TypeMovie, seriesID, 0, nrOfItems, offset, callback);
+	public void listSeries(String searchString, int nrOfItems, int offset, final RpcCallback<JukeboxResponseListMovies> callback) {
+		list(searchString, RequestType.TypeSeries, 0, 0, nrOfItems, offset, callback);
 	}
 
-	public void listSeason(String searchString, int seriesID, int seasonID, int nrOfItems, int offset, final RpcCallback<JukeboxResponseListMovies> callback) {
-		list(searchString, RequestType.TypeMovie, seriesID, seasonID, nrOfItems, offset, callback);
+	public void listSeasons(String searchString, int seriesID, int nrOfItems, int offset, final RpcCallback<JukeboxResponseListMovies> callback) {
+		list(searchString, RequestType.TypeSeason, seriesID, 0, nrOfItems, offset, callback);
 	}
 
-	private void list(final String searchString, RequestType type, final int seriesID, final int seasonID, final int nrOfItems, final int offset, final RpcCallback<JukeboxResponseListMovies> callback) {
+	public void listEpisodes(String searchString, int seriesID, int seasonID, int nrOfItems, int offset, final RpcCallback<JukeboxResponseListMovies> callback) {
+		list(searchString, RequestType.TypeEpisode, seriesID, seasonID, nrOfItems, offset, callback);
+	}
+
+	private void list(final String searchString, final RequestType type, final int seriesID, final int seasonID, final int nrOfItems, final int offset, final RpcCallback<JukeboxResponseListMovies> callback) {
 		final RpcController controller = new SocketRpcController();
 
 		Thread t = new Thread() {
@@ -205,7 +209,7 @@ public class JukeboxConnectionHandler {
 		 
 				JukeboxRequestListMovies request = JukeboxRequestListMovies.newBuilder()
 						.setSearchString(searchString)
-						.setRequestType(RequestType.TypeMovie)
+						.setRequestType(type)
 						.setSeriesID(seriesID)
 						.setSeasonID(seasonID)
 						.setNrOfItems(nrOfItems)

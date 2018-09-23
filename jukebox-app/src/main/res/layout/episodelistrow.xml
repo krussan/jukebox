@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="140dip"
+    android:orientation="horizontal" 
+    android:padding="6dip">
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/icon" 
+        android:contentDescription="@string/descPosterImage"
+        android:layout_margin="5dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+    />
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_toRightOf="@id/imageView1"
+        >
+
+        <TextView
+            android:id="@+id/toptext"
+            android:layout_alignParentLeft="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/lblTitle"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="#FFFFFF"
+        />
+
+
+        <TextView
+            android:id="@+id/txtDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/toptext"
+            android:text="About"
+            android:textColor="#FFFFFF"
+            android:gravity="left"
+            android:layout_toLeftOf="@id/btnPlayEpisode"
+            android:ellipsize="end"
+        />
+
+
+        <ImageView
+            android:id="@+id/imgWatched"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/txtRating"
+            android:layout_below="@id/toptext"
+            android:src="@android:drawable/ic_menu_view"
+            android:contentDescription="@string/descWatched" />
+
+        <ImageButton
+            android:id="@+id/btnPlayEpisode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@android:drawable/ic_media_play"
+            android:contentDescription="@string/descDownloading"
+            />
+
+    </RelativeLayout>
+
+
+</RelativeLayout>
