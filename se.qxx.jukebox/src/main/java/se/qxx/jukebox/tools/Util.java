@@ -100,11 +100,9 @@ public class Util {
 	 * @param filter The filter of extension to look for
 	 * @return
 	 */
-	public static List<File> getFileListing(File directory, ExtensionFileFilter filter)
+	public static List<File> getFileListing(File directory, ExtensionFileFilter filter, boolean recurse)
 	{
-		List<File> result = checkExtension(directory.listFiles(filter), filter);
-		
-		return result;
+		return getFileListing(directory.listFiles(filter), filter, recurse);
 	}
 
 	/**
@@ -113,16 +111,17 @@ public class Util {
 	 * @param filter The filter of extension to look for
 	 * @return
 	 */
-	private static List<File> checkExtension(File[] filesAndDirs, ExtensionFileFilter filter) {
+	private static List<File> getFileListing(File[] filesAndDirs, ExtensionFileFilter filter, boolean recurse) {
 		List<File> result = new ArrayList<File>();
 
 		for(File file : filesAndDirs) {
 			
 			if (file.isFile() ) {
 				result.add(file);
-			} else 
-			{
-				result.addAll(Util.getFileListing(file, filter));
+			} else if (recurse) {
+				result.addAll(
+					getFileListing(
+						file.listFiles(filter), filter, recurse));
 			}
 		}
 		
@@ -141,7 +140,7 @@ public class Util {
 		FileSystemView fsv = FileSystemView.getFileSystemView();
 		File dirF = fsv.getParentDirectory(new File(directory.getName(), "C$"));
 
-		return checkExtension(dirF.listFiles(), filter);
+		return getFileListing(dirF.listFiles(), filter, true);
 	}
 
 	/**

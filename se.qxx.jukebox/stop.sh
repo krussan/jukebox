@@ -1,10 +1,13 @@
 PID=`cat jukebox.pid`
 
-echo Stopping jukebox with pid :: $PID
-#kill $PID
-
-echo Creating stopper file
-touch stopper.stp
+if [ "$1" = "-p" ]; then
+	echo Stopping jukebox with pid :: $PID
+	kill $PID
+else
+	touch stopper.stp
+	
+	sleep 5
+fi
 
 echo Killing all ffmpeg processes
 pkill ffmpeg

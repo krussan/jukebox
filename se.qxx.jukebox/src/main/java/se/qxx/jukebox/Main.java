@@ -94,7 +94,8 @@ public class Main implements Runnable, INotifyClient
 			ExtensionFileFilter filter = new ExtensionFileFilter();
 			filter.addExtension("xml");
 			filter.addExtension("stp");
-			FileSystemWatcher w = new  FileSystemWatcher(".", filter, true, true);
+			FileSystemWatcher w = new  FileSystemWatcher(".", filter, true, true, false);
+			w.setSleepTime(1000);
 			w.registerClient(this);
 
 			// start by acquiring the semaphore

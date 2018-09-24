@@ -133,7 +133,7 @@ public class DB {
 	public static Movie findMovie(String identifiedTitle) {
 		String searchString = replaceSearchString(identifiedTitle);
 		
-		Log.Debug(String.format("DB :: Series search string :: %s", searchString), LogType.MAIN);
+		Log.Debug(String.format("DB :: Series search string :: %s", searchString), LogType.FIND);
 		 
 		try {
 			ProtoDB db = getProtoDBInstance();
@@ -153,7 +153,7 @@ public class DB {
 			}
 			
 		} catch (Exception e) {
-			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
+			Log.Error("failed to get information from database", Log.LogType.FIND, e);
 //			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
 			
 			return null;
