@@ -17,6 +17,8 @@ import se.qxx.jukebox.tools.Util;
 public class DownloadChecker implements Runnable {
 	private static DownloadChecker _instance;
 	private boolean isRunning;
+
+	private Object syncObject = new Object();
 	
 	private Map<String, FileRepresentationState> files = new HashMap<String, FileRepresentationState>();
 	// <string, string>
@@ -166,7 +168,14 @@ public class DownloadChecker implements Runnable {
 	 */
 	private void checkFileNotPresentInMap(FileRepresentationState fs, String filename) {
 		//check DB flag
-		Media md = DB.getMediaByFilename(fs.getName());
+		Media md = null;
+		
+		// this check is trigered from every file system watcher,
+		// these threads quickly gets many. hence the synchronization
+		synchronized(syncObject) {
+			md = DB.getMediaByFilename(fs.getName());
+		}
+		
 		if (md != null) {
 			// media exist. set State to INIT
 			// check if download is marked as complete already
