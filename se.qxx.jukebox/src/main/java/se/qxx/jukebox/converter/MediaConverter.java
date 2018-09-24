@@ -20,6 +20,7 @@ import net.bramp.ffmpeg.probe.FFmpegProbeResult;
 import net.bramp.ffmpeg.progress.Progress;
 import net.bramp.ffmpeg.progress.ProgressListener;
 import se.qxx.jukebox.DB;
+import se.qxx.jukebox.JukeboxThread;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.converter.MediaConverterResult.State;
@@ -28,16 +29,15 @@ import se.qxx.jukebox.domain.JukeboxDomain.MediaConverterState;
 import se.qxx.jukebox.tools.Util;
 import se.qxx.protodb.Logger;
 
-public class MediaConverter implements Runnable {
+public class MediaConverter extends JukeboxThread {
 
 	private static MediaConverter _instance;
-	private boolean isRunning;
-	private static final int THREAD_WAIT_SECONDS = 3000;
 	private static boolean converting = false;
 	
 	private Thread converterThread;
 
 	private MediaConverter() {
+		super("MediaConverter", 3000, LogType.CONVERTER);
 	}
 
 	public static MediaConverter get() {
@@ -48,61 +48,43 @@ public class MediaConverter implements Runnable {
 	}
 
 	@Override
-	public void run() {
-		this.setRunning(true);
-
+	protected void initialize() {
 		Log.Info("Starting up converter thread [...]", LogType.CONVERTER);
-		Util.waitForSettings();
-
-		mainLoop();
-	}
-
-	protected void mainLoop() {
 		Log.Debug("Cleaning up converter queue ..", LogType.CONVERTER);
 		DB.cleanupConverterQueue();
 		
 		Log.Debug("Retrieving list to process", LogType.CONVERTER);
+
+	}
+
+	@Override
+	protected void execute() {
 		List<Media> _listProcessing = DB.getConverterQueue();
 
-		while (isRunning()) {
-			//MediaConverterState resultState = MediaConverterState.Failed;
-
+		for (Media md : _listProcessing) {
 			try {
-				for (Media md : _listProcessing) {
-					try {
-						if (md != null) {
-							if (needsConversion(md)) {
-								saveConvertedMedia(md, MediaConverterState.Converting);
-								MediaConverterResult result = triggerConverter(md);
-								
-								if (result.getState() == State.Completed) {
-									saveConvertedMedia(md, result.getConvertedFilename());
-								}
-								else if (result.getState() == State.Aborted) {
-									saveConvertedMedia(md, MediaConverterState.Queued);
-								}
-								else {
-									saveConvertedMedia(md, MediaConverterState.Failed);
-								}
-							}
-							else {
-								saveConvertedMedia(md, MediaConverterState.NotNeeded);
-							}
+				if (md != null) {
+					if (needsConversion(md)) {
+						saveConvertedMedia(md, MediaConverterState.Converting);
+						MediaConverterResult result = triggerConverter(md);
+						
+						if (result.getState() == MediaConverterResult.State.Completed) {
+							saveConvertedMedia(md, result.getConvertedFilename());
 						}
-					} catch (Exception e) {
-						Log.Error("Error when converting media", LogType.CONVERTER, e);
-						saveConvertedMedia(md, MediaConverterState.Failed);
+						else if (result.getState() == MediaConverterResult.State.Aborted) {
+							saveConvertedMedia(md, MediaConverterState.Queued);
+						}
+						else {
+							saveConvertedMedia(md, MediaConverterState.Failed);
+						}
+					}
+					else {
+						saveConvertedMedia(md, MediaConverterState.NotNeeded);
 					}
 				}
-
-				// wait for trigger
-				synchronized (_instance) {
-					_instance.wait(THREAD_WAIT_SECONDS);
-					_listProcessing = DB.getConverterQueue();
-				}
-
-			} catch (InterruptedException e) {
-				Log.Error("SUBS :: MediaConverter is going down ...", LogType.CONVERTER, e);
+			} catch (Exception e) {
+				Log.Error("Error when converting media", LogType.CONVERTER, e);
+				saveConvertedMedia(md, MediaConverterState.Failed);
 			}
 		}
 	}
@@ -168,17 +150,17 @@ public class MediaConverter implements Runnable {
 			converterThread.join();
 			
 			Log.Debug(String.format("Conversion completed on :: %s", filename), LogType.CONVERTER);
-			return new MediaConverterResult(filename, newFilepath, State.Completed);
+			return new MediaConverterResult(filename, newFilepath, MediaConverterResult.State.Completed);
 
 		}
 		catch (InterruptedException iex) {
 			Log.Info("Interrupt triggerd",  LogType.CONVERTER);
-			return new MediaConverterResult(filename, StringUtils.EMPTY, State.Aborted);
+			return new MediaConverterResult(filename, StringUtils.EMPTY, MediaConverterResult.State.Aborted);
 		}
 		catch (Exception e) {
 			// TODO Auto-generated catch block
 			Log.Error("Error when converting file",  LogType.CONVERTER, e);
-			return new MediaConverterResult(filename, StringUtils.EMPTY, State.Error);
+			return new MediaConverterResult(filename, StringUtils.EMPTY, MediaConverterResult.State.Error);
 		}
 
 		// String cmd = String.format("ffmpeg -i %s -copy %s", )
@@ -201,17 +183,10 @@ public class MediaConverter implements Runnable {
 
 	}
 
-	public boolean isRunning() {
-		return isRunning;
-	}
-
-	public void setRunning(boolean isRunning) {
-		this.isRunning = isRunning;
-	}
-
-	public void stop() {
-		this.setRunning(false);
+	@Override
+	public void end() {
 		converterThread.interrupt();
+		super.end();
 	}
 
 }

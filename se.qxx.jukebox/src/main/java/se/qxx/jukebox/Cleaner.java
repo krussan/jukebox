@@ -13,18 +13,12 @@ import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.tools.Util;
 import se.qxx.protodb.exceptions.DatabaseNotSupportedException;
 
-public class Cleaner implements Runnable {
-	private boolean isRunning;
-
-	public boolean isRunning() {
-		return isRunning;
-	}
-
-	public void setRunning(boolean isRunning) {
-		this.isRunning = isRunning;
-	}
-
+public class Cleaner extends JukeboxThread {
 	private static Cleaner _instance = null; 
+	
+	public Cleaner() {
+		super("Cleaner", 30*60*1000, LogType.FIND);
+	}
 	
 	public static Cleaner get() {
 		if (_instance == null)
@@ -34,31 +28,26 @@ public class Cleaner implements Runnable {
 	}
 
 	@Override
-	public void run() {
-		this.setRunning(true);
-		Util.waitForSettings();
-		mainLoop();
+	protected void initialize() {
 	}
-	
-	private void mainLoop() {
-		while(this.isRunning()) {
-			Log.Info("Starting up cleaner thread", LogType.FIND);
-			try {
-				Log.Info("Cleaning up movies", LogType.FIND);
-				cleanMovies();	
-				
-				Thread.sleep(15 * 60 * 1000);
-				Log.Info("Cleaning up episodes", LogType.FIND);
-				cleanEpisodes();
-				
-				Thread.sleep(15 * 60 * 1000);
-				Log.Info("Cleaning up empty series", LogType.FIND);
-				cleanEmptySeries();
+
+	@Override
+	protected void execute() {
+		Log.Info("Starting up cleaner thread", LogType.FIND);
+		try {
+			Log.Info("Cleaning up movies", LogType.FIND);
+			cleanMovies();	
 			
-				Thread.sleep(30 * 60 * 1000);
-			} catch (InterruptedException e) {
-				Log.Info("Cleaner thread is shutting down", LogType.FIND);
-			}
+			Thread.sleep(15 * 60 * 1000);
+			Log.Info("Cleaning up episodes", LogType.FIND);
+			cleanEpisodes();
+			
+			Thread.sleep(15 * 60 * 1000);
+			Log.Info("Cleaning up empty series", LogType.FIND);
+			cleanEmptySeries();
+		
+		} catch (InterruptedException e) {
+			Log.Info("Cleaner thread is shutting down", LogType.FIND);
 		}
 	}
 	
@@ -112,7 +101,5 @@ public class Cleaner implements Runnable {
 		return f.exists();
 	}
 
-	public void stop() {
-		this.setRunning(false);
-	}
+
 }

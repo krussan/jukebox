@@ -2,6 +2,7 @@ package se.qxx.jukebox;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
 import se.qxx.jukebox.tools.Util;
@@ -20,12 +21,17 @@ import se.qxx.jukebox.settings.Settings;
 public class Main implements Runnable, INotifyClient
 {
 	private Boolean isRunning;
-	private Thread subtitleDownloaderThread;
-	private Thread identifierThread; 
-	private Thread cleanerThread;
-	private Thread mediaConverterThread;
-	private Thread downloadCheckerThread;
+	private List<JukeboxThread> threadPool = new ArrayList<JukeboxThread>();
+//	private Thread subtitleDownloaderThread;
+//	private Thread identifierThread; 
+//	private Thread cleanerThread;
+//	private Thread mediaConverterThread;
+//	private Thread downloadCheckerThread;
 	
+	public List<JukeboxThread> getThreadPool() {
+		return threadPool;
+	}
+
 	public Boolean getIsRunning() {
 		return isRunning;
 	}
@@ -33,8 +39,6 @@ public class Main implements Runnable, INotifyClient
 	public void setIsRunning(Boolean isRunning) {
 		this.isRunning = isRunning;
 	}
-
-	private TcpListener _listener;
 	
 	ArrayList<FileSystemWatcher> watchers = new ArrayList<FileSystemWatcher>();
 	java.util.concurrent.Semaphore s = new java.util.concurrent.Semaphore(1);	
@@ -50,13 +54,12 @@ public class Main implements Runnable, INotifyClient
 			System.out.println("Starting threads ...");
 			if (Arguments.get().isTcpListenerEnabled()) {
 				System.out.println("Starting TCP listener");
-				setupListening();
+				startupThread(new TcpListener());;
 			}
 			
 			if (Arguments.get().isSubtitleDownloaderEnabled()) {
 				System.out.println("Starting subtitle downloader");
-				subtitleDownloaderThread = new Thread(SubtitleDownloader.get());
-				subtitleDownloaderThread.start();
+				startupThread(SubtitleDownloader.get());
 			}
 			
 			if (Arguments.get().isWebServerEnabled()) {
@@ -66,26 +69,22 @@ public class Main implements Runnable, INotifyClient
 			
 			if (Arguments.get().isWatcherEnabled()) {
 				System.out.println("Starting watcher thread");
-				identifierThread = new Thread(MovieIdentifier.get());
-				identifierThread.start();
+				startupThread(MovieIdentifier.get());
 			}
 			
 			if (Arguments.get().isCleanerEnabled()) {
 				System.out.println("Starting cleaner thread");
-				cleanerThread = new Thread(Cleaner.get());
-				cleanerThread.start();
+				startupThread(Cleaner.get());
 			}
 			
 			if (Arguments.get().isMediaConverterEnabled()) {
 				System.out.println("Starting media converter");
-				mediaConverterThread = new Thread(MediaConverter.get());
-				mediaConverterThread.start();
+				startupThread(MediaConverter.get());
 			}
 			
 			if (Arguments.get().isDownloadCheckerEnabled()) {
 				System.out.println("Starting download checker");
-				downloadCheckerThread = new Thread(DownloadChecker.get());
-				downloadCheckerThread.start();
+				startupThread(DownloadChecker.get());
 			}
 			
 			this.setIsRunning(true);;
@@ -94,10 +93,11 @@ public class Main implements Runnable, INotifyClient
 			ExtensionFileFilter filter = new ExtensionFileFilter();
 			filter.addExtension("xml");
 			filter.addExtension("stp");
-			FileSystemWatcher w = new  FileSystemWatcher(".", filter, true, true, false);
+			FileSystemWatcher w = new FileSystemWatcher(".", filter, true, true, false);
 			w.setSleepTime(1000);
 			w.registerClient(this);
-
+			w.startListening();
+			
 			// start by acquiring the semaphore
 			s.acquire();
 
@@ -122,6 +122,11 @@ public class Main implements Runnable, INotifyClient
 		Log.Info("Shutdown completed!", LogType.MAIN);
 	}
 	
+	private void startupThread(JukeboxThread t) {
+		this.getThreadPool().add(t);
+		t.start();
+	}
+
 	private void cleanupStopperFile() {
 		File f = new File("stopper.stp");
 		if (f.exists()) {
@@ -132,38 +137,15 @@ public class Main implements Runnable, INotifyClient
 
 	public void stop() {
 		Log.Info("Server is shutting down ...", LogType.MAIN);
-		
-		System.out.println("Stopping tcp listener ...");
-		stopListening();
 
-		// stop cleaner thred
-		System.out.println("Stopping cleaner thread ...");
-		Cleaner.get().stop();
-		cleanerThread.interrupt();
-		
-		// stop download checker
-		System.out.println("Stopping download checker ...");
-		DownloadChecker.get().stop();
-		downloadCheckerThread.interrupt();
-		
-		// stop ffmpeg processes
-		System.out.println("Stopping media converter and ffmpeg threads ...");
-		MediaConverter.get().stop();
-		mediaConverterThread.interrupt(); 		
-		
 		// stop web server
 		System.out.println("Stopping web server ...");
 		StreamingWebServer.get().stop();
-		
-		// stop subtitle thread
-		System.out.println("Stopping subtitle downloader ...");
-		SubtitleDownloader.get().stop();
-		subtitleDownloaderThread.interrupt();
-		
-		// stop identifier
-		System.out.println("Stopping identifier ...");
-		MovieIdentifier.get().stop(); 
-		identifierThread.interrupt();
+
+		// stop all jukebox threads
+		for (JukeboxThread t : this.getThreadPool()) {
+			t.end();
+		}		
 		
 		// stop main thread
 		System.out.println("Stopping server ...");
@@ -172,11 +154,13 @@ public class Main implements Runnable, INotifyClient
 	}
 	
 	public void fileModified(FileRepresentation f) {
+		Log.Debug(String.format("-- file modified :: %s", f.getName()), LogType.MAIN);
 		if (f.getName().endsWith("xml"))
 			s.release();
 	}
 	
 	public void fileCreated(FileRepresentation f){
+		Log.Debug(String.format("-- file created :: %s", f.getName()), LogType.MAIN);
 		if (f.getName().endsWith("stp"))
 			stop();
 	}
@@ -197,7 +181,7 @@ public class Main implements Runnable, INotifyClient
 			File path = new File(c.getPath());
 			
 			if (path.exists()) {
-				FileSystemWatcher f = new FileSystemWatcher(c.getPath(), ff, true, true);
+				FileSystemWatcher f = new FileSystemWatcher(c.getPath(), ff, true, true, true);
 			
 				Log.Debug(String.format("Starting listening on :: %s", c.getPath()), Log.LogType.FIND);
 			
@@ -209,25 +193,5 @@ public class Main implements Runnable, INotifyClient
 			}
 		}
 	}
-	
-	private void setupListening() {
-		try {
-			_listener = new TcpListener();
-			Thread t = new Thread(_listener);
-			t.start();
-		}
-		catch (Exception e) {
-			
-		}
-	}
-	
-	private void stopListening() {
-		try {
-			_listener.stopListening();
-		}
-		catch (Exception e) {
-			
-		}
-	}	
 	
 }

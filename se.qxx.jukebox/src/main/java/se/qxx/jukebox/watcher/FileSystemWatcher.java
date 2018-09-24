@@ -157,17 +157,9 @@ public class FileSystemWatcher implements Runnable {
 			currentRepresentation = getCurrentRepresentation();
 
 			for (FileRepresentation f : currentRepresentation) {
-				if (!this.getFiles().contains(f) && this.isWatchCreated())
+				if (!fileExistsInCurrentRepresentation(f)) {				
 					notifyCreated(f);
-
-				for (FileRepresentation o : files) {
-					if (o.getName() == f.getName()) {
-						if (o.getLastModified() != f.getLastModified() && this.isWatchModified()) {
-							notifyModified(f);
-						}
-					}
 				}
-
 			}
 
 			files = currentRepresentation;
@@ -179,6 +171,20 @@ public class FileSystemWatcher implements Runnable {
 			}
 		}
 
+	}
+
+	private boolean fileExistsInCurrentRepresentation(FileRepresentation f) {
+		for (FileRepresentation o : files) {
+			if (o.getName().equals(f.getName())) {
+				if (o.getLastModified() != f.getLastModified() && this.isWatchModified()) {
+					notifyModified(f);
+				}
+				
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 	public void startListening() {

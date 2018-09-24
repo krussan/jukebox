@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Queue;
 
 import se.qxx.jukebox.DB;
+import se.qxx.jukebox.JukeboxThread;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.MovieIdentifier;
@@ -14,12 +15,9 @@ import se.qxx.jukebox.converter.FileRepresentationState;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.tools.Util;
 
-public class DownloadChecker implements Runnable {
+public class DownloadChecker extends JukeboxThread {
 	private static DownloadChecker _instance;
-	private boolean isRunning;
 
-	private Object syncObject = new Object();
-	
 	private Map<String, FileRepresentationState> files = new HashMap<String, FileRepresentationState>();
 	// <string, string>
 	// <filename - FileRepresentation, state, exist in db?, downloadflag from db>
@@ -42,15 +40,8 @@ public class DownloadChecker implements Runnable {
 	// ------state WATCH
 	
 	
-	public boolean isRunning() {
-		return isRunning;
-	}
-
-	public void setRunning(boolean isRunning) {
-		this.isRunning = isRunning;
-	}
-	
 	private DownloadChecker() {
+		super("DownloadChecker", 300000, LogType.FIND);
 	}
 	
 	public static DownloadChecker get() {
@@ -61,43 +52,33 @@ public class DownloadChecker implements Runnable {
 	}
 	
 	@Override
-	public void run() {
-		this.setRunning(true);
-		Util.waitForSettings();
-
-		mainLoop();
+	protected void initialize() {
 	}
 	
-	private void mainLoop() {
-		while(this.isRunning()) {
-			// check all files in map that is not marked as DONE
-			for (String filename : this.files.keySet()) {
-				FileRepresentationState fs = this.files.get(filename);
-				switch (fs.getState()) {
-				case CHANGED:
-					// reset state to INIT 
-					resetFile(fs, filename);
-					break;
-				case INIT:
-					// if nothing happened on the file then mark it as completed
-					markCompleted(fs, filename);
-					break;
-				case WAIT:
-					// check DB again. If present change to INIT
-					checkFileNotPresentInMap(fs, filename);
-					break;
-				case DONE:
-					// do nothing. Done files are not handled
-					break;					
-				default:
-					break;
-				
-				}
-			}
+	@Override
+	protected void execute() {		
+		// check all files in map that is not marked as DONE
+		for (String filename : this.files.keySet()) {
+			FileRepresentationState fs = this.files.get(filename);
+			switch (fs.getState()) {
+			case CHANGED:
+				// reset state to INIT 
+				resetFile(fs, filename);
+				break;
+			case INIT:
+				// if nothing happened on the file then mark it as completed
+				markCompleted(fs, filename);
+				break;
+			case WAIT:
+				// check DB again. If present change to INIT
+				checkFileNotPresentInMap(fs, filename);
+				break;
+			case DONE:
+				// do nothing. Done files are not handled
+				break;					
+			default:
+				break;
 			
-			try { Thread.sleep(300000); } 
-			catch (InterruptedException e) {
-				Log.Debug("Download checker is shutting down", LogType.FIND);
 			}
 		}
 			
@@ -172,7 +153,7 @@ public class DownloadChecker implements Runnable {
 		
 		// this check is trigered from every file system watcher,
 		// these threads quickly gets many. hence the synchronization
-		synchronized(syncObject) {
+		synchronized(_instance) {
 			md = DB.getMediaByFilename(fs.getName());
 		}
 		
@@ -204,9 +185,4 @@ public class DownloadChecker implements Runnable {
 			this.files.put(filename, fs);
 		}
 	}
-
-	public void stop() {
-		this.setRunning(false);
-	}
-
 }

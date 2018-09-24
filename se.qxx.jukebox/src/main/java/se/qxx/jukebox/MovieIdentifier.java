@@ -22,13 +22,14 @@ import se.qxx.jukebox.tools.MediaMetadata;
 import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.watcher.FileRepresentation;
 
-public class MovieIdentifier implements Runnable {
+public class MovieIdentifier extends JukeboxThread {
 	
 	private static MovieIdentifier _instance;
 	private Queue<FileRepresentation> files;
 	private boolean isRunning;
 	
 	private MovieIdentifier() {
+		super("MovieIdentifier", 0, LogType.FIND);
 		this.files = new LinkedList<FileRepresentation>();
 	}
 	
@@ -40,28 +41,18 @@ public class MovieIdentifier implements Runnable {
 	}
 	
 	@Override
-	public void run() {
-		this.setRunning(true);
-		Util.waitForSettings();
-
-		mainLoop();
+	protected void initialize() {
+		
 	}
 	
-	private void mainLoop() {
-		while(this.isRunning()) {	
-			if (this.files.isEmpty()) {
-				synchronized (_instance) {
-					try { _instance.wait(); } catch (InterruptedException e) {}
-				}
-			}
+	@Override
+	protected void execute() {
+		if (!this.files.isEmpty()) {
 			FileRepresentation f = this.files.poll();
 			
 			if (f != null)
 				identify(f);
-			
 		}
-		
-		
 	}
 
 	public void addFile(FileRepresentation f)  {
@@ -73,14 +64,6 @@ public class MovieIdentifier implements Runnable {
 		}
 	}
 
-	public boolean isRunning() {
-		return isRunning;
-	}
-
-	public void setRunning(boolean isRunning) {
-		this.isRunning = isRunning;
-	}
-	
 	private void identify(FileRepresentation f) {
 		Log.Debug(String.format("Identifying :: %s", f.getName()), Log.LogType.FIND);		
 
@@ -437,9 +420,5 @@ public class MovieIdentifier implements Runnable {
 			}
 		}
 		return false;
-	}
-	
-	public void stop() {
-		this.setRunning(false);
 	}
 }

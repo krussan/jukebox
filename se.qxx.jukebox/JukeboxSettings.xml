@@ -3,7 +3,7 @@
   <catalogs>
     <catalog includeSubdirectories="true" path="/media/ultra/BitTorrent">
       <localPaths>
-      	<path player="vlc_main" path="file:///media/ultra/BitTorrent" />
+      	<path player="vlc_main" path="file:///media/ultra/BitTorrent2" />
       	<path player="black_hell_front" path="file:///Z:/BitTorrent" />
       </localPaths>
       <extensions>
