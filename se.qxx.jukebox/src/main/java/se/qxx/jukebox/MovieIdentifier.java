@@ -438,4 +438,8 @@ public class MovieIdentifier implements Runnable {
 		}
 		return false;
 	}
+	
+	public void stop() {
+		this.setRunning(false);
+	}
 }

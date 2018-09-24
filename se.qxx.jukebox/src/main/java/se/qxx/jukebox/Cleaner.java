@@ -57,7 +57,7 @@ public class Cleaner implements Runnable {
 			
 				Thread.sleep(30 * 60 * 1000);
 			} catch (InterruptedException e) {
-				break;
+				Log.Info("Cleaner thread is shutting down", LogType.FIND);
 			}
 		}
 	}
@@ -110,5 +110,9 @@ public class Cleaner implements Runnable {
 	private boolean mediaExists(Media md) {
 		File f = new File(Util.getFullFilePath(md));
 		return f.exists();
+	}
+
+	public void stop() {
+		this.setRunning(false);
 	}
 }

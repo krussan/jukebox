@@ -12,13 +12,28 @@ import se.qxx.jukebox.watcher.FileRepresentation;
 import se.qxx.jukebox.watcher.FileSystemWatcher;
 import se.qxx.jukebox.watcher.INotifyClient;
 import se.qxx.jukebox.webserver.StreamingWebServer;
+import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.converter.MediaConverter;
 import se.qxx.jukebox.servercomm.TcpListener;
 import se.qxx.jukebox.settings.Settings;
 
 public class Main implements Runnable, INotifyClient
 {
-	private Boolean isRunning = false;
+	private Boolean isRunning;
+	private Thread subtitleDownloaderThread;
+	private Thread identifierThread; 
+	private Thread cleanerThread;
+	private Thread mediaConverterThread;
+	private Thread downloadCheckerThread;
+	
+	public Boolean getIsRunning() {
+		return isRunning;
+	}
+
+	public void setIsRunning(Boolean isRunning) {
+		this.isRunning = isRunning;
+	}
+
 	private TcpListener _listener;
 	
 	ArrayList<FileSystemWatcher> watchers = new ArrayList<FileSystemWatcher>();
@@ -27,6 +42,8 @@ public class Main implements Runnable, INotifyClient
 	public void run() {
 		
 		try {
+			cleanupStopperFile();
+			
 			System.out.println("Initializing settings");
 			Settings.initialize();
 			
@@ -38,7 +55,7 @@ public class Main implements Runnable, INotifyClient
 			
 			if (Arguments.get().isSubtitleDownloaderEnabled()) {
 				System.out.println("Starting subtitle downloader");
-				Thread subtitleDownloaderThread = new Thread(SubtitleDownloader.get());
+				subtitleDownloaderThread = new Thread(SubtitleDownloader.get());
 				subtitleDownloaderThread.start();
 			}
 			
@@ -49,40 +66,41 @@ public class Main implements Runnable, INotifyClient
 			
 			if (Arguments.get().isWatcherEnabled()) {
 				System.out.println("Starting watcher thread");
-				Thread identifierThread = new Thread(MovieIdentifier.get());
+				identifierThread = new Thread(MovieIdentifier.get());
 				identifierThread.start();
 			}
 			
 			if (Arguments.get().isCleanerEnabled()) {
 				System.out.println("Starting cleaner thread");
-				Thread cleanerThread = new Thread(Cleaner.get());
+				cleanerThread = new Thread(Cleaner.get());
 				cleanerThread.start();
 			}
 			
 			if (Arguments.get().isMediaConverterEnabled()) {
 				System.out.println("Starting media converter");
-				Thread mediaConverterThread = new Thread(MediaConverter.get());
+				mediaConverterThread = new Thread(MediaConverter.get());
 				mediaConverterThread.start();
 			}
 			
 			if (Arguments.get().isDownloadCheckerEnabled()) {
 				System.out.println("Starting download checker");
-				Thread downloadCheckerThread = new Thread(DownloadChecker.get());
+				downloadCheckerThread = new Thread(DownloadChecker.get());
 				downloadCheckerThread.start();
 			}
 			
-			isRunning = true;
+			this.setIsRunning(true);;
 			
 			System.out.println("Setting watcher on configuration file");
 			ExtensionFileFilter filter = new ExtensionFileFilter();
 			filter.addExtension("xml");
-			FileSystemWatcher w = new  FileSystemWatcher(".", filter, false, true);
+			filter.addExtension("stp");
+			FileSystemWatcher w = new  FileSystemWatcher(".", filter, true, true);
 			w.registerClient(this);
 
 			// start by acquiring the semaphore
 			s.acquire();
 
-			while (isRunning) {
+			while (this.getIsRunning()) {
 				if (Arguments.get().isWatcherEnabled()) {
 					System.out.println("Starting up watcher thred");
 					setupCatalogs();
@@ -99,19 +117,67 @@ public class Main implements Runnable, INotifyClient
 			System.out.println(e.toString());
 			e.printStackTrace();
 		}
+		
+		Log.Info("Shutdown completed!", LogType.MAIN);
 	}
 	
+	private void cleanupStopperFile() {
+		File f = new File("stopper.stp");
+		if (f.exists()) {
+			Log.Debug("Cleaning up stopper file", LogType.MAIN);
+			f.delete();
+		}
+	}
+
 	public void stop() {
-		isRunning = false;
-		s.release();
+		Log.Info("Server is shutting down ...", LogType.MAIN);
+		
+		System.out.println("Stopping tcp listener ...");
 		stopListening();
+
+		// stop cleaner thred
+		System.out.println("Stopping cleaner thread ...");
+		Cleaner.get().stop();
+		cleanerThread.interrupt();
+		
+		// stop download checker
+		System.out.println("Stopping download checker ...");
+		DownloadChecker.get().stop();
+		downloadCheckerThread.interrupt();
+		
+		// stop ffmpeg processes
+		System.out.println("Stopping media converter and ffmpeg threads ...");
+		MediaConverter.get().stop();
+		mediaConverterThread.interrupt(); 		
+		
+		// stop web server
+		System.out.println("Stopping web server ...");
+		StreamingWebServer.get().stop();
+		
+		// stop subtitle thread
+		System.out.println("Stopping subtitle downloader ...");
+		SubtitleDownloader.get().stop();
+		subtitleDownloaderThread.interrupt();
+		
+		// stop identifier
+		System.out.println("Stopping identifier ...");
+		MovieIdentifier.get().stop(); 
+		identifierThread.interrupt();
+		
+		// stop main thread
+		System.out.println("Stopping server ...");
+		this.setIsRunning(false);
+		s.release();
 	}
 	
 	public void fileModified(FileRepresentation f) {
-		s.release();
+		if (f.getName().endsWith("xml"))
+			s.release();
 	}
 	
 	public void fileCreated(FileRepresentation f){
+		if (f.getName().endsWith("stp"))
+			stop();
 	}
 	
 	private void setupCatalogs(){

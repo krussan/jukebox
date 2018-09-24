@@ -97,7 +97,7 @@ public class DownloadChecker implements Runnable {
 			
 			try { Thread.sleep(300000); } 
 			catch (InterruptedException e) {
-				this.setRunning(false);
+				Log.Debug("Download checker is shutting down", LogType.FIND);
 			}
 		}
 			
@@ -203,6 +203,10 @@ public class DownloadChecker implements Runnable {
 		synchronized(_instance) {
 			this.files.put(filename, fs);
 		}
+	}
+
+	public void stop() {
+		this.setRunning(false);
 	}
 
 }

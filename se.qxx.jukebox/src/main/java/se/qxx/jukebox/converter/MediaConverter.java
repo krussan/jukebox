@@ -22,6 +22,7 @@ import net.bramp.ffmpeg.progress.ProgressListener;
 import se.qxx.jukebox.DB;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.converter.MediaConverterResult.State;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.MediaConverterState;
 import se.qxx.jukebox.tools.Util;
@@ -33,6 +34,8 @@ public class MediaConverter implements Runnable {
 	private boolean isRunning;
 	private static final int THREAD_WAIT_SECONDS = 3000;
 	private static boolean converting = false;
+	
+	private Thread converterThread;
 
 	private MediaConverter() {
 	}
@@ -62,7 +65,7 @@ public class MediaConverter implements Runnable {
 		List<Media> _listProcessing = DB.getConverterQueue();
 
 		while (isRunning()) {
-			MediaConverterState result = MediaConverterState.Failed;
+			//MediaConverterState resultState = MediaConverterState.Failed;
 
 			try {
 				for (Media md : _listProcessing) {
@@ -70,10 +73,13 @@ public class MediaConverter implements Runnable {
 						if (md != null) {
 							if (needsConversion(md)) {
 								saveConvertedMedia(md, MediaConverterState.Converting);
-								String newFilename = triggerConverter(md);
+								MediaConverterResult result = triggerConverter(md);
 								
-								if (!StringUtils.isEmpty(newFilename) ) {
-									saveConvertedMedia(md, newFilename);
+								if (result.getState() == State.Completed) {
+									saveConvertedMedia(md, result.getConvertedFilename());
+								}
+								else if (result.getState() == State.Aborted) {
+									saveConvertedMedia(md, MediaConverterState.Queued);
 								}
 								else {
 									saveConvertedMedia(md, MediaConverterState.Failed);
@@ -108,7 +114,7 @@ public class MediaConverter implements Runnable {
 		return !FilenameUtils.getExtension(md.getFilename()).equalsIgnoreCase("mp4");
 	}
 
-	private String triggerConverter(Media md) throws IOException {
+	private MediaConverterResult triggerConverter(Media md) throws IOException {
 		FFmpeg ffmpeg = new FFmpeg();
 		FFprobe ffprobe = new FFprobe();
 
@@ -154,22 +160,25 @@ public class MediaConverter implements Runnable {
 			}
 			
 		});
-
-		
 		
 		try {
-			Thread t = new Thread(job);
-			t.start();
+			converterThread = new Thread(job);
+			converterThread.start();
 			
-			t.join();
+			converterThread.join();
 			
 			Log.Debug(String.format("Conversion completed on :: %s", filename), LogType.CONVERTER);
-			return newFilename;
+			return new MediaConverterResult(filename, newFilepath, State.Completed);
 
-		} catch (Exception e) {
+		}
+		catch (InterruptedException iex) {
+			Log.Info("Interrupt triggerd",  LogType.CONVERTER);
+			return new MediaConverterResult(filename, StringUtils.EMPTY, State.Aborted);
+		}
+		catch (Exception e) {
 			// TODO Auto-generated catch block
 			Log.Error("Error when converting file",  LogType.CONVERTER, e);
-			return StringUtils.EMPTY;
+			return new MediaConverterResult(filename, StringUtils.EMPTY, State.Error);
 		}
 
 		// String cmd = String.format("ffmpeg -i %s -copy %s", )
@@ -198,6 +207,11 @@ public class MediaConverter implements Runnable {
 
 	public void setRunning(boolean isRunning) {
 		this.isRunning = isRunning;
+	}
+
+	public void stop() {
+		this.setRunning(false);
+		converterThread.interrupt();
 	}
 
 }

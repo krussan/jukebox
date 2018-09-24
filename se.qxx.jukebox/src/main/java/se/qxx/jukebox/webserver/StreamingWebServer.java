@@ -535,5 +535,9 @@ public class StreamingWebServer extends NanoHTTPD {
 				streamingFile);
 	}
 	
+	public void stop() {
+		_instance.stop();
+	}
+	
 
 }
