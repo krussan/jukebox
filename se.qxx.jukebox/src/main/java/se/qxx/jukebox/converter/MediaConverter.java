@@ -32,8 +32,6 @@ import se.qxx.protodb.Logger;
 public class MediaConverter extends JukeboxThread {
 
 	private static MediaConverter _instance;
-	private static boolean converting = false;
-	
 	private Thread converterThread;
 
 	private MediaConverter() {
@@ -52,13 +50,12 @@ public class MediaConverter extends JukeboxThread {
 		Log.Info("Starting up converter thread [...]", LogType.CONVERTER);
 		Log.Debug("Cleaning up converter queue ..", LogType.CONVERTER);
 		DB.cleanupConverterQueue();
-		
-		Log.Debug("Retrieving list to process", LogType.CONVERTER);
 
 	}
 
 	@Override
 	protected void execute() {
+		Log.Debug("Retrieving list to process", LogType.CONVERTER);
 		List<Media> _listProcessing = DB.getConverterQueue();
 
 		for (Media md : _listProcessing) {
@@ -152,24 +149,35 @@ public class MediaConverter extends JukeboxThread {
 			
 			converterThread.join();
 			
-			Log.Debug(String.format("Conversion completed on :: %s", filename), LogType.CONVERTER);
-			return new MediaConverterResult(filename, newFilepath, MediaConverterResult.State.Completed);
 
+			FFmpegJob.State state = job.getState();
+			
+			switch (state) {
+			case FINISHED:
+				Log.Debug(String.format("Conversion completed on :: %s", filename), LogType.CONVERTER);
+				return new MediaConverterResult(filename, newFilepath, MediaConverterResult.State.Completed);
+			case FAILED:
+				Log.Debug(String.format("Conversion FAILED on :: %s", filename), LogType.CONVERTER);
+				break;
+			case RUNNING:
+				Log.Debug(String.format("Conversion STILL RUNNING on :: %s", filename), LogType.CONVERTER);
+				break;
+			case WAITING:
+				Log.Debug(String.format("Conversion WAITING on :: %s", filename), LogType.CONVERTER);
+				break;
+			}
+			
+			return new MediaConverterResult(filename, newFilepath, MediaConverterResult.State.Error);
+			
 		}
 		catch (InterruptedException iex) {
-			Log.Info("Interrupt triggerd",  LogType.CONVERTER);
+			Log.Info("Interrupt triggered",  LogType.CONVERTER);
 			return new MediaConverterResult(filename, StringUtils.EMPTY, MediaConverterResult.State.Aborted);
 		}
 		catch (Exception e) {
-			// TODO Auto-generated catch block
 			Log.Error("Error when converting file",  LogType.CONVERTER, e);
 			return new MediaConverterResult(filename, StringUtils.EMPTY, MediaConverterResult.State.Error);
 		}
-
-		// String cmd = String.format("ffmpeg -i %s -copy %s", )
-		// ffmpeg -i Atomic.Blonde.2017.720p.HC.HDRip.850MB.MkvCage.mkv -c:a copy -c:v
-		// copy Atomic.Blonde.2017.720p.HC.HDRip.850MB.MkvCage_jukebox.mp4
-
 	}
 
 	private void saveConvertedMedia(Media md, String newFilename) {
@@ -188,9 +196,11 @@ public class MediaConverter extends JukeboxThread {
 
 	@Override
 	public void end() {
-		if (converterThread != null)
+		if (converterThread != null) {
+			Log.Debug("Stopping converter thread", LogType.CONVERTER);
 			converterThread.interrupt();
-		
+		}
+
 		super.end();
 	}
 	
