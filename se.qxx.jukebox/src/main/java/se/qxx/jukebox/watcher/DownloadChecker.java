@@ -80,6 +80,9 @@ public class DownloadChecker extends JukeboxThread {
 				break;
 			
 			}
+			
+			if (!this.isRunning())
+				break;
 		}
 			
 	}

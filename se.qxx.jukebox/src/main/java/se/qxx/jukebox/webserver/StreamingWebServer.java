@@ -537,7 +537,7 @@ public class StreamingWebServer extends NanoHTTPD {
 	}
 	
 	public void stop() {
-		_instance.stop();
+		super.stop();
 	}
 
 	private void setPriority() {

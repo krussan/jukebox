@@ -86,6 +86,9 @@ public class MediaConverter extends JukeboxThread {
 				Log.Error("Error when converting media", LogType.CONVERTER, e);
 				saveConvertedMedia(md, MediaConverterState.Failed);
 			}
+			
+			if (!this.isRunning())
+				break;
 		}
 	}
 
@@ -185,7 +188,9 @@ public class MediaConverter extends JukeboxThread {
 
 	@Override
 	public void end() {
-		converterThread.interrupt();
+		if (converterThread != null)
+			converterThread.interrupt();
+		
 		super.end();
 	}
 	

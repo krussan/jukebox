@@ -5,13 +5,11 @@ import se.qxx.jukebox.tools.Util;
 
 public abstract class JukeboxThread extends Thread {
 	private boolean isRunning;
-	private String threadName;
 	private long sleepTime;
 	private LogType logType;
 
 	public JukeboxThread(String name, long sleepTime, LogType logType) {
 		super(name);
-		this.setName(name);
 		this.setSleepTime(sleepTime);
 		this.setLogType(logType);
 	}
@@ -25,15 +23,6 @@ public abstract class JukeboxThread extends Thread {
 		this.isRunning = isRunning;
 	}
 	
-	
-	public String getThreadName() {
-		return threadName;
-	}
-
-
-	public void setThreadName(String name) {
-		this.threadName = name;
-	}
 	
 	public long getSleepTime() {
 		return sleepTime;
@@ -52,7 +41,7 @@ public abstract class JukeboxThread extends Thread {
 	}
 
 	protected abstract void initialize();
-	protected abstract void execute();
+	protected abstract void execute() throws InterruptedException;
 
 	@Override
 	public void run() {
@@ -68,8 +57,11 @@ public abstract class JukeboxThread extends Thread {
 			try {
 				execute();
 				
+				if (!this.isRunning)
+					break;
+				
 				synchronized(this) {
-					if (this.getSleepTime() > 0)
+					if(this.getSleepTime() > 0)
 						this.wait(this.getSleepTime());
 					else if (this.getSleepTime() == 0)
 						this.wait();
@@ -77,14 +69,16 @@ public abstract class JukeboxThread extends Thread {
 				
 				
 			} catch (InterruptedException e) {
-				Log.Info(String.format("%s thread is shutting down", this.getThreadName()), this.getLogType());
+				Log.Info(String.format("%s thread is shutting down", this.getName()), this.getLogType());
 			}
 		}
+		
+		Log.Info(String.format("Thread %s ended normally !",  this.getName()), this.getLogType());
 	}
 
 	
 	public void end() {
-		Log.Info(String.format("Stopping %s thread ...",  this.getThreadName()), this.getLogType());
+		Log.Info(String.format("Stopping %s thread ...",  this.getName()), this.getLogType());
 		this.setRunning(false);
 		this.interrupt();
 	}

@@ -9,6 +9,16 @@ import se.qxx.jukebox.tools.Util;
 
 public class TcpListener extends JukeboxThread {
 
+	JukeboxRpcServer server;
+	
+	public JukeboxRpcServer getServer() {
+		return server;
+	}
+
+	public void setServer(JukeboxRpcServer server) {
+		this.server = server;
+	}
+
 	public TcpListener() {
 		super("TcpListener", 3000, LogType.COMM);
 	}
@@ -16,12 +26,12 @@ public class TcpListener extends JukeboxThread {
 	@Override
 	protected void initialize() {
 		int port = Settings.get().getTcpListener().getPort().getValue();
-		JukeboxRpcServer server = new JukeboxRpcServer(port);
+		this.setServer(new JukeboxRpcServer(port));
   
 		Log.Info(String.format("Starting up RPC server. Listening on port %s",  port), LogType.COMM);
 		
 		try {
-			server.runServer(JukeboxRpcServerConnection.class);
+			this.getServer().runServer(JukeboxRpcServerConnection.class);
 		} catch (InstantiationException | IllegalAccessException e) {
 			Log.Error("Error occured when starting up RPC server", LogType.COMM, e);
 		}
@@ -34,5 +44,11 @@ public class TcpListener extends JukeboxThread {
 	@Override
 	public int getJukeboxPriority() {
 		return 3;
+	}
+	
+	@Override
+	public void end() {
+		this.getServer().stopServer();
+		super.end();
 	}
 }

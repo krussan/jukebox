@@ -32,23 +32,19 @@ public class Cleaner extends JukeboxThread {
 	}
 
 	@Override
-	protected void execute() {
+	protected void execute() throws InterruptedException {
 		Log.Info("Starting up cleaner thread", LogType.FIND);
-		try {
-			Log.Info("Cleaning up movies", LogType.FIND);
-			cleanMovies();	
-			
-			Thread.sleep(15 * 60 * 1000);
-			Log.Info("Cleaning up episodes", LogType.FIND);
-			cleanEpisodes();
-			
-			Thread.sleep(15 * 60 * 1000);
-			Log.Info("Cleaning up empty series", LogType.FIND);
-			cleanEmptySeries();
+		Log.Info("Cleaning up movies", LogType.FIND);
+		cleanMovies();	
 		
-		} catch (InterruptedException e) {
-			Log.Info("Cleaner thread is shutting down", LogType.FIND);
-		}
+		Thread.sleep(15 * 60 * 1000);
+		Log.Info("Cleaning up episodes", LogType.FIND);
+		cleanEpisodes();
+		
+		Thread.sleep(15 * 60 * 1000);
+		Log.Info("Cleaning up empty series", LogType.FIND);
+		cleanEmptySeries();
+		
 	}
 	
 	private void cleanMovies() {

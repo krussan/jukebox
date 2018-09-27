@@ -139,12 +139,16 @@ public class Main implements Runnable, INotifyClient
 		Log.Info("Server is shutting down ...", LogType.MAIN);
 
 		// stop web server
-		System.out.println("Stopping web server ...");
-		StreamingWebServer.get().stop();
+		try {
+			System.out.println("Stopping web server ...");
+			StreamingWebServer.get().stop();
+		} catch(Exception e) {
+			Log.Debug("StreamingWebServer error. Continue shutdown", LogType.MAIN);
+		}
 
 		// stop all jukebox threads
 		for (JukeboxThread t : this.getThreadPool()) {
-			Log.Debug(String.format("Ending thread :: %s", t.getThreadName()), LogType.MAIN);
+			Log.Debug(String.format("Ending thread :: %s", t.getName()), LogType.MAIN);
 			t.end();
 			try {
 				t.join();
