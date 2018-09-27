@@ -10,6 +10,7 @@ public abstract class JukeboxThread extends Thread {
 	private LogType logType;
 
 	public JukeboxThread(String name, long sleepTime, LogType logType) {
+		super(name);
 		this.setName(name);
 		this.setSleepTime(sleepTime);
 		this.setLogType(logType);
@@ -62,6 +63,7 @@ public abstract class JukeboxThread extends Thread {
 	
 	protected void mainLoop() {
 		initialize();
+		this.setPriority(this.getJukeboxPriority());
 		while(this.isRunning()) {
 			try {
 				execute();
@@ -87,9 +89,8 @@ public abstract class JukeboxThread extends Thread {
 		this.interrupt();
 	}
 
-
-
-
-	
+	public int getJukeboxPriority() {
+		return Thread.NORM_PRIORITY;
+	}
 
 }

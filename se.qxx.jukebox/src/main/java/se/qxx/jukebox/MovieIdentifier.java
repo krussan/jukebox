@@ -421,4 +421,9 @@ public class MovieIdentifier extends JukeboxThread {
 		}
 		return false;
 	}
+	
+	@Override
+	public int getJukeboxPriority() {
+		return Thread.NORM_PRIORITY;
+	}
 }

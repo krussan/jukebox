@@ -101,5 +101,8 @@ public class Cleaner extends JukeboxThread {
 		return f.exists();
 	}
 
-
+	@Override
+	public int getJukeboxPriority() {
+		return 3;
+	}
 }

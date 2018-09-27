@@ -29,5 +29,10 @@ public class TcpListener extends JukeboxThread {
 	
 	@Override
 	protected void execute() {
-	}	
+	}
+	
+	@Override
+	public int getJukeboxPriority() {
+		return 3;
+	}
 }

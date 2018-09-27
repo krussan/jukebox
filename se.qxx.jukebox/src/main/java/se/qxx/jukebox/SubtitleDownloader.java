@@ -522,5 +522,10 @@ public class SubtitleDownloader extends JukeboxThread {
 
 		return subtitleFiles;
 	}
+	
+	@Override
+	public int getJukeboxPriority() {
+		return 3;
+	}
 
 }

@@ -185,4 +185,9 @@ public class DownloadChecker extends JukeboxThread {
 			this.files.put(filename, fs);
 		}
 	}
+	
+	@Override
+	public int getJukeboxPriority() {
+		return 3;
+	}
 }

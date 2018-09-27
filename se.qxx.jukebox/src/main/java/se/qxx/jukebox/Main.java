@@ -144,7 +144,13 @@ public class Main implements Runnable, INotifyClient
 
 		// stop all jukebox threads
 		for (JukeboxThread t : this.getThreadPool()) {
+			Log.Debug(String.format("Ending thread :: %s", t.getThreadName()), LogType.MAIN);
 			t.end();
+			try {
+				t.join();
+			} catch (InterruptedException e) {
+				Log.Debug("Thread was interrupted... continuing", LogType.MAIN);
+			}
 		}		
 		
 		// stop main thread

@@ -135,6 +135,7 @@ public class StreamingWebServer extends NanoHTTPD {
 	
 
 	public Response serve(IHTTPSession session) {
+		setPriority();
 		
         Map<String, String> header = session.getHeaders();
         String uri = session.getUri();
@@ -538,6 +539,9 @@ public class StreamingWebServer extends NanoHTTPD {
 	public void stop() {
 		_instance.stop();
 	}
-	
+
+	private void setPriority() {
+		Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+	}
 
 }

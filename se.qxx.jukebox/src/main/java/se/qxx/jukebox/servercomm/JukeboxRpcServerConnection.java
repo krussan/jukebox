@@ -58,6 +58,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			JukeboxRequestListMovies request,
 			RpcCallback<JukeboxResponseListMovies> done) {
 
+		setPriority();
 		Log.Debug(String.format("ListMovies :: %s", request.getRequestType()), LogType.COMM);
 		String searchString = request.getSearchString();
 		
@@ -203,6 +204,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	public void listPlayers(RpcController controller, Empty request,
 			RpcCallback<JukeboxResponseListPlayers> done) {
 
+		setPriority();
 		Log.Debug("ListPlayers", LogType.COMM);
 
 		Collection<String> hostnames = new ArrayList<String>();
@@ -220,6 +222,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			JukeboxRequestStartMovie request,
 			RpcCallback<JukeboxResponseStartMovie> done) {
 
+		setPriority();
 		Log.Debug("StartMovie", LogType.COMM);
 		Log.Debug(String.format("Starting %s with ID: %s on player %s", request.getRequestType(), request.getMovieOrEpisodeId(), request.getPlayerName()), Log.LogType.COMM);
 		
@@ -299,6 +302,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	public void stopMovie(RpcController controller,
 			JukeboxRequestGeneral request, RpcCallback<Empty> done) {
 
+		setPriority();
 		Log.Debug("StopMovie", LogType.COMM);
 		Log.Debug(String.format("Stopping movie on player %s", request.getPlayerName()), Log.LogType.COMM);
 		
@@ -318,6 +322,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	public void pauseMovie(RpcController controller,
 			JukeboxRequestGeneral request, RpcCallback<Empty> done) {
 
+		setPriority();
 		Log.Debug("PauseMovie", LogType.COMM);
 		Log.Debug(String.format("Pausing movie on player %s", request.getPlayerName()), Log.LogType.COMM);
 		
@@ -336,6 +341,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	public void seek(RpcController controller, JukeboxRequestSeek request,
 			RpcCallback<Empty> done) {
 
+		setPriority();
 		Log.Debug(String.format("Seeking on player %s to %s seconds", request.getPlayerName(), request.getSeconds()), Log.LogType.COMM);
 		
 		try {
@@ -352,6 +358,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	public void switchVRatio(RpcController controller,
 			JukeboxRequestGeneral request, RpcCallback<Empty> done) {
 
+		setPriority();
 		Log.Debug("SwitchVRatio", LogType.COMM);
 		Log.Debug(String.format("Toggling vratio on %s...", request.getPlayerName()), Log.LogType.COMM);
 		
@@ -370,6 +377,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	public void getTime(RpcController controller,
 			JukeboxRequestGeneral request, RpcCallback<JukeboxResponseTime> done) {
 
+		setPriority();
 		Log.Debug("GetTime", LogType.COMM);
 		Log.Debug(String.format("Getting time on %s...", request.getPlayerName()), Log.LogType.COMM);
 		
@@ -401,6 +409,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			JukeboxRequestGeneral request,
 			RpcCallback<JukeboxResponseIsPlaying> done) {
 
+		setPriority();
 		Log.Debug("IsPlaying", LogType.COMM);
 		Log.Debug(String.format("Getting is playing status on %s...", request.getPlayerName()), Log.LogType.COMM);
 		
@@ -420,6 +429,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			RpcCallback<JukeboxResponseGetTitle> done) {
 		// TODO Auto-generated method stub
 		
+		setPriority();
 		Log.Debug("GetTitle -- EMPTY", LogType.COMM);
 	}
 
@@ -427,6 +437,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	public void blacklist(RpcController controller,
 			JukeboxRequestID request, RpcCallback<Empty> done) {
 		
+		setPriority();
 		Log.Debug("Blacklist -- EMPTY", LogType.COMM);
 
 		if (request.getRequestType() == RequestType.TypeMovie) {
@@ -447,6 +458,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			JukeboxRequestID request, RpcCallback<Empty> done) {
 		// TODO Auto-generated method stub
 		
+		setPriority();
 		Log.Debug("ToggleWatched -- EMPTY", LogType.COMM);
 	}
 
@@ -455,6 +467,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			JukeboxRequestListSubtitles request,
 			RpcCallback<JukeboxResponseListSubtitles> done) {
 
+		setPriority();
 		Log.Debug(String.format("Getting list of subtitles for media ID :: %s", request.getMediaId()), Log.LogType.COMM);
 
 		
@@ -469,7 +482,8 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	@Override
 	public void setSubtitle(RpcController controller,
 			JukeboxRequestSetSubtitle request, RpcCallback<Empty> done) {
-
+		
+		setPriority();
 		Log.Debug(String.format("Setting subtitle on %s...", request.getPlayerName()), Log.LogType.COMM);
 		
 		int mediaID = request.getMediaID();
@@ -513,6 +527,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	public void wakeup(RpcController controller, JukeboxRequestGeneral request,
 			RpcCallback<Empty> done) {
 
+		setPriority();
 		Log.Debug(String.format("Waking up player %s", request.getPlayerName()), Log.LogType.COMM);
 		
 		try {
@@ -531,6 +546,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	public void suspend(RpcController controller,
 			JukeboxRequestGeneral request, RpcCallback<Empty> done) {
 
+		setPriority();
 		Log.Debug(String.format("Suspending computer with player %s...", request.getPlayerName()), Log.LogType.COMM);
 		
 		try {
@@ -549,6 +565,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	public void toggleFullscreen(RpcController controller,
 			JukeboxRequestGeneral request, RpcCallback<Empty> done) {
 
+		setPriority();
 		Log.Debug(String.format("Toggling fullscreen...", request.getPlayerName()), Log.LogType.COMM);
 		
 		try {
@@ -585,6 +602,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	public void reIdentify(RpcController controller, JukeboxRequestID request,
 			RpcCallback<Empty> done) {
 		
+		setPriority();
 		Log.Debug("Re-identify -- EMPTY", LogType.COMM);
 
 		try {
@@ -651,6 +669,10 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		for (Media md : ep.getMediaList()) {
 			reenlist(md);
 		}	
+	}
+	
+	private void setPriority() {
+		Thread.currentThread().setPriority(7);
 	}
 	
 }

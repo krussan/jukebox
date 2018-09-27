@@ -188,5 +188,11 @@ public class MediaConverter extends JukeboxThread {
 		converterThread.interrupt();
 		super.end();
 	}
+	
+	@Override
+	public int getJukeboxPriority() {
+		return 3;
+	}
+
 
 }
