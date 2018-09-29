@@ -105,9 +105,11 @@ public class MediaConverter extends JukeboxThread {
 
 		String newFilepath = String.format("%s/%s", md.getFilepath(), newFilename);
 
-		FFmpegProbeResult in = ffprobe.probe(filename);
+		try {
+			Log.Info(String.format("Probing :: %s", filename), LogType.CONVERTER);
+			FFmpegProbeResult in = ffprobe.probe(filename);
 		
-		FFmpegBuilder builder = new FFmpegBuilder()
+			FFmpegBuilder builder = new FFmpegBuilder()
 				.setInput(filename)
 				.addOutput(newFilepath)
 				.setFormat("mp4")
@@ -116,37 +118,37 @@ public class MediaConverter extends JukeboxThread {
 
 				.done();
 
-		Log.Debug(String.format("Starting converter on :: %s", filename), LogType.CONVERTER);
-		Log.Debug(String.format(" --> new file :: %s", newFilepath), LogType.CONVERTER);
-
-		FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
-		FFmpegJob job = executor.createJob(builder, new ProgressListener() {
-			// Using the FFmpegProbeResult determine the duration of the input
-			final double duration_ns = in.getFormat().duration * TimeUnit.SECONDS.toNanos(1);
-			
-			@Override
-			public void progress(Progress progress) {
-				double percentage = progress.out_time_ns / duration_ns;
+			Log.Debug(String.format("Starting converter on :: %s", filename), LogType.CONVERTER);
+			Log.Debug(String.format(" --> new file :: %s", newFilepath), LogType.CONVERTER);
+	
+			FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
+			FFmpegJob job = executor.createJob(builder, new ProgressListener() {
+				// Using the FFmpegProbeResult determine the duration of the input
+				final double duration_ns = in.getFormat().duration * TimeUnit.SECONDS.toNanos(1);
 				
-				String logMessage =
-					String.format(
-						"[%.0f%%] status:%s frame:%d time:%s ms fps:%.0f speed:%.2fx",
-						percentage * 100,
-						progress.status,
-						progress.frame,
-						FFmpegUtils.toTimecode(progress.out_time_ns, TimeUnit.NANOSECONDS),
-						progress.fps.doubleValue(),
-						progress.speed);
+				@Override
+				public void progress(Progress progress) {
+					double percentage = progress.out_time_ns / duration_ns;
+					
+					String logMessage =
+						String.format(
+							"[%.0f%%] status:%s frame:%d time:%s ms fps:%.0f speed:%.2fx",
+							percentage * 100,
+							progress.status,
+							progress.frame,
+							FFmpegUtils.toTimecode(progress.out_time_ns, TimeUnit.NANOSECONDS),
+							progress.fps.doubleValue(),
+							progress.speed);
+					
+					Log.Info(logMessage, LogType.CONVERTER);
+				}
 				
-				Log.Info(logMessage, LogType.CONVERTER);
-			}
-			
-		});
+			});
 		
-		try {
+		
 			converterThread = new Thread(job);
 			converterThread.start();
-			
+		
 			converterThread.join();
 			
 
