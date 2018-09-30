@@ -183,17 +183,11 @@ public class MediaConverter extends JukeboxThread {
 	}
 
 	private void saveConvertedMedia(Media md, String newFilename) {
-		Media o = Media.newBuilder(md).setConvertedFileName(newFilename)
-				.setConverterState(MediaConverterState.Completed).build();
-
-		DB.save(o);
+		DB.saveConversion(md.getID(), newFilename, MediaConverterState.Completed_VALUE);
 	}
 
 	private void saveConvertedMedia(Media md, MediaConverterState result) {
-		Media o = Media.newBuilder(md).setConverterState(result).build();
-
-		DB.save(o);
-
+		DB.saveConversion(md.getID(), result.getNumber());
 	}
 
 	@Override

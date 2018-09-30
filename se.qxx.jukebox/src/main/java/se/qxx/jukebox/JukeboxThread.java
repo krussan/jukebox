@@ -51,6 +51,8 @@ public abstract class JukeboxThread extends Thread {
 	}
 	
 	protected void mainLoop() {
+		Log.Info(String.format("Starting up thread %s",  this.getName()), this.getLogType());
+		
 		initialize();
 		this.setPriority(this.getJukeboxPriority());
 		while(this.isRunning()) {

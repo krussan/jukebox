@@ -2,7 +2,10 @@ package se.qxx.jukebox;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import org.apache.commons.io.FilenameUtils;
 
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
 import se.qxx.jukebox.tools.Util;
@@ -22,11 +25,6 @@ public class Main implements Runnable, INotifyClient
 {
 	private Boolean isRunning;
 	private List<JukeboxThread> threadPool = new ArrayList<JukeboxThread>();
-//	private Thread subtitleDownloaderThread;
-//	private Thread identifierThread; 
-//	private Thread cleanerThread;
-//	private Thread mediaConverterThread;
-//	private Thread downloadCheckerThread;
 	
 	public List<JukeboxThread> getThreadPool() {
 		return threadPool;
@@ -40,7 +38,6 @@ public class Main implements Runnable, INotifyClient
 		this.isRunning = isRunning;
 	}
 	
-	ArrayList<FileSystemWatcher> watchers = new ArrayList<FileSystemWatcher>();
 	java.util.concurrent.Semaphore s = new java.util.concurrent.Semaphore(1);	
 	
 	public void run() {
@@ -77,26 +74,20 @@ public class Main implements Runnable, INotifyClient
 				startupThread(Cleaner.get());
 			}
 			
-			if (Arguments.get().isMediaConverterEnabled()) {
-				System.out.println("Starting media converter");
-				startupThread(MediaConverter.get());
-			}
-			
 			if (Arguments.get().isDownloadCheckerEnabled()) {
 				System.out.println("Starting download checker");
 				startupThread(DownloadChecker.get());
 			}
 			
+			if (Arguments.get().isMediaConverterEnabled()) {
+				System.out.println("Starting media converter");
+				startupThread(MediaConverter.get());
+			}
+			
+			
 			this.setIsRunning(true);;
 			
-			System.out.println("Setting watcher on configuration file");
-			ExtensionFileFilter filter = new ExtensionFileFilter();
-			filter.addExtension("xml");
-			filter.addExtension("stp");
-			FileSystemWatcher w = new FileSystemWatcher(".", filter, true, true, false);
-			w.setSleepTime(1000);
-			w.registerClient(this);
-			w.startListening();
+			setupConfigurationListener();
 			
 			// start by acquiring the semaphore
 			s.acquire();
@@ -120,6 +111,18 @@ public class Main implements Runnable, INotifyClient
 		}
 		
 		Log.Info("Shutdown completed!", LogType.MAIN);
+		cleanupStopperFile();
+	}
+
+	private void setupConfigurationListener() {
+		System.out.println("Setting watcher on configuration file");
+		ExtensionFileFilter filter = new ExtensionFileFilter();
+		filter.addExtension("xml");
+		filter.addExtension("stp");
+		FileSystemWatcher configurationWatcher = new FileSystemWatcher("ConfigurationWatcher", ".", filter, true, true, false);
+		configurationWatcher.setSleepTime(1000);
+		configurationWatcher.registerClient(this);
+		startupThread(configurationWatcher);
 	}
 	
 	private void startupThread(JukeboxThread t) {
@@ -146,7 +149,9 @@ public class Main implements Runnable, INotifyClient
 			Log.Debug("StreamingWebServer error. Continue shutdown", LogType.MAIN);
 		}
 
-		// stop all jukebox threads
+		// stop all jukebox threads in reverse order
+		Collections.reverse(this.getThreadPool());
+		
 		for (JukeboxThread t : this.getThreadPool()) {
 			Log.Debug(String.format("Ending thread :: %s", t.getName()), LogType.MAIN);
 			t.end();
@@ -161,6 +166,7 @@ public class Main implements Runnable, INotifyClient
 		System.out.println("Stopping server ...");
 		this.setIsRunning(false);
 		s.release();
+	
 	}
 	
 	public void fileModified(FileRepresentation f) {
@@ -178,28 +184,32 @@ public class Main implements Runnable, INotifyClient
 	private void setupCatalogs(){
 		FileCreatedHandler h = new FileCreatedHandler();
 		
-		for (FileSystemWatcher f : watchers) {
-			f.stopListening();
+		for (JukeboxThread t : threadPool) {
+			if (t instanceof FileSystemWatcher) {
+				t.end();
+			}
 		}
-		
-		watchers.clear();
 
 		ExtensionFileFilter ff = new ExtensionFileFilter();
 		ff.addExtensions(Util.getExtensions());
 		
+		int cc = 0;
 		for (Catalog c : Settings.get().getCatalogs().getCatalog()) {
+			cc++;
 			File path = new File(c.getPath());
 			
 			if (path.exists()) {
-				FileSystemWatcher f = new FileSystemWatcher(c.getPath(), ff, true, true, true);
+				FileSystemWatcher f = new FileSystemWatcher(String.format("Catalog %s", cc),c.getPath(), ff, true, true, true);
 			
-				Log.Debug(String.format("Starting listening on :: %s", c.getPath()), Log.LogType.FIND);
+				Log.Debug(String.format(
+					"Starting listening on :: %s", 
+					c.getPath()), 
+					Log.LogType.FIND);
 			
 				f.registerClient(h);
 				f.setSleepTime(500);
-				f.startListening();
+				startupThread(f);
 			
-				watchers.add(f);
 			}
 		}
 	}

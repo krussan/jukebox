@@ -496,6 +496,19 @@ public class DB {
        return result;
 	
 	}
+	
+	public static void setDownloadCompleted(int id) {
+		try {
+			ProtoDB db = getProtoDBInstance();
+			
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				String sql = String.format("UPDATE Media SET downloadcomplete = 1 WHERE ID = %s", id);
+				db.executeNonQuery(sql);
+			}
+		} catch (Exception e) {
+			Log.Error(String.format("Failed to set download complete"), Log.LogType.MAIN, e);
+		}				
+	}
 
 	public  static void cleanupConverterQueue() {
 		try {
@@ -1092,5 +1105,28 @@ public class DB {
 		}		
 		
 		return 0;				
+	}
+
+	public static void saveConversion(int id, String newFilename, int value) {
+		try {
+			ProtoDB db = getProtoDBInstance();
+			
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				String sql = String.format(
+					"UPDATE Media "
+					+ "SET _converterState_ID = %s "
+					+ (StringUtils.isEmpty(newFilename) ? "" : String.format(", convertedFileName = '%s'", newFilename))
+					+ "WHERE ID = %s", 
+						value,
+						id);
+				db.executeNonQuery(sql);
+			}
+		} catch (Exception e) {
+			Log.Error(String.format("Failed to set download complete"), Log.LogType.MAIN, e);
+		}						
+	}
+
+	public static void saveConversion(int id, int completedValue) {
+		saveConversion(id, StringUtils.EMPTY, completedValue);
 	}
 }

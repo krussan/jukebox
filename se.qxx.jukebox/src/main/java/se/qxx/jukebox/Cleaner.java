@@ -37,9 +37,15 @@ public class Cleaner extends JukeboxThread {
 		Log.Info("Cleaning up movies", LogType.FIND);
 		cleanMovies();	
 		
+		if (!this.isRunning())
+			return;
+		
 		Thread.sleep(15 * 60 * 1000);
 		Log.Info("Cleaning up episodes", LogType.FIND);
 		cleanEpisodes();
+		
+		if (!this.isRunning())
+			return;
 		
 		Thread.sleep(15 * 60 * 1000);
 		Log.Info("Cleaning up empty series", LogType.FIND);
@@ -61,6 +67,9 @@ public class Cleaner extends JukeboxThread {
 						Log.Error("Deletion of media failed", LogType.FIND, ex);
 					}
 				}
+				
+				if (!this.isRunning())
+					return;
 			}
 		}
 		
@@ -83,6 +92,9 @@ public class Cleaner extends JukeboxThread {
 								Log.Error("Deletion of media failed", LogType.FIND, ex);
 							}
 						}
+						
+						if (!this.isRunning())
+							return;
 					}					
 				}
 			}

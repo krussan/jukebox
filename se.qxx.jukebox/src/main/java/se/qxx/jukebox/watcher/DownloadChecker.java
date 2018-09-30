@@ -82,7 +82,7 @@ public class DownloadChecker extends JukeboxThread {
 			}
 			
 			if (!this.isRunning())
-				break;
+				return;
 		}
 			
 	}
@@ -102,25 +102,24 @@ public class DownloadChecker extends JukeboxThread {
 		
 		// should never be null, but anywhay
 		if (md != null) {
-			DB.save(
-				Media.newBuilder(md)
-				.setDownloadComplete(true)
-				.build());
+			DB.setDownloadCompleted(md.getID());
 		}
 		
 		store(fs, filename);
 		
 	}
 
-	public void checkFile(FileRepresentation f)  {
-		FileRepresentationState fs = new FileRepresentationState(f);
-		String filename = f.getFullPath().toLowerCase();
-		
-		if (files.containsKey(filename)) {
-			checkFilePresentInMap(fs, filename);
-		}
-		else {
-			checkFileNotPresentInMap(fs, filename);
+	public synchronized void checkFile(FileRepresentation f)  {
+		if (this.isRunning()) {
+			FileRepresentationState fs = new FileRepresentationState(f);
+			String filename = f.getFullPath().toLowerCase();
+			
+			if (files.containsKey(filename)) {
+				checkFilePresentInMap(fs, filename);
+			}
+			else {
+				checkFileNotPresentInMap(fs, filename);
+			}
 		}
 	}
 

@@ -6,20 +6,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.TreeSet;
 
+import se.qxx.jukebox.JukeboxThread;
+import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.tools.Util;
 
-public class FileSystemWatcher implements Runnable {
+public class FileSystemWatcher extends JukeboxThread {
 
-	private Boolean isRunning = false;
-
-	public Boolean getIsRunning() {
-		return isRunning;
-	}
-
-	public void setIsRunning(Boolean isRunning) {
-		this.isRunning = isRunning;
-	}
-
+	TreeSet<FileRepresentation> currentRepresentation ;
+	
 	private static Comparator<FileRepresentation> comparator = new Comparator<FileRepresentation>() {
 
 		public int compare(FileRepresentation fr0, FileRepresentation fr1) {
@@ -54,10 +48,7 @@ public class FileSystemWatcher implements Runnable {
 		this.files = files;
 	}
 
-	private long sleepTime = 10000;
-
 	private ExtensionFileFilter filter;
-
 	private boolean watchCreated = false;
 
 	public boolean isWatchCreated() {
@@ -80,13 +71,11 @@ public class FileSystemWatcher implements Runnable {
 
 	private boolean recurse = false;
 
-	public FileSystemWatcher(String directoryName, ExtensionFileFilter filter, boolean watchCreated,
+	public FileSystemWatcher(String name, String directoryName, ExtensionFileFilter filter, boolean watchCreated,
 			boolean watchModified, boolean recurse) {
+		super(name, 10000, LogType.FIND);
+		
 		File directoryToWatch = new File(directoryName);
-		/*
-		 * if (!directoryToWatch.isDirectory()) { throw new
-		 * RuntimeException("It needs to be a directory"); }
-		 */
 
 		this.setDirectory(directoryToWatch);
 		this.setFilter(filter);
@@ -96,14 +85,6 @@ public class FileSystemWatcher implements Runnable {
 		this.setWatchCreated(watchCreated);
 		this.setWatchModified(watchModified);
 		this.setRecurse(recurse);
-	}
-
-	public void setSleepTime(long sleepTime) {
-		this.sleepTime = sleepTime;
-	}
-
-	public long getSleepTime() {
-		return this.sleepTime;
 	}
 
 	public boolean isRecurse() {
@@ -145,32 +126,26 @@ public class FileSystemWatcher implements Runnable {
 		}
 	}
 
-	public void run() {
-		this.setIsRunning(true);
-		TreeSet<FileRepresentation> currentRepresentation = getCurrentRepresentation();
+	@Override
+	public void initialize() {
+		currentRepresentation = getCurrentRepresentation();
 
 		for (FileRepresentation f : currentRepresentation) {
 			notifyCreated(f);
-		}
+		}		
+	}
+	
+	@Override
+	public void execute() {
+		currentRepresentation = getCurrentRepresentation();
 
-		while (this.getIsRunning()) {
-			currentRepresentation = getCurrentRepresentation();
-
-			for (FileRepresentation f : currentRepresentation) {
-				if (!fileExistsInCurrentRepresentation(f)) {				
-					notifyCreated(f);
-				}
-			}
-
-			files = currentRepresentation;
-
-			try {
-				Thread.sleep(getSleepTime());
-			} catch (InterruptedException e) {
-				return;
+		for (FileRepresentation f : currentRepresentation) {
+			if (!fileExistsInCurrentRepresentation(f)) {				
+				notifyCreated(f);
 			}
 		}
 
+		files = currentRepresentation;		
 	}
 
 	private boolean fileExistsInCurrentRepresentation(FileRepresentation f) {
@@ -185,15 +160,6 @@ public class FileSystemWatcher implements Runnable {
 		}
 		
 		return false;
-	}
-
-	public void startListening() {
-		Thread t = new Thread(this);
-		t.start();
-	}
-
-	public void stopListening() {
-		this.setIsRunning(false);
 	}
 
 	public ExtensionFileFilter getFilter() {
