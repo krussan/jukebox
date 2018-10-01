@@ -20,7 +20,6 @@ waitforshutdown() {
             prog "$d" Shutting down
 
             if [ ! -f stopper.stp ]; then
-                echo "Server stopped successfully!"
                 return 1
             fi
             sleep 1   # do some work here
@@ -48,5 +47,7 @@ else
       echo -e "\nShutdown FAILED !!!"
       echo "Killing processes hard ..."
       killhard
+   else
+      echo -e "\nServer stopped successfully!"
    fi
 fi

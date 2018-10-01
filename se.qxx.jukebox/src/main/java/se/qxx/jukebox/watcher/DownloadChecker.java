@@ -1,9 +1,7 @@
 package se.qxx.jukebox.watcher;
 
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
 
 import se.qxx.jukebox.DB;
 import se.qxx.jukebox.JukeboxThread;
@@ -18,7 +16,7 @@ import se.qxx.jukebox.tools.Util;
 public class DownloadChecker extends JukeboxThread {
 	private static DownloadChecker _instance;
 
-	private Map<String, FileRepresentationState> files = new HashMap<String, FileRepresentationState>();
+	private Map<String, FileRepresentationState> files = new ConcurrentHashMap<String, FileRepresentationState>();
 	// <string, string>
 	// <filename - FileRepresentation, state, exist in db?, downloadflag from db>
 	

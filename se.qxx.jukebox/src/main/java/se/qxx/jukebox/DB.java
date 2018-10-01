@@ -1110,12 +1110,13 @@ public class DB {
 	public static void saveConversion(int id, String newFilename, int value) {
 		try {
 			ProtoDB db = getProtoDBInstance();
-			
+
+			String filename = newFilename.replace("'", "''");
 			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
 				String sql = String.format(
 					"UPDATE Media "
 					+ "SET _converterState_ID = %s "
-					+ (StringUtils.isEmpty(newFilename) ? "" : String.format(", convertedFileName = '%s'", newFilename))
+					+ (StringUtils.isEmpty(newFilename) ? "" : String.format(", convertedFileName = '%s' ", filename))
 					+ "WHERE ID = %s", 
 						value,
 						id);
