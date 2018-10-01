@@ -119,7 +119,7 @@ public class MediaConverter extends JukeboxThread {
 				if (findCodec(acceptedAudioCodecs, stream.codec_name))
 					audioCodec = "copy";
 			}
-			else {
+			else if (stream.codec_type == CodecType.VIDEO){
 				Log.Info(String.format("Video codec :: %s", stream.codec_name), LogType.CONVERTER);
 				if (findCodec(acceptedVideoCodecs, stream.codec_name))
 					audioCodec = "copy";
