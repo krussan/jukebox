@@ -48,8 +48,6 @@ public class StreamingWebServer extends NanoHTTPD {
 	
 	private AtomicInteger streamingIterator;
 	
-	private Configuration templateConfig = null;
-	
 	public StreamingWebServer(String host, int port) {
 		super(host, port);
 		
@@ -127,7 +125,7 @@ public class StreamingWebServer extends NanoHTTPD {
 			return registerFile(tempFile.getAbsolutePath());
 			
 		} catch (Exception e) {
-			Log.Error("Error while parsing and writing subtitle file", LogType.WEBSERVER, e);
+			Log.Error("ERROR while parsing and writing subtitle file", LogType.WEBSERVER);
 		}
 		
 		return null;
