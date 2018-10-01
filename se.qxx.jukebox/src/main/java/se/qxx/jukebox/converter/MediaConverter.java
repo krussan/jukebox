@@ -1,6 +1,9 @@
 package se.qxx.jukebox.converter;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
@@ -17,6 +20,8 @@ import net.bramp.ffmpeg.FFprobe;
 import net.bramp.ffmpeg.builder.FFmpegBuilder;
 import net.bramp.ffmpeg.job.FFmpegJob;
 import net.bramp.ffmpeg.probe.FFmpegProbeResult;
+import net.bramp.ffmpeg.probe.FFmpegStream;
+import net.bramp.ffmpeg.probe.FFmpegStream.CodecType;
 import net.bramp.ffmpeg.progress.Progress;
 import net.bramp.ffmpeg.progress.ProgressListener;
 import se.qxx.jukebox.DB;
@@ -61,9 +66,12 @@ public class MediaConverter extends JukeboxThread {
 		for (Media md : _listProcessing) {
 			try {
 				if (md != null) {
-					if (needsConversion(md)) {
+					FFmpegProbeResult probeResult = getProbeResult(md);
+					ConversionProbeResult conversionCheckResult = checkConversion(md, probeResult);
+					
+					if (conversionCheckResult.getNeedsConversion()) {
 						saveConvertedMedia(md, MediaConverterState.Converting);
-						MediaConverterResult result = triggerConverter(md);
+						MediaConverterResult result = triggerConverter(md, probeResult, conversionCheckResult);
 						
 						if (result.getState() == MediaConverterResult.State.Completed) {
 							saveConvertedMedia(md, result.getConvertedFilename());
@@ -89,14 +97,52 @@ public class MediaConverter extends JukeboxThread {
 		}
 	}
 
-	private boolean needsConversion(Media md) {
+	private FFmpegProbeResult getProbeResult(Media md) throws IOException {
+		FFprobe ffprobe = new FFprobe();
+		return ffprobe.probe(Util.getFullFilePath(md));
+	}
+
+	private ConversionProbeResult checkConversion(Media md, FFmpegProbeResult probeResult) {
 		//TODO: Should be configurable
 		//TODO: Use ffprobe to check container
 		//for now all not mp4 extension
-		return !FilenameUtils.getExtension(md.getFilename()).equalsIgnoreCase("mp4");
+		//list of accepted video codecs
+		List<String> acceptedVideoCodecs = Arrays.asList(new String[] {"h264"});
+		List<String> acceptedAudioCodecs = Arrays.asList(new String[] {"aac", "mp3", "vorbis", "lcpm", "wav", "flac", "opus"});
+
+		String audioCodec = "aac";
+		String videoCodec = "h264";
+		
+		for (FFmpegStream stream : probeResult.getStreams()) {
+			if (stream.codec_type == CodecType.AUDIO) {
+				Log.Info(String.format("Audio codec :: %s", stream.codec_name), LogType.CONVERTER);
+				if (findCodec(acceptedAudioCodecs, stream.codec_name))
+					audioCodec = "copy";
+			}
+			else {
+				Log.Info(String.format("Video codec :: %s", stream.codec_name), LogType.CONVERTER);
+				if (findCodec(acceptedVideoCodecs, stream.codec_name))
+					audioCodec = "copy";
+			}
+		}
+		boolean needsConversion = 
+				FilenameUtils.getExtension(md.getFilename()).equalsIgnoreCase("mp4") ||
+				!StringUtils.equals(audioCodec, "copy") ||
+				!StringUtils.equals(videoCodec, "copy");
+		
+		return new ConversionProbeResult(needsConversion, videoCodec, audioCodec);
 	}
 
-	private MediaConverterResult triggerConverter(Media md) throws IOException {
+	private boolean findCodec(List<String> listCodecs, String codec_name) {
+		for (String c : listCodecs) {
+			if (StringUtils.equalsIgnoreCase(c, codec_name))
+				return true;
+		}
+		
+		return false;
+	}
+
+	private MediaConverterResult triggerConverter(Media md, FFmpegProbeResult probeResult, ConversionProbeResult checkResult) throws IOException {
 		FFmpeg ffmpeg = new FFmpeg();
 		FFprobe ffprobe = new FFprobe();
 
@@ -106,14 +152,13 @@ public class MediaConverter extends JukeboxThread {
 
 		try {
 			Log.Info(String.format("Probing :: %s", filename), LogType.CONVERTER);
-			FFmpegProbeResult in = ffprobe.probe(filename);
 		
 			FFmpegBuilder builder = new FFmpegBuilder()
 				.setInput(filename)
 				.addOutput(newFilepath)
 				.setFormat("mp4")
-				.setVideoCodec("copy")
-				.setAudioCodec("copy")
+				.setVideoCodec(checkResult.getTargetVideoCodec())
+				.setAudioCodec(checkResult.getTargetAudioCodec())
 
 				.done();
 
@@ -123,7 +168,7 @@ public class MediaConverter extends JukeboxThread {
 			FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
 			FFmpegJob job = executor.createJob(builder, new ProgressListener() {
 				// Using the FFmpegProbeResult determine the duration of the input
-				final double duration_ns = in.getFormat().duration * TimeUnit.SECONDS.toNanos(1);
+				final double duration_ns = probeResult.getFormat().duration * TimeUnit.SECONDS.toNanos(1);
 				
 				@Override
 				public void progress(Progress progress) {
