@@ -102,7 +102,6 @@ public class MediaConverter extends JukeboxThread {
 
 		String filename = Util.getFullFilePath(md);
 		String newFilename = String.format("%s_[tazmo].mp4", FilenameUtils.getBaseName(md.getFilename()));
-
 		String newFilepath = String.format("%s/%s", md.getFilepath(), newFilename);
 
 		try {
@@ -169,7 +168,7 @@ public class MediaConverter extends JukeboxThread {
 				break;
 			}
 			
-			return new MediaConverterResult(filename, newFilepath, MediaConverterResult.State.Error);
+			return new MediaConverterResult(filename, newFilename, MediaConverterResult.State.Error);
 			
 		}
 		catch (InterruptedException iex) {

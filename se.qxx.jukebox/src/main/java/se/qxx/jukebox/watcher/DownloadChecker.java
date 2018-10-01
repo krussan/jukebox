@@ -109,14 +109,16 @@ public class DownloadChecker extends JukeboxThread {
 
 	public synchronized void checkFile(FileRepresentation f)  {
 		if (this.isRunning()) {
-			FileRepresentationState fs = new FileRepresentationState(f);
-			String filename = f.getFullPath().toLowerCase();
-			
-			if (files.containsKey(filename)) {
-				checkFilePresentInMap(fs, filename);
-			}
-			else {
-				checkFileNotPresentInMap(fs, filename);
+			if (!Util.isExcludedFile(f, LogType.FIND)) {
+				FileRepresentationState fs = new FileRepresentationState(f);
+				String filename = f.getFullPath().toLowerCase();
+				
+				if (files.containsKey(filename)) {
+					checkFilePresentInMap(fs, filename);
+				}
+				else {
+					checkFileNotPresentInMap(fs, filename);
+				}
 			}
 		}
 	}

@@ -72,16 +72,7 @@ public class MovieIdentifier extends JukeboxThread {
 		
 		
 		// Added ignore on all filename that contains the string sample
-		if (StringUtils.containsIgnoreCase(filename, "sample")) {
-			Log.Info(String.format("Ignoring %s as this appears to be a sample", filename), LogType.FIND);
-		}
-		else if (f.getFileSize() < 104857600) {
-			Log.Info(String.format("Ignoring %s as this has a file size of less than 100MB", filename), LogType.FIND);
-		}
-		else if (FilenameUtils.removeExtension(f.getName()).endsWith("[tazmo]")) {
-			Log.Info(String.format("Ignoring %s as this is a converted file", filename), LogType.FIND);
-		}
-		else {
+		if (!Util.isExcludedFile(f, LogType.FIND)) {
 			//check if the same media already exist in db
 			Media dbMedia = DB.getMediaByFilename(filename);
 			if (dbMedia != null && StringUtils.equalsIgnoreCase(dbMedia.getFilepath(), path)) {

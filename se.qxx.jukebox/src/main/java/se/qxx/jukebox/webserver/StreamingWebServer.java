@@ -9,8 +9,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +47,16 @@ import se.qxx.protodb.model.CaseInsensitiveMap;
 public class StreamingWebServer extends NanoHTTPD {
 
 	private static StreamingWebServer _instance;
+	private String ipAddress = "127.0.0.1";
 	
+	public String getIpAddress() {
+		return ipAddress;
+	}
+
+	public void setIpAddress(String ipAddress) {
+		this.ipAddress = ipAddress;
+	}
+
 	// maps stream name to actual file name
 	private Map<String, String> streamingMap = null;
 	private Map<String, String> mimeTypeMap = null;
@@ -55,8 +71,14 @@ public class StreamingWebServer extends NanoHTTPD {
 		streamingMap = new ConcurrentHashMap<String, String>();
 		
 		initializeMappings();
+		setIpAddress();
 	}
 
+	private void setIpAddress() {
+		this.setIpAddress(Util.findIpAddress());
+		Log.Info(String.format("Setting Ip Address :: %s", this.getIpAddress()), LogType.WEBSERVER);
+	}
+	
 	public void initializeMappings() {
 		mimeTypeMap = new CaseInsensitiveMap();
 		extensionMap = new CaseInsensitiveMap();
@@ -79,9 +101,10 @@ public class StreamingWebServer extends NanoHTTPD {
 		
 		streamingMap.put(streamingFile, filename);
 		
+		String uri = getStreamUri(streamingFile);
 		Log.Info(String.format("Registering file %s :: %s", streamingFile, filename), LogType.WEBSERVER);
-		
-		String uri = getStreamUri(streamingFile);		
+		Log.Info(String.format("URI :: %s", uri), LogType.WEBSERVER);
+				
 		return new StreamingFile(uri, getMimeType(uri, filename));
 	}
 	
@@ -520,16 +543,9 @@ public class StreamingWebServer extends NanoHTTPD {
 
 	private String getStreamUri(String streamingFile) {
 		String uri = streamingFile;
-		String ipAddress = "127.0.0.1";
-		try {
-			ipAddress = Inet4Address.getLocalHost().getHostAddress();
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			Log.Error("Unknown host while getting ip number", LogType.WEBSERVER, e);
-		}
 		
 		return String.format("http://%s%s/%s", 
-				ipAddress,  
+				this.getIpAddress(),  
 				this.getListeningPort() == 80 ? "" : String.format(":%s", this.getListeningPort()),
 				streamingFile);
 	}
