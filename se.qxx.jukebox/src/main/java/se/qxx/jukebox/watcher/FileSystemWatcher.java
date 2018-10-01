@@ -102,11 +102,18 @@ public class FileSystemWatcher extends JukeboxThread {
 	public java.util.TreeSet<FileRepresentation> getCurrentRepresentation() {
 		TreeSet<FileRepresentation> rep = new TreeSet<FileRepresentation>(comparator);
 
-		List<File> list = Util.getFileListing(this.getDirectory(), this.getFilter(), this.isRecurse());
-		// List<File> list = Util.getFileListingWorkAround(directory, _filter);
+		List<File> list = Util.getFileListing(
+			this.getDirectory(), 
+			this.getFilter(), 
+			this.isRecurse());
 
 		for (File f : list) {
-			rep.add(new FileRepresentation(f.getParent(), f.getName(), f.lastModified(), f.length()));
+			rep.add(
+				new FileRepresentation(
+					f.getParent(),
+					f.getName(), 
+					f.lastModified(), 
+					f.length()));
 		}
 
 		return rep;
@@ -132,6 +139,8 @@ public class FileSystemWatcher extends JukeboxThread {
 
 		for (FileRepresentation f : currentRepresentation) {
 			notifyCreated(f);
+			if (!this.isRunning())
+				break;
 		}		
 	}
 	
@@ -143,6 +152,9 @@ public class FileSystemWatcher extends JukeboxThread {
 			if (!fileExistsInCurrentRepresentation(f)) {				
 				notifyCreated(f);
 			}
+
+			if (!this.isRunning())
+				break;
 		}
 
 		files = currentRepresentation;		

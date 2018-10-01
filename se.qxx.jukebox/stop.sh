@@ -1,5 +1,4 @@
 #!/bin/bash
-PID=`cat jukebox.pid`
 
 prog() {
     local w=40 p=$1;  shift
@@ -9,28 +8,45 @@ prog() {
     printf "\r\e[K|%-*s| %s" "$w" "$dots" "$*";
 }
 
-echo Killing all ffmpeg processes
-pkill ffprobe
-pkill ffmpeg
+killhard() {
+   PID=`cat jukebox.pid`
+   echo Stopping jukebox with pid :: $PID
+   kill $PID
+}
 
-if [ "$1" = "-p" ]; then
-        echo Stopping jukebox with pid :: $PID
-        kill $PID
-else
-        touch stopper.stp
-
-        # test loop
+waitforshutdown() {
         for x in {1..20} ; do
             d=`expr $x \* 5`
             prog "$d" Shutting down
 
             if [ ! -f stopper.stp ]; then
                 echo "Server stopped successfully!"
-                return
+                return 1
             fi
             sleep 1   # do some work here
 
         done;
+        
+        return 0
+}
 
-        echo -e "\nShutdown FAILED !!!"
+ffmpegkill() {
+   echo Killing all ffmpeg processes
+   pkill ffprobe
+   pkill ffmpeg
+}
+
+ffmpegkill
+
+if [ "$1" = "-p" ]; then
+   killhard
+else
+   touch stopper.stp
+
+   # test loop
+   if waitforshutdown; then
+      echo -e "\nShutdown FAILED !!!"
+      echo "Killing processes hard ..."
+      killhard
+   fi
 fi
