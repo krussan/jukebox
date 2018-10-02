@@ -115,22 +115,33 @@ public class MediaConverter extends JukeboxThread {
 		
 		for (FFmpegStream stream : probeResult.getStreams()) {
 			if (stream.codec_type == CodecType.AUDIO) {
-				Log.Info(String.format("Audio codec :: %s", stream.codec_name), LogType.CONVERTER);
+				logCodec(stream);
+
 				if (findCodec(acceptedAudioCodecs, stream.codec_name))
 					audioCodec = "copy";
 			}
 			else if (stream.codec_type == CodecType.VIDEO){
-				Log.Info(String.format("Video codec :: %s", stream.codec_name), LogType.CONVERTER);
+				logCodec(stream);
 				if (findCodec(acceptedVideoCodecs, stream.codec_name))
-					audioCodec = "copy";
+					videoCodec = "copy";
 			}
 		}
+		
+		Log.Info(String.format("Target video codec :: %s", videoCodec), LogType.CONVERTER);
+		Log.Info(String.format("Target audio codec :: %s", audioCodec), LogType.CONVERTER);
 		boolean needsConversion = 
 				FilenameUtils.getExtension(md.getFilename()).equalsIgnoreCase("mp4") ||
 				!StringUtils.equals(audioCodec, "copy") ||
 				!StringUtils.equals(videoCodec, "copy");
 		
 		return new ConversionProbeResult(needsConversion, videoCodec, audioCodec);
+	}
+
+	private void logCodec(FFmpegStream stream) {
+		Log.Info(String.format("%s codec name       :: %s", stream.codec_type, stream.codec_name), LogType.CONVERTER);
+		Log.Info(String.format("%s codec tag        :: %s", stream.codec_type, stream.codec_tag), LogType.CONVERTER);
+		Log.Info(String.format("%s codec long name  :: %s", stream.codec_type, stream.codec_long_name), LogType.CONVERTER);
+		Log.Info(String.format("%s codec tag string :: %s", stream.codec_type, stream.codec_tag_string), LogType.CONVERTER);
 	}
 
 	private boolean findCodec(List<String> listCodecs, String codec_name) {
