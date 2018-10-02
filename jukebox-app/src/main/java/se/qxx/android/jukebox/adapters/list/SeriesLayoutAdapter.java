@@ -44,17 +44,9 @@ public class SeriesLayoutAdapter extends GenericListLayoutAdapter<Series> {
             GUITools.setTextOnTextview(R.id.toptext, s.getTitle(), v);
             GUITools.setTextOnTextview(R.id.bottomtext, Integer.toString(s.getYear()), v);
 
-            // If all media has a meta duration then hide the download icon
-            GUITools.hideView(R.id.imgDownloading, v);
-
-            if (!s.getThumbnail().isEmpty()) {
-                Bitmap image = GUITools.getBitmapFromByteArray(s.getThumbnail().toByteArray());
-                Bitmap scaledImage = GUITools.scaleImage(80, image, v.getContext());
-                GUITools.setImageOnImageView(R.id.imageView1, scaledImage, v);
-            }
-            else {
-                GUITools.setImageResourceOnImageView(R.id.imageView1, R.drawable.icon, v);
-            }
+            hideDownloadAndCompletedIcons(v);
+            setupThumbnail(v, s.getThumbnail());
+            setupSubtitles(v, new ArrayList<>());
         }
     }
 

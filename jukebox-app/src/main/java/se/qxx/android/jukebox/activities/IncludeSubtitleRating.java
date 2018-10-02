@@ -43,13 +43,17 @@ public class IncludeSubtitleRating {
 		        GUITools.hideView(R.id.imgSubRatingSubsExist, v);
 	    		break;
 	    	case NotMatched:
-		        GUITools.hideView(R.id.imgSubRatingExact, v);
-		        GUITools.hideView(R.id.imgSubRatingPositive, v);
-		        GUITools.hideView(R.id.imgSubRatingProbable, v);
-		        GUITools.hideView(R.id.imgSubRatingSubsExist, v);
+				hideAll(v);
 	    		break;	        	
 	    	}
 	    }
 		
+	}
+
+	public static void hideAll(View v) {
+		GUITools.hideView(R.id.imgSubRatingExact, v);
+		GUITools.hideView(R.id.imgSubRatingPositive, v);
+		GUITools.hideView(R.id.imgSubRatingProbable, v);
+		GUITools.hideView(R.id.imgSubRatingSubsExist, v);
 	}
 }

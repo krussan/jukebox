@@ -18,7 +18,6 @@ import se.qxx.jukebox.domain.JukeboxDomain.Series;
 
 public class SeasonLayoutAdapter extends GenericListLayoutAdapter<Season> {
 
-	private Context context;
 	private List<Season> seasons = new ArrayList<>();
 
     public List<Season> getSeasons() {
@@ -35,44 +34,26 @@ public class SeasonLayoutAdapter extends GenericListLayoutAdapter<Season> {
 
 	public SeasonLayoutAdapter(Context context, Series series) {
 		super(context, R.layout.movielistrow);
-		this.context = context;
 		this.clearSeasons();
 		this.addSeasons(series.getSeasonList());
 	}
 
     public SeasonLayoutAdapter(Context context, List<Season> seasons) {
         super(context, R.layout.movielistrow);
-        this.context = context;
         this.clearSeasons();
         this.addSeasons(seasons);
     }
 
 	@Override
-	public void initializeView(View v, Season o) {
+	public void initializeView(View v, Season ss) {
 		try {
+			if (ss != null) {
+				GUITools.setTextOnTextview(R.id.toptext, String.format("Season %s - %s", ss.getSeasonNumber(), ss.getTitle()), v);
+				GUITools.setTextOnTextview(R.id.bottomtext, Integer.toString(ss.getYear()), v);
 
-			if (v == null) {
-				LayoutInflater vi = (LayoutInflater)this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				v = vi.inflate(R.layout.movielistrow, null);
-			}
-			Context context = v.getContext();
-
-			if (o != null) {
-				GUITools.setTextOnTextview(R.id.toptext, String.format("Season %s - %s", o.getSeasonNumber(), o.getTitle()), v);
-				GUITools.setTextOnTextview(R.id.bottomtext, Integer.toString(o.getYear()), v);
-//	        	GUITools.setTextOnTextview(R.id.txtRating, m.getRating(), v);
-
-				// If all media has a meta duration then hide the download icon
-				GUITools.hideView(R.id.imgDownloading, v);
-
-				if (o.getThumbnail().isEmpty()) {
-					GUITools.setImageResourceOnImageView(R.id.imageView1, R.drawable.icon, v);
-				}
-				else {
-					Bitmap image = GUITools.getBitmapFromByteArray(o.getThumbnail().toByteArray());
-					Bitmap scaledImage = GUITools.scaleImage(80, image, v.getContext());
-					GUITools.setImageOnImageView(R.id.imageView1, scaledImage, v);
-				}
+				hideDownloadAndCompletedIcons(v);
+				setupThumbnail(v, ss.getThumbnail());
+				setupSubtitles(v, new ArrayList<>());
 			}
 		}
 		catch (Exception e) {

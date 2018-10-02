@@ -51,28 +51,36 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:text="@string/lblRating" 
-        />        
+        />
 
         <ImageView
             android:id="@+id/imgDownloading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/toptext"
             android:layout_alignParentRight="true"
-            android:src="@android:drawable/stat_sys_download" 
-            android:contentDescription="@string/descDownloading"/>
+            android:layout_below="@id/toptext"
+            android:contentDescription="@string/descDownloading"
+            android:src="@android:drawable/stat_sys_download" />
 
 
         <ImageView
             android:id="@+id/imgWatched"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/txtRating"
             android:layout_below="@id/toptext"
             android:layout_toLeftOf="@id/imgDownloading"
             android:src="@android:drawable/ic_menu_view"
             android:contentDescription="@string/descWatched" />
-       
+
+        <ImageView
+            android:id="@+id/imgConverted"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_toStartOf="@+id/imgWatched"
+            android:contentDescription="@string/descConverted"
+            android:src="@drawable/ic_mms_black_24dp" />
+
     </RelativeLayout>
    
 </LinearLayout>

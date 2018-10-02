@@ -10,6 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import se.qxx.android.jukebox.R;
@@ -17,11 +18,11 @@ import se.qxx.android.jukebox.activities.NowPlayingActivity;
 import se.qxx.android.jukebox.activities.ViewMode;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
+import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 
-public class EpisodeLayoutAdapter extends BaseAdapter implements View.OnClickListener {
+public class EpisodeLayoutAdapter extends GenericListLayoutAdapter<Episode> implements View.OnClickListener {
 
-	private Context context;
     private List<Episode> episodes = new ArrayList<>();
     private int seasonNumber;
 
@@ -46,85 +47,74 @@ public class EpisodeLayoutAdapter extends BaseAdapter implements View.OnClickLis
     }
 
     public EpisodeLayoutAdapter(Context context, int seasonNumber, List<Episode> episodes) {
-		super();
-		this.context = context;
+		super(context, R.layout.episodelistrow);
+
 		this.setSeasonNumber(seasonNumber);
 		this.clearEpisodes();
 		this.addEpisodes(episodes);
 	}
 
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		View v = convertView;
+    @Override
+    public void initializeView(View v, Episode ep) {
+        if (ep != null) {
+            GUITools.setTextOnTextview(R.id.toptext, String.format("S%sE%s - %s", this.getSeasonNumber(), ep.getEpisodeNumber(), ep.getTitle()), v);
+            GUITools.setTextOnTextview(R.id.txtDescription, ep.getStory(), v);
 
-		try {
+            setupDownloadedAndCompletedIcons(v, ep.getMediaList());
+            setupThumbnail(v, ep.getThumbnail());
+            setupSubtitles(v, ep.getMedia(0).getSubsList());
 
-            if (v == null) {
-                LayoutInflater vi = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                v = vi.inflate(R.layout.episodelistrow, parent, false);
-            }
+            ImageButton btnPlayEpisode = v.findViewById(R.id.btnPlayEpisode);
+            btnPlayEpisode.setTag(ep.getID());
+            btnPlayEpisode.setOnClickListener(this);
 
-            if (v != null) {
-                Episode ep = (Episode) this.getItem(position);
-                if (ep != null) {
-                    GUITools.setTextOnTextview(R.id.toptext, String.format("S%sE%s - %s", this.getSeasonNumber(), ep.getEpisodeNumber(), ep.getTitle()), v);
-                    GUITools.setTextOnTextview(R.id.txtDescription, ep.getStory(), v);
-
-                    if (ep.getThumbnail().isEmpty()) {
-                        GUITools.setImageResourceOnImageView(R.id.imageView1, R.drawable.icon, v);
-                    } else {
-                        Bitmap image = GUITools.getBitmapFromByteArray(ep.getThumbnail().toByteArray());
-                        Bitmap scaledImage = GUITools.scaleImage(80, image, v.getContext());
-                        GUITools.setImageOnImageView(R.id.imageView1, scaledImage, v);
-                    }
-
-                    ImageButton btnPlayEpisode = v.findViewById(R.id.btnPlayEpisode);
-                    btnPlayEpisode.setTag(position);
-                    btnPlayEpisode.setOnClickListener(this);
-
-                }
-            }
-        }
-        catch(Exception e){
-            Logger.Log().e("Error occured while populating list", e);
         }
 
+    }
 
-        return v;
-	}
-
-	@Override
+    @Override
 	public void onClick(View view) {
 
-        int position = (int) view.getTag();
+        int episodeId = (int) view.getTag();
+        Episode e = getItemById(episodeId);
 
-		switch (view.getId()) {
-			case R.id.btnPlayEpisode:
-				Intent iPlay = new Intent(this.context, NowPlayingActivity.class);
-                iPlay.putExtra("mode", ViewMode.Episode);
-                iPlay.putExtra("episode", getEpisodes().get(position));
-                iPlay.putExtra("seasonNumber", getSeasonNumber());
+        if (e != null) {
+            switch (view.getId()) {
+                case R.id.btnPlayEpisode:
+                    Intent iPlay = new Intent(this.getContext(), NowPlayingActivity.class);
+                    iPlay.putExtra("mode", ViewMode.Episode);
+                    iPlay.putExtra("episode", e);
+                    iPlay.putExtra("seasonNumber", getSeasonNumber());
 
-				context.startActivity(iPlay);
-				break;
-		}
+                    this.getContext().startActivity(iPlay);
+                    break;
+            }
+        }
 	}
 
 
-	@Override
-	public int getCount() {
-		return this.getEpisodes().size();
-	}
+    @Override
+    public int getItemCount() {
+        return this.getEpisodes().size();
+    }
 
-	@Override
-	public Object getItem(int position) {
-		return this.getEpisodes().get(position);
-	}
+    @Override
+    public JukeboxDomain.Episode getDataObject(int position) {
+        return this.getEpisodes().get(position);
+    }
 
-	@Override
-	public long getItemId(int position) {
-		return position;
-	}
+    @Override
+    public long getObjectId(int position) {
+        return this.getDataObject(position).getID();
+    }
+
+    private Episode getItemById(int id) {
+        for (Episode e : this.getEpisodes()) {
+            if (e.getID() == id)
+                return e;
+        }
+        return null;
+    }
 
 
 

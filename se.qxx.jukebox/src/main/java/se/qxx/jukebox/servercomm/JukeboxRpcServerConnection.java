@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.google.protobuf.ByteString;
 import com.google.protobuf.RpcCallback;
 import com.google.protobuf.RpcController;
 
@@ -15,17 +14,17 @@ import se.qxx.jukebox.DB;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.MovieIdentifier;
 import se.qxx.jukebox.Log.LogType;
-import se.qxx.jukebox.domain.DomainUtil;
 import se.qxx.jukebox.domain.JukeboxDomain.Empty;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
-import se.qxx.jukebox.domain.JukeboxDomain.Episode.Builder;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGeneral;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGetItem;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListSubtitles;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSeek;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSetSubtitle;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStartMovie;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseGetItem;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseGetTitle;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseIsPlaying;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
@@ -36,14 +35,12 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseTime;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxService;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
-import se.qxx.jukebox.domain.JukeboxDomain.Rating;
 import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Players.Server;
-import se.qxx.jukebox.tools.MediaMetadata;
 import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.vlc.VLCConnectionNotFoundException;
 import se.qxx.jukebox.watcher.FileRepresentation;
@@ -87,24 +84,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 				DB.getTotalNrOfSeries());
 			
 			break;
-		case TypeSeason:
-			b.addSeries(
-				DB.searchSeriesById(
-						request.getSeriesID()));
-			
-			b.setTotalSeasons(
-				DB.getTotalNrOfSeasons(
-						request.getSeriesID()));
-				
-			break;
-		case TypeEpisode:
-			b.addSeason(
-				DB.searchSeasonById(request.getSeasonID()));
-				
-			b.setTotalEpisodes(
-				DB.getTotalNrOfEpisodes(
-						request.getSeasonID()));
-			
+		default:
 			break;
 		}
 		
@@ -141,65 +121,6 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		Log.Debug(String.format("Episode count :: %s ", c), LogType.COMM);
 	}
 
-	private List<Series> removeFullSizePicturesAndSubsFromSeries(List<Series> listSeries) {
-		List<Series> listSeriesNoPics = new ArrayList<Series>();
-
-		for (Series s : listSeries) {
-			for (Season sn : s.getSeasonList()) {
-				for (Episode e : sn.getEpisodeList()) {
- 					
- 					List<Media> newMediaList = removeSubs(e.getMediaList());
- 					
-					Episode e1 = Episode.newBuilder(e)
-							.setImage(ByteString.EMPTY)
-							.clearMedia()
-							.addAllMedia(newMediaList)
-							.build();
-					
-					DomainUtil.updateEpisode(sn, e1);
-				}
-				
-				Season sn1 = Season.newBuilder(sn).setImage(ByteString.EMPTY).build();
-				DomainUtil.updateSeason(s, sn1);
-			}
-			
-			Series s1 = Series.newBuilder(s).setImage(ByteString.EMPTY).build();
-			listSeriesNoPics.add(s1);
-		}
-		
-		return listSeriesNoPics;
-	}
-
-	private List<Media> removeSubs(List<Media> mediaList) {
-		List<Media> newMediaList = new ArrayList<Media>();
-		
-		for (Media md : mediaList) {
-			newMediaList.add(removeSubs(md));
-		}
-	
-		return newMediaList;
-	}
-
-	private Media removeSubs(Media md) {
-		return Media.newBuilder(md).clearSubs().build();
-	}
-
-	private List<Movie> removeFullSizePicturesAndSubsFromMovies(List<Movie> listMovies) {
-		List<Movie> listNoPics = new ArrayList<Movie>();
-		for (Movie m : listMovies) {
-			List<Media> newMediaList = removeSubs(m.getMediaList());
-			
-			listNoPics.add(
-					Movie.newBuilder(m)
-					.setImage(ByteString.EMPTY)
-					.clearMedia()
-					.addAllMedia(newMediaList)
-					.build());
-		}
-		
-		return listNoPics;
-	}
- 
 	@Override
 	public void listPlayers(RpcController controller, Empty request,
 			RpcCallback<JukeboxResponseListPlayers> done) {
@@ -271,7 +192,6 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	}
 
 	private Media getMedia(JukeboxRequestStartMovie request) {
-		Media md = null;
 		if (request.getRequestType() == RequestType.TypeMovie) {
 			return DB.getMovie(request.getMovieOrEpisodeId()).getMedia(0);
 		}
@@ -673,6 +593,37 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	
 	private void setPriority() {
 		Thread.currentThread().setPriority(7);
+	}
+
+	@Override
+	public void getItem(RpcController controller, JukeboxRequestGetItem request,
+			RpcCallback<JukeboxResponseGetItem> done) {
+		setPriority();
+		Log.Debug(String.format("GetItem :: %s - %s", request.getID(), request.getRequestType()), LogType.COMM);
+		
+		
+		JukeboxResponseGetItem.Builder b = JukeboxResponseGetItem.newBuilder();
+		switch (request.getRequestType()) {		
+		case TypeMovie:
+			b.setMovie(
+				DB.searchMoviesByID(
+					request.getID()));
+			break;
+		case TypeSeries:
+			b.setSerie(
+				DB.searchSeriesById(
+					request.getID()));
+			break;
+		case TypeSeason:
+			b.setSeason(
+				DB.searchSeasonById(
+					request.getID()));
+			break;
+		default:
+			break;
+		}
+		
+		done.run(b.build());
 	}
 	
 }

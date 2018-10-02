@@ -32,25 +32,27 @@ class LocalCastProvider extends CastProvider implements MediaPlayer.OnBufferingU
                 Uri uri = Uri.parse(response.getUri());
 
                 mediaPlayer = MediaPlayer.create(context, uri);
-                setupMediaPlayer();
+                if (mediaPlayer != null) {
+                    setupMediaPlayer();
 
-                for (String subUri : response.getSubtitleUrisList()) {
-                    try {
-                        mediaPlayer.addTimedTextSource(context, Uri.parse(subUri), "text/vtt");
-                    } catch (IOException e) {
-                        Logger.Log().e("Unable to add substitle", e);
+                    for (String subUri : response.getSubtitleUrisList()) {
+                        try {
+                            mediaPlayer.addTimedTextSource(context, Uri.parse(subUri), "text/vtt");
+                        } catch (IOException e) {
+                            Logger.Log().e("Unable to add substitle", e);
+                        }
                     }
+
+                    if (response.getSubtitleUrisCount() > 0)
+                        mediaPlayer.selectTrack(1);
+
+                    mediaPlayer.setDisplay(getDisplay());
+                    setViewLayoutRatio();
+
+                    mediaPlayer.start();
+
+                    initializeSubtitles();
                 }
-
-                if (response.getSubtitleUrisCount() > 0)
-                    mediaPlayer.selectTrack(1);
-
-                mediaPlayer.setDisplay(getDisplay());
-                setViewLayoutRatio();
-
-                mediaPlayer.start();
-
-                initializeSubtitles();
             }
         };
 

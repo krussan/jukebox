@@ -63,6 +63,39 @@ public class DB {
 				, excludedObjects
 				, "identifiedTitle");
 	}
+	
+	public static Movie searchMoviesByID(int id) {
+		try {
+			List<String> excludedObjects = new ArrayList<String>();
+			excludedObjects.add("media.subs");
+			excludedObjects.add("image");
+	
+			ProtoDB db = getProtoDBInstance(true);
+	
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				List<Movie> result = db.search(
+					SearchOptions.newBuilder(JukeboxDomain.Movie.getDefaultInstance())
+						.addFieldName("ID")
+						.addSearchArgument(id)
+						.addOperator(ProtoDBSearchOperator.Equals)
+						.setShallow(false)
+						.addAllExcludedObjects(excludedObjects));				
+
+				if (result.size() > 0)
+					return result.get(0);
+				else
+					return null;
+				
+			}
+		
+		}
+		catch (Exception e) {
+			Log.Error("Failed to retrieve series listing from DB", Log.LogType.MAIN, e);
+			return null;
+		}		
+
+	}
+	
 
 	public static List<Series> searchSeriesByTitle(String searchString) {
 		return searchSeriesByTitle(searchString, -1, -1);		

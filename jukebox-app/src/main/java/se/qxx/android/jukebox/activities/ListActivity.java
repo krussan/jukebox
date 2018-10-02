@@ -107,10 +107,12 @@ public class ListActivity extends AppCompatActivity implements
 		JukeboxSettings.init(this);
 
 		setContentView(R.layout.main);
-		initializeView();
 
-		mCastContext = CastContext.getSharedInstance(this);
-		connector = new Connector(this);
+        mCastContext = CastContext.getSharedInstance(this);
+        connector = new Connector(this);
+        
+        initializeView();
+
 
         loadMoreData(0, getSeriesID(), getSeasonID());
     }

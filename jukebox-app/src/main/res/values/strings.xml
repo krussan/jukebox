@@ -46,4 +46,5 @@
     <string name="tabMovies">Movies</string>
     <string name="tabSeries">Series</string>
     <string name="tabSeason">Season</string>
+    <string name="descConverted">Converted</string>
 </resources>

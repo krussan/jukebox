@@ -51,7 +51,7 @@ public class FlipperActivity extends AppCompatActivity implements OnPageChangeLi
         this.setCurrentPosition(getPosition());
 
 		connector = new Connector(this);
-        connector.connect(0, -1, this.getMode(), -1, -1);
+        connector.connect(getCurrentPosition(), 1, this.getMode(), -1, -1);
 
         this.getRootView().setOnLongClickListener(this);
 
