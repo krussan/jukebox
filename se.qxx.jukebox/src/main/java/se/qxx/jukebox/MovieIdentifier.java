@@ -56,11 +56,15 @@ public class MovieIdentifier extends JukeboxThread {
 	}
 
 	public void addFile(FileRepresentation f)  {
+		Log.Debug(String.format("Adding file %s", f.getName()), LogType.FIND);
 		if (!files.contains(f)) {
 			synchronized(_instance) {
 				this.files.add(f);
 				_instance.notify();
 			}
+		}
+		else {
+			Log.Debug("File already added", LogType.FIND);
 		}
 	}
 
