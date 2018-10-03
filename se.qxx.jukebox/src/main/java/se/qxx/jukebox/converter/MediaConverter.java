@@ -218,7 +218,7 @@ public class MediaConverter extends JukeboxThread {
 			switch (state) {
 			case FINISHED:
 				Log.Debug(String.format("Conversion completed on :: %s", filename), LogType.CONVERTER);
-				return new MediaConverterResult(filename, newFilepath, MediaConverterResult.State.Completed);
+				return new MediaConverterResult(filename, newFilename, MediaConverterResult.State.Completed);
 			case FAILED:
 				Log.Debug(String.format("Conversion FAILED on :: %s", filename), LogType.CONVERTER);
 				break;
