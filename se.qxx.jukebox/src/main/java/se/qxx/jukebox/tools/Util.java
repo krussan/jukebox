@@ -332,7 +332,7 @@ public class Util {
 			return true;
 		}
 		else if (FilenameUtils.removeExtension(f.getName()).endsWith("[tazmo]")) {
-			Log.Info(String.format("Ignoring %s as this is a converted file", f.getName()), logType);
+			//Log.Info(String.format("Ignoring %s as this is a converted file", f.getName()), logType);
 			return true;
 		}
 		

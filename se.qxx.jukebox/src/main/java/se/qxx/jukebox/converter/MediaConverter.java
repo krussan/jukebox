@@ -99,6 +99,7 @@ public class MediaConverter extends JukeboxThread {
 
 	private FFmpegProbeResult getProbeResult(Media md) throws IOException {
 		FFprobe ffprobe = new FFprobe();
+		Log.Info(String.format("Probing :: %s", md.getFilename()), LogType.CONVERTER);
 		return ffprobe.probe(Util.getFullFilePath(md));
 	}
 
@@ -162,7 +163,6 @@ public class MediaConverter extends JukeboxThread {
 		String newFilepath = String.format("%s/%s", md.getFilepath(), newFilename);
 
 		try {
-			Log.Info(String.format("Probing :: %s", filename), LogType.CONVERTER);
 		
 			FFmpegBuilder builder = new FFmpegBuilder()
 				.setInput(filename)
