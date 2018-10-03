@@ -31,6 +31,9 @@ import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.converter.MediaConverterResult.State;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.MediaConverterState;
+import se.qxx.jukebox.settings.CodecsType;
+import se.qxx.jukebox.settings.CodecsType.Codec;
+import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.tools.Util;
 import se.qxx.protodb.Logger;
 
@@ -108,8 +111,11 @@ public class MediaConverter extends JukeboxThread {
 		//TODO: Use ffprobe to check container
 		//for now all not mp4 extension
 		//list of accepted video codecs
-		List<String> acceptedVideoCodecs = Arrays.asList(new String[] {"h264"});
-		List<String> acceptedAudioCodecs = Arrays.asList(new String[] {"aac", "mp3", "vorbis", "lcpm", "wav", "flac", "opus"});
+		
+		List<Codec> acceptedVideoCodecs = Settings.get().getConverter().getAcceptedVideoCodecs().getCodec();
+		List<Codec> acceptedAudioCodecs = Settings.get().getConverter().getAcceptedAudioCodecs().getCodec();
+		//List<String> acceptedVideoCodecs = Settings.get().getConverter().getAcceptedAudioCodecs().getCodec();
+		//List<String> acceptedAudioCodecs = Arrays.asList(new String[] {"aac", "mp3", "vorbis", "lcpm", "wav", "flac", "opus"});
 
 		String audioCodec = "aac";
 		String videoCodec = "h264";
@@ -145,9 +151,9 @@ public class MediaConverter extends JukeboxThread {
 		Log.Info(String.format("%s codec tag string :: %s", stream.codec_type, stream.codec_tag_string), LogType.CONVERTER);
 	}
 
-	private boolean findCodec(List<String> listCodecs, String codec_name) {
-		for (String c : listCodecs) {
-			if (StringUtils.equalsIgnoreCase(c, codec_name))
+	private boolean findCodec(List<Codec> listCodecs, String codec_name) {
+		for (Codec c : listCodecs) {
+			if (StringUtils.equalsIgnoreCase(c.getTag(), codec_name))
 				return true;
 		}
 		

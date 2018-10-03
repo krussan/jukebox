@@ -150,4 +150,19 @@
   	</extensionOverrideMap>
   	
   </webServer>
+  <converter>
+  	<acceptedVideoCodecs>
+  		<codec tag="h264" />
+  		<codec tag="h265" />
+  	</acceptedVideoCodecs>
+  	<acceptedAudioCodecs>
+  		<codec tag="aac" />
+  		<codec tag="mp3" />
+  		<codec tag="vorbis" />
+  		<codec tag="lcpm" />
+  		<codec tag="wav" />
+  		<codec tag="flac" />
+  		<codec tag="opus" />
+  	</acceptedAudioCodecs>
+  </converter>
 </JukeboxListenerSettings>
