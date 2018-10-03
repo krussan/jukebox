@@ -548,7 +548,7 @@ public class DB {
 			ProtoDB db = getProtoDBInstance();
 			
 			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
-				String sql = "UPDATE Media SET _converterstate_ID = 2 WHERE _converterstate_ID = 4";
+				String sql = "UPDATE Media SET _converterstate_ID = 2 WHERE _converterstate_ID IN (4,5)";
 				db.executeNonQuery(sql);
 			}
 		} catch (Exception e) {
