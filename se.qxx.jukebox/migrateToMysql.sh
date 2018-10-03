@@ -15,7 +15,6 @@ if [ "$FILE" != "" ] && [ "$MYSQL_USER" != "" ] && [ "$MYSQL_PASS" != "" ] && [ 
    sqlite3 $FILE ".tables" > dump/tables.sql
 
    for tbl in `cat dump/tables.sql | tr -s ' ' | cut -d ' ' --output-delimiter=$'\n' -f 1- | tr -s '\n\n'`; do
-      DO_BLOBS=
       if [[ "$tbl" == "BlobData" && "$EXPORT_BLOB_DATA" == "1" ]] || [[ "$tbl" != "BlobData" ]]; then
          echo "Exporting table :: $tbl"
          sqlite3 $FILE ".dump $tbl" > dump/$tbl.sql
@@ -28,6 +27,7 @@ if [ "$FILE" != "" ] && [ "$MYSQL_USER" != "" ] && [ "$MYSQL_PASS" != "" ] && [ 
          sed -i -e "s/\"$tbl\"/$tbl/gi" dump/$tbl.sql
 
          echo "Importing table :: $tbl"
+         mysql -h $MYSQL_HOST -u $MYSQL_USER --password=$MYSQL_PASS -D $MYSQL_DB -e "DELETE FROM $tbl"
          mysql -h $MYSQL_HOST -u $MYSQL_USER --password=$MYSQL_PASS -D $MYSQL_DB < dump/$tbl.sql
       fi
    done

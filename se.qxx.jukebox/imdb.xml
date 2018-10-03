@@ -154,6 +154,7 @@
     <datePatterns>
         <pattern><![CDATA[dd MMM yyyy]]></pattern>
         <pattern><![CDATA[dd MMM. yyyy]]></pattern>
+        <pattern><![CDATA[dd MMMM yyyy]]></pattern>
         <pattern><![CDATA[MMM. dd, yyyy]]></pattern>
         <pattern><![CDATA[yyyy-MM-dd]]></pattern>
     </datePatterns>
