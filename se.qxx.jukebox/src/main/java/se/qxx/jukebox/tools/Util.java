@@ -327,14 +327,15 @@ public class Util {
 			Log.Info(String.format("Ignoring %s as this appears to be a sample", f.getName()), logType);
 			return true;
 		}
+		else if (FilenameUtils.removeExtension(f.getName()).endsWith("[tazmo]")) {
+			//Log.Info(String.format("Ignoring %s as this is a converted file", f.getName()), logType);
+			return true;
+		}		
 		else if (f.getFileSize() < 104857600) {
 			Log.Info(String.format("Ignoring %s as this has a file size of less than 100MB", f.getName()), logType);
 			return true;
 		}
-		else if (FilenameUtils.removeExtension(f.getName()).endsWith("[tazmo]")) {
-			//Log.Info(String.format("Ignoring %s as this is a converted file", f.getName()), logType);
-			return true;
-		}
+
 		
 		return false;
 	}
