@@ -40,7 +40,6 @@ public class ChromeCastProvider extends CastProvider implements RemoteMediaClien
     @Override
     public RpcCallback<JukeboxDomain.JukeboxResponseStartMovie> getCallback() {
         return response -> {
-
             JukeboxConnectionProgressDialog dialog = getDialog();
             if (dialog != null)
                 dialog.close();

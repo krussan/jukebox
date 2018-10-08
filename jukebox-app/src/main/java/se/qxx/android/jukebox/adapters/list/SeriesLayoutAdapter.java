@@ -4,6 +4,7 @@ import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
+import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 
 import android.content.Context;
@@ -42,12 +43,20 @@ public class SeriesLayoutAdapter extends GenericListLayoutAdapter<Series> {
     public void initializeView(View v, Series s) {
 	    if (s != null) {
             GUITools.setTextOnTextview(R.id.toptext, s.getTitle(), v);
-            GUITools.setTextOnTextview(R.id.bottomtext, Integer.toString(s.getYear()), v);
 
+            setYear(v, s);
             hideDownloadAndCompletedIcons(v);
             setupThumbnail(v, s.getThumbnail());
             setupSubtitles(v, new ArrayList<>());
         }
+    }
+
+    private void setYear(View v, Series s) {
+        int year = s.getYear();
+        if (year > 0)
+            GUITools.setTextOnTextview(R.id.bottomtext, Integer.toString(year), v);
+        else
+            GUITools.hideView(R.id.bottomtext, v);
     }
 
     @Override

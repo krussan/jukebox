@@ -13,6 +13,7 @@ import java.util.List;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
+import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 
@@ -49,8 +50,8 @@ public class SeasonLayoutAdapter extends GenericListLayoutAdapter<Season> {
 		try {
 			if (ss != null) {
 				GUITools.setTextOnTextview(R.id.toptext, String.format("Season %s - %s", ss.getSeasonNumber(), ss.getTitle()), v);
-				GUITools.setTextOnTextview(R.id.bottomtext, Integer.toString(ss.getYear()), v);
 
+				setYear(v, ss);
 				hideDownloadAndCompletedIcons(v);
 				setupThumbnail(v, ss.getThumbnail());
 				setupSubtitles(v, new ArrayList<>());
@@ -59,6 +60,14 @@ public class SeasonLayoutAdapter extends GenericListLayoutAdapter<Season> {
 		catch (Exception e) {
 			Logger.Log().e("Error occured while populating list", e);
 		}
+	}
+
+	private void setYear(View v, Season ss) {
+		int year = ss.getYear();
+		if (year > 0)
+            GUITools.setTextOnTextview(R.id.bottomtext, Integer.toString(year), v);
+        else
+            GUITools.hideView(R.id.bottomtext, v);
 	}
 
 	@Override

@@ -66,8 +66,10 @@ public class SubSelectActivity extends AppCompatActivity implements OnItemClickL
         jh.listSubtitles(
             this.getMedia(),
 				(response) -> {
-					SubtitleLayoutAdapter adapter = new SubtitleLayoutAdapter(this, response.getSubtitleList());
-					v.setAdapter(adapter);
+            		runOnUiThread(() -> {
+						SubtitleLayoutAdapter adapter = new SubtitleLayoutAdapter(this, response.getSubtitleList());
+						v.setAdapter(adapter);
+					});
 				});
 
     }
