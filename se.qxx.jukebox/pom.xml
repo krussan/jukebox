@@ -171,6 +171,13 @@
 			<version>0.6.2</version>
 		</dependency>
 
+		<dependency>
+		    <groupId>net.java.dev.jna</groupId>
+		    <artifactId>jna</artifactId>
+		    <version>4.2.2</version>
+		</dependency>
+
+
 	</dependencies>
 
 	<build>
@@ -406,7 +413,7 @@
 				<filtering>false</filtering>
 				<directory>src/main/native</directory>
 				<includes>
-					<include>*</include>
+					<include>**/*</include>
 				</includes>
 			</resource>
 			<resource>
