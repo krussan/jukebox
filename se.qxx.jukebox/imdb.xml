@@ -18,7 +18,7 @@
         
     </title>
     
-    <searchUrl><![CDATA[http://www.imdb.com/find?s=tt&q=%%TITLE%%]]></searchUrl>
+    <searchUrl><![CDATA[https://www.imdb.com/find?s=tt&q=%%TITLE%%]]></searchUrl>
     <searchPatterns>
      <searchResultPattern
          name="November2012_TV"

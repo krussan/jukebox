@@ -60,7 +60,7 @@ public class MovieIdentifier extends JukeboxThread {
 		if (!files.contains(f)) {
 			synchronized(_instance) {
 				this.files.add(f);
-				_instance.notify();
+				this.notify();
 			}
 		}
 		else {

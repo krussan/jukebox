@@ -215,7 +215,7 @@ public class Util {
 
 	public static String getImdbIdFromUrl(String imdbUrl) {
 		// http://www.imdb.com/title/tt1541874/
-		Pattern p = Pattern.compile("http:\\/\\/www\\.imdb\\.com\\/.*\\/(tt\\d*).*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
+		Pattern p = Pattern.compile("\\/(tt\\d*)\\/", Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
 		Matcher m = p.matcher(imdbUrl);
 		if (m.find())
 			return m.group(1);

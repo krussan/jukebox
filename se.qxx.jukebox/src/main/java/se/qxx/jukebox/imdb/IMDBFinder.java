@@ -13,6 +13,10 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
@@ -44,7 +48,7 @@ public class IMDBFinder {
  
 		IMDBRecord rec = null;
 		if (StringUtils.isEmpty(imdbUrl) || urlIsBlacklisted(imdbUrl, m.getBlacklistList())) {
-			rec = Search(m.getTitle(), m.getYear(), m.getBlacklistList(), Settings.imdb().getSearchUrl(), false); 
+			rec = Search(m.getTitle(), m.getYear(), m.getBlacklistList(), false); 
 		}
 		else {
 			Log.Debug(String.format("IMDB url found."), LogType.IMDB);
@@ -141,7 +145,7 @@ public class IMDBFinder {
 	
 	private static IMDBRecord getSeriesRecord(Series s) throws NumberFormatException, IOException, ParseException {
 		if (StringUtils.isEmpty(s.getImdbUrl())) {
-			return Search(s.getTitle(), s.getYear(), null, Settings.imdb().getSearchUrl(), true);
+			return Search(s.getTitle(), s.getYear(), null, true);
 		}
 		else
 			return IMDBRecord.get(s.getImdbUrl());
@@ -167,14 +171,14 @@ public class IMDBFinder {
 		return false;
 	}
 
-	private synchronized static IMDBRecord Search(
+	public synchronized static IMDBRecord Search(
 			String searchString, 
 			int yearToFind, 
 			List<String> blacklist, 
-			String searchUrl,
 			boolean isTvEpisode) throws IOException, NumberFormatException, ParseException {
 		long currentTimeStamp = Util.getCurrentTimestamp();
 		
+		String searchUrl = Settings.imdb().getSearchUrl();
 		try {
 			// wait a while to avoid hammering
 			if (currentTimeStamp < nextSearch) {
@@ -358,70 +362,58 @@ public class IMDBFinder {
 		
 		Collections.sort(patterns, new SearchPatternComparer());
 		IMDBRecord rec = null;
-		for (SearchResultPattern p : patterns) {
-			if (p.isEnabled() && ((p.isTvPattern() && isTvEpisode) || (!p.isTvPattern() && !isTvEpisode))) {
-				Log.Debug(String.format("Using pattern :: %s", p.getName()), LogType.IMDB);
-				
-				rec = findUrl(
-						  blacklist
-						, text
-						, yearToFind
-						, StringUtils.trim(p.getBlockPattern())
-						, p.getGroupBlock()
-						, StringUtils.trim(p.getRecordPattern())
-						, p.getGroupRecordUrl()
-						, p.getGroupRecordYear());
-				
-				if (rec != null)
-					break;
-			}
-		}
+		
+		rec = findUrl(
+				  blacklist
+				, text
+				, yearToFind
+				, isTvEpisode);
 		
 		return rec;
 	}
-	
-	private static boolean testResult(int expectedYear, int foundYear) {
-		return (expectedYear == 0 || expectedYear == foundYear);
-	}
+
 
 	private static IMDBRecord findUrl(
 			List<String> blacklist, 
 			String text,
 			int yearToFind,
-			String patternForBlock, 
-			int patternGroupForBlock,
-			String patternForRecord,
-			int urlGroup,
-			int yearGroup) {
+			boolean isTvEpisode) {
 		
-		//TODO: Also match by length of movie
 		try {
-			List<String[]> records = parseBlockAndRecords(
-					text
-					, patternForBlock
-					, patternGroupForBlock
-					, patternForRecord
-					, urlGroup
-					, yearGroup);
-		
-			for (String[] record : records) {
-				String url = record[0];
-				int year = Integer.parseInt(record[1]);
-								
-				
+			Document doc = Jsoup.parse(text);
+			String selector = getElementSelector(yearToFind, isTvEpisode);
+					
+			Elements elm = doc.select(selector);
+			for (Element e : elm) {
+				String url = e.attr("href");
+	
 				// Check if movie was blacklisted. If it was get the next record matching
-				if (!urlIsBlacklisted(url, blacklist) && testResult(yearToFind, year))
-				{
+				if (!urlIsBlacklisted(url, blacklist))
 					// if year and title matches then continue to the URL and extract information about the movie.
 					return IMDBRecord.get(url);
-				}				
 			}
+			
 		}
 		catch (Exception e) {
 			Log.Error(String.format("Error occured when trying to find %s in IMDB", text), LogType.FIND, e);
 		}
 
 		return null;
+	}
+
+	private static String getElementSelector(int yearToFind, boolean isTvEpisodeSearch) {
+		String selector = StringUtils.EMPTY;
+		if (!isTvEpisodeSearch) {
+			selector = yearToFind > 0 ?
+				String.format("tr.findResult:matches(\\(%s\\)) a", yearToFind) :
+				"tr.findResult a";
+		}
+		else {
+			selector = yearToFind > 0 ?
+				String.format("tr.findResult:matches(\\(%s\\).*?\\(TV\\s*Series\\))", yearToFind) :
+				"tr.findResult:matches(\\(TV\\s*Series\\))";
+		}
+		return selector;
 	}
 
 	private static String findPreferredTitle(String text, String country) {

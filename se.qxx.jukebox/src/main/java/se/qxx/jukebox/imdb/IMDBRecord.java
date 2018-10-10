@@ -207,13 +207,13 @@ public class IMDBRecord {
 		String internalUrl = StringUtils.trim(url);
 		
 		if (StringUtils.startsWithIgnoreCase(internalUrl, "www.imdb.com"))
-			internalUrl = "http://" + internalUrl;
+			internalUrl = "https://" + internalUrl;
 		
 		if (StringUtils.startsWithIgnoreCase(internalUrl, "/"))
-			internalUrl = "http://www.imdb.com" + internalUrl;
+			internalUrl = "https://www.imdb.com" + internalUrl;
 
-		if (!StringUtils.startsWithIgnoreCase(internalUrl, "http://www.imdb.com"))
-			throw new MalformedURLException(String.format("A IMDB url must start with http://www.imdb.com. Url was :: %s", internalUrl));
+		if (!StringUtils.startsWithIgnoreCase(internalUrl, "https://www.imdb.com"))
+			throw new MalformedURLException(String.format("A IMDB url must start with https://www.imdb.com. Url was :: %s", internalUrl));
 						
 		try {
 			Log.Debug(String.format("IMDBRECORD :: Making web request to url :: %s", internalUrl), LogType.IMDB);

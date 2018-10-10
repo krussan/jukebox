@@ -3,8 +3,11 @@ package se.qxx.jukebox.junit;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.imdb.IMDBFinder;
 import se.qxx.jukebox.imdb.IMDBRecord;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.tools.WebResult;
@@ -15,6 +18,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -57,5 +61,27 @@ public class TestImdbParser {
 		
 		return sb.toString();	
 	}
+
+	@Ignore
+	@Test
+	public void Test_Movie_Live() throws IOException, NumberFormatException, ParseException {
+		IMDBRecord rec = IMDBFinder.Search(
+			"A Most Wanted Man",
+			2014,
+			null,
+			false);
+		
+		assertEquals("A Most Wanted Man", rec.getTitle());
+		assertEquals(2014, rec.getYear());
+		assertArrayEquals(new String[] {"Crime", "Drama", "Thriller"}, rec.getAllGenres().toArray(new String[] {}));
+		assertEquals("Anton Corbijn", rec.getDirector());
+		assertEquals(122, rec.getDurationMinutes());
+		assertNotNull(rec.getImageUrl());
+		assertEquals("6.8", rec.getRating());
+		assertEquals("A Chechen Muslim illegally immigrates to Hamburg, where he gets caught in the international war on terror.", rec.getStory());
+			
+		
+	}
+	
 
 }
