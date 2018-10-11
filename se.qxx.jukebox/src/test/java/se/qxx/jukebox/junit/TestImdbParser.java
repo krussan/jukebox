@@ -1,29 +1,25 @@
 package se.qxx.jukebox.junit;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateUtils;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
-import se.qxx.jukebox.domain.JukeboxDomain.Movie;
-import se.qxx.jukebox.imdb.IMDBFinder;
-import se.qxx.jukebox.imdb.IMDBRecord;
-import se.qxx.jukebox.settings.Settings;
-import se.qxx.jukebox.tools.WebResult;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 import javax.xml.bind.JAXBException;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import se.qxx.jukebox.imdb.IMDBFinder;
+import se.qxx.jukebox.imdb.IMDBRecord;
+import se.qxx.jukebox.settings.Settings;
 
 public class TestImdbParser {
 	@Before
@@ -105,7 +101,7 @@ public class TestImdbParser {
 	@Test
 	public void Test_Movie_SearchResults() throws IOException {
 		String searchResults = readResource("TestImdbSearchResult.html");
-		String url = IMDBFinder.findUrl(new ArrayList<String>() {}, searchResults, 2014, false);
+		String url = IMDBFinder.findUrl(new ArrayList<String>(), searchResults, 2014, false);
 		
 		assertEquals("/title/tt1972571/?ref_=fn_tt_tt_1", url);
 	}

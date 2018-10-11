@@ -5,18 +5,17 @@ import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.builders.MovieBuilder;
-import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.domain.DomainUtil;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
+import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.imdb.IMDBFinder;
 import se.qxx.jukebox.tools.MediaMetadata;
 import se.qxx.jukebox.tools.Util;
@@ -26,7 +25,6 @@ public class MovieIdentifier extends JukeboxThread {
 	
 	private static MovieIdentifier _instance;
 	private Queue<FileRepresentation> files;
-	private boolean isRunning;
 	
 	private MovieIdentifier() {
 		super("MovieIdentifier", 0, LogType.FIND);
