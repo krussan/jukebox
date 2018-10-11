@@ -130,8 +130,9 @@ public class IMDBFinder {
 
 	private static Season populateSeason(Season sn, IMDBRecord seriesRec) {
 		Log.Debug("IMDB :: Updating season object with urls", LogType.IMDB);
-		String seasonUrl = getSeasonUrl(sn.getSeasonNumber(), seriesRec.getAllSeasonUrls());
+		String seasonUrl = seriesRec.getAllSeasonUrls().get(sn.getSeasonNumber());
 		Log.Debug(String.format("IMDB :: Season URL :: %s", seasonUrl), LogType.IMDB);
+		
 		return Season.newBuilder(sn)
 				.setImdbUrl(seasonUrl)
 				.setImdbId(Util.getImdbIdFromUrl(seasonUrl))
@@ -196,8 +197,13 @@ public class IMDBFinder {
 				rec = IMDBRecord.getFromWebResult(webResult);
 			}
 			else {				
-				Log.Info(String.format("IMDB :: %s is NOT redirected to movie", searchString), LogType.IMDB);				
-				rec = findMovieInSearchResults(blacklist, yearToFind, webResult.getResult(), isTvEpisode);			
+				Log.Info(String.format("IMDB :: %s is NOT redirected to movie", searchString), LogType.IMDB);
+				rec = IMDBRecord.get(
+					findUrl(
+						  blacklist
+						, webResult.getResult()
+						, yearToFind
+						, isTvEpisode));			
 			}
 			
 			setNextSearchTimer();
@@ -353,27 +359,10 @@ public class IMDBFinder {
 		return title;
 	}
 
-	private static IMDBRecord findMovieInSearchResults(
-			List<String> blacklist, 
-			int yearToFind, 
-			String text,
-			boolean isTvEpisode) {
-		List<SearchResultPattern> patterns = Settings.imdb().getSearchPatterns().getSearchResultPattern();
 		
-		Collections.sort(patterns, new SearchPatternComparer());
-		IMDBRecord rec = null;
-		
-		rec = findUrl(
-				  blacklist
-				, text
-				, yearToFind
-				, isTvEpisode);
-		
-		return rec;
-	}
 
 
-	private static IMDBRecord findUrl(
+	public static String findUrl(
 			List<String> blacklist, 
 			String text,
 			int yearToFind,
@@ -390,7 +379,7 @@ public class IMDBFinder {
 				// Check if movie was blacklisted. If it was get the next record matching
 				if (!urlIsBlacklisted(url, blacklist))
 					// if year and title matches then continue to the URL and extract information about the movie.
-					return IMDBRecord.get(url);
+					return url;
 			}
 			
 		}
@@ -515,7 +504,7 @@ public class IMDBFinder {
 	private static String getSeasonUrl(int seasonNumber, List<String> seasonUrls) {
 		for(String url : seasonUrls) {
 			Log.Debug(String.format("Testing episode url %s", url), LogType.IMDB);
-			if (StringUtils.contains(url, String.format("episodes?season=%s", seasonNumber))) {
+			if (StringUtils.contains(url, String.format("season=%s", seasonNumber))) {
 				return url;
 			}
 		}

@@ -20,6 +20,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.xml.bind.JAXBException;
@@ -62,14 +63,10 @@ public class TestImdbParser {
 		return sb.toString();	
 	}
 
-	@Ignore
 	@Test
-	public void Test_Movie_Live() throws IOException, NumberFormatException, ParseException {
-		IMDBRecord rec = IMDBFinder.Search(
-			"A Most Wanted Man",
-			2014,
-			null,
-			false);
+	public void Test_Movie2() throws IOException, NumberFormatException, ParseException {
+		String movieHtml = readResource("TestImdb2.html");
+		IMDBRecord rec = IMDBRecord.parse(movieHtml);		
 		
 		assertEquals("A Most Wanted Man", rec.getTitle());
 		assertEquals(2014, rec.getYear());
@@ -80,7 +77,29 @@ public class TestImdbParser {
 		assertEquals("6.8", rec.getRating());
 		assertEquals("A Chechen Muslim illegally immigrates to Hamburg, where he gets caught in the international war on terror.", rec.getStory());
 			
+	}
+	
+	@Test
+	public void Test_Series1() throws IOException {
+		String movieHtml = readResource("TestSeries1.html");
+		IMDBRecord rec = IMDBRecord.parse(movieHtml);		
 		
+		assertEquals("The Walking Dead", rec.getTitle());
+		assertArrayEquals(new String[] {"Drama", "Horror", "Sci-Fi"}, rec.getAllGenres().toArray(new String[] {}));
+		assertEquals("", rec.getDirector());
+		assertEquals(44, rec.getDurationMinutes());
+		assertNotNull(rec.getImageUrl());
+		assertEquals("8.4", rec.getRating());
+		assertEquals("Sheriff Deputy Rick Grimes wakes up from a coma to learn the world is in ruins, and must lead a group of survivors to stay alive.", rec.getStory());
+		assertEquals(9, rec.getAllSeasonUrls().size());
+	}
+	
+	@Test
+	public void Test_Movie_SearchResults() throws IOException {
+		String searchResults = readResource("TestImdbSearchResult.html");
+		String url = IMDBFinder.findUrl(new ArrayList<String>() {}, searchResults, 2014, false);
+		
+		assertEquals("/title/tt1972571/?ref_=fn_tt_tt_1", url);
 	}
 	
 
