@@ -16,7 +16,6 @@ public class TestImdbFinder {
 	public static void main(String[] args) throws Exception {
 		Settings.initialize();
  
-		Log.Debug(String.format("Number of infopatterns :: %s", Settings.imdb().getInfoPatterns().getInfoPattern().size()), LogType.IMDB);
 		if (args.length > 0 && !StringUtils.isEmpty(args[0])) {
 			String filename = args[0];
 			String path = FilenameUtils.getPath(filename);

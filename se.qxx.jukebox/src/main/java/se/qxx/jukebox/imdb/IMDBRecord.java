@@ -25,7 +25,6 @@ import org.jsoup.select.Elements;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.settings.Settings;
-import se.qxx.jukebox.settings.imdb.Imdb.InfoPatterns.InfoPattern;
 import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.tools.WebResult;
 import se.qxx.jukebox.tools.WebRetriever;
@@ -40,13 +39,17 @@ public class IMDBRecord {
 	private String story = "";
 	private byte[] image = null;
 	private String title = "";
+	private int episodeNumber;
+	
 	
 	private Map<Integer, String> seasons = new HashMap<Integer, String>();
+	private Map<Integer, String> episodes = new HashMap<Integer, String>();
 	
 	private Date firstAirDate = null;
 	private String imageUrl;
 	
-	private Pattern seasonPattern = Pattern.compile("season\\=(\\d*)");
+	private final Pattern seasonPattern = Pattern.compile("season\\=(\\d*)");
+	private final Pattern episodePattern = Pattern.compile("ttep_ep(\\d*)");
 
 	private IMDBRecord() {
 	}
@@ -65,8 +68,32 @@ public class IMDBRecord {
 		rec.parseRating(doc);
 		rec.parseStory(doc);
 		rec.parseSeasons(doc);
+		rec.parseEpisodes(doc);
 
 		return rec;
+	}
+
+	private void parseEpisodes(Document doc) {
+		Elements elm = doc.select("strong > a[href~=ttep_ep]");
+		
+		for (Element e : elm) {
+			String url = StringUtils.EMPTY;
+			try {
+				url = fixImdbUrl(e.attr("href"));
+			} catch (MalformedURLException e1) {
+				Log.Error("Error parsing imdb url for season", LogType.IMDB);
+			}				
+			Log.Debug(String.format("IMDBRECORD :: Setting season url :: %s", url), LogType.IMDB);
+			this.addEpisodeUrl(url);
+		}
+	}
+
+	private void addEpisodeUrl(String url) {
+		Matcher m = episodePattern.matcher(url);
+		if (m.find()) {
+			int episode = Integer.parseInt(m.group(1));
+			this.getAllEpisodeUrls().put(episode, url);
+		}
 	}
 
 	private void parseSeasons(Document doc) {
@@ -354,6 +381,10 @@ public class IMDBRecord {
 
 	public Map<Integer, String> getAllSeasonUrls() {
 		return this.seasons;
+	}
+
+	public Map<Integer, String> getAllEpisodeUrls() {
+		return this.episodes;
 	}
 
 	public Date getFirstAirDate() {

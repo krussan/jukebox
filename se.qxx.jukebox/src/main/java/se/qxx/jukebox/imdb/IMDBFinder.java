@@ -4,19 +4,16 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import com.google.protobuf.ByteString;
 
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
@@ -28,14 +25,9 @@ import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.imdb.Imdb;
-import se.qxx.jukebox.settings.imdb.Imdb.EpisodePatterns.EpisodePattern;
-import se.qxx.jukebox.settings.imdb.Imdb.SearchPatterns.SearchResultPattern;
 import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.tools.WebResult;
 import se.qxx.jukebox.tools.WebRetriever;
-import se.qxx.jukebox.settings.imdb.SearchPatternComparer;
-
-import com.google.protobuf.ByteString;
 
 public class IMDBFinder {
 	private static long nextSearch = 0;
@@ -109,17 +101,11 @@ public class IMDBFinder {
 	private static Episode populateEpisode(String seasonUrl, Episode ep)
 			throws IOException, ParseException, MalformedURLException {
 		IMDBRecord episodeRec;
-		IMDBEpisode iep;
 
 		Log.Debug("IMDB :: Getting episode info", LogType.IMDB);
 		
 		if (!StringUtils.isEmpty(seasonUrl)) {
-			iep = getEpisodeRec(seasonUrl, ep.getEpisodeNumber());
-			
-			if (iep == null)
-				return null;
-			
-			episodeRec = IMDBRecord.get(iep.getUrl());
+			episodeRec = getEpisodeRec(seasonUrl, ep.getEpisodeNumber());
 			
 			return populateEpisodeInfo(ep, episodeRec);
 		}
@@ -405,111 +391,35 @@ public class IMDBFinder {
 		return selector;
 	}
 
-	private static String findPreferredTitle(String text, String country) {
+	public static String findPreferredTitle(String text, String country) {
 		Log.Info(String.format("Finding preferred title for %s", country), LogType.FIND);
 		Imdb.Title t = Settings.imdb().getTitle();
-		Imdb.Title.TitleResultPattern s = t.getTitleResultPattern();
-		
-		List<String[]> records = parseBlockAndRecords(
-				text
-				, StringUtils.trim(s.getBlockPattern())
-				, s.getGroupBlock()
-				, StringUtils.trim(s.getRecordPattern())
-				, s.getGroupRecordTitle()
-				, s.getGroupRecordCountry());
-		
-		boolean useOriginal = t.isUseOriginalIfExists();
-		
-		for (String[] record : records) {
-			String recordCountry = record[1];
-			String recordTitle = record[0];
+
+		if (!t.isUseOriginalIfExists()) {
+			Document doc = Jsoup.parse(text);
+			Elements elms = doc.select(String.format("table#akas tr:has(td:matches(%s))", country));
 			
-			if (useOriginal && StringUtils.containsIgnoreCase(recordCountry, "(original title)")) {
-				Log.Info("IMDB :: TITLE :: Found original", LogType.FIND);
-				return recordTitle;
-			}
-			
-			if (StringUtils.containsIgnoreCase(recordCountry, country)) {
-				Log.Info("IMDB :: TITLE :: Found specific", LogType.FIND);
-				return recordTitle;		
+			if (elms.size() > 0) {
+				return elms.get(0).text();
 			}
 		}
 		
 		return StringUtils.EMPTY;
 	}
 
-	private static List<String[]> parseBlockAndRecords(
-			String text, 
-			String patternForBlock, 
-			int patternGroupForBlock,
-			String patternForRecord,
-			int... groupIndex) {
-				
-		List<String[]> ret = new ArrayList<String[]>();
+	private static IMDBRecord getEpisodeRec(String seasonUrl, int episode) throws IOException, NumberFormatException, ParseException {
+		Log.Debug(String.format("IMDB :: Epsiode :: %s - URL :: %s", episode, seasonUrl), LogType.IMDB);
 		
-		Pattern p = Pattern.compile(patternForBlock
-				, Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
-		Matcher m = p.matcher(text);
+		// get the record for the season page
+		IMDBRecord rec = IMDBRecord.get(seasonUrl);
 		
-		if (m.find()) {
-			Log.Debug(String.format("Block pattern found"), LogType.IMDB);
-
-			String blockMatch = m.group(patternGroupForBlock);
-			
-			Pattern pRec = Pattern.compile(patternForRecord
-					, Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
-			Matcher mRec = pRec.matcher(blockMatch);
-			
-			while (mRec.find()) {				
-				List<String> values = new ArrayList<String>();
-				
-				for (int i=0;i<groupIndex.length;i++) {
-					values.add(mRec.group(groupIndex[i]));
-				}
-				
-				ret.add(values.toArray(new String[values.size()]));
-			}				
-		}
-		
-		Log.Debug(String.format("%s records found", ret.size()), LogType.IMDB);
-
-		return ret;
-		
-	}
-
-	private static IMDBEpisode getEpisodeRec(String url, int episode) throws IOException, NumberFormatException, ParseException {
-		Log.Debug(String.format("IMDB :: Epsiode :: %s - URL :: %s", episode, url), LogType.IMDB);
-		WebResult result = WebRetriever.getWebResult(url);
-		
-		for (EpisodePattern p : Settings.imdb().getEpisodePatterns().getEpisodePattern()) {
-			Pattern pattern = Pattern.compile(p.getRegex(), Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
-			Matcher matcher = pattern.matcher(result.getResult());
-			while(matcher.find()){
-				IMDBEpisode ep = new IMDBEpisode(
-					matcher.group(p.getUrlGroup())
-					, Integer.parseInt(matcher.group(p.getEpisodeGroup()))
-					, matcher.group(p.getTitleGroup())
-					, DateUtils.parseDate(matcher.group(p.getAirDateGroup()), 
-							Settings.imdb().getDatePatterns().getPattern().toArray(new String[]{})));
-						
-				if (ep.getEpisodeNumber() == episode) {
-					return ep;
-				}
-			}
+		String episodeUrl = rec.getAllEpisodeUrls().get(episode);
+		if (!StringUtils.isEmpty(episodeUrl)) {
+			return IMDBRecord.get(episodeUrl);
 		}
 		
 		return null;
-	}
-
-	private static String getSeasonUrl(int seasonNumber, List<String> seasonUrls) {
-		for(String url : seasonUrls) {
-			Log.Debug(String.format("Testing episode url %s", url), LogType.IMDB);
-			if (StringUtils.contains(url, String.format("season=%s", seasonNumber))) {
-				return url;
-			}
-		}
 		
-		return StringUtils.EMPTY;
 	}
 
 }

@@ -95,11 +95,34 @@ public class TestImdbParser {
 	}
 	
 	@Test
+	public void Test_ReleaseInfo_No_specific_for_country() throws IOException {
+		String searchResults = readResource("TestReleaseInfo.html");
+		String title = IMDBFinder.findPreferredTitle(searchResults, "Sweden");
+		
+		assertEquals("", title);
+	}
+	
+	@Test
 	public void Test_Movie_SearchResults() throws IOException {
 		String searchResults = readResource("TestImdbSearchResult.html");
 		String url = IMDBFinder.findUrl(new ArrayList<String>() {}, searchResults, 2014, false);
 		
 		assertEquals("/title/tt1972571/?ref_=fn_tt_tt_1", url);
+	}
+	
+	@Test
+	public void Test_Episode1() throws IOException {
+		String episodeHtml = readResource("TestEpisode1-S1E1.html");
+		IMDBRecord rec = IMDBRecord.parse(episodeHtml);
+		
+		assertEquals("Days Gone Bye", rec.getTitle());
+		assertArrayEquals(new String[] {"Drama", "Horror", "Sci-Fi"}, rec.getAllGenres().toArray(new String[] {}));
+		assertEquals("Frank Darabont", rec.getDirector());
+		assertEquals(67, rec.getDurationMinutes());
+		assertNotNull(rec.getImageUrl());
+		assertEquals("9.2", rec.getRating());
+		assertEquals("Deputy Sheriff Rick Grimes awakens from a coma, and searches for his family in a world ravaged by the undead.", rec.getStory());
+		
 	}
 	
 
