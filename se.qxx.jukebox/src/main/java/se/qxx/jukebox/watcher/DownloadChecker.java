@@ -7,7 +7,6 @@ import se.qxx.jukebox.DB;
 import se.qxx.jukebox.JukeboxThread;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
-import se.qxx.jukebox.MovieIdentifier;
 import se.qxx.jukebox.converter.FileChangedState;
 import se.qxx.jukebox.converter.FileRepresentationState;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;

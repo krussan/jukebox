@@ -39,7 +39,7 @@ public class IMDBRecord {
 	private String story = "";
 	private byte[] image = null;
 	private String title = "";
-	private int episodeNumber;
+	//private int episodeNumber;
 	
 	
 	private Map<Integer, String> seasons = new HashMap<Integer, String>();
@@ -319,7 +319,7 @@ public class IMDBRecord {
 		rec.url = webResult.getUrl();
 
 		try {
-			rec.parse(webResult.getResult());
+			IMDBRecord.parse(webResult.getResult());
 		} catch (Exception e) {
 			Log.Error(String.format("Failed to get IMDB information from url :: %s", webResult.getUrl()), LogType.FIND,
 					e);

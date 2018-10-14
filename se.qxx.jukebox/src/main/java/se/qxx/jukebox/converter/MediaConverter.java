@@ -1,13 +1,7 @@
 package se.qxx.jukebox.converter;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.RunnableFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FilenameUtils;
@@ -28,14 +22,11 @@ import se.qxx.jukebox.DB;
 import se.qxx.jukebox.JukeboxThread;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
-import se.qxx.jukebox.converter.MediaConverterResult.State;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.MediaConverterState;
-import se.qxx.jukebox.settings.CodecsType;
 import se.qxx.jukebox.settings.CodecsType.Codec;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.tools.Util;
-import se.qxx.protodb.Logger;
 
 public class MediaConverter extends JukeboxThread {
 

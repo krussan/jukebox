@@ -346,6 +346,7 @@ public class Util {
 			List<NetworkInterface> nets = Collections.list(NetworkInterface.getNetworkInterfaces());
 		
 			Collections.sort(nets, new Comparator<NetworkInterface>() {	
+				@SuppressWarnings("serial")
 				Map<String, Integer> map = new HashMap<String, Integer>() {
 				{
 					put("eth0", 1);

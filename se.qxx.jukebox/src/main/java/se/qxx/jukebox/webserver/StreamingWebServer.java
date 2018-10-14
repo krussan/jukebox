@@ -8,29 +8,21 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+
 import com.google.protobuf.ByteString;
 
 import fi.iki.elonen.NanoHTTPD;
-import freemarker.template.Configuration;
-import freemarker.template.TemplateException;
 import fi.iki.elonen.NanoHTTPD.Response.Status;
+import freemarker.template.TemplateException;
 import se.qxx.jukebox.DB;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;

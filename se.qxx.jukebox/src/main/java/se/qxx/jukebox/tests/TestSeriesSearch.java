@@ -13,8 +13,6 @@ import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.protodb.ProtoDB;
 import se.qxx.protodb.ProtoDBFactory;
-import se.qxx.protodb.SearchOptions;
-import se.qxx.protodb.model.ProtoDBSearchOperator;
 
 public class TestSeriesSearch {
 

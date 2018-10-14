@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.io.FilenameUtils;
-
+import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.converter.MediaConverter;
+import se.qxx.jukebox.servercomm.TcpListener;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
+import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.watcher.DownloadChecker;
 import se.qxx.jukebox.watcher.ExtensionFileFilter;
@@ -16,10 +18,6 @@ import se.qxx.jukebox.watcher.FileRepresentation;
 import se.qxx.jukebox.watcher.FileSystemWatcher;
 import se.qxx.jukebox.watcher.INotifyClient;
 import se.qxx.jukebox.webserver.StreamingWebServer;
-import se.qxx.jukebox.Log.LogType;
-import se.qxx.jukebox.converter.MediaConverter;
-import se.qxx.jukebox.servercomm.TcpListener;
-import se.qxx.jukebox.settings.Settings;
 
 public class Main implements Runnable, INotifyClient
 {

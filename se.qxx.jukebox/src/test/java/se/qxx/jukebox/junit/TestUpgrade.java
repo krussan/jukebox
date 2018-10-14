@@ -1,21 +1,12 @@
 package se.qxx.jukebox.junit;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import javax.xml.bind.JAXBException;
-
-import org.junit.Before;
 import org.junit.Test;
 
-import fi.iki.elonen.NanoHTTPD.Response;
 import se.qxx.jukebox.upgrade.Upgrade_0_20;
-import se.qxx.jukebox.webserver.StreamingWebServer;
 import se.qxx.protodb.backend.DatabaseBackend;
 import se.qxx.protodb.exceptions.DatabaseNotSupportedException;
 
