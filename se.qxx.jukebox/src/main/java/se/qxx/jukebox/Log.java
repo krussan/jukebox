@@ -24,7 +24,8 @@ public class Log {
 		IMDB,
 		WEBSERVER,
 		DB,
-		CONVERTER
+		CONVERTER,
+		CHECKER
 	}
 	
 	public static void Critical(String msg, LogType type) {

@@ -12,6 +12,10 @@ killhard() {
    PID=`cat jukebox.pid`
    echo Stopping jukebox with pid :: $PID
    kill $PID
+   
+   if [ -f stopper.stp ]; then
+      rm stopper.stp
+   fi
 }
 
 waitforshutdown() {

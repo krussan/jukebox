@@ -45,11 +45,14 @@ public class MovieIdentifier extends JukeboxThread {
 	
 	@Override
 	protected void execute() {
-		if (!this.files.isEmpty()) {
+		while (!this.files.isEmpty()) {
 			FileRepresentation f = this.files.poll();
 			
 			if (f != null)
 				identify(f);
+			
+			if (!this.isRunning())
+				break;
 		}
 	}
 
@@ -58,7 +61,7 @@ public class MovieIdentifier extends JukeboxThread {
 		if (!files.contains(f)) {
 			synchronized(_instance) {
 				this.files.add(f);
-				this.notify();
+				super.notify();
 			}
 		}
 		else {
@@ -259,25 +262,20 @@ public class MovieIdentifier extends JukeboxThread {
 	 * @param newMedia
 	 */
 	protected void getInfoAndSaveSeries(Series series, int season, int episode, Media media) {
-		
 		Series s = series;
 
 		// construct the objects.
 		// this should be done here and not in the IMDBFinder.
 		// IMDBFinder should expect the objects in the hierarchy to be populated.
-		Season sn = DomainUtil.findSeason(s, season);
-		Episode ep = DomainUtil.findEpisode(sn, episode);
-
-		if (sn == null || ep == null)
-			throw new IllegalArgumentException("Season or Episode not found!");
+		validateSeriesStructure(s, season, episode);
 		
 		// If not get information and subtitles
 		// If title is the same as the filename (except ignore pattern) then don't identify on IMDB.
 		if (Arguments.get().isImdbIdentifierEnabled()) 
 			s = getImdbInformation(s, season, episode);
 		
-		sn = DomainUtil.findSeason(s, season);
-		ep = DomainUtil.findEpisode(sn, episode);
+		Season sn = DomainUtil.findSeason(s, season);
+		Episode ep = DomainUtil.findEpisode(sn, episode);
 		
 		// Get media information from MediaInfo library
 		if (Arguments.get().isMediaInfoEnabled()) {
@@ -298,8 +296,19 @@ public class MovieIdentifier extends JukeboxThread {
 		
 		Log.Debug(String.format("MovieIdentifier :: #3 Number of episodes :: %s", sn.getEpisodeCount()), LogType.FIND);
 		
+		//TODO: This is taking to long.
+		// Since this will delete and save the whole series it blocks everything else
+		// could we verify if it's an 
 		DB.save(s);
 		
+	}
+
+	private void validateSeriesStructure(Series s, int season, int episode) {
+		Season sn = DomainUtil.findSeason(s, season);
+		Episode ep = DomainUtil.findEpisode(sn, episode);
+
+		if (sn == null || ep == null)
+			throw new IllegalArgumentException("Season or Episode not found!");
 	}
 
 	/**

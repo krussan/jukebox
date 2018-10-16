@@ -38,7 +38,7 @@ public class DownloadChecker extends JukeboxThread {
 	
 	
 	private DownloadChecker() {
-		super("DownloadChecker", 300000, LogType.FIND);
+		super("DownloadChecker", 300000, LogType.CHECKER);
 	}
 	
 	public static DownloadChecker get() {
@@ -86,13 +86,13 @@ public class DownloadChecker extends JukeboxThread {
 	
 	
 	private void resetFile(FileRepresentationState fs, String filename) {
-		Log.Debug(String.format("-- STATE -- Setting download state to INIT on :: %s",  filename), LogType.FIND);
+		Log.Debug(String.format("-- STATE -- Setting download state to INIT on :: %s",  filename), LogType.CHECKER);
 		fs.setState(FileChangedState.INIT);
 		store(fs, filename);
 	}
 
 	private void markCompleted(FileRepresentationState fs, String filename) {
-		Log.Debug(String.format("-- STATE -- Setting download state to DONE on :: %s",  filename), LogType.FIND);
+		Log.Debug(String.format("-- STATE -- Setting download state to DONE on :: %s",  filename), LogType.CHECKER);
 		fs.setState(FileChangedState.DONE);
 		
 		Media md = DB.getMediaByFilename(fs.getName());
@@ -108,7 +108,7 @@ public class DownloadChecker extends JukeboxThread {
 
 	public synchronized void checkFile(FileRepresentation f)  {
 		if (this.isRunning()) {
-			if (!Util.isExcludedFile(f, LogType.FIND)) {
+			if (!Util.isExcludedFile(f, LogType.CHECKER)) {
 				FileRepresentationState fs = new FileRepresentationState(f);
 				String filename = f.getFullPath().toLowerCase();
 				
@@ -131,7 +131,7 @@ public class DownloadChecker extends JukeboxThread {
 		FileRepresentationState fsOld = this.files.get(filename);
 		
 		if (fsOld.getState() != FileChangedState.DONE && fsOld.getState() != FileChangedState.WAIT) {
-			Log.Debug(String.format("-- STATE -- File exists in map. Setting state to CHANGED on :: %s", filename), LogType.FIND);
+			Log.Debug(String.format("-- STATE -- File exists in map. Setting state to CHANGED on :: %s", filename), LogType.CHECKER);
 			fs.setState(FileChangedState.CHANGED);
 			store(fs, filename);
 		}
@@ -162,16 +162,16 @@ public class DownloadChecker extends JukeboxThread {
 			// media exist. set State to INIT
 			// check if download is marked as complete already
 			if (md.getDownloadComplete()) {
-				Log.Debug(String.format("-- STATE -- Download already completed. Setting state to DONE on :: %s", filename), LogType.FIND);
+				Log.Debug(String.format("-- STATE -- Download already completed. Setting state to DONE on :: %s", filename), LogType.CHECKER);
 				fs.setState(FileChangedState.DONE);
 			}
 			else {
-				Log.Debug(String.format("-- STATE -- Download NOT completed. Setting state to INIT on :: %s", filename), LogType.FIND);
+				Log.Debug(String.format("-- STATE -- Download NOT completed. Setting state to INIT on :: %s", filename), LogType.CHECKER);
 				fs.setState(FileChangedState.INIT);
 			}
 		}
 		else {
-			Log.Debug(String.format("-- STATE -- Setting state to WAIT on :: %s", filename), LogType.FIND);
+			Log.Debug(String.format("-- STATE -- Setting state to WAIT on :: %s", filename), LogType.CHECKER);
 			// media does not exist. Not handled by identifier yet
 			// set state to wait
 			fs.setState(FileChangedState.WAIT);

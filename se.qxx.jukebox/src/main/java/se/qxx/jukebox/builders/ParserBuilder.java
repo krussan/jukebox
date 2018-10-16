@@ -10,6 +10,8 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
+import se.qxx.jukebox.Log;
+import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.settings.parser.ParserSettings;
 import se.qxx.jukebox.settings.parser.ParserType;
@@ -28,7 +30,11 @@ public class ParserBuilder extends MovieBuilder {
 		
 		String fileNameToMatch = FilenameUtils.getBaseName(md.getFilename());
 		
-		String stringToProcess = removeParenthesis(fileNameToMatch);
+		Log.Info(String.format("Running ParserBuilder on %s", fileNameToMatch), LogType.FIND);
+				
+		String stringToProcess = removeParenthesis(
+				removeInitialParenthesis(fileNameToMatch));
+		
 		String[] tokens = StringUtils.split(stringToProcess, " _.-");
 		
 		// assume movie name always comes first. The next token after that identifies the end of filename.
@@ -279,5 +285,19 @@ public class ParserBuilder extends MovieBuilder {
 			ret = StringUtils.replace(ret, searchString, " ");
 
 		return ret;
+	}
+
+	private String removeInitialParenthesis(String string) {
+		String ret = handleInitialParenthesis(string, "\\[", "\\]");
+		ret = handleInitialParenthesis(ret, "\\(", "\\)");
+		return ret;
+	}
+
+	private String handleInitialParenthesis(String string, String start, String end) {
+		String pattern = String.format("^%s.*?%s", start, end);
+		Pattern p = Pattern.compile(pattern);
+		Matcher m = p.matcher(string);
+	
+		return m.replaceAll("");
 	}	
 }

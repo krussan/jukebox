@@ -133,6 +133,7 @@
   	<log type="file" filename="webserver.log" level="DEBUG" logs="WEBSERVER" />
   	<!-- <log type="file" filename="db.log" level="DEBUG" logs="DB" /> -->
   	<log type="file" filename="converter.log" level="DEBUG" logs="CONVERTER" />
+  	<log type="file" filename="checker.log" level="DEBUG" logs="CHECKER" />
   </logs>  
   <database>
     <driver>com.mysql.jdbc.Driver</driver>
