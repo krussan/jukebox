@@ -425,6 +425,24 @@ public class DB {
 		}
 	}	
 
+	public static void saveAsync(Series series) {
+		Thread t = new Thread(() -> {
+			try {
+
+				ProtoDB db = getProtoDBInstance();
+				synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+					db.save(series);
+				}
+			}
+			catch (Exception e) {
+				Log.Error("Failed to store episode to DB", Log.LogType.MAIN, e);
+			}
+
+		});
+		t.start();
+	}	
+
+
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Delete
 	//---------------------------------------------------------------------------------------

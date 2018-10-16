@@ -525,36 +525,41 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		setPriority();
 		Log.Debug("Re-identify -- EMPTY", LogType.COMM);
 
-		try {
-			if (request.getRequestType() == RequestType.TypeMovie) {
-				Movie m = DB.getMovie(request.getId());
-				DB.delete(m);
-				reenlist(m);
-			}
-			
-			if (request.getRequestType() == RequestType.TypeSeries) {
-				Series s = DB.getSeries(request.getId());
-				DB.delete(s);			
-				reenlist(s);			
-			}
+		Thread t = new Thread(() -> {
+			try {
+				if (request.getRequestType() == RequestType.TypeMovie) {
+					Movie m = DB.getMovie(request.getId());
+					DB.delete(m);
+					reenlist(m);
+				}
+				
+				if (request.getRequestType() == RequestType.TypeSeries) {
+					Series s = DB.getSeries(request.getId());
+					DB.delete(s);			
+					reenlist(s);			
+				}
 
-			if (request.getRequestType() == RequestType.TypeSeason) {
-				Season sn = DB.getSeason(request.getId());
-				DB.delete(sn);			
-				reenlist(sn);			
-			}
+				if (request.getRequestType() == RequestType.TypeSeason) {
+					Season sn = DB.getSeason(request.getId());
+					DB.delete(sn);			
+					reenlist(sn);			
+				}
 
-			if (request.getRequestType() == RequestType.TypeEpisode) {
-				Episode ep = DB.getEpisode(request.getId());
-				DB.delete(ep);			
-				reenlist(ep);			
+				if (request.getRequestType() == RequestType.TypeEpisode) {
+					Episode ep = DB.getEpisode(request.getId());
+					DB.delete(ep);			
+					reenlist(ep);			
+				}
+				
+				
 			}
-			
-			done.run(Empty.newBuilder().build());
-		}
-		catch (Exception e) {
-			controller.setFailed("Error occured when deleting object from database");
-		}
+			catch (Exception e) {
+				Log.Error("Error occured when deleting object from database", LogType.COMM);
+			}			
+		});
+		t.start();
+		
+		done.run(Empty.newBuilder().build());
 	}
 	
 	private void reenlist(Movie m) {
