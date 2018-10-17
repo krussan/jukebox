@@ -150,7 +150,7 @@ public class SubtitleDownloader extends JukeboxThread {
 	public Movie addMovie(Movie m) {
 		synchronized (_instance) {
 			Movie mm = DB.addMovieToSubtitleQueue(m);
-			this.notify();
+			this.signal();
 			
 			return mm;
 		} 
@@ -204,7 +204,7 @@ public class SubtitleDownloader extends JukeboxThread {
 	public Episode addEpisode(Episode episode) {
 		synchronized (_instance) {
 			episode = DB.addEpisodeToSubtitleQueue(episode);
-			this.notify();
+			this.signal();
 			
 			return episode;
 		}  

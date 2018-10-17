@@ -1,5 +1,9 @@
 package se.qxx.jukebox;
 
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
+
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.tools.Util;
 
@@ -7,6 +11,10 @@ public abstract class JukeboxThread extends Thread {
 	private boolean isRunning;
 	private long sleepTime;
 	private LogType logType;
+	
+	private ReentrantLock lock = new ReentrantLock();
+	private Condition condA = lock.newCondition();
+	private Condition condB = lock.newCondition();
 
 	public JukeboxThread(String name, long sleepTime, LogType logType) {
 		super(name);
@@ -62,11 +70,15 @@ public abstract class JukeboxThread extends Thread {
 				if (!this.isRunning)
 					break;
 				
-				synchronized(this) {
-					if(this.getSleepTime() > 0)
-						this.wait(this.getSleepTime());
+				lock.lock();
+				try {
+					if (this.getSleepTime() > 0)
+						condA.await(this.getSleepTime(), TimeUnit.MILLISECONDS);
 					else if (this.getSleepTime() == 0)
-						this.wait();
+						condA.await(this.getSleepTime(), TimeUnit.MILLISECONDS);
+				}
+				finally {
+					lock.unlock();
 				}
 				
 				
@@ -87,6 +99,16 @@ public abstract class JukeboxThread extends Thread {
 
 	public int getJukeboxPriority() {
 		return Thread.NORM_PRIORITY;
+	}
+	
+	protected void signal() {
+		lock.lock();
+		try {
+			condA.signal();
+		}
+		finally {
+			lock.unlock();
+		}
 	}
 
 }

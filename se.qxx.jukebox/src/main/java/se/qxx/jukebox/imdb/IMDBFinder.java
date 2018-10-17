@@ -240,6 +240,8 @@ public class IMDBFinder {
 				b.setTitle(preferredTitle);
 			
 			if (rec.getImage() != null) {
+				Log.Debug(String.format("Setting image. Length :: %s",  rec.getImage().length), LogType.IMDB);
+				
 				ByteString image = ByteString.copyFrom(rec.getImage());
 				b.setImage(image);
 				try {
@@ -247,6 +249,9 @@ public class IMDBFinder {
 				} catch (IOException e) {
 					Log.Error("Error when creating thumbnail", LogType.IMDB);
 				}
+			}
+			else {
+				Log.Debug("Image IS NULL", LogType.IMDB);
 			}
 			
 			if (m.getYear() == 0)
@@ -276,9 +281,18 @@ public class IMDBFinder {
 			
 			if (!StringUtils.isEmpty(preferredTitle)) 
 				b.setTitle(preferredTitle);
-			
-			if (rec.getImage() != null)
-				b.setImage(ByteString.copyFrom(rec.getImage()));
+
+			if (rec.getImage() != null) {
+				Log.Debug(String.format("Setting image. Length :: %s",  rec.getImage().length), LogType.IMDB);
+				
+				ByteString image = ByteString.copyFrom(rec.getImage());
+				b.setImage(image);
+				try {
+					b.setThumbnail(Util.getScaledImage(image));
+				} catch (IOException e) {
+					Log.Error("Error when creating thumbnail", LogType.IMDB);
+				}
+			}
 
 			return b.build();
 		}
@@ -301,8 +315,17 @@ public class IMDBFinder {
 			if (!StringUtils.isEmpty(preferredTitle)) 
 				b.setTitle(preferredTitle);
 			
-			if (rec.getImage() != null)
-				b.setImage(ByteString.copyFrom(rec.getImage()));
+			if (rec.getImage() != null) {
+				Log.Debug(String.format("Setting image. Length :: %s",  rec.getImage().length), LogType.IMDB);
+				
+				ByteString image = ByteString.copyFrom(rec.getImage());
+				b.setImage(image);
+				try {
+					b.setThumbnail(Util.getScaledImage(image));
+				} catch (IOException e) {
+					Log.Error("Error when creating thumbnail", LogType.IMDB);
+				}
+			}
 			
 			if (s.getYear() == 0)
 				b.setYear(rec.getYear());

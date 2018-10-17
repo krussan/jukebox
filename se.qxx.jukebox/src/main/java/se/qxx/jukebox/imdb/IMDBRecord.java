@@ -149,7 +149,6 @@ public class IMDBRecord {
 			try {
 				f = WebRetriever.getWebFile(value, Util.getTempDirectory());
 				this.setImageUrl(value);
-				;
 				this.setImage(readFile(f));
 
 			} catch (IOException e) {

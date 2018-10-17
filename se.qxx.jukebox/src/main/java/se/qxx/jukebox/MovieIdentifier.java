@@ -60,7 +60,7 @@ public class MovieIdentifier extends JukeboxThread {
 		if (!files.contains(f)) {
 			synchronized (_instance) {
 				this.files.add(f);
-				super.notify();
+				signal();
 			}
 		} else {
 			Log.Debug("File already added", LogType.FIND);
@@ -269,9 +269,8 @@ public class MovieIdentifier extends JukeboxThread {
 			ep = Episode.newBuilder(ep).clearMedia().addMedia(md).build();
 		}
 
-		if (Arguments.get().isSubtitleDownloaderEnabled()) {
+		if (Arguments.get().isSubtitleDownloaderEnabled()) 
 			ep = SubtitleDownloader.get().addEpisode(ep);
-		}
 
 		sn = DomainUtil.updateEpisode(sn, ep);
 		s = DomainUtil.updateSeason(s, sn);

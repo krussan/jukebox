@@ -70,6 +70,7 @@ public class TestImdbParser {
 		assertEquals("Anton Corbijn", rec.getDirector());
 		assertEquals(122, rec.getDurationMinutes());
 		assertNotNull(rec.getImageUrl());
+		assertTrue(rec.getImage().length > 0);
 		assertEquals("6.8", rec.getRating());
 		assertEquals("A Chechen Muslim illegally immigrates to Hamburg, where he gets caught in the international war on terror.", rec.getStory());
 			

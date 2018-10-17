@@ -114,11 +114,13 @@ public class Main implements Runnable, INotifyClient
 
 	private void setupConfigurationListener() {
 		System.out.println("Setting watcher on configuration file");
+		
 		ExtensionFileFilter filter = new ExtensionFileFilter();
 		filter.addExtension("xml");
 		filter.addExtension("stp");
+		
 		FileSystemWatcher configurationWatcher = new FileSystemWatcher("ConfigurationWatcher", ".", filter, true, true, false);
-		configurationWatcher.setSleepTime(1000);
+		configurationWatcher.setSleepTime(300);
 		configurationWatcher.registerClient(this);
 		startupThread(configurationWatcher);
 	}
