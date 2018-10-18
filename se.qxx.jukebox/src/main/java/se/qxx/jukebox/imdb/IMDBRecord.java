@@ -51,11 +51,13 @@ public class IMDBRecord {
 	private final Pattern seasonPattern = Pattern.compile("season\\=(\\d*)");
 	private final Pattern episodePattern = Pattern.compile("ttep_ep(\\d*)");
 
-	private IMDBRecord() {
+	private IMDBRecord(String url) {
+		this.url = url;
 	}
 
-	public static IMDBRecord parse(String webResult) {
-		IMDBRecord rec = new IMDBRecord();
+	public static IMDBRecord parse(String url, String webResult) {
+		IMDBRecord rec = new IMDBRecord(url);
+		
 		Document doc = Jsoup.parse(webResult);
 		Log.Debug(String.format("IMDBRECORD :: Initializing parsing"), LogType.IMDB);
 
@@ -83,7 +85,7 @@ public class IMDBRecord {
 			} catch (MalformedURLException e1) {
 				Log.Error("Error parsing imdb url for season", LogType.IMDB);
 			}				
-			Log.Debug(String.format("IMDBRECORD :: Setting season url :: %s", url), LogType.IMDB);
+			Log.Debug(String.format("IMDBRECORD :: Setting episode url :: %s", url), LogType.IMDB);
 			this.addEpisodeUrl(url);
 		}
 	}
@@ -148,8 +150,13 @@ public class IMDBRecord {
 			File f;
 			try {
 				f = WebRetriever.getWebFile(value, Util.getTempDirectory());
+				byte[] data = readFile(f);
+				
+				Log.Debug(String.format("IMDBRECORD :: Setting image url :: %s", value), LogType.IMDB);
+				Log.Debug(String.format("IMDBRECORD :: Setting image (length) :: %s", data.length), LogType.IMDB);
+				
 				this.setImageUrl(value);
-				this.setImage(readFile(f));
+				this.setImage(data);
 
 			} catch (IOException e) {
 				Log.Error("Error when downloading file", LogType.IMDB);
@@ -169,6 +176,7 @@ public class IMDBRecord {
 				dateValue = m.group(1).trim();
 			}
 
+			Log.Debug(String.format("IMDBRECORD :: Setting first air date :: %s", dateValue), LogType.IMDB);
 			this.setFirstAirDate(dateValue);
 		}
 	}
@@ -179,6 +187,7 @@ public class IMDBRecord {
 			String genre = StringEscapeUtils.unescapeHtml4(elm.get(i).text()).trim();
 			this.getAllGenres().add(genre);
 		}
+		Log.Debug(String.format("IMDBRECORD :: Setting genres :: %s", String.join(",", this.getAllGenres())), LogType.IMDB);
 	}
 
 	private void parseDuration(Document doc) {
@@ -314,11 +323,9 @@ public class IMDBRecord {
 	}
 
 	public static IMDBRecord getFromWebResult(WebResult webResult) {
-		IMDBRecord rec = new IMDBRecord();
-		rec.url = webResult.getUrl();
-
+		IMDBRecord rec = null;
 		try {
-			IMDBRecord.parse(webResult.getResult());
+			rec = IMDBRecord.parse(webResult.getUrl(), webResult.getResult());
 		} catch (Exception e) {
 			Log.Error(String.format("Failed to get IMDB information from url :: %s", webResult.getUrl()), LogType.FIND,
 					e);
