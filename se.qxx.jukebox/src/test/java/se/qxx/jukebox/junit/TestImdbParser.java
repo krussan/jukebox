@@ -14,6 +14,7 @@ import java.util.ArrayList;
 
 import javax.xml.bind.JAXBException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -30,7 +31,7 @@ public class TestImdbParser {
 	@Test
 	public void TestImdbMovie() throws IOException {
 		String movieHtml = readResource("TestImdb1.html");
-		IMDBRecord rec = IMDBRecord.parse(movieHtml);
+		IMDBRecord rec = IMDBRecord.parse(StringUtils.EMPTY, movieHtml);
 		
 		assertEquals("The Amazing Spider-Man 2", rec.getTitle());
 		assertEquals(3, rec.getAllGenres().size());
@@ -62,7 +63,7 @@ public class TestImdbParser {
 	@Test
 	public void Test_Movie2() throws IOException, NumberFormatException, ParseException {
 		String movieHtml = readResource("TestImdb2.html");
-		IMDBRecord rec = IMDBRecord.parse(movieHtml);		
+		IMDBRecord rec = IMDBRecord.parse(StringUtils.EMPTY, movieHtml);		
 		
 		assertEquals("A Most Wanted Man", rec.getTitle());
 		assertEquals(2014, rec.getYear());
@@ -79,7 +80,7 @@ public class TestImdbParser {
 	@Test
 	public void Test_Series1() throws IOException {
 		String movieHtml = readResource("TestSeries1.html");
-		IMDBRecord rec = IMDBRecord.parse(movieHtml);		
+		IMDBRecord rec = IMDBRecord.parse(StringUtils.EMPTY, movieHtml);		
 		
 		assertEquals("The Walking Dead", rec.getTitle());
 		assertArrayEquals(new String[] {"Drama", "Horror", "Sci-Fi"}, rec.getAllGenres().toArray(new String[] {}));
@@ -110,7 +111,7 @@ public class TestImdbParser {
 	@Test
 	public void Test_Episode1() throws IOException {
 		String episodeHtml = readResource("TestEpisode1-S1E1.html");
-		IMDBRecord rec = IMDBRecord.parse(episodeHtml);
+		IMDBRecord rec = IMDBRecord.parse(StringUtils.EMPTY, episodeHtml);
 		
 		assertEquals("Days Gone Bye", rec.getTitle());
 		assertArrayEquals(new String[] {"Drama", "Horror", "Sci-Fi"}, rec.getAllGenres().toArray(new String[] {}));
