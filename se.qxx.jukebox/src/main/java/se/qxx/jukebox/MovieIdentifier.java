@@ -234,6 +234,7 @@ public class MovieIdentifier extends JukeboxThread {
 			movie = Movie.newBuilder(movie).clearMedia().addMedia(md).build();
 		}
 
+		Log.Debug(String.format("Saving movie. Image length :: %s, Thumbnail length :: %s", movie.getImage().size(), movie.getThumbnail().size()), LogType.FIND);
 		movie = DB.save(movie);
 
 		SubtitleDownloader.get().addMovie(movie);

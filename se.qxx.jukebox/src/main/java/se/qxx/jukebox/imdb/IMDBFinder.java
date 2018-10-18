@@ -403,8 +403,8 @@ public class IMDBFinder {
 		String selector = StringUtils.EMPTY;
 		if (!isTvEpisodeSearch) {
 			selector = yearToFind > 0 ?
-				String.format("tr.findResult:matches(\\(%s\\)) a", yearToFind) :
-				"tr.findResult a";
+				String.format("tr.findResult:matches(\\(%s\\)):not(:matches(TV\\sEpisode)) a", yearToFind) :
+				"tr.findResult:not(:matches(TV\\\\sEpisode)) a";
 		}
 		else {
 			selector = yearToFind > 0 ?
