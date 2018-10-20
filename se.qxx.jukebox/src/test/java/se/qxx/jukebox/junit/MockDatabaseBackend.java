@@ -42,6 +42,12 @@ public class MockDatabaseBackend extends DatabaseBackend {
 	public String getEndBracket() {
 		return "";
 	}
+	
+	@Override
+	public String getMD5Function() {
+		return "";
+		
+	}
 
 
 }
