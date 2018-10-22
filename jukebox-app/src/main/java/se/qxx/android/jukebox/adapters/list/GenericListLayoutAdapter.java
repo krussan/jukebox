@@ -2,10 +2,15 @@ package se.qxx.android.jukebox.adapters.list;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.res.ResourcesCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+
+import com.google.protobuf.ByteString;
 
 import java.util.List;
 
@@ -15,6 +20,7 @@ import se.qxx.android.jukebox.model.IModelAdapter;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
+import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
@@ -124,4 +130,54 @@ public abstract class GenericListLayoutAdapter<T> extends BaseAdapter {
         else
             return -1;
     }
+
+    protected void setupThumbnail(View v, ByteString image) {
+        if (image.isEmpty()) {
+            Drawable drawable = ResourcesCompat.getDrawable(v.getResources(), R.drawable.movie2, null);
+            scaleBitmap(v, ((BitmapDrawable) drawable).getBitmap());
+        }
+        else {
+            Bitmap bitmap = GUITools.getBitmapFromByteArray(image.toByteArray());
+            scaleBitmap(v, bitmap);
+        }
+    }
+
+    private void scaleBitmap(View v, Bitmap bitmap) {
+        Bitmap scaledImage = GUITools.scaleImage(80, bitmap, v.getContext());
+        GUITools.setImageOnImageView(R.id.imageView1, scaledImage, v);
+    }
+
+    protected void hideDownloadAndCompletedIcons(View v) {
+	    GUITools.hideView(R.id.imgWatched, v);
+	    GUITools.hideView(R.id.imgConverted, v);
+    }
+
+    protected void setupDownloadedAndCompletedIcons(View v, List<Media> mediaList) {
+        // set this to false for now until we have a way of identifying watched items
+        GUITools.hideView(R.id.imgWatched, v);
+
+        // If all media has a meta duration then hide the download icon
+        boolean downloadFinished = true;
+        boolean conversionFinished = true;
+        for (Media md : mediaList) {
+            if (!md.getDownloadComplete())
+                downloadFinished = false;
+            if (md.getConverterState() != JukeboxDomain.MediaConverterState.Completed && md.getConverterState() != JukeboxDomain.MediaConverterState.NotNeeded)
+                conversionFinished = false;
+
+        }
+        if (downloadFinished)
+            GUITools.hideView(R.id.imgDownloading, v);
+        if (!conversionFinished)
+            GUITools.hideView(R.id.imgConverted, v);
+    }
+
+    protected void setupSubtitles(View v, List<Subtitle> subtitleList) {
+        List<Subtitle> sortedSubtitles = Sorter.sortSubtitlesByRating(subtitleList);
+        if (sortedSubtitles.size() > 0)
+            IncludeSubtitleRating.initialize(sortedSubtitles.get(0), v);
+        else
+            IncludeSubtitleRating.hideAll(v);
+    }
+
 }

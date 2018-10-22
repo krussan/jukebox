@@ -23,7 +23,9 @@ public class Log {
 		VLCRESPONSE,
 		IMDB,
 		WEBSERVER,
-		DB
+		DB,
+		CONVERTER,
+		CHECKER
 	}
 	
 	public static void Critical(String msg, LogType type) {

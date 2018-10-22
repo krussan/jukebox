@@ -41,4 +41,8 @@ public class FileRepresentation {
 	public void setFileSize(long _fileSize) {
 		this._fileSize = _fileSize;
 	}
+	
+	public String getFullPath() {
+		return String.format("%s/%s", this.getPath(), this.getName());
+	}
 }

@@ -113,15 +113,13 @@ public class Connector {
                         });
 			}
             else if (modelType == ViewMode.Season) {
-                jh.listSeasons("",
-                        seriesID,
-                        nrOfItems,
-                        offset,
+				jh.getItem(seriesID, JukeboxDomain.RequestType.TypeSeries,
                         response -> {
                             //TODO: if repsonse is null probably the server is down..
                             if (response != null) {
-                                if (response.getSeriesCount() > 0)
-                                    this.getCallback().handleSeasonsUpdated(response.getSeries(0).getSeasonList(), response.getTotalSeasons());
+								this.getCallback().handleSeasonsUpdated(
+										response.getSerie().getSeasonList(),
+										response.getSerie().getSeasonCount());
 
                                 Model.get().setInitialized(true);
                             }
@@ -130,15 +128,10 @@ public class Connector {
                         });
             }
 			else if (modelType == ViewMode.Episode) {
-			    jh.listEpisodes("",
-                        seriesID,
-                        seasonID,
-                        nrOfItems,
-                        offset,
+			    jh.getItem(seasonID, JukeboxDomain.RequestType.TypeSeason,
                         response -> {
 			                if (response != null) {
-                                if (response.getSeasonCount() > 0)
-                                    this.getCallback().handleEpisodesUpdated(response.getSeason(0).getEpisodeList(), response.getTotalEpisodes());
+                                this.getCallback().handleEpisodesUpdated(response.getSeason().getEpisodeList(), response.getSeason().getEpisodeCount());
 
                                 Model.get().setInitialized(true);
                             }

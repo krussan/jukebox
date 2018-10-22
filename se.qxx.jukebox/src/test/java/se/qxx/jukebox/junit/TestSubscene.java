@@ -101,6 +101,7 @@ public class TestSubscene {
 						.setIndex(1)
 						.setFilepath("/jukebox/")
 						.setFilename("Mockito.2014.mp4")
+						.setDownloadComplete(false)
 						.build())
 				.build();
 		

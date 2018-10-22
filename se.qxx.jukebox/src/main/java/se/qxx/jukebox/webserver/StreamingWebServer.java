@@ -8,26 +8,27 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.Inet4Address;
-import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+
 import com.google.protobuf.ByteString;
 
 import fi.iki.elonen.NanoHTTPD;
-import freemarker.template.Configuration;
-import freemarker.template.TemplateException;
 import fi.iki.elonen.NanoHTTPD.Response.Status;
+import freemarker.template.TemplateException;
 import se.qxx.jukebox.DB;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
+import se.qxx.jukebox.domain.JukeboxDomain.Media;
+import se.qxx.jukebox.domain.JukeboxDomain.MediaConverterState;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.WebServer.MimeTypeMap.Extension;
@@ -38,7 +39,16 @@ import se.qxx.protodb.model.CaseInsensitiveMap;
 public class StreamingWebServer extends NanoHTTPD {
 
 	private static StreamingWebServer _instance;
+	private String ipAddress = "127.0.0.1";
 	
+	public String getIpAddress() {
+		return ipAddress;
+	}
+
+	public void setIpAddress(String ipAddress) {
+		this.ipAddress = ipAddress;
+	}
+
 	// maps stream name to actual file name
 	private Map<String, String> streamingMap = null;
 	private Map<String, String> mimeTypeMap = null;
@@ -46,13 +56,22 @@ public class StreamingWebServer extends NanoHTTPD {
 	
 	private AtomicInteger streamingIterator;
 	
-	private Configuration templateConfig = null;
-	
 	public StreamingWebServer(String host, int port) {
 		super(host, port);
 		
 		streamingIterator = new AtomicInteger();
 		streamingMap = new ConcurrentHashMap<String, String>();
+		
+		initializeMappings();
+		setIpAddress();
+	}
+
+	private void setIpAddress() {
+		this.setIpAddress(Util.findIpAddress());
+		Log.Info(String.format("Setting Ip Address :: %s", this.getIpAddress()), LogType.WEBSERVER);
+	}
+	
+	public void initializeMappings() {
 		mimeTypeMap = new CaseInsensitiveMap();
 		extensionMap = new CaseInsensitiveMap();
 		
@@ -64,9 +83,6 @@ public class StreamingWebServer extends NanoHTTPD {
 			Settings.get().getWebServer().getExtensionOverrideMap().getExtension()) {
 			extensionMap.put(e.getValue(), e.getOverride());
 		}
-		
-
-		
 	}
 	
 	public StreamingFile registerFile(String filename) {
@@ -77,11 +93,27 @@ public class StreamingWebServer extends NanoHTTPD {
 		
 		streamingMap.put(streamingFile, filename);
 		
+		String uri = getStreamUri(streamingFile);
 		Log.Info(String.format("Registering file %s :: %s", streamingFile, filename), LogType.WEBSERVER);
-		
-		String uri = getStreamUri(streamingFile);		
+		Log.Info(String.format("URI :: %s", uri), LogType.WEBSERVER);
+				
 		return new StreamingFile(uri, getMimeType(uri, filename));
-		
+	}
+	
+	public StreamingFile registerFile(Media md) {
+		String filename = getStreamingFilename(md);
+		return registerFile(filename);
+	}
+
+	public String getStreamingFilename(Media md) {
+		String filename;
+		if (md.getConverterState() == MediaConverterState.Completed && !StringUtils.isEmpty(md.getConvertedFileName())) {
+			filename = Util.getConvertedFullFilepath(md);
+		}
+		else {
+			filename = Util.getFullFilePath(md);
+		}
+		return filename;
 	}
 
 	private String getOverrideExtension(String file) {
@@ -108,7 +140,7 @@ public class StreamingWebServer extends NanoHTTPD {
 			return registerFile(tempFile.getAbsolutePath());
 			
 		} catch (Exception e) {
-			Log.Error("Error while parsing and writing subtitle file", LogType.WEBSERVER, e);
+			Log.Error("ERROR while parsing and writing subtitle file", LogType.WEBSERVER);
 		}
 		
 		return null;
@@ -116,6 +148,7 @@ public class StreamingWebServer extends NanoHTTPD {
 	
 
 	public Response serve(IHTTPSession session) {
+		setPriority();
 		
         Map<String, String> header = session.getHeaders();
         String uri = session.getUri();
@@ -489,6 +522,10 @@ public class StreamingWebServer extends NanoHTTPD {
 		}
 	}
 	
+	public static boolean isInitialized() {
+		return _instance != null;
+	}
+	
 	public static StreamingWebServer get() {
 		if (_instance == null)
 			setup("127.0.0.1", 8080);
@@ -498,19 +535,19 @@ public class StreamingWebServer extends NanoHTTPD {
 
 	private String getStreamUri(String streamingFile) {
 		String uri = streamingFile;
-		String ipAddress = "127.0.0.1";
-		try {
-			ipAddress = Inet4Address.getLocalHost().getHostAddress();
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			Log.Error("Unknown host while getting ip number", LogType.WEBSERVER, e);
-		}
 		
 		return String.format("http://%s%s/%s", 
-				ipAddress,  
+				this.getIpAddress(),  
 				this.getListeningPort() == 80 ? "" : String.format(":%s", this.getListeningPort()),
 				streamingFile);
 	}
 	
+	public void stop() {
+		super.stop();
+	}
+
+	private void setPriority() {
+		Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+	}
 
 }

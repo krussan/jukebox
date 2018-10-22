@@ -32,13 +32,16 @@ import se.qxx.jukebox.subtitles.SubFinderBase;
 import se.qxx.jukebox.tools.Unpacker;
 import se.qxx.jukebox.tools.Util;
 
-public class SubtitleDownloader implements Runnable {
+public class SubtitleDownloader extends JukeboxThread {
 
 	private String subsPath = StringUtils.EMPTY;
 	private static SubtitleDownloader _instance;
-	private boolean isRunning;
 
-	private SubtitleDownloader() {
+	public SubtitleDownloader() {
+		super(
+			"Subtitle", 
+			Settings.get().getSubFinders().getThreadWaitSeconds() * 1000,
+			LogType.SUBS);
 	}
 
 	public static SubtitleDownloader get() {
@@ -49,13 +52,24 @@ public class SubtitleDownloader implements Runnable {
 	}
 
 	@Override
+	protected void initialize() {
+		cleanupTempDirectory();
+		subsPath = Settings.get().getSubFinders().getSubsPath();
+		
+		Log.Debug("Retrieving list to process", LogType.SUBS);
+		DB.cleanSubtitleQueue();
+		
+		
+	}
+	
+	@Override
 	public void run() {
 		this.setRunning(true);
-		cleanupTempDirectory();
+		
 		
 		Util.waitForSettings();
 				
-		subsPath = Settings.get().getSubFinders().getSubsPath();
+		
 			
 //		initializeSubsDatabase();
 
@@ -63,42 +77,24 @@ public class SubtitleDownloader implements Runnable {
 		// this.wait();
 	}
 
-	protected void mainLoop() {
-		long threadWaitSeconds = Settings.get().getSubFinders().getThreadWaitSeconds() * 1000;
+	@Override
+	protected void execute() {
+		int result = 0;
+		List<MovieOrSeries> _listProcessing =  DB.getSubtitleQueue();
 		
-		Log.Debug("Retrieving list to process", LogType.SUBS);
-		DB.cleanSubtitleQueue();
-		
-		List<MovieOrSeries> _listProcessing =  DB.getSubtitleQueue();				
-		
-		while (isRunning()) {
-			int result = 0;
+		for (MovieOrSeries mos : _listProcessing) {
 			try {
-				for (MovieOrSeries mos : _listProcessing) {
-					try {
-						if (mos != null) {
-							getSubtitles(mos);
-							result = 1;
-						}
-					} catch (Exception e) {
-						Log.Error("Error when downloading subtitles", Log.LogType.SUBS, e);
-						result = -1;
-
-					}
-					
-					saveSubtitleQueue(mos, result);
+				if (mos != null) {
+					getSubtitles(mos);
+					result = 1;
 				}
-				
-				// wait for trigger
-				synchronized (_instance) {
-					_instance.wait(threadWaitSeconds);
-					_listProcessing = DB.getSubtitleQueue();					
-				}
-				
-			} catch (InterruptedException e) {
-				Log.Error("SUBS :: SubtitleDownloader is going down ...", LogType.SUBS, e);
-			}			
-		}
+			} catch (Exception e) {
+				Log.Error("Error when downloading subtitles", Log.LogType.SUBS, e);
+				result = -1;
+			}
+			
+			saveSubtitleQueue(mos, result);
+		}			
 	}
 
 
@@ -154,7 +150,7 @@ public class SubtitleDownloader implements Runnable {
 	public Movie addMovie(Movie m) {
 		synchronized (_instance) {
 			Movie mm = DB.addMovieToSubtitleQueue(m);
-			_instance.notify();
+			this.signal();
 			
 			return mm;
 		} 
@@ -208,19 +204,13 @@ public class SubtitleDownloader implements Runnable {
 	public Episode addEpisode(Episode episode) {
 		synchronized (_instance) {
 			episode = DB.addEpisodeToSubtitleQueue(episode);
-			_instance.notify();
+			this.signal();
 			
 			return episode;
 		}  
 	}
 
-	/**
-	 * Stops the subtitle download thread
-	 */
-	public void stop() {
-		this.setRunning(false);
-	}
-
+	
 	/**
 	 * Wrapper function for getting subs for a specific movie
 	 * @param m
@@ -532,13 +522,10 @@ public class SubtitleDownloader implements Runnable {
 
 		return subtitleFiles;
 	}
-
-	public boolean isRunning() {
-		return isRunning;
-	}
-
-	public void setRunning(boolean isRunning) {
-		this.isRunning = isRunning;
-	}
 	
+	@Override
+	public int getJukeboxPriority() {
+		return 3;
+	}
+
 }

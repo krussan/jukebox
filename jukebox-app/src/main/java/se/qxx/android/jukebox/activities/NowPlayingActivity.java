@@ -13,8 +13,10 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -58,6 +60,7 @@ public class NowPlayingActivity
     private List<JukeboxDomain.Media> mediaList;
     private int currentMediaIndex = 0;
 
+    private boolean loadingVisible = false;
     private static boolean screenChange = false;
 
     private ViewMode getMode() {
@@ -128,15 +131,21 @@ public class NowPlayingActivity
             }
 
             initializeMediaController();
-
             initializeSessionManager();
 
             if (!screenChange )
-                castProvider.startMovie();
+                startMedia();
 
         } catch (Exception e) {
             Logger.Log().e("Unable to initialize NowPlayingActivity", e);
         }
+    }
+
+    private void startMedia() {
+        loadingVisible = true;
+        setVisibility(castProvider.usesMediaController());
+
+        castProvider.startMovie();
     }
 
     private void initializeCastProvider() {
@@ -179,9 +188,11 @@ public class NowPlayingActivity
         LinearLayout linearLayout1 = findViewById(R.id.linearLayout1);
         LinearLayout linearLayoutButtons1 = findViewById(R.id.linearLayoutButtons1);
         TextView txtSeekIndicator = findViewById(R.id.txtSeekIndicator);
+        ProgressBar spinner = findViewById(R.id.spinner);
 
-        int standardControlsMode = surfaceViewVisible ? View.GONE : View.VISIBLE;
-        int mediaControllerMode = surfaceViewVisible ? View.VISIBLE : View.GONE;
+        int standardControlsMode = surfaceViewVisible || loadingVisible ? View.GONE : View.VISIBLE;
+        int mediaControllerMode = !surfaceViewVisible || loadingVisible ? View.GONE : View.VISIBLE;
+        int spinnerVisible = loadingVisible ? View.VISIBLE : View.GONE;
 
         sb.setVisibility(standardControlsMode);
         linearLayout1.setVisibility(standardControlsMode);
@@ -190,6 +201,9 @@ public class NowPlayingActivity
         txtSeekIndicator.setVisibility(standardControlsMode);
 
         sv.setVisibility(mediaControllerMode);
+
+        spinner.setVisibility(spinnerVisible);
+
 
     }
 
@@ -443,8 +457,14 @@ public class NowPlayingActivity
                             Toast.LENGTH_LONG).show();
                 }
             });
-
         }
+
+
+        loadingVisible = false;
+        runOnUiThread(() -> {
+            setVisibility(castProvider.usesMediaController());
+        });
+
     }
 
     @Override

@@ -18,6 +18,8 @@ public class Arguments {
 	private boolean cleanerEnabled = true;
 	private boolean cleanerLogOnly = false;
 	private boolean setupDatabase = false;
+	private boolean downloadCheckerEnabled = true;
+	private boolean mediaConverterEnabled = true;
 	
 	private static Arguments _instance;
 	
@@ -108,6 +110,12 @@ public class Arguments {
 			_instance.setCleanerLogOnly(true);
 		}
 		
+		if (arguments.contains("-dd")) 
+			_instance.setDownloadCheckerEnabled(false);
+		
+		if (arguments.contains("-dmc"))
+			_instance.setMediaConverterEnabled(false);
+		
 		if (arguments.contains("--setupdb")) {
 			_instance.setSetupDatabase(true);
 		}
@@ -183,5 +191,21 @@ public class Arguments {
 
 	public void setSetupDatabase(boolean setupDatabase) {
 		this.setupDatabase = setupDatabase;
+	}
+
+	public boolean isDownloadCheckerEnabled() {
+		return downloadCheckerEnabled;
+	}
+
+	public void setDownloadCheckerEnabled(boolean downloadCheckerEnabled) {
+		this.downloadCheckerEnabled = downloadCheckerEnabled;
+	}
+
+	public boolean isMediaConverterEnabled() {
+		return mediaConverterEnabled;
+	}
+
+	public void setMediaConverterEnabled(boolean mediaConverterEnabled) {
+		this.mediaConverterEnabled = mediaConverterEnabled;
 	}
 }

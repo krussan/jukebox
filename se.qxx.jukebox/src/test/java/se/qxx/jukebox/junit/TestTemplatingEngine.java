@@ -73,6 +73,7 @@ public class TestTemplatingEngine {
 				.setFilename("movie2.avi")
 				.setFilepath("/video")
 				.setIndex(0)
+				.setDownloadComplete(false)
 				.addSubs(Subtitle.newBuilder()
 						.setID(1)
 						.setRating(Rating.ExactMatch)

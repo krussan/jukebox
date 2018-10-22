@@ -51,7 +51,7 @@ public class FlipperActivity extends AppCompatActivity implements OnPageChangeLi
         this.setCurrentPosition(getPosition());
 
 		connector = new Connector(this);
-        connector.connect(0, -1, this.getMode(), -1, -1);
+        connector.connect(getCurrentPosition(), 1, this.getMode(), -1, -1);
 
         this.getRootView().setOnLongClickListener(this);
 
@@ -172,8 +172,9 @@ public class FlipperActivity extends AppCompatActivity implements OnPageChangeLi
 	}
 
 	public JukeboxDomain.Movie getCurrentMovie() {
+    	// Modified since we now only show one item in the flipper activity
         if (mfa != null)
-            return mfa.getMovies().get(this.getCurrentPosition());
+            return mfa.getMovies().get(0);
         else
             return null;
     }

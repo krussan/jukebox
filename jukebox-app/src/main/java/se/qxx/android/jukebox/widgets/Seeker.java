@@ -30,7 +30,7 @@ public class Seeker implements Runnable {
                //if (!StringUtils.equalsIgnoreCase(response.getFilename(), Model.get().getCurrentMedia().getFilename()))
 				// Model.get().setCurrentMedia(response.getFilename());
 
-               if (listener != null)
+			if (response != null && listener != null)
                    listener.updateSeeker(response.getSeconds(), 0);
            });
 	}
@@ -74,7 +74,7 @@ public class Seeker implements Runnable {
 		this.start(false);
 	}
 
-	protected void startNewThread() {
+	private void startNewThread() {
 		internalThread = new Thread(this);
 		internalThread.start();
 	}

@@ -13,18 +13,12 @@ import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.tools.Util;
 import se.qxx.protodb.exceptions.DatabaseNotSupportedException;
 
-public class Cleaner implements Runnable {
-	private boolean isRunning;
-
-	public boolean isRunning() {
-		return isRunning;
-	}
-
-	public void setRunning(boolean isRunning) {
-		this.isRunning = isRunning;
-	}
-
+public class Cleaner extends JukeboxThread {
 	private static Cleaner _instance = null; 
+	
+	public Cleaner() {
+		super("Cleaner", 30*60*1000, LogType.FIND);
+	}
 	
 	public static Cleaner get() {
 		if (_instance == null)
@@ -34,32 +28,29 @@ public class Cleaner implements Runnable {
 	}
 
 	@Override
-	public void run() {
-		this.setRunning(true);
-		Util.waitForSettings();
-		mainLoop();
+	protected void initialize() {
 	}
-	
-	private void mainLoop() {
-		while(this.isRunning()) {
-			Log.Info("Starting up cleaner thread", LogType.FIND);
-			try {
-				Log.Info("Cleaning up movies", LogType.FIND);
-				cleanMovies();	
-				
-				Thread.sleep(15 * 60 * 1000);
-				Log.Info("Cleaning up episodes", LogType.FIND);
-				cleanEpisodes();
-				
-				Thread.sleep(15 * 60 * 1000);
-				Log.Info("Cleaning up empty series", LogType.FIND);
-				cleanEmptySeries();
-			
-				Thread.sleep(30 * 60 * 1000);
-			} catch (InterruptedException e) {
-				break;
-			}
-		}
+
+	@Override
+	protected void execute() throws InterruptedException {
+		Log.Info("Starting up cleaner thread", LogType.FIND);
+		Log.Info("Cleaning up movies", LogType.FIND);
+		cleanMovies();	
+		
+		if (!this.isRunning())
+			return;
+		
+		Thread.sleep(15 * 60 * 1000);
+		Log.Info("Cleaning up episodes", LogType.FIND);
+		cleanEpisodes();
+		
+		if (!this.isRunning())
+			return;
+		
+		Thread.sleep(15 * 60 * 1000);
+		Log.Info("Cleaning up empty series", LogType.FIND);
+		cleanEmptySeries();
+		
 	}
 	
 	private void cleanMovies() {
@@ -76,6 +67,9 @@ public class Cleaner implements Runnable {
 						Log.Error("Deletion of media failed", LogType.FIND, ex);
 					}
 				}
+				
+				if (!this.isRunning())
+					return;
 			}
 		}
 		
@@ -98,6 +92,9 @@ public class Cleaner implements Runnable {
 								Log.Error("Deletion of media failed", LogType.FIND, ex);
 							}
 						}
+						
+						if (!this.isRunning())
+							return;
 					}					
 				}
 			}
@@ -110,5 +107,10 @@ public class Cleaner implements Runnable {
 	private boolean mediaExists(Media md) {
 		File f = new File(Util.getFullFilePath(md));
 		return f.exists();
+	}
+
+	@Override
+	public int getJukeboxPriority() {
+		return 3;
 	}
 }

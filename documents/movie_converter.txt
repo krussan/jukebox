@@ -1,0 +1,30 @@
+Startup
+--------
+Startup of MediaConverter
+check if ffmpeg is present
+ - if not exit media converter not triggering any convert issues
+
+MediaConverter
+--------------
+1. if an avi is found set mediaConverterState to QUEUED.
+2. MediaConverter finds all queued items
+ - for each queued items
+	set convertedFilename to xxx_jukebox.mp4
+	trigger out of process
+	ffmpeg -i Atomic.Blonde.2017.720p.HC.HDRip.850MB.MkvCage.mkv -c:a copy -c:v copy Atomic.Blonde.2017.720p.HC.HDRip.850MB.MkvCage_jukebox.mp4
+	
+ - if error then set mediaConverterState to Failed
+ 
+ - if completed
+	- Set mediaConverterState to Completed
+	- Replace filename with convertedFilename
+	- delete the original file
+	
+	
+-- Watcher needs to be modified to search on both filename and convertedFilename
+-- if found in one of them then ignore file
+
+
+Jukebox-App
+-----------
+Add context RPC call to trigger conversion on specific videos
