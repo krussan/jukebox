@@ -59,7 +59,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 
 		setPriority();
 		Log.Debug(String.format("ListMovies :: %s", request.getRequestType()), LogType.COMM);
-		Log.Debug(String.format("ListMovies :: Offset :: %s :: NrOfItems :: %s", offset, nrOfItems), LogType.COMM);
+		
 		String searchString = request.getSearchString();
 		
 		JukeboxResponseListMovies.Builder b = JukeboxResponseListMovies.newBuilder();
