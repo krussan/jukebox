@@ -169,31 +169,33 @@ public class SubtitleDownloader extends JukeboxThread {
 	private Movie clearSubs(Movie m) {
 		Movie.Builder mb = Movie.newBuilder(m);
 		
-		for (Media md : m.getMediaList()) {
-			mb.addMedia(
+		List<Media> newMedia = clearSubsFromMediaList(m.getMediaList());
+		mb.clearMedia().addAllMedia(newMedia);
+
+		return DB.save(
+			mb.build());
+	}
+
+	private List<Media> clearSubsFromMediaList(List<Media> medialist) {
+		List<Media> mlist = new ArrayList<Media>();
+		for (Media md : medialist) {
+			mlist.add(
 					Media.newBuilder(md)
 					.clearSubs()
 					.build());		
 		}
 		
-		Movie newMovie = mb.build();
-
-		return DB.save(newMovie);
+		return mlist;
 	}
 
 	private Episode clearSubs(Episode ep) {
 		Episode.Builder epb = Episode.newBuilder(ep);
 		
-		for (Media md : ep.getMediaList()) {
-			epb.addMedia(
-					Media.newBuilder(md)
-					.clearSubs()
-					.build());		
-		}
+		List<Media> newMedia = clearSubsFromMediaList(ep.getMediaList());
+		epb.clearMedia().addAllMedia(newMedia);
 		
-		Episode newEpisode = epb.build();
-
-		return DB.save(newEpisode);
+		return DB.save(
+			epb.build());
 	}
 
 	/**

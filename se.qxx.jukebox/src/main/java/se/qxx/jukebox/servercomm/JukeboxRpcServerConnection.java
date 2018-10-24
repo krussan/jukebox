@@ -575,22 +575,25 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	public void reenlistSubtitles(RpcController controller,
 			JukeboxRequestID request, RpcCallback<Empty> done) {
 
-		try {
-			if (request.getRequestType() == RequestType.TypeMovie) {
-				Movie m = DB.getMovie(request.getId());
-				SubtitleDownloader.get().reenlistMovie(m);	
+		Thread t = new Thread(() -> {
+			try {
+				if (request.getRequestType() == RequestType.TypeMovie) {
+					Movie m = DB.getMovie(request.getId());
+					SubtitleDownloader.get().reenlistMovie(m);	
+				}
+				else if (request.getRequestType() == RequestType.TypeEpisode) {
+					Episode ep = DB.getEpisode(request.getId());
+					SubtitleDownloader.get().reenlistEpisode(ep);
+				}
+			
+				done.run(Empty.newBuilder().build());
 			}
-			else if (request.getRequestType() == RequestType.TypeEpisode) {
-				Episode ep = DB.getEpisode(request.getId());
-				SubtitleDownloader.get().reenlistEpisode(ep);
+			catch (Exception e) {
+				Logger.log("Error occured in reenlistSubtitles", e);
+				controller.setFailed("Error occured when enlisting to subtitle downloader");
 			}
-		
-			done.run(Empty.newBuilder().build());
-		}
-		catch (Exception e) {
-			Logger.log("Error occured in reenlistSubtitles", e);
-			controller.setFailed("Error occured when enlisting to subtitle downloader");
-		}
+		});
+		t.start();
 	}
 	
 	private void reenlist(Media md) {
