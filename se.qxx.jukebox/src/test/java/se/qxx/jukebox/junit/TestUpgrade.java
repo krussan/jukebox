@@ -1,30 +1,24 @@
 package se.qxx.jukebox.junit;
 
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
+import static org.junit.Assert.assertEquals;
 
-import org.junit.Before;
+import java.util.List;
+
 import org.junit.Test;
 
-import se.qxx.jukebox.DB;
-import se.qxx.jukebox.upgrade.Upgrader;
+import se.qxx.jukebox.upgrade.Upgrade_0_20;
+import se.qxx.protodb.backend.DatabaseBackend;
+import se.qxx.protodb.exceptions.DatabaseNotSupportedException;
 
 public class TestUpgrade {
-	
-	@Before public void setup() {
-		DB.setDatabase("jukebox_test.db");
-	}
-	
-	@Test public void upgrade() 
-			throws SecurityException
-			, IllegalArgumentException
-			, ClassNotFoundException
-			, SQLException
-			, NoSuchMethodException
-			, InstantiationException
-			, IllegalAccessException
-			, InvocationTargetException {
+	@Test
+	public void TestUpgrade_0_20() throws DatabaseNotSupportedException {
+		DatabaseBackend db = new MockDatabaseBackend();
+		Upgrade_0_20 up = new Upgrade_0_20();
+		List<String> dbScripts = up.getDatabaseUpgradeScripts(db);
 		
-		//Upgrader.performUpgrade();
+		assertEquals(2, dbScripts.size());
+		assertEquals(String.format("UPDATE %1$sMedia%2$s SET _converterstate_ID = 2", db.getStartBracket(), db.getEndBracket()), dbScripts.get(0));
+		assertEquals(String.format("UPDATE %1$sMedia%2$s SET downloadComplete = 0", db.getStartBracket(), db.getEndBracket()), dbScripts.get(1));
 	}
 }

@@ -3,13 +3,13 @@ package se.qxx.jukebox;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain;
@@ -19,103 +19,140 @@ import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.JukeboxDomain.SubtitleQueue;
+import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.domain.MovieOrSeries;
-import se.qxx.protodb.DBStatement;
+import se.qxx.protodb.DBType;
 import se.qxx.protodb.ProtoDB;
+import se.qxx.protodb.ProtoDBFactory;
+import se.qxx.protodb.ProtoDBSort;
+import se.qxx.protodb.SearchOptions;
+import se.qxx.protodb.exceptions.DatabaseNotSupportedException;
 import se.qxx.protodb.exceptions.IDFieldNotFoundException;
 import se.qxx.protodb.exceptions.ProtoDBParserException;
 import se.qxx.protodb.exceptions.SearchFieldNotFoundException;
+import se.qxx.protodb.exceptions.SearchOptionsNotInitializedException;
 import se.qxx.protodb.model.ProtoDBSearchOperator;
 
-import com.google.protobuf.DynamicMessage;
-import com.google.protobuf.InvalidProtocolBufferException;
-
+import com.google.protobuf.Message;
 public class DB {
-     
-//	private final static String[] COLUMNS = {"ID", "title", "year",
-//			"type", "format", "sound", "language", "groupName", "imdburl", "duration",
-//			"rating", "director", "story", "identifier", "identifierRating", "watched",
-//			"isTvEpisode", "season", "episode", "firstAirDate", "episodeTitle"};
-//    " isTvEpisode bool NOT NULL DEFAULT 0," +
-//	" episode int NULL, " +
-//    " firstAirDate date NULL, " +
-//	" _season_ID int NULL",
 
-	private static String databaseFilename = "jukebox_proto.db";
+	private static Object syncObject = new Object();
 	
 	private DB() {
 		
 	} 
 
-	private static String getDatabaseFilename() {
-		return databaseFilename;
-	}
-
-	private static void setDatabaseFilename(String databaseFilename) {
-		DB.databaseFilename = databaseFilename;
-	}
-
-	public static void setDatabase(String databaseFilename) {
-		setDatabaseFilename(databaseFilename);
-	}
-	
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Search
 	//---------------------------------------------------------------------------------------
 
-	public synchronized static List<Movie> searchMoviesByTitle(String searchString, boolean populateBlobs, boolean filterSubs) {
-		return searchMoviesByTitle(searchString, populateBlobs, filterSubs, -1, -1);
+	public static List<Movie> searchMoviesByTitle(String searchString) {
+		return searchMoviesByTitle(searchString, -1, -1);
 	}
-	public synchronized static List<Movie> searchMoviesByTitle(String searchString, boolean populateBlobs, boolean filterSubs, int numberOfResults, int offset) {
+	
+	public static List<Movie> searchMoviesByTitle(String searchString, int numberOfResults, int offset) {
+		List<String> excludedObjects = new ArrayList<String>();
+		excludedObjects.add("media.subs");
+		excludedObjects.add("image");
+		
+		return searchByTitle(JukeboxDomain.Movie.getDefaultInstance()
+				, "title"
+				, searchString
+				, numberOfResults
+				, offset
+				, excludedObjects
+				, "identifiedTitle");
+	}
+	
+	public static Movie searchMoviesByID(int id) {
 		try {
-			ProtoDB db = getProtoDBInstance(populateBlobs);
-			
-			List<String> filterObjects = new ArrayList<String>();
-			
-			if (filterSubs) {
-				filterObjects.add("media.subs");
-			}
+			List<String> excludedObjects = new ArrayList<String>();
+			excludedObjects.add("media.subs");
+			excludedObjects.add("image");
+	
+			ProtoDB db = getProtoDBInstance(true);
+	
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				List<Movie> result = db.search(
+					SearchOptions.newBuilder(JukeboxDomain.Movie.getDefaultInstance())
+						.addFieldName("ID")
+						.addSearchArgument(id)
+						.addOperator(ProtoDBSearchOperator.Equals)
+						.setShallow(false)
+						.addAllExcludedObjects(excludedObjects));				
 
-			return db.search(JukeboxDomain.Movie.getDefaultInstance(), 
-					"title", 
-					"%" + searchString + "%",
-					ProtoDBSearchOperator.Like, 
-					false, 
-					numberOfResults, 
-					offset);
+				if (result.size() > 0)
+					return result.get(0);
+				else
+					return null;
+				
+			}
+		
 		}
 		catch (Exception e) {
-			Log.Error("Failed to retrieve movie listing from DB", Log.LogType.MAIN, e);
-			return new ArrayList<Movie>();
-		}	
+			Log.Error("Failed to retrieve series listing from DB", Log.LogType.MAIN, e);
+			return null;
+		}		
+
+	}
+	
+
+	public static List<Series> searchSeriesByTitle(String searchString) {
+		return searchSeriesByTitle(searchString, -1, -1);		
 	}
 
-	public synchronized static List<Series> searchSeriesByTitle(String searchString, boolean populateBlobs, boolean filterSubs) {
-		return searchSeriesByTitle(searchString, populateBlobs, filterSubs, -1, -1);		
+	public static List<Series> searchSeriesByTitle(String searchString, int numberOfResults, int offset) {
+		List<String> excludedObjects = new ArrayList<String>();
+		excludedObjects.add("season"); // exclude underlying seasons
+		excludedObjects.add("image"); // exclude full size image
+		
+		return searchByTitle(JukeboxDomain.Series.getDefaultInstance()
+				, "title"
+				, searchString
+				, numberOfResults
+				, offset
+				, excludedObjects	
+				, "title");
 	}
-
-	public synchronized static List<Series> searchSeriesByTitle(String searchString, boolean populateBlobs, boolean filterSubs, int numberOfResults, int offset) {
+	
+	private static <T extends Message> List<T> searchByTitle(
+			T instance, 
+			String searchField, 
+			String searchString, 
+			int numberOfResults,
+			int offset,
+			List<String> excludedObjects,
+			String sortField) {
 		try {
-			ProtoDB db = getProtoDBInstance(populateBlobs);
+			ProtoDB db = getProtoDBInstance(true);
 
-			List<String> filterObjects = new ArrayList<String>();			
-			if (filterSubs) {
-				filterObjects.add("season.episode.media.subs");
-			}
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
 			
-			return db.search(JukeboxDomain.Series.getDefaultInstance(), 
-					"title", 
-					"%" + searchString + "%",
-					ProtoDBSearchOperator.Like,
-					false,
-					numberOfResults,
-					offset);
+				
+				if (StringUtils.isEmpty(searchString))
+					searchField = "";
+				else
+					searchString = "%" + searchString + "%"; 
+				
+				return db.search(
+					SearchOptions.newBuilder(instance)
+						.addFieldName(searchField)
+						.addSearchArgument(searchString)
+						.addOperator(ProtoDBSearchOperator.Like)
+						.setShallow(false)
+						.setOffset(offset)
+						.setNumberOfResults(numberOfResults)
+						.setSortField(sortField)
+						.setSortOrder(ProtoDBSort.Asc)
+						.addAllExcludedObjects(excludedObjects));				
+
+			}
 			
 		}
 		catch (Exception e) {
 			Log.Error("Failed to retrieve series listing from DB", Log.LogType.MAIN, e);
-			return new ArrayList<Series>();
-		}
+			return new ArrayList<T>();
+		}		
 	}
 
 
@@ -126,23 +163,58 @@ public class DB {
 		return StringUtils.trim(ret);
 	}
 	
-	public synchronized static Movie findMovie(String identifiedTitle) {
+	public static Movie findMovie(String identifiedTitle) {
 		String searchString = replaceSearchString(identifiedTitle);
+		
+		Log.Debug(String.format("DB :: Series search string :: %s", searchString), LogType.FIND);
+		 
+		try {
+			ProtoDB db = getProtoDBInstance();
+			
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				List<Movie> result =
+						db.search(
+							SearchOptions.newBuilder(JukeboxDomain.Movie.getDefaultInstance())
+								.addFieldName("identifiedTitle") 
+								.addSearchArgument(searchString)
+								.addOperator(ProtoDBSearchOperator.Like));
+					
+				if (result.size() > 0)
+					return result.get(0);
+				else 
+					return null;				
+			}
+			
+		} catch (Exception e) {
+			Log.Error("failed to get information from database", Log.LogType.FIND, e);
+//			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
+			
+			return null;
+		}
+	}
+	
+	public static Series findSeries(String identifiedTitle) {
+		String searchString = replaceSearchString(identifiedTitle) + "%";
 		
 		Log.Debug(String.format("DB :: Series search string :: %s", searchString), LogType.MAIN);
 		 
 		try {
 			ProtoDB db = getProtoDBInstance();
-			List<Movie> result =
-				db.search(JukeboxDomain.Movie.getDefaultInstance(), 
-					"identifiedTitle", 
-					searchString,
-					ProtoDBSearchOperator.Like);
 			
-			if (result.size() > 0)
-				return result.get(0);
-			else 
-				return null;
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				List<Series> result =
+						db.search(
+							SearchOptions.newBuilder(JukeboxDomain.Series.getDefaultInstance())
+								.addFieldName("identifiedTitle") 
+								.addSearchArgument(searchString)
+								.addOperator(ProtoDBSearchOperator.Like));
+
+				if (result.size() > 0)
+					return result.get(0);
+				else 
+					return null;
+				
+			}
 			
 		} catch (Exception e) {
 			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
@@ -152,40 +224,78 @@ public class DB {
 		}
 	}
 	
-	public synchronized static Series findSeries(String identifiedTitle) {
-		String searchString = replaceSearchString(identifiedTitle) + "%";
-		
-		Log.Debug(String.format("DB :: Series search string :: %s", searchString), LogType.MAIN);
-		 
+	/***
+	 * Uses search method to find a specific Series by ID.
+	 * Includes episodes but exludes images on series and season
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public static Series searchSeriesById(int id) {
 		try {
 			ProtoDB db = getProtoDBInstance();
-			List<Series> result =
-				db.search(JukeboxDomain.Series.getDefaultInstance(), 
-					"identifiedTitle", 
-					searchString, 
-					ProtoDBSearchOperator.Like);
-			
-			if (result.size() > 0)
-				return result.get(0);
-			else 
-				return null;
-			
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				List<Series> result = 
+					db.search(SearchOptions.newBuilder(JukeboxDomain.Series.getDefaultInstance()) 
+						.addFieldName("ID") 
+						.addSearchArgument(id) 
+						.addOperator(ProtoDBSearchOperator.Equals)
+						.addExcludedObject("season.episode")
+						.addExcludedObject("image")
+						.addExcludedObject("season.image"));
+					
+
+				if (result.size() > 0)
+					return result.get(0);
+				else
+					return null;
+			}
 		} catch (Exception e) {
 			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
-//			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
-			
-			return null;
 		}
+		
+		return null;
+	}
+
+	public static Season searchSeasonById(int id) {
+		try {
+			ProtoDB db = getProtoDBInstance();
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				List<Season> result = 
+					db.search(SearchOptions.newBuilder(JukeboxDomain.Season.getDefaultInstance()) 
+						.addFieldName("ID") 
+						.addSearchArgument(id) 
+						.addOperator(ProtoDBSearchOperator.Equals)
+						.addExcludedObject("image")
+						.addExcludedObject("episode.image")
+						.addExcludedObject("episode.media.subs"));
+				
+					
+
+				if (result.size() > 0)
+					return result.get(0);
+				else
+					return null;
+			}
+		} catch (Exception e) {
+			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
+		}
+		
+		return null;
 	}
 
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Get
 	//---------------------------------------------------------------------------------------
 
-	public synchronized static Movie getMovie(int id) {
+	public static Movie getMovie(int id) {
 		try {
 			ProtoDB db = getProtoDBInstance();
-			return db.get(id, Movie.getDefaultInstance());
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				return db.get(
+					id, 
+					Movie.getDefaultInstance());
+			}
 		} catch (Exception e) {
 			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
 			
@@ -195,10 +305,24 @@ public class DB {
 		return null;
 	}
 
-	public synchronized static Series getSeries(int id) {
+	
+
+
+	public static Series getSeries(int id) {
 		try {
 			ProtoDB db = getProtoDBInstance();
-			return db.get(id, Series.getDefaultInstance());
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				List<Series> result = 
+					db.search(SearchOptions.newBuilder(JukeboxDomain.Series.getDefaultInstance()) 
+						.addFieldName("ID") 
+						.addSearchArgument(id) 
+						.addOperator(ProtoDBSearchOperator.Equals));
+
+				if (result.size() > 0)
+					return result.get(0);
+				else
+					return null;
+			}
 		} catch (Exception e) {
 			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
 		}
@@ -206,10 +330,21 @@ public class DB {
 		return null;
 	}
 
-	public synchronized static Season getSeason(int id) {
+	public static Season getSeason(int id) {
 		try {
 			ProtoDB db = getProtoDBInstance();
-			return db.get(id, Season.getDefaultInstance());
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				List<Season> result =
+						db.search(SearchOptions.newBuilder(JukeboxDomain.Season.getDefaultInstance()) 
+								.addFieldName("ID") 
+								.addSearchArgument(id) 
+								.addOperator(ProtoDBSearchOperator.Equals));
+
+				if (result.size() > 0)
+					return result.get(0);
+				else
+					return null;
+			}
 		} catch (Exception e) {
 			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
 		}
@@ -217,10 +352,12 @@ public class DB {
 		return null;
 	}
 
-	public synchronized static Episode getEpisode(int id) {
+	public static Episode getEpisode(int id) {
 		try {
 			ProtoDB db = getProtoDBInstance();
-			return db.get(id, Episode.getDefaultInstance());
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				return db.get(id, Episode.getDefaultInstance());
+			}
 		} catch (Exception e) {
 			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
 		}
@@ -232,11 +369,12 @@ public class DB {
 	//------------------------------------------------------------------------ Save
 	//---------------------------------------------------------------------------------------
 
-	public synchronized static Movie save(Movie m) {
+	public static Movie save(Movie m) {
 		try {
 			ProtoDB db = getProtoDBInstance();
-			
-			return db.save(m);
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				return db.save(m);
+			}
 		}
 		catch (Exception e) {
 			Log.Error("Failed to store movie to DB", Log.LogType.MAIN, e);
@@ -245,11 +383,12 @@ public class DB {
 		}
 	}
 
-	public synchronized static Media save(Media md) {
+	public static Media save(Media md) {
 		try {
 			ProtoDB db = getProtoDBInstance();
-			
-			return db.save(md);
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				return db.save(md);
+			}
 		}
 		catch (Exception e) {
 			Log.Error("Failed to store media to DB", Log.LogType.MAIN, e);
@@ -258,11 +397,12 @@ public class DB {
 		}
 	}
 	
-	public synchronized static Episode save(Episode episode) {
+	public static Episode save(Episode episode) {
 		try {
 			ProtoDB db = getProtoDBInstance();
-			
-			return db.save(episode);
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				return db.save(episode);
+			}
 		}
 		catch (Exception e) {
 			Log.Error("Failed to store episode to DB", Log.LogType.MAIN, e);
@@ -271,11 +411,12 @@ public class DB {
 		}
 	}	
 
-	public synchronized static Series save(Series series) {
+	public static Series save(Series series) {
 		try {
 			ProtoDB db = getProtoDBInstance();
-			
-			return db.save(series);
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				return db.save(series);
+			}
 		}
 		catch (Exception e) {
 			Log.Error("Failed to store episode to DB", Log.LogType.MAIN, e);
@@ -283,56 +424,78 @@ public class DB {
 			return null;
 		}
 	}	
+
+	public static void saveAsync(Series series) {
+		Thread t = new Thread(() -> {
+			try {
+
+				ProtoDB db = getProtoDBInstance();
+				synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+					db.save(series);
+				}
+			}
+			catch (Exception e) {
+				Log.Error("Failed to store episode to DB", Log.LogType.MAIN, e);
+			}
+
+		});
+		t.start();
+	}	
+
 
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Delete
 	//---------------------------------------------------------------------------------------
-	public synchronized static void delete(Movie m) throws ClassNotFoundException, SQLException {
+	public static void delete(Movie m) throws ClassNotFoundException, SQLException, DatabaseNotSupportedException {
 		try {
 			ProtoDB db = getProtoDBInstance();
-			
-			db.delete(m);
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				db.delete(m);
+			}
 		}
-		catch (ClassNotFoundException | SQLException e) {
+		catch (ClassNotFoundException | SQLException | DatabaseNotSupportedException e) {
 			Log.Error("Failed to delete movie in DB", Log.LogType.MAIN, e);
 			
 			throw e;
 		}		
 	}
 	
-	public synchronized static void delete(Series s) throws ClassNotFoundException, SQLException {
+	public static void delete(Series s) throws ClassNotFoundException, SQLException, DatabaseNotSupportedException  {
 		try {
 			ProtoDB db = getProtoDBInstance();
-			
-			db.delete(s);
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				db.delete(s);
+			}
 		}
-		catch (ClassNotFoundException | SQLException e) {
+		catch (ClassNotFoundException | SQLException | DatabaseNotSupportedException e) {
 			Log.Error("Failed to delete series in DB", Log.LogType.MAIN, e);
 			
 			throw e;
 		}			
 	}
 
-	public synchronized static void delete(Season sn) throws ClassNotFoundException, SQLException {
+	public static void delete(Season sn) throws ClassNotFoundException, SQLException,  DatabaseNotSupportedException  {
 		try {
 			ProtoDB db = getProtoDBInstance();
-			
-			db.delete(sn);
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				db.delete(sn);
+			}
 		}
-		catch (ClassNotFoundException | SQLException e) {
+		catch (ClassNotFoundException | SQLException |  DatabaseNotSupportedException  e) {
 			Log.Error("Failed to delete season in DB", Log.LogType.MAIN, e);
 			
 			throw e;
 		}			
 	}
 
-	public synchronized static void delete(Episode ep) throws ClassNotFoundException, SQLException {
+	public static void delete(Episode ep) throws ClassNotFoundException, SQLException, DatabaseNotSupportedException  {
 		try {
 			ProtoDB db = getProtoDBInstance();
-			
-			db.delete(ep);
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				db.delete(ep);
+			}
 		}
-		catch (ClassNotFoundException | SQLException e) {
+		catch (ClassNotFoundException | SQLException | DatabaseNotSupportedException  e) {
 			Log.Error("Failed to delete episode in DB", Log.LogType.MAIN, e);
 			
 			throw e;
@@ -343,11 +506,13 @@ public class DB {
 	//------------------------------------------------------------------------ Watched
 	//---------------------------------------------------------------------------------------
 	
-	public synchronized static void toggleWatched(Movie m) {
+	public static void toggleWatched(Movie m) {
 		try {
 			ProtoDB db = getProtoDBInstance();
-
-			db.save(Movie.newBuilder(m).setWatched(!m.getWatched()).build());
+			
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				db.save(Movie.newBuilder(m).setWatched(!m.getWatched()).build());
+			}
 
 		}
 		catch (Exception e) {
@@ -356,11 +521,66 @@ public class DB {
 
 	}		
 
+	public static List<Media> getConverterQueue() {
+		List<Media> result = new ArrayList<Media>();
+       try {
+           ProtoDB db = getProtoDBInstance();
+               
+           synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+                               
+               // Restrict result to 5.
+    	   	   // should only have the queue state Queued if download completed
+               result = db.search(
+        		   SearchOptions.newBuilder(JukeboxDomain.Media.getDefaultInstance())
+        		   	.addFieldName("converterState")
+        		   	.addOperator(ProtoDBSearchOperator.Equals)
+        		   	.addSearchArgument("Queued")
+        		   	.setNumberOfResults(5)
+        		   	.setOffset(0));
+     
+           }
+       }
+       catch (Exception e) {
+           Log.Error("Failed to retrieve movie listing from DB", LogType.MAIN, e);
+       }
+       
+       return result;
+	
+	}
+	
+	public static void setDownloadCompleted(int id) {
+		try {
+			ProtoDB db = getProtoDBInstance();
+			
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				String sql = String.format("UPDATE Media SET downloadcomplete = 1 WHERE ID = %s", id);
+				db.executeNonQuery(sql);
+			}
+		} catch (Exception e) {
+			Log.Error(String.format("Failed to set download complete"), Log.LogType.MAIN, e);
+		}				
+	}
+
+	public  static void cleanupConverterQueue() {
+		try {
+			ProtoDB db = getProtoDBInstance();
+			
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				String sql = "UPDATE Media SET _converterstate_ID = 2 WHERE _converterstate_ID IN (4,5)";
+				db.executeNonQuery(sql);
+			}
+		} catch (Exception e) {
+			Log.Error(String.format("Failed to clean subtitle queue"), Log.LogType.MAIN, e);
+		}		
+	}
+
+
+
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Subtitles
 	//---------------------------------------------------------------------------------------
 
-	public synchronized static Movie addMovieToSubtitleQueue(Movie m) {
+	public static Movie addMovieToSubtitleQueue(Movie m) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			int id = m.hasSubtitleQueue() ? m.getSubtitleQueue().getID() : -1;
@@ -373,7 +593,9 @@ public class DB {
 					.build())
 				.build();
 			
-			return db.save(m);
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				return db.save(m);
+			}
 		}
 		catch (Exception e) {
 			Log.Error("Failed to store movie to DB", Log.LogType.MAIN, e);
@@ -381,7 +603,7 @@ public class DB {
 		return m;
 	}
 	
-	public synchronized static Episode addEpisodeToSubtitleQueue(Episode e) {
+	public static Episode addEpisodeToSubtitleQueue(Episode e) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			
@@ -391,9 +613,11 @@ public class DB {
 						.setSubtitleRetreiveResult(0)				
 						.setSubtitleQueuedAt(DB.getCurrentUnixTimestamp())
 						.build())
-					.build();	
+					.build();
 			
-			return db.save(e);
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				return db.save(e);
+			}
 		}
 		catch (Exception ex) {
 			Log.Error("Failed to store epsiode to DB", Log.LogType.MAIN, ex);
@@ -412,32 +636,42 @@ public class DB {
 	 * 
 	 * @return
 	 */
-	public synchronized static List<MovieOrSeries> getSubtitleQueue() {
+	public static List<MovieOrSeries> getSubtitleQueue() {
 		List<MovieOrSeries> result = new ArrayList<MovieOrSeries>();
+		List<Movie> movies = new ArrayList<Movie>();
+		List<Series> series = new ArrayList<Series>();
 		
 		try {
 			ProtoDB db = getProtoDBInstance();
-			 
-			// Restrict result to 5. Since the list will be retrieved again it does not matter.
-			List<Movie> movies =
-				db.search(JukeboxDomain.Movie.getDefaultInstance(), 
-					"subtitleQueue.subtitleRetreiveResult", 
-					0, 
-					ProtoDBSearchOperator.Equals,
-					5,
-					0);
-
-			// this is a bit dangerous.
-			// what if we cut a series/season in half and save the series (!)
-			// So to be sure we save _only_ the episode from the SubtitleDownloader.
-			List<Series> series = 
-				db.search(JukeboxDomain.Series.getDefaultInstance(), 
-					"season.episode.subtitleQueue.subtitleRetreiveResult", 
-					0, 
-					ProtoDBSearchOperator.Equals,
-					5,
-					0);
-
+			
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+					
+				// Restrict result to 5. Since the list will be retrieved again it does not matter.
+				movies =
+					db.search(
+						SearchOptions.newBuilder(JukeboxDomain.Movie.getDefaultInstance())
+						.addFieldName("subtitleQueue.subtitleRetreiveResult")
+						.addSearchArgument(0)
+						.addOperator(ProtoDBSearchOperator.Equals)
+						.setNumberOfResults(5)
+						.addExcludedObject("media.subs")
+						.setOffset(0));
+	
+				// this is a bit dangerous.
+				// what if we cut a series/season in half and save the series (!)
+				// So to be sure we save _only_ the episode from the SubtitleDownloader.
+				series =
+					db.search(
+						SearchOptions.newBuilder(JukeboxDomain.Series.getDefaultInstance())
+						.addFieldName("season.episode.subtitleQueue.subtitleRetreiveResult")
+						.addSearchArgument(0)
+						.addOperator(ProtoDBSearchOperator.Equals)
+						.setNumberOfResults(5)
+						.addExcludedObject("season.episode.media.subs")
+						.setOffset(0));
+	
+			}
+			
 			result = constructSubtitleQueue(movies, series);
 		}
 		catch (Exception e) {
@@ -447,18 +681,25 @@ public class DB {
 		return result;
 	}
 
-	private static ProtoDB getProtoDBInstance() {
+	public static ProtoDB getProtoDBInstance() throws DatabaseNotSupportedException {
 		return getProtoDBInstance(true);
 	}
 	
-	private static ProtoDB getProtoDBInstance(boolean populateBlobs) {
+	public static ProtoDB getProtoDBInstance(boolean populateBlobs) throws DatabaseNotSupportedException {
+		String driver = Settings.get().getDatabase().getDriver();
+		String connectionString = Settings.get().getDatabase().getConnectionString();
+
+		return getProtoDBInstance(driver, connectionString, populateBlobs);
+	}
+	
+	public static ProtoDB getProtoDBInstance(String driver, String connectionString, boolean populateBlobs) throws DatabaseNotSupportedException {
 		ProtoDB db = null; 
 		String logFilename = Log.getLoggerFilename(LogType.DB);
-		
+	
 		if (StringUtils.isEmpty(logFilename))
-			db = new ProtoDB(DB.getDatabaseFilename());
+			db = ProtoDBFactory.getInstance(driver, connectionString);
 		else
-			db = new ProtoDB(DB.getDatabaseFilename(), logFilename);
+			db = ProtoDBFactory.getInstance(driver, connectionString, logFilename);
 		
 		db.setPopulateBlobs(populateBlobs);
 		return db;
@@ -507,12 +748,14 @@ public class DB {
 	//------------------------------------------------------------------------ Blacklist
 	//---------------------------------------------------------------------------------------
 
-	public synchronized static void addToBlacklist(Movie m) {
+	public static void addToBlacklist(Movie m) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			m = Movie.newBuilder(m).addBlacklist(m.getImdbId()).build();			
 			
-			db.save(m);
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				db.save(m);
+			}
 		}
 		catch (Exception e) {
 			Log.Error("Failed to add movie to blacklist in DB", Log.LogType.MAIN, e);
@@ -523,19 +766,22 @@ public class DB {
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Version
 	//---------------------------------------------------------------------------------------
-	public synchronized static Version getVersion() throws ClassNotFoundException {
+	public static Version getVersion() throws ClassNotFoundException {
 		Connection conn = null;
 		int minor = 0;
 		int major = 0;
 		
 		try {
-			conn = DB.initialize();
+			ProtoDB db = getProtoDBInstance();
+			conn = db.getConnection();
 			
-			PreparedStatement prep = conn.prepareStatement("SELECT minor, major FROM Version WHERE ID=1");
-			ResultSet rs = prep.executeQuery();
-			if (rs.next()) {
-				minor = rs.getInt("minor");
-				major = rs.getInt("major");
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				PreparedStatement prep = conn.prepareStatement("SELECT minor, major FROM Version WHERE ID=1");
+				ResultSet rs = prep.executeQuery();
+				if (rs.next()) {
+					minor = rs.getInt("minor");
+					major = rs.getInt("major");
+				}
 			}
 		} catch (Exception e) {
 			minor = 0;
@@ -553,59 +799,76 @@ public class DB {
 		return new Version(major, minor);
 	}
 	
-	public synchronized static void setVersion(Version ver) throws ClassNotFoundException, SQLException {
+	public  static void setVersion(Version ver) throws ClassNotFoundException, SQLException, DatabaseNotSupportedException {
 		Connection conn = null;
 		try {
-			conn = DB.initialize();
+			ProtoDB db = getProtoDBInstance();
+			conn = db.getConnection();
 			
-			PreparedStatement prep = conn.prepareStatement("UPDATE Version SET major = ?, minor= ? WHERE ID = 1");
-			prep.setInt(1, ver.getMajor());
-			prep.setInt(2, ver.getMinor());
-			
-			prep.execute();
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				PreparedStatement prep = conn.prepareStatement("UPDATE Version SET major = ?, minor= ? WHERE ID = 1");
+				prep.setInt(1, ver.getMajor());
+				prep.setInt(2, ver.getMinor());
+				
+				prep.execute();
+			}
 		}
 		finally {
 			DB.disconnect(conn);
 		}
 	}
 	
-	private synchronized static void insertVersion(Version ver) throws ClassNotFoundException, SQLException {
+	private static void insertVersion(Version ver) throws ClassNotFoundException, SQLException, DatabaseNotSupportedException {
 		Connection conn = null;
 		try {
-			conn = DB.initialize();
+			ProtoDB db = getProtoDBInstance();
+			conn = db.getConnection();
 			
-			PreparedStatement prep = conn.prepareStatement("INSERT INTO Version (major, minor) VALUES (?, ?)");
-			prep.setInt(1, ver.getMajor());
-			prep.setInt(2, ver.getMinor());
-			
-			prep.execute();
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				PreparedStatement prep = conn.prepareStatement("INSERT INTO Version (major, minor) VALUES (?, ?)");
+				prep.setInt(1, ver.getMajor());
+				prep.setInt(2, ver.getMinor());
+				
+				prep.execute();
+			}
 		}
 		finally {
 			DB.disconnect(conn);
 		}
 	}
 	
-	public static String backup() throws IOException {
-		String backupFilename = String.format("%s.bak", DB.getDatabaseFilename());
-		File backup = new File(backupFilename);
-		File current = new File(DB.getDatabaseFilename());
+	public static String backup() throws IOException, DatabaseNotSupportedException  {
+		String backupFilename = StringUtils.EMPTY;
 		
-		int i = 1;
-		while (backup.exists()) {
-			backupFilename = String.format("%s.bak.%s", DB.getDatabaseFilename(), i);
-			backup = new File(backupFilename);
-			i++;
+		ProtoDB db = getProtoDBInstance();
+		if (db.getDBType() == DBType.Sqlite) {
+			String[] splitted = StringUtils.split(db.getDatabaseBackend().getConnectionString(), ':');
+			ArrayUtils.reverse(splitted);
+			String databaseFilename = splitted[0];
+			
+			backupFilename = String.format("%s.bak", databaseFilename);
+			File backup = new File(backupFilename);
+			File current = new File(databaseFilename);
+			
+			int i = 1;
+			while (backup.exists()) {
+				backupFilename = String.format("%s.bak.%s", databaseFilename, i);
+				backup = new File(backupFilename);
+				i++;
+			}
+			
+			System.out.println(String.format("Making backup to :: %s", backupFilename));
+			FileUtils.copyFile(current, backup);
 		}
-		
-		System.out.println(String.format("Making backup to :: %s", backupFilename));
-		FileUtils.copyFile(current, backup);
-		
+		else {
+			System.out.println("Database is not Sqlite. Backup not available. Send a prayer to the data gods.");
+		}
 		return backupFilename;
 	}
 
 	public static void restore(String backupFilename) throws IOException {
 		File backup = new File(backupFilename);
-		File restoreFile = new File(DB.getDatabaseFilename());
+		File restoreFile = new File("jukebox_proto.db");
 		
 		if (restoreFile.exists())
 			restoreFile.delete();
@@ -651,9 +914,8 @@ public class DB {
 		}
 	}
 	
-	private static Connection initialize() throws ClassNotFoundException, SQLException {
-		Class.forName("org.sqlite.JDBC");
-	    return DriverManager.getConnection(String.format("jdbc:sqlite:%s", DB.databaseFilename));				
+	private static Connection initialize() throws ClassNotFoundException, SQLException, DatabaseNotSupportedException {
+		return DB.getProtoDBInstance().getConnection();
 	}
 	
 	private static void disconnect(Connection conn) {
@@ -666,8 +928,7 @@ public class DB {
 
 	public synchronized static boolean purgeDatabase() {
 		try {
-			File f = new File(databaseFilename);
-			f.delete();
+			DB.getProtoDBInstance().dropAllTables();
 		
 			setupDatabase();
 			
@@ -679,39 +940,46 @@ public class DB {
 		}
 	}
 
-	public synchronized static boolean setupDatabase() {
+	public synchronized static boolean setupDatabase() throws ClassNotFoundException, SQLException, IDFieldNotFoundException, DatabaseNotSupportedException {
 		try {
-			File f = new File(DB.getDatabaseFilename());
-			if (!f.exists()) {
-				ProtoDB db = getProtoDBInstance();			
+			Version ver = DB.getVersion();
+			if (ver.getMajor() == 0 && ver.getMinor() == 10) {
+				ProtoDB db = getProtoDBInstance();
+				
 				db.setupDatabase(Movie.getDefaultInstance());
 				db.setupDatabase(se.qxx.jukebox.domain.JukeboxDomain.Version.getDefaultInstance());
 				db.setupDatabase(Series.getDefaultInstance());
 				DB.insertVersion(new Version());
+				
+				return false;
 			}
-			
-			return true;
 		} catch (ClassNotFoundException | SQLException
-				| IDFieldNotFoundException e) {
+				| IDFieldNotFoundException | DatabaseNotSupportedException e) {
 			Log.Error("Failed to setup database", Log.LogType.MAIN, e);
+			
+			throw e;
 		}
 		
-		return false;
+		return true;
 	}
 
-	public synchronized static Movie getMovieByMediaID(int mediaID) {
+	public static Movie getMovieByMediaID(int mediaID) {
 		try {
 			ProtoDB db = getProtoDBInstance();
-			List<Movie> result =
-				db.search(JukeboxDomain.Movie.getDefaultInstance(), 
-					"media.ID", 
-					mediaID, 
-					ProtoDBSearchOperator.Equals);
 			
-			if (result.size() > 0)
-				return result.get(0);
-			else 
-				return null;
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				List<Movie> result =
+					db.search(
+						SearchOptions.newBuilder(JukeboxDomain.Movie.getDefaultInstance())
+						.addFieldName("media.ID")
+						.addSearchArgument(mediaID)
+						.addOperator(ProtoDBSearchOperator.Equals));
+				
+				if (result.size() > 0)
+					return result.get(0);
+				else 
+					return null;
+			}
 			
 		} catch (Exception e) {
 			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
@@ -723,20 +991,25 @@ public class DB {
 	}
 
 	
-	public synchronized static Media getMediaByFilename(String filename) {
+	public static Media getMediaByFilename(String filename) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			
-			List<Media> result =
-				db.search(JukeboxDomain.Media.getDefaultInstance(), 
-					"filename", 
-					filename, 
-					ProtoDBSearchOperator.Equals);
-			
-			if (result.size() > 0)
-				return result.get(0);
-			else 
-				return null;
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				List<Media> result =
+					db.search(
+						SearchOptions.newBuilder(JukeboxDomain.Media.getDefaultInstance())
+						.addFieldName("filename")
+						.addSearchArgument(filename)
+						.addOperator(ProtoDBSearchOperator.Equals)
+						.setShallow(false)
+						.addExcludedObject("subs"));
+				
+				if (result.size() > 0)
+					return result.get(0);
+				else 
+					return null;
+			}
 			
 		} catch (Exception e) {
 			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
@@ -747,53 +1020,63 @@ public class DB {
 			
 	}
 	
-	public synchronized static Media getMediaById(int mediaId) {
+	public static Media getMediaById(int mediaId)  {
 		try {
-			ProtoDB db = getProtoDBInstance();			
-			return db.get(mediaId, Media.getDefaultInstance());
-		} catch (ClassNotFoundException | SQLException e) {
+			ProtoDB db = getProtoDBInstance();
+			
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				return db.get(mediaId, Media.getDefaultInstance());
+			}
+		} catch (ClassNotFoundException | SQLException | DatabaseNotSupportedException e) {
 			Log.Error(String.format("Failed to get media %s", mediaId), Log.LogType.MAIN, e);
 		}
 		
 		return null;		
 	}
 
-	public synchronized static Movie getMovieBySubfilename(String subsFilename) {
+	public static Movie getMovieBySubfilename(String subsFilename) throws DatabaseNotSupportedException {
 		try {
 			String searchString = replaceSearchString(subsFilename) + "%";
 			
 			ProtoDB db = getProtoDBInstance();
-			List<Movie> result = 
-				db.search(JukeboxDomain.Movie.getDefaultInstance(), 
-					"media.subs.filename", 
-					searchString, 
-					ProtoDBSearchOperator.Like);
 			
-			if (result.size() > 0)
-				return result.get(0);
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				List<Movie> result = 
+					db.search(
+						SearchOptions.newBuilder(JukeboxDomain.Movie.getDefaultInstance())
+						.addFieldName("media.subs.filename")
+						.addSearchArgument(searchString)
+						.addOperator(ProtoDBSearchOperator.Like));
+				
+				if (result.size() > 0)
+					return result.get(0);
+			}
 			
-		} catch (ClassNotFoundException | SQLException | SearchFieldNotFoundException | ProtoDBParserException e) {
+		} catch (ClassNotFoundException | SQLException | SearchFieldNotFoundException | ProtoDBParserException | SearchOptionsNotInitializedException e) {
 			Log.Error(String.format("Failed to get movie with subs filename %s", subsFilename), Log.LogType.MAIN, e);
 		}
 		
 		return null;
 	}
 
-	public synchronized static void purgeSeries() {
+	public static void purgeSeries() {
 		try {
 			ProtoDB db = getProtoDBInstance();
-			List<Series> result =
-					db.search(JukeboxDomain.Series.getDefaultInstance(), 
-						"title", 
-						"%", 
-						ProtoDBSearchOperator.Like);
 			
-			for (Series s : result) {
-				System.out.println(String.format("Purging :: %s", s.getTitle()));
-				db.delete(s);
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				List<Series> result =
+					db.search(SearchOptions.newBuilder(JukeboxDomain.Series.getDefaultInstance())
+							.addFieldName("title")
+							.addSearchArgument("%")
+							.addOperator(ProtoDBSearchOperator.Like));
+				
+				for (Series s : result) {
+					System.out.println(String.format("Purging :: %s", s.getTitle()));
+					db.delete(s);
+				}
 			}
 			
-		} catch (ClassNotFoundException | SQLException | SearchFieldNotFoundException | ProtoDBParserException e) {
+		} catch (ClassNotFoundException | SQLException | SearchFieldNotFoundException | DatabaseNotSupportedException | ProtoDBParserException | SearchOptionsNotInitializedException e) {
 			Log.Error(String.format("Failed to purge series"), Log.LogType.MAIN, e);
 		}		
 	}
@@ -802,14 +1085,100 @@ public class DB {
 	 * This purges the subtitle queue from all items that are not present in
 	 * the Episode and the Movie objects any more
 	 */
-	public synchronized static void cleanSubtitleQueue() {
+	public  static void cleanSubtitleQueue() {
 		try {
 			ProtoDB db = getProtoDBInstance();
-			String sql = "UPDATE SubtitleQueue SET subtitleRetreiveResult = -2 WHERE ID NOT IN (SELECT _subtitleQueue_ID FROM Movie) AND ID NOT IN (SELECT _subtitleQueue_ID FROM Episode);";
-			db.executeNonQuery(sql);
+			
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				String sql = "UPDATE SubtitleQueue SET subtitleRetreiveResult = -2 WHERE ID NOT IN (SELECT _subtitleQueue_ID FROM Movie) AND ID NOT IN (SELECT _subtitleQueue_ID FROM Episode);";
+				db.executeNonQuery(sql);
+			}
 		} catch (Exception e) {
 			Log.Error(String.format("Failed to clean subtitle queue"), Log.LogType.MAIN, e);
 		}		
 	}
 	
+	public static int getTotalNrOfMovies() {
+		try {
+			ProtoDB db = getProtoDBInstance();
+			
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				String sql = "SELECT COUNT(1) FROM Movie;";
+				return db.executeScalar(sql);
+			}
+		} catch (Exception e) {
+			Log.Error(String.format("Failed to clean subtitle queue"), Log.LogType.MAIN, e);
+		}		
+		
+		return 0;
+	}
+
+	public static int getTotalNrOfSeries() {
+		try {
+			ProtoDB db = getProtoDBInstance();
+			
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				String sql = "SELECT COUNT(1) FROM Series;";
+				return db.executeScalar(sql);
+			}
+		} catch (Exception e) {
+			Log.Error(String.format("Failed to clean subtitle queue"), Log.LogType.MAIN, e);
+		}		
+		
+		return 0;
+	}
+	
+	public static int getTotalNrOfSeasons(int seriesID) {
+		try {
+			ProtoDB db = getProtoDBInstance();
+			
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				String sql = String.format("SELECT COUNT(1) FROM SeriesSeason_Season SS INNER JOIN Season S ON SS._season_ID = S.ID WHERE _series_ID = %s;", seriesID);
+				return db.executeScalar(sql);
+			}
+		} catch (Exception e) {
+			Log.Error(String.format("Failed to clean subtitle queue"), Log.LogType.MAIN, e);
+		}		
+		
+		return 0;		
+	}
+	
+	public static int getTotalNrOfEpisodes(int seasonID) {
+		try {
+			ProtoDB db = getProtoDBInstance();
+			
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				String sql = String.format("SELECT COUNT(1) FROM SeasonEpisode_Episode SS INNER JOIN Episode E ON SS._episode_ID = E.ID WHERE _season_ID = %s;", seasonID);
+				return db.executeScalar(sql);
+			}
+		} catch (Exception e) {
+			Log.Error(String.format("Failed to clean subtitle queue"), Log.LogType.MAIN, e);
+		}		
+		
+		return 0;				
+	}
+
+	public static void saveConversion(int id, String newFilename, int value) {
+		try {
+			ProtoDB db = getProtoDBInstance();
+
+			String filename = newFilename.replace("'", "''");
+			synchronized(db.getDBType() == DBType.Sqlite ? syncObject : new Object()) {
+				String sql = String.format(
+					"UPDATE Media "
+					+ "SET _converterState_ID = %s "
+					+ (StringUtils.isEmpty(newFilename) ? "" : String.format(", convertedFileName = '%s' ", filename))
+					+ "WHERE ID = %s", 
+						value,
+						id);
+				db.executeNonQuery(sql);
+			}
+		} catch (Exception e) {
+			Log.Error(String.format("Failed to set download complete"), Log.LogType.MAIN, e);
+		}						
+	}
+
+	public static void saveConversion(int id, int completedValue) {
+		saveConversion(id, StringUtils.EMPTY, completedValue);
+	}
 }

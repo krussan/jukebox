@@ -1,27 +1,13 @@
 package se.qxx.jukebox.upgrade;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.List;
 
-import javax.imageio.ImageIO;
-
-import org.apache.commons.lang3.StringUtils;
-import org.imgscalr.Scalr;
-
-import com.google.protobuf.ByteString;
-
 import se.qxx.jukebox.DB;
-import se.qxx.jukebox.SubtitleDownloader;
 import se.qxx.jukebox.Version;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
-import se.qxx.jukebox.domain.JukeboxDomain.SubtitleQueue;
-import se.qxx.jukebox.domain.DomainUtil;
 
 public class Upgrade_0_16 implements IIncrimentalUpgrade {
 
@@ -52,8 +38,8 @@ public class Upgrade_0_16 implements IIncrimentalUpgrade {
 
 			System.out.println("Re-adding all media to subtitle queue");
 			
-			List<Movie> movies = DB.searchMoviesByTitle("", true, true);
-			List<Series> series = DB.searchSeriesByTitle("", true, true);
+			List<Movie> movies = DB.searchMoviesByTitle("");
+			List<Series> series = DB.searchSeriesByTitle("");
 			
 			int mSize = movies.size();
 

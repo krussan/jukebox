@@ -11,6 +11,7 @@ import javax.xml.transform.stream.StreamSource;
 import se.qxx.jukebox.settings.imdb.Imdb;
 import se.qxx.jukebox.settings.imdb.ImdbSettings;
 import se.qxx.jukebox.settings.parser.ParserSettings;
+import se.qxx.jukebox.webserver.StreamingWebServer;
 
 
 public class Settings {
@@ -27,6 +28,9 @@ public class Settings {
 		Settings.readSettings();
 		ImdbSettings.readSettings();
 		ParserSettings.readSettings();
+		
+		if (StreamingWebServer.isInitialized())
+			StreamingWebServer.get().initializeMappings();
 	}
 	
 	private static Settings getInstance() {

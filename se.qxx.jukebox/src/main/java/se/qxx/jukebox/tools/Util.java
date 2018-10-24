@@ -1,8 +1,6 @@
 package se.qxx.jukebox.tools;
 
 import java.awt.image.BufferedImage;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -10,11 +8,19 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,6 +49,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.settings.JukeboxListenerSettings;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.watcher.ExtensionFileFilter;
+import se.qxx.jukebox.watcher.FileRepresentation;
 
 public class Util {
 	/**
@@ -103,11 +110,9 @@ public class Util {
 	 * @param filter The filter of extension to look for
 	 * @return
 	 */
-	public static List<File> getFileListing(File directory, ExtensionFileFilter filter)
+	public static List<File> getFileListing(File directory, ExtensionFileFilter filter, boolean recurse)
 	{
-		List<File> result = checkExtension(directory.listFiles(filter), filter);
-		
-		return result;
+		return getFileListing(directory.listFiles(filter), filter, recurse);
 	}
 
 	/**
@@ -116,16 +121,17 @@ public class Util {
 	 * @param filter The filter of extension to look for
 	 * @return
 	 */
-	private static List<File> checkExtension(File[] filesAndDirs, ExtensionFileFilter filter) {
+	private static List<File> getFileListing(File[] filesAndDirs, ExtensionFileFilter filter, boolean recurse) {
 		List<File> result = new ArrayList<File>();
 
 		for(File file : filesAndDirs) {
 			
 			if (file.isFile() ) {
 				result.add(file);
-			} else 
-			{
-				result.addAll(Util.getFileListing(file, filter));
+			} else if (recurse) {
+				result.addAll(
+					getFileListing(
+						file.listFiles(filter), filter, recurse));
 			}
 		}
 		
@@ -144,7 +150,7 @@ public class Util {
 		FileSystemView fsv = FileSystemView.getFileSystemView();
 		File dirF = fsv.getParentDirectory(new File(directory.getName(), "C$"));
 
-		return checkExtension(dirF.listFiles(), filter);
+		return getFileListing(dirF.listFiles(), filter, true);
 	}
 
 	/**
@@ -209,7 +215,7 @@ public class Util {
 
 	public static String getImdbIdFromUrl(String imdbUrl) {
 		// http://www.imdb.com/title/tt1541874/
-		Pattern p = Pattern.compile("http:\\/\\/www\\.imdb\\.com\\/.*\\/(tt\\d*).*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
+		Pattern p = Pattern.compile("\\/(tt\\d*)\\/", Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
 		Matcher m = p.matcher(imdbUrl);
 		if (m.find())
 			return m.group(1);
@@ -301,7 +307,92 @@ public class Util {
 	}
 	
 	public static String getFullFilePath(Media md) {
-		return String.format("%s/%s", FilenameUtils.normalizeNoEndSeparator(md.getFilepath()), md.getFilename());
+		return getFilePath(
+			FilenameUtils.normalizeNoEndSeparator(md.getFilepath()), 
+			md.getFilename());
+	}
+	
+	public static String getConvertedFullFilepath(Media md) {
+		return getFilePath(
+				FilenameUtils.normalizeNoEndSeparator(md.getFilepath()), 
+				md.getConvertedFileName());
+	}
+	
+	private static String getFilePath(String filepath, String filename) {
+		return String.format("%s/%s", filepath, filename);
+	}
+
+	public static boolean isExcludedFile(FileRepresentation f, LogType logType) {
+		if (StringUtils.containsIgnoreCase(f.getName(), "sample")) {
+			Log.Info(String.format("Ignoring %s as this appears to be a sample", f.getName()), logType);
+			return true;
+		}
+		else if (FilenameUtils.removeExtension(f.getName()).endsWith("[tazmo]")) {
+			//Log.Info(String.format("Ignoring %s as this is a converted file", f.getName()), logType);
+			return true;
+		}		
+		else if (f.getFileSize() < 104857600) {
+			Log.Info(String.format("Ignoring %s as this has a file size of less than 100MB", f.getName()), logType);
+			return true;
+		}
+
+		
+		return false;
+	}
+
+	public static String findIpAddress() {
+
+		try {
+			List<NetworkInterface> nets = Collections.list(NetworkInterface.getNetworkInterfaces());
+		
+			Collections.sort(nets, new Comparator<NetworkInterface>() {	
+				@SuppressWarnings("serial")
+				Map<String, Integer> map = new HashMap<String, Integer>() {
+				{
+					put("eth0", 1);
+					put("eth1", 2);
+					put("eth2", 3);
+					put("eth3", 4);
+					put("eth4", 5);
+					put("eth5", 6);
+					put("wlan0", 7);
+					put("wlan1", 8);
+					put("wlan2", 9);
+					put("wlan3", 10);
+					put("wlan4", 11);
+					put("wlan5", 12);
+					put("lo", 99);
+				}};
+				
+				@Override
+				public int compare(NetworkInterface o1, NetworkInterface o2) {
+					int x = 99;
+					int y = 99;
+					if (map.containsKey(o1.getName()))
+						x = map.get(o1.getName());
+					
+					if (map.containsKey(o2.getName()))
+						y = map.get(o2.getName());
+					
+					return Integer.compare(x, y);
+				}
+				
+			});
+			
+			for (NetworkInterface intf : nets) {
+				Enumeration<InetAddress> addr = intf.getInetAddresses();
+				while (addr.hasMoreElements()) {
+					InetAddress a = addr.nextElement();
+					if (a instanceof Inet4Address && !a.getHostAddress().equals("127.0.0.1")) {
+						return a.getHostAddress();	
+					}
+				}
+			}
+			
+		} catch (SocketException e) {
+			
+		}
+		return "127.0.0.1";
 	}
 
 }

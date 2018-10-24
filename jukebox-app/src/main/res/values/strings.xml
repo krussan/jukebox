@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, JukeboxActivity!</string>
+    <string name="app_name">TazMo</string>
+    <color name="myColor">#3399CC</color>
+    <string name="myClickHandler">myClickHandler</string>
+    <string name="onConnectClickHandler">onConnectClickHandler</string>
+    <string name="defaultServerIpAddress">192.168.1.100</string>
+    <string name="movieIconDescription">Movie icon</string>
+    <string name="btnPlay">Play</string>
+    <string name="btnStop">Stop</string>
+    <string name="btnPause">Pause</string>
+    <string name="btnWakeup">Wakeup</string>
+    <string name="btnFullscreen">Toggle fullscreen</string>
+    <string name="btnViewInfo">View info</string>
+    <string name="lblTitle">Title</string>
+    <string name="lblYear">Year</string>
+    <string name="lblStory">Story</string>
+    <string name="lblGenre">Genre</string>
+    <string name="lblDirector">Director</string>
+    <string name="lblDuration">Duration</string>
+    <string name="lblRating">Rating</string>
+    <string name="lblConnect">Connect</string>
+    <string name="lblSelectMediaPlayer">Player</string>
+    <string name="lblMediaPlayerName">Media player</string>
+    <string name="lblContentRefresh">Refresh</string>
+    <string name="descSelect">Select</string>
+    <string name="descPosterImage">Poster image</string>
+    <string name="lblFilename">Filename</string>
+    <string name="descViewInfo">View IMDB info</string>
+    <string name="btnSubselect">Select subs</string>
+    <string name="btnSubOk">OK</string>
+    <string name="btnSubNotOk">Not OK</string>
+    <string name="lblSeekBarIndicator">00:00</string>
+    <string name="descDownloading">Downloading</string>
+    <string name="lblSubtitleName">Name of subtitle</string>
+    <string name="descProbableMatch">Probable match</string>
+    <string name="descPositiveMatch">Positive match</string>
+    <string name="descExactMatch">Exact match</string>
+    <string name="descSubsExist">Subtitles exist</string>
+    <string name="lblSubtitleLanguage">LANG</string>
+    <string name="descWatched">Watched</string>
+    <string name="title_activity_video">VideoActivity</string>
+    <string name="action_settings">Settings</string>
+    <string name="media_route_menu_title">Chromecast</string>
+    <string name="tabMovies">Movies</string>
+    <string name="tabSeries">Series</string>
+    <string name="tabSeason">Season</string>
+    <string name="descConverted">Converted</string>
+    <string-array name="actionDialogMenu">
+        <item>Blacklist</item>
+        <item>Toggle watched</item>
+        <item>Re-identify</item>
+        <item>Reenlist subtitles</item>
+    </string-array>
+    <string-array name="actionDialogStrings">
+        <item>Blacklisting...</item>
+        <item>Toggling watched status...</item>
+        <item>Marking object for re-identify...</item>
+        <item>Triggering subtitle downloader...</item>
+    </string-array>
+</resources>

@@ -1,0 +1,3 @@
+include ':jukebox-app'
+include ':se.qxx.jukebox.comm'
+include ':se.qxx.jukebox.domain'

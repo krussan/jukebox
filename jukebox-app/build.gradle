@@ -1,0 +1,125 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.github.triplet.play'
+apply plugin: 'idea'
+
+def appVersionName = version ?: '1.0'
+def appVersionCode = Integer.valueOf(System.env.TRAVIS_BUILD_NUMBER ?: project.findProperty('versionCode') ?: 1)
+
+def appJsonFile = project.findProperty('apiJsonFile') ?: '../ci/api.json'
+
+android {
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
+
+    defaultConfig {
+        applicationId "se.qxx.android.jukebox"
+        minSdkVersion 21
+        targetSdkVersion 27
+
+        // Enabling multidex support.
+        multiDexEnabled true
+        versionCode appVersionCode
+        versionName appVersionName
+        setProperty("archivesBaseName", "jukebox-$versionName")
+
+    }
+
+    signingConfigs {
+        release {
+            if (System.env['RELEASE_STORE_FILE'] != null)
+                storeFile file(System.env['RELEASE_STORE_FILE'])
+
+            if (System.env["RELEASE_STORE_PASSWORD"] != null)
+                storePassword System.env["RELEASE_STORE_PASSWORD"]
+
+            if (System.env["RELEASE_KEY_ALIAS"] != null)
+                keyAlias System.env["RELEASE_KEY_ALIAS"]
+
+            if (System.env["RELEASE_KEY_PASSWORD"] != null)
+                keyPassword System.env["RELEASE_KEY_PASSWORD"]
+
+            if (project.hasProperty("RELEASE_STORE_FILE"))
+                storeFile file(RELEASE_STORE_FILE)
+
+            if (project.hasProperty("RELEASE_STORE_PASSWORD"))
+                storePassword RELEASE_STORE_PASSWORD
+
+            if (project.hasProperty("RELEASE_KEY_ALIAS"))
+                keyAlias RELEASE_KEY_ALIAS
+
+            if (project.hasProperty("RELEASE_KEY_PASSWORD"))
+                keyPassword RELEASE_KEY_PASSWORD
+
+        }
+    }
+
+     buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules-debug.txt'
+        }
+
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            signingConfig signingConfigs.release
+        }
+
+    }
+
+    lintOptions {
+        disable 'GoogleAppIndexingWarning'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+def publish = project.tasks.create("publishAll")
+def deployPath = ""
+
+if (project.hasProperty("RELEASE_DEPLOY_PATH"))
+    deployPath = project.properties["RELEASE_DEPLOY_PATH"]
+else if (System.env["RELEASE_DEPLOY_PATH"] != null)
+    deployPath = System.env["RELEASE_DEPLOY_PATH"]
+
+if (deployPath != "") {
+    def folder = new File(deployPath)
+
+    if (folder.exists()) {
+        android.applicationVariants.all { variant ->
+            variant.outputs.each { output ->
+                def task = project.tasks.create("publish" + 
+variant.name.capitalize() + "Apk", Copy)
+
+                task.from(output.outputFile)
+                task.into(folder)
+
+                task.dependsOn variant.assemble
+                publish.dependsOn task
+            }
+        }
+    }
+}
+
+play {
+    track = "internal"
+    jsonFile = file(appJsonFile)
+}
+
+dependencies {
+    implementation project(':se.qxx.jukebox.domain')
+    implementation project(':se.qxx.jukebox.comm')
+    implementation 'org.apache.commons:commons-lang3:3.7'
+    implementation 'com.google.protobuf:protobuf-java:2.4.1'
+    implementation 'com.googlecode:protobuf-socket-rpc:2.0'
+    implementation 'se.qxx.android.tools:android-tools:1.0.2'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:recyclerview-v7:27.1.1'
+    implementation 'com.android.support:support-v4:27.1.1'
+    implementation 'com.android.support:mediarouter-v7:27.1.1'
+    implementation 'com.google.android.gms:play-services-cast-framework:16.0.1'
+    implementation 'org.apache.commons:commons-collections4:4.1'
+}

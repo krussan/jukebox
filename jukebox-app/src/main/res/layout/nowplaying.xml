@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center|clip_vertical|fill_horizontal"
+    android:orientation="vertical" 
+    android:id="@+id/rootNowPlaying">
+    
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center_horizontal" >
+
+
+            <ImageButton
+                android:id="@+id/btnViewInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#00000000"
+                android:hapticFeedbackEnabled="true"
+                android:onClick="onButtonClicked"
+                android:src="@drawable/infoabout"
+                android:contentDescription="@string/descViewInfo" />
+
+	        <ImageButton
+	            android:id="@+id/btnFullscreen"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:src="@drawable/btnfullscreen"
+				android:background="@null"
+	            android:hapticFeedbackEnabled="true"
+	            android:onClick="onButtonClicked"
+			/>
+	        
+	        <ImageButton
+	            android:id="@+id/btnSubSelection"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:src="@drawable/btnsubtitles"
+	            android:hapticFeedbackEnabled="true"
+				android:background="@null"
+	            android:onClick="onButtonClicked"
+			/>
+	        	        
+                        
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayoutButtons1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/linearLayout1"
+        android:layout_alignParentLeft="true"
+        android:gravity="center_horizontal" >
+
+		<ImageButton
+            android:id="@+id/btnBackward"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/btnbackward"
+			android:background="@null"
+            android:hapticFeedbackEnabled="true"
+            android:onClick="onButtonClicked"
+		/>        
+        
+        <ImageButton
+            android:id="@+id/btnPlay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/btnplay"
+			android:background="@null"
+            android:onClick="onButtonClicked"
+        />
+
+        <ImageButton
+            android:id="@+id/btnPause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/btnpause"
+			android:background="@null"
+            android:hapticFeedbackEnabled="true"
+            android:onClick="onButtonClicked" />
+
+        <ImageButton
+            android:id="@+id/btnStop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/btnstop"
+			android:background="@null"
+            android:hapticFeedbackEnabled="true"
+            android:onClick="onButtonClicked"
+		/>
+
+        <ImageButton
+            android:id="@+id/btnForward"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/btnforward"
+			android:background="@null"
+            android:hapticFeedbackEnabled="true"
+            android:onClick="onButtonClicked"
+		/>
+
+    </LinearLayout>
+    
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true" 
+        android:orientation="vertical"
+        android:padding="10dp">
+
+       	<TextView
+       	    android:id="@+id/lblNowPlayingTitle"
+       	    android:layout_width="wrap_content"
+       	    android:layout_height="wrap_content"	    
+       	    android:text="@string/lblTitle"
+            android:layout_gravity="center_horizontal"       	    
+	        android:textAppearance="?android:attr/textAppearanceLarge" />
+       	
+        <ImageView
+            android:id="@+id/imgNowPlaying"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:padding="12dp"
+            android:src="@android:drawable/ic_menu_gallery"
+            android:contentDescription="@string/descPosterImage" />
+                
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/spinner"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:layout_centerHorizontal="true"
+        android:layout_centerInParent="true"
+     />
+
+    <SurfaceView
+        android:id="@+id/surfaceview"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+		android:layout_centerVertical="true"
+		/>
+
+    <SeekBar
+        android:id="@+id/seekBarDuration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/linearLayoutButtons1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="26dp"
+        android:max="1000"
+        android:progress="0" />
+
+    <TextView
+        android:id="@+id/txtSeekIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/seekBarDuration"
+        android:layout_centerHorizontal="true"
+        android:text="@string/lblSeekBarIndicator"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+</RelativeLayout>

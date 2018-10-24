@@ -5,9 +5,8 @@ import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang3.StringUtils;
 
-import se.qxx.jukebox.domain.JukeboxDomain;
+import se.qxx.jukebox.DB;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
-import se.qxx.protodb.ProtoDB;
 
 public class DeleteSeries {
 
@@ -15,15 +14,14 @@ public class DeleteSeries {
 		if (args.length > 0) {
 			
 			try {
-				ProtoDB db = new ProtoDB("jukebox_proto.db");
-				
 				Series s = null;
 				
 				if (StringUtils.isNumeric(args[0])) {
-					s = db.get(Integer.parseInt(args[0]), JukeboxDomain.Series.getDefaultInstance());
+					int id = Integer.parseInt(args[0]);
+					s = DB.getSeries(id);
 					
 					if (s != null) 
-						db.delete(s);
+						DB.delete(s);
 					else 
 						System.out.println("Nothing found!");					
 				}

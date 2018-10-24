@@ -73,7 +73,7 @@ ${jarFile} ${script.class} ${1+&quot;$@&quot;} &amp;${line.separator}"
 	        host="${jukeboxDeployServer}"
 	        username="${jukeboxDeployUser}"
 	        failonerror="false"
-	        command="cd ${jukeboxDeployPath};./stop.sh;" 
+	        command="cd ${jukeboxDeployPath};./stop.sh -p;" 
 	        passphrase="${jukeboxKeyFilePass}"
         />
 	    	    

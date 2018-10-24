@@ -6,7 +6,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -102,6 +101,7 @@ public class TestSubscene {
 						.setIndex(1)
 						.setFilepath("/jukebox/")
 						.setFilename("Mockito.2014.mp4")
+						.setDownloadComplete(false)
 						.build())
 				.build();
 		

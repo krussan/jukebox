@@ -1,55 +1,53 @@
 package se.qxx.jukebox.servercomm;
 
+import se.qxx.jukebox.JukeboxThread;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.comm.JukeboxRpcServer;
 import se.qxx.jukebox.settings.Settings;
-import se.qxx.jukebox.tools.Util;
 
-public class TcpListener implements Runnable {
+public class TcpListener extends JukeboxThread {
 
-	private boolean isRunning = false;
+	JukeboxRpcServer server;
+	
+	public JukeboxRpcServer getServer() {
+		return server;
+	}
+
+	public void setServer(JukeboxRpcServer server) {
+		this.server = server;
+	}
+
 	public TcpListener() {
+		super("TcpListener", 3000, LogType.COMM);
 	}
 
 	@Override
-	public void run() {
-		isRunning = true;
-		  
-		Util.waitForSettings();
-					
+	protected void initialize() {
 		int port = Settings.get().getTcpListener().getPort().getValue();
-		JukeboxRpcServer server = new JukeboxRpcServer(port);
+		this.setServer(new JukeboxRpcServer(port));
   
 		Log.Info(String.format("Starting up RPC server. Listening on port %s",  port), LogType.COMM);
-		try {
-			server.runServer(JukeboxRpcServerConnection.class);
 		
-			while (isRunning) {
-				try {
-					Thread.sleep(3000);
-	//					Socket client = socket.accept();
-	//					
-	//					Thread t = new Thread(new TcpConnection(client));
-	//					t.start();
-				} catch (InterruptedException e) {
-					Log.Error("RPC service interrupted", LogType.COMM, e);
-					this.isRunning = false;
-				}				
-			}
-		} catch (InstantiationException | IllegalAccessException ex) {
-			Log.Error("Error occured when starting up RPC server", LogType.COMM, ex);
+		try {
+			this.getServer().runServer(JukeboxRpcServerConnection.class);
+		} catch (InstantiationException | IllegalAccessException e) {
+			Log.Error("Error occured when starting up RPC server", LogType.COMM, e);
 		}
-
-		Log.Info("Stopping RPC server", LogType.COMM);
-		server.stopServer();
 	}
 	
-	public void stopListening() {
-		Log.Debug("RPC Server: stop listening called", LogType.COMM);
-		this.isRunning = false;
+	@Override
+	protected void execute() {
 	}
-
 	
+	@Override
+	public int getJukeboxPriority() {
+		return 3;
+	}
 	
+	@Override
+	public void end() {
+		this.getServer().stopServer();
+		super.end();
+	}
 }

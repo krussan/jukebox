@@ -37,7 +37,6 @@ public class NfoBuilder extends MovieBuilder {
 				
 				String 	title = "",  	
 						type = "",
-						format = "", 
 						sound = "",  	
 						language = "", 
 						imdbUrl = "";
@@ -83,6 +82,28 @@ public class NfoBuilder extends MovieBuilder {
 							if (StringUtils.isEmpty(imdbUrl)) {
 								imdbUrl = line.getValue();
 							}
+						case AspectRatio:
+							break;
+						case Duration:
+							break;
+						case Format:
+							break;
+						case FrameRate:
+							break;
+						case Genre:
+							break;
+						case Ignore:
+							break;
+						case Presents:
+							break;
+						case Resolution:
+							break;
+						case SeriesInfo:
+							break;
+						case Subtitles:
+							break;
+						default:
+							break;
 						}
 					}
 				}				
