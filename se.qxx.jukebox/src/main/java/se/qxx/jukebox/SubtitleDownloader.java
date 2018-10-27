@@ -147,12 +147,10 @@ public class SubtitleDownloader extends JukeboxThread {
 	 * Add a movie to the subtitile download queue.
 	 * @param m The movie to add
 	 */
-	public Movie addMovie(Movie m) {
+	public void addMovie(Movie m) {
 		synchronized (_instance) {
 			Movie mm = DB.addMovieToSubtitleQueue(m);
 			this.signal();
-			
-			return mm;
 		} 
 	}
 	
@@ -203,12 +201,10 @@ public class SubtitleDownloader extends JukeboxThread {
 	 * The episode and series have to be saved separately
 	 * @param episode The episode to add
 	 */
-	public Episode addEpisode(Episode episode) {
+	public void addEpisode(Episode episode) {
 		synchronized (_instance) {
 			episode = DB.addEpisodeToSubtitleQueue(episode);
 			this.signal();
-			
-			return episode;
 		}  
 	}
 

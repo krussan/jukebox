@@ -40,6 +40,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
+import se.qxx.jukebox.imdb.IMDBFinder;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Players.Server;
 import se.qxx.jukebox.tools.Util;
@@ -657,6 +658,30 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		}
 		
 		done.run(b.build());
+	}
+
+	@Override
+	public void reenlistMetadata(RpcController controller, JukeboxRequestID request, RpcCallback<Empty> done) {
+		Thread t = new Thread(() -> {
+			try {
+				if (request.getRequestType() == RequestType.TypeMovie) {
+					Movie m = DB.getMovie(request.getId());
+					m = IMDBFinder.Get(m);
+					DB.save(m);	
+				}
+				else if (request.getRequestType() == RequestType.TypeEpisode) {
+					Episode ep = DB.getEpisode(request.getId());
+					SubtitleDownloader.get().reenlistEpisode(ep);
+				}
+			
+				done.run(Empty.newBuilder().build());
+			}
+			catch (Exception e) {
+				Logger.log("Error occured in reenlistSubtitles", e);
+				controller.setFailed("Error occured when enlisting to subtitle downloader");
+			}
+		});
+		t.start();		
 	}
 	
 }
