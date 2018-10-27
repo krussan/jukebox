@@ -36,12 +36,7 @@ public class JukeboxConnectionProgressDialog implements JukeboxResponseListener 
 		final Context c = this.activity.getApplicationContext();
 				
 		if (!success) {
-			this.activity.runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					Toast.makeText(c, msg, Toast.LENGTH_LONG).show();		
-				}			
-			});
+			this.activity.runOnUiThread(() -> Toast.makeText(c, msg, Toast.LENGTH_LONG).show());
 		}		
 	}
 

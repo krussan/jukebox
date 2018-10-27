@@ -1,5 +1,6 @@
 package se.qxx.android.jukebox.dialogs;
 
+import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
@@ -41,16 +42,16 @@ public class ActionDialog implements OnClickListener{
 		// Removed threads as the connectionHandler is threader itself
 		switch (choice) {
 		case 0:
-			jh.blacklist(this.id, this.reqType);
+			jh.blacklist((int) this.id, this.reqType);
 			break;
 		case 1:
-			jh.toggleWatched(this.id, this.reqType);
+			jh.toggleWatched((int) this.id, this.reqType);
 			break;
 		case 2:
-			jh.reIdentify(this.id, this.reqType);
+			jh.reIdentify((int) this.id, this.reqType);
 			break;
 		case 3:
-			jh.reenlistSub(this.id, this.reqType);
+			jh.reenlistSub((int) this.id, this.reqType);
 			break;
 		}
 		
