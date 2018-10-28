@@ -1461,4 +1461,35 @@ public class DB {
 	public static void saveConversion(int id, int completedValue) {
 		saveConversion(id, StringUtils.EMPTY, completedValue);
 	}
+
+	public static Series getSeriesByEpisode(int id) {
+		List<Series> series = null;
+		try {
+			ProtoDB db = getProtoDBInstance();
+			
+			try {
+				if (db.getDBType() == DBType.Sqlite) lock.lock();
+
+				series =
+					db.search(
+						SearchOptions.newBuilder(JukeboxDomain.Series.getDefaultInstance())
+						.addFieldName("season.episode.ID")
+						.addSearchArgument(id)
+						.addOperator(ProtoDBSearchOperator.Equals));	
+
+			}
+			finally {
+				if (db.getDBType() == DBType.Sqlite) lock.unlock();
+			}
+		}
+		catch (Exception e) {
+			Log.Error("Failed to retrieve movie listing from DB", Log.LogType.MAIN, e);
+		}
+		
+		if (series.size() > 0)
+			return series.get(0);
+		else
+			return null;
+
+	}
 }

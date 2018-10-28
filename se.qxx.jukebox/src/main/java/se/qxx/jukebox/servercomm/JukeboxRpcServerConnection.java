@@ -666,11 +666,16 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			try {
 				if (request.getRequestType() == RequestType.TypeMovie) {
 					Movie m = DB.getMovie(request.getId());
-					m = IMDBFinder.Get(m);
+					MovieIdentifier.get().getMovieInfo(m, m.getMedia(0));
 					DB.save(m);	
 				}
 				else if (request.getRequestType() == RequestType.TypeEpisode) {
 					Episode ep = DB.getEpisode(request.getId());
+					Series s = DB.getSeriesByEpisode(request.getId());
+					int episode = ep.getEpisodeNumber();
+					DomainUtil.findSeasonByEpisodeId(request.getId())
+					MovieIdentifier.get().getSeriesInfo(s, season, episode, ep.getMedia(0));
+					
 					SubtitleDownloader.get().reenlistEpisode(ep);
 				}
 			
