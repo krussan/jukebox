@@ -276,8 +276,10 @@ public class IMDBFinder {
 					.setStory(rec.getStory())
 					.setRating(rec.getRating())
 					.addAllGenre(rec.getAllGenres())
-					.setYear(rec.getYear())
-					.setFirstAirDate(rec.getFirstAirDate().getTime());
+					.setYear(rec.getYear());
+			
+			if (rec.getFirstAirDate() != null)
+					b.setFirstAirDate(rec.getFirstAirDate().getTime());
 			
 			if (!StringUtils.isEmpty(preferredTitle)) 
 				b.setTitle(preferredTitle);

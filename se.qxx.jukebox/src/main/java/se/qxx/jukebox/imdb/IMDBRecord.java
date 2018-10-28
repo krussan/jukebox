@@ -168,17 +168,36 @@ public class IMDBRecord {
 	private void parseFirstAirDate(Document doc) {
 		Elements elm = doc.select(".title_wrapper a[href~=/.*releaseinfo.*]");
 		if (elm.size() > 0) {
-			Pattern p = Pattern.compile("(.*?)\\((.*)\\)");
-			Matcher m = p.matcher(elm.text());
-
-			String dateValue = elm.get(0).text().trim();
-			if (m.find()) {
-				dateValue = m.group(1).trim();
+			String dateValue = fetchAirDateByParenthesis(elm);
+			
+			if (StringUtils.isEmpty(dateValue))
+				dateValue = fetchAirDateByEpisodeAired(elm);
+			
+			if (StringUtils.isNotEmpty(dateValue)) {
+				Log.Debug(String.format("IMDBRECORD :: Setting first air date :: %s", dateValue), LogType.IMDB);
+				this.setFirstAirDate(dateValue);
 			}
-
-			Log.Debug(String.format("IMDBRECORD :: Setting first air date :: %s", dateValue), LogType.IMDB);
-			this.setFirstAirDate(dateValue);
 		}
+	}
+	
+	private String fetchAirDateByEpisodeAired(Elements elm) {
+		Pattern p = Pattern.compile("Episode\\s*aired\\s*");
+		Matcher m = p.matcher(elm.text());
+		if (m.find()) {
+			return m.replaceFirst("");	
+		}
+		
+		return StringUtils.EMPTY;
+	}
+
+	private String fetchAirDateByParenthesis(Elements elm) {
+		Pattern p = Pattern.compile("(.*?)\\((.*)\\)");
+		Matcher m = p.matcher(elm.text());
+
+		if (m.find()) {
+			return m.group(1).trim();
+		}
+		return StringUtils.EMPTY;
 	}
 
 	private void parseGenres(Document doc) {
@@ -362,7 +381,7 @@ public class IMDBRecord {
 	}
 
 	private void setStory(String story) {
-		this.story = story;
+		this.story = story;
 	}
 
 	public byte[] getImage() {

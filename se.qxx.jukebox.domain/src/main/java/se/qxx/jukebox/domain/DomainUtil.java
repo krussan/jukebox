@@ -73,4 +73,14 @@ public class DomainUtil {
 		}
 		return null;
 	}
+
+	public static Episode findEpisode(Series s, int season, int episode) {
+		for (int i=0;i < s.getSeasonCount();i++) {
+			if (s.getSeason(i).getSeasonNumber() == season) {
+				return findEpisode(s.getSeason(i), episode);				
+			}
+		}
+		return null;
+	}
+
 }

@@ -15,6 +15,7 @@ import se.qxx.jukebox.Log;
 import se.qxx.jukebox.MovieIdentifier;
 import se.qxx.jukebox.SubtitleDownloader;
 import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.domain.DomainUtil;
 import se.qxx.jukebox.domain.JukeboxDomain.Empty;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGeneral;
@@ -672,11 +673,15 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 				else if (request.getRequestType() == RequestType.TypeEpisode) {
 					Episode ep = DB.getEpisode(request.getId());
 					Series s = DB.getSeriesByEpisode(request.getId());
-					int episode = ep.getEpisodeNumber();
-					DomainUtil.findSeasonByEpisodeId(request.getId())
-					MovieIdentifier.get().getSeriesInfo(s, season, episode, ep.getMedia(0));
-					
-					SubtitleDownloader.get().reenlistEpisode(ep);
+					if (s != null) {
+						Log.Debug("Series found. Finding season...", LogType.COMM);
+						Season sn = DomainUtil.findSeasonByEpisodeId(s, request.getId());
+						
+						updateEpisodeInfo(s, sn, ep);
+					}
+					else {
+						Log.Debug("Series not found. exiting...", LogType.COMM);
+					}
 				}
 			
 				done.run(Empty.newBuilder().build());
@@ -687,6 +692,26 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			}
 		});
 		t.start();		
+	}
+
+	private void updateEpisodeInfo(Series s, Season sn, Episode ep) {
+		if (sn != null) {
+			int season = sn.getSeasonNumber();
+			
+			Log.Debug("Season found. Updating info on episode...", LogType.COMM);
+			
+			s = MovieIdentifier.get().getSeriesInfo(
+					s, 
+					season, 
+					ep.getEpisodeNumber(), 
+					ep.getMedia(0));
+			
+			Episode newEpisode = DomainUtil.findEpisode(s, season, ep.getEpisodeNumber());
+			DB.save(newEpisode);
+		}
+		else {
+			Log.Debug("Season not found -- exiting", LogType.COMM);
+		}
 	}
 	
 }

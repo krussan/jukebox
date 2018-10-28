@@ -1492,4 +1492,26 @@ public class DB {
 			return null;
 
 	}
+
+	public static Season save(Season season) {
+		try {
+			ProtoDB db = getProtoDBInstance();
+
+			try {
+				if (db.getDBType() == DBType.Sqlite) lock.lock();
+				
+				return db.save(season);
+			}
+			finally {
+				if (db.getDBType() == DBType.Sqlite) lock.unlock();
+			}
+		}
+		catch (Exception e) {
+			Log.Error("Failed to store episode to DB", Log.LogType.MAIN, e);
+			
+			return null;
+		}
+	}
+
+
 }

@@ -2,8 +2,8 @@ package se.qxx.jukebox;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -27,7 +27,7 @@ public class MovieIdentifier extends JukeboxThread {
 
 	private MovieIdentifier() {
 		super("MovieIdentifier", 0, LogType.FIND);
-		this.files = new LinkedList<FileRepresentation>();
+		this.files = new ConcurrentLinkedQueue<FileRepresentation>();
 	}
 
 	public static MovieIdentifier get() {
@@ -58,10 +58,8 @@ public class MovieIdentifier extends JukeboxThread {
 	public void addFile(FileRepresentation f) {
 		Log.Debug(String.format("Adding file %s", f.getName()), LogType.FIND);
 		if (!files.contains(f)) {
-			synchronized (_instance) {
-				this.files.add(f);
-				signal();
-			}
+			this.files.add(f);
+			signal();
 		} else {
 			Log.Debug("File already added", LogType.FIND);
 		}

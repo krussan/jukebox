@@ -14,6 +14,8 @@ public abstract class JukeboxThread extends Thread {
 	
 	private ReentrantLock lock = new ReentrantLock();
 	private Condition condA = lock.newCondition();
+	
+	@SuppressWarnings("unused")
 	private Condition condB = lock.newCondition();
 
 	public JukeboxThread(String name, long sleepTime, LogType logType) {
@@ -75,7 +77,7 @@ public abstract class JukeboxThread extends Thread {
 					if (this.getSleepTime() > 0)
 						condA.await(this.getSleepTime(), TimeUnit.MILLISECONDS);
 					else if (this.getSleepTime() == 0)
-						condA.await(this.getSleepTime(), TimeUnit.MILLISECONDS);
+						condA.await();
 				}
 				finally {
 					lock.unlock();
