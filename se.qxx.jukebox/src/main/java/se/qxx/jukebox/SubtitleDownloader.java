@@ -7,6 +7,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -33,7 +34,7 @@ import se.qxx.jukebox.tools.Unpacker;
 import se.qxx.jukebox.tools.Util;
 
 public class SubtitleDownloader extends JukeboxThread {
-
+	ReentrantLock lock = new ReentrantLock();
 	private String subsPath = StringUtils.EMPTY;
 	private static SubtitleDownloader _instance;
 
@@ -148,10 +149,14 @@ public class SubtitleDownloader extends JukeboxThread {
 	 * @param m The movie to add
 	 */
 	public void addMovie(Movie m) {
-		synchronized (_instance) {
-			Movie mm = DB.addMovieToSubtitleQueue(m);
+		lock.lock();
+		try {
+			DB.addMovieToSubtitleQueue(m);
 			this.signal();
-		} 
+		}
+		finally {
+			lock.unlock();
+		}
 	}
 	
 	public void reenlistMovie(Movie m) {
@@ -202,10 +207,14 @@ public class SubtitleDownloader extends JukeboxThread {
 	 * @param episode The episode to add
 	 */
 	public void addEpisode(Episode episode) {
-		synchronized (_instance) {
+		lock.lock();
+		try {
 			episode = DB.addEpisodeToSubtitleQueue(episode);
 			this.signal();
 		}  
+		finally {
+			lock.unlock();
+		}
 	}
 
 	

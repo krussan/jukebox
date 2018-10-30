@@ -3,7 +3,9 @@ package se.qxx.jukebox;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Queue;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.FutureTask;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -125,16 +127,24 @@ public class MovieIdentifier extends JukeboxThread {
 		Movie dbMovie = DB.findMovie(mos.getTitle());
 
 		if (dbMovie == null) {
-			Log.Debug("MovieIdentifier :: Movie not found -- adding new", LogType.FIND);
-			dbMovie = getMovieInfo(mos.getMovie(), newMedia);
-			DB.save(dbMovie);
+			saveNewMovie(mos, newMedia);
 		} else {
 			Log.Debug("MovieIdentifier :: Movie found -- checking existing media", LogType.FIND);
 			checkExistingMedia(dbMovie, newMedia);
 		}
+	}
+
+	private void saveNewMovie(MovieOrSeries mos, Media newMedia) {
 		
-		if (Arguments.get().isSubtitleDownloaderEnabled())
-			SubtitleDownloader.get().addMovie(dbMovie);
+		Log.Debug("MovieIdentifier :: Movie not found -- adding new", LogType.FIND);
+		
+		Thread t = new Thread(() -> {
+			Movie movie = getMovieInfo(mos.getMovie(), newMedia);
+			movie = DB.save(movie);
+			if (Arguments.get().isSubtitleDownloaderEnabled())
+				SubtitleDownloader.get().addMovie(movie);			
+		});
+		t.start();
 	}
 
 	private void matchSeries(MovieOrSeries mos, Media newMedia) {
@@ -157,12 +167,10 @@ public class MovieIdentifier extends JukeboxThread {
 		// if no series found in DB. create new from the created series
 		// - if no series then no seasons and no episodes
 		if (dbSeries == null) {
-			dbSeries = saveNewSeries(series, newMedia, season, episode);			
+			saveNewSeries(series, newMedia, season, episode);			
 		} else {
-			dbSeries = mergeExistingSeries(series, newMedia, season, episode, dbSeries);
+			mergeExistingSeries(series, newMedia, season, episode, dbSeries);
 		}
-		
-		enlistToSubtitleDownloader(dbSeries, season, episode);
 	}
 
 	private void enlistToSubtitleDownloader(Series s, int season, int episode) {
@@ -173,7 +181,7 @@ public class MovieIdentifier extends JukeboxThread {
 			SubtitleDownloader.get().addEpisode(ep);
 	}
 
-	private Series mergeExistingSeries(Series series, Media newMedia, int season, int episode, Series dbSeries) {
+	private void mergeExistingSeries(Series series, Media newMedia, int season, int episode, Series dbSeries) {
 		Log.Debug("MovieIdentifier :: Series found. Searching for season..", LogType.FIND);
 		// Log.Debug(String.format("MovieIdentifier :: dbSeries nr of episodes :: %s",
 		// DomainUtil.findSeason(dbSeries, season).getEpisodeCount()), LogType.FIND);
@@ -182,20 +190,27 @@ public class MovieIdentifier extends JukeboxThread {
 		// if it does then exit
 		if (checkSeries(dbSeries, season, episode)) {
 			Log.Debug("MovieIdentifier :: Episode already exist in DB. Exiting ... ", LogType.FIND);
-			return dbSeries;
 		} else {
 			Series mergedSeries = mergeSeries(dbSeries, series, season, episode);
 
-			Series s = getSeriesInfo(mergedSeries, season, episode, newMedia);
-			return DB.save(s);
+			forkSeriesUpdate(mergedSeries, newMedia, season, episode);
 		}
 	}
 
-	private Series saveNewSeries(Series series, Media newMedia, int season, int episode) {
+	private void forkSeriesUpdate(Series series, Media media, int season, int episode) {
+		Thread t = new Thread(() -> {
+			Series s = getSeriesInfo(series, season, episode, media);
+			s = DB.save(s);
+			enlistToSubtitleDownloader(s, season, episode);
+
+		});
+		t.start();
+	}
+
+	private void saveNewSeries(Series series, Media newMedia, int season, int episode) {
 		// no series exist
 		Log.Debug("MovieIdentifier :: No series found! Creating new", LogType.FIND);
-		Series s = getSeriesInfo(series, season, episode, newMedia);
-		return DB.save(s);
+		forkSeriesUpdate(series, newMedia, season, episode);
 	}
 
 	/**
@@ -291,7 +306,6 @@ public class MovieIdentifier extends JukeboxThread {
 		s = getAdditionalInfo(media, s, season, episode);
 
 		return s;
-
 	}
 
 	private Series getAdditionalInfo(Media media, Series s, int season, int episode) {

@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -19,7 +20,7 @@ import se.qxx.jukebox.settings.JukeboxListenerSettings.Players.Server;
 import se.qxx.jukebox.settings.Settings;
 
 public class Distributor {
-
+	private ReentrantLock lock = new ReentrantLock();
 	private static Distributor _instance;
 	private Hashtable<String, VLCConnection> connectors;
 
@@ -321,33 +322,53 @@ public class Distributor {
 		return null;
 	}
 
-	private synchronized boolean assertLiveConnection(String hostName) throws VLCConnectionNotFoundException {
-		VLCConnection conn = findConnection(hostName);
-		
-		if (!conn.isConnected() || !conn.testConnection())
-			conn = createNewConnection(hostName);
+	private boolean assertLiveConnection(String hostName) throws VLCConnectionNotFoundException {
+		lock.lock();
+		try {
+			VLCConnection conn = findConnection(hostName);
+			
+			if (!conn.isConnected() || !conn.testConnection())
+				conn = createNewConnection(hostName);
 
-		return conn.isConnected();	
+			return conn.isConnected();				
+		}
+		finally {
+			lock.unlock();
+		}
 	}
 
-	private synchronized VLCConnection findConnection(String hostName) throws VLCConnectionNotFoundException {
-		VLCConnection conn = this.connectors.get(hostName);
-		
-		if (conn == null)
-			conn = createNewConnection(hostName);
-		
-		return conn;	
+	private VLCConnection findConnection(String hostName) throws VLCConnectionNotFoundException {
+		lock.lock();
+		try {
+			VLCConnection conn = this.connectors.get(hostName);
+			
+			if (conn == null)
+				conn = createNewConnection(hostName);
+			
+			return conn;				
+		}
+		finally {
+			lock.unlock();
+		}
+
 	}
 	
-	private synchronized VLCConnection createNewConnection(String hostName) throws VLCConnectionNotFoundException {
-		Server s = findServerInSettings(hostName);
-		
-		if (this.connectors.containsKey(hostName))
-			this.connectors.remove(hostName);
-		
-		VLCConnection conn = new VLCConnection(s.getHost(), s.getPort());
-		this.connectors.put(hostName, conn);
-		return conn;
+	private VLCConnection createNewConnection(String hostName) throws VLCConnectionNotFoundException {
+		lock.lock();
+		try {
+			Server s = findServerInSettings(hostName);
+			
+			if (this.connectors.containsKey(hostName))
+				this.connectors.remove(hostName);
+			
+			VLCConnection conn = new VLCConnection(s.getHost(), s.getPort());
+			this.connectors.put(hostName, conn);
+			return conn;			
+		}
+		finally {
+			lock.unlock();
+		}
+
 	}
 	
 	

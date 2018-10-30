@@ -2,6 +2,7 @@ package se.qxx.jukebox.watcher;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
 
 import se.qxx.jukebox.DB;
 import se.qxx.jukebox.JukeboxThread;
@@ -14,6 +15,7 @@ import se.qxx.jukebox.tools.Util;
 
 public class DownloadChecker extends JukeboxThread {
 	private static DownloadChecker _instance;
+	private ReentrantLock lock = new ReentrantLock();
 
 	private Map<String, FileRepresentationState> files = new ConcurrentHashMap<String, FileRepresentationState>();
 	// <string, string>
@@ -106,20 +108,27 @@ public class DownloadChecker extends JukeboxThread {
 		
 	}
 
-	public synchronized void checkFile(FileRepresentation f)  {
-		if (this.isRunning()) {
-			if (!Util.isExcludedFile(f, LogType.CHECKER)) {
-				FileRepresentationState fs = new FileRepresentationState(f);
-				String filename = f.getFullPath().toLowerCase();
-				
-				if (files.containsKey(filename)) {
-					checkFilePresentInMap(fs, filename);
+	public void checkFile(FileRepresentation f)  {
+		lock.lock();
+		try {
+			if (this.isRunning()) {
+				if (!Util.isExcludedFile(f, LogType.CHECKER)) {
+					FileRepresentationState fs = new FileRepresentationState(f);
+					String filename = f.getFullPath().toLowerCase();
+					
+					if (files.containsKey(filename)) {
+						checkFilePresentInMap(fs, filename);
+					}
+					else {
+						checkFileNotPresentInMap(fs, filename);
+					}
 				}
-				else {
-					checkFileNotPresentInMap(fs, filename);
-				}
-			}
+			}		
 		}
+		finally {
+			lock.unlock();
+		}
+		
 	}
 
 	/***
@@ -154,9 +163,8 @@ public class DownloadChecker extends JukeboxThread {
 		
 		// this check is trigered from every file system watcher,
 		// these threads quickly gets many. hence the synchronization
-		synchronized(_instance) {
-			md = DB.getMediaByFilename(fs.getName());
-		}
+		
+		md = getSynchronizedMedia(fs);
 		
 		if (md != null) {
 			// media exist. set State to INIT
@@ -181,9 +189,23 @@ public class DownloadChecker extends JukeboxThread {
 		
 	}
 
+	private Media getSynchronizedMedia(FileRepresentationState fs) {
+		lock.lock();
+		try {
+			return DB.getMediaByFilename(fs.getName());
+		}
+		finally {
+			lock.unlock();
+		}
+	}
+
 	private void store(FileRepresentationState fs, String filename) {
-		synchronized(_instance) {
+		lock.lock();
+		try {
 			this.files.put(filename, fs);
+		}
+		finally {
+			lock.unlock();
 		}
 	}
 	

@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -31,71 +33,84 @@ import se.qxx.jukebox.tools.WebRetriever;
 
 public class IMDBFinder {
 	private static long nextSearch = 0;
+	private static ReentrantLock lock = new ReentrantLock();			
 	
-	public synchronized static Movie Get(Movie m) throws IOException, NumberFormatException, ParseException {
-		Log.Debug("---------------------------------------------------------------------------", LogType.IMDB);
-		Log.Debug(String.format("Starting search on title :: %s (%s)", m.getTitle(), m.getYear()), LogType.IMDB);
-		Log.Debug("---------------------------------------------------------------------------", LogType.IMDB);
-		String imdbUrl = m.getImdbUrl();
- 
-		IMDBRecord rec = null;
-		if (StringUtils.isEmpty(imdbUrl) || urlIsBlacklisted(imdbUrl, m.getBlacklistList())) {
-			rec = Search(m.getTitle(), m.getYear(), m.getBlacklistList(), false); 
-		}
-		else {
-			Log.Debug(String.format("IMDB url found."), LogType.IMDB);
+	public static Movie Get(Movie m) throws IOException, NumberFormatException, ParseException {
+		lock.lock();
+		try {
+			Log.Debug("---------------------------------------------------------------------------", LogType.IMDB);
+			Log.Debug(String.format("Starting search on title :: %s (%s)", m.getTitle(), m.getYear()), LogType.IMDB);
+			Log.Debug("---------------------------------------------------------------------------", LogType.IMDB);
+			String imdbUrl = m.getImdbUrl();
+	 
+			IMDBRecord rec = null;
+			if (StringUtils.isEmpty(imdbUrl) || urlIsBlacklisted(imdbUrl, m.getBlacklistList())) {
+				rec = Search(m.getTitle(), m.getYear(), m.getBlacklistList(), false); 
+			}
+			else {
+				Log.Debug(String.format("IMDB url found."), LogType.IMDB);
+				
+				rec = IMDBRecord.get(imdbUrl);
+			}
 			
-			rec = IMDBRecord.get(imdbUrl);
+			return extractMovieInfo(m, rec);			
 		}
-		
-		return extractMovieInfo(m, rec);
+		finally {
+			lock.unlock();
+		}
 	}
 	
-	public synchronized static Series Get(Series series, int season, int episode) throws IOException, NumberFormatException, ParseException {
+	public static Series Get(Series series, int season, int episode) throws IOException, NumberFormatException, ParseException {
 		Log.Debug("---------------------------------------------------------------------------", LogType.IMDB);
 		Log.Debug(String.format("Starting search on series title :: %s (%s) S%s E%s", series.getTitle(), series.getYear(), season, episode), LogType.IMDB);
 		Log.Debug("---------------------------------------------------------------------------", LogType.IMDB);
 
 
-		Series s = series;
-		Season sn = DomainUtil.findSeason(s, season);
-		Episode ep = DomainUtil.findEpisode(sn, episode);
-
-		Log.Debug(String.format("IMDB :: Number of episodes in season :: %s", sn.getEpisodeCount()), LogType.IMDB);		
-
-		if (sn == null || s == null || ep == null)
-			throw new IllegalArgumentException("Object hierarchy for series need to be created before IMDB call");
-
-		IMDBRecord seriesRec = null;
-		if (StringUtils.isEmpty(s.getImdbUrl()) || StringUtils.isEmpty(sn.getImdbUrl())) {
-			seriesRec = getSeriesRecord(s);
-
-			// seriesRecord indicate if we have
-			if (seriesRec != null) {
-				s = populateSeries(s, seriesRec);
-				sn = populateSeason(sn, seriesRec);
+		lock.lock();
+		try {
+			Series s = series;
+			Season sn = DomainUtil.findSeason(s, season);
+			Episode ep = DomainUtil.findEpisode(sn, episode);
+	
+			Log.Debug(String.format("IMDB :: Number of episodes in season :: %s", sn.getEpisodeCount()), LogType.IMDB);		
+	
+			if (sn == null || s == null || ep == null)
+				throw new IllegalArgumentException("Object hierarchy for series need to be created before IMDB call");
+	
+			IMDBRecord seriesRec = null;
+			if (StringUtils.isEmpty(s.getImdbUrl()) || StringUtils.isEmpty(sn.getImdbUrl())) {
+				seriesRec = getSeriesRecord(s, season);
+	
+				// seriesRecord indicate if we have
+				if (seriesRec != null) {
+					s = populateSeries(s, seriesRec);
+					sn = populateSeason(sn, seriesRec);
+				}
+				else {
+					Log.Error("No series found in IMDB !!", LogType.IMDB);
+				}
+			}			
+			
+			// extract episode info from that page
+			ep = populateEpisode(sn.getImdbUrl(), ep);
+			
+			if (ep != null) {
+				Log.Debug("IMDB :: Updating episode in season object", LogType.IMDB);
+				sn = DomainUtil.updateEpisode(sn, ep);
+		
+				Log.Debug("IMDB :: Updating season in series object", LogType.IMDB);
+				s = DomainUtil.updateSeason(s, sn);
+				
+				Log.Debug(String.format("IMDB :: Number of episodes in season :: %s", sn.getEpisodeCount()), LogType.IMDB);		
 			}
 			else {
-				Log.Error("No series found in IMDB !!", LogType.IMDB);
+				Log.Debug("No episode found!", LogType.IMDB);
 			}
-		}			
-		
-		// extract episode info from that page
-		ep = populateEpisode(sn.getImdbUrl(), ep);
-		
-		if (ep != null) {
-			Log.Debug("IMDB :: Updating episode in season object", LogType.IMDB);
-			sn = DomainUtil.updateEpisode(sn, ep);
-	
-			Log.Debug("IMDB :: Updating season in series object", LogType.IMDB);
-			s = DomainUtil.updateSeason(s, sn);
-			
-			Log.Debug(String.format("IMDB :: Number of episodes in season :: %s", sn.getEpisodeCount()), LogType.IMDB);		
+			return s;
 		}
-		else {
-			Log.Debug("No episode found!", LogType.IMDB);
+		finally {
+			lock.unlock();
 		}
-		return s;
 	}
 
 	private static Episode populateEpisode(String seasonUrl, Episode ep)
@@ -130,12 +145,45 @@ public class IMDBFinder {
 		return extractSeriesInfo(s, seriesRec);					
 	}
 	
-	private static IMDBRecord getSeriesRecord(Series s) throws NumberFormatException, IOException, ParseException {
+	private static IMDBRecord getSeriesRecord(Series s, int season) throws NumberFormatException, IOException, ParseException {
 		if (StringUtils.isEmpty(s.getImdbUrl())) {
-			return Search(s.getTitle(), s.getYear(), null, true);
+			return searchSeriesAndCheckSeason(s, season);
 		}
 		else
 			return IMDBRecord.get(s.getImdbUrl());
+	}
+
+	/***
+	 * Finds the series and iterate through the result list
+	 * If a series is matched then also check that the series
+	 * contains the actual season. Otherwise continue with the next series
+	 * 
+	 * @param s
+	 * @param season
+	 * @return
+	 * @throws IOException
+	 * @throws ParseException
+	 */
+	private static IMDBRecord searchSeriesAndCheckSeason(Series s, int season)
+			throws IOException, ParseException {
+		List<String> seriesBlacklist = new ArrayList<String>();
+		
+		boolean found = false;
+		IMDBRecord seriesRec = null;
+		while(!found) {
+			seriesRec =
+				Search(
+					s.getTitle(), 
+					s.getYear(), 
+					seriesBlacklist, 
+					true);
+
+			// exit if series contains season or if the series record is null (no series found)
+			found = seriesRec.getAllSeasonUrls().containsKey(season) || seriesRec == null;
+			seriesBlacklist.add(Util.getImdbIdFromUrl(seriesRec.getUrl()));
+		}
+		
+		return seriesRec; 
 	}
 
 
@@ -158,25 +206,23 @@ public class IMDBFinder {
 		return false;
 	}
 
-	public synchronized static IMDBRecord Search(
+	public  static IMDBRecord Search(
 			String searchString, 
 			int yearToFind, 
 			List<String> blacklist, 
 			boolean isTvEpisode) throws IOException, NumberFormatException, ParseException {
-		long currentTimeStamp = Util.getCurrentTimestamp();
+		
 		
 		String searchUrl = Settings.imdb().getSearchUrl();
+		
+		lock.lock();
 		try {
-			// wait a while to avoid hammering
-			if (currentTimeStamp < nextSearch) {
-				Log.Debug(String.format("Waiting %s seconds", (nextSearch - currentTimeStamp) / 1000), LogType.IMDB);
-				Thread.sleep(nextSearch - currentTimeStamp);
-			}
+			waitRandom();
 			WebResult webResult = getSearchResult(searchString, searchUrl);
 			
 			// Accomodate for that sometimes IMDB redirects you
 			// directly to the correct movie. (i.e. "Cleanskin")
-			IMDBRecord rec;
+			IMDBRecord rec = null;
 
 			if (webResult.isRedirected()) {
 				Log.Info(String.format("IMDB :: %s is redirected to movie", searchString), LogType.IMDB);
@@ -184,12 +230,14 @@ public class IMDBFinder {
 			}
 			else {				
 				Log.Info(String.format("IMDB :: %s is NOT redirected to movie", searchString), LogType.IMDB);
-				rec = IMDBRecord.get(
-					findUrl(
-						  blacklist
+				String url = 
+					findUrl(blacklist
 						, webResult.getResult()
 						, yearToFind
-						, isTvEpisode));			
+						, isTvEpisode);
+				
+				if (!StringUtils.isEmpty(url))
+					rec = IMDBRecord.get(url);			
 			}
 			
 			setNextSearchTimer();
@@ -197,6 +245,18 @@ public class IMDBFinder {
 			return rec;
 		} catch (InterruptedException e) {
 			return null;
+		}
+		finally {
+			lock.unlock();
+		}
+	}
+
+	private static void waitRandom() throws InterruptedException {
+		long currentTimeStamp = Util.getCurrentTimestamp();
+		// wait a while to avoid hammering
+		if (currentTimeStamp < nextSearch) {
+			Log.Debug(String.format("Waiting %s seconds", (nextSearch - currentTimeStamp) / 1000), LogType.IMDB);
+			Thread.sleep(nextSearch - currentTimeStamp);
 		}
 	}
 
@@ -405,13 +465,13 @@ public class IMDBFinder {
 		String selector = StringUtils.EMPTY;
 		if (!isTvEpisodeSearch) {
 			selector = yearToFind > 0 ?
-				String.format("tr.findResult:matches(\\(%s\\)):not(:matches(TV\\sEpisode)) a", yearToFind) :
-				"tr.findResult:not(:matches(TV\\\\sEpisode)) a";
+				String.format("tr.findResult td.result_text:matches(\\(%s\\)):not(:matches(TV\\sEpisode)) a", yearToFind) :
+				"tr.findResult td.result_text:not(:matches(TV\\\\sEpisode)) a";
 		}
 		else {
 			selector = yearToFind > 0 ?
-				String.format("tr.findResult:matches(\\(%s\\).*?\\(TV\\s*Series\\))", yearToFind) :
-				"tr.findResult:matches(\\(TV\\s*Series\\))";
+				String.format("tr.findResult:matches(\\(%s\\).*?\\(TV\\s*Series\\)):not(:matches(\\(TV\\sEpisode\\))) a", yearToFind) :
+				"tr.findResult td.result_text:matches(\\(TV\\s*Series\\)) a";
 		}
 		return selector;
 	}
