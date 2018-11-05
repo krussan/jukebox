@@ -312,6 +312,13 @@ public class Util {
 			md.getFilename());
 	}
 	
+	public static String getFullFilePath(String filePath, String fileName) {
+		return getFilePath(
+			FilenameUtils.normalizeNoEndSeparator(filePath), 
+			fileName);
+	}
+	
+	
 	public static String getConvertedFullFilepath(Media md) {
 		return getFilePath(
 				FilenameUtils.normalizeNoEndSeparator(md.getFilepath()), 

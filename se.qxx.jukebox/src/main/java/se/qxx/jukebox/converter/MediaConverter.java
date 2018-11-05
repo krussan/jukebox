@@ -1,5 +1,6 @@
 package se.qxx.jukebox.converter;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -157,8 +158,14 @@ public class MediaConverter extends JukeboxThread {
 
 		String filename = Util.getFullFilePath(md);
 		String newFilename = String.format("%s_[tazmo].mp4", FilenameUtils.getBaseName(md.getFilename()));
-		String newFilepath = String.format("%s/%s", md.getFilepath(), newFilename);
+		String filePath = md.getFilepath();
+		String newFilepath = Util.getFullFilePath(filePath, newFilename);
 
+		if (checkFileExists(newFilepath)) {
+			Log.Debug(String.format("Conversion already exist on :: %s", filename), LogType.CONVERTER);
+			return new MediaConverterResult(filePath, filename, newFilename, MediaConverterResult.State.Completed);
+		}
+			
 		try {
 		
 			FFmpegBuilder builder = new FFmpegBuilder()
@@ -167,71 +174,82 @@ public class MediaConverter extends JukeboxThread {
 				.setFormat("mp4")
 				.setVideoCodec(checkResult.getTargetVideoCodec())
 				.setAudioCodec(checkResult.getTargetAudioCodec())
-
 				.done();
 
 			Log.Debug(String.format("Starting converter on :: %s", filename), LogType.CONVERTER);
 			Log.Debug(String.format(" --> new file :: %s", newFilepath), LogType.CONVERTER);
 	
-			FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
-			FFmpegJob job = executor.createJob(builder, new ProgressListener() {
-				// Using the FFmpegProbeResult determine the duration of the input
-				final double duration_ns = probeResult.getFormat().duration * TimeUnit.SECONDS.toNanos(1);
-				
-				@Override
-				public void progress(Progress progress) {
-					double percentage = progress.out_time_ns / duration_ns;
-					
-					String logMessage =
-						String.format(
-							"[%.0f%%] status:%s frame:%d time:%s ms fps:%.0f speed:%.2fx",
-							percentage * 100,
-							progress.status,
-							progress.frame,
-							FFmpegUtils.toTimecode(progress.out_time_ns, TimeUnit.NANOSECONDS),
-							progress.fps.doubleValue(),
-							progress.speed);
-					
-					Log.Info(logMessage, LogType.CONVERTER);
-				}
-				
-			});
-		
-		
-			converterThread = new Thread(job);
-			converterThread.start();
-		
-			converterThread.join();
-			
+			final double duration_ns = getDurationNs(probeResult);			
+			FFmpegJob job = runConversion(ffmpeg, ffprobe, builder, duration_ns);
 
-			FFmpegJob.State state = job.getState();
+			// check 
+			return checkConverterResult(filePath, filename, newFilename, job).cleanupOnError();
 			
-			switch (state) {
-			case FINISHED:
-				Log.Debug(String.format("Conversion completed on :: %s", filename), LogType.CONVERTER);
-				return new MediaConverterResult(filename, newFilename, MediaConverterResult.State.Completed);
-			case FAILED:
-				Log.Debug(String.format("Conversion FAILED on :: %s", filename), LogType.CONVERTER);
-				break;
-			case RUNNING:
-				Log.Debug(String.format("Conversion STILL RUNNING on :: %s", filename), LogType.CONVERTER);
-				break;
-			case WAITING:
-				Log.Debug(String.format("Conversion WAITING on :: %s", filename), LogType.CONVERTER);
-				break;
-			}
 			
-			return new MediaConverterResult(filename, newFilename, MediaConverterResult.State.Error);
-			
-		}
-		catch (InterruptedException iex) {
-			Log.Info("Interrupt triggered",  LogType.CONVERTER);
-			return new MediaConverterResult(filename, StringUtils.EMPTY, MediaConverterResult.State.Aborted);
 		}
 		catch (Exception e) {
 			Log.Error("Error when converting file",  LogType.CONVERTER, e);
-			return new MediaConverterResult(filename, StringUtils.EMPTY, MediaConverterResult.State.Error);
+			return new MediaConverterResult(filePath, filename, StringUtils.EMPTY, MediaConverterResult.State.Error).cleanupOnError();
 		}
+	}
+
+
+	private FFmpegJob runConversion(FFmpeg ffmpeg, FFprobe ffprobe, FFmpegBuilder builder, final double duration_ns) {
+		FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);			
+		FFmpegJob job = executor.createJob(builder, new ProgressListener() {
+			@Override
+			public void progress(Progress progress) {
+				double percentage = progress.out_time_ns / duration_ns;
+				
+				String logMessage =
+					String.format(
+						"[%.0f%%] status:%s frame:%d time:%s ms fps:%.0f speed:%.2fx",
+						percentage * 100,
+						progress.status,
+						progress.frame,
+						FFmpegUtils.toTimecode(progress.out_time_ns, TimeUnit.NANOSECONDS),
+						progress.fps.doubleValue(),
+						progress.speed);
+				
+				Log.Info(logMessage, LogType.CONVERTER);
+			}
+			
+		});
+
+		// execute conversion
+		job.run();
+		return job;
+	}
+	
+	private double getDurationNs(FFmpegProbeResult probeResult) {
+		// Using the FFmpegProbeResult determine the duration of the input
+		return probeResult.getFormat().duration * TimeUnit.SECONDS.toNanos(1);
+	}
+
+	private MediaConverterResult checkConverterResult(String filepath, String filename, String newFilename, FFmpegJob job) {
+		FFmpegJob.State state = job.getState();
+		
+		switch (state) {
+		case FINISHED:
+			Log.Debug(String.format("Conversion completed on :: %s", filename), LogType.CONVERTER);
+			return new MediaConverterResult(filepath, filename, newFilename, MediaConverterResult.State.Completed);
+		case FAILED:
+			Log.Debug(String.format("Conversion FAILED on :: %s", filename), LogType.CONVERTER);
+			break;
+		case RUNNING:
+			Log.Debug(String.format("Conversion STILL RUNNING on :: %s", filename), LogType.CONVERTER);
+			break;
+		case WAITING:
+			Log.Debug(String.format("Conversion WAITING on :: %s", filename), LogType.CONVERTER);
+			break;
+		}
+		
+		return new MediaConverterResult(filepath, filename, newFilename, MediaConverterResult.State.Error);
+	}
+
+	private boolean checkFileExists(String newFilepath) {
+		File f = new File(newFilepath);
+		return f.exists();
 	}
 
 	private void saveConvertedMedia(Media md, String newFilename) {
