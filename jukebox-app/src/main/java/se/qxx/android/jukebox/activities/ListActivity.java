@@ -10,6 +10,8 @@ import android.widget.ListView;
 
 import com.google.android.gms.cast.framework.CastContext;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import se.qxx.android.jukebox.R;
@@ -183,7 +185,7 @@ public class ListActivity extends AppCompatActivity implements
                 new EpisodeLayoutAdapter(
                         this.getApplicationContext(),
                         this.getSeason().getSeasonNumber(),
-                        this.getSeason().getEpisodeList());
+                        sortEpisodes(this.getSeason().getEpisodeList()));
 
             lv.setAdapter(_episodeLayoutAdapter);
         }
@@ -314,7 +316,7 @@ public class ListActivity extends AppCompatActivity implements
         if (this.getMode() == ViewMode.Episode) {
             this.setTotalItems(totalEpisodes);
             if (_episodeLayoutAdapter != null) {
-                _episodeLayoutAdapter.addEpisodes(episodes);
+                _episodeLayoutAdapter.addEpisodes(sortEpisodes(episodes));
 
                 if (this.getOffset() == 0 && episodes.size() <= Constants.NR_OF_ITEMS)
                     this.setFirstIsLast(true);
@@ -322,6 +324,14 @@ public class ListActivity extends AppCompatActivity implements
                 notifyEpisodes();
             }
         }
+    }
+
+    private List<JukeboxDomain.Episode> sortEpisodes(List<JukeboxDomain.Episode> episodes) {
+        Collections.sort(episodes, (x, y) -> {
+            return Integer.compare(x.getEpisodeNumber(), y.getEpisodeNumber());
+        });
+
+        return episodes;
     }
 
     private void notifySeasons() {
