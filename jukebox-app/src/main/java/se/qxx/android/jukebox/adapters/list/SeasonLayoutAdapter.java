@@ -7,7 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import se.qxx.android.jukebox.R;
@@ -26,30 +29,28 @@ public class SeasonLayoutAdapter extends GenericListLayoutAdapter<Season> {
     }
 
     public void addSeasons(List<Season> seasons) {
-        this.getSeasons().addAll(seasons);
+        this.getSeasons().addAll(
+			sortSeasons(seasons));
     }
 
     public void clearSeasons() {
         this.getSeasons().clear();
     }
 
-	public SeasonLayoutAdapter(Context context, Series series) {
-		super(context, R.layout.movielistrow);
-		this.clearSeasons();
-		this.addSeasons(series.getSeasonList());
-	}
-
     public SeasonLayoutAdapter(Context context, List<Season> seasons) {
         super(context, R.layout.movielistrow);
         this.clearSeasons();
-        this.addSeasons(seasons);
+        this.addSeasons(sortSeasons(seasons));
     }
 
 	@Override
 	public void initializeView(View v, Season ss) {
 		try {
 			if (ss != null) {
-				GUITools.setTextOnTextview(R.id.toptext, String.format("Season %s - %s", ss.getSeasonNumber(), ss.getTitle()), v);
+			    String label = String.format("Season %s%s",
+                        ss.getSeasonNumber(),
+                        StringUtils.isEmpty(ss.getTitle()) ? "" : " - " + ss.getTitle());
+				GUITools.setTextOnTextview(R.id.toptext, label, v);
 
 				setYear(v, ss);
 				hideDownloadAndCompletedIcons(v);
@@ -83,6 +84,14 @@ public class SeasonLayoutAdapter extends GenericListLayoutAdapter<Season> {
 	@Override
 	public long getObjectId(int position) {
 		return this.getDataObject(position).getID();
+	}
+
+	private List<JukeboxDomain.Season> sortSeasons(List<JukeboxDomain.Season> seasons) {
+		List<JukeboxDomain.Season> newList = new ArrayList<>(seasons);
+
+		Collections.sort(newList, (x, y) -> Integer.compare(x.getSeasonNumber(), y.getSeasonNumber()));
+
+		return newList;
 	}
 
 }

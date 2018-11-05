@@ -1,5 +1,7 @@
 package se.qxx.android.jukebox.activities;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
@@ -80,6 +82,7 @@ public class NowPlayingActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.nowplaying);
 
         comm = new JukeboxConnectionHandler(
                 JukeboxSettings.get().getServerIpAddress(),
@@ -87,11 +90,17 @@ public class NowPlayingActivity
 
         comm.setListener(this);
 
-        setContentView(R.layout.nowplaying);
-
+        initializeCastProvider();
         initializeView();
 
         screenChange = false;
+    }
+
+    private boolean isLocalPlayer() {
+        if (castProvider == null)
+            return true;
+
+        return castProvider.usesMediaController();
     }
 
     private void initializeView() {
@@ -100,8 +109,6 @@ public class NowPlayingActivity
             SeekBar sb = findViewById(R.id.seekBarDuration);
             sb.setOnSeekBarChangeListener(this);
             sb.setVisibility(View.VISIBLE);
-
-            initializeCastProvider();
 
             if (this.getMode() == ViewMode.Episode) {
                 Episode ep = getEpisode();
@@ -143,7 +150,7 @@ public class NowPlayingActivity
 
     private void startMedia() {
         loadingVisible = true;
-        setVisibility(castProvider.usesMediaController());
+        setVisibility(isLocalPlayer());
 
         castProvider.startMovie();
     }
@@ -171,7 +178,7 @@ public class NowPlayingActivity
     private void initializeMediaController() {
 
         SurfaceView sv = findViewById(R.id.surfaceview);
-        boolean surfaceViewVisible = castProvider.usesMediaController();
+        boolean surfaceViewVisible = isLocalPlayer();
         setVisibility(surfaceViewVisible);
 
         if (surfaceViewVisible) {
@@ -260,6 +267,9 @@ public class NowPlayingActivity
         super.onStop();
         if (seeker != null)
             seeker.stop();
+
+        if (castProvider != null && isLocalPlayer())
+            castProvider.stop();
     }
 
     @Override
@@ -462,14 +472,14 @@ public class NowPlayingActivity
 
         loadingVisible = false;
         runOnUiThread(() -> {
-            setVisibility(castProvider.usesMediaController());
+            setVisibility(isLocalPlayer());
         });
 
     }
 
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
-        if (castProvider.usesMediaController()) {
+        if (isLocalPlayer()) {
             mcontroller.setMediaPlayer(castProvider);
 
             mcontroller.setAnchorView(findViewById(R.id.surfaceview));
@@ -486,7 +496,7 @@ public class NowPlayingActivity
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
-        if (castProvider.usesMediaController())
+        if (isLocalPlayer())
             mcontroller.show();
 
         return false;

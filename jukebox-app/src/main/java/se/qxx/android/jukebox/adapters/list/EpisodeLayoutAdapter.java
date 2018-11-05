@@ -31,7 +31,8 @@ public class EpisodeLayoutAdapter extends GenericListLayoutAdapter<Episode> impl
 	}
 
 	public void addEpisodes(List<Episode> episodes) {
-        this.getEpisodes().addAll(episodes);
+        this.getEpisodes().addAll(
+            sortEpisodes(episodes));
 	}
 
 	public void clearEpisodes() {
@@ -51,7 +52,7 @@ public class EpisodeLayoutAdapter extends GenericListLayoutAdapter<Episode> impl
 
 		this.setSeasonNumber(seasonNumber);
 		this.clearEpisodes();
-		this.addEpisodes(episodes);
+		this.addEpisodes(sortEpisodes(episodes));
 	}
 
     @Override
@@ -114,6 +115,14 @@ public class EpisodeLayoutAdapter extends GenericListLayoutAdapter<Episode> impl
                 return e;
         }
         return null;
+    }
+
+    private List<JukeboxDomain.Episode> sortEpisodes(List<JukeboxDomain.Episode> episodes) {
+        List<JukeboxDomain.Episode> newList = new ArrayList<>(episodes);
+
+        Collections.sort(newList, (x, y) -> Integer.compare(x.getEpisodeNumber(), y.getEpisodeNumber()));
+
+        return newList;
     }
 
 
