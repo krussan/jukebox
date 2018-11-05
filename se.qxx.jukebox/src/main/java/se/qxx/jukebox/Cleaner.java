@@ -55,6 +55,8 @@ public class Cleaner extends JukeboxThread {
 	
 	private void cleanMovies() {
 		List<Movie> movies = DB.searchMoviesByTitle("");
+		
+		//TODO: check that the path is part of a listener
 		for (Movie m : movies) {
 			for (Media md : m.getMediaList()) {
 				if (!mediaExists(md)) {
@@ -78,6 +80,7 @@ public class Cleaner extends JukeboxThread {
 	private void cleanEpisodes() {
 		List<Series> series = DB.searchSeriesByTitle("");
 		
+		//TODO: check that the path is part of a listener
 		for (Series s : series) {
 			for (Season ss : s.getSeasonList()) {
 				for (Episode e : ss.getEpisodeList()) {
