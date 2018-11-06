@@ -175,8 +175,7 @@ public class SubtitleDownloader extends JukeboxThread {
 		List<Media> newMedia = clearSubsFromMediaList(m.getMediaList());
 		mb.clearMedia().addAllMedia(newMedia);
 
-		return DB.save(
-			mb.build());
+		return DB.save(mb.build());
 	}
 
 	private List<Media> clearSubsFromMediaList(List<Media> medialist) {

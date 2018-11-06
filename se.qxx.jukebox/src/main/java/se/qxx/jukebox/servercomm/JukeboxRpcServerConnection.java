@@ -577,6 +577,8 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	public void reenlistSubtitles(RpcController controller,
 			JukeboxRequestID request, RpcCallback<Empty> done) {
 
+		Log.Debug(String.format("Re-enlist subtitle -- %s", request.getId()), LogType.COMM);
+
 		Thread t = new Thread(() -> {
 			try {
 				if (request.getRequestType() == RequestType.TypeMovie) {
