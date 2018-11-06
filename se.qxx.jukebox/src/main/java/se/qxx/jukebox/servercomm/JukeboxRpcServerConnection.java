@@ -598,6 +598,8 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			}
 		});
 		t.start();
+		
+		done.run(Empty.newBuilder().build());
 	}
 	
 	private void reenlist(Media md) {
