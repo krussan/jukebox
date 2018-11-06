@@ -441,18 +441,15 @@ public class IMDBFinder {
 		
 		try {
 			Document doc = Jsoup.parse(text);
-			String selector = getElementSelector(yearToFind, isTvEpisode);
-					
-			Elements elm = doc.select(selector);
-			for (Element e : elm) {
-				String url = e.attr("href");
-	
-				// Check if movie was blacklisted. If it was get the next record matching
-				if (!urlIsBlacklisted(url, blacklist))
-					// if year and title matches then continue to the URL and extract information about the movie.
-					return url;
-			}
 			
+			// get first url (when we search by year
+			String url = findUrlInSearchResult(doc, yearToFind, isTvEpisode, blacklist);
+			
+			// if not found (and yearToFind exists) search without year
+			if (StringUtils.isEmpty(url) && yearToFind > 0)
+				url = findUrlInSearchResult(doc, 0, isTvEpisode, blacklist);
+			
+			return url;
 		}
 		catch (Exception e) {
 			Log.Error(String.format("Error occured when trying to find %s in IMDB", text), LogType.FIND, e);
@@ -461,17 +458,40 @@ public class IMDBFinder {
 		return null;
 	}
 
+	private static String findUrlInSearchResult(
+			Document doc,
+			int yearToFind,
+			boolean isTvEpisode,
+			List<String> blacklist) {
+		String selector = getElementSelector(yearToFind, isTvEpisode);
+
+		Elements elm = doc.select(selector);
+		for (Element e : elm) {
+			String url = e.attr("href");
+
+			// Check if movie was blacklisted. If it was get the next record matching
+			if (!urlIsBlacklisted(url, blacklist))
+				// if year and title matches then continue to the URL and extract information about the movie.
+				return url;
+		}
+		
+		return StringUtils.EMPTY;
+	}
+
 	private static String getElementSelector(int yearToFind, boolean isTvEpisodeSearch) {
 		String selector = StringUtils.EMPTY;
+		
 		if (!isTvEpisodeSearch) {
-			selector = yearToFind > 0 ?
-				String.format("tr.findResult td.result_text:matches(\\(%s\\)):not(:matches(TV\\sEpisode)) a", yearToFind) :
-				"tr.findResult td.result_text:not(:matches(TV\\\\sEpisode)) a";
+			if (yearToFind > 0)
+				selector = String.format("tr.findResult td.result_text:matches(\\(%s\\)):not(:matches(\\(TV\\sEpisode\\))) a", yearToFind);
+			else
+				selector = "tr.findResult td.result_text:not(:matches(TV\\\\sEpisode)) a";
 		}
 		else {
-			selector = yearToFind > 0 ?
-				String.format("tr.findResult:matches(\\(%s\\).*?\\(TV\\s*Series\\)):not(:matches(\\(TV\\sEpisode\\))) a", yearToFind) :
-				"tr.findResult td.result_text:matches(\\(TV\\s*Series\\)) a";
+			if (yearToFind > 0)
+				selector = String.format("tr.findResult:matches(\\(%s\\).*?\\(TV\\s*Series\\)):not(:matches(\\(TV\\sEpisode\\))) a", yearToFind);
+			else
+				selector = "tr.findResult td.result_text:matches(\\(TV\\s*Series\\)):not(:matches(\\(TV\\sEpisode\\))) a";
 		}
 		return selector;
 	}
