@@ -39,7 +39,8 @@
             android:textColor="#FFFFFF"
         />
 
-        <include layout="@layout/subtitlestars" 
+        <include android:id="+@id/incMovieSubtitles"
+            android:layout="@layout/subtitlestars"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
