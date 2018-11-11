@@ -46,8 +46,6 @@ public class MovieLayoutAdapter extends GenericListLayoutAdapter<Movie> {
             setupDownloadedAndCompletedIcons(v, m.getMediaList());
             setupThumbnail(v, m.getThumbnail());
 
-            v.findViewById(R.id.incMovieSubtitles)
-
             setupSubtitles(v, m.getMedia(0).getSubsList());
 
 

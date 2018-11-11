@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:layout_height="?android:attr/listPreferredItemHeightLarge"
     android:orientation="horizontal" 
-    android:padding="6dip">
+    android:padding="3dp">
 
     <ImageView
         android:id="@+id/imageView1"
@@ -39,18 +39,18 @@
             android:textColor="#FFFFFF"
         />
 
-        <include android:id="+@id/incMovieSubtitles"
-            android:layout="@layout/subtitlestars"
+        <ImageView android:id="@+id/imgSub"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@id/bottomtext" />        
+            android:src="@drawable/ic_star_exact"
+            android:layout_alignParentRight="true"/>
 
         <TextView
             android:id="@+id/txtRating"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
+            android:layout_marginRight="6dp"
+            android:layout_toLeftOf="@id/imgSub"
             android:text="@string/lblRating" 
         />
 

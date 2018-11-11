@@ -174,10 +174,12 @@ public abstract class GenericListLayoutAdapter<T> extends BaseAdapter {
 
     protected void setupSubtitles(View v, List<Subtitle> subtitleList) {
         List<Subtitle> sortedSubtitles = Sorter.sortSubtitlesByRating(subtitleList);
+
         if (sortedSubtitles.size() > 0)
             IncludeSubtitleRating.initialize(sortedSubtitles.get(0), v);
         else
-            IncludeSubtitleRating.hideAll(v);
+            IncludeSubtitleRating.initialize(null, v);
+
     }
 
 }
