@@ -59,18 +59,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_below="@id/toptext"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@id/imgSub"
             android:contentDescription="@string/descDownloading"
-            android:src="@android:drawable/stat_sys_download" />
+            android:src="@drawable/ic_download_completed" />
 
 
         <ImageView
             android:id="@+id/imgWatched"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/toptext"
+            android:layout_below="@id/imgSub"
             android:layout_toLeftOf="@id/imgDownloading"
-            android:src="@android:drawable/ic_menu_view"
+            android:layout_alignParentBottom="true"
+            android:src="@drawable/ic_watched"
             android:contentDescription="@string/descWatched" />
 
         <ImageView
@@ -78,9 +80,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_toStartOf="@+id/imgWatched"
+            android:layout_below="@id/imgSub"
+            android:layout_toLeftOf="@id/imgWatched"
             android:contentDescription="@string/descConverted"
-            android:src="@drawable/ic_mms_black_24dp" />
+            android:src="@drawable/ic_conversion_completed" />
 
     </RelativeLayout>
    
