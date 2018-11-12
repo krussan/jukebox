@@ -72,8 +72,8 @@ public class FileSystemWatcher extends JukeboxThread {
 	private boolean recurse = false;
 
 	public FileSystemWatcher(String name, String directoryName, ExtensionFileFilter filter, boolean watchCreated,
-			boolean watchModified, boolean recurse) {
-		super(name, 10000, LogType.FIND);
+			boolean watchModified, boolean recurse, int waitTime) {
+		super(name, waitTime, LogType.FIND);
 		
 		File directoryToWatch = new File(directoryName);
 

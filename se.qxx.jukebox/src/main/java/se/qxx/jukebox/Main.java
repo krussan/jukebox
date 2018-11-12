@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.converter.MediaConverter;
 import se.qxx.jukebox.servercomm.TcpListener;
@@ -119,7 +121,7 @@ public class Main implements Runnable, INotifyClient
 		filter.addExtension("xml");
 		filter.addExtension("stp");
 		
-		FileSystemWatcher configurationWatcher = new FileSystemWatcher("ConfigurationWatcher", ".", filter, true, true, false);
+		FileSystemWatcher configurationWatcher = new FileSystemWatcher("ConfigurationWatcher", ".", filter, true, true, false, 500);
 		configurationWatcher.setSleepTime(300);
 		configurationWatcher.registerClient(this);
 		startupThread(configurationWatcher);
@@ -186,7 +188,9 @@ public class Main implements Runnable, INotifyClient
 		
 		for (JukeboxThread t : threadPool) {
 			if (t instanceof FileSystemWatcher) {
-				t.end();
+				// end all but the configuration watcher
+				if (!StringUtils.equalsIgnoreCase(t.getName(), "ConfigurationWatcher"))
+					t.end();
 			}
 		}
 
@@ -199,7 +203,7 @@ public class Main implements Runnable, INotifyClient
 			File path = new File(c.getPath());
 			
 			if (path.exists()) {
-				FileSystemWatcher f = new FileSystemWatcher(String.format("Catalog %s", cc),c.getPath(), ff, true, true, true);
+				FileSystemWatcher f = new FileSystemWatcher(String.format("Catalog %s", cc),c.getPath(), ff, true, true, true, 10000);
 			
 				Log.Debug(String.format(
 					"Starting listening on :: %s", 

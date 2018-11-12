@@ -62,21 +62,6 @@ public class SubtitleDownloader extends JukeboxThread {
 		
 		
 	}
-	
-	@Override
-	public void run() {
-		this.setRunning(true);
-		
-		
-		Util.waitForSettings();
-				
-		
-			
-//		initializeSubsDatabase();
-
-		mainLoop();
-		// this.wait();
-	}
 
 	@Override
 	protected void execute() {
@@ -103,31 +88,45 @@ public class SubtitleDownloader extends JukeboxThread {
 
 
 	private void saveSubtitleQueue(MovieOrSeries mos, int result) {
-		
 		if (mos.isSeries()) {
-			SubtitleQueue q = mos.getEpisode().getSubtitleQueue();
-			
-			DB.save(Episode.newBuilder(mos.getEpisode())
-				.setSubtitleQueue(
-					SubtitleQueue.newBuilder(q)
-						.setSubtitleRetreivedAt(DB.getCurrentUnixTimestamp())
-						.setSubtitleRetreiveResult(result)
-						.build()
-					).build());
+			saveSubtitleQueue(mos.getEpisode(), result);
 		}
 		else {
-			SubtitleQueue q = mos.getMovie().getSubtitleQueue();
-			
-			DB.save(Movie.newBuilder(mos.getMovie())
+			saveSubtitleQueue(mos.getMovie(), result);
+		}
+		
+	}
+
+	private void saveSubtitleQueue(Episode ep, int result) {
+		SubtitleQueue q = ep.getSubtitleQueue();
+		
+		// Be sure to get the whole object before saving
+		ep = DB.getEpisode(ep.getID());
+		
+		DB.save(Episode.newBuilder(ep)
+			.setSubtitleQueue(
+				SubtitleQueue.newBuilder(q)
+					.setSubtitleRetreivedAt(DB.getCurrentUnixTimestamp())
+					.setSubtitleRetreiveResult(result)
+					.build()
+				).build());
+	}
+	
+	private void saveSubtitleQueue(Movie m, int result) {
+		SubtitleQueue q = m.getSubtitleQueue();
+		
+		// Be sure to get the whole object before saving
+		m = DB.getMovie(m.getID());
+		
+		DB.save(Movie.newBuilder(m)
 				.setSubtitleQueue(
 					SubtitleQueue.newBuilder(q)									
 						.setSubtitleRetreivedAt(DB.getCurrentUnixTimestamp())
 						.setSubtitleRetreiveResult(result)
 						.build()
 					).build());
-		}
-		
 	}
+	
 
 	/**
 	 * Empties the temp directory. 
