@@ -150,6 +150,8 @@ public abstract class GenericListLayoutAdapter<T> extends BaseAdapter {
     protected void hideDownloadAndCompletedIcons(View v) {
 	    GUITools.hideView(R.id.imgWatched, v);
 	    GUITools.hideView(R.id.imgConverted, v);
+	    GUITools.hideView(R.id.imgSub, v);
+        GUITools.hideView(R.id.imgDownloading, v);
     }
 
     protected void setupDownloadedAndCompletedIcons(View v, List<Media> mediaList) {

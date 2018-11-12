@@ -25,10 +25,10 @@
 
         <TextView
             android:id="@+id/toptext"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
             android:text="@string/lblTitle"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="#FFFFFF"
@@ -52,7 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_below="@id/imgSub"
+            android:layout_below="@id/txtDescription"
             android:contentDescription="@string/descConverted"
             android:src="@drawable/ic_conversion_completed" />
 
@@ -60,6 +60,7 @@
             android:id="@+id/imgWatched"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@id/txtDescription"
             android:layout_toRightOf="@id/imgConverted"
             android:layout_alignParentBottom="true"
             android:src="@drawable/ic_watched"
@@ -69,6 +70,7 @@
             android:id="@+id/imgDownloading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@id/txtDescription"
             android:layout_toRightOf="@id/imgWatched"
             android:layout_alignParentBottom="true"
             android:contentDescription="@string/descDownloading"
