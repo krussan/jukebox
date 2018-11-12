@@ -362,37 +362,59 @@ public class SubtitleDownloader extends JukeboxThread {
 		String tempFilepath = SubFinderBase.createTempSubsPath(mos);
 		Log.Debug(String.format("Unpack path :: %s", unpackPath), LogType.SUBS);
 		
+		List<Subtitle> subtitleList = new ArrayList<Subtitle>();
+		
 		for (SubFile subfile : files) {
 			try {
 				File f = subfile.getFile();
 				clearPath(unpackPath);
 				
 				List<File> unpackedFiles = Unpacker.unpackFiles(f, unpackPath);
-
-				for (File unpackedFile : unpackedFiles) {
-					if (unpackedFile != null) {
-						Media md = matchFileToMedia(mos, unpackedFile);
-						
-						if (md != null) {
-							// read file
-							String textdata = readSubFile(unpackedFile);
-							
-							// store filename of sub in database
-							saveSubtitle(subfile, unpackedFile, md, textdata);
-							
-						}
-						else {
-							Log.Debug(String.format("Failed to match sub %s against media for movie %s", unpackedFile.getName(), mos.getTitle()), LogType.SUBS);
-						}
-					}
-				}
+				subtitleList.addAll(
+					constructSubtitles(mos, subfile, unpackedFiles));
 
 			} catch (Exception e) {
 				Log.Error("Error when downloading subtitles... Continuing with next one", Log.LogType.SUBS, e);
 			}
 		}
 		
+		saveSubtitles(mos.getMedia(), subtitleList);
+		
 		cleanupTempDirectory(tempFilepath);
+	}
+
+	private List<Subtitle>  constructSubtitles(MovieOrSeries mos, SubFile subfile, List<File> unpackedFiles) {
+		List<Subtitle> subtitleList = new ArrayList<Subtitle>();
+		
+		for (File unpackedFile : unpackedFiles) {
+			if (unpackedFile != null) {
+				Media md = matchFileToMedia(mos, unpackedFile);
+				
+				if (md != null) {
+					// read file
+					String textdata = readSubFile(unpackedFile);
+					
+					// store filename of sub in database
+					subtitleList.add(
+						Subtitle.newBuilder()
+							.setID(-1)
+							.setMediaIndex(md.getIndex())
+							.setFilename(unpackedFile.getName())
+							.setDescription(subfile.getDescription())
+							.setRating(subfile.getRating())
+							.setLanguage(subfile.getLanguage().toString())
+							
+							.setTextdata(ByteString.copyFromUtf8(textdata))
+							.build());
+					
+				}
+				else {
+					Log.Debug(String.format("Failed to match sub %s against media for movie %s", unpackedFile.getName(), mos.getTitle()), LogType.SUBS);
+				}
+			}
+		}
+		
+		return subtitleList;
 	}
 
 	private void cleanupTempDirectory(String tempFilepath) {
@@ -402,22 +424,15 @@ public class SubtitleDownloader extends JukeboxThread {
 			Log.Error(String.format("Error while deleting temporary dir :: %s", tempFilepath), LogType.SUBS);
 		}
 	}
+	
+	
 
-	private void saveSubtitle(SubFile subfile, File unpackedFile, Media md, String textdata) {
-		Log.Debug(String.format("Saving subtitle %s - %s bytes", subfile.getDescription(), textdata.length()), LogType.SUBS);
-		
+	private void saveSubtitles(Media md, List<Subtitle> subtitleList) {
+		// Get media to get the whole object
+		md = DB.getMediaById(md.getID());
 		DB.save(
-			Media.newBuilder(md).addSubs(
-				Subtitle.newBuilder()
-					.setID(-1)
-					.setMediaIndex(md.getIndex())
-					.setFilename(unpackedFile.getName())
-					.setDescription(subfile.getDescription())
-					.setRating(subfile.getRating())
-					.setLanguage(subfile.getLanguage().toString())
-					
-					.setTextdata(ByteString.copyFromUtf8(textdata))
-					.build())
+			Media.newBuilder(md)
+				.addAllSubs(subtitleList)
 				.build());
 	}
 
