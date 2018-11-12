@@ -28,7 +28,16 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="#FFFFFF"
         />
-    
+
+        <TextView
+            android:id="@+id/txtRating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="6dp"
+            android:layout_below="@id/bottomtext"
+            android:text="@string/lblRating"
+            />
+
         <TextView
             android:id="@+id/bottomtext"
             android:layout_width="wrap_content"
@@ -45,14 +54,6 @@
             android:src="@drawable/ic_star_exact"
             android:layout_alignParentRight="true"/>
 
-        <TextView
-            android:id="@+id/txtRating"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="6dp"
-            android:layout_toLeftOf="@id/imgSub"
-            android:text="@string/lblRating" 
-        />
 
         <ImageView
             android:id="@+id/imgDownloading"
