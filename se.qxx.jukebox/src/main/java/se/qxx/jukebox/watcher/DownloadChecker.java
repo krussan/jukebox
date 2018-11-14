@@ -103,6 +103,12 @@ public class DownloadChecker extends JukeboxThread {
 		// should never be null, but anyway
 		if (md != null) {
 			DB.setDownloadCompleted(md.getID());
+			/*
+			 *TODO: Fix reenlist matroska file
+			if (Util.isMatroskaFile(md)) {				
+				SubtitleDownloader.get().reenlistEpisode(ep);
+			}
+			*/
 		}
 		
 		store(fs, filename);

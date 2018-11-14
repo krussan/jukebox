@@ -101,7 +101,7 @@ public class ParserBuilder extends MovieBuilder {
 		
 		// if we get to an unknown token we switch to titlemode
 		if (pt.equals(ParserType.UNKNOWN) && !titleMode)
-			titleMode = !titleMode;
+			titleMode = true;
 		
 		// if we are in titlemode and we get to non unknown token
 		// we push the title. All other unkown tokens will be ignored 
