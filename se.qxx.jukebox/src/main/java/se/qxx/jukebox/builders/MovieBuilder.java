@@ -66,7 +66,7 @@ public abstract class MovieBuilder {
 
 			if (mos != null) {
 				Log.Debug(
-						String.format("MovieBuilder :: Selected proposal has rating of %s", mos.getIdentifierRating()),
+						String.format("MovieBuilder :: Selected proposal (%s) has rating of %s", mos.getIdentifier(), mos.getIdentifierRating()),
 						LogType.FIND);
 			}
 		} else {
@@ -124,8 +124,10 @@ public abstract class MovieBuilder {
 	}
 
 	private static boolean verifyProposal(MovieOrSeries proposal) {
-		return !proposal.isSeries() || (proposal.isSeries() && proposal.getSeries().getSeasonCount() > 0
-				&& proposal.getSeries().getSeason(0).getEpisodeCount() > 0);
+		return !proposal.isSeries() 
+				|| (proposal.isSeries() 
+						&& proposal.getSeries().getSeasonCount() > 0
+						&& proposal.getSeries().getSeason(0).getEpisodeCount() > 0);
 	}
 
 	protected Media getMedia(String filepath, String filename) {
