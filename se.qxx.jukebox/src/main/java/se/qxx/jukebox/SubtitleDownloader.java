@@ -71,7 +71,13 @@ public class SubtitleDownloader extends JukeboxThread {
 		for (MovieOrSeries mos : _listProcessing) {
 			try {
 				if (mos != null) {
-					getSubtitles(mos);
+					List<SubFile> files = getSubtitles(mos);
+					
+					// Extract files from rar/zip
+					List<Subtitle> subtitleList = extractSubs(mos, files);
+					
+					saveSubtitles(mos.getMedia(), subtitleList);
+					
 					result = 1;
 				}
 			} catch (Exception e) {
@@ -220,24 +226,24 @@ public class SubtitleDownloader extends JukeboxThread {
 	 * Wrapper function for getting subs for a specific movie
 	 * @param m
 	 */
-	private void getSubtitles(MovieOrSeries mos) {
+	private List<SubFile> getSubtitles(MovieOrSeries mos) {
 		// We only check if there exist subs for the first media file.
 		// If it does then it should exist from the others as well.
 		Media md = mos.getMedia();
 
-	
+		List<SubFile> files = new ArrayList<SubFile>();
+		
 		if (!checkMatroskaFile(md)) {			
-			List<SubFile> files = checkMovieDirForSubs(md);
+			files = checkMovieDirForSubs(md);
 			
 			if (files.size() == 0) {
 				// use reflection to get all subfinders
 				// get files
 				files = callSubtitleDownloaders(mos);
 			}
-	
-			// Extract files from rar/zip
-			extractSubs(mos, files);
 		}
+		
+		return files;
 	}
 	
 	/***
@@ -357,7 +363,7 @@ public class SubtitleDownloader extends JukeboxThread {
 	 * @param m The movie for these sub files
 	 * @param files The files downloaded
 	 */
-	private void extractSubs(MovieOrSeries mos, List<SubFile> files) {
+	private List<Subtitle> extractSubs(MovieOrSeries mos, List<SubFile> files) {
 		String unpackPath = getUnpackedPath(mos);
 		String tempFilepath = SubFinderBase.createTempSubsPath(mos);
 		Log.Debug(String.format("Unpack path :: %s", unpackPath), LogType.SUBS);
@@ -378,9 +384,9 @@ public class SubtitleDownloader extends JukeboxThread {
 			}
 		}
 		
-		saveSubtitles(mos.getMedia(), subtitleList);
-		
 		cleanupTempDirectory(tempFilepath);
+		
+		return subtitleList;
 	}
 
 	private List<Subtitle>  constructSubtitles(MovieOrSeries mos, SubFile subfile, List<File> unpackedFiles) {
