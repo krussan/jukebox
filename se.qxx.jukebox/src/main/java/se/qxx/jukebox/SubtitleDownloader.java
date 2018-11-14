@@ -37,6 +37,12 @@ public class SubtitleDownloader extends JukeboxThread {
 	ReentrantLock lock = new ReentrantLock();
 	private String subsPath = StringUtils.EMPTY;
 	private static SubtitleDownloader _instance;
+	private List<SubFinderBase> subFinders;
+	
+	public List<SubFinderBase> getSubFinders() {
+		return subFinders;
+	}
+
 
 	public SubtitleDownloader() {
 		super(
@@ -60,7 +66,22 @@ public class SubtitleDownloader extends JukeboxThread {
 		Log.Debug("Retrieving list to process", LogType.SUBS);
 		DB.cleanSubtitleQueue();
 		
-		
+		setupSubFinders();
+	}
+
+	private void setupSubFinders() {
+		for (SubFinder f : Settings.get().getSubFinders().getSubFinder()) {
+			String className = f.getClazz();
+
+			try {
+				SubFinderSettings[] args = new SubFinderSettings[] {f.getSubFinderSettings()};
+				getSubFinders().add(
+					(SubFinderBase)Util.getInstance(className, new Class[] {SubFinderSettings.class}, args));
+				
+			} catch (Exception e) {
+				Log.Error(String.format("Error when loading subfinder :: %s", className), Log.LogType.SUBS, e);
+			}
+		}
 	}
 
 	@Override
@@ -73,25 +94,34 @@ public class SubtitleDownloader extends JukeboxThread {
 				if (mos != null) {
 					List<SubFile> files = getSubtitles(mos);
 					
+					if (!this.isRunning())
+						break;
+					
 					// Extract files from rar/zip
 					List<Subtitle> subtitleList = extractSubs(mos, files);
+					
+					if (!this.isRunning())
+						break;
 			
 					if (subtitleList.size() > 0)
 						saveSubtitles(mos.getMedia(), subtitleList);
 					
 					result = 1;
 				}
+				
+				
 			} catch (Exception e) {
 				Log.Error("Error when downloading subtitles", Log.LogType.SUBS, e);
 				result = -1;
 			}
 			
 			saveSubtitleQueue(mos, result);
+			
+			if (!this.isRunning())
+				break;
+			
 		}			
 	}
-
-
-	
 
 
 	private void saveSubtitleQueue(MovieOrSeries mos, int result) {
@@ -527,24 +557,14 @@ public class SubtitleDownloader extends JukeboxThread {
 	 */
 	private List<SubFile> callSubtitleDownloaders(MovieOrSeries mos) {
 		ArrayList<SubFile> subtitleFiles = new ArrayList<SubFile>();
-		for (SubFinder f : Settings.get().getSubFinders().getSubFinder()) {
-			String className = f.getClazz();
+		for (SubFinderBase finder : this.getSubFinders()) {
+			ArrayList<String> languages = new ArrayList<String>();
+			languages.add("Eng");
+			languages.add("Swe");
 
-			try {
-				SubFinderSettings[] args = new SubFinderSettings[] {f.getSubFinderSettings()};
-				SubFinderBase finder = (SubFinderBase)Util.getInstance(className, new Class[] {SubFinderSettings.class}, args);
-
-				ArrayList<String> languages = new ArrayList<String>();
-				languages.add("Eng");
-				languages.add("Swe");
-
-				// add list of downloaded files to list
-				subtitleFiles.addAll(finder.findSubtitles(mos, languages));
-
-			} catch (Exception e) {
-				
-				Log.Error(String.format("Error when loading subfinder :: %s", className), Log.LogType.SUBS, e);
-			}
+			// add list of downloaded files to list
+			subtitleFiles.addAll(
+				finder.findSubtitles(mos, languages));
 		}
 
 		return subtitleFiles;
@@ -555,4 +575,13 @@ public class SubtitleDownloader extends JukeboxThread {
 		return 3;
 	}
 
+	@Override
+	public void end() {
+		for (SubFinderBase finder : this.getSubFinders()) {
+			finder.exit();
+		}
+		
+		super.end();
+		
+	}
 }

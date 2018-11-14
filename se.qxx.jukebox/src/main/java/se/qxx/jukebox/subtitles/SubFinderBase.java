@@ -29,6 +29,7 @@ public abstract class SubFinderBase {
 	private Language language;
 	private int minWaitSeconds = 20;
 	private int maxWaitSeconds = 30;
+	private boolean isRunning = true;
 	
 	private final int MAX_SUBS_DOWNLOADED = 15;
 	
@@ -62,12 +63,20 @@ public abstract class SubFinderBase {
 
 	protected void setMaxWaitSeconds(int maxWaitSeconds) {
 		this.maxWaitSeconds = maxWaitSeconds;
+	}
+	
+	public boolean isRunning() {
+		return isRunning;
+	}
+
+	public void setRunning(boolean isRunning) {
+		this.isRunning = isRunning;
 	}	
 
 	private HashMap<String, String> settings = new HashMap<String, String>();
 
 	public abstract List<SubFile> findSubtitles(MovieOrSeries mos, List<String> languages);
-
+	
 	public SubFinderBase(JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings subFinderSettings) {
 		for (JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings.Setting setting : subFinderSettings.getSetting()) {
 			this.settings.put(StringUtils.trim(setting.getKey()), StringUtils.trim(setting.getValue()));
@@ -126,7 +135,9 @@ public abstract class SubFinderBase {
 					Log.Error(String.format("Subtitle downloader interrupted", this.getClassName()), Log.LogType.SUBS, e);
 				}
 			}
-			
+
+			if (!this.isRunning)
+				return new ArrayList<SubFile>();
 		}
 		
 		return files;
@@ -328,6 +339,10 @@ public abstract class SubFinderBase {
 			path.mkdirs();
 		
 		return tempPath;
-	}	
+	}
+
+	public void exit() {
+		this.setRunning(false);
+	}
 
 }
