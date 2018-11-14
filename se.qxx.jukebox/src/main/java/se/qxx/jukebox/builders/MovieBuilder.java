@@ -49,56 +49,6 @@ public abstract class MovieBuilder {
 	}
 
 	/**
-	 * Create a Series object if this is part of a tv episode
-	 * 
-	 * @param filepath
-	 * @param filename
-	 * @return
-	 */
-	// public static Series identifySeries(Movie m, String filepath, String
-	// filename) {
-	// PartPattern pp = new PartPattern(filename);
-	//
-	// Series s = null;
-	// if (pp.isTvEpisode()) {
-	// s = Series.newBuilder()
-	// .setID(-1)
-	// .setTitle(pp.getSeriesTitle())
-	// .setIdentifiedTitle(pp.getSeriesTitle())
-	// .setStory(m.getStory())
-	// .setImage(m.getImage())
-	// .addAllGenre(m.getGenreList())
-	// .addSeason(
-	// Season.newBuilder()
-	// .setID(-1)
-	// .setSeasonNumber(pp.getSeason())
-	// .addEpisode(
-	// Episode.newBuilder()
-	// .setID(-1)
-	// .setEpisodeNumber(pp.getEpisode())
-	// .setYear(m.getYear())
-	// .setType(m.getType())
-	// .setFormat(m.getFormat())
-	// .setSound(m.getSound())
-	// .setLanguage(m.getLanguage())
-	// .setGroupName(m.getGroupName())
-	// .setDuration(m.getDuration())
-	// .setRating(m.getRating())
-	// .setDirector(m.getDirector())
-	// .setIdentifier(m.getIdentifier())
-	// .setIdentifierRating(m.getIdentifierRating())
-	// .addAllMedia(m.getMediaList())
-	// .build()
-	// )
-	// .build()
-	// )
-	// .build();
-	// }
-	//
-	// return s;
-	// }
-
-	/**
 	 * Builds the movie from the first proposal in the list
 	 * 
 	 * @param filepath
@@ -124,29 +74,6 @@ public abstract class MovieBuilder {
 		}
 		return mos;
 	}
-
-	// private static MovieOrSeries buildMovieOrSeries(MovieOrSeries mos
-	// , String filepath
-	// , String filename
-	// , String imdbUrl) {
-	//
-	// Media md = Media.newBuilder()
-	// .setID(-1)
-	// .setIndex(pp.getPart())
-	// .setFilename(filename)
-	// .setFilepath(filepath)
-	// .build();
-	//
-	// Movie.Builder builder = Movie.newBuilder(m).addMedia(md);
-	//
-	// // If a Imdb Link has been found in one of the builders
-	// // then merge it into this one
-	// if (!StringUtils.isEmpty(imdbUrl))
-	// builder.setImdbUrl(imdbUrl);
-	//
-	// return builder.build();
-	// }
-
 
 	/**
 	 * Execute all builders, perform rating and returns a sorted list where the best

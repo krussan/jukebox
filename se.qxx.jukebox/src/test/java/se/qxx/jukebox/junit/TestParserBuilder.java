@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import se.qxx.jukebox.builders.ParserBuilder;
 import se.qxx.jukebox.builders.ParserMovie;
+import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.settings.Settings;
 
 public class TestParserBuilder {
@@ -222,6 +223,21 @@ public class TestParserBuilder {
 		assertEquals(4, m.getSeason());
 		assertEquals(13, m.getEpisode());
 	}
+	
+	@Test
+	public void TestSeasonInTitle() {
+		String filename = "This and that Season 1.mp4";
+		
+		ParserBuilder b = new ParserBuilder();
+		ParserMovie pm = b.extractMovieParser("", filename);
+		MovieOrSeries mos = pm.build();
+		
+		assertTrue(mos.isSeries());
+		assertEquals("This and that", mos.getMainTitle());
+		assertEquals(1, pm.getSeason());
+		assertEquals(0, pm.getEpisode());
+	}
+	
 	
 	//
 }
