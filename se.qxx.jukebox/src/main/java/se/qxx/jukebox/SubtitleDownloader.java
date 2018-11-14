@@ -75,8 +75,9 @@ public class SubtitleDownloader extends JukeboxThread {
 					
 					// Extract files from rar/zip
 					List<Subtitle> subtitleList = extractSubs(mos, files);
-					
-					saveSubtitles(mos.getMedia(), subtitleList);
+			
+					if (subtitleList.size() > 0)
+						saveSubtitles(mos.getMedia(), subtitleList);
 					
 					result = 1;
 				}
@@ -253,22 +254,22 @@ public class SubtitleDownloader extends JukeboxThread {
 	 * @return
 	 */
 	private boolean checkMatroskaFile(Media md) {
-		
 		if (Util.isMatroskaFile(md)) {
-			Log.Debug(String.format("Checking mkv container for media %s",  md.getFilename()), LogType.SUBS);
-			
-			List<Subtitle> subs = 
-				MkvSubtitleReader.extractSubs(Util.getFullFilePath(md));
-			
-			if (subs == null || subs.size() == 0)
-				return false;
-
-			Log.Debug(String.format("%s subs found in container. Saving...", subs.size()), LogType.SUBS);
-			DB.save(
-				Media.newBuilder(md)
-					.addAllSubs(subs)
-					.build());
-			
+			if (md.getDownloadComplete()) {
+				Log.Debug(String.format("Checking mkv container for media %s",  md.getFilename()), LogType.SUBS);
+				
+				List<Subtitle> subs = 
+					MkvSubtitleReader.extractSubs(Util.getFullFilePath(md));
+				
+				if (subs == null || subs.size() == 0)
+					return false;
+	
+				Log.Debug(String.format("%s subs found in container. Saving...", subs.size()), LogType.SUBS);
+				DB.save(
+					Media.newBuilder(md)
+						.addAllSubs(subs)
+						.build());
+			}
 			return true;
 		}
 		

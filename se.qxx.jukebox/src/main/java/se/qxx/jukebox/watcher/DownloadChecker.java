@@ -7,6 +7,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import se.qxx.jukebox.DB;
 import se.qxx.jukebox.JukeboxThread;
 import se.qxx.jukebox.Log;
+import se.qxx.jukebox.SubtitleDownloader;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.converter.FileChangedState;
 import se.qxx.jukebox.converter.FileRepresentationState;
@@ -99,7 +100,7 @@ public class DownloadChecker extends JukeboxThread {
 		
 		Media md = DB.getMediaByFilename(fs.getName());
 		
-		// should never be null, but anywhay
+		// should never be null, but anyway
 		if (md != null) {
 			DB.setDownloadCompleted(md.getID());
 		}
