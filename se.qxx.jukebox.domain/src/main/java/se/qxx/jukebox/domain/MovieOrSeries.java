@@ -52,6 +52,27 @@ public class MovieOrSeries {
 			return this.getMovie().getIdentifierRating();
 	}
 	
+	public void setSeasonAndEpisode(int season, int episode) {
+		if (this.isSeries()) {	
+			Series s = this.getSeries();
+			Season sn = s.getSeason(0);
+			Episode ep = sn.getEpisode(0); 
+			
+			ep = Episode.newBuilder(ep)
+					.setEpisodeNumber(episode)
+					.build();
+			
+			sn = Season.newBuilder(sn)
+					.setSeasonNumber(season)
+					.build();
+			
+			sn = DomainUtil.updateEpisode(sn, ep);
+			s = DomainUtil.updateSeason(s, sn);
+			
+			this.setSeries(s);
+		}	
+	}
+	
 	public void setIdentifierRating(int rating) {
 		if (this.isSeries()) {	
 			Series s = this.getSeries();
@@ -182,7 +203,11 @@ public class MovieOrSeries {
 	public Episode getEpisode() {
 		return this.getSeries().getSeason(0).getEpisode(0);
 	}
-	
+
+	public Season getSeason() {
+		return this.getSeries().getSeason(0);
+	}
+
 	public String getMainStory() {
 		if (this.isSeries())
 			return this.getSeries().getStory();

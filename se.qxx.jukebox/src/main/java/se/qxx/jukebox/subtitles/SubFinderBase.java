@@ -125,15 +125,7 @@ public abstract class SubFinderBase {
 			}
 			
 			if (listSubs.size() > 1) {
-				try {
-					Random r = new Random();
-					int n = r.nextInt((this.getMaxWaitSeconds() - this.getMinWaitSeconds()) * 1000 + 1) + this.getMinWaitSeconds() * 1000;
-					
-					// sleep randomly to avoid detection (from 10 sec to 30 sec)
-					Thread.sleep(n);
-				} catch (InterruptedException e) {
-					Log.Error(String.format("Subtitle downloader interrupted", this.getClassName()), Log.LogType.SUBS, e);
-				}
+				waitRandomly();
 			}
 
 			if (!this.isRunning)
@@ -142,6 +134,18 @@ public abstract class SubFinderBase {
 		
 		return files;
 		
+	}
+
+	private void waitRandomly() {
+		try {
+			Random r = new Random();
+			int n = r.nextInt((this.getMaxWaitSeconds() - this.getMinWaitSeconds()) * 1000 + 1) + this.getMinWaitSeconds() * 1000;
+			
+			// sleep randomly to avoid detection (from 10 sec to 30 sec)
+			Thread.sleep(n);
+		} catch (InterruptedException e) {
+			Log.Error(String.format("Subtitle downloader interrupted", this.getClassName()), Log.LogType.SUBS, e);
+		}
 	}
 	
 	

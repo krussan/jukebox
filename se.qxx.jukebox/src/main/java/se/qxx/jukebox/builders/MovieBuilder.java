@@ -72,7 +72,40 @@ public abstract class MovieBuilder {
 		} else {
 			Log.Info(String.format("Failed to identify movie with filename %s", filename), LogType.FIND);
 		}
+		
+		mos = checkSeriesEpisode(mos, proposals);
 		return mos;
+	}
+
+	/***
+	 * If MovieOrSeries is a series then check that both episode and season are set
+	 * If not search the proposals and update the object with the first that has
+	 * both set
+	 * @param mos
+	 * @param proposals
+	 * @return
+	 */
+	private static MovieOrSeries checkSeriesEpisode(MovieOrSeries mos, ArrayList<MovieOrSeries> proposals) {
+		if (mos.isSeries()) {
+			if (!seriesHasSeasonAndEpisode(mos)) {
+				for (int i=1;i<proposals.size(); i++) {
+					MovieOrSeries otherMos = proposals.get(i);
+					if (seriesHasSeasonAndEpisode(otherMos)) {
+						mos.setSeasonAndEpisode(
+							otherMos.getSeason().getSeasonNumber(), 
+							otherMos.getEpisode().getEpisodeNumber());
+						break;
+					}
+				}
+			}
+		}
+			
+		return mos;
+	}
+
+	private static boolean seriesHasSeasonAndEpisode(MovieOrSeries mos) {
+		return mos.getEpisode().getEpisodeNumber() > 0
+			&& mos.getSeason().getSeasonNumber() > 0;
 	}
 
 	/**
