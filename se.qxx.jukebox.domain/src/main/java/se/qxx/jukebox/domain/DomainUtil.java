@@ -17,13 +17,25 @@ public class DomainUtil {
 	}
 	
 	public static Season updateEpisode(Season season, Episode newEpisode) {
-		int episodeIndex = findEpisodeIndex(season, newEpisode.getEpisodeNumber());
+		Season.Builder sb = removeEpisode(season, newEpisode);
+		
+		return sb.addEpisode(newEpisode).build();
+	}
+
+	private static Season.Builder removeEpisode(Season season, Episode newEpisode) {
+		int episodeIndex = findEpisodeIndex(
+			season, 
+			newEpisode.getEpisodeNumber());
+
 		Season.Builder sb = Season.newBuilder(season);
+		
+		if (episodeIndex < 0)
+			episodeIndex = findEpisodeIndexById(season, newEpisode.getID());
 		
 		if (episodeIndex >= 0)
 			sb.removeEpisode(episodeIndex);
 		
-		return sb.addEpisode(newEpisode).build();
+		return sb;
 	}
 	
 	public static int findSeasonIndex(Series s, int season) {
@@ -50,6 +62,18 @@ public class DomainUtil {
 			for (int i=0; i<sn.getEpisodeCount(); i++){
 				if (sn.getEpisode(i).getEpisodeNumber() == episode)
 					return i;
+			}
+		}
+
+		
+		return -1;
+	}
+	
+	public static int findEpisodeIndexById(Season sn, int episodeID) {
+		
+		for (int i=0; i<sn.getEpisodeCount();i++) {
+			if (sn.getEpisode(i).getID() == episodeID) {
+				return i;
 			}
 		}
 		

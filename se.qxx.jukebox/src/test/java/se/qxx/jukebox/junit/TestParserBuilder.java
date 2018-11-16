@@ -3,15 +3,21 @@ package se.qxx.jukebox.junit;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import se.qxx.jukebox.builders.MovieBuilder;
 import se.qxx.jukebox.builders.ParserBuilder;
 import se.qxx.jukebox.builders.ParserMovie;
 import se.qxx.jukebox.domain.MovieOrSeries;
+import se.qxx.jukebox.domain.JukeboxDomain.Episode;
+import se.qxx.jukebox.domain.JukeboxDomain.Season;
+import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.settings.Settings;
 
 public class TestParserBuilder {
@@ -236,6 +242,52 @@ public class TestParserBuilder {
 		assertEquals("This and that", mos.getMainTitle());
 		assertEquals(1, pm.getSeason());
 		assertEquals(0, pm.getEpisode());
+	}
+	
+	@Test
+	public void TestSeriesProposals() {
+		List<MovieOrSeries> proposals = new ArrayList<MovieOrSeries>();
+		MovieOrSeries mos1 = new MovieOrSeries(
+				Series.newBuilder()
+				.setID(-1)
+				.setTitle("This and that 1")
+				.setIdentifiedTitle("This and that 1")
+				.addSeason(Season.newBuilder()
+					.setID(-1)
+					.setSeasonNumber(1)
+					.addEpisode(Episode.newBuilder()
+						.setID(-1)
+						.setEpisodeNumber(0)
+						.build())
+					.build())
+				.build());
+		mos1.setIdentifierRating(80);
+		
+		MovieOrSeries mos2 = new MovieOrSeries(
+				Series.newBuilder()
+				.setID(-1)
+				.setTitle("This and that 2")
+				.setIdentifiedTitle("This and that 2")
+				.addSeason(Season.newBuilder()
+					.setID(-1)
+					.setSeasonNumber(1)
+					.addEpisode(Episode.newBuilder()
+						.setID(-1)
+						.setEpisodeNumber(3)
+						.build())
+					.build())
+				.build());
+		mos2.setIdentifierRating(10);
+		
+		proposals.add(mos1);
+		proposals.add(mos2);
+
+		MovieOrSeries mos = MovieBuilder.build("", "This and that Season1.mp4", proposals);
+		
+		assertTrue(mos.isSeries());
+		assertEquals(1, mos.getSeason().getSeasonNumber());
+		assertEquals(3, mos.getSeason().getEpisode(0).getEpisodeNumber());		
+		assertEquals(mos.getMainTitle(), "This and that 1");
 	}
 	
 	

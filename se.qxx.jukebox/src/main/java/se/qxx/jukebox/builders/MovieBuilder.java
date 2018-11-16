@@ -2,6 +2,7 @@ package se.qxx.jukebox.builders;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -58,7 +59,7 @@ public abstract class MovieBuilder {
 	 * @param part
 	 * @return The movie
 	 */
-	protected static MovieOrSeries build(String filepath, String filename, ArrayList<MovieOrSeries> proposals) {
+	public static MovieOrSeries build(String filepath, String filename, List<MovieOrSeries> proposals) {
 
 		MovieOrSeries mos = null;
 		if (proposals.size() > 0) {
@@ -85,7 +86,7 @@ public abstract class MovieBuilder {
 	 * @param proposals
 	 * @return
 	 */
-	private static MovieOrSeries checkSeriesEpisode(MovieOrSeries mos, ArrayList<MovieOrSeries> proposals) {
+	private static MovieOrSeries checkSeriesEpisode(MovieOrSeries mos, List<MovieOrSeries> proposals) {
 		if (mos.isSeries()) {
 			if (!seriesHasSeasonAndEpisode(mos)) {
 				for (int i=1;i<proposals.size(); i++) {
