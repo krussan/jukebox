@@ -2,15 +2,18 @@ package se.qxx.jukebox;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.FutureTask;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.builders.MovieBuilder;
+import se.qxx.jukebox.concurrent.StringLockPool;
 import se.qxx.jukebox.domain.DomainUtil;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
@@ -26,10 +29,12 @@ import se.qxx.jukebox.watcher.FileRepresentation;
 public class MovieIdentifier extends JukeboxThread {
 	private static MovieIdentifier _instance;
 	private Queue<FileRepresentation> files;
+	private StringLockPool seriesLocks;
 
 	private MovieIdentifier() {
 		super("MovieIdentifier", 0, LogType.FIND);
 		this.files = new ConcurrentLinkedQueue<FileRepresentation>();
+		this.seriesLocks = new StringLockPool();
 	}
 
 	public static MovieIdentifier get() {
@@ -162,16 +167,36 @@ public class MovieIdentifier extends JukeboxThread {
 		}
 
 		// find series that matches
-		// do we not need to merge dbSeries and series??!!
-		Series dbSeries = DB.findSeries(series.getTitle());
+		// TODO: this goes wrong if there is an ongoing parallel identification process
+		// which has not been saved yet.
+		
+		forkWaitForOtherSeriesObjects(newMedia, series, season, episode);
+	}
 
-		// if no series found in DB. create new from the created series
-		// - if no series then no seasons and no episodes
-		if (dbSeries == null) {
-			saveNewSeries(series, newMedia, season, episode);			
-		} else {
-			mergeExistingSeries(series, newMedia, season, episode, dbSeries);
-		}
+	private void forkWaitForOtherSeriesObjects(Media newMedia, Series series, int season, int episode) {
+		Thread t = new Thread(() -> {
+			
+			try {
+				// wait if there is a lock on the series title
+				this.getSeriesLocks().lock(series.getTitle());
+				
+				
+				Series dbSeries = DB.findSeries(series.getTitle());
+		
+				// if no series found in DB. create new from the created series
+				// - if no series then no seasons and no episodes
+				if (dbSeries == null) {
+					//check identification process
+					saveNewSeries(series, newMedia, season, episode);			
+				} else {
+					mergeExistingSeries(series, newMedia, season, episode, dbSeries);
+				}				
+			}
+			finally {
+				this.getSeriesLocks().unlock(series.getTitle());
+			}
+		});
+		t.start();
 	}
 
 	private void enlistToSubtitleDownloader(Series s, int season, int episode) {
@@ -194,24 +219,20 @@ public class MovieIdentifier extends JukeboxThread {
 		} else {
 			Series mergedSeries = mergeSeries(dbSeries, series, season, episode);
 
-			forkSeriesUpdate(mergedSeries, newMedia, season, episode);
+			updateSeries(mergedSeries, newMedia, season, episode);
 		}
 	}
 
-	private void forkSeriesUpdate(Series series, Media media, int season, int episode) {
-		Thread t = new Thread(() -> {
-			Series s = getSeriesInfo(series, season, episode, media);
-			s = DB.save(s);
-			enlistToSubtitleDownloader(s, season, episode);
-
-		});
-		t.start();
+	private void updateSeries(Series series, Media media, int season, int episode) {
+		Series s = getSeriesInfo(series, season, episode, media);
+		s = DB.save(s);
+		enlistToSubtitleDownloader(s, season, episode);
 	}
 
 	private void saveNewSeries(Series series, Media newMedia, int season, int episode) {
 		// no series exist
 		Log.Debug("MovieIdentifier :: No series found! Creating new", LogType.FIND);
-		forkSeriesUpdate(series, newMedia, season, episode);
+		updateSeries(series, newMedia, season, episode);
 	}
 
 	/**
@@ -451,4 +472,9 @@ public class MovieIdentifier extends JukeboxThread {
 	public int getJukeboxPriority() {
 		return Thread.NORM_PRIORITY;
 	}
+
+	public StringLockPool getSeriesLocks() {
+		return this.seriesLocks;
+	}
+
 }

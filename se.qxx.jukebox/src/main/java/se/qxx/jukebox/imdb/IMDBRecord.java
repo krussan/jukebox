@@ -423,7 +423,7 @@ public class IMDBRecord {
 					Settings.imdb().getDatePatterns().getPattern().toArray(new String[] {}));
 			Log.Debug(String.format("IMDB :: parsed date :: %s", this.firstAirDate), LogType.IMDB);
 		} catch (ParseException e) {
-			Log.Error(String.format("IMDB :: Unable to parse date :: %s", firstAirDate), LogType.IMDB, e);
+			Log.Info(String.format("IMDB :: Unable to parse date :: %s", firstAirDate), LogType.IMDB);
 		}
 	}
 

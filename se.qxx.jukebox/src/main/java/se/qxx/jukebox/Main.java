@@ -105,9 +105,7 @@ public class Main implements Runnable, INotifyClient
 			}
 		}
 		catch (Exception e) {
-			System.out.println("An error occured on main thread::");
-			System.out.println(e.toString());
-			e.printStackTrace();
+			Log.Error("An error occured on main thread::", LogType.MAIN, e);
 		}
 		
 		Log.Info("Shutdown completed!", LogType.MAIN);

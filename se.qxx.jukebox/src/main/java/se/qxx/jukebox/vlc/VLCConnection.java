@@ -202,11 +202,9 @@ public class VLCConnection extends TcpClient {
 					return false;
 				else
 					return true;
-			} catch (SocketException e) {
-				Log.Error("Error while setting subtitle track", Log.LogType.COMM, e);
 			} catch (IOException e) {
-				e.printStackTrace();
-			}		
+				Log.Error("Error while setting subtitle track", Log.LogType.COMM, e);
+			}
 			
 			return false;
 		}
