@@ -243,7 +243,21 @@ public class TestParserBuilder {
 		assertEquals(1, pm.getSeason());
 		assertEquals(0, pm.getEpisode());
 	}
-	
+
+	@Test
+	public void TestCompleteSeasonInTitle() {
+		String filename = "This and that Complete Season 1.mp4";
+		
+		ParserBuilder b = new ParserBuilder();
+		ParserMovie pm = b.extractMovieParser("", filename);
+		MovieOrSeries mos = pm.build();
+		
+		assertTrue(mos.isSeries());
+		assertEquals("This and that", mos.getMainTitle());
+		assertEquals(1, pm.getSeason());
+		assertEquals(0, pm.getEpisode());
+	}
+
 	@Test
 	public void TestSeriesProposals() {
 		List<MovieOrSeries> proposals = new ArrayList<MovieOrSeries>();
