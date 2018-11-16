@@ -99,20 +99,9 @@ public abstract class SubFinderBase {
 		
 		for (SubFile sf : listSubs) {
 			try {
-				File file = WebRetriever.getWebFile(sf.getUrl(), tempSubPath);
-				if (file != null) {
-					sf.setFile(file);
-					
-					files.add(sf);
-		
-					Log.Debug(String.format("%s :: [%s/%s] :: File downloaded: %s"
-							, this.getClassName()
-							, c
-							, sizeCollection
-							, sf.getFile().getName())
-						, Log.LogType.SUBS);
-		
-				}
+				SubFile sfi = downloadSubFile(sf, tempSubPath, sizeCollection, c);
+				if (sfi != null)
+					files.add(sfi);
 				
 				c++;
 				
@@ -124,9 +113,8 @@ public abstract class SubFinderBase {
 				Log.Error(String.format("%s :: Error when downloading subtitle :: %s", this.getClassName(), sf.getFile().getName()), LogType.SUBS, e);
 			}
 			
-			if (listSubs.size() > 1) {
+			if (listSubs.size() > 1)
 				waitRandomly();
-			}
 
 			if (!this.isRunning)
 				return new ArrayList<SubFile>();
@@ -136,11 +124,32 @@ public abstract class SubFinderBase {
 		
 	}
 
+	private SubFile downloadSubFile(SubFile sf, String tempSubPath, int sizeCollection, int c)
+			throws IOException {
+		File file = WebRetriever.getWebFile(sf.getUrl(), tempSubPath);
+
+		if (file != null) {
+			sf.setFile(file);
+			
+			Log.Debug(String.format("%s :: [%s/%s] :: File downloaded: %s"
+					, this.getClassName()
+					, c
+					, sizeCollection
+					, sf.getFile().getName())
+				, Log.LogType.SUBS);
+			
+			return sf;
+
+		}
+		return null;
+	}
+
 	private void waitRandomly() {
 		try {
 			Random r = new Random();
 			int n = r.nextInt((this.getMaxWaitSeconds() - this.getMinWaitSeconds()) * 1000 + 1) + this.getMinWaitSeconds() * 1000;
 			
+			Log.Info(String.format("Sleeping for %s seconds", n), LogType.SUBS);
 			// sleep randomly to avoid detection (from 10 sec to 30 sec)
 			Thread.sleep(n);
 		} catch (InterruptedException e) {
