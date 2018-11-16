@@ -179,7 +179,7 @@ public class IMDBFinder {
 					true);
 
 			// exit if series contains season or if the series record is null (no series found)
-			found = seriesRec.getAllSeasonUrls().containsKey(season) || seriesRec == null;
+			found = seriesRec == null || seriesRec.getAllSeasonUrls().containsKey(season);
 			seriesBlacklist.add(Util.getImdbIdFromUrl(seriesRec.getUrl()));
 		}
 		
