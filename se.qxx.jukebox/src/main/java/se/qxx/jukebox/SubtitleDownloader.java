@@ -295,10 +295,15 @@ public class SubtitleDownloader extends JukeboxThread {
 					return false;
 	
 				Log.Debug(String.format("%s subs found in container. Saving...", subs.size()), LogType.SUBS);
-				DB.save(
-					Media.newBuilder(md)
-						.addAllSubs(subs)
-						.build());
+				
+				md = DB.getMediaById(md.getID());
+				
+				if (md != null) {
+					DB.save(
+						Media.newBuilder(md)
+							.addAllSubs(subs)
+							.build());
+				}
 			}
 			return true;
 		}
