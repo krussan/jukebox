@@ -1,14 +1,26 @@
 package se.qxx.jukebox;
 
 import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.inject.Inject;
+
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.converter.MediaConverter;
+import se.qxx.jukebox.interfaces.IArguments;
+import se.qxx.jukebox.interfaces.IExecutor;
+import se.qxx.jukebox.interfaces.IMain;
+import se.qxx.jukebox.interfaces.ISubtitleDownloader;
 import se.qxx.jukebox.servercomm.TcpListener;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
 import se.qxx.jukebox.settings.Settings;
@@ -20,13 +32,49 @@ import se.qxx.jukebox.watcher.FileRepresentation;
 import se.qxx.jukebox.watcher.FileSystemWatcher;
 import se.qxx.jukebox.watcher.INotifyClient;
 import se.qxx.jukebox.webserver.StreamingWebServer;
+import se.qxx.protodb.exceptions.DatabaseNotSupportedException;
+import se.qxx.protodb.exceptions.IDFieldNotFoundException;
 
-public class Main implements Runnable, INotifyClient
+public class Main implements IMain, INotifyClient
 {
 	private Boolean isRunning;
 	private List<JukeboxThread> threadPool = new ArrayList<JukeboxThread>();
+	private IArguments arguments;
+	private IExecutor executor;
+	private ISubtitleDownloader subtitleDownloader;
+
+	@Inject
+	public Main(IArguments arguments, IExecutor executor, ISubtitleDownloader subtitleDownloader) {
+		this.setArguments(arguments);	
+		this.setExecutor(executor);
+		this.setSubtitleDownloader(subtitleDownloader);
+	}
+	
+	public ISubtitleDownloader getSubtitleDownloader() {
+		return subtitleDownloader;
+	}
+
+	public void setSubtitleDownloader(ISubtitleDownloader subtitleDownloader) {
+		this.subtitleDownloader = subtitleDownloader;
+	}
+
+	public IExecutor getExecutor() {
+		return executor;
+	}
+
+	public void setExecutor(IExecutor executor) {
+		this.executor = executor;
+	}
+
+	public IArguments getArguments() {
+		return arguments;
+	}
+	public void setArguments(IArguments arguments) {
+		this.arguments = arguments;
+	}
 	
 	public List<JukeboxThread> getThreadPool() {
+		
 		return threadPool;
 	}
 
@@ -40,6 +88,19 @@ public class Main implements Runnable, INotifyClient
 	
 	java.util.concurrent.Semaphore s = new java.util.concurrent.Semaphore(1);	
 	
+
+	
+	private void startMainThread()  {
+		try {
+
+		}
+		catch (Exception e) {
+			//log exception and exit
+			System.out.println("Error when starting up ::");
+			e.printStackTrace();
+		}
+	}
+
 	public void run() {
 		
 		try {
@@ -49,37 +110,37 @@ public class Main implements Runnable, INotifyClient
 			Settings.initialize();
 			
 			System.out.println("Starting threads ...");
-			if (Arguments.get().isTcpListenerEnabled()) {
+			if (this.getArguments().isTcpListenerEnabled()) {
 				System.out.println("Starting TCP listener");
 				startupThread(new TcpListener());;
 			}
 			
-			if (Arguments.get().isSubtitleDownloaderEnabled()) {
+			if (this.getArguments().isSubtitleDownloaderEnabled()) {
 				System.out.println("Starting subtitle downloader");
-				startupThread(SubtitleDownloader.get());
+				startupThread(this.getSubtitleDownloader());
 			}
 			
-			if (Arguments.get().isWebServerEnabled()) {
+			if (this.getArguments().isWebServerEnabled()) {
 				System.out.println("Starting web server");
 				StreamingWebServer.setup("0.0.0.0", 8001);
 			}
 			
-			if (Arguments.get().isWatcherEnabled()) {
+			if (this.getArguments().isWatcherEnabled()) {
 				System.out.println("Starting watcher thread");
 				startupThread(MovieIdentifier.get());
 			}
 			
-			if (Arguments.get().isCleanerEnabled()) {
+			if (this.getArguments().isCleanerEnabled()) {
 				System.out.println("Starting cleaner thread");
 				startupThread(Cleaner.get());
 			}
 			
-			if (Arguments.get().isDownloadCheckerEnabled()) {
+			if (this.getArguments().isDownloadCheckerEnabled()) {
 				System.out.println("Starting download checker");
 				startupThread(DownloadChecker.get());
 			}
 			
-			if (Arguments.get().isMediaConverterEnabled()) {
+			if (this.getArguments().isMediaConverterEnabled()) {
 				System.out.println("Starting media converter");
 				startupThread(MediaConverter.get());
 			}
@@ -93,7 +154,7 @@ public class Main implements Runnable, INotifyClient
 			s.acquire();
 
 			while (this.getIsRunning()) {
-				if (Arguments.get().isWatcherEnabled()) {
+				if (this.getArguments().isWatcherEnabled()) {
 					System.out.println("Starting up watcher thred");
 					setupCatalogs();
 				}
@@ -215,5 +276,12 @@ public class Main implements Runnable, INotifyClient
 			}
 		}
 	}
+
+	public static ExecutorService getExecutorService() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	
+
 }

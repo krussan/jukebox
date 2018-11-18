@@ -1,98 +1,64 @@
 package se.qxx.jukebox;
 
-import java.io.IOException;
-import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
 
-import javax.xml.bind.JAXBException;
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.TypeLiteral;
+import com.google.inject.name.Names;
 
-import se.qxx.jukebox.settings.Settings;
+import se.qxx.jukebox.interfaces.IArguments;
+import se.qxx.jukebox.interfaces.ICleaner;
+import se.qxx.jukebox.interfaces.IDatabase;
+import se.qxx.jukebox.interfaces.IExecutor;
+import se.qxx.jukebox.interfaces.IMain;
+import se.qxx.jukebox.interfaces.IStarter;
+import se.qxx.jukebox.interfaces.ISubtitleDownloader;
+import se.qxx.jukebox.interfaces.IUpgrader;
 import se.qxx.jukebox.upgrade.Upgrader;
-import se.qxx.protodb.exceptions.DatabaseNotSupportedException;
-import se.qxx.protodb.exceptions.IDFieldNotFoundException;
 
 public class Jukebox {
-
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Arguments.initialize(args);
-		 
+		Injector injector = setupBindings(args);
+		Starter starter = injector.getInstance(Starter.class);
+		Main main = injector.getInstance(Main.class);
 		
-		if (Arguments.get().isHelpRequested()) {
-			displayHelp(); 
-			return; 
-		}
+		if (starter.checkStart())
+			main.run();
+	}
+	
+	private static Injector setupBindings(String[] args) {
 		
-		try {
-			Settings.initialize();
-		
-			if (Arguments.get().isPurgeMode()) {
-				purge();
-				return;
-			}
+		Injector injector = Guice.createInjector(new AbstractModule() {
 			
-			if (Arguments.get().isPurgeSubtitles()) {
-	//			purgeSubs();
-				System.out.println("Purging of subtitles has been removed. Will maybe be implemented in the future...");
-				System.out.println("Exiting....");			
-				return;
-			}
-			
-			if (Arguments.get().isPurgeSeries()) {
-				System.out.println("Purging all series");
-				DB.purgeSeries();
-				return;
-			}
-			
-			if (Arguments.get().isSetupDatabase()) {
-				try {
-					System.out.println("Setting up database...");
+			@Override
+			protected void configure() {
+				bind(new TypeLiteral<List<String>>() {})
+					.annotatedWith(Names.named("Commandline arguments"))
+					.toInstance(Arrays.asList(args));
 				
-					DB.setupDatabase();
-				} catch (ClassNotFoundException | SQLException | IDFieldNotFoundException
-						| DatabaseNotSupportedException e) {
-					e.printStackTrace();
-				}
-				System.out.println("Done!");
-				return;
+				bind(IArguments.class).to(Arguments.class).asEagerSingleton();
+				bind(IDatabase.class).to(DB.class);
+				bind(IUpgrader.class).to(Upgrader.class);
+				bind(IStarter.class).to(Starter.class);
+				bind(IExecutor.class).to(Executor.class);
+				bind(IMain.class).to(Main.class);
+				bind(ISubtitleDownloader.class).to(SubtitleDownloader.class);
+				bind(ICleaner.class).to(Cleaner.class);
+				
+					
+				
 			}
-						
-			startMainThread();
-		} catch (IOException | JAXBException e1) {
-			e1.printStackTrace();
-		}		
+		});
+		
+		return injector;
 	}
-	
-	private static void displayHelp() {
-		System.out.println("");
-		System.out.println("Jukebox starter - run.sh");
-		System.out.println("");
-		System.out.println("   run.sh [-ds] [-di] [-dt] [-dm] [-dc] [-dmc] [-dd] [--purge] [--help]");
-		System.out.println("");
-		System.out.println("\t-ds\tDisable subtitle downloader");
-		System.out.println("\t-di\tDisable imdb identifier");
-		System.out.println("\t-dt\tDisable tcp listener");
-		System.out.println("\t-dm\tDisable media info library");
-		System.out.println("\t-dw\tDisable streaming web server");
-		System.out.println("\t-df\tDisable search engine finder");
-		System.out.println("\t-dc\tDisable cleaning thread");
-		System.out.println("\t-dcl\tDisable but log cleaning entries");
-		System.out.println("\t-dmc\tDisable media converter");
-		System.out.println("\t-dd\tDisable download checker");
-		System.out.println("");
-		System.out.println("\t--purge\tPurges all content from database and exit");
-		System.out.println("\t--purgeSubs\tPurges all subtitles and queue from database");
-		System.out.println("\t--purgeSeries\tPurges all series and tv episodes from database");		
-		System.out.println("\t--help\tDisplays this help");
-		System.out.println("");
-	}
-	
-	private static void purge() {
-		System.out.println("Purging database ....");
-		DB.purgeDatabase();
-		System.out.println("Done !");
-	}
+
 
 //	private static void purgeSubs() {
 //		System.out.println("Purging subtitles from database ....");
@@ -100,33 +66,6 @@ public class Jukebox {
 //		System.out.println("Done !");
 //	}
 
-	private static void startMainThread()  {
-		try {
-			System.out.println("Starting up. Checking database ...");
-			
-			if (DB.setupDatabase()) {
-				if (!Upgrader.upgradeRequired()) {
-					System.out.println("No upgrade required... continuing...");
-					Thread t = new Thread(new Main());
-					t.start();
-					
-					t.join();
-				}
-				else if (Upgrader.databaseIsLaterVersion()) {
-					System.out.println("Database is a later version!! Exiting .......");
-				}
-				else {
-					System.out.println("Upgrade required");
-					Upgrader.performUpgrade();
-				}
-			}
-		}
-		catch (Exception e) {
-			//log exception and exit
-			System.out.println("Error when starting up ::");
-			e.printStackTrace();
-		}
-	}
 	
 
 

@@ -1,8 +1,14 @@
 package se.qxx.jukebox.upgrade;
 
 import se.qxx.jukebox.Version;
+import se.qxx.jukebox.interfaces.IDatabase;
+import se.qxx.jukebox.interfaces.IUpgrader;
 
-public class Upgrade_0_14 implements IIncrimentalUpgrade {
+public class Upgrade_0_14 extends UpgraderBase implements IIncrimentalUpgrade {
+
+	public Upgrade_0_14(IDatabase database) {
+		super(database);
+	}
 
 	static final String[] DbScripts = {
 		"ALTER TABLE movie ADD identifiedTitle TEXT NULL",
@@ -22,7 +28,7 @@ public class Upgrade_0_14 implements IIncrimentalUpgrade {
 
 	@Override
 	public void performUpgrade() throws UpgradeFailedException {
-		Upgrader.runDatabasescripts(DbScripts);
+		runDatabasescripts(DbScripts);
 		
 	}
 }

@@ -13,11 +13,16 @@ import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
+import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.tools.MediaMetadata;
 
-public class Upgrade_0_18 implements IIncrimentalUpgrade {
+public class Upgrade_0_18 extends UpgraderBase implements IIncrimentalUpgrade {
 	
+	public Upgrade_0_18(IDatabase database) {
+		super(database);
+	}
+
 	private static String[] DbScripts = {
 			"UPDATE SubtitleQueue\r\n" + 
 			"SET subtitleretreivedat = 0\r\n" + 
@@ -48,7 +53,7 @@ public class Upgrade_0_18 implements IIncrimentalUpgrade {
 		
 		List<String> movieIds = new ArrayList<String>();
 		
-		List<Movie> movies = DB.searchMoviesByTitle("");
+		List<Movie> movies = this.getDatabase().searchMoviesByTitle("");
 		for (Movie m : movies) {
 			for (Media md : m.getMediaList()) {
 				if (md.getFilename().endsWith("mkv")) {
@@ -62,7 +67,7 @@ public class Upgrade_0_18 implements IIncrimentalUpgrade {
 			}
 		}
 		
-		List<Series> series = DB.searchSeriesByTitle("");
+		List<Series> series = this.getDatabase().searchSeriesByTitle("");
 		for (Series s : series) {
 			for (Season ss : s.getSeasonList()) {
 				for (Episode ep : ss.getEpisodeList()) {
@@ -82,7 +87,7 @@ public class Upgrade_0_18 implements IIncrimentalUpgrade {
 		
 		DbScripts[0] = DbScripts[0].replace("__IDS__", String.join(",", movieIds));
 		
-		Upgrader.runDatabasescripts(DbScripts);		
+		runDatabasescripts(DbScripts);		
 	}
 
 }

@@ -1,8 +1,14 @@
 package se.qxx.jukebox.upgrade;
 
 import se.qxx.jukebox.Version;
+import se.qxx.jukebox.interfaces.IDatabase;
+import se.qxx.jukebox.interfaces.IUpgrader;
 
-public class Upgrade_0_1 implements IIncrimentalUpgrade {
+public class Upgrade_0_1 extends UpgraderBase implements IIncrimentalUpgrade {
+
+	public Upgrade_0_1(IDatabase database) {
+		super(database);
+	}
 
 	static final String[] DbScripts = {
 		"CREATE TABLE dbVersion (major int, minor int)"
@@ -56,7 +62,7 @@ public class Upgrade_0_1 implements IIncrimentalUpgrade {
 		 * 
 		 */
 
-		Upgrader.runDatabasescripts(DbScripts);
+		runDatabasescripts(DbScripts);
 		
 	}
 

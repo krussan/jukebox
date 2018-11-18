@@ -50,9 +50,6 @@ public class TestStringLocks {
 		
 		assertEquals(false, tryLock);
 		
-		
-		
-		
 	}
 	
 }

@@ -180,7 +180,6 @@ public class MovieIdentifier extends JukeboxThread {
 				// wait if there is a lock on the series title
 				this.getSeriesLocks().lock(series.getTitle());
 				
-				
 				Series dbSeries = DB.findSeries(series.getTitle());
 		
 				// if no series found in DB. create new from the created series

@@ -1,10 +1,20 @@
 package se.qxx.jukebox;
   
-import java.util.Arrays;
 import java.util.List;
 
-public class Arguments {
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
+import se.qxx.jukebox.interfaces.IArguments;
+
+public class Arguments implements IArguments {
+
+	
+	@Inject
+	public Arguments(@Named("Commandline arguments") List<String> args) {
+		this.initialize(args);
+	}
+	
 	private boolean subtitleDownloaderEnabled = true;
 	private boolean tcpListenerEnabled = true;
 	private boolean imdbIdentitifierEnabled = true;
@@ -20,8 +30,6 @@ public class Arguments {
 	private boolean setupDatabase = false;
 	private boolean downloadCheckerEnabled = true;
 	private boolean mediaConverterEnabled = true;
-	
-	private static Arguments _instance;
 	
 	public boolean isSubtitleDownloaderEnabled() {
 		return subtitleDownloaderEnabled;
@@ -62,73 +70,59 @@ public class Arguments {
 	public void setWebServerEnabled(boolean webServerEnabled) {
 		this.webServerEnabled = webServerEnabled;
 	}
+
 	
-	private Arguments() {
-		
-	}
-	
-	public static void initialize(String[] args) {
-		_instance = new Arguments();
-		
-		List<String> arguments = Arrays.asList(args);
-	
+	public void initialize(List<String> arguments) {
 		if (arguments.contains("-dt"))
-			_instance.setTcpListenerEnabled(false);
+			this.setTcpListenerEnabled(false);
 		
 		if (arguments.contains("-ds"))
-			_instance.setSubtitleDownloaderEnabled(false);
+			this.setSubtitleDownloaderEnabled(false);
 		
 		if (arguments.contains("-di"))
-			_instance.setImdbIdentifierEnabled(false);
+			this.setImdbIdentifierEnabled(false);
 
 		if (arguments.contains("-dm"))
-			_instance.setMediaInfoEnabled(false);
+			this.setMediaInfoEnabled(false);
 
 		if (arguments.contains("-dw"))
-			_instance.setWebServerEnabled(false);
+			this.setWebServerEnabled(false);
 
 		if (arguments.contains("--purge"))
-			_instance.setPurgeMode(true);
+			this.setPurgeMode(true);
 		
 		if (arguments.contains("--help") || arguments.contains("-?"))
-			_instance.setHelpRequested(true);
+			this.setHelpRequested(true);
 		
 		if (arguments.contains("--purgeSubs"))
-			_instance.setPurgeSubtitles(true);
+			this.setPurgeSubtitles(true);
 		
 		if (arguments.contains("--purgeSeries"))
-			_instance.setPurgeSeries(true);
+			this.setPurgeSeries(true);
 		
 		if (arguments.contains("-df"))
-			_instance.setWatcherEnabled(false);
+			this.setWatcherEnabled(false);
 		
 		if (arguments.contains("-dc"))
-			_instance.setCleanerEnabled(false);
+			this.setCleanerEnabled(false);
 		
 		if (arguments.contains("-dcl")) {
-			_instance.setCleanerEnabled(true);
-			_instance.setCleanerLogOnly(true);
+			this.setCleanerEnabled(true);
+			this.setCleanerLogOnly(true);
 		}
 		
 		if (arguments.contains("-dd")) 
-			_instance.setDownloadCheckerEnabled(false);
+			this.setDownloadCheckerEnabled(false);
 		
 		if (arguments.contains("-dmc"))
-			_instance.setMediaConverterEnabled(false);
+			this.setMediaConverterEnabled(false);
 		
 		if (arguments.contains("--setupdb")) {
-			_instance.setSetupDatabase(true);
+			this.setSetupDatabase(true);
 		}
 
 	}
 	
-	public static Arguments get() {
-		if (_instance == null)
-			_instance = new Arguments();
-		
-		return _instance;
-	}
-
 	public boolean isPurgeMode() {
 		return purgeMode;
 	}

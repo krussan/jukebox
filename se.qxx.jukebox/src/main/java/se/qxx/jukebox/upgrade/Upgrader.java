@@ -8,25 +8,52 @@ import java.util.Stack;
 
 import se.qxx.jukebox.DB;
 import se.qxx.jukebox.Version;
+import se.qxx.jukebox.interfaces.IDatabase;
+import se.qxx.jukebox.interfaces.IUpgrader;
 import se.qxx.protodb.exceptions.DatabaseNotSupportedException;
 
-public class Upgrader {
+public class Upgrader implements IUpgrader {
 
-	public static boolean upgradeRequired() throws ClassNotFoundException, SQLException {
-		Version currentVersion = DB.getVersion();
+	private IDatabase database;
+	
+	public Upgrader(IDatabase database) {
+		this.setDatabase(database);
+	}
+	
+	public IDatabase getDatabase() {
+		return database;
+	}
+	public void setDatabase(IDatabase database) {
+		this.database = database;
+	}
+	
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.upgrade.IUpgrader#upgradeRequired()
+	 */
+	@Override
+	public boolean upgradeRequired() throws ClassNotFoundException, SQLException {
+		Version currentVersion = this.getDatabase().getVersion();
 		Version thisVersion = new Version();
 
 		return !thisVersion.isEqualTo(currentVersion);
 	}
 	
-	public static boolean databaseIsLaterVersion() throws ClassNotFoundException, SQLException {
-		Version currentVersion = DB.getVersion();
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.upgrade.IUpgrader#databaseIsLaterVersion()
+	 */
+	@Override
+	public boolean databaseIsLaterVersion() throws ClassNotFoundException, SQLException {
+		Version currentVersion = this.getDatabase().getVersion();
 		Version thisVersion = new Version();
 
 		return thisVersion.isLessThan(currentVersion);
 	}
 	
-	public static void performUpgrade() 
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.upgrade.IUpgrader#performUpgrade()
+	 */
+	@Override
+	public void performUpgrade() 
 			throws ClassNotFoundException
 				 , SQLException
 				 , SecurityException
@@ -36,7 +63,7 @@ public class Upgrader {
 				 , IllegalAccessException
 				 , InvocationTargetException, DatabaseNotSupportedException {
 		
-		Version currentVersion = DB.getVersion();
+		Version currentVersion = this.getDatabase().getVersion();
 		Version thisVersion = new Version();
 		
 		Stack<Version> upgradeStack = new Stack<Version>();
@@ -53,7 +80,7 @@ public class Upgrader {
 
 		System.out.println("Making backup of database...");
 		try {
-			String backupFilename = DB.backup();
+			String backupFilename = this.getDatabase().backup();
 		
 			while (!upgradeStack.isEmpty()) {
 				Version upgradeVersion = upgradeStack.pop();
@@ -63,7 +90,7 @@ public class Upgrader {
 					System.out.println(String.format("Upgrading to version %s", upgradeVersion.toString()));
 					c.performUpgrade();
 					
-					DB.setVersion(upgradeVersion);
+					this.getDatabase().setVersion(upgradeVersion);
 				}
 				catch (Exception e) {
 
@@ -73,7 +100,7 @@ public class Upgrader {
 					System.out.println("Starting rollback...");
 
 					try {
-						DB.restore(backupFilename);
+						this.getDatabase().restore(backupFilename);
 					} catch (IOException e2) {
 						System.out.println("ROLLBACK FAILED! CORRUPT STATE!");
 						e2.printStackTrace();
@@ -92,20 +119,14 @@ public class Upgrader {
 		
 	} 
 	
-	private static IIncrimentalUpgrade getClazz(Version ver) throws ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
+	private IIncrimentalUpgrade getClazz(Version ver) throws ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
 		Class<?> c = Class.forName(ver.getUpgradeClazzName());
-		Class<?>[] parTypes = new Class<?>[] {};
-		Object[] args = new Object[] {};
+		Class<?>[] parTypes = new Class<?>[] {IDatabase.class};
+
+		Object[] args = new Object[] {this.getDatabase()};
 		Constructor<?> con = c.getConstructor(parTypes);
 		Object o = con.newInstance(args);
 	
 		return (IIncrimentalUpgrade)o;	
-	}
-	
-	public static void runDatabasescripts(String[] dbScripts) throws UpgradeFailedException {
-		System.out.println("Upgrading database...");
-
-		if (!DB.executeUpgradeStatements(dbScripts))
-			throw new UpgradeFailedException();
 	}
 }

@@ -5,12 +5,15 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.tools.Util;
 
-public abstract class JukeboxThread extends Thread {
+public abstract class JukeboxThread implements Runnable {
 	private boolean isRunning;
 	private long sleepTime;
 	private LogType logType;
+	private String name;
+	private IExecutor executor;
 	
 	private ReentrantLock lock = new ReentrantLock();
 	private Condition condA = lock.newCondition();
@@ -18,10 +21,11 @@ public abstract class JukeboxThread extends Thread {
 	@SuppressWarnings("unused")
 	private Condition condB = lock.newCondition();
 
-	public JukeboxThread(String name, long sleepTime, LogType logType) {
-		super(name);
+	public JukeboxThread(String name, long sleepTime, LogType logType, IExecutor executor) {
+		this.setName(name);
 		this.setSleepTime(sleepTime);
 		this.setLogType(logType);
+		this.setExecutor(executor);
 	}
 	
 
@@ -64,7 +68,6 @@ public abstract class JukeboxThread extends Thread {
 		Log.Info(String.format("Starting up thread %s",  this.getName()), this.getLogType());
 		
 		initialize();
-		this.setPriority(this.getJukeboxPriority());
 		while(this.isRunning()) {
 			try {
 				execute();
@@ -96,7 +99,6 @@ public abstract class JukeboxThread extends Thread {
 	public void end() {
 		Log.Info(String.format("Stopping %s thread ...",  this.getName()), this.getLogType());
 		this.setRunning(false);
-		this.interrupt();
 	}
 
 	public int getJukeboxPriority() {
@@ -111,6 +113,26 @@ public abstract class JukeboxThread extends Thread {
 		finally {
 			lock.unlock();
 		}
+	}
+
+
+	public String getName() {
+		return name;
+	}
+
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+
+	public IExecutor getExecutor() {
+		return executor;
+	}
+
+
+	public void setExecutor(IExecutor executor) {
+		this.executor = executor;
 	}
 
 }

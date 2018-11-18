@@ -1,9 +1,15 @@
 package se.qxx.jukebox.upgrade;
 
 import se.qxx.jukebox.Version;
+import se.qxx.jukebox.interfaces.IDatabase;
 
-public class Upgrade_0_11 implements IIncrimentalUpgrade {
+public class Upgrade_0_11 extends UpgraderBase implements IIncrimentalUpgrade {
 
+	public Upgrade_0_11(IDatabase database) {
+		super(database);
+	}
+
+	
 	static final String[] DbScripts = {
 		"CREATE TABLE Movie_Blacklist (_movie_ID INTEGER NOT NULL REFERENCES Movie (ID),value TEXT NOT NULL)",
 		"DROP TABLE Media_Blacklist",
@@ -29,7 +35,7 @@ public class Upgrade_0_11 implements IIncrimentalUpgrade {
 
 	@Override
 	public void performUpgrade() throws UpgradeFailedException {
-		Upgrader.runDatabasescripts(DbScripts);
+		runDatabasescripts(DbScripts);
 
 	}
 }

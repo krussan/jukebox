@@ -1,8 +1,13 @@
 package se.qxx.jukebox.upgrade;
 
 import se.qxx.jukebox.Version;
+import se.qxx.jukebox.interfaces.IDatabase;
 
-public class Upgrade_0_9 implements IIncrimentalUpgrade {
+public class Upgrade_0_9 extends UpgraderBase implements IIncrimentalUpgrade {
+
+	public Upgrade_0_9(IDatabase database) {
+		super(database);
+	}
 
 	static final String[] DbScripts = {
 		"CREATE TABLE Blacklist (" +
@@ -24,7 +29,7 @@ public class Upgrade_0_9 implements IIncrimentalUpgrade {
 
 	@Override
 	public void performUpgrade() throws UpgradeFailedException {
-		Upgrader.runDatabasescripts(DbScripts);
+		runDatabasescripts(DbScripts);
 
 	}
 }

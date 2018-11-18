@@ -21,6 +21,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.JukeboxDomain.SubtitleQueue;
+import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.protodb.DBType;
@@ -36,12 +37,12 @@ import se.qxx.protodb.exceptions.SearchOptionsNotInitializedException;
 import se.qxx.protodb.model.ProtoDBSearchOperator;
 
 import com.google.protobuf.Message;
-public class DB {
+public class DB implements IDatabase {
 
 
-	private static ReentrantLock lock = new ReentrantLock();
+	private ReentrantLock lock = new ReentrantLock();
 	
-	private DB() {
+	public DB() {
 		
 	} 
 
@@ -49,13 +50,21 @@ public class DB {
 	//------------------------------------------------------------------------ Search
 	//---------------------------------------------------------------------------------------
 
-	public static List<Movie> searchMoviesByTitle(String searchString) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#searchMoviesByTitle(java.lang.String)
+	 */
+	@Override
+	public List<Movie> searchMoviesByTitle(String searchString) {
 		return searchMoviesByTitle(searchString, -1, -1);
 	}
 	
-	public static List<Movie> searchMoviesByTitle(String searchString, int numberOfResults, int offset) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#searchMoviesByTitle(java.lang.String, int, int)
+	 */
+	@Override
+	public List<Movie> searchMoviesByTitle(String searchString, int numberOfResults, int offset) {
 		List<String> excludedObjects = new ArrayList<String>();
-		excludedObjects.add("media.subs");
+		excludedObjects.add("media.subs.textdata");
 		excludedObjects.add("image");
 		
 		return searchByTitle(JukeboxDomain.Movie.getDefaultInstance()
@@ -67,10 +76,14 @@ public class DB {
 				, "identifiedTitle");
 	}
 	
-	public static Movie searchMoviesByID(int id) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#searchMoviesByID(int)
+	 */
+	@Override
+	public Movie searchMoviesByID(int id) {
 		try {
 			List<String> excludedObjects = new ArrayList<String>();
-			excludedObjects.add("media.subs");
+			excludedObjects.add("media.subs.textdata");
 			excludedObjects.add("image");
 	
 			ProtoDB db = getProtoDBInstance(true);
@@ -105,11 +118,19 @@ public class DB {
 	}
 	
 
-	public static List<Series> searchSeriesByTitle(String searchString) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#searchSeriesByTitle(java.lang.String)
+	 */
+	@Override
+	public List<Series> searchSeriesByTitle(String searchString) {
 		return searchSeriesByTitle(searchString, -1, -1);		
 	}
 
-	public static List<Series> searchSeriesByTitle(String searchString, int numberOfResults, int offset) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#searchSeriesByTitle(java.lang.String, int, int)
+	 */
+	@Override
+	public List<Series> searchSeriesByTitle(String searchString, int numberOfResults, int offset) {
 		List<String> excludedObjects = new ArrayList<String>();
 		excludedObjects.add("season"); // exclude underlying seasons
 		excludedObjects.add("image"); // exclude full size image
@@ -123,7 +144,7 @@ public class DB {
 				, "title");
 	}
 	
-	private static <T extends Message> List<T> searchByTitle(
+	private <T extends Message> List<T> searchByTitle(
 			T instance, 
 			String searchField, 
 			String searchString, 
@@ -169,14 +190,18 @@ public class DB {
 	}
 
 
-	private static String replaceSearchString(String searchString) {
+	private String replaceSearchString(String searchString) {
 		String ret = searchString;
 		ret = StringUtils.replace(ret, "%", "\\%");
 		ret = StringUtils.replace(ret, "_", "\\_");
 		return StringUtils.trim(ret);
 	}
 	
-	public static Movie findMovie(String identifiedTitle) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#findMovie(java.lang.String)
+	 */
+	@Override
+	public Movie findMovie(String identifiedTitle) {
 		String searchString = replaceSearchString(identifiedTitle);
 		
 		Log.Debug(String.format("DB :: Series search string :: %s", searchString), LogType.FIND);
@@ -213,7 +238,11 @@ public class DB {
 		}
 	}
 	
-	public static Series findSeries(String identifiedTitle) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#findSeries(java.lang.String)
+	 */
+	@Override
+	public Series findSeries(String identifiedTitle) {
 		String searchString = replaceSearchString(identifiedTitle) + "%";
 		
 		Log.Debug(String.format("DB :: Series search string :: %s", searchString), LogType.MAIN);
@@ -250,14 +279,11 @@ public class DB {
 		}
 	}
 	
-	/***
-	 * Uses search method to find a specific Series by ID.
-	 * Includes episodes but exludes images on series and season
-	 * 
-	 * @param id
-	 * @return
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#searchSeriesById(int)
 	 */
-	public static Series searchSeriesById(int id) {
+	@Override
+	public Series searchSeriesById(int id) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			
@@ -292,7 +318,11 @@ public class DB {
 		return null;
 	}
 
-	public static Season searchSeasonById(int id) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#searchSeasonById(int)
+	 */
+	@Override
+	public Season searchSeasonById(int id) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			
@@ -306,7 +336,7 @@ public class DB {
 							.addOperator(ProtoDBSearchOperator.Equals)
 							.addExcludedObject("image")
 							.addExcludedObject("episode.image")
-							.addExcludedObject("episode.media.subs"));
+							.addExcludedObject("episode.media.subs.textdata"));
 					
 						
 
@@ -332,7 +362,11 @@ public class DB {
 	//------------------------------------------------------------------------ Get
 	//---------------------------------------------------------------------------------------
 
-	public static Movie getMovie(int id) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#getMovie(int)
+	 */
+	@Override
+	public Movie getMovie(int id) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			
@@ -361,7 +395,11 @@ public class DB {
 	
 
 
-	public static Series getSeries(int id) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#getSeries(int)
+	 */
+	@Override
+	public Series getSeries(int id) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			
@@ -392,7 +430,11 @@ public class DB {
 		return null;
 	}
 
-	public static Season getSeason(int id) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#getSeason(int)
+	 */
+	@Override
+	public Season getSeason(int id) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			try {
@@ -422,7 +464,11 @@ public class DB {
 		return null;
 	}
 
-	public static Episode getEpisode(int id) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#getEpisode(int)
+	 */
+	@Override
+	public Episode getEpisode(int id) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			
@@ -447,7 +493,11 @@ public class DB {
 	//------------------------------------------------------------------------ Save
 	//---------------------------------------------------------------------------------------
 
-	public static Movie save(Movie m) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#save(se.qxx.jukebox.domain.JukeboxDomain.Movie)
+	 */
+	@Override
+	public Movie save(Movie m) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			
@@ -468,7 +518,11 @@ public class DB {
 		}
 	}
 
-	public static Media save(Media md) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#save(se.qxx.jukebox.domain.JukeboxDomain.Media)
+	 */
+	@Override
+	public Media save(Media md) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			
@@ -488,7 +542,11 @@ public class DB {
 		}
 	}
 	
-	public static Episode save(Episode episode) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#save(se.qxx.jukebox.domain.JukeboxDomain.Episode)
+	 */
+	@Override
+	public Episode save(Episode episode) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 
@@ -508,7 +566,11 @@ public class DB {
 		}
 	}	
 
-	public static Series save(Series series) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#save(se.qxx.jukebox.domain.JukeboxDomain.Series)
+	 */
+	@Override
+	public Series save(Series series) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			
@@ -528,7 +590,11 @@ public class DB {
 		}
 	}	
 
-	public static void saveAsync(Series series) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#saveAsync(se.qxx.jukebox.domain.JukeboxDomain.Series)
+	 */
+	@Override
+	public void saveAsync(Series series) {
 		Thread t = new Thread(() -> {
 			try {
 
@@ -556,7 +622,11 @@ public class DB {
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Delete
 	//---------------------------------------------------------------------------------------
-	public static void delete(Movie m) throws ClassNotFoundException, SQLException, DatabaseNotSupportedException {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#delete(se.qxx.jukebox.domain.JukeboxDomain.Movie)
+	 */
+	@Override
+	public void delete(Movie m) throws ClassNotFoundException, SQLException, DatabaseNotSupportedException {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			
@@ -578,7 +648,11 @@ public class DB {
 		}		
 	}
 	
-	public static void delete(Series s) throws ClassNotFoundException, SQLException, DatabaseNotSupportedException  {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#delete(se.qxx.jukebox.domain.JukeboxDomain.Series)
+	 */
+	@Override
+	public void delete(Series s) throws ClassNotFoundException, SQLException, DatabaseNotSupportedException  {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			
@@ -600,7 +674,11 @@ public class DB {
 		}			
 	}
 
-	public static void delete(Season sn) throws ClassNotFoundException, SQLException,  DatabaseNotSupportedException  {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#delete(se.qxx.jukebox.domain.JukeboxDomain.Season)
+	 */
+	@Override
+	public void delete(Season sn) throws ClassNotFoundException, SQLException,  DatabaseNotSupportedException  {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			
@@ -620,7 +698,11 @@ public class DB {
 		}			
 	}
 
-	public static void delete(Episode ep) throws ClassNotFoundException, SQLException, DatabaseNotSupportedException  {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#delete(se.qxx.jukebox.domain.JukeboxDomain.Episode)
+	 */
+	@Override
+	public void delete(Episode ep) throws ClassNotFoundException, SQLException, DatabaseNotSupportedException  {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			
@@ -644,7 +726,11 @@ public class DB {
 	//------------------------------------------------------------------------ Watched
 	//---------------------------------------------------------------------------------------
 	
-	public static void toggleWatched(Movie m) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#toggleWatched(se.qxx.jukebox.domain.JukeboxDomain.Movie)
+	 */
+	@Override
+	public void toggleWatched(Movie m) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			
@@ -663,7 +749,11 @@ public class DB {
 
 	}		
 
-	public static List<Media> getConverterQueue() {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#getConverterQueue()
+	 */
+	@Override
+	public List<Media> getConverterQueue() {
 		List<Media> result = new ArrayList<Media>();
        try {
            ProtoDB db = getProtoDBInstance();
@@ -695,7 +785,11 @@ public class DB {
 	
 	}
 	
-	public static void setDownloadCompleted(int id) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#setDownloadCompleted(int)
+	 */
+	@Override
+	public void setDownloadCompleted(int id) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			
@@ -715,7 +809,11 @@ public class DB {
 		}				
 	}
 
-	public  static void cleanupConverterQueue() {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#cleanupConverterQueue()
+	 */
+	@Override
+	public  void cleanupConverterQueue() {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			
@@ -740,7 +838,11 @@ public class DB {
 	//------------------------------------------------------------------------ Subtitles
 	//---------------------------------------------------------------------------------------
 
-	public static Movie addMovieToSubtitleQueue(Movie m) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#addMovieToSubtitleQueue(se.qxx.jukebox.domain.JukeboxDomain.Movie)
+	 */
+	@Override
+	public Movie addMovieToSubtitleQueue(Movie m) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			int id = m.hasSubtitleQueue() ? m.getSubtitleQueue().getID() : -1;
@@ -767,7 +869,11 @@ public class DB {
 		return m;
 	}
 	
-	public static Episode addEpisodeToSubtitleQueue(Episode e) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#addEpisodeToSubtitleQueue(se.qxx.jukebox.domain.JukeboxDomain.Episode)
+	 */
+	@Override
+	public Episode addEpisodeToSubtitleQueue(Episode e) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			
@@ -775,7 +881,7 @@ public class DB {
 					SubtitleQueue.newBuilder()
 						.setID(-1)
 						.setSubtitleRetreiveResult(0)				
-						.setSubtitleQueuedAt(DB.getCurrentUnixTimestamp())
+						.setSubtitleQueuedAt(getCurrentUnixTimestamp())
 						.build())
 					.build();
 			
@@ -793,18 +899,19 @@ public class DB {
 		return e;
 	}
 	
-	public static long getCurrentUnixTimestamp() {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#getCurrentUnixTimestamp()
+	 */
+	@Override
+	public long getCurrentUnixTimestamp() {
 		return System.currentTimeMillis() / 1000L;
 	}
 
-	/***
-	 * Retrieves the subtitle queue as a list of MovieOrSeries objects
-	 * Due to the nature of the MovieOrSeries class all episodes needs
-	 * to be represented by a single series and a single season object
-	 * 
-	 * @return
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#getSubtitleQueue()
 	 */
-	public static List<MovieOrSeries> getSubtitleQueue() {
+	@Override
+	public List<MovieOrSeries> getSubtitleQueue() {
 		List<MovieOrSeries> result = new ArrayList<MovieOrSeries>();
 		List<Movie> movies = new ArrayList<Movie>();
 		List<Series> series = new ArrayList<Series>();
@@ -854,18 +961,30 @@ public class DB {
 		return result;
 	}
 	
-	public static ProtoDB getProtoDBInstance() throws DatabaseNotSupportedException {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#getProtoDBInstance()
+	 */
+	@Override
+	public ProtoDB getProtoDBInstance() throws DatabaseNotSupportedException {
 		return getProtoDBInstance(true);
 	}
 	
-	public static ProtoDB getProtoDBInstance(boolean populateBlobs) throws DatabaseNotSupportedException {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#getProtoDBInstance(boolean)
+	 */
+	@Override
+	public ProtoDB getProtoDBInstance(boolean populateBlobs) throws DatabaseNotSupportedException {
 		String driver = Settings.get().getDatabase().getDriver();
 		String connectionString = Settings.get().getDatabase().getConnectionString();
 
 		return getProtoDBInstance(driver, connectionString, populateBlobs);
 	}
 	
-	public static ProtoDB getProtoDBInstance(String driver, String connectionString, boolean populateBlobs) throws DatabaseNotSupportedException {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#getProtoDBInstance(java.lang.String, java.lang.String, boolean)
+	 */
+	@Override
+	public ProtoDB getProtoDBInstance(String driver, String connectionString, boolean populateBlobs) throws DatabaseNotSupportedException {
 		ProtoDB db = null; 
 		String logFilename = Log.getLoggerFilename(LogType.DB);
 	
@@ -878,7 +997,7 @@ public class DB {
 		return db;
 	}
 
-	private static List<MovieOrSeries> constructSubtitleQueue(List<Movie> movies, List<Series> series) {
+	private List<MovieOrSeries> constructSubtitleQueue(List<Movie> movies, List<Series> series) {
 		List<MovieOrSeries> moss = new ArrayList<MovieOrSeries>();
 		
 		for (Movie m : movies) {
@@ -893,7 +1012,7 @@ public class DB {
 		return moss;
 	}
 
-	private static List<MovieOrSeries> decoupleSeries(List<Series> series) {
+	private List<MovieOrSeries> decoupleSeries(List<Series> series) {
 		List<MovieOrSeries> moss = new ArrayList<MovieOrSeries>();
 		
 		for (Series s : series) {
@@ -921,7 +1040,11 @@ public class DB {
 	//------------------------------------------------------------------------ Blacklist
 	//---------------------------------------------------------------------------------------
 
-	public static void addToBlacklist(Movie m) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#addToBlacklist(se.qxx.jukebox.domain.JukeboxDomain.Movie)
+	 */
+	@Override
+	public void addToBlacklist(Movie m) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			m = Movie.newBuilder(m).addBlacklist(m.getImdbId()).build();			
@@ -943,7 +1066,11 @@ public class DB {
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Version
 	//---------------------------------------------------------------------------------------
-	public static Version getVersion() throws ClassNotFoundException {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#getVersion()
+	 */
+	@Override
+	public Version getVersion() throws ClassNotFoundException {
 		Connection conn = null;
 		int minor = 0;
 		int major = 0;
@@ -973,7 +1100,7 @@ public class DB {
 		}
 		
 		finally {
-			DB.disconnect(conn);
+			disconnect(conn);
 		}
 		
 		//default for pre-protodb is 0.10
@@ -983,7 +1110,11 @@ public class DB {
 		return new Version(major, minor);
 	}
 	
-	public  static void setVersion(Version ver) throws ClassNotFoundException, SQLException, DatabaseNotSupportedException {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#setVersion(se.qxx.jukebox.Version)
+	 */
+	@Override
+	public  void setVersion(Version ver) throws ClassNotFoundException, SQLException, DatabaseNotSupportedException {
 		Connection conn = null;
 		try {
 			ProtoDB db = getProtoDBInstance();
@@ -1004,11 +1135,11 @@ public class DB {
 			}
 		}
 		finally {
-			DB.disconnect(conn);
+			disconnect(conn);
 		}
 	}
 	
-	private static void insertVersion(Version ver) throws ClassNotFoundException, SQLException, DatabaseNotSupportedException {
+	private void insertVersion(Version ver) throws ClassNotFoundException, SQLException, DatabaseNotSupportedException {
 		Connection conn = null;
 		try {
 			ProtoDB db = getProtoDBInstance();
@@ -1030,11 +1161,15 @@ public class DB {
 
 		}
 		finally {
-			DB.disconnect(conn);
+			disconnect(conn);
 		}
 	}
 	
-	public static String backup() throws IOException, DatabaseNotSupportedException  {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#backup()
+	 */
+	@Override
+	public String backup() throws IOException, DatabaseNotSupportedException  {
 		String backupFilename = StringUtils.EMPTY;
 		
 		ProtoDB db = getProtoDBInstance();
@@ -1063,7 +1198,11 @@ public class DB {
 		return backupFilename;
 	}
 
-	public static void restore(String backupFilename) throws IOException {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#restore(java.lang.String)
+	 */
+	@Override
+	public void restore(String backupFilename) throws IOException {
 		File backup = new File(backupFilename);
 		File restoreFile = new File("jukebox_proto.db");
 		
@@ -1074,14 +1213,17 @@ public class DB {
 	}
 	
 
-	public static boolean executeUpgradeStatements(String[] statements) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#executeUpgradeStatements(java.lang.String[])
+	 */
+	@Override
+	public boolean executeUpgradeStatements(String[] statements) {
 		Connection conn = null;
 		String sql = StringUtils.EMPTY;
 		
 		try {
 			lock.lock();
-			conn = DB.initialize();
-			
+			conn = initialize();
 			conn.setAutoCommit(false);
 
 			int nrOfScripts = statements.length;
@@ -1110,16 +1252,16 @@ public class DB {
 			return false;
 		}
 		finally {
-			DB.disconnect(conn);
+			disconnect(conn);
 			lock.unlock();
 		}
 	}
 	
-	private static Connection initialize() throws ClassNotFoundException, SQLException, DatabaseNotSupportedException {
-		return DB.getProtoDBInstance().getConnection();
+	private Connection initialize() throws ClassNotFoundException, SQLException, DatabaseNotSupportedException {
+		return getProtoDBInstance().getConnection();
 	}
 	
-	private static void disconnect(Connection conn) {
+	private void disconnect(Connection conn) {
 		try {
 			if (conn != null)
 				conn.close();
@@ -1127,11 +1269,15 @@ public class DB {
 		}
 	}
 
-	public static boolean purgeDatabase() {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#purgeDatabase()
+	 */
+	@Override
+	public boolean purgeDatabase() {
 		try {
 			lock.lock();
 			
-			DB.getProtoDBInstance().dropAllTables();
+			getProtoDBInstance().dropAllTables();
 		
 			setupDatabase();
 			
@@ -1146,17 +1292,21 @@ public class DB {
 		}
 	}
 
-	public static boolean setupDatabase() throws ClassNotFoundException, SQLException, IDFieldNotFoundException, DatabaseNotSupportedException {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#setupDatabase()
+	 */
+	@Override
+	public boolean setupDatabase() throws ClassNotFoundException, SQLException, IDFieldNotFoundException, DatabaseNotSupportedException {
 		try {
 			lock.lock();
-			Version ver = DB.getVersion();
+			Version ver = getVersion();
 			if (ver.getMajor() == 0 && ver.getMinor() == 10) {
 				ProtoDB db = getProtoDBInstance();
 				
 				db.setupDatabase(Movie.getDefaultInstance());
 				db.setupDatabase(se.qxx.jukebox.domain.JukeboxDomain.Version.getDefaultInstance());
 				db.setupDatabase(Series.getDefaultInstance());
-				DB.insertVersion(new Version());
+				insertVersion(new Version());
 				
 				return false;
 			}
@@ -1173,7 +1323,11 @@ public class DB {
 		return true;
 	}
 
-	public static Movie getMovieByMediaID(int mediaID) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#getMovieByMediaID(int)
+	 */
+	@Override
+	public Movie getMovieByMediaID(int mediaID) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			
@@ -1207,7 +1361,11 @@ public class DB {
 	}
 
 	
-	public static Media getMediaByFilename(String filename) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#getMediaByFilename(java.lang.String)
+	 */
+	@Override
+	public Media getMediaByFilename(String filename) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 
@@ -1242,7 +1400,11 @@ public class DB {
 			
 	}
 	
-	public static Media getMediaById(int mediaId)  {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#getMediaById(int)
+	 */
+	@Override
+	public Media getMediaById(int mediaId)  {
 		try {
 			ProtoDB db = getProtoDBInstance();
 
@@ -1261,7 +1423,11 @@ public class DB {
 		return null;		
 	}
 
-	public static Movie getMovieBySubfilename(String subsFilename) throws DatabaseNotSupportedException {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#getMovieBySubfilename(java.lang.String)
+	 */
+	@Override
+	public Movie getMovieBySubfilename(String subsFilename) throws DatabaseNotSupportedException {
 		try {
 			String searchString = replaceSearchString(subsFilename) + "%";
 			
@@ -1291,7 +1457,11 @@ public class DB {
 		return null;
 	}
 
-	public static void purgeSeries() {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#purgeSeries()
+	 */
+	@Override
+	public void purgeSeries() {
 		try {
 			ProtoDB db = getProtoDBInstance();
 
@@ -1319,11 +1489,11 @@ public class DB {
 		}		
 	}
 
-	/***
-	 * This purges the subtitle queue from all items that are not present in
-	 * the Episode and the Movie objects any more
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#cleanSubtitleQueue()
 	 */
-	public  static void cleanSubtitleQueue() {
+	@Override
+	public  void cleanSubtitleQueue() {
 		try {
 			ProtoDB db = getProtoDBInstance();
 
@@ -1342,7 +1512,11 @@ public class DB {
 		}		
 	}
 	
-	public static int getTotalNrOfMovies() {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#getTotalNrOfMovies()
+	 */
+	@Override
+	public int getTotalNrOfMovies() {
 		try {
 			ProtoDB db = getProtoDBInstance();
 
@@ -1364,7 +1538,11 @@ public class DB {
 		return 0;
 	}
 
-	public static int getTotalNrOfSeries() {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#getTotalNrOfSeries()
+	 */
+	@Override
+	public int getTotalNrOfSeries() {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			
@@ -1386,7 +1564,11 @@ public class DB {
 		return 0;
 	}
 	
-	public static int getTotalNrOfSeasons(int seriesID) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#getTotalNrOfSeasons(int)
+	 */
+	@Override
+	public int getTotalNrOfSeasons(int seriesID) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 
@@ -1408,7 +1590,11 @@ public class DB {
 		return 0;		
 	}
 	
-	public static int getTotalNrOfEpisodes(int seasonID) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#getTotalNrOfEpisodes(int)
+	 */
+	@Override
+	public int getTotalNrOfEpisodes(int seasonID) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			
@@ -1429,7 +1615,11 @@ public class DB {
 		return 0;				
 	}
 
-	public static void saveConversion(int id, String newFilename, int value) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#saveConversion(int, java.lang.String, int)
+	 */
+	@Override
+	public void saveConversion(int id, String newFilename, int value) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 
@@ -1458,11 +1648,19 @@ public class DB {
 		}						
 	}
 
-	public static void saveConversion(int id, int completedValue) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#saveConversion(int, int)
+	 */
+	@Override
+	public void saveConversion(int id, int completedValue) {
 		saveConversion(id, StringUtils.EMPTY, completedValue);
 	}
 
-	public static Series getSeriesByEpisode(int id) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#getSeriesByEpisode(int)
+	 */
+	@Override
+	public Series getSeriesByEpisode(int id) {
 		List<Series> series = null;
 		try {
 			ProtoDB db = getProtoDBInstance();
@@ -1493,7 +1691,11 @@ public class DB {
 
 	}
 
-	public static Season save(Season season) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#save(se.qxx.jukebox.domain.JukeboxDomain.Season)
+	 */
+	@Override
+	public Season save(Season season) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 

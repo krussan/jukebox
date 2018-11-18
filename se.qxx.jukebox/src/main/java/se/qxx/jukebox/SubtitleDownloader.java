@@ -7,16 +7,23 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.google.protobuf.ByteString;
 
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.builders.MovieBuilder;
 import se.qxx.jukebox.domain.MovieOrSeries;
+import se.qxx.jukebox.interfaces.IDatabase;
+import se.qxx.jukebox.interfaces.IExecutor;
+import se.qxx.jukebox.interfaces.ISubtitleDownloader;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
@@ -33,29 +40,33 @@ import se.qxx.jukebox.subtitles.SubFinderBase;
 import se.qxx.jukebox.tools.Unpacker;
 import se.qxx.jukebox.tools.Util;
 
-public class SubtitleDownloader extends JukeboxThread {
+@Singleton
+public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownloader {
 	ReentrantLock lock = new ReentrantLock();
 	private String subsPath = StringUtils.EMPTY;
-	private static SubtitleDownloader _instance;
 	private List<SubFinderBase> subFinders;
+	private IDatabase database;
 	
 	public List<SubFinderBase> getSubFinders() {
 		return subFinders;
 	}
 
-
-	public SubtitleDownloader() {
+	@Inject
+	public SubtitleDownloader(IDatabase database, IExecutor executor) {
 		super(
 			"Subtitle", 
 			Settings.get().getSubFinders().getThreadWaitSeconds() * 1000,
-			LogType.SUBS);
+			LogType.SUBS,
+			executor);
+		this.setDatabase(database);
 	}
 
-	public static SubtitleDownloader get() {
-		if (_instance == null)
-			_instance = new SubtitleDownloader();
+	public IDatabase getDatabase() {
+		return database;
+	}
 
-		return _instance;
+	public void setDatabase(IDatabase database) {
+		this.database = database;
 	}
 
 	@Override
@@ -64,12 +75,13 @@ public class SubtitleDownloader extends JukeboxThread {
 		subsPath = Settings.get().getSubFinders().getSubsPath();
 		
 		Log.Debug("Retrieving list to process", LogType.SUBS);
-		DB.cleanSubtitleQueue();
+		this.getDatabase().cleanSubtitleQueue();
 		
 		setupSubFinders();
 	}
 
 	private void setupSubFinders() {
+		Util.waitForSettings();
 		for (SubFinder f : Settings.get().getSubFinders().getSubFinder()) {
 			String className = f.getClazz();
 
@@ -87,7 +99,7 @@ public class SubtitleDownloader extends JukeboxThread {
 	@Override
 	protected void execute() {
 		int result = 0;
-		List<MovieOrSeries> _listProcessing =  DB.getSubtitleQueue();
+		List<MovieOrSeries> _listProcessing =  this.getDatabase().getSubtitleQueue();
 		
 		for (MovieOrSeries mos : _listProcessing) {
 			try {
@@ -138,12 +150,12 @@ public class SubtitleDownloader extends JukeboxThread {
 		SubtitleQueue q = ep.getSubtitleQueue();
 		
 		// Be sure to get the whole object before saving
-		ep = DB.getEpisode(ep.getID());
+		ep = this.getDatabase().getEpisode(ep.getID());
 		
-		DB.save(Episode.newBuilder(ep)
+		this.getDatabase().save(Episode.newBuilder(ep)
 			.setSubtitleQueue(
 				SubtitleQueue.newBuilder(q)
-					.setSubtitleRetreivedAt(DB.getCurrentUnixTimestamp())
+					.setSubtitleRetreivedAt(this.getDatabase().getCurrentUnixTimestamp())
 					.setSubtitleRetreiveResult(result)
 					.build()
 				).build());
@@ -153,12 +165,12 @@ public class SubtitleDownloader extends JukeboxThread {
 		SubtitleQueue q = m.getSubtitleQueue();
 		
 		// Be sure to get the whole object before saving
-		m = DB.getMovie(m.getID());
+		m = this.getDatabase().getMovie(m.getID());
 		
-		DB.save(Movie.newBuilder(m)
+		this.getDatabase().save(Movie.newBuilder(m)
 				.setSubtitleQueue(
 					SubtitleQueue.newBuilder(q)									
-						.setSubtitleRetreivedAt(DB.getCurrentUnixTimestamp())
+						.setSubtitleRetreivedAt(this.getDatabase().getCurrentUnixTimestamp())
 						.setSubtitleRetreiveResult(result)
 						.build()
 					).build());
@@ -187,7 +199,7 @@ public class SubtitleDownloader extends JukeboxThread {
 	public void addMovie(Movie m) {
 		lock.lock();
 		try {
-			DB.addMovieToSubtitleQueue(m);
+			this.getDatabase().addMovieToSubtitleQueue(m);
 			this.signal();
 		}
 		finally {
@@ -211,7 +223,7 @@ public class SubtitleDownloader extends JukeboxThread {
 		List<Media> newMedia = clearSubsFromMediaList(m.getMediaList());
 		mb.clearMedia().addAllMedia(newMedia);
 
-		return DB.save(mb.build());
+		return this.getDatabase().save(mb.build());
 	}
 
 	private List<Media> clearSubsFromMediaList(List<Media> medialist) {
@@ -232,7 +244,7 @@ public class SubtitleDownloader extends JukeboxThread {
 		List<Media> newMedia = clearSubsFromMediaList(ep.getMediaList());
 		epb.clearMedia().addAllMedia(newMedia);
 		
-		return DB.save(
+		return this.getDatabase().save(
 			epb.build());
 	}
 
@@ -244,7 +256,7 @@ public class SubtitleDownloader extends JukeboxThread {
 	public void addEpisode(Episode episode) {
 		lock.lock();
 		try {
-			episode = DB.addEpisodeToSubtitleQueue(episode);
+			episode = this.getDatabase().addEpisodeToSubtitleQueue(episode);
 			this.signal();
 		}  
 		finally {
@@ -296,10 +308,10 @@ public class SubtitleDownloader extends JukeboxThread {
 	
 				Log.Debug(String.format("%s subs found in container. Saving...", subs.size()), LogType.SUBS);
 				
-				md = DB.getMediaById(md.getID());
+				md = this.getDatabase().getMediaById(md.getID());
 				
 				if (md != null) {
-					DB.save(
+					this.getDatabase().save(
 						Media.newBuilder(md)
 							.addAllSubs(subs)
 							.build());
@@ -471,8 +483,8 @@ public class SubtitleDownloader extends JukeboxThread {
 
 	private void saveSubtitles(Media md, List<Subtitle> subtitleList) {
 		// Get media to get the whole object
-		md = DB.getMediaById(md.getID());
-		DB.save(
+		md = this.getDatabase().getMediaById(md.getID());
+		this.getDatabase().save(
 			Media.newBuilder(md)
 				.addAllSubs(subtitleList)
 				.build());

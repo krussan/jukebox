@@ -1,8 +1,13 @@
 package se.qxx.jukebox.upgrade;
 
 import se.qxx.jukebox.Version;
+import se.qxx.jukebox.interfaces.IDatabase;
 
-public class Upgrade_0_5 implements IIncrimentalUpgrade {
+public class Upgrade_0_5 extends UpgraderBase implements IIncrimentalUpgrade {
+
+	public Upgrade_0_5(IDatabase database) {
+		super(database);
+	}
 
 	static final String[] DbScripts = {
 		"ALTER TABLE Movie ADD metaDuration int",
@@ -21,7 +26,7 @@ public class Upgrade_0_5 implements IIncrimentalUpgrade {
 
 	@Override
 	public void performUpgrade() throws UpgradeFailedException {
-		Upgrader.runDatabasescripts(DbScripts);
+		runDatabasescripts(DbScripts);
 
 	}
 }

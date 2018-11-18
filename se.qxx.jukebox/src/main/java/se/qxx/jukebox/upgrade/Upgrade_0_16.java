@@ -8,8 +8,13 @@ import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
+import se.qxx.jukebox.interfaces.IDatabase;
 
-public class Upgrade_0_16 implements IIncrimentalUpgrade {
+public class Upgrade_0_16 extends UpgraderBase implements IIncrimentalUpgrade {
+
+	public Upgrade_0_16(IDatabase database) {
+		super(database);
+	}
 
 	static final String[] DbScripts = {
 		"UPDATE Movie SET _subtitlequeue_ID = NULL",
@@ -31,21 +36,21 @@ public class Upgrade_0_16 implements IIncrimentalUpgrade {
 	@Override
 	public void performUpgrade() throws UpgradeFailedException {
 		//throw new UpgradeFailedException();
-		Upgrader.runDatabasescripts(DbScripts);
+		runDatabasescripts(DbScripts);
 		
 		
 		try {
 
 			System.out.println("Re-adding all media to subtitle queue");
 			
-			List<Movie> movies = DB.searchMoviesByTitle("");
-			List<Series> series = DB.searchSeriesByTitle("");
+			List<Movie> movies = this.getDatabase().searchMoviesByTitle("");
+			List<Series> series = this.getDatabase().searchSeriesByTitle("");
 			
 			int mSize = movies.size();
 
 			for (int i=0;i<mSize; i++) {
 				System.out.println(String.format("Adding movie [%s/%s]", i, mSize));
-				DB.addMovieToSubtitleQueue(movies.get(i));
+				this.getDatabase().addMovieToSubtitleQueue(movies.get(i));
 			}
 			
 			int sSize = series.size(); 
@@ -62,7 +67,7 @@ public class Upgrade_0_16 implements IIncrimentalUpgrade {
 						Episode e = ss.getEpisode(k);
 						
 						System.out.println(String.format("Adding episode [%s/%s] [%s/%s] [%s/%s]", i, sSize, j, ssSize, k, eSize));
-						DB.addEpisodeToSubtitleQueue(e);
+						this.getDatabase().addEpisodeToSubtitleQueue(e);
 					}
 				}
 			}
