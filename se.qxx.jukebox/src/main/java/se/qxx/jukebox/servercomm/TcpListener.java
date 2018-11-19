@@ -1,15 +1,36 @@
 package se.qxx.jukebox.servercomm;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import se.qxx.jukebox.JukeboxThread;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.comm.JukeboxRpcServer;
+import se.qxx.jukebox.interfaces.IExecutor;
+import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.settings.Settings;
 
-public class TcpListener extends JukeboxThread {
+@Singleton
+public class TcpListener extends JukeboxThread implements ITcpListener {
 
-	JukeboxRpcServer server;
+	private JukeboxRpcServer server;
+	private ISettings settings;
 	
+	@Inject
+	public TcpListener(IExecutor executor, ISettings settings) {
+		super("TcpListener", 3000, LogType.COMM, executor);
+		this.setSettings(settings);
+	}
+	
+	public ISettings getSettings() {
+		return settings;
+	}
+	public void setSettings(ISettings settings) {
+		this.settings = settings;
+	}
+
+	@Override
 	public JukeboxRpcServer getServer() {
 		return server;
 	}
@@ -18,13 +39,10 @@ public class TcpListener extends JukeboxThread {
 		this.server = server;
 	}
 
-	public TcpListener() {
-		super("TcpListener", 3000, LogType.COMM);
-	}
 
 	@Override
 	protected void initialize() {
-		int port = Settings.get().getTcpListener().getPort().getValue();
+		int port = this.getSettings().getSettings().getTcpListener().getPort().getValue();
 		this.setServer(new JukeboxRpcServer(port));
   
 		Log.Info(String.format("Starting up RPC server. Listening on port %s",  port), LogType.COMM);
@@ -49,5 +67,10 @@ public class TcpListener extends JukeboxThread {
 	public void end() {
 		this.getServer().stopServer();
 		super.end();
+	}
+
+	@Override
+	public Runnable getRunnable() {
+		return this;
 	}
 }

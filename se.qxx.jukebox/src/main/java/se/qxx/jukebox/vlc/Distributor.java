@@ -7,64 +7,68 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
-import se.qxx.jukebox.domain.Sorter;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
+import se.qxx.jukebox.domain.Sorter;
+import se.qxx.jukebox.interfaces.IDistributor;
+import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.servercomm.HibernatorClientConnection;
 import se.qxx.jukebox.servercomm.WakeOnLan;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog.LocalPaths.Path;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Players.Server;
-import se.qxx.jukebox.settings.Settings;
 
-public class Distributor {
+@Singleton
+public class Distributor implements IDistributor {
 	private ReentrantLock lock = new ReentrantLock();
-	private static Distributor _instance;
+	
 	private Hashtable<String, VLCConnection> connectors;
 
-	/**
-	 * Private constructor for the VLC Distributor.
-	 */
-	private Distributor() {
+	private ISettings settings;
+	
+	@Inject
+	public Distributor(ISettings settings) {
 		this.connectors = new Hashtable<String, VLCConnection>();
+		this.setSettings(settings);
 	}
 	
-	/**
-	 * Public getter for the singleton VLC Distributor object
-	 * @return The VLC Distributor
-	 */
-	public static Distributor get() {
-		if (_instance == null)
-			_instance = new Distributor();
-		
-		return _instance;
+	public ISettings getSettings() {
+		return settings;
 	}
-	
-	/**
-	 * Lists the players declared in the XML file
-	 * @return A list of strings with the player names
+
+	public void setSettings(ISettings settings) {
+		this.settings = settings;
+	}
+
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.vlc.IDistributor#listPlayers()
 	 */
+	@Override
 	public List<String> listPlayers() {
 		List<String> list = new ArrayList<String>();
-		for (Server s : Settings.get().getPlayers().getServer()) {
+		for (Server s : this.getSettings().getSettings().getPlayers().getServer()) {
 			list.add(s.getName());
 		}
 		return list;
 	}
 	
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.vlc.IDistributor#startMovie(java.lang.String, se.qxx.jukebox.domain.JukeboxDomain.Media)
+	 */
+	@Override
 	public boolean startMovie(String hostName, Media md) throws VLCConnectionNotFoundException {
 		return startMovie(hostName, md, StringUtils.EMPTY);
 	}
 	
-	/**
-	 * Starts a movie on a specific VLC playrer
-	 * @param hostName 	The player on which to start the movie
-	 * @param id 		The ID of the movie
-	 * @return			True if the call succeeds
-	 * @throws VLCConnectionNotFoundException
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.vlc.IDistributor#startMovie(java.lang.String, se.qxx.jukebox.domain.JukeboxDomain.Media, java.lang.String)
 	 */
+	@Override
 	public boolean startMovie(String hostName, Media md, String subFilename) throws VLCConnectionNotFoundException {
 		if (!assertLiveConnection(hostName))
 			return false;
@@ -72,11 +76,11 @@ public class Distributor {
 		VLCConnection conn = findConnection(hostName);
 		Server vlcServer = findServerInSettings(hostName);
 		String vlcSubsPath = vlcServer.getSubsPath();
-		String serverSubsPath = Settings.get().getSubFinders().getSubsPath();
+		String serverSubsPath = this.getSettings().getSettings().getSubFinders().getSubsPath();
 		
 		if (md != null) {
 			String filepath = md.getFilepath();
-			for (Catalog c : Settings.get().getCatalogs().getCatalog()) {
+			for (Catalog c : this.getSettings().getSettings().getCatalogs().getCatalog()) {
 				Log.Debug(String.format("Comparing %s with %s", c.getPath(), filepath), Log.LogType.COMM);
 				if (filepath.startsWith(c.getPath())) {
 					Path vlcPath = findLocalPath(c, hostName);
@@ -114,12 +118,10 @@ public class Distributor {
 		return false;
 	}
 	
-	/**
-	 * Stops a movie on a specific VLC player and clears the playlist
-	 * @param hostName		The player on which to stop the movie
-	 * @return				True if the call succeeds
-	 * @throws VLCConnectionNotFoundException
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.vlc.IDistributor#stopMovie(java.lang.String)
 	 */
+	@Override
 	public boolean stopMovie(String hostName) throws VLCConnectionNotFoundException {
 		if (!assertLiveConnection(hostName))
 			return false;
@@ -132,12 +134,10 @@ public class Distributor {
 		return true;
 	}
 
-	/**
-	 * Pauses a movie on a specific VLC player
-	 * @param hostName		The player on which to pause the movie
-	 * @return				True if the call succeeds	
-	 * @throws VLCConnectionNotFoundException
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.vlc.IDistributor#pauseMovie(java.lang.String)
 	 */
+	@Override
 	public boolean pauseMovie(String hostName) throws VLCConnectionNotFoundException {
 		if (!assertLiveConnection(hostName))
 			return false;
@@ -148,12 +148,10 @@ public class Distributor {
 		return true; 
 	}
 	
-	/**
-	 * Toggles fullscreen mode on a specific VLC player
-	 * @param hostName
-	 * @return
-	 * @throws VLCConnectionNotFoundException
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.vlc.IDistributor#toggleFullscreen(java.lang.String)
 	 */
+	@Override
 	public boolean toggleFullscreen(String hostName) throws VLCConnectionNotFoundException {
 		if (!assertLiveConnection(hostName))
 			return false;
@@ -164,6 +162,10 @@ public class Distributor {
 		return true; 
 	}
 
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.vlc.IDistributor#seek(java.lang.String, int)
+	 */
+	@Override
 	public boolean seek(String hostName, int seconds) throws VLCConnectionNotFoundException {
 		if (!assertLiveConnection(hostName))
 			return false;
@@ -174,6 +176,10 @@ public class Distributor {
 		return true; 
 	}
 	
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.vlc.IDistributor#toggleVRatio(java.lang.String)
+	 */
+	@Override
 	public boolean toggleVRatio(String hostName) throws VLCConnectionNotFoundException {
 		if (!assertLiveConnection(hostName))
 			return false;
@@ -184,6 +190,10 @@ public class Distributor {
 		return true; 
 	}
 
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.vlc.IDistributor#setSubtitle(java.lang.String, int)
+	 */
+	@Override
 	public boolean setSubtitle(String hostName, int subtitleID) throws VLCConnectionNotFoundException {
 		if (!assertLiveConnection(hostName))
 			return false;
@@ -194,6 +204,10 @@ public class Distributor {
 		return true; 
 	}
 	
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.vlc.IDistributor#restartWithSubtitle(java.lang.String, se.qxx.jukebox.domain.JukeboxDomain.Media, java.lang.String, boolean)
+	 */
+	@Override
 	public boolean restartWithSubtitle(String hostName, Media md, String subFilename, boolean restartAtSamePosition) throws VLCConnectionNotFoundException {
 		//get current time
 		String currentTime = getTime(hostName);
@@ -221,6 +235,10 @@ public class Distributor {
 		return true;
 	}
 	
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.vlc.IDistributor#clearPlaylist(java.lang.String)
+	 */
+	@Override
 	public void clearPlaylist(String hostName) throws VLCConnectionNotFoundException {
 		if (!assertLiveConnection(hostName))
 			return;
@@ -230,6 +248,10 @@ public class Distributor {
 		
 	}
 	
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.vlc.IDistributor#getTime(java.lang.String)
+	 */
+	@Override
 	public String getTime(String hostName) throws VLCConnectionNotFoundException {
 		if (!assertLiveConnection(hostName))
 			return StringUtils.EMPTY;
@@ -239,6 +261,10 @@ public class Distributor {
 		return conn.getTime(); 
 	}
 
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.vlc.IDistributor#isPlaying(java.lang.String)
+	 */
+	@Override
 	public boolean isPlaying(String hostName) throws VLCConnectionNotFoundException {
 		if (!assertLiveConnection(hostName))
 			return false;
@@ -247,6 +273,10 @@ public class Distributor {
 		return conn.isPlaying();
 	}
 
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.vlc.IDistributor#getTitle(java.lang.String)
+	 */
+	@Override
 	public String getTitle(String hostName) throws VLCConnectionNotFoundException {
 		if (!assertLiveConnection(hostName))
 			return StringUtils.EMPTY;
@@ -256,6 +286,10 @@ public class Distributor {
 	}
 	
 	
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.vlc.IDistributor#wakeup(java.lang.String)
+	 */
+	@Override
 	public boolean wakeup(String hostName) throws VLCConnectionNotFoundException {
 		Server s = findServerInSettings(hostName);
 		
@@ -273,6 +307,10 @@ public class Distributor {
 		return false;
 	}
 	
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.vlc.IDistributor#suspend(java.lang.String)
+	 */
+	@Override
 	public boolean suspend(String hostName) throws VLCConnectionNotFoundException {
 		Server s = findServerInSettings(hostName);
 		try {
@@ -292,6 +330,10 @@ public class Distributor {
 		return false;
 	}
 	
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.vlc.IDistributor#hibernate(java.lang.String)
+	 */
+	@Override
 	public boolean hibernate(String hostName) throws VLCConnectionNotFoundException {
 		Server s = findServerInSettings(hostName);
 		try {
@@ -373,7 +415,7 @@ public class Distributor {
 	
 	
 	private Server findServerInSettings(String hostName) throws VLCConnectionNotFoundException {
-		for (Server s : Settings.get().getPlayers().getServer()) {
+		for (Server s : this.getSettings().getSettings().getPlayers().getServer()) {
 			if (s.getName().equals(hostName)) 
 				return s;
 		}

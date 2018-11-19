@@ -10,9 +10,9 @@ import com.google.inject.Inject;
 
 import se.qxx.jukebox.interfaces.IArguments;
 import se.qxx.jukebox.interfaces.IDatabase;
+import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.IStarter;
 import se.qxx.jukebox.interfaces.IUpgrader;
-import se.qxx.jukebox.settings.Settings;
 import se.qxx.protodb.exceptions.DatabaseNotSupportedException;
 import se.qxx.protodb.exceptions.IDFieldNotFoundException;
 
@@ -20,14 +20,25 @@ public class Starter implements IStarter {
 	private IArguments arguments;
 	private IUpgrader upgrader;
 	private IDatabase database;
+	private ISettings settings;
 	
 
 	@Inject
-	public Starter(IArguments arguments, IUpgrader upgrader, IDatabase database) {
+	public Starter(IArguments arguments, IUpgrader upgrader, IDatabase database, ISettings settings) {
 		this.setArguments(arguments);
 		this.setUpgrader(upgrader);
+		this.setDatabase(database);
+		this.setSettings(settings);
 	}
 	
+	public ISettings getSettings() {
+		return settings;
+	}
+
+	public void setSettings(ISettings settings) {
+		this.settings = settings;
+	}
+
 	public IDatabase getDatabase() {
 		return database;
 	}
@@ -88,7 +99,7 @@ public class Starter implements IStarter {
 		}
 		
 		try {
-			Settings.initialize();
+			this.getSettings().initialize();
 		
 			if (this.getArguments().isPurgeMode()) {
 				purge();

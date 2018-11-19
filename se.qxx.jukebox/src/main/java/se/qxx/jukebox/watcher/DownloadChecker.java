@@ -4,6 +4,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import se.qxx.jukebox.DB;
 import se.qxx.jukebox.JukeboxThread;
 import se.qxx.jukebox.Log;
@@ -12,13 +15,17 @@ import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.converter.FileChangedState;
 import se.qxx.jukebox.converter.FileRepresentationState;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
+import se.qxx.jukebox.interfaces.IDatabase;
+import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.tools.Util;
 
-public class DownloadChecker extends JukeboxThread {
-	private static DownloadChecker _instance;
+@Singleton
+public class DownloadChecker extends JukeboxThread implements IDownloadChecker {
+	
 	private ReentrantLock lock = new ReentrantLock();
-
 	private Map<String, FileRepresentationState> files = new ConcurrentHashMap<String, FileRepresentationState>();
+	
+	private IDatabase database;
 	// <string, string>
 	// <filename - FileRepresentation, state, exist in db?, downloadflag from db>
 	
@@ -39,18 +46,20 @@ public class DownloadChecker extends JukeboxThread {
 	// ----yes ->
 	// ------state WATCH
 	
-	
-	private DownloadChecker() {
-		super("DownloadChecker", 300000, LogType.CHECKER);
+	@Inject
+	private DownloadChecker(IExecutor executor, IDatabase database) {
+		super("DownloadChecker", 300000, LogType.CHECKER, executor);
+		this.setDatabase(database);
 	}
-	
-	public static DownloadChecker get() {
-		if (_instance == null)
-			_instance = new DownloadChecker();
-		
-		return _instance;
+
+	public IDatabase getDatabase() {
+		return database;
 	}
-	
+
+	public void setDatabase(IDatabase database) {
+		this.database = database;
+	}
+
 	@Override
 	protected void initialize() {
 	}
@@ -98,11 +107,11 @@ public class DownloadChecker extends JukeboxThread {
 		Log.Debug(String.format("-- STATE -- Setting download state to DONE on :: %s",  filename), LogType.CHECKER);
 		fs.setState(FileChangedState.DONE);
 		
-		Media md = DB.getMediaByFilename(fs.getName());
+		Media md = this.getDatabase().getMediaByFilename(fs.getName());
 		
 		// should never be null, but anyway
 		if (md != null) {
-			DB.setDownloadCompleted(md.getID());
+			this.getDatabase().setDownloadCompleted(md.getID());
 			/*
 			 *TODO: Fix reenlist matroska file
 			if (Util.isMatroskaFile(md)) {				
@@ -115,6 +124,10 @@ public class DownloadChecker extends JukeboxThread {
 		
 	}
 
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.watcher.IDownloadChecker#checkFile(se.qxx.jukebox.watcher.FileRepresentation)
+	 */
+	@Override
 	public void checkFile(FileRepresentation f)  {
 		lock.lock();
 		try {
@@ -199,7 +212,7 @@ public class DownloadChecker extends JukeboxThread {
 	private Media getSynchronizedMedia(FileRepresentationState fs) {
 		lock.lock();
 		try {
-			return DB.getMediaByFilename(fs.getName());
+			return this.getDatabase().getMediaByFilename(fs.getName());
 		}
 		finally {
 			lock.unlock();
@@ -219,5 +232,10 @@ public class DownloadChecker extends JukeboxThread {
 	@Override
 	public int getJukeboxPriority() {
 		return 3;
+	}
+
+	@Override
+	public Runnable getRunnable() {
+		return this;
 	}
 }

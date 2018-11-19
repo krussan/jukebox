@@ -11,10 +11,15 @@ import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Identifier;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.MovieOrSeries;
+import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
 import se.qxx.jukebox.settings.Settings;
 
 public class ParentDirectoryBuilder extends ParserBuilder {
+
+	public ParentDirectoryBuilder(ISettings settings) {
+		super(settings);
+	}
 
 	@Override
 	public MovieOrSeries extract(String filepath, String filename) {
@@ -53,7 +58,7 @@ public class ParentDirectoryBuilder extends ParserBuilder {
 		if (path.length() >= 2 && (path.endsWith("/") || path.endsWith("\\")))
 			path = path.substring(0, path.length() - 2);
 		
-		for (Catalog c : Settings.get().getCatalogs().getCatalog()) {
+		for (Catalog c : this.getSettings().getSettings().getCatalogs().getCatalog()) {
 			if (path.toLowerCase().equals(c.getPath().toLowerCase()))
 				return true;
 		}

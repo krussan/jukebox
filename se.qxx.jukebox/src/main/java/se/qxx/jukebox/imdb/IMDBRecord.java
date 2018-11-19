@@ -24,6 +24,8 @@ import org.jsoup.select.Elements;
 
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.interfaces.IIMDBParser;
+import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.tools.WebResult;
@@ -39,8 +41,6 @@ public class IMDBRecord {
 	private String story = "";
 	private byte[] image = null;
 	private String title = "";
-	//private int episodeNumber;
-	
 	
 	private Map<Integer, String> seasons = new HashMap<Integer, String>();
 	private Map<Integer, String> episodes = new HashMap<Integer, String>();
@@ -51,11 +51,11 @@ public class IMDBRecord {
 	private final Pattern seasonPattern = Pattern.compile("season\\=(\\d*)");
 	private final Pattern episodePattern = Pattern.compile("ttep_ep(\\d*)");
 
-	private IMDBRecord(String url) {
+	public IMDBRecord(String url) {
 		this.url = url;
 	}
 
-	public static IMDBRecord parse(String url, String webResult) {
+	public static IMDBRecord parse(String url, String webResult, ISettings settings, IIMDBParser parser) {
 		IMDBRecord rec = new IMDBRecord(url);
 		
 		Document doc = Jsoup.parse(webResult);
@@ -65,7 +65,7 @@ public class IMDBRecord {
 		rec.parseDirector(doc);
 		rec.parseDuration(doc);
 		rec.parseGenres(doc);
-		rec.parseFirstAirDate(doc);
+		rec.parseFirstAirDate(doc, settings);
 		rec.parseImage(doc);
 		rec.parseRating(doc);
 		rec.parseStory(doc);
@@ -75,22 +75,12 @@ public class IMDBRecord {
 		return rec;
 	}
 
-	private void parseEpisodes(Document doc) {
-		Elements elm = doc.select("strong > a[href~=ttep_ep]");
-		
-		for (Element e : elm) {
-			String url = StringUtils.EMPTY;
-			try {
-				url = fixImdbUrl(e.attr("href"));
-			} catch (MalformedURLException e1) {
-				Log.Error("Error parsing imdb url for season", LogType.IMDB);
-			}				
-			Log.Debug(String.format("IMDBRECORD :: Setting episode url :: %s", url), LogType.IMDB);
-			this.addEpisodeUrl(url);
-		}
-	}
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.imdb.IIMDBParser#parseEpisodes(org.jsoup.nodes.Document)
+	 */
+	
 
-	private void addEpisodeUrl(String url) {
+	public void addEpisodeUrl(String url) {
 		Matcher m = episodePattern.matcher(url);
 		if (m.find()) {
 			int episode = Integer.parseInt(m.group(1));
@@ -98,23 +88,12 @@ public class IMDBRecord {
 		}
 	}
 
-	private void parseSeasons(Document doc) {
-		Elements elm = doc.select(".seasons-and-year-nav a[href~=season]");
-		
-		for (Element e : elm) {
-			String url = StringUtils.EMPTY;
-			try {
-				url = fixImdbUrl(e.attr("href"));
-			} catch (MalformedURLException e1) {
-				Log.Error("Error parsing imdb url for season", LogType.IMDB);
-			}				
-			Log.Debug(String.format("IMDBRECORD :: Setting season url :: %s", url), LogType.IMDB);
-			this.addSeasonUrl(url);
-		}
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.imdb.IIMDBParser#parseSeasons(org.jsoup.nodes.Document)
+	 */
+	
 
-	}
-
-	private void addSeasonUrl(String url) {		
+	public void addSeasonUrl(String url) {		
 		Matcher m = seasonPattern.matcher(url);
 		if (m.find()) {
 			int season = Integer.parseInt(m.group(1));
@@ -122,171 +101,31 @@ public class IMDBRecord {
 		}
 	}
 
-	private void parseStory(Document doc) {
-		Elements elm = doc.select("div.summary_text");
 
-		if (elm.size() > 0) {
-			String unescapedValue = StringEscapeUtils.unescapeHtml4(elm.get(0).text());
-			Log.Debug(String.format("IMDBRECORD :: Setting story :: %s", unescapedValue), LogType.IMDB);
-			this.setStory(unescapedValue);
-		}
-	}
 
-	private void parseRating(Document doc) {
-		Elements elm = doc.select("span[itemprop=ratingValue]");
-
-		if (elm.size() > 0) {
-			String unescapedValue = StringEscapeUtils.unescapeHtml4(elm.get(0).text());
-			Log.Debug(String.format("IMDBRECORD :: Setting rating :: %s", unescapedValue), LogType.IMDB);
-			this.setRating(unescapedValue);
-		}
-	}
-
-	private void parseImage(Document doc) {
-		Elements elm = doc.select(".poster img");
-
-		if (elm.size() > 0) {
-			String value = elm.attr("src").trim();
-			File f;
-			try {
-				f = WebRetriever.getWebFile(value, Util.getTempDirectory());
-				byte[] data = readFile(f);
-				
-				Log.Debug(String.format("IMDBRECORD :: Setting image url :: %s", value), LogType.IMDB);
-				Log.Debug(String.format("IMDBRECORD :: Setting image (length) :: %s", data.length), LogType.IMDB);
-				
-				this.setImageUrl(value);
-				this.setImage(data);
-
-			} catch (IOException e) {
-				Log.Error("Error when downloading file", LogType.IMDB);
-			}
-
-		}
-	}
-
-	private void parseFirstAirDate(Document doc) {
-		Elements elm = doc.select(".title_wrapper a[href~=/.*releaseinfo.*]");
-		if (elm.size() > 0) {
-			String dateValue = fetchAirDateByParenthesis(elm);
-			
-			if (StringUtils.isEmpty(dateValue))
-				dateValue = fetchAirDateByEpisodeAired(elm);
-			
-			if (StringUtils.isNotEmpty(dateValue)) {
-				Log.Debug(String.format("IMDBRECORD :: Setting first air date :: %s", dateValue), LogType.IMDB);
-				this.setFirstAirDate(dateValue);
-			}
-		}
-	}
 	
-	private String fetchAirDateByEpisodeAired(Elements elm) {
-		Pattern p = Pattern.compile("Episode\\s*aired\\s*");
-		Matcher m = p.matcher(elm.text());
-		if (m.find()) {
-			return m.replaceFirst("");	
-		}
-		
-		return StringUtils.EMPTY;
-	}
 
-	private String fetchAirDateByParenthesis(Elements elm) {
-		Pattern p = Pattern.compile("(.*?)\\((.*)\\)");
-		Matcher m = p.matcher(elm.text());
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.imdb.IIMDBParser#parseFirstAirDate(org.jsoup.nodes.Document, se.qxx.jukebox.interfaces.ISettings)
+	 */
 
-		if (m.find()) {
-			return m.group(1).trim();
-		}
-		return StringUtils.EMPTY;
-	}
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.imdb.IIMDBParser#parseGenres(org.jsoup.nodes.Document)
+	 */
 
-	private void parseGenres(Document doc) {
-		Elements elm = doc.select(".title_wrapper a[href~=genre]");
-		for (int i = 0; i < elm.size(); i++) {
-			String genre = StringEscapeUtils.unescapeHtml4(elm.get(i).text()).trim();
-			this.getAllGenres().add(genre);
-		}
-		Log.Debug(String.format("IMDBRECORD :: Setting genres :: %s", String.join(",", this.getAllGenres())), LogType.IMDB);
-	}
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.imdb.IIMDBParser#parseDuration(org.jsoup.nodes.Document)
+	 */
 
-	private void parseDuration(Document doc) {
-		Elements elm = doc.select(".title_wrapper time");
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.imdb.IIMDBParser#parseDirector(org.jsoup.nodes.Document)
+	 */
 
-		if (elm.size() > 0) {
-			String duration = elm.get(0).attr("datetime");
-			Duration dur = Duration.parse(duration);
-			int minutes = (int) (dur.getSeconds() / 60);
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.imdb.IIMDBParser#parseTitle(org.jsoup.nodes.Document)
+	 */
 
-			Log.Debug(String.format("IMDBRECORD :: Setting duration :: %s", minutes), LogType.IMDB);
-			this.setDurationMinutes(minutes);
-		}
-	}
-
-	private void parseDirector(Document doc) {
-		Elements elm = doc.select(".credit_summary_item:contains(Director) > a");
-
-		if (elm.size() > 0) {
-			String unescapedValue = StringEscapeUtils.unescapeHtml4(elm.get(0).text());
-			Log.Debug(String.format("IMDBRECORD :: Setting director :: %s", unescapedValue), LogType.IMDB);
-			this.setDirector(unescapedValue);
-		}
-	}
-
-	private void parseTitle(Document doc) {
-		Elements elm = doc.select(".title_wrapper > h1");
-		if (elm.size() > 0) {
-			Pattern p = Pattern.compile("(.*?)\\((\\d{4})\\)");
-			Matcher m = p.matcher(elm.text());
-
-			if (m.find()) {
-				String title = m.group(1);
-				String year = m.group(2);
-
-				String unescapedValue = StringEscapeUtils.unescapeHtml4(title).trim();
-				Log.Debug(String.format("IMDBRECORD :: Setting title :: %s", unescapedValue), LogType.IMDB);
-				this.setTitle(unescapedValue);
-
-				unescapedValue = StringEscapeUtils.unescapeHtml4(year).trim();
-				Log.Debug(String.format("IMDBRECORD :: Setting year :: %s", unescapedValue), LogType.IMDB);
-				this.setYear(Integer.parseInt(unescapedValue));
-			} else {
-				String unescapedValue = StringEscapeUtils.unescapeHtml4(elm.text()).trim();
-				Log.Debug(String.format("IMDBRECORD :: Setting title :: %s", unescapedValue), LogType.IMDB);
-				this.setTitle(unescapedValue);
-			}
-		}
-	}
-
-	private static byte[] readFile(File f) {
-		try {
-			FileInputStream fs = new FileInputStream(f);
-			long length = f.length();
-			if (length > Integer.MAX_VALUE) {
-				fs.close();
-				throw new ArrayIndexOutOfBoundsException();
-			}
-			byte[] data = new byte[(int) length];
-			int offset = 0;
-			int numRead = 0;
-			while (offset < data.length && (numRead = fs.read(data, offset, data.length - offset)) >= 0) {
-				offset += numRead;
-			}
-
-			// Ensure all the bytes have been read in
-			if (offset < data.length) {
-				fs.close();
-				throw new IOException("Could not completely read file " + f.getName());
-			}
-
-			// Close the input stream and return bytes
-			fs.close();
-			return data;
-		} catch (Exception e) {
-			Log.Error("Error when reading file", LogType.FIND, e);
-			return null;
-		}
-
-	}
+	
 
 	public IMDBRecord(String url, int year) {
 		this.year = year;
@@ -327,19 +166,7 @@ public class IMDBRecord {
 
 	}
 
-	private static String fixImdbUrl(String url) throws MalformedURLException {
-		if (StringUtils.startsWithIgnoreCase(url, "www.imdb.com"))
-			url = "https://" + url;
-
-		if (StringUtils.startsWithIgnoreCase(url, "/"))
-			url = "https://www.imdb.com" + url;
-
-		if (!StringUtils.startsWithIgnoreCase(url, "https://www.imdb.com"))
-			throw new MalformedURLException(
-					String.format("A IMDB url must start with https://www.imdb.com. Url was :: %s", url));
-		
-		return url;
-	}
+	
 
 	public static IMDBRecord getFromWebResult(WebResult webResult) {
 		IMDBRecord rec = null;
@@ -356,7 +183,7 @@ public class IMDBRecord {
 		return durationMinutes;
 	}
 
-	private void setDurationMinutes(int durationMinutes) {
+	public void setDurationMinutes(int durationMinutes) {
 		this.durationMinutes = durationMinutes;
 	}
 
@@ -364,7 +191,7 @@ public class IMDBRecord {
 		return rating;
 	}
 
-	private void setRating(String rating) {
+	public void setRating(String rating) {
 		this.rating = rating;
 	}
 
@@ -372,7 +199,7 @@ public class IMDBRecord {
 		return director;
 	}
 
-	private void setDirector(String director) {
+	public void setDirector(String director) {
 		this.director = director;
 	}
 
@@ -380,7 +207,7 @@ public class IMDBRecord {
 		return story;
 	}
 
-	private void setStory(String story) {
+	public void setStory(String story) {
 		this.story = story;
 	}
 
@@ -388,7 +215,7 @@ public class IMDBRecord {
 		return image;
 	}
 
-	private void setImage(byte[] image) {
+	public void setImage(byte[] image) {
 		this.image = image;
 	}
 
@@ -400,7 +227,7 @@ public class IMDBRecord {
 		return title;
 	}
 
-	private void setTitle(String title) {
+	public void setTitle(String title) {
 		this.title = title;
 	}
 
@@ -416,15 +243,7 @@ public class IMDBRecord {
 		return firstAirDate;
 	}
 
-	public void setFirstAirDate(String firstAirDate) {
-		try {
-			Log.Debug(String.format("IMDB :: parsing date :: %s", firstAirDate), LogType.IMDB);
-			this.firstAirDate = DateUtils.parseDate(firstAirDate,
-					Settings.imdb().getDatePatterns().getPattern().toArray(new String[] {}));
-			Log.Debug(String.format("IMDB :: parsed date :: %s", this.firstAirDate), LogType.IMDB);
-		} catch (ParseException e) {
-			Log.Info(String.format("IMDB :: Unable to parse date :: %s", firstAirDate), LogType.IMDB);
-		}
+	public void setFirstAirDate(String firstAirDate, ISettings settings) {
 	}
 
 	public String getImageUrl() {

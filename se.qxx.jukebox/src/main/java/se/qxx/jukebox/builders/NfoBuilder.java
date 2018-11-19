@@ -1,6 +1,7 @@
 package se.qxx.jukebox.builders;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,11 +16,14 @@ import se.qxx.jukebox.domain.JukeboxDomain.Identifier;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.watcher.ExtensionFileFilter;
 import se.qxx.jukebox.domain.MovieOrSeries;
+import se.qxx.jukebox.interfaces.ISettings;
 
 public class NfoBuilder extends MovieBuilder {
 	
-	
-	
+	public NfoBuilder(ISettings settings) {
+		super(settings);
+	}
+
 	@Override
 	public MovieOrSeries extract(String filepath, String filename) {
 		Movie m = null;
@@ -183,4 +187,18 @@ public class NfoBuilder extends MovieBuilder {
 		
 		return m.matches();
 	}
+	
+	
+	private ArrayList<String> getGroupsToCheck() {
+		ArrayList<String> groupsToCheck = new ArrayList<String>();
+		groupsToCheck.add("title");
+		groupsToCheck.add("year");
+		groupsToCheck.add("type");
+		groupsToCheck.add("format");
+		groupsToCheck.add("sound");
+		groupsToCheck.add("language");
+		groupsToCheck.add("group");
+		return groupsToCheck;
+	}
+
 }

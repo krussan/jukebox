@@ -7,7 +7,6 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.io.FileUtils;
@@ -19,20 +18,20 @@ import com.google.inject.Singleton;
 import com.google.protobuf.ByteString;
 
 import se.qxx.jukebox.Log.LogType;
-import se.qxx.jukebox.builders.MovieBuilder;
-import se.qxx.jukebox.domain.MovieOrSeries;
-import se.qxx.jukebox.interfaces.IDatabase;
-import se.qxx.jukebox.interfaces.IExecutor;
-import se.qxx.jukebox.interfaces.ISubtitleDownloader;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Rating;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.domain.JukeboxDomain.SubtitleQueue;
+import se.qxx.jukebox.domain.MovieOrSeries;
+import se.qxx.jukebox.interfaces.IDatabase;
+import se.qxx.jukebox.interfaces.IExecutor;
+import se.qxx.jukebox.interfaces.IMovieBuilderFactory;
+import se.qxx.jukebox.interfaces.ISettings;
+import se.qxx.jukebox.interfaces.ISubtitleDownloader;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings;
-import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.subtitles.Language;
 import se.qxx.jukebox.subtitles.MkvSubtitleReader;
 import se.qxx.jukebox.subtitles.SubFile;
@@ -46,19 +45,42 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	private String subsPath = StringUtils.EMPTY;
 	private List<SubFinderBase> subFinders;
 	private IDatabase database;
+	private ISettings settings;
+	private IMovieBuilderFactory movieBuilderFactory;
 	
-	public List<SubFinderBase> getSubFinders() {
-		return subFinders;
-	}
-
 	@Inject
-	public SubtitleDownloader(IDatabase database, IExecutor executor) {
+	public SubtitleDownloader(IDatabase database, 
+			IExecutor executor, 
+			ISettings settings,
+			IMovieBuilderFactory movieBuilderFactory) {
 		super(
 			"Subtitle", 
-			Settings.get().getSubFinders().getThreadWaitSeconds() * 1000,
+			settings.getSettings().getSubFinders().getThreadWaitSeconds() * 1000,
 			LogType.SUBS,
 			executor);
 		this.setDatabase(database);
+		this.setSettings(settings);
+		this.setMovieBuilderFactory(movieBuilderFactory);
+	}
+
+	public List<SubFinderBase> getSubFinders() {
+		return subFinders;
+	}
+	
+	public IMovieBuilderFactory getMovieBuilderFactory() {
+		return movieBuilderFactory;
+	}
+
+	public void setMovieBuilderFactory(IMovieBuilderFactory movieBuilderFactory) {
+		this.movieBuilderFactory = movieBuilderFactory;
+	}
+
+	public ISettings getSettings() {
+		return settings;
+	}
+
+	public void setSettings(ISettings settings) {
+		this.settings = settings;
 	}
 
 	public IDatabase getDatabase() {
@@ -72,7 +94,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	@Override
 	protected void initialize() {
 		cleanupTempDirectory();
-		subsPath = Settings.get().getSubFinders().getSubsPath();
+		subsPath = this.getSettings().getSettings().getSubFinders().getSubsPath();
 		
 		Log.Debug("Retrieving list to process", LogType.SUBS);
 		this.getDatabase().cleanSubtitleQueue();
@@ -82,7 +104,9 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 
 	private void setupSubFinders() {
 		Util.waitForSettings();
-		for (SubFinder f : Settings.get().getSubFinders().getSubFinder()) {
+		
+
+		for (SubFinder f : this.getSettings().getSettings().getSubFinders().getSubFinder()) {
 			String className = f.getClazz();
 
 			try {
@@ -526,7 +550,8 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	 * @return The media matching the sub filename
 	 */
 	private Media matchFileToMedia(MovieOrSeries mos, File unpackedFile) {
-		MovieOrSeries unpackedMos = MovieBuilder.identify("", unpackedFile.getName());
+		MovieOrSeries unpackedMos = this.getMovieBuilderFactory()
+				.identify("", unpackedFile.getName());
 		
 		int subIndex = unpackedMos.getMedia().getIndex();
 		
@@ -600,5 +625,10 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 		
 		super.end();
 		
+	}
+
+	@Override
+	public Runnable getRunnable() {
+		return this;
 	}
 }

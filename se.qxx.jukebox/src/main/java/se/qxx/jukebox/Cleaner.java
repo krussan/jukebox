@@ -32,34 +32,18 @@ public class Cleaner extends JukeboxThread implements ICleaner {
 		this.setArguments(arguments);
 	}
 	
-	/* (non-Javadoc)
-	 * @see se.qxx.jukebox.ICleaner#getArguments()
-	 */
-	@Override
 	public IArguments getArguments() {
 		return arguments;
 	}
 
-	/* (non-Javadoc)
-	 * @see se.qxx.jukebox.ICleaner#setArguments(se.qxx.jukebox.interfaces.IArguments)
-	 */
-	@Override
 	public void setArguments(IArguments arguments) {
 		this.arguments = arguments;
 	}
 
-	/* (non-Javadoc)
-	 * @see se.qxx.jukebox.ICleaner#getDatabase()
-	 */
-	@Override
 	public IDatabase getDatabase() {
 		return database;
 	}
 
-	/* (non-Javadoc)
-	 * @see se.qxx.jukebox.ICleaner#setDatabase(se.qxx.jukebox.interfaces.IDatabase)
-	 */
-	@Override
 	public void setDatabase(IDatabase database) {
 		this.database = database;
 	}
@@ -155,5 +139,10 @@ public class Cleaner extends JukeboxThread implements ICleaner {
 	@Override
 	public int getJukeboxPriority() {
 		return 3;
+	}
+
+	@Override
+	public Runnable getRunnable() {
+		return this;
 	}
 }

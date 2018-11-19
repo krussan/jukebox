@@ -8,53 +8,97 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
+import se.qxx.jukebox.Jukebox;
+import se.qxx.jukebox.interfaces.IImdbSettings;
+import se.qxx.jukebox.interfaces.IParserSettings;
+import se.qxx.jukebox.interfaces.ISettings;
+import se.qxx.jukebox.interfaces.IStreamingWebServer;
 import se.qxx.jukebox.settings.imdb.Imdb;
 import se.qxx.jukebox.settings.imdb.ImdbSettings;
+import se.qxx.jukebox.settings.parser.Parser;
 import se.qxx.jukebox.settings.parser.ParserSettings;
 import se.qxx.jukebox.webserver.StreamingWebServer;
 
 
-public class Settings {
-
-	private static Settings _instance;
-	private JukeboxListenerSettings _settings;
-	
+public class Settings implements ISettings {
+	private JukeboxListenerSettings settings;
+	private IImdbSettings imdbSettings;
+	private IParserSettings parserSettings;
+	private IStreamingWebServer webServer;
 	public int serverPort = 45444;	
 	
-	private Settings() {
+	public Settings(IImdbSettings imdbSettings, IParserSettings parserSettings, IStreamingWebServer webServer) {
+		this.setImdbSettings(imdbSettings);
+		this.setParserSettings(parserSettings);
+		this.setWebServer(webServer);
 	}
 	
-	public static void initialize() throws IOException, JAXBException {
-		Settings.readSettings();
-		ImdbSettings.readSettings();
-		ParserSettings.readSettings();
+	public JukeboxListenerSettings getSettings() {
+		return settings;
+	}
+
+	public void setSettings(JukeboxListenerSettings settings) {
+		this.settings = settings;
+	}
+
+	public IStreamingWebServer getWebServer() {
+		return webServer;
+	}
+
+	public void setWebServer(IStreamingWebServer webServer) {
+		this.webServer = webServer;
+	}
+
+	public IParserSettings getParserSettings() {
+		return parserSettings;
+	}
+
+	public void setParserSettings(IParserSettings parserSettings) {
+		this.parserSettings = parserSettings;
+	}
+
+	public IImdbSettings getImdbSettings() {
+		return imdbSettings;
+	}
+
+	public void setImdbSettings(IImdbSettings imdbSettings) {
+		this.imdbSettings = imdbSettings;
+	}
+
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.settings.ISettings#initialize()
+	 */
+	@Override
+	public void initialize() throws IOException, JAXBException {
+		readSettings();
+		this.getImdbSettings().readSettings();
+		this.getParserSettings().readSettings();
 		
-		if (StreamingWebServer.isInitialized())
-			StreamingWebServer.get().initializeMappings();
+		this.getWebServer().initializeMappings();
 	}
 	
-	private static Settings getInstance() {
-		if (_instance == null) {
-			_instance = new Settings();
-		}
-			
-		return _instance;
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.settings.ISettings#imdb()
+	 */
+	@Override
+	public Imdb getImdb() {
+		return this.getImdbSettings().getImdb();
 	}
 	
-	public static JukeboxListenerSettings get() {
-		return getInstance()._settings;
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.settings.ISettings#parser()
+	 */
+	@Override
+	public Parser getParser() {
+		return this.getParserSettings().getSettings();
 	}
 	
-	public static Imdb imdb() {
-		return ImdbSettings.get();
-	}
-	
-	public static ParserSettings parser() {
-		return ParserSettings.getInstance();
-	}
-	
-	public static void readSettings() throws IOException, JAXBException {
-		getInstance().readSettingFile();
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.settings.ISettings#readSettings()
+	 */
+	@Override
+	public void readSettings() throws IOException, JAXBException {
+		readSettingFile();
 	}
 	
 	private void readSettingFile() throws IOException, JAXBException {
@@ -62,7 +106,7 @@ public class Settings {
 		Unmarshaller u = c.createUnmarshaller();
 		
 		JAXBElement<JukeboxListenerSettings> root = u.unmarshal(new StreamSource(new File("JukeboxSettings.xml")), JukeboxListenerSettings.class);
-		_settings = root.getValue();
+		this.setSettings(root.getValue());
 		
 	}
 }

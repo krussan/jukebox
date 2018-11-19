@@ -1,7 +1,6 @@
 package se.qxx.jukebox.interfaces;
 
-public interface ICleaner {
+public interface IMediaConverter {
 
 	public Runnable getRunnable();
-
 }

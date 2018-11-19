@@ -7,4 +7,6 @@ public interface IExecutor {
 
 	public void start(Runnable runnable);
 	public <T> Future<T> start(Callable<T> callable);
+	public void stop() throws InterruptedException;
+	public void stopWatchers();
 }

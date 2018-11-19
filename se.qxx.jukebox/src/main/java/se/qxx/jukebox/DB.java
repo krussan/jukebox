@@ -13,6 +13,10 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import com.google.inject.Inject;
+import com.google.protobuf.Message;
+
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
@@ -21,9 +25,9 @@ import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.JukeboxDomain.SubtitleQueue;
-import se.qxx.jukebox.interfaces.IDatabase;
-import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.domain.MovieOrSeries;
+import se.qxx.jukebox.interfaces.IDatabase;
+import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.protodb.DBType;
 import se.qxx.protodb.ProtoDB;
 import se.qxx.protodb.ProtoDBFactory;
@@ -36,19 +40,28 @@ import se.qxx.protodb.exceptions.SearchFieldNotFoundException;
 import se.qxx.protodb.exceptions.SearchOptionsNotInitializedException;
 import se.qxx.protodb.model.ProtoDBSearchOperator;
 
-import com.google.protobuf.Message;
 public class DB implements IDatabase {
 
-
-	private ReentrantLock lock = new ReentrantLock();
+	private static ReentrantLock lock = new ReentrantLock();
 	
-	public DB() {
-		
+	private ISettings settings;
+	
+	@Inject
+	public DB(ISettings settings) {
+		this.setSettings(settings);
 	} 
 
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Search
 	//---------------------------------------------------------------------------------------
+
+	public ISettings getSettings() {
+		return settings;
+	}
+
+	public void setSettings(ISettings settings) {
+		this.settings = settings;
+	}
 
 	/* (non-Javadoc)
 	 * @see se.qxx.jukebox.IDatabase#searchMoviesByTitle(java.lang.String)
@@ -974,8 +987,8 @@ public class DB implements IDatabase {
 	 */
 	@Override
 	public ProtoDB getProtoDBInstance(boolean populateBlobs) throws DatabaseNotSupportedException {
-		String driver = Settings.get().getDatabase().getDriver();
-		String connectionString = Settings.get().getDatabase().getConnectionString();
+		String driver = this.getSettings().getSettings().getDatabase().getDriver();
+		String connectionString = this.getSettings().getSettings().getDatabase().getConnectionString();
 
 		return getProtoDBInstance(driver, connectionString, populateBlobs);
 	}

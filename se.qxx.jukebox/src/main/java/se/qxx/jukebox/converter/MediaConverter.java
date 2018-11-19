@@ -8,6 +8,9 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.FFmpegExecutor;
 import net.bramp.ffmpeg.FFmpegUtils;
@@ -25,38 +28,55 @@ import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.MediaConverterState;
+import se.qxx.jukebox.interfaces.IDatabase;
+import se.qxx.jukebox.interfaces.IExecutor;
+import se.qxx.jukebox.interfaces.IMediaConverter;
+import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.settings.CodecsType.Codec;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.tools.Util;
 
-public class MediaConverter extends JukeboxThread {
+@Singleton
+public class MediaConverter extends JukeboxThread implements IMediaConverter {
 
-	private static MediaConverter _instance;
-	private Thread converterThread;
-
-	private MediaConverter() {
-		super("MediaConverter", 3000, LogType.CONVERTER);
+	private IDatabase database;
+	private ISettings settings;
+	
+	@Inject
+	private MediaConverter(IExecutor executor, IDatabase database, ISettings settings) {
+		super("MediaConverter", 3000, LogType.CONVERTER, executor);
+		this.setDatabase(database);
+		this.setSettings(settings);
 	}
 
-	public static MediaConverter get() {
-		if (_instance == null)
-			_instance = new MediaConverter();
+	public ISettings getSettings() {
+		return settings;
+	}
 
-		return _instance;
+	public void setSettings(ISettings settings) {
+		this.settings = settings;
+	}
+
+	public IDatabase getDatabase() {
+		return database;
+	}
+
+	public void setDatabase(IDatabase database) {
+		this.database = database;
 	}
 
 	@Override
 	protected void initialize() {
 		Log.Info("Starting up converter thread [...]", LogType.CONVERTER);
 		Log.Debug("Cleaning up converter queue ..", LogType.CONVERTER);
-		DB.cleanupConverterQueue();
+		this.getDatabase().cleanupConverterQueue();
 
 	}
 
 	@Override
 	protected void execute() {
 		Log.Debug("Retrieving list to process", LogType.CONVERTER);
-		List<Media> _listProcessing = DB.getConverterQueue();
+		List<Media> _listProcessing = this.getDatabase().getConverterQueue();
 
 		for (Media md : _listProcessing) {
 			try {
@@ -104,8 +124,8 @@ public class MediaConverter extends JukeboxThread {
 		//for now all not mp4 extension
 		//list of accepted video codecs
 		
-		List<Codec> acceptedVideoCodecs = Settings.get().getConverter().getAcceptedVideoCodecs().getCodec();
-		List<Codec> acceptedAudioCodecs = Settings.get().getConverter().getAcceptedAudioCodecs().getCodec();
+		List<Codec> acceptedVideoCodecs = this.getSettings().getSettings().getConverter().getAcceptedVideoCodecs().getCodec();
+		List<Codec> acceptedAudioCodecs = this.getSettings().getSettings().getConverter().getAcceptedAudioCodecs().getCodec();
 		//List<String> acceptedVideoCodecs = Settings.get().getConverter().getAcceptedAudioCodecs().getCodec();
 		//List<String> acceptedAudioCodecs = Arrays.asList(new String[] {"aac", "mp3", "vorbis", "lcpm", "wav", "flac", "opus"});
 
@@ -253,26 +273,26 @@ public class MediaConverter extends JukeboxThread {
 	}
 
 	private void saveConvertedMedia(Media md, String newFilename) {
-		DB.saveConversion(md.getID(), newFilename, MediaConverterState.Completed_VALUE);
+		this.getDatabase().saveConversion(md.getID(), newFilename, MediaConverterState.Completed_VALUE);
 	}
 
 	private void saveConvertedMedia(Media md, MediaConverterState result) {
-		DB.saveConversion(md.getID(), result.getNumber());
+		this.getDatabase().saveConversion(md.getID(), result.getNumber());
 	}
 
 	@Override
 	public void end() {
-		if (converterThread != null) {
-			Log.Debug("Stopping converter thread", LogType.CONVERTER);
-			converterThread.interrupt();
-		}
-
 		super.end();
 	}
 	
 	@Override
 	public int getJukeboxPriority() {
 		return 3;
+	}
+
+	@Override
+	public Runnable getRunnable() {
+		return this;
 	}
 
 

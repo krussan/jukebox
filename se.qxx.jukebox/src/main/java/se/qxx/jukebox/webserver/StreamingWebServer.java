@@ -18,12 +18,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.google.protobuf.ByteString;
 
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.NanoHTTPD.Response.Status;
 import freemarker.template.TemplateException;
-import se.qxx.jukebox.DB;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
@@ -31,33 +32,32 @@ import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.MediaConverterState;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
+import se.qxx.jukebox.interfaces.IDatabase;
+import se.qxx.jukebox.interfaces.ISettings;
+import se.qxx.jukebox.interfaces.IStreamingWebServer;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.WebServer.MimeTypeMap.Extension;
-import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.tools.Util;
 import se.qxx.protodb.model.CaseInsensitiveMap;
 
-public class StreamingWebServer extends NanoHTTPD {
+@Singleton
+public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer {
 
-	private static StreamingWebServer _instance;
-	private String ipAddress = "127.0.0.1";
+	private ISettings settings;
+	private IDatabase database;
 	
-	public String getIpAddress() {
-		return ipAddress;
-	}
-
-	public void setIpAddress(String ipAddress) {
-		this.ipAddress = ipAddress;
-	}
-
 	// maps stream name to actual file name
 	private Map<String, String> streamingMap = null;
 	private Map<String, String> mimeTypeMap = null;
 	private Map<String, String> extensionMap = null;
 	
 	private AtomicInteger streamingIterator;
+	private String ipAddress; 
 	
-	public StreamingWebServer(String host, int port) {
-		super(host, port);
+	@Inject
+	public StreamingWebServer(ISettings settings, IDatabase database) {
+		super("0.0.0.0", settings.getSettings().getTcpListener().getPort().getValue());
+		this.setSettings(settings);
+		this.setDatabase(database);
 		
 		streamingIterator = new AtomicInteger();
 		streamingMap = new ConcurrentHashMap<String, String>();
@@ -66,25 +66,49 @@ public class StreamingWebServer extends NanoHTTPD {
 		setIpAddress();
 	}
 
+	public IDatabase getDatabase() {
+		return database;
+	}
+
+	public void setDatabase(IDatabase database) {
+		this.database = database;
+	}
+
+	public ISettings getSettings() {
+		return settings;
+	}
+
+	public void setSettings(ISettings settings) {
+		this.settings = settings;
+	}
+
 	private void setIpAddress() {
 		this.setIpAddress(Util.findIpAddress());
 		Log.Info(String.format("Setting Ip Address :: %s", this.getIpAddress()), LogType.WEBSERVER);
 	}
 	
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.webserver.IStreamingWebServer#initializeMappings()
+	 */
+	@Override
 	public void initializeMappings() {
 		mimeTypeMap = new CaseInsensitiveMap();
 		extensionMap = new CaseInsensitiveMap();
 		
-		for (Extension e : Settings.get().getWebServer().getMimeTypeMap().getExtension() ) {
+		for (Extension e : this.getSettings().getSettings().getWebServer().getMimeTypeMap().getExtension() ) {
 			mimeTypeMap.put(e.getValue(), e.getMimeType());
 		}
 	
-		for (se.qxx.jukebox.settings.JukeboxListenerSettings.WebServer.ExtensionOverrideMap.Extension e : 
-			Settings.get().getWebServer().getExtensionOverrideMap().getExtension()) {
+		for (se.qxx.jukebox.settings.JukeboxListenerSettings.WebServer.ExtensionOverrideMap.Extension e :
+			this.getSettings().getSettings().getWebServer().getExtensionOverrideMap().getExtension()) {
 			extensionMap.put(e.getValue(), e.getOverride());
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.webserver.IStreamingWebServer#registerFile(java.lang.String)
+	 */
+	@Override
 	public StreamingFile registerFile(String filename) {
 		int iter = streamingIterator.incrementAndGet();
 		
@@ -100,11 +124,19 @@ public class StreamingWebServer extends NanoHTTPD {
 		return new StreamingFile(uri, getMimeType(uri, filename));
 	}
 	
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.webserver.IStreamingWebServer#registerFile(se.qxx.jukebox.domain.JukeboxDomain.Media)
+	 */
+	@Override
 	public StreamingFile registerFile(Media md) {
 		String filename = getStreamingFilename(md);
 		return registerFile(filename);
 	}
 
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.webserver.IStreamingWebServer#getStreamingFilename(se.qxx.jukebox.domain.JukeboxDomain.Media)
+	 */
+	@Override
 	public String getStreamingFilename(Media md) {
 		String filename;
 		if (md.getConverterState() == MediaConverterState.Completed && !StringUtils.isEmpty(md.getConvertedFileName())) {
@@ -127,10 +159,18 @@ public class StreamingWebServer extends NanoHTTPD {
 		return extension;
 	}
 	
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.webserver.IStreamingWebServer#deregisterFile(java.lang.String)
+	 */
+	@Override
 	public void deregisterFile(String streamingFile) {
 		streamingMap.remove(streamingFile);
 	}
 	
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.webserver.IStreamingWebServer#registerSubtitle(se.qxx.jukebox.domain.JukeboxDomain.Subtitle)
+	 */
+	@Override
 	public StreamingFile registerSubtitle(Subtitle sub) {
 
 		try {
@@ -147,6 +187,10 @@ public class StreamingWebServer extends NanoHTTPD {
 	}
 	
 
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.webserver.IStreamingWebServer#serve(fi.iki.elonen.NanoHTTPD.IHTTPSession)
+	 */
+	@Override
 	public Response serve(IHTTPSession session) {
 		setPriority();
 		
@@ -248,6 +292,10 @@ public class StreamingWebServer extends NanoHTTPD {
 
     }
 
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.webserver.IStreamingWebServer#getMimeType(java.lang.String, java.lang.String)
+	 */
+	@Override
 	public String getMimeType(String uri, String filename) {
         //use mp4 for now. Default seems to be octet-stream for unknown file types 
         // and that does not fit well with some video players
@@ -284,7 +332,7 @@ public class StreamingWebServer extends NanoHTTPD {
 	}
 	
 	private Response serveRootHtml() {
-		List<Movie> movies = DB.searchMoviesByTitle("");
+		List<Movie> movies = this.getDatabase().searchMoviesByTitle("");
 		
 		try {
 			return createResponse(Response.Status.OK, NanoHTTPD.MIME_HTML, TemplateEngine.get().listMovies(movies));
@@ -295,7 +343,7 @@ public class StreamingWebServer extends NanoHTTPD {
 	}
 	
 	private Response serveMovieHtml(int id) {
-		Movie m = DB.getMovie(id);
+		Movie m = this.getDatabase().getMovie(id);
 		try {
 			return createResponse(Response.Status.OK, NanoHTTPD.MIME_HTML, TemplateEngine.get().showMovieHtml(m));
 		} catch (TemplateException | IOException e) {
@@ -304,7 +352,7 @@ public class StreamingWebServer extends NanoHTTPD {
 	}
 	
 	private Response serveThumbnail(int id) {
-		Movie m = DB.getMovie(id);
+		Movie m = this.getDatabase().getMovie(id);
 		
 		if (m != null && m.getThumbnail() != null) {
 			serveImage(m.getThumbnail());
@@ -314,7 +362,7 @@ public class StreamingWebServer extends NanoHTTPD {
 	}
 
 	private Response serveEpisodeThumbnail(int id) {
-		Episode ep = DB.getEpisode(id);
+		Episode ep = this.getDatabase().getEpisode(id);
 		
 		if (ep != null && ep.getThumbnail() != null) {
 			return serveImage(ep.getThumbnail());
@@ -336,7 +384,7 @@ public class StreamingWebServer extends NanoHTTPD {
 	}
 
 	private Response serveMovieImage(int id) {
-		Movie m = DB.getMovie(id);
+		Movie m = this.getDatabase().getMovie(id);
 
 		if (m != null && m.getImage() != null) 
 			serveImage(m.getImage());
@@ -345,7 +393,7 @@ public class StreamingWebServer extends NanoHTTPD {
 	}
 
 	private Response serveEpisodeImage(int id) {
-		Episode m = DB.getEpisode(id);
+		Episode m = this.getDatabase().getEpisode(id);
 
 		if (m != null && m.getImage() != null) 
 			serveImage(m.getImage());
@@ -510,29 +558,7 @@ public class StreamingWebServer extends NanoHTTPD {
         res.addHeader("Accept-Ranges", "bytes");
         return res;
     }
-    
-	public static void setup(String host, int port) {
-		_instance = new StreamingWebServer(host, port);
-
-		try {
-			_instance.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 	
-	public static boolean isInitialized() {
-		return _instance != null;
-	}
-	
-	public static StreamingWebServer get() {
-		if (_instance == null)
-			setup("127.0.0.1", 8080);
-		
-		return _instance;
-	}
-
 	private String getStreamUri(String streamingFile) {
 		String uri = streamingFile;
 		
@@ -542,12 +568,22 @@ public class StreamingWebServer extends NanoHTTPD {
 				streamingFile);
 	}
 	
-	public void stop() {
-		super.stop();
-	}
-
 	private void setPriority() {
 		Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 	}
 
+	@Override
+	public String getIpAddress() {
+		return ipAddress;
+	}
+
+	@Override
+	public void setIpAddress(String ipAddress) {
+		this.ipAddress = ipAddress;
+	}
+
+	@Override
+	public Runnable getRunnable() {
+		return this.createServerRunnable(SOCKET_READ_TIMEOUT);
+	}
 }

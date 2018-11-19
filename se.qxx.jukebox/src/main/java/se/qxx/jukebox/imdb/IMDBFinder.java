@@ -15,6 +15,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.google.protobuf.ByteString;
 
 import se.qxx.jukebox.Log;
@@ -25,17 +27,39 @@ import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie.Builder;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
+import se.qxx.jukebox.interfaces.IIMDBFinder;
+import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.imdb.Imdb;
 import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.tools.WebResult;
 import se.qxx.jukebox.tools.WebRetriever;
 
-public class IMDBFinder {
-	private static long nextSearch = 0;
+@Singleton
+public class IMDBFinder implements IIMDBFinder {
+	private long nextSearch = 0;
 	private static ReentrantLock lock = new ReentrantLock();			
 	
-	public static Movie Get(Movie m) throws IOException, NumberFormatException, ParseException {
+	private ISettings settings;
+	
+	@Inject
+	public IMDBFinder(ISettings settings) {
+		this.setSettings(settings);
+	}
+	
+	public ISettings getSettings() {
+		return settings;
+	}
+
+	public void setSettings(ISettings settings) {
+		this.settings = settings;
+	}
+
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.imdb.IIMDBFinder#Get(se.qxx.jukebox.domain.JukeboxDomain.Movie)
+	 */
+	@Override
+	public Movie Get(Movie m) throws IOException, NumberFormatException, ParseException {
 		lock.lock();
 		try {
 			Log.Debug("---------------------------------------------------------------------------", LogType.IMDB);
@@ -60,7 +84,11 @@ public class IMDBFinder {
 		}
 	}
 	
-	public static Series Get(Series series, int season, int episode) throws IOException, NumberFormatException, ParseException {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.imdb.IIMDBFinder#Get(se.qxx.jukebox.domain.JukeboxDomain.Series, int, int)
+	 */
+	@Override
+	public Series Get(Series series, int season, int episode) throws IOException, NumberFormatException, ParseException {
 		Log.Debug("---------------------------------------------------------------------------", LogType.IMDB);
 		Log.Debug(String.format("Starting search on series title :: %s (%s) S%s E%s", series.getTitle(), series.getYear(), season, episode), LogType.IMDB);
 		Log.Debug("---------------------------------------------------------------------------", LogType.IMDB);
@@ -113,7 +141,7 @@ public class IMDBFinder {
 		}
 	}
 
-	private static Episode populateEpisode(String seasonUrl, Episode ep)
+	private Episode populateEpisode(String seasonUrl, Episode ep)
 			throws IOException, ParseException, MalformedURLException {
 		IMDBRecord episodeRec;
 
@@ -129,7 +157,7 @@ public class IMDBFinder {
 		}
 	}
 
-	private static Season populateSeason(Season sn, IMDBRecord seriesRec) {
+	private Season populateSeason(Season sn, IMDBRecord seriesRec) {
 		Log.Debug("IMDB :: Updating season object with urls", LogType.IMDB);
 		String seasonUrl = seriesRec.getAllSeasonUrls().get(sn.getSeasonNumber());
 		Log.Debug(String.format("IMDB :: Season URL :: %s", seasonUrl), LogType.IMDB);
@@ -140,12 +168,12 @@ public class IMDBFinder {
 				.build();
 	}
 	
-	private static Series populateSeries(Series s, IMDBRecord seriesRec) {
+	private Series populateSeries(Series s, IMDBRecord seriesRec) {
 		Log.Debug("IMDB :: Creating new series object", LogType.IMDB);
 		return extractSeriesInfo(s, seriesRec);					
 	}
 	
-	private static IMDBRecord getSeriesRecord(Series s, int season) throws NumberFormatException, IOException, ParseException {
+	private IMDBRecord getSeriesRecord(Series s, int season) throws NumberFormatException, IOException, ParseException {
 		if (StringUtils.isEmpty(s.getImdbUrl())) {
 			return searchSeriesAndCheckSeason(s, season);
 		}
@@ -164,7 +192,7 @@ public class IMDBFinder {
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	private static IMDBRecord searchSeriesAndCheckSeason(Series s, int season)
+	private IMDBRecord searchSeriesAndCheckSeason(Series s, int season)
 			throws IOException, ParseException {
 		List<String> seriesBlacklist = new ArrayList<String>();
 		
@@ -193,7 +221,7 @@ public class IMDBFinder {
 	 * @param blacklistedIDs The list of blacklisted IMDB id's
 	 * @return
 	 */
-	private static boolean urlIsBlacklisted(String imdbUrl, List<String> blacklist) {
+	private boolean urlIsBlacklisted(String imdbUrl, List<String> blacklist) {
 		String imdbid = Util.getImdbIdFromUrl(imdbUrl);
 		if (!StringUtils.isEmpty(imdbid) && blacklist != null) {	
 			for (String entry : blacklist) {	
@@ -206,14 +234,18 @@ public class IMDBFinder {
 		return false;
 	}
 
-	public  static IMDBRecord Search(
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.imdb.IIMDBFinder#Search(java.lang.String, int, java.util.List, boolean)
+	 */
+	@Override
+	public  IMDBRecord Search(
 			String searchString, 
 			int yearToFind, 
 			List<String> blacklist, 
 			boolean isTvEpisode) throws IOException, NumberFormatException, ParseException {
 		
 		
-		String searchUrl = Settings.imdb().getSearchUrl();
+		String searchUrl = this.getSettings().getImdb().getSearchUrl();
 		
 		lock.lock();
 		try {
@@ -251,7 +283,7 @@ public class IMDBFinder {
 		}
 	}
 
-	private static void waitRandom() throws InterruptedException {
+	private void waitRandom() throws InterruptedException {
 		long currentTimeStamp = Util.getCurrentTimestamp();
 		// wait a while to avoid hammering
 		if (currentTimeStamp < nextSearch) {
@@ -260,7 +292,7 @@ public class IMDBFinder {
 		}
 	}
 
-	protected static WebResult getSearchResult(String title, String searchUrl)
+	protected WebResult getSearchResult(String title, String searchUrl)
 			throws UnsupportedEncodingException, IOException {
 		String urlParameters = java.net.URLEncoder.encode(title, "ISO-8859-1");
 		String urlString = searchUrl.replace("%%TITLE%%", urlParameters);
@@ -272,17 +304,17 @@ public class IMDBFinder {
 		return webResult;
 	}
 
-	private static void setNextSearchTimer() {
+	private void setNextSearchTimer() {
 		// sleep randomly to avoid detection
 		Random r = new Random();
-		int minSeconds = Settings.imdb().getSettings().getSleepSecondsMin() * 1000;
-		int maxSeconds = Settings.imdb().getSettings().getSleepSecondsMax() * 1000;
+		int minSeconds = this.getSettings().getImdb().getSettings().getSleepSecondsMin() * 1000;
+		int maxSeconds = this.getSettings().getImdb().getSettings().getSleepSecondsMax() * 1000;
 		int n = r.nextInt(minSeconds) + maxSeconds - minSeconds;
 		
 		nextSearch = Util.getCurrentTimestamp() + n;
 	}
 
-	private static Movie extractMovieInfo(Movie m, IMDBRecord rec) {
+	private Movie extractMovieInfo(Movie m, IMDBRecord rec) {
 		if (rec != null) {
 			// get releaseInfo to get the correct international title
 			String preferredTitle = getPreferredTitle(rec);
@@ -323,7 +355,7 @@ public class IMDBFinder {
 			return m;
 	}
 	
-	private static Episode populateEpisodeInfo(Episode ep, IMDBRecord rec) {
+	private Episode populateEpisodeInfo(Episode ep, IMDBRecord rec) {
 		if (rec != null) {
 			// get releaseInfo to get the correct international title
 			String preferredTitle = getPreferredTitle(rec);
@@ -362,7 +394,7 @@ public class IMDBFinder {
 			return null;
 	}
 	
-	private static Series extractSeriesInfo(Series s, IMDBRecord rec) {
+	private Series extractSeriesInfo(Series s, IMDBRecord rec) {
 		if (rec != null) {
 			// get releaseInfo to get the correct international title
 			String preferredTitle = getPreferredTitle(rec);
@@ -398,17 +430,17 @@ public class IMDBFinder {
 			return s;
 	}
 		
-	private static boolean usePreferredCountryDefault() {
-		String preferredTitleCountry = Settings.imdb().getTitle().getPreferredLanguage();
+	private boolean usePreferredCountryDefault() {
+		String preferredTitleCountry = this.getSettings().getImdb().getTitle().getPreferredLanguage();
 		
 		return StringUtils.isEmpty(preferredTitleCountry) 
 				|| StringUtils.equalsIgnoreCase(preferredTitleCountry, "default");
 	}
 	
-	private static String getPreferredTitle(IMDBRecord rec) {
+	private String getPreferredTitle(IMDBRecord rec) {
 		String title = rec.getTitle();
-		boolean useOriginal = Settings.imdb().getTitle().isUseOriginalIfExists();
-		String preferredTitleCountry = Settings.imdb().getTitle().getPreferredLanguage();		
+		boolean useOriginal = this.getSettings().getImdb().getTitle().isUseOriginalIfExists();
+		String preferredTitleCountry = this.getSettings().getImdb().getTitle().getPreferredLanguage();		
 		
 		if (usePreferredCountryDefault() && !useOriginal) {
 			return title;
@@ -433,7 +465,7 @@ public class IMDBFinder {
 		
 
 
-	public static String findUrl(
+	public String findUrl(
 			List<String> blacklist, 
 			String text,
 			int yearToFind,
@@ -458,7 +490,7 @@ public class IMDBFinder {
 		return null;
 	}
 
-	private static String findUrlInSearchResult(
+	private String findUrlInSearchResult(
 			Document doc,
 			int yearToFind,
 			boolean isTvEpisode,
@@ -478,7 +510,7 @@ public class IMDBFinder {
 		return StringUtils.EMPTY;
 	}
 
-	private static String getElementSelector(int yearToFind, boolean isTvEpisodeSearch) {
+	private String getElementSelector(int yearToFind, boolean isTvEpisodeSearch) {
 		String selector = StringUtils.EMPTY;
 		
 		if (!isTvEpisodeSearch) {
@@ -496,9 +528,9 @@ public class IMDBFinder {
 		return selector;
 	}
 
-	public static String findPreferredTitle(String text, String country) {
+	public String findPreferredTitle(String text, String country) {
 		Log.Info(String.format("Finding preferred title for %s", country), LogType.FIND);
-		Imdb.Title t = Settings.imdb().getTitle();
+		Imdb.Title t = this.getSettings().getImdb().getTitle();
 
 		if (!t.isUseOriginalIfExists()) {
 			Document doc = Jsoup.parse(text);
@@ -512,7 +544,7 @@ public class IMDBFinder {
 		return StringUtils.EMPTY;
 	}
 
-	private static IMDBRecord getEpisodeRec(String seasonUrl, int episode) throws IOException, NumberFormatException, ParseException {
+	private IMDBRecord getEpisodeRec(String seasonUrl, int episode) throws IOException, NumberFormatException, ParseException {
 		Log.Debug(String.format("IMDB :: Epsiode :: %s - URL :: %s", episode, seasonUrl), LogType.IMDB);
 		
 		// get the record for the season page

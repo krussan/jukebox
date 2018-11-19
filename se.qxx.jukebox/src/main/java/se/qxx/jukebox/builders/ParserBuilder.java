@@ -13,15 +13,26 @@ import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.MovieOrSeries;
+import se.qxx.jukebox.interfaces.ISettings;
+import se.qxx.jukebox.settings.parser.Parser;
+import se.qxx.jukebox.settings.parser.Parser.Keywords;
 import se.qxx.jukebox.settings.parser.ParserSettings;
 import se.qxx.jukebox.settings.parser.ParserType;
 import se.qxx.jukebox.settings.parser.WordType;
 
 public class ParserBuilder extends MovieBuilder {
 
+	public ParserBuilder(ISettings settings) {
+		super(settings);
+	}
+
 	@Override
 	public MovieOrSeries extract(String filepath, String filename) {
 		return extractMovieParser(filepath, filename).build();
+	}
+	
+	private Parser getParser() {
+		return this.getSettings().getParser();
 	}
 	
 	public ParserMovie extractMovieParser(String filepath, String filename) {
@@ -249,27 +260,28 @@ public class ParserBuilder extends MovieBuilder {
 	}
 
 	private List<WordType> getWordList(ParserType pt) {
+		Keywords keyWords = this.getParser().getKeywords();
 		switch (pt) {
 		case EPISODE:
-			return ParserSettings.getInstance().getSettings().getKeywords().getEpisode().getWord();	
+			return keyWords.getEpisode().getWord();	
 		case FORMAT:
-			return ParserSettings.getInstance().getSettings().getKeywords().getFormat().getWord();
+			return keyWords.getFormat().getWord();
 		case LANGUAGE:
-			return ParserSettings.getInstance().getSettings().getKeywords().getLanguage().getWord();
+			return keyWords.getLanguage().getWord();
 		case OTHER:
-			return ParserSettings.getInstance().getSettings().getKeywords().getOther().getWord();
+			return keyWords.getOther().getWord();
 		case PART:
-			return ParserSettings.getInstance().getSettings().getKeywords().getParts().getWord();
+			return keyWords.getParts().getWord();
 		case SEASON:
-			return ParserSettings.getInstance().getSettings().getKeywords().getSeason().getWord();
+			return keyWords.getSeason().getWord();
 		case SOUND:
-			return ParserSettings.getInstance().getSettings().getKeywords().getSound().getWord();
+			return keyWords.getSound().getWord();
 		case TYPE:
-			return ParserSettings.getInstance().getSettings().getKeywords().getType().getWord();
+			return keyWords.getType().getWord();
 		case YEAR:
-			return ParserSettings.getInstance().getSettings().getKeywords().getYear().getWord();
+			return keyWords.getYear().getWord();
 		case GROUP:
-			return ParserSettings.getInstance().getSettings().getKeywords().getGroups().getWord();		
+			return keyWords.getGroups().getWord();		
 		default:
 			return new ArrayList<WordType>();
 		}

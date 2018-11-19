@@ -11,6 +11,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.builders.MovieBuilder;
 import se.qxx.jukebox.concurrent.StringLockPool;
@@ -21,28 +24,97 @@ import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.MovieOrSeries;
-import se.qxx.jukebox.imdb.IMDBFinder;
+import se.qxx.jukebox.interfaces.IArguments;
+import se.qxx.jukebox.interfaces.IDatabase;
+import se.qxx.jukebox.interfaces.IExecutor;
+import se.qxx.jukebox.interfaces.IIMDBFinder;
+import se.qxx.jukebox.interfaces.IMovieBuilderFactory;
+import se.qxx.jukebox.interfaces.IMovieIdentifier;
+import se.qxx.jukebox.interfaces.ISubtitleDownloader;
 import se.qxx.jukebox.tools.MediaMetadata;
 import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.watcher.FileRepresentation;
 
-public class MovieIdentifier extends JukeboxThread {
-	private static MovieIdentifier _instance;
+@Singleton
+public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
+	
 	private Queue<FileRepresentation> files;
 	private StringLockPool seriesLocks;
+	private IDatabase database;
+	private IArguments arguments;
+	private ISubtitleDownloader subtitleDownloader;
+	private IIMDBFinder imdbFinder;
+	private IMovieBuilderFactory movieBuilderFactory;
 
-	private MovieIdentifier() {
-		super("MovieIdentifier", 0, LogType.FIND);
+	@Inject
+	private MovieIdentifier(IExecutor executor, 
+			IDatabase database, 
+			IArguments arguments,
+			ISubtitleDownloader subtitleDownloader,
+			IIMDBFinder imdbFinder,
+			IMovieBuilderFactory movieBuilderFactory) {
+		super("MovieIdentifier", 0, LogType.FIND, executor);
+		
+		this.setDatabase(database);
+		this.setArguments(arguments);
+		this.setSubtitleDownloader(subtitleDownloader);
+		this.setImdbFinder(imdbFinder);
+		this.setMovieBuilderFactory(movieBuilderFactory);
+		
 		this.files = new ConcurrentLinkedQueue<FileRepresentation>();
 		this.seriesLocks = new StringLockPool();
 	}
 
-	public static MovieIdentifier get() {
-		if (_instance == null)
-			_instance = new MovieIdentifier();
 
-		return _instance;
+	public IMovieBuilderFactory getMovieBuilderFactory() {
+		return movieBuilderFactory;
 	}
+
+
+	public void setMovieBuilderFactory(IMovieBuilderFactory movieBuilderFactory) {
+		this.movieBuilderFactory = movieBuilderFactory;
+	}
+
+
+	public IIMDBFinder getImdbFinder() {
+		return imdbFinder;
+	}
+
+
+	public void setImdbFinder(IIMDBFinder imdbFinder) {
+		this.imdbFinder = imdbFinder;
+	}
+
+
+	public ISubtitleDownloader getSubtitleDownloader() {
+		return subtitleDownloader;
+	}
+
+
+	public void setSubtitleDownloader(ISubtitleDownloader subtitleDownloader) {
+		this.subtitleDownloader = subtitleDownloader;
+	}
+
+
+	public IArguments getArguments() {
+		return arguments;
+	}
+
+
+	public void setArguments(IArguments arguments) {
+		this.arguments = arguments;
+	}
+
+
+	public IDatabase getDatabase() {
+		return database;
+	}
+
+
+	public void setDatabase(IDatabase database) {
+		this.database = database;
+	}
+
 
 	@Override
 	protected void initialize() {
@@ -62,6 +134,10 @@ public class MovieIdentifier extends JukeboxThread {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IMovieIdentifier#addFile(se.qxx.jukebox.watcher.FileRepresentation)
+	 */
+	@Override
 	public void addFile(FileRepresentation f) {
 		Log.Debug(String.format("Adding file %s", f.getName()), LogType.FIND);
 		
@@ -82,12 +158,13 @@ public class MovieIdentifier extends JukeboxThread {
 		// Added ignore on all filename that contains the string sample
 		if (!Util.isExcludedFile(f, LogType.FIND)) {
 			// check if the same media already exist in db
-			Media dbMedia = DB.getMediaByFilename(filename);
+			Media dbMedia = this.getDatabase().getMediaByFilename(filename);
 			if (dbMedia != null && StringUtils.equalsIgnoreCase(dbMedia.getFilepath(), path)) {
-				Log.Info("Media already exist in DB. Continuing...", LogType.FIND);
+				Log.Info("Media already exist in this.getDatabase(). Continuing...", LogType.FIND);
 				return;
 			} else {
-				MovieOrSeries mos = MovieBuilder.identify(path, filename);
+				MovieOrSeries mos = this.getMovieBuilderFactory()
+						.identify(path, filename);
 
 				if (mos != null) {
 					matchMovieWithDatabase(mos);
@@ -129,8 +206,8 @@ public class MovieIdentifier extends JukeboxThread {
 	}
 
 	private void matchMovie(MovieOrSeries mos, Media newMedia) {
-		// Movie dbMovie = DB.getMovieByStartOfMediaFilename(mos.getTitle());
-		Movie dbMovie = DB.findMovie(mos.getTitle());
+		// Movie dbMovie = this.getDatabase().getMovieByStartOfMediaFilename(mos.getTitle());
+		Movie dbMovie = this.getDatabase().findMovie(mos.getTitle());
 
 		if (dbMovie == null) {
 			saveNewMovie(mos, newMedia);
@@ -146,9 +223,9 @@ public class MovieIdentifier extends JukeboxThread {
 		
 		Thread t = new Thread(() -> {
 			Movie movie = getMovieInfo(mos.getMovie(), newMedia);
-			movie = DB.save(movie);
-			if (Arguments.get().isSubtitleDownloaderEnabled())
-				SubtitleDownloader.get().addMovie(movie);			
+			movie = this.getDatabase().save(movie);
+			if (this.getArguments().isSubtitleDownloaderEnabled())
+				this.getSubtitleDownloader().addMovie(movie);			
 		});
 		t.start();
 	}
@@ -180,9 +257,9 @@ public class MovieIdentifier extends JukeboxThread {
 				// wait if there is a lock on the series title
 				this.getSeriesLocks().lock(series.getTitle());
 				
-				Series dbSeries = DB.findSeries(series.getTitle());
+				Series dbSeries = this.getDatabase().findSeries(series.getTitle());
 		
-				// if no series found in DB. create new from the created series
+				// if no series found in this.getDatabase(). create new from the created series
 				// - if no series then no seasons and no episodes
 				if (dbSeries == null) {
 					//check identification process
@@ -202,8 +279,8 @@ public class MovieIdentifier extends JukeboxThread {
 		Season sn = DomainUtil.findSeason(s, season);
 		Episode ep = DomainUtil.findEpisode(sn, episode);
 				
-		if (Arguments.get().isSubtitleDownloaderEnabled()) 
-			SubtitleDownloader.get().addEpisode(ep);
+		if (this.getArguments().isSubtitleDownloaderEnabled()) 
+			this.getSubtitleDownloader().addEpisode(ep);
 	}
 
 	private void mergeExistingSeries(Series series, Media newMedia, int season, int episode, Series dbSeries) {
@@ -214,7 +291,7 @@ public class MovieIdentifier extends JukeboxThread {
 		// verify if dbSeries have the episode.
 		// if it does then exit
 		if (checkSeries(dbSeries, season, episode)) {
-			Log.Debug("MovieIdentifier :: Episode already exist in DB. Exiting ... ", LogType.FIND);
+			Log.Debug("MovieIdentifier :: Episode already exist in this.getDatabase(). Exiting ... ", LogType.FIND);
 		} else {
 			Series mergedSeries = mergeSeries(dbSeries, series, season, episode);
 
@@ -224,7 +301,7 @@ public class MovieIdentifier extends JukeboxThread {
 
 	private void updateSeries(Series series, Media media, int season, int episode) {
 		Series s = getSeriesInfo(series, season, episode, media);
-		s = DB.save(s);
+		s = this.getDatabase().save(s);
 		enlistToSubtitleDownloader(s, season, episode);
 	}
 
@@ -279,21 +356,19 @@ public class MovieIdentifier extends JukeboxThread {
 		return DomainUtil.updateSeason(mergeTo, sn);
 	}
 
-	/**
-	 * Gets IMDB and metadata information from media and adds it to the database.
-	 * 
-	 * @param m
-	 * @param newMedia
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IMovieIdentifier#getMovieInfo(se.qxx.jukebox.domain.JukeboxDomain.Movie, se.qxx.jukebox.domain.JukeboxDomain.Media)
 	 */
+	@Override
 	public Movie getMovieInfo(Movie movie, Media media) {
 		// If not get information and subtitles
 		// If title is the same as the filename (except ignore pattern) then don't
-		// identify on IMDB.
-		if (Arguments.get().isImdbIdentifierEnabled())
+		// identify on IMthis.getDatabase().
+		if (this.getArguments().isImdbIdentifierEnabled())
 			movie = getImdbInformation(movie);
 
 		// Get media information from MediaInfo library
-		if (Arguments.get().isMediaInfoEnabled()) {
+		if (this.getArguments().isMediaInfoEnabled()) {
 			Media md = MediaMetadata.addMediaMetadata(media);
 
 			movie = Movie.newBuilder(movie).clearMedia().addMedia(md).build();
@@ -303,12 +378,10 @@ public class MovieIdentifier extends JukeboxThread {
 		return movie;
 	}
 
-	/**
-	 * Gets IMDB and metadata information from media and adds it to the database.
-	 * 
-	 * @param m
-	 * @param newMedia
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IMovieIdentifier#getSeriesInfo(se.qxx.jukebox.domain.JukeboxDomain.Series, int, int, se.qxx.jukebox.domain.JukeboxDomain.Media)
 	 */
+	@Override
 	public Series getSeriesInfo(Series series, int season, int episode, Media media) {
 		Series s = series;
 
@@ -319,8 +392,8 @@ public class MovieIdentifier extends JukeboxThread {
 
 		// If not get information and subtitles
 		// If title is the same as the filename (except ignore pattern) then don't
-		// identify on IMDB.
-		if (Arguments.get().isImdbIdentifierEnabled())
+		// identify on IMthis.getDatabase().
+		if (this.getArguments().isImdbIdentifierEnabled())
 			s = getImdbInformation(s, season, episode);
 
 		// Get metadata and enlist to subtitle downloader
@@ -334,7 +407,7 @@ public class MovieIdentifier extends JukeboxThread {
 		Episode ep = DomainUtil.findEpisode(sn, episode);
 
 		// Get media information from MediaInfo library
-		if (Arguments.get().isMediaInfoEnabled()) {
+		if (this.getArguments().isMediaInfoEnabled()) {
 			Media md = MediaMetadata.addMediaMetadata(media);
 
 			ep = Episode.newBuilder(ep).clearMedia().addMedia(md).build();
@@ -367,16 +440,16 @@ public class MovieIdentifier extends JukeboxThread {
 		// Check if media exists
 		if (!mediaExists(movie, media)) {
 			// Add media metadata
-			if (Arguments.get().isMediaInfoEnabled())
+			if (this.getArguments().isMediaInfoEnabled())
 				media = MediaMetadata.addMediaMetadata(media);
 
 			// If movie exist but not the media then add the media
-			DB.save(Movie.newBuilder(movie).addMedia(media).build());
+			this.getDatabase().save(Movie.newBuilder(movie).addMedia(media).build());
 		}
 
 		// Check if movie has subs. If not then add it to the subtitle queue.
 		if (!hasSubtitles(movie)) {
-			SubtitleDownloader.get().addMovie(movie);
+			this.getSubtitleDownloader().addMovie(movie);
 		}
 	}
 
@@ -385,15 +458,15 @@ public class MovieIdentifier extends JukeboxThread {
 
 		if (!mediaExists(e, media)) {
 			// Add media metadata
-			if (Arguments.get().isMediaInfoEnabled())
+			if (this.getArguments().isMediaInfoEnabled())
 				media = MediaMetadata.addMediaMetadata(media);
 
 			// If movie exist but not the media then add the media
-			DB.save(Episode.newBuilder(e).addMedia(media).build());
+			this.getDatabase().save(Episode.newBuilder(e).addMedia(media).build());
 		}
 
 		if (!hasSubtitles(e)) {
-			SubtitleDownloader.get().addEpisode(e);
+			this.getSubtitleDownloader().addEpisode(e);
 		}
 	}
 
@@ -422,7 +495,7 @@ public class MovieIdentifier extends JukeboxThread {
 	private Movie getImdbInformation(Movie m) {
 		// find imdb link
 		try {
-			m = IMDBFinder.Get(m);
+			m = this.getImdbFinder().Get(m);
 
 			if (!StringUtils.isEmpty(m.getImdbUrl()))
 				Log.Info(String.format("IMDB link found for :: %s", m.getTitle()), LogType.FIND);
@@ -437,7 +510,7 @@ public class MovieIdentifier extends JukeboxThread {
 		// find imdb link
 		Series s = null;
 		try {
-			s = IMDBFinder.Get(series, season, episode);
+			s = this.getImdbFinder().Get(series, season, episode);
 
 			if (!StringUtils.isEmpty(s.getImdbUrl()))
 				Log.Info(String.format("IMDB link found for :: %s", series.getTitle()), LogType.FIND);
@@ -474,6 +547,12 @@ public class MovieIdentifier extends JukeboxThread {
 
 	public StringLockPool getSeriesLocks() {
 		return this.seriesLocks;
+	}
+
+
+	@Override
+	public Runnable getRunnable() {
+		return this;
 	}
 
 }

@@ -1,55 +1,124 @@
 package se.qxx.jukebox;
 
 import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import javax.xml.bind.JAXBException;
-
-import org.apache.commons.lang3.StringUtils;
 
 import com.google.inject.Inject;
 
 import se.qxx.jukebox.Log.LogType;
-import se.qxx.jukebox.converter.MediaConverter;
 import se.qxx.jukebox.interfaces.IArguments;
+import se.qxx.jukebox.interfaces.ICleaner;
 import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.IMain;
+import se.qxx.jukebox.interfaces.IMediaConverter;
+import se.qxx.jukebox.interfaces.IMovieIdentifier;
+import se.qxx.jukebox.interfaces.ISettings;
+import se.qxx.jukebox.interfaces.IStreamingWebServer;
 import se.qxx.jukebox.interfaces.ISubtitleDownloader;
-import se.qxx.jukebox.servercomm.TcpListener;
+import se.qxx.jukebox.servercomm.ITcpListener;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
-import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.tools.Util;
-import se.qxx.jukebox.watcher.DownloadChecker;
 import se.qxx.jukebox.watcher.ExtensionFileFilter;
 import se.qxx.jukebox.watcher.FileCreatedHandler;
 import se.qxx.jukebox.watcher.FileRepresentation;
 import se.qxx.jukebox.watcher.FileSystemWatcher;
+import se.qxx.jukebox.watcher.IDownloadChecker;
 import se.qxx.jukebox.watcher.INotifyClient;
-import se.qxx.jukebox.webserver.StreamingWebServer;
-import se.qxx.protodb.exceptions.DatabaseNotSupportedException;
-import se.qxx.protodb.exceptions.IDFieldNotFoundException;
 
 public class Main implements IMain, INotifyClient
 {
 	private Boolean isRunning;
-	private List<JukeboxThread> threadPool = new ArrayList<JukeboxThread>();
+
 	private IArguments arguments;
 	private IExecutor executor;
 	private ISubtitleDownloader subtitleDownloader;
+	private ICleaner cleaner;
+	private IStreamingWebServer webServer;
+	private ISettings settings;
+	private ITcpListener tcpListener;
+	private IMovieIdentifier movieIdentifier;
+	private IDownloadChecker downloadChecker;
+	private IMediaConverter mediaConverter;
 
 	@Inject
-	public Main(IArguments arguments, IExecutor executor, ISubtitleDownloader subtitleDownloader) {
+	public Main(IArguments arguments, 
+			IExecutor executor, 
+			ISubtitleDownloader subtitleDownloader, 
+			ICleaner cleaner, 
+			IStreamingWebServer webServer, 
+			ISettings settings,
+			ITcpListener tcpListener,
+			IMovieIdentifier movieIdentifier,
+			IDownloadChecker downloadChecker,
+			IMediaConverter mediaConverter) {
+		
 		this.setArguments(arguments);	
 		this.setExecutor(executor);
 		this.setSubtitleDownloader(subtitleDownloader);
-	}
+		this.setCleaner(cleaner);
+		this.setWebServer(webServer);
+		this.setSettings(settings);
+		this.setTcpListener(tcpListener);
+		this.setMovieIdentifier(movieIdentifier);
+		this.setDownloadChecker(downloadChecker);
+		this.setMediaConverter(mediaConverter);
+	}	
 	
+	public IMediaConverter getMediaConverter() {
+		return mediaConverter;
+	}
+
+	public void setMediaConverter(IMediaConverter mediaConverter) {
+		this.mediaConverter = mediaConverter;
+	}
+
+	public IDownloadChecker getDownloadChecker() {
+		return downloadChecker;
+	}
+
+	public void setDownloadChecker(IDownloadChecker downloadChecker) {
+		this.downloadChecker = downloadChecker;
+	}
+
+	public IMovieIdentifier getMovieIdentifier() {
+		return movieIdentifier;
+	}
+
+	public void setMovieIdentifier(IMovieIdentifier movieIdentifier) {
+		this.movieIdentifier = movieIdentifier;
+	}
+
+	public ITcpListener getTcpListener() {
+		return tcpListener;
+	}
+
+	public void setTcpListener(ITcpListener tcpListener) {
+		this.tcpListener = tcpListener;
+	}
+
+	public ISettings getSettings() {
+		return settings;
+	}
+
+	public void setSettings(ISettings settings) {
+		this.settings = settings;
+	}
+
+	public IStreamingWebServer getWebServer() {
+		return webServer;
+	}
+
+	public void setWebServer(IStreamingWebServer webServer) {
+		this.webServer = webServer;
+	}
+
+	public ICleaner getCleaner() {
+		return cleaner;
+	}
+
+	public void setCleaner(ICleaner cleaner) {
+		this.cleaner = cleaner;
+	}
+
 	public ISubtitleDownloader getSubtitleDownloader() {
 		return subtitleDownloader;
 	}
@@ -73,11 +142,6 @@ public class Main implements IMain, INotifyClient
 		this.arguments = arguments;
 	}
 	
-	public List<JukeboxThread> getThreadPool() {
-		
-		return threadPool;
-	}
-
 	public Boolean getIsRunning() {
 		return isRunning;
 	}
@@ -88,66 +152,17 @@ public class Main implements IMain, INotifyClient
 	
 	java.util.concurrent.Semaphore s = new java.util.concurrent.Semaphore(1);	
 	
-
-	
-	private void startMainThread()  {
-		try {
-
-		}
-		catch (Exception e) {
-			//log exception and exit
-			System.out.println("Error when starting up ::");
-			e.printStackTrace();
-		}
-	}
-
 	public void run() {
 		
 		try {
-			cleanupStopperFile();
+			cleanupStopperFile();			
 			
 			System.out.println("Initializing settings");
-			Settings.initialize();
+			this.getSettings().initialize();
 			
-			System.out.println("Starting threads ...");
-			if (this.getArguments().isTcpListenerEnabled()) {
-				System.out.println("Starting TCP listener");
-				startupThread(new TcpListener());;
-			}
-			
-			if (this.getArguments().isSubtitleDownloaderEnabled()) {
-				System.out.println("Starting subtitle downloader");
-				startupThread(this.getSubtitleDownloader());
-			}
-			
-			if (this.getArguments().isWebServerEnabled()) {
-				System.out.println("Starting web server");
-				StreamingWebServer.setup("0.0.0.0", 8001);
-			}
-			
-			if (this.getArguments().isWatcherEnabled()) {
-				System.out.println("Starting watcher thread");
-				startupThread(MovieIdentifier.get());
-			}
-			
-			if (this.getArguments().isCleanerEnabled()) {
-				System.out.println("Starting cleaner thread");
-				startupThread(Cleaner.get());
-			}
-			
-			if (this.getArguments().isDownloadCheckerEnabled()) {
-				System.out.println("Starting download checker");
-				startupThread(DownloadChecker.get());
-			}
-			
-			if (this.getArguments().isMediaConverterEnabled()) {
-				System.out.println("Starting media converter");
-				startupThread(MediaConverter.get());
-			}
-			
+			startupThreads();
 			
 			this.setIsRunning(true);;
-			
 			setupConfigurationListener();
 			
 			// start by acquiring the semaphore
@@ -161,8 +176,8 @@ public class Main implements IMain, INotifyClient
 
 				// acquire a new to block this thread until it is released by another thread (by calling stop)
 				s.acquire();
-				
-				Settings.initialize();				
+			
+				this.getSettings().initialize();	
 			}
 		}
 		catch (Exception e) {
@@ -171,6 +186,44 @@ public class Main implements IMain, INotifyClient
 		
 		Log.Info("Shutdown completed!", LogType.MAIN);
 		cleanupStopperFile();
+	}
+
+	private void startupThreads() {
+		System.out.println("Starting threads ...");
+		if (this.getArguments().isTcpListenerEnabled()) {
+			System.out.println("Starting TCP listener");
+			this.getExecutor().start(this.getTcpListener().getRunnable());
+		}
+		
+		if (this.getArguments().isSubtitleDownloaderEnabled()) {
+			System.out.println("Starting subtitle downloader");
+			this.getExecutor().start(this.getSubtitleDownloader().getRunnable());
+		}
+		
+		if (this.getArguments().isWebServerEnabled()) {
+			System.out.println("Starting web server");
+			this.getExecutor().start(this.getWebServer().getRunnable());
+		}
+		
+		if (this.getArguments().isWatcherEnabled()) {
+			System.out.println("Starting watcher thread");
+			this.getExecutor().start(this.getMovieIdentifier().getRunnable());
+		}
+		
+		if (this.getArguments().isCleanerEnabled()) {
+			System.out.println("Starting cleaner thread");
+			this.getExecutor().start(this.getCleaner().getRunnable());				
+		}
+		
+		if (this.getArguments().isDownloadCheckerEnabled()) {
+			System.out.println("Starting download checker");
+			this.getExecutor().start(this.getDownloadChecker().getRunnable());
+		}
+		
+		if (this.getArguments().isMediaConverterEnabled()) {
+			System.out.println("Starting media converter");
+			this.getExecutor().start(this.getMediaConverter().getRunnable());
+		}
 	}
 
 	private void setupConfigurationListener() {
@@ -183,13 +236,9 @@ public class Main implements IMain, INotifyClient
 		FileSystemWatcher configurationWatcher = new FileSystemWatcher("ConfigurationWatcher", ".", filter, true, true, false, 500);
 		configurationWatcher.setSleepTime(300);
 		configurationWatcher.registerClient(this);
-		startupThread(configurationWatcher);
+		this.getExecutor().start(configurationWatcher);
 	}
 	
-	private void startupThread(JukeboxThread t) {
-		this.getThreadPool().add(t);
-		t.start();
-	}
 
 	private void cleanupStopperFile() {
 		File f = new File("stopper.stp");
@@ -202,31 +251,18 @@ public class Main implements IMain, INotifyClient
 	public void stop() {
 		Log.Info("Server is shutting down ...", LogType.MAIN);
 
-		// stop web server
 		try {
-			System.out.println("Stopping web server ...");
-			StreamingWebServer.get().stop();
-		} catch(Exception e) {
-			Log.Debug("StreamingWebServer error. Continue shutdown", LogType.MAIN);
+			this.getExecutor().stop();
+
+			// stop main thread
+			System.out.println("Stopping server ...");
+			this.setIsRunning(false);
+			s.release();
+
+		} catch (InterruptedException e) {
+			
 		}
 
-		// stop all jukebox threads in reverse order
-		Collections.reverse(this.getThreadPool());
-		
-		for (JukeboxThread t : this.getThreadPool()) {
-			Log.Debug(String.format("Ending thread :: %s", t.getName()), LogType.MAIN);
-			t.end();
-			try {
-				t.join();
-			} catch (InterruptedException e) {
-				Log.Debug("Thread was interrupted... continuing", LogType.MAIN);
-			}
-		}		
-		
-		// stop main thread
-		System.out.println("Stopping server ...");
-		this.setIsRunning(false);
-		s.release();
 	
 	}
 	
@@ -244,20 +280,14 @@ public class Main implements IMain, INotifyClient
 	
 	private void setupCatalogs(){
 		FileCreatedHandler h = new FileCreatedHandler();
-		
-		for (JukeboxThread t : threadPool) {
-			if (t instanceof FileSystemWatcher) {
-				// end all but the configuration watcher
-				if (!StringUtils.equalsIgnoreCase(t.getName(), "ConfigurationWatcher"))
-					t.end();
-			}
-		}
+			
+		this.getExecutor().stopWatchers();
 
 		ExtensionFileFilter ff = new ExtensionFileFilter();
 		ff.addExtensions(Util.getExtensions());
 		
 		int cc = 0;
-		for (Catalog c : Settings.get().getCatalogs().getCatalog()) {
+		for (Catalog c : this.getSettings().getSettings().getCatalogs().getCatalog()) {
 			cc++;
 			File path = new File(c.getPath());
 			
@@ -271,17 +301,12 @@ public class Main implements IMain, INotifyClient
 			
 				f.registerClient(h);
 				f.setSleepTime(500);
-				startupThread(f);
+				
+				this.getExecutor().start(f);
 			
 			}
 		}
 	}
 
-	public static ExecutorService getExecutorService() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	
 
 }

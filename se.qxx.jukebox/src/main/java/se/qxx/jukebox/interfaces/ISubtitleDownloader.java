@@ -8,4 +8,5 @@ public interface ISubtitleDownloader {
 	public void reenlistMovie(Movie m);
 	public void reenlistEpisode(Episode ep);
 	public void addEpisode(Episode episode);
+	public Runnable getRunnable();
 }
