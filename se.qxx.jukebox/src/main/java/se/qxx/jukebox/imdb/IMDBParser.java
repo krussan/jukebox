@@ -19,6 +19,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
@@ -31,13 +32,23 @@ import se.qxx.jukebox.tools.WebRetriever;
 public class IMDBParser implements IIMDBParser {
 	private IFileReader fileReader;
 	private ISettings settings;
+	private Document document;
 
 	@Inject
-	public IMDBParser(IFileReader fileReader, ISettings settings) {
+	public IMDBParser(IFileReader fileReader, ISettings settings, @Assisted Document document) {
 		this.setFileReader(fileReader);
 		this.setSettings(settings);
+		this.setDocument(document);
 	}
 	
+	public Document getDocument() {
+		return document;
+	}
+
+	public void setDocument(Document document) {
+		this.document = document;
+	}
+
 	public ISettings getSettings() {
 		return settings;
 	}
@@ -53,8 +64,8 @@ public class IMDBParser implements IIMDBParser {
 		this.fileReader = fileReader;
 	}
 	@Override
-	public List<String> parseEpisodes(Document doc) {
-		Elements elm = doc.select("strong > a[href~=ttep_ep]");
+	public List<String> parseEpisodes() {
+		Elements elm = this.getDocument().select("strong > a[href~=ttep_ep]");
 		
 		List<String> result = new ArrayList<String>();
 		for (Element e : elm) {
@@ -72,8 +83,8 @@ public class IMDBParser implements IIMDBParser {
 	}
 
 	@Override
-	public List<String> parseSeasons(Document doc) {
-		Elements elm = doc.select(".seasons-and-year-nav a[href~=season]");
+	public List<String> parseSeasons() {
+		Elements elm = this.getDocument().select(".seasons-and-year-nav a[href~=season]");
 		
 		List<String> result = new ArrayList<String>();
 		for (Element e : elm) {
@@ -92,8 +103,8 @@ public class IMDBParser implements IIMDBParser {
 	}
 
 	@Override
-	public String parseStory(Document doc) {
-		Elements elm = doc.select("div.summary_text");
+	public String parseStory() {
+		Elements elm = this.getDocument().select("div.summary_text");
 
 		if (elm.size() > 0) {
 			String unescapedValue = StringEscapeUtils.unescapeHtml4(elm.get(0).text());
@@ -106,8 +117,8 @@ public class IMDBParser implements IIMDBParser {
 
 
 	@Override
-	public String parseRating(Document doc) {
-		Elements elm = doc.select("span[itemprop=ratingValue]");
+	public String parseRating() {
+		Elements elm = this.getDocument().select("span[itemprop=ratingValue]");
 
 		if (elm.size() > 0) {
 			String unescapedValue = StringEscapeUtils.unescapeHtml4(elm.get(0).text());
@@ -119,8 +130,8 @@ public class IMDBParser implements IIMDBParser {
 	}
 
 	@Override
-	public ImageData parseImage(Document doc) {
-		Elements elm = doc.select(".poster img");
+	public ImageData parseImage() {
+		Elements elm = this.getDocument().select(".poster img");
 
 		if (elm.size() > 0) {
 			String value = elm.attr("src").trim();
@@ -145,8 +156,8 @@ public class IMDBParser implements IIMDBParser {
 	}
 
 	@Override
-	public Date parseFirstAirDate(Document doc) {
-		Elements elm = doc.select(".title_wrapper a[href~=/.*releaseinfo.*]");
+	public Date parseFirstAirDate() {
+		Elements elm = this.getDocument().select(".title_wrapper a[href~=/.*releaseinfo.*]");
 		if (elm.size() > 0) {
 			String dateValue = fetchAirDateByParenthesis(elm);
 			
@@ -183,20 +194,22 @@ public class IMDBParser implements IIMDBParser {
 	}
 
 	@Override
-	public List<String> parseGenres(Document doc) {
-		Elements elm = doc.select(".title_wrapper a[href~=genre]");
+	public List<String> parseGenres() {
+		Elements elm = this.getDocument().select(".title_wrapper a[href~=genre]");
 		
 		List<String> result = new ArrayList<String>();
 		for (int i = 0; i < elm.size(); i++) {
 			String genre = StringEscapeUtils.unescapeHtml4(elm.get(i).text()).trim();
-			this.getAllGenres().add(genre);
+			result.add(genre);
 		}
-		Log.Debug(String.format("IMDBRECORD :: Setting genres :: %s", String.join(",", this.getAllGenres())), LogType.IMDB);
+		Log.Debug(String.format("IMDBRECORD :: Setting genres :: %s", String.join(",", result)), LogType.IMDB);
+		
+		return result;
 	}
 
 	@Override
-	public void parseDuration(Document doc) {
-		Elements elm = doc.select(".title_wrapper time");
+	public int parseDuration() {
+		Elements elm = this.getDocument().select(".title_wrapper time");
 
 		if (elm.size() > 0) {
 			String duration = elm.get(0).attr("datetime");
@@ -204,46 +217,65 @@ public class IMDBParser implements IIMDBParser {
 			int minutes = (int) (dur.getSeconds() / 60);
 
 			Log.Debug(String.format("IMDBRECORD :: Setting duration :: %s", minutes), LogType.IMDB);
-			this.setDurationMinutes(minutes);
+			return minutes;
 		}
+		
+		return 0;
 	}
 
 	@Override
-	public void parseDirector(Document doc) {
-		Elements elm = doc.select(".credit_summary_item:contains(Director) > a");
+	public String parseDirector() {
+		Elements elm = this.getDocument().select(".credit_summary_item:contains(Director) > a");
 
 		if (elm.size() > 0) {
 			String unescapedValue = StringEscapeUtils.unescapeHtml4(elm.get(0).text());
 			Log.Debug(String.format("IMDBRECORD :: Setting director :: %s", unescapedValue), LogType.IMDB);
-			this.setDirector(unescapedValue);
+			return unescapedValue;
 		}
+		
+		return StringUtils.EMPTY;
+	}
+	
+	@Override
+	public int parseYear() {
+		String parsed = extractTitle(TitleType.Year);
+		if (!StringUtils.isEmpty(parsed) && StringUtils.isNumeric(parsed))
+			return Integer.parseInt(parsed);
+		
+		return 0;
 	}
 
-
-	@Override
-	public void parseTitle(Document doc) {
-		Elements elm = doc.select(".title_wrapper > h1");
+	private enum TitleType {
+		Title,
+		Year
+	}
+	
+	private String extractTitle(TitleType type) {
+		Elements elm = this.getDocument().select(".title_wrapper > h1");
 		if (elm.size() > 0) {
 			Pattern p = Pattern.compile("(.*?)\\((\\d{4})\\)");
 			Matcher m = p.matcher(elm.text());
 
 			if (m.find()) {
-				String title = m.group(1);
-				String year = m.group(2);
+				String match = m.group(type == TitleType.Title ? 1 : 2);
 
-				String unescapedValue = StringEscapeUtils.unescapeHtml4(title).trim();
-				Log.Debug(String.format("IMDBRECORD :: Setting title :: %s", unescapedValue), LogType.IMDB);
-				this.setTitle(unescapedValue);
-
-				unescapedValue = StringEscapeUtils.unescapeHtml4(year).trim();
-				Log.Debug(String.format("IMDBRECORD :: Setting year :: %s", unescapedValue), LogType.IMDB);
-				this.setYear(Integer.parseInt(unescapedValue));
-			} else {
+				String unescapedValue = StringEscapeUtils.unescapeHtml4(match).trim();
+				return unescapedValue;
+			} else if (type == TitleType.Title) {
 				String unescapedValue = StringEscapeUtils.unescapeHtml4(elm.text()).trim();
 				Log.Debug(String.format("IMDBRECORD :: Setting title :: %s", unescapedValue), LogType.IMDB);
-				this.setTitle(unescapedValue);
+				return unescapedValue;
 			}
+			
 		}
+		return StringUtils.EMPTY;
+
+	}
+
+
+	@Override
+	public String parseTitle() {
+		return extractTitle(TitleType.Title);
 	}
 
 	public String fixImdbUrl(String url) throws MalformedURLException {

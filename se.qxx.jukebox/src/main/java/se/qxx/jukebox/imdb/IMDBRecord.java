@@ -55,7 +55,7 @@ public class IMDBRecord {
 		this.url = url;
 	}
 
-	public static IMDBRecord parse(String url, String webResult, ISettings settings, IIMDBParser parser) {
+	public static IMDBRecord parse(String url, String webResult, ISettings settings, IMDBParserFactory parserFactory) {
 		IMDBRecord rec = new IMDBRecord(url);
 		
 		Document doc = Jsoup.parse(webResult);

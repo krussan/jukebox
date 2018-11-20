@@ -13,6 +13,7 @@ import se.qxx.jukebox.builders.MovieBuilderFactory;
 import se.qxx.jukebox.converter.MediaConverter;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.imdb.IMDBFinder;
+import se.qxx.jukebox.imdb.IMDBParserFactory;
 import se.qxx.jukebox.interfaces.IArguments;
 import se.qxx.jukebox.interfaces.ICleaner;
 import se.qxx.jukebox.interfaces.IDatabase;
@@ -85,6 +86,8 @@ public class Jukebox {
 				bind(IDistributor.class).to(Distributor.class);
 				bind(IMovieBuilderFactory.class).to(MovieBuilderFactory.class);
 				bind(IFileReader.class).to(FileReader.class);
+				
+				bind(IMDBParserFactory)
 				
 				
 			}

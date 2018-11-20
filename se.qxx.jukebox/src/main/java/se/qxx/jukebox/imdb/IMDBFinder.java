@@ -28,6 +28,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Movie.Builder;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.interfaces.IIMDBFinder;
+import se.qxx.jukebox.interfaces.IIMDBParser;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.imdb.Imdb;
@@ -41,12 +42,22 @@ public class IMDBFinder implements IIMDBFinder {
 	private static ReentrantLock lock = new ReentrantLock();			
 	
 	private ISettings settings;
+	private IIMDBParser imdbParser;
 	
 	@Inject
-	public IMDBFinder(ISettings settings) {
+	public IMDBFinder(ISettings settings, IIMDBParser imdbParser) {
 		this.setSettings(settings);
+		this.setImdbParser(imdbParser);
 	}
 	
+	public IIMDBParser getImdbParser() {
+		return imdbParser;
+	}
+
+	public void setImdbParser(IIMDBParser imdbParser) {
+		this.imdbParser = imdbParser;
+	}
+
 	public ISettings getSettings() {
 		return settings;
 	}
