@@ -1,5 +1,6 @@
 package se.qxx.jukebox.imdb;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -96,6 +97,11 @@ public class IMDBFinder implements IIMDBFinder {
 			else {
 				Log.Debug(String.format("IMDB url found."), LogType.IMDB);
 				
+				String internalUrl = fixImdbUrl(internalUrl);
+				Log.Debug(String.format("IMDBRECORD :: Making web request to url :: %s", internalUrl), LogType.IMDB);
+
+				WebResult webResult = WebRetriever.getWebResult(internalUrl);
+
 				rec = IMDBRecord.get(imdbUrl);
 			}
 			
@@ -322,7 +328,7 @@ public class IMDBFinder implements IIMDBFinder {
 
 		Log.Debug(String.format("Making web request. Url :: %s", urlString), LogType.IMDB);
 
-		WebResult webResult = WebRetriever.getWebResult(urlString);
+		WebResult webResult = this.getWebRetriever().getWebResult(urlString);
 		return webResult;
 	}
 
@@ -471,7 +477,7 @@ public class IMDBFinder implements IIMDBFinder {
 			String url = rec.getUrl() + "releaseinfo";
 			
 			try {
-				WebResult webResult = WebRetriever.getWebResult(url);
+				WebResult webResult = this.getWebRetriever().getWebResult(url);
 				
 				String foundTitle = findPreferredTitle(webResult.getResult(), preferredTitleCountry);
 				return (StringUtils.isEmpty(foundTitle) ? title : foundTitle);
@@ -579,6 +585,22 @@ public class IMDBFinder implements IIMDBFinder {
 		
 		return null;
 		
+	}
+	
+	private byte[] getWebFile(string url) {
+		File f;
+		try {
+			f = WebRetriever.getWebFile(value, Util.getTempDirectory());
+			byte[] data = this.getFileReader().readFile(f);
+			
+			Log.Debug(String.format("IMDBRECORD :: Setting image url :: %s", value), LogType.IMDB);
+			Log.Debug(String.format("IMDBRECORD :: Setting image (length) :: %s", data.length), LogType.IMDB);
+			
+			return data;
+
+		} catch (IOException e) {
+			Log.Error("Error when downloading file", LogType.IMDB);
+		}		
 	}
 
 }

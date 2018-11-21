@@ -1,5 +1,6 @@
 package se.qxx.jukebox.tools;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -11,6 +12,7 @@ import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.inject.Inject;
@@ -47,10 +49,7 @@ public class WebRetriever implements IWebRetriever {
 				
 		return res;
 	}
-	
-	/* (non-Javadoc)
-	 * @see se.qxx.jukebox.tools.IWebRetriever#getWebFile(java.lang.String, java.lang.String)
-	 */
+
 	@Override
 	public File getWebFile(String urlString, String savePath) throws IOException {
 		URL url = new URL(urlString);
@@ -61,6 +60,43 @@ public class WebRetriever implements IWebRetriever {
 		
 		httpcon.connect();
 		
+		url = handleRedirect(httpcon, url);
+		String filenameAndPath = getFilename(savePath, url, httpcon);
+		
+		File f = new File(filenameAndPath);
+		InputStream is = httpcon.getInputStream();
+		FileOutputStream os = new FileOutputStream(f);
+		
+		IOUtils.copy(is, os);
+		        
+        os.flush();
+        os.close();
+        is.close();
+		
+		httpcon.disconnect();
+		httpcon = null;
+		
+		return f;
+	}
+
+	private String getFilename(String savePath, URL url, HttpURLConnection httpcon) {
+		String contentDisposition = httpcon.getHeaderField("content-disposition");
+		String filename = url.getPath().substring(url.getPath().lastIndexOf("/") + 1, url.getPath().length());
+		
+		Log.Debug(String.format("Content-Disposition :: %s", contentDisposition), LogType.MAIN);
+		
+		if (!StringUtils.isEmpty(contentDisposition)) {
+			Pattern p = Pattern.compile("filename=\"?(.*?)\"?$", Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
+			Matcher m = p.matcher(contentDisposition);
+			
+			if (m.find()) 
+				filename = m.group(1);
+		}
+		String filenameAndPath = String.format("%s/%s", savePath, filename);
+		return filenameAndPath;
+	}	
+	
+	private URL handleRedirect(HttpURLConnection httpcon, URL url) throws IOException {
 		boolean found = false;
 		int code;
 		String newUrl;
@@ -95,39 +131,7 @@ public class WebRetriever implements IWebRetriever {
 				found = true;
 			}
 		}
-	
 		
-		String contentDisposition = httpcon.getHeaderField("content-disposition");
-		String filename = url.getPath().substring(url.getPath().lastIndexOf("/") + 1, url.getPath().length());
-		
-		Log.Debug(String.format("Content-Disposition :: %s", contentDisposition), LogType.MAIN);
-		
-		if (!StringUtils.isEmpty(contentDisposition)) {
-			Pattern p = Pattern.compile("filename=\"?(.*?)\"?$", Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
-			Matcher m = p.matcher(contentDisposition);
-			
-			if (m.find()) 
-				filename = m.group(1);
-		}
-		String filenameAndPath = String.format("%s/%s", savePath, filename);
-		
-		File f = new File(filenameAndPath);
-		InputStream is = httpcon.getInputStream();
-		FileOutputStream os = new FileOutputStream(f);
-		
-        int len;
-        byte[] buffer = new byte[4096];
-        
-        while (-1 != (len = is.read(buffer)))
-          os.write(buffer, 0, len);
-		        
-        os.flush();
-        os.close();
-        is.close();
-		
-		httpcon.disconnect();
-		httpcon = null;
-		
-		return f;
-	}	
+		return url;
+	}
 }

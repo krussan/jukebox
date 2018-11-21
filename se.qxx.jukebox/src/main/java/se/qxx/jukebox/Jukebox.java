@@ -17,6 +17,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.imdb.IMDBFinder;
 import se.qxx.jukebox.imdb.IMDBParser;
 import se.qxx.jukebox.imdb.IMDBParserFactory;
+import se.qxx.jukebox.imdb.IMDBUrlRewrite;
 import se.qxx.jukebox.interfaces.IArguments;
 import se.qxx.jukebox.interfaces.ICleaner;
 import se.qxx.jukebox.interfaces.IDatabase;
@@ -25,6 +26,7 @@ import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.IFileReader;
 import se.qxx.jukebox.interfaces.IIMDBFinder;
 import se.qxx.jukebox.interfaces.IIMDBParser;
+import se.qxx.jukebox.interfaces.IIMDBUrlRewrite;
 import se.qxx.jukebox.interfaces.IImdbSettings;
 import se.qxx.jukebox.interfaces.IMain;
 import se.qxx.jukebox.interfaces.IMediaConverter;
@@ -93,6 +95,7 @@ public class Jukebox {
 				bind(IMovieBuilderFactory.class).to(MovieBuilderFactory.class);
 				bind(IFileReader.class).to(FileReader.class);
 				bind(IWebRetriever.class).to(WebRetriever.class);
+				bind(IIMDBUrlRewrite.class).to(IMDBUrlRewrite.class);
 				
 				install(
 					new FactoryModuleBuilder()

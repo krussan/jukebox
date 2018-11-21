@@ -29,6 +29,7 @@ import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.interfaces.IFileReader;
 import se.qxx.jukebox.interfaces.IIMDBParser;
+import se.qxx.jukebox.interfaces.IIMDBUrlRewrite;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.tools.WebRetriever;
@@ -36,18 +37,31 @@ import se.qxx.jukebox.tools.WebRetriever;
 public class IMDBParser implements IIMDBParser {
 	private IFileReader fileReader;
 	private ISettings settings;
+	private IIMDBUrlRewrite urlRewrite;
 	private Document document;
 
 	private final Pattern seasonPattern = Pattern.compile("season\\=(\\d*)");
 	private final Pattern episodePattern = Pattern.compile("ttep_ep(\\d*)");
 
 	@Inject
-	public IMDBParser(IFileReader fileReader, ISettings settings, @Assisted Document document) {
+	public IMDBParser(IFileReader fileReader, 
+			ISettings settings, 
+			IIMDBUrlRewrite urlRewrite, 
+			@Assisted Document document) {
 		this.setFileReader(fileReader);
 		this.setSettings(settings);
 		this.setDocument(document);
+		this.setUrlRewrite(urlRewrite);
 	}
 	
+	public IIMDBUrlRewrite getUrlRewrite() {
+		return urlRewrite;
+	}
+
+	public void setUrlRewrite(IIMDBUrlRewrite urlRewrite) {
+		this.urlRewrite = urlRewrite;
+	}
+
 	public Document getDocument() {
 		return document;
 	}
@@ -78,7 +92,7 @@ public class IMDBParser implements IIMDBParser {
 		for (Element e : elm) {
 			String url = StringUtils.EMPTY;
 			try {
-				url = fixImdbUrl(e.attr("href"));
+				url = this.getUrlRewrite().fixUrl(e.attr("href"));
 			} catch (MalformedURLException e1) {
 				Log.Error("Error parsing imdb url for season", LogType.IMDB);
 			}				
@@ -100,7 +114,7 @@ public class IMDBParser implements IIMDBParser {
 		for (Element e : elm) {
 			String url = StringUtils.EMPTY;
 			try {
-				url = fixImdbUrl(e.attr("href"));
+				url = this.getUrlRewrite().fixUrl(e.attr("href"));
 			} catch (MalformedURLException e1) {
 				Log.Error("Error parsing imdb url for season", LogType.IMDB);
 			}				
@@ -144,25 +158,12 @@ public class IMDBParser implements IIMDBParser {
 	}
 
 	@Override
-	public ImageData parseImage() {
+	public String parseImageUrl() {
 		Elements elm = this.getDocument().select(".poster img");
 
 		if (elm.size() > 0) {
 			String value = elm.attr("src").trim();
-			File f;
-			try {
-				f = WebRetriever.getWebFile(value, Util.getTempDirectory());
-				byte[] data = this.getFileReader().readFile(f);
-				
-				Log.Debug(String.format("IMDBRECORD :: Setting image url :: %s", value), LogType.IMDB);
-				Log.Debug(String.format("IMDBRECORD :: Setting image (length) :: %s", data.length), LogType.IMDB);
-				
-				
-				return new ImageData(value, data);
-
-			} catch (IOException e) {
-				Log.Error("Error when downloading file", LogType.IMDB);
-			}
+			return value;
 
 		}
 		
@@ -290,20 +291,6 @@ public class IMDBParser implements IIMDBParser {
 	@Override
 	public String parseTitle() {
 		return extractTitle(TitleType.Title);
-	}
-
-	public String fixImdbUrl(String url) throws MalformedURLException {
-		if (StringUtils.startsWithIgnoreCase(url, "www.imdb.com"))
-			url = "https://" + url;
-
-		if (StringUtils.startsWithIgnoreCase(url, "/"))
-			url = "https://www.imdb.com" + url;
-
-		if (!StringUtils.startsWithIgnoreCase(url, "https://www.imdb.com"))
-			throw new MalformedURLException(
-					String.format("A IMDB url must start with https://www.imdb.com. Url was :: %s", url));
-		
-		return url;
 	}
 	
 	private Date parseDate(String date) {

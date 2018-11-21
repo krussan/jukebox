@@ -7,6 +7,7 @@ import java.util.Map;
 import org.jsoup.nodes.Document;
 
 import se.qxx.jukebox.imdb.ImageData;
+import se.qxx.jukebox.imdb.Strnig;
 
 public interface IIMDBParser {
 
@@ -14,12 +15,12 @@ public interface IIMDBParser {
 	Map<Integer, String> parseSeasons();
 	String parseStory();
 	String parseRating();
-	ImageData parseImage();
 	List<String> parseGenres();
 	int parseDuration();
 	String parseDirector();
 	String parseTitle();
 	int parseYear();
 	Date parseFirstAirDate();
+	String parseImageUrl();
 
 }

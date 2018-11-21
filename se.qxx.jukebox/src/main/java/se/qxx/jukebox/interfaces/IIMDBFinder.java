@@ -6,6 +6,7 @@ import java.util.List;
 
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
+import se.qxx.jukebox.imdb.IMDBRecord;
 
 public interface IIMDBFinder {
 
@@ -13,7 +14,7 @@ public interface IIMDBFinder {
 
 	Series Get(Series series, int season, int episode) throws IOException, NumberFormatException, ParseException;
 
-	IIMDBParser Search(String searchString, int yearToFind, List<String> blacklist, boolean isTvEpisode)
+	IMDBRecord Search(String searchString, int yearToFind, List<String> blacklist, boolean isTvEpisode)
 			throws IOException, NumberFormatException, ParseException;
 
 }
