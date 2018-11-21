@@ -2,6 +2,7 @@ package se.qxx.jukebox.interfaces;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.jsoup.nodes.Document;
 
@@ -9,8 +10,8 @@ import se.qxx.jukebox.imdb.ImageData;
 
 public interface IIMDBParser {
 
-	List<String> parseEpisodes();
-	List<String> parseSeasons();
+	Map<Integer, String> parseEpisodes();
+	Map<Integer, String> parseSeasons();
 	String parseStory();
 	String parseRating();
 	ImageData parseImage();

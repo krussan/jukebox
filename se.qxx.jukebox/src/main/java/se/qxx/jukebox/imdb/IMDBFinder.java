@@ -30,6 +30,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.interfaces.IIMDBFinder;
 import se.qxx.jukebox.interfaces.IIMDBParser;
 import se.qxx.jukebox.interfaces.ISettings;
+import se.qxx.jukebox.interfaces.IWebRetriever;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.imdb.Imdb;
 import se.qxx.jukebox.tools.Util;
@@ -43,13 +44,23 @@ public class IMDBFinder implements IIMDBFinder {
 	
 	private ISettings settings;
 	private IIMDBParser imdbParser;
+	private IWebRetriever webRetriever;
 	
 	@Inject
-	public IMDBFinder(ISettings settings, IIMDBParser imdbParser) {
+	public IMDBFinder(ISettings settings, IIMDBParser imdbParser, IWebRetriever webRetriever) {
 		this.setSettings(settings);
 		this.setImdbParser(imdbParser);
+		this.setWebRetriever(webRetriever);
 	}
 	
+	public IWebRetriever getWebRetriever() {
+		return webRetriever;
+	}
+
+	public void setWebRetriever(IWebRetriever webRetriever) {
+		this.webRetriever = webRetriever;
+	}
+
 	public IIMDBParser getImdbParser() {
 		return imdbParser;
 	}
@@ -249,7 +260,7 @@ public class IMDBFinder implements IIMDBFinder {
 	 * @see se.qxx.jukebox.imdb.IIMDBFinder#Search(java.lang.String, int, java.util.List, boolean)
 	 */
 	@Override
-	public  IMDBRecord Search(
+	public IMDBRecord Search(
 			String searchString, 
 			int yearToFind, 
 			List<String> blacklist, 

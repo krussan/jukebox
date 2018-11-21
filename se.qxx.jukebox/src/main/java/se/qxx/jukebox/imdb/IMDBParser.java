@@ -7,13 +7,17 @@ import java.text.ParseException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -33,6 +37,9 @@ public class IMDBParser implements IIMDBParser {
 	private IFileReader fileReader;
 	private ISettings settings;
 	private Document document;
+
+	private final Pattern seasonPattern = Pattern.compile("season\\=(\\d*)");
+	private final Pattern episodePattern = Pattern.compile("ttep_ep(\\d*)");
 
 	@Inject
 	public IMDBParser(IFileReader fileReader, ISettings settings, @Assisted Document document) {
@@ -64,10 +71,10 @@ public class IMDBParser implements IIMDBParser {
 		this.fileReader = fileReader;
 	}
 	@Override
-	public List<String> parseEpisodes() {
+	public Map<Integer, String> parseEpisodes() {
 		Elements elm = this.getDocument().select("strong > a[href~=ttep_ep]");
 		
-		List<String> result = new ArrayList<String>();
+		Map<Integer, String> result = new HashMap<Integer, String>();
 		for (Element e : elm) {
 			String url = StringUtils.EMPTY;
 			try {
@@ -76,17 +83,20 @@ public class IMDBParser implements IIMDBParser {
 				Log.Error("Error parsing imdb url for season", LogType.IMDB);
 			}				
 			Log.Debug(String.format("IMDBRECORD :: Setting episode url :: %s", url), LogType.IMDB);
-			result.add(url);
+			
+			Pair<Integer, String> entry = parseEpisodeUrl(url);
+			if (entry != null)
+				result.put(entry.getLeft(), entry.getRight());
 		}
 		
 		return result;
 	}
 
 	@Override
-	public List<String> parseSeasons() {
+	public Map<Integer, String> parseSeasons() {
 		Elements elm = this.getDocument().select(".seasons-and-year-nav a[href~=season]");
 		
-		List<String> result = new ArrayList<String>();
+		Map<Integer, String> result = new HashMap<Integer, String>();
 		for (Element e : elm) {
 			String url = StringUtils.EMPTY;
 			try {
@@ -95,7 +105,11 @@ public class IMDBParser implements IIMDBParser {
 				Log.Error("Error parsing imdb url for season", LogType.IMDB);
 			}				
 			Log.Debug(String.format("IMDBRECORD :: Setting season url :: %s", url), LogType.IMDB);
-			result.add(url);
+			
+			Pair<Integer, String> entry = parseSeasonUrl(url);
+			if (entry != null)
+				result.put(entry.getLeft(), entry.getRight());
+
 		}
 		
 		return result;
@@ -304,4 +318,25 @@ public class IMDBParser implements IIMDBParser {
 		
 		return null;
 	}
+	
+	public Pair<Integer, String> parseEpisodeUrl(String url) {
+		Matcher m = episodePattern.matcher(url);
+		if (m.find()) {
+			int episode = Integer.parseInt(m.group(1));
+			return Pair.of(episode, url);
+		}
+		
+		return null;
+	}
+
+	public Pair<Integer, String> parseSeasonUrl(String url) {		
+		Matcher m = seasonPattern.matcher(url);
+		if (m.find()) {
+			int season = Integer.parseInt(m.group(1));
+			return Pair.of(season, url);
+		}
+		
+		return null;		
+	}
+
 }

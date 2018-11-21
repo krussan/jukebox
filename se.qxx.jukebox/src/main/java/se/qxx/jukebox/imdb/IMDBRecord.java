@@ -48,8 +48,6 @@ public class IMDBRecord {
 	private Date firstAirDate = null;
 	private String imageUrl;
 	
-	private final Pattern seasonPattern = Pattern.compile("season\\=(\\d*)");
-	private final Pattern episodePattern = Pattern.compile("ttep_ep(\\d*)");
 
 	public IMDBRecord(String url) {
 		this.url = url;
@@ -61,16 +59,22 @@ public class IMDBRecord {
 		Document doc = Jsoup.parse(webResult);
 		Log.Debug(String.format("IMDBRECORD :: Initializing parsing"), LogType.IMDB);
 
-		rec.parseTitle(doc);
-		rec.parseDirector(doc);
-		rec.parseDuration(doc);
-		rec.parseGenres(doc);
-		rec.parseFirstAirDate(doc, settings);
-		rec.parseImage(doc);
-		rec.parseRating(doc);
-		rec.parseStory(doc);
-		rec.parseSeasons(doc);
-		rec.parseEpisodes(doc);
+		IIMDBParser parser = parserFactory.create(doc);
+		rec.setTitle(parser.parseTitle());
+		rec.setDirector(parser.parseDirector());
+		rec.setDurationMinutes(parser.parseDuration());
+		rec.addGenres(parser.parseGenres());
+		rec.setFirstAirDate(parser.parseFirstAirDate());
+		
+		ImageData image = parser.parseImage();
+		rec.setImage(image.getData());
+		rec.setImageUrl(image.getUrl());
+		
+		rec.setRating(parser.parseRating());
+		rec.setStory(parser.parseStory());
+		
+		rec.setAllSeasonUrls(parser.parseSeasons());
+		rec.setAllEpisodeUrls(parser.parseEpisodes());
 
 		return rec;
 	}
@@ -80,53 +84,7 @@ public class IMDBRecord {
 	 */
 	
 
-	public void addEpisodeUrl(String url) {
-		Matcher m = episodePattern.matcher(url);
-		if (m.find()) {
-			int episode = Integer.parseInt(m.group(1));
-			this.getAllEpisodeUrls().put(episode, url);
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see se.qxx.jukebox.imdb.IIMDBParser#parseSeasons(org.jsoup.nodes.Document)
-	 */
 	
-
-	public void addSeasonUrl(String url) {		
-		Matcher m = seasonPattern.matcher(url);
-		if (m.find()) {
-			int season = Integer.parseInt(m.group(1));
-			this.getAllSeasonUrls().put(season, url);
-		}
-	}
-
-
-
-	
-
-	/* (non-Javadoc)
-	 * @see se.qxx.jukebox.imdb.IIMDBParser#parseFirstAirDate(org.jsoup.nodes.Document, se.qxx.jukebox.interfaces.ISettings)
-	 */
-
-	/* (non-Javadoc)
-	 * @see se.qxx.jukebox.imdb.IIMDBParser#parseGenres(org.jsoup.nodes.Document)
-	 */
-
-	/* (non-Javadoc)
-	 * @see se.qxx.jukebox.imdb.IIMDBParser#parseDuration(org.jsoup.nodes.Document)
-	 */
-
-	/* (non-Javadoc)
-	 * @see se.qxx.jukebox.imdb.IIMDBParser#parseDirector(org.jsoup.nodes.Document)
-	 */
-
-	/* (non-Javadoc)
-	 * @see se.qxx.jukebox.imdb.IIMDBParser#parseTitle(org.jsoup.nodes.Document)
-	 */
-
-	
-
 	public IMDBRecord(String url, int year) {
 		this.year = year;
 		this.url = url;
@@ -234,16 +192,25 @@ public class IMDBRecord {
 	public Map<Integer, String> getAllSeasonUrls() {
 		return this.seasons;
 	}
+	
+	public void setAllSeasonUrls(Map<Integer, String> seasonMap) {
+		this.seasons = seasonMap;
+	}
 
 	public Map<Integer, String> getAllEpisodeUrls() {
 		return this.episodes;
+	}
+	
+	public void setAllEpisodeUrls(Map<Integer, String> episodeMap) {
+		this.episodes = episodeMap;
 	}
 
 	public Date getFirstAirDate() {
 		return firstAirDate;
 	}
 
-	public void setFirstAirDate(String firstAirDate, ISettings settings) {
+	public void setFirstAirDate(Date date) {
+		this.firstAirDate = date;
 	}
 
 	public String getImageUrl() {
@@ -252,5 +219,17 @@ public class IMDBRecord {
 
 	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
+	}
+	
+	public void addGenres(List<String> genres) {
+		this.getAllGenres().addAll(genres);
+	}
+	
+	public void addSeasons(List<String> seasons) {
+		this.getE().addAll(genres);
+	}
+	
+	public void addEpisodes(List<String> episodes) {
+		this.getAllGenres().addAll(genres);
 	}
 }

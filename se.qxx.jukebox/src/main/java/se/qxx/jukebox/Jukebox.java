@@ -7,12 +7,15 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.TypeLiteral;
+import com.google.inject.assistedinject.FactoryModuleBuilder;
+import com.google.inject.assistedinject.FactoryProvider;
 import com.google.inject.name.Names;
 
 import se.qxx.jukebox.builders.MovieBuilderFactory;
 import se.qxx.jukebox.converter.MediaConverter;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.imdb.IMDBFinder;
+import se.qxx.jukebox.imdb.IMDBParser;
 import se.qxx.jukebox.imdb.IMDBParserFactory;
 import se.qxx.jukebox.interfaces.IArguments;
 import se.qxx.jukebox.interfaces.ICleaner;
@@ -21,6 +24,7 @@ import se.qxx.jukebox.interfaces.IDistributor;
 import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.IFileReader;
 import se.qxx.jukebox.interfaces.IIMDBFinder;
+import se.qxx.jukebox.interfaces.IIMDBParser;
 import se.qxx.jukebox.interfaces.IImdbSettings;
 import se.qxx.jukebox.interfaces.IMain;
 import se.qxx.jukebox.interfaces.IMediaConverter;
@@ -32,11 +36,13 @@ import se.qxx.jukebox.interfaces.IStarter;
 import se.qxx.jukebox.interfaces.IStreamingWebServer;
 import se.qxx.jukebox.interfaces.ISubtitleDownloader;
 import se.qxx.jukebox.interfaces.IUpgrader;
+import se.qxx.jukebox.interfaces.IWebRetriever;
 import se.qxx.jukebox.servercomm.ITcpListener;
 import se.qxx.jukebox.servercomm.TcpListener;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.imdb.ImdbSettings;
 import se.qxx.jukebox.settings.parser.ParserSettings;
+import se.qxx.jukebox.tools.WebRetriever;
 import se.qxx.jukebox.upgrade.Upgrader;
 import se.qxx.jukebox.vlc.Distributor;
 import se.qxx.jukebox.watcher.DownloadChecker;
@@ -86,8 +92,12 @@ public class Jukebox {
 				bind(IDistributor.class).to(Distributor.class);
 				bind(IMovieBuilderFactory.class).to(MovieBuilderFactory.class);
 				bind(IFileReader.class).to(FileReader.class);
+				bind(IWebRetriever.class).to(WebRetriever.class);
 				
-				bind(IMDBParserFactory)
+				install(
+					new FactoryModuleBuilder()
+						.implement(IIMDBParser.class, IMDBParser.class)
+						.build(IMDBParserFactory.class));
 				
 				
 			}

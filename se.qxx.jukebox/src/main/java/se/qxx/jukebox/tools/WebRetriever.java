@@ -13,22 +13,33 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.interfaces.IWebRetriever;
 
-public class WebRetriever {
+@Singleton
+public class WebRetriever implements IWebRetriever {
 	
-	public static WebResult getWebResult(String urlString) throws IOException {
+	@Inject
+	public WebRetriever() {
+		
+	}
+	
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.tools.IWebRetriever#getWebResult(java.lang.String)
+	 */
+	@Override
+	public WebResult getWebResult(String urlString) throws IOException {
 		URL url = new URL(urlString);
 		HttpURLConnection httpcon = (HttpURLConnection) url.openConnection(); 
 		httpcon.addRequestProperty("User-Agent", "Mozilla/4.76"); 
 		httpcon.addRequestProperty("Accept-Language", "en-US");
 		
 		String result = Util.readMessageFromStream(httpcon.getInputStream());
-        
-//		Log.Info(String.format("1st url :: %s", url.toString()), LogType.MAIN);
-//		Log.Info(String.format("2nd url :: %s", httpcon.getURL().toString()), LogType.MAIN);
-		
+	
 		WebResult res = new WebResult(httpcon.getURL(), result, !url.toString().equals(httpcon.getURL().toString()));
 		
 		httpcon.disconnect();
@@ -37,7 +48,11 @@ public class WebRetriever {
 		return res;
 	}
 	
-	public static File getWebFile(String urlString, String savePath) throws IOException {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.tools.IWebRetriever#getWebFile(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public File getWebFile(String urlString, String savePath) throws IOException {
 		URL url = new URL(urlString);
 		HttpURLConnection httpcon = (HttpURLConnection) url.openConnection();
 		httpcon.setInstanceFollowRedirects(false);
@@ -52,13 +67,11 @@ public class WebRetriever {
 		
 		while (!found) {
 			code = httpcon.getResponseCode();
-			//Log.Debug(httpcon.getResponseMessage(), Log.LogType.MAIN);
-			
+
 			if (code == 302) {
 				newUrl = httpcon.getHeaderField("Location");
 				httpcon.disconnect();
 				
-				//String regex = "^((http[s]?|ftp):\\/)?\\/?([^:\\/\\s]+)((\\/\\w+)*\\/)([\\w\\-\\.]+[^#?\\s]+)(.*)?(#[\\w\\-]+)?$";
 				String regex = "^(http|s):\\/\\/([^\\/]*)(.*)$";
 				java.util.regex.Pattern p = java.util.regex.Pattern.compile(regex);
 				java.util.regex.Matcher m = p.matcher(newUrl);
@@ -66,9 +79,6 @@ public class WebRetriever {
 					try {
 						URI uri = new URI(m.group(1), m.group(2), m.group(3), "");
 						
-						//newUrl = m.group(1) + "://" + m.group(2) + URLEncoder.encode(m.group(3), "iso-8859-1");
-						//Log.Debug(m.group(2));
-
 						url = uri.toURL();
 
 					} catch (URISyntaxException e) {
@@ -93,7 +103,6 @@ public class WebRetriever {
 		Log.Debug(String.format("Content-Disposition :: %s", contentDisposition), LogType.MAIN);
 		
 		if (!StringUtils.isEmpty(contentDisposition)) {
-			//attachment; filename="Catch..44.2011.BRRip.XviD.AC3-FTW._www.ENGSUB.NET.zip"
 			Pattern p = Pattern.compile("filename=\"?(.*?)\"?$", Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
 			Matcher m = p.matcher(contentDisposition);
 			
