@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -31,6 +32,7 @@ import se.qxx.jukebox.interfaces.IFileReader;
 import se.qxx.jukebox.interfaces.IIMDBParser;
 import se.qxx.jukebox.interfaces.IIMDBUrlRewrite;
 import se.qxx.jukebox.interfaces.ISettings;
+import se.qxx.jukebox.interfaces.IWebRetriever;
 import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.tools.WebRetriever;
 
@@ -38,6 +40,7 @@ public class IMDBParser implements IIMDBParser {
 	private IFileReader fileReader;
 	private ISettings settings;
 	private IIMDBUrlRewrite urlRewrite;
+	private IWebRetriever webRetriever;
 	private Document document;
 
 	private final Pattern seasonPattern = Pattern.compile("season\\=(\\d*)");
@@ -47,13 +50,24 @@ public class IMDBParser implements IIMDBParser {
 	public IMDBParser(IFileReader fileReader, 
 			ISettings settings, 
 			IIMDBUrlRewrite urlRewrite, 
+			IWebRetriever webRetriever,
 			@Assisted Document document) {
 		this.setFileReader(fileReader);
 		this.setSettings(settings);
 		this.setDocument(document);
 		this.setUrlRewrite(urlRewrite);
+		this.setWebRetriever(webRetriever);
 	}
 	
+
+	public IWebRetriever getWebRetriever() {
+		return webRetriever;
+	}
+
+	public void setWebRetriever(IWebRetriever webRetriever) {
+		this.webRetriever = webRetriever;
+	}
+
 	public IIMDBUrlRewrite getUrlRewrite() {
 		return urlRewrite;
 	}
@@ -324,6 +338,32 @@ public class IMDBParser implements IIMDBParser {
 		}
 		
 		return null;		
+	}
+
+	@Override
+	public IMDBRecord parse(String url, String webResult) {
+		IMDBRecord rec = new IMDBRecord(url);
+		
+		Document doc = Jsoup.parse(webResult);
+		Log.Debug(String.format("IMDBRECORD :: Initializing parsing"), LogType.IMDB);
+		
+		rec.setTitle(this.parseTitle());
+		rec.setDirector(this.parseDirector());
+		rec.setDurationMinutes(this.parseDuration());
+		rec.addGenres(this.parseGenres());
+		rec.setFirstAirDate(this.parseFirstAirDate());
+		
+		
+		rec.setImage(this.parseImageUrl());
+		rec.setImageUrl(this.parseImageUrl());
+		
+		rec.setRating(parser.parseRating());
+		rec.setStory(parser.parseStory());
+		
+		rec.setAllSeasonUrls(parser.parseSeasons());
+		rec.setAllEpisodeUrls(parser.parseEpisodes());
+
+		return rec;
 	}
 
 }

@@ -52,38 +52,6 @@ public class IMDBRecord {
 	public IMDBRecord(String url) {
 		this.url = url;
 	}
-
-	public static IMDBRecord parse(String url, String webResult, ISettings settings, IMDBParserFactory parserFactory) {
-		IMDBRecord rec = new IMDBRecord(url);
-		
-		Document doc = Jsoup.parse(webResult);
-		Log.Debug(String.format("IMDBRECORD :: Initializing parsing"), LogType.IMDB);
-
-		IIMDBParser parser = parserFactory.create(doc);
-		rec.setTitle(parser.parseTitle());
-		rec.setDirector(parser.parseDirector());
-		rec.setDurationMinutes(parser.parseDuration());
-		rec.addGenres(parser.parseGenres());
-		rec.setFirstAirDate(parser.parseFirstAirDate());
-		
-		ImageData image = parser.parseImage();
-		rec.setImage(image.getData());
-		rec.setImageUrl(image.getUrl());
-		
-		rec.setRating(parser.parseRating());
-		rec.setStory(parser.parseStory());
-		
-		rec.setAllSeasonUrls(parser.parseSeasons());
-		rec.setAllEpisodeUrls(parser.parseEpisodes());
-
-		return rec;
-	}
-
-	/* (non-Javadoc)
-	 * @see se.qxx.jukebox.imdb.IIMDBParser#parseEpisodes(org.jsoup.nodes.Document)
-	 */
-	
-
 	
 	public IMDBRecord(String url, int year) {
 		this.year = year;
@@ -104,37 +72,6 @@ public class IMDBRecord {
 
 	public void setYear(int year) {
 		this.year = year;
-	}
-
-	public static IMDBRecord get(String url) throws MalformedURLException {
-		String internalUrl = StringUtils.trim(url);
-
-		internalUrl = fixImdbUrl(internalUrl);
-
-		try {
-			Log.Debug(String.format("IMDBRECORD :: Making web request to url :: %s", internalUrl), LogType.IMDB);
-
-			WebResult webResult = WebRetriever.getWebResult(internalUrl);
-			return getFromWebResult(webResult);
-		} catch (Exception e) {
-			Log.Error(String.format("Failed to get IMDB information from url :: %s", url), LogType.FIND, e);
-		}
-
-		return null;
-
-	}
-
-	
-
-	public static IMDBRecord getFromWebResult(WebResult webResult) {
-		IMDBRecord rec = null;
-		try {
-			rec = IMDBRecord.parse(webResult.getUrl(), webResult.getResult());
-		} catch (Exception e) {
-			Log.Error(String.format("Failed to get IMDB information from url :: %s", webResult.getUrl()), LogType.FIND,
-					e);
-		}
-		return rec;
 	}
 
 	public int getDurationMinutes() {
@@ -224,12 +161,5 @@ public class IMDBRecord {
 	public void addGenres(List<String> genres) {
 		this.getAllGenres().addAll(genres);
 	}
-	
-	public void addSeasons(List<String> seasons) {
-		this.getE().addAll(genres);
-	}
-	
-	public void addEpisodes(List<String> episodes) {
-		this.getAllGenres().addAll(genres);
-	}
+
 }

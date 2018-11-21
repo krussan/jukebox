@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -53,25 +54,13 @@ public class WebRetriever implements IWebRetriever {
 	@Override
 	public File getWebFile(String urlString, String savePath) throws IOException {
 		URL url = new URL(urlString);
-		HttpURLConnection httpcon = (HttpURLConnection) url.openConnection();
-		httpcon.setInstanceFollowRedirects(false);
-		
-		httpcon.addRequestProperty("User-Agent", "Mozilla/4.76"); 
-		
-		httpcon.connect();
-		
+		HttpURLConnection httpcon = setupHttpConnection(url);
 		url = handleRedirect(httpcon, url);
-		String filenameAndPath = getFilename(savePath, url, httpcon);
-		
+			
+		String filenameAndPath = getFilename(savePath, httpcon);
 		File f = new File(filenameAndPath);
-		InputStream is = httpcon.getInputStream();
-		FileOutputStream os = new FileOutputStream(f);
-		
-		IOUtils.copy(is, os);
-		        
-        os.flush();
-        os.close();
-        is.close();
+
+		readWebData(httpcon, new FileOutputStream(f));
 		
 		httpcon.disconnect();
 		httpcon = null;
@@ -79,7 +68,26 @@ public class WebRetriever implements IWebRetriever {
 		return f;
 	}
 
-	private String getFilename(String savePath, URL url, HttpURLConnection httpcon) {
+	private void readWebData(HttpURLConnection httpcon, OutputStream os) throws IOException {
+		InputStream is = httpcon.getInputStream();
+
+		IOUtils.copy(is, os);
+		        
+        os.flush();
+        os.close();
+        is.close();
+	}
+
+	private HttpURLConnection setupHttpConnection(URL url) throws IOException {
+		HttpURLConnection httpcon = (HttpURLConnection) url.openConnection();
+		httpcon.setInstanceFollowRedirects(false);
+		httpcon.addRequestProperty("User-Agent", "Mozilla/4.76"); 
+		httpcon.connect();
+		return httpcon;
+	}
+
+	private String getFilename(String savePath, HttpURLConnection httpcon) {
+		URL url = httpcon.getURL();
 		String contentDisposition = httpcon.getHeaderField("content-disposition");
 		String filename = url.getPath().substring(url.getPath().lastIndexOf("/") + 1, url.getPath().length());
 		
@@ -133,5 +141,21 @@ public class WebRetriever implements IWebRetriever {
 		}
 		
 		return url;
+	}
+
+	@Override
+	public byte[] getWebFileData(String urlString) throws IOException {
+		URL url = new URL(urlString);
+		HttpURLConnection httpcon = setupHttpConnection(url);
+		url = handleRedirect(httpcon, url);
+			
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		
+		readWebData(httpcon, bos);
+		
+		httpcon.disconnect();
+		httpcon = null;
+		
+		return bos.toByteArray();
 	}
 }

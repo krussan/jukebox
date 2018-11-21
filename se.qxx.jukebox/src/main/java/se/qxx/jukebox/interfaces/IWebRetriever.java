@@ -8,7 +8,7 @@ import se.qxx.jukebox.tools.WebResult;
 public interface IWebRetriever {
 
 	WebResult getWebResult(String urlString) throws IOException;
-
 	File getWebFile(String urlString, String savePath) throws IOException;
+	byte[] getWebFileData(String urlString) throws IOException;
 
 }

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.jsoup.nodes.Document;
 
+import se.qxx.jukebox.imdb.IMDBRecord;
 import se.qxx.jukebox.imdb.ImageData;
 import se.qxx.jukebox.imdb.Strnig;
 
@@ -22,5 +23,7 @@ public interface IIMDBParser {
 	int parseYear();
 	Date parseFirstAirDate();
 	String parseImageUrl();
-
+	
+	IMDBRecord parse(String url, String webResult);
+	
 }

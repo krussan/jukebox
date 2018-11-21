@@ -30,6 +30,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.interfaces.IIMDBFinder;
 import se.qxx.jukebox.interfaces.IIMDBParser;
+import se.qxx.jukebox.interfaces.IIMDBUrlRewrite;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.IWebRetriever;
 import se.qxx.jukebox.settings.Settings;
@@ -44,30 +45,40 @@ public class IMDBFinder implements IIMDBFinder {
 	private static ReentrantLock lock = new ReentrantLock();			
 	
 	private ISettings settings;
-	private IIMDBParser imdbParser;
 	private IWebRetriever webRetriever;
+	private IIMDBUrlRewrite urlRewrite;
+	private IMDBParserFactory parserFactory;
 	
 	@Inject
-	public IMDBFinder(ISettings settings, IIMDBParser imdbParser, IWebRetriever webRetriever) {
+	public IMDBFinder(ISettings settings, IWebRetriever webRetriever, IIMDBUrlRewrite urlRewrite, IMDBParserFactory parserFactory) {
 		this.setSettings(settings);
-		this.setImdbParser(imdbParser);
 		this.setWebRetriever(webRetriever);
+		this.setUrlRewrite(urlRewrite);
+		this.setParserFactory(parserFactory);
 	}
 	
+	public IMDBParserFactory getParserFactory() {
+		return parserFactory;
+	}
+
+	public void setParserFactory(IMDBParserFactory parserFactory) {
+		this.parserFactory = parserFactory;
+	}
+
+	public IIMDBUrlRewrite getUrlRewrite() {
+		return urlRewrite;
+	}
+
+	public void setUrlRewrite(IIMDBUrlRewrite urlRewrite) {
+		this.urlRewrite = urlRewrite;
+	}
+
 	public IWebRetriever getWebRetriever() {
 		return webRetriever;
 	}
 
 	public void setWebRetriever(IWebRetriever webRetriever) {
 		this.webRetriever = webRetriever;
-	}
-
-	public IIMDBParser getImdbParser() {
-		return imdbParser;
-	}
-
-	public void setImdbParser(IIMDBParser imdbParser) {
-		this.imdbParser = imdbParser;
 	}
 
 	public ISettings getSettings() {
@@ -97,11 +108,13 @@ public class IMDBFinder implements IIMDBFinder {
 			else {
 				Log.Debug(String.format("IMDB url found."), LogType.IMDB);
 				
-				String internalUrl = fixImdbUrl(internalUrl);
+				String internalUrl = this.getUrlRewrite().fixUrl(
+						StringUtils.trim(imdbUrl));
 				Log.Debug(String.format("IMDBRECORD :: Making web request to url :: %s", internalUrl), LogType.IMDB);
 
-				WebResult webResult = WebRetriever.getWebResult(internalUrl);
-
+				WebResult webResult = this.getWebRetriever().getWebResult(internalUrl);
+				Jsoup doc = Jsoup.parse(webResult.getResult());
+				IIMDBParser parser = this.getParserFactory().create(doc);
 				rec = IMDBRecord.get(imdbUrl);
 			}
 			
@@ -587,20 +600,21 @@ public class IMDBFinder implements IIMDBFinder {
 		
 	}
 	
-	private byte[] getWebFile(string url) {
+	private byte[] getWebFile(String url) {
 		File f;
 		try {
-			f = WebRetriever.getWebFile(value, Util.getTempDirectory());
-			byte[] data = this.getFileReader().readFile(f);
+			byte[] data = this.getWebRetriever().getWebFileData(url);
 			
-			Log.Debug(String.format("IMDBRECORD :: Setting image url :: %s", value), LogType.IMDB);
+			Log.Debug(String.format("IMDBRECORD :: Setting image url :: %s", url), LogType.IMDB);
 			Log.Debug(String.format("IMDBRECORD :: Setting image (length) :: %s", data.length), LogType.IMDB);
 			
 			return data;
 
 		} catch (IOException e) {
 			Log.Error("Error when downloading file", LogType.IMDB);
-		}		
+		}
+		
+		return null;		
 	}
 
 }
