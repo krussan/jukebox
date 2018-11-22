@@ -7,16 +7,16 @@ import java.util.concurrent.locks.ReentrantLock;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import se.qxx.jukebox.DB;
-import se.qxx.jukebox.JukeboxThread;
 import se.qxx.jukebox.Log;
-import se.qxx.jukebox.SubtitleDownloader;
 import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.concurrent.JukeboxThread;
 import se.qxx.jukebox.converter.FileChangedState;
 import se.qxx.jukebox.converter.FileRepresentationState;
+import se.qxx.jukebox.core.DB;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IExecutor;
+import se.qxx.jukebox.subtitles.SubtitleDownloader;
 import se.qxx.jukebox.tools.Util;
 
 @Singleton

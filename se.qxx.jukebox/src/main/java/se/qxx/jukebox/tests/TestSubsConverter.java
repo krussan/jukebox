@@ -8,7 +8,7 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 
 import fr.noop.subtitle.model.SubtitleParsingException;
-import se.qxx.jukebox.DB;
+import se.qxx.jukebox.core.DB;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.protodb.ProtoDB;

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-import se.qxx.jukebox.Version;
+import se.qxx.jukebox.core.Version;
 import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;

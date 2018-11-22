@@ -1,9 +1,10 @@
-package se.qxx.jukebox;
+package se.qxx.jukebox.concurrent;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.tools.Util;

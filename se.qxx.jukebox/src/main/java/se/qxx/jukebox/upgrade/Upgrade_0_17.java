@@ -4,8 +4,9 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import se.qxx.jukebox.DB;
-import se.qxx.jukebox.Version;
+
+import se.qxx.jukebox.core.DB;
+import se.qxx.jukebox.core.Version;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;

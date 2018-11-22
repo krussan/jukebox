@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.MovieOrSeries;
+import se.qxx.jukebox.interfaces.ISubFinder;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings;
 
 public class Subscene extends SubFinderBase {
@@ -31,7 +32,6 @@ public class Subscene extends SubFinderBase {
 	
 	
 	public Subscene(SubFinderSettings subFinderSettings) {
-		super(subFinderSettings);
 		this.setClassName("Subscene");
 		this.setLanguage(Language.English);
 	}

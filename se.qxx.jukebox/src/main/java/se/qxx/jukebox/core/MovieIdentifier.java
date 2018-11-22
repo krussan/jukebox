@@ -1,4 +1,4 @@
-package se.qxx.jukebox;
+package se.qxx.jukebox.core;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -14,8 +14,10 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.builders.MovieBuilder;
+import se.qxx.jukebox.concurrent.JukeboxThread;
 import se.qxx.jukebox.concurrent.StringLockPool;
 import se.qxx.jukebox.domain.DomainUtil;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;

@@ -1,4 +1,4 @@
-package se.qxx.jukebox;
+package se.qxx.jukebox.concurrent;
 
 import java.util.ArrayList;
 import java.util.List;

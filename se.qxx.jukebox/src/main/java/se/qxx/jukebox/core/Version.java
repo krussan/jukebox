@@ -1,4 +1,4 @@
-package se.qxx.jukebox;
+package se.qxx.jukebox.core;
 
 public class Version {
 	private int major;

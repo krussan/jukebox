@@ -1,4 +1,4 @@
-package se.qxx.jukebox;
+package se.qxx.jukebox.subtitles;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -17,7 +17,9 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.protobuf.ByteString;
 
+import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.concurrent.JukeboxThread;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
@@ -32,10 +34,6 @@ import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.ISubtitleDownloader;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings;
-import se.qxx.jukebox.subtitles.Language;
-import se.qxx.jukebox.subtitles.MkvSubtitleReader;
-import se.qxx.jukebox.subtitles.SubFile;
-import se.qxx.jukebox.subtitles.SubFinderBase;
 import se.qxx.jukebox.tools.Unpacker;
 import se.qxx.jukebox.tools.Util;
 

@@ -6,8 +6,8 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
-import se.qxx.jukebox.DB;
-import se.qxx.jukebox.Version;
+import se.qxx.jukebox.core.DB;
+import se.qxx.jukebox.core.Version;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;

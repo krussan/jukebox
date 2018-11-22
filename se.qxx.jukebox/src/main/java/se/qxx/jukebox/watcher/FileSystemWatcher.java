@@ -6,8 +6,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.TreeSet;
 
-import se.qxx.jukebox.JukeboxThread;
 import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.concurrent.JukeboxThread;
 import se.qxx.jukebox.tools.Util;
 
 public class FileSystemWatcher extends JukeboxThread {

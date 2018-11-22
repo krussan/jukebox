@@ -3,7 +3,7 @@ package se.qxx.jukebox.tests;
 import java.io.IOException;
 import javax.xml.bind.JAXBException;
 
-import se.qxx.jukebox.DB;
+import se.qxx.jukebox.core.DB;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.protodb.exceptions.DatabaseNotSupportedException;
 

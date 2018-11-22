@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,37 +22,74 @@ import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.builders.MovieBuilder;
 import se.qxx.jukebox.domain.JukeboxDomain.Rating;
+import se.qxx.jukebox.interfaces.IMovieBuilderFactory;
 import se.qxx.jukebox.interfaces.ISettings;
+import se.qxx.jukebox.interfaces.ISubFileDownloader;
 import se.qxx.jukebox.interfaces.IWebRetriever;
 import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.settings.JukeboxListenerSettings;
+import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.tools.WebResult;
 import se.qxx.jukebox.tools.WebRetriever;
 
-public abstract class SubFinderBase {
+public class SubFinderBase implements ISubFinder {
 	private String className;
 	private Language language;
-	private int minWaitSeconds = 20;
-	private int maxWaitSeconds = 30;
-	private boolean isRunning = true;
-	
-	private final int MAX_SUBS_DOWNLOADED = 15;
 	
 	private IWebRetriever webRetriever;
-	private Map<String, String> settings = new HashMap<String, String>(); 
+	private IMovieBuilderFactory movieBuilderFactory;
+	private ISubFileDownloader subFileDownloader;
+	private ISettings settings;
 	
-	public SubFinderBase(@Assisted JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings subFinderSettings, 
-			IWebRetriever webRetriever) {
+
+	private Map<String, String> subSettings = new HashMap<>();
+	
+	public SubFinderBase(String className,
+			ISettings settings, 
+			IWebRetriever webRetriever,
+			IMovieBuilderFactory movieBuilderFactory,
+			ISubFileDownloader subFileDownloader) {
+
+		this.setClassName(className);
+		this.setSettings(settings);
+		this.setSubFileDownloader(subFileDownloader);
 		this.setWebRetriever(webRetriever);
-		//
-		for (JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings.Setting setting : subFinderSettings.getSetting()) {
-			this.settings.put(StringUtils.trim(setting.getKey()), StringUtils.trim(setting.getValue()));
-		}
+		this.setMovieBuilderFactory(movieBuilderFactory);
+		initSubSettings();
 	}
 
-	protected String getClassName() {
-		return className;
+	private void initSubSettings() {
+		Optional<SubFinder> subFinderSettings = this.getSettings().getSettings().getSubFinders().getSubFinder().stream().filter(x -> StringUtils.equalsIgnoreCase(x.getClazz(), this.getClassName())).findFirst();
+		
+		if (subFinderSettings.isPresent()) {
+			subFinderSettings.get().getSubFinderSettings().getSetting().forEach(x -> this.subSettings.put(x.getKey(), x.getValue()));
+		}
+
+	}
+
+	public ISettings getSettings() {
+		return settings;
+	}
+
+	public void setSettings(ISettings settings) {
+		this.settings = settings;
+	}
+
+	public ISubFileDownloader getSubFileDownloader() {
+		return subFileDownloader;
+	}
+
+	public void setSubFileDownloader(ISubFileDownloader subFileDownloader) {
+		this.subFileDownloader = subFileDownloader;
+	}
+
+	public IMovieBuilderFactory getMovieBuilderFactory() {
+		return movieBuilderFactory;
+	}
+
+	public void setMovieBuilderFactory(IMovieBuilderFactory movieBuilderFactory) {
+		this.movieBuilderFactory = movieBuilderFactory;
 	}
 
 	public IWebRetriever getWebRetriever() {
@@ -60,6 +98,11 @@ public abstract class SubFinderBase {
 
 	public void setWebRetriever(IWebRetriever webRetriever) {
 		this.webRetriever = webRetriever;
+	}
+
+
+	protected String getClassName() {
+		return className;
 	}
 
 	protected void setClassName(String className) {
@@ -73,112 +116,17 @@ public abstract class SubFinderBase {
 	protected void setLanguage(Language language) {
 		this.language = language;
 	}
-	
-	protected int getMinWaitSeconds() {
-		return minWaitSeconds;
-	}
-
-	protected void setMinWaitSeconds(int minWaitSeconds) {
-		this.minWaitSeconds = minWaitSeconds;
-	}
-
-	protected int getMaxWaitSeconds() {
-		return maxWaitSeconds;
-	}
-
-	protected void setMaxWaitSeconds(int maxWaitSeconds) {
-		this.maxWaitSeconds = maxWaitSeconds;
-	}
-	
-	public boolean isRunning() {
-		return isRunning;
-	}
-
-	public void setRunning(boolean isRunning) {
-		this.isRunning = isRunning;
-	}	
-
+		
 	public abstract List<SubFile> findSubtitles(MovieOrSeries mos, List<String> languages);
 
 	protected String getSetting(String key) {
-		return this.settings.get(key);
+		return this.subSettings.get(key);
 	}
-
-	protected List<SubFile> downloadSubs(MovieOrSeries mos, List<SubFile> listSubs) {
-		List<SubFile> files = new ArrayList<SubFile>();
-		
-		//Store downloaded files in temporary storage
-		//SubtitleDownloader will move them to correct path
-		String tempSubPath = createTempSubsPath(mos);
-		
-		int sizeCollection = listSubs.size();
-		int c = 1;
-		
-		for (SubFile sf : listSubs) {
-			try {
-				SubFile sfi = downloadSubFile(sf, tempSubPath, sizeCollection, c);
-				if (sfi != null)
-					files.add(sfi);
-				
-				c++;
-				
-				if (c > MAX_SUBS_DOWNLOADED)
-					break;
-				
-			}
-			catch (IOException e) {
-				Log.Error(String.format("%s :: Error when downloading subtitle :: %s", this.getClassName(), sf.getFile().getName()), LogType.SUBS, e);
-			}
-			
-			if (listSubs.size() > 1)
-				waitRandomly();
-
-			if (!this.isRunning)
-				return new ArrayList<SubFile>();
-		}
-		
-		return files;
-		
-	}
-
-	private SubFile downloadSubFile(SubFile sf, String tempSubPath, int sizeCollection, int c)
-			throws IOException {
-		File file = this.getWebRetriever().getWebFile(sf.getUrl(), tempSubPath);
-
-		if (file != null) {
-			sf.setFile(file);
-			
-			Log.Debug(String.format("%s :: [%s/%s] :: File downloaded: %s"
-					, this.getClassName()
-					, c
-					, sizeCollection
-					, sf.getFile().getName())
-				, Log.LogType.SUBS);
-			
-			return sf;
-
-		}
-		return null;
-	}
-
-	private void waitRandomly() {
-		try {
-			Random r = new Random();
-			int n = r.nextInt((this.getMaxWaitSeconds() - this.getMinWaitSeconds()) * 1000 + 1) + this.getMinWaitSeconds() * 1000;
-			
-			Log.Info(String.format("Sleeping for %s seconds", n), LogType.SUBS);
-			// sleep randomly to avoid detection (from 10 sec to 30 sec)
-			Thread.sleep(n);
-		} catch (InterruptedException e) {
-			Log.Error(String.format("Subtitle downloader interrupted", this.getClassName()), Log.LogType.SUBS, e);
-		}
-	}
-	
 	
 	protected String performSearch(String url) {
 		String result = StringUtils.EMPTY;
 		try {
-			WebResult webResult = WebRetriever.getWebResult(url);
+			WebResult webResult = this.getWebRetriever().getWebResult(url);
 			
 			result = webResult.getResult();
 	
@@ -326,7 +274,8 @@ public abstract class SubFinderBase {
 	 * @return Rating			 - A rating based on the Rating enumeration				
 	 */
 	protected Rating rateSub(MovieOrSeries mos, String subFileDescription) {
-		MovieOrSeries subMos = MovieBuilder.identify("", subFileDescription + ".dummy");
+		MovieOrSeries subMos = this.getMovieBuilderFactory()
+				.identify("", subFileDescription + ".dummy");
 		
 		if (subMos != null) {
 			String subFilename = FilenameUtils.getBaseName(subMos.getMedia().getFilename());
@@ -352,27 +301,5 @@ public abstract class SubFinderBase {
 		return Rating.NotMatched;
 	
 	}	
-	
-	/**
-	 * Returns a temporary path to download subtitles to
-	 * @return
-	 */
-	public static String createTempSubsPath(MovieOrSeries mos) {
-		String tempPath = 
-			FilenameUtils.normalize(
-				String.format("%s/temp/%s"
-					, Settings.get().getSubFinders().getSubsPath()
-					, mos.getID()));
-
-		File path = new File(tempPath);
-		if (!path.exists())
-			path.mkdirs();
-		
-		return tempPath;
-	}
-
-	public void exit() {
-		this.setRunning(false);
-	}
 
 }

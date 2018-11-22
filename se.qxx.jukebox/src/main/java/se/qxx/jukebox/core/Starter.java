@@ -1,4 +1,4 @@
-package se.qxx.jukebox;
+package se.qxx.jukebox.core;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;

@@ -6,8 +6,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.Stack;
 
-import se.qxx.jukebox.DB;
-import se.qxx.jukebox.Version;
+import se.qxx.jukebox.core.DB;
+import se.qxx.jukebox.core.Version;
 import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IUpgrader;
 import se.qxx.protodb.exceptions.DatabaseNotSupportedException;

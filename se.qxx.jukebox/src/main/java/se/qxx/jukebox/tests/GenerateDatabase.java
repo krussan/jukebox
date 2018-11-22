@@ -5,7 +5,7 @@ import java.sql.SQLException;
 
 import javax.xml.bind.JAXBException;
 
-import se.qxx.jukebox.Version;
+import se.qxx.jukebox.core.Version;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.protodb.ProtoDB;

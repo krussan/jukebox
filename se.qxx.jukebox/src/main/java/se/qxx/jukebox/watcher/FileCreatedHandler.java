@@ -1,6 +1,6 @@
 package se.qxx.jukebox.watcher;
 
-import se.qxx.jukebox.MovieIdentifier;
+import se.qxx.jukebox.core.MovieIdentifier;
 
 public class FileCreatedHandler implements INotifyClient {
 
