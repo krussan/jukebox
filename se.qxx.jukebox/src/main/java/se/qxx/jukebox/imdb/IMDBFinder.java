@@ -28,16 +28,15 @@ import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie.Builder;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
+import se.qxx.jukebox.factories.IMDBParserFactory;
 import se.qxx.jukebox.interfaces.IIMDBFinder;
 import se.qxx.jukebox.interfaces.IIMDBParser;
 import se.qxx.jukebox.interfaces.IIMDBUrlRewrite;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.IWebRetriever;
-import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.imdb.Imdb;
 import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.tools.WebResult;
-import se.qxx.jukebox.tools.WebRetriever;
 
 @Singleton
 public class IMDBFinder implements IIMDBFinder {
@@ -108,14 +107,7 @@ public class IMDBFinder implements IIMDBFinder {
 			else {
 				Log.Debug(String.format("IMDB url found."), LogType.IMDB);
 				
-				String internalUrl = this.getUrlRewrite().fixUrl(
-						StringUtils.trim(imdbUrl));
-				Log.Debug(String.format("IMDBRECORD :: Making web request to url :: %s", internalUrl), LogType.IMDB);
-
-				WebResult webResult = this.getWebRetriever().getWebResult(internalUrl);
-				Jsoup doc = Jsoup.parse(webResult.getResult());
-				IIMDBParser parser = this.getParserFactory().create(doc);
-				rec = IMDBRecord.get(imdbUrl);
+				rec = getImdbResult(imdbUrl);
 			}
 			
 			return extractMovieInfo(m, rec);			
@@ -123,6 +115,23 @@ public class IMDBFinder implements IIMDBFinder {
 		finally {
 			lock.unlock();
 		}
+	}
+
+	private IMDBRecord getImdbResult(String url) throws IOException {
+		String internalUrl = this.getUrlRewrite().fixUrl(StringUtils.trim(url));
+		
+		Log.Debug(String.format("IMDBRECORD :: Making web request to url :: %s", internalUrl), LogType.IMDB);
+
+		WebResult webResult = this.getWebRetriever().getWebResult(internalUrl);
+		Document doc = Jsoup.parse(webResult.getResult());
+		
+		IIMDBParser parser = this.getParserFactory().create(doc);
+		IMDBRecord rec = parser.parse(webResult.getUrl(), webResult.getResult());
+		
+		if (!StringUtils.isEmpty(rec.getImageUrl())) 
+			rec.setImage(this.getWebRetriever().getWebFileData(rec.getImageUrl()));
+		
+		return rec;
 	}
 	
 	/* (non-Javadoc)
@@ -218,8 +227,9 @@ public class IMDBFinder implements IIMDBFinder {
 		if (StringUtils.isEmpty(s.getImdbUrl())) {
 			return searchSeriesAndCheckSeason(s, season);
 		}
-		else
-			return IMDBRecord.get(s.getImdbUrl());
+		else {
+			return getImdbResult(s.getImdbUrl());
+		}
 	}
 
 	/***
@@ -299,7 +309,7 @@ public class IMDBFinder implements IIMDBFinder {
 
 			if (webResult.isRedirected()) {
 				Log.Info(String.format("IMDB :: %s is redirected to movie", searchString), LogType.IMDB);
-				rec = IMDBRecord.getFromWebResult(webResult);
+				return getImdbResult(webResult.getResult());
 			}
 			else {				
 				Log.Info(String.format("IMDB :: %s is NOT redirected to movie", searchString), LogType.IMDB);
@@ -310,7 +320,7 @@ public class IMDBFinder implements IIMDBFinder {
 						, isTvEpisode);
 				
 				if (!StringUtils.isEmpty(url))
-					rec = IMDBRecord.get(url);			
+					rec = getImdbResult(url);			
 			}
 			
 			setNextSearchTimer();
@@ -589,11 +599,11 @@ public class IMDBFinder implements IIMDBFinder {
 		Log.Debug(String.format("IMDB :: Epsiode :: %s - URL :: %s", episode, seasonUrl), LogType.IMDB);
 		
 		// get the record for the season page
-		IMDBRecord rec = IMDBRecord.get(seasonUrl);
+		IMDBRecord rec = getImdbResult(seasonUrl);
 		
 		String episodeUrl = rec.getAllEpisodeUrls().get(episode);
 		if (!StringUtils.isEmpty(episodeUrl)) {
-			return IMDBRecord.get(episodeUrl);
+			return getImdbResult(episodeUrl);
 		}
 		
 		return null;

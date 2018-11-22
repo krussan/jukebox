@@ -174,12 +174,9 @@ public class IMDBParser implements IIMDBParser {
 	@Override
 	public String parseImageUrl() {
 		Elements elm = this.getDocument().select(".poster img");
-
-		if (elm.size() > 0) {
-			String value = elm.attr("src").trim();
-			return value;
-
-		}
+		
+		if (elm.size() > 0)
+			return elm.attr("src").trim();
 		
 		return null;
 	}
@@ -353,15 +350,14 @@ public class IMDBParser implements IIMDBParser {
 		rec.addGenres(this.parseGenres());
 		rec.setFirstAirDate(this.parseFirstAirDate());
 		
-		
-		rec.setImage(this.parseImageUrl());
+	
 		rec.setImageUrl(this.parseImageUrl());
 		
-		rec.setRating(parser.parseRating());
-		rec.setStory(parser.parseStory());
+		rec.setRating(this.parseRating());
+		rec.setStory(this.parseStory());
 		
-		rec.setAllSeasonUrls(parser.parseSeasons());
-		rec.setAllEpisodeUrls(parser.parseEpisodes());
+		rec.setAllSeasonUrls(this.parseSeasons());
+		rec.setAllEpisodeUrls(this.parseEpisodes());
 
 		return rec;
 	}

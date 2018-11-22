@@ -1,35 +1,10 @@
 package se.qxx.jukebox.imdb;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.text.ParseException;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import se.qxx.jukebox.Log;
-import se.qxx.jukebox.Log.LogType;
-import se.qxx.jukebox.interfaces.IIMDBParser;
-import se.qxx.jukebox.interfaces.ISettings;
-import se.qxx.jukebox.settings.Settings;
-import se.qxx.jukebox.tools.Util;
-import se.qxx.jukebox.tools.WebResult;
-import se.qxx.jukebox.tools.WebRetriever;
 
 public class IMDBRecord {
 	private String url = "";

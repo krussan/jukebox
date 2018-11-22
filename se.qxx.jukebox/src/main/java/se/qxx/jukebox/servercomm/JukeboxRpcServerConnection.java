@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.inject.Inject;
 import com.google.protobuf.RpcCallback;
 import com.google.protobuf.RpcController;
 
@@ -42,6 +43,12 @@ import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.imdb.IMDBFinder;
+import se.qxx.jukebox.interfaces.IDatabase;
+import se.qxx.jukebox.interfaces.IDistributor;
+import se.qxx.jukebox.interfaces.IMovieIdentifier;
+import se.qxx.jukebox.interfaces.ISettings;
+import se.qxx.jukebox.interfaces.IStreamingWebServer;
+import se.qxx.jukebox.interfaces.ISubtitleDownloader;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Players.Server;
 import se.qxx.jukebox.tools.Util;
@@ -53,7 +60,74 @@ import se.qxx.protodb.Logger;
 import se.qxx.jukebox.vlc.Distributor;
 
 public class JukeboxRpcServerConnection extends JukeboxService {
+	private IDatabase database;
+	private ISettings settings;
+	private IDistributor distributor;
+	private IStreamingWebServer webServer;
+	private ISubtitleDownloader subtitleDownloader;
+	private IMovieIdentifier movieIdentifier;
+	
+	@Inject
+	public JukeboxRpcServerConnection(
+			ISettings settings, 
+			IDatabase database, 
+			IDistributor distributor,
+			IStreamingWebServer webServer,
+			ISubtitleDownloader subtitleDownloader,
+			IMovieIdentifier movieIdentifier) {
+		super();
+		this.setDatabase(database);
+		this.setSettings(settings);
+		this.setDistributor(distributor);
+		this.setWebServer(webServer);
+		this.setSubtitleDownloader(subtitleDownloader);
+		this.setMovieIdentifier(movieIdentifier);
+	}
+	
+	public IMovieIdentifier getMovieIdentifier() {
+		return movieIdentifier;
+	}
 
+	public void setMovieIdentifier(IMovieIdentifier movieIdentifier) {
+		this.movieIdentifier = movieIdentifier;
+	}
+
+	public ISubtitleDownloader getSubtitleDownloader() {
+		return subtitleDownloader;
+	}
+
+	public void setSubtitleDownloader(ISubtitleDownloader subtitleDownloader) {
+		this.subtitleDownloader = subtitleDownloader;
+	}
+
+	public IStreamingWebServer getWebServer() {
+		return webServer;
+	}
+
+	public void setWebServer(IStreamingWebServer webServer) {
+		this.webServer = webServer;
+	}
+
+	public IDistributor getDistributor() {
+		return distributor;
+	}
+
+	public void setDistributor(IDistributor distributor) {
+		this.distributor = distributor;
+	}
+
+	public ISettings getSettings() {
+		return settings;
+	}
+	public void setSettings(ISettings settings) {
+		this.settings = settings;
+	}
+	public IDatabase getDatabase() {
+		return database;
+	}
+	public void setDatabase(IDatabase database) {
+		this.database = database;
+	}
 	@Override 
 	public void listMovies(RpcController controller,
 			JukeboxRequestListMovies request,
@@ -69,24 +143,24 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		switch (request.getRequestType()) {
 		case TypeMovie:
 			b.addAllMovies(
-				DB.searchMoviesByTitle(
+				this.getDatabase().searchMoviesByTitle(
 						searchString, 
 						request.getNrOfItems(), 
 						request.getStartIndex()));
 			
 			b.setTotalMovies(
-				DB.getTotalNrOfMovies());
+				this.getDatabase().getTotalNrOfMovies());
 			
 			break;
 		case TypeSeries:
 			b.addAllSeries(
-				DB.searchSeriesByTitle(
+				this.getDatabase().searchSeriesByTitle(
 						searchString, 
 						request.getNrOfItems(), 
 						request.getStartIndex()));
 			
 			b.setTotalSeries(
-				DB.getTotalNrOfSeries());
+				this.getDatabase().getTotalNrOfSeries());
 			
 			break;
 		default:
@@ -134,7 +208,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		Log.Debug("ListPlayers", LogType.COMM);
 
 		Collection<String> hostnames = new ArrayList<String>();
-		for (Server s : Settings.get().getPlayers().getServer()) {
+		for (Server s : this.getSettings().getSettings().getPlayers().getServer()) {
 			hostnames.add(s.getName());
 		}
 		
@@ -168,7 +242,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 				success = true;
 			}
 			else {
-				success = Distributor.get().startMovie(request.getPlayerName(), md);
+				success = this.getDistributor().startMovie(request.getPlayerName(), md);
 			}
 			
 			if (success) {
@@ -198,10 +272,10 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 
 	private Media getMedia(JukeboxRequestStartMovie request) {
 		if (request.getRequestType() == RequestType.TypeMovie) {
-			return DB.getMovie(request.getMovieOrEpisodeId()).getMedia(0);
+			return this.getDatabase().getMovie(request.getMovieOrEpisodeId()).getMedia(0);
 		}
 		else if (request.getRequestType() == RequestType.TypeEpisode) {
-			return DB.getEpisode(request.getMovieOrEpisodeId()).getMedia(0);
+			return this.getDatabase().getEpisode(request.getMovieOrEpisodeId()).getMedia(0);
 		}
 		
 		return null;
@@ -210,11 +284,11 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	private StreamingFile serveChromecast(Media md, List<String> subtitleUris) {
 		// if media contains subtitles (i.e. mkv) then extract the file and put it into a file for serving
 		// https://github.com/matthewn4444/EBMLReader ??
-		StreamingFile streamingFile = StreamingWebServer.get().registerFile(md);
+		StreamingFile streamingFile = this.getWebServer().registerFile(md);
 		
 		Log.Debug(String.format("Number of subtitles :: %s", md.getSubsCount()), LogType.COMM);
 		for (Subtitle s : md.getSubsList()) {
-			StreamingFile subFile = StreamingWebServer.get().registerSubtitle(s);
+			StreamingFile subFile = this.getWebServer().registerSubtitle(s);
 			
 			if (subFile != null)
 				subtitleUris.add(subFile.getUri());
@@ -232,7 +306,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		Log.Debug(String.format("Stopping movie on player %s", request.getPlayerName()), Log.LogType.COMM);
 		
 		try {
-			if (Distributor.get().stopMovie(request.getPlayerName()))
+			if (this.getDistributor().stopMovie(request.getPlayerName()))
 				done.run(Empty.newBuilder().build());
 			else
 				controller.setFailed("Error occured when connecting to target media player"); 
@@ -252,7 +326,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		Log.Debug(String.format("Pausing movie on player %s", request.getPlayerName()), Log.LogType.COMM);
 		
 		try {
-			if (Distributor.get().pauseMovie(request.getPlayerName()))
+			if (this.getDistributor().pauseMovie(request.getPlayerName()))
 				done.run(Empty.newBuilder().build());
 			else
 				controller.setFailed("Error occured when connecting to target media player"); 
@@ -270,7 +344,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		Log.Debug(String.format("Seeking on player %s to %s seconds", request.getPlayerName(), request.getSeconds()), Log.LogType.COMM);
 		
 		try {
-			if (Distributor.get().seek(request.getPlayerName(), request.getSeconds()))
+			if (this.getDistributor().seek(request.getPlayerName(), request.getSeconds()))
 				done.run(Empty.newBuilder().build());
 			else
 				controller.setFailed("Error occured when connecting to target media player"); 
@@ -288,7 +362,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		Log.Debug(String.format("Toggling vratio on %s...", request.getPlayerName()), Log.LogType.COMM);
 		
 		try {
-			if (Distributor.get().toggleVRatio(request.getPlayerName()))
+			if (this.getDistributor().toggleVRatio(request.getPlayerName()))
 				done.run(Empty.newBuilder().build());
 			else
 				controller.setFailed("Error occured when connecting to target media player"); 
@@ -307,7 +381,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		Log.Debug(String.format("Getting time on %s...", request.getPlayerName()), Log.LogType.COMM);
 		
 		try {
-			String response = Distributor.get().getTime(request.getPlayerName());
+			String response = this.getDistributor().getTime(request.getPlayerName());
 			if (response.equals(StringUtils.EMPTY))
 				controller.setFailed("Error occured when connecting to target media player"); 
 			else {
@@ -339,7 +413,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		Log.Debug(String.format("Getting is playing status on %s...", request.getPlayerName()), Log.LogType.COMM);
 		
 		try {
-			boolean isPlaying = Distributor.get().isPlaying(request.getPlayerName());
+			boolean isPlaying = this.getDistributor().isPlaying(request.getPlayerName());
 
 			JukeboxResponseIsPlaying r = JukeboxResponseIsPlaying.newBuilder().setIsPlaying(isPlaying).build();	
 			done.run(r);				
@@ -366,9 +440,9 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		Log.Debug("Blacklist -- EMPTY", LogType.COMM);
 
 		if (request.getRequestType() == RequestType.TypeMovie) {
-			Movie m = DB.getMovie(request.getId());
+			Movie m = this.getDatabase().getMovie(request.getId());
 			if (m != null)
-				DB.addToBlacklist(m);
+				this.getDatabase().addToBlacklist(m);
 		}
 		
 		if (request.getRequestType() == RequestType.TypeEpisode) {
@@ -396,7 +470,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		Log.Debug(String.format("Getting list of subtitles for media ID :: %s", request.getMediaId()), Log.LogType.COMM);
 
 		
-		Media media = DB.getMediaById(request.getMediaId());
+		Media media = this.getDatabase().getMediaById(request.getMediaId());
 
 		JukeboxResponseListSubtitles.Builder b = JukeboxResponseListSubtitles.newBuilder();
 		b.addAllSubtitle(media.getSubsList());
@@ -412,7 +486,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		Log.Debug(String.format("Setting subtitle on %s...", request.getPlayerName()), Log.LogType.COMM);
 		
 		int mediaID = request.getMediaID();
-		Movie m = DB.getMovieByMediaID(mediaID);
+		Movie m = this.getDatabase().getMovieByMediaID(mediaID);
 		
 		Media md = null;
 		for (int i=0;i<m.getMediaCount();i++) {
@@ -430,7 +504,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		
 		try {
 			if (subTrack != null) {
-				if (Distributor.get().restartWithSubtitle(
+				if (this.getDistributor().restartWithSubtitle(
 						request.getPlayerName(), 
 						md, 
 						subTrack.getFilename(), 
@@ -456,7 +530,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		Log.Debug(String.format("Waking up player %s", request.getPlayerName()), Log.LogType.COMM);
 		
 		try {
-			if (Distributor.get().wakeup(request.getPlayerName()))		
+			if (this.getDistributor().wakeup(request.getPlayerName()))		
 				done.run(Empty.newBuilder().build());
 			else
 				controller.setFailed("Could not wake up computer. Error while connecting.");
@@ -475,7 +549,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		Log.Debug(String.format("Suspending computer with player %s...", request.getPlayerName()), Log.LogType.COMM);
 		
 		try {
-			if (Distributor.get().suspend(request.getPlayerName()))
+			if (this.getDistributor().suspend(request.getPlayerName()))
 				done.run(Empty.newBuilder().build());
 			else
 				controller.setFailed("Error occured when connecting to target control service"); 
@@ -494,7 +568,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		Log.Debug(String.format("Toggling fullscreen...", request.getPlayerName()), Log.LogType.COMM);
 		
 		try {
-			if (Distributor.get().toggleFullscreen(request.getPlayerName()))
+			if (this.getDistributor().toggleFullscreen(request.getPlayerName()))
 				done.run(Empty.newBuilder().build());
 			else
 				controller.setFailed("Error occured when connecting to target media player"); 
@@ -517,7 +591,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	 
 	private String getTitleFilename(String playerName) {
 		try {
-			return StringUtils.trim(Distributor.get().getTitle(playerName));
+			return StringUtils.trim(this.getDistributor().getTitle(playerName));
 		} catch (VLCConnectionNotFoundException e) {
 			return StringUtils.EMPTY; 			
 		}		
@@ -533,26 +607,26 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		Thread t = new Thread(() -> {
 			try {
 				if (request.getRequestType() == RequestType.TypeMovie) {
-					Movie m = DB.getMovie(request.getId());
-					DB.delete(m);
+					Movie m = this.getDatabase().getMovie(request.getId());
+					this.getDatabase().delete(m);
 					reenlist(m);
 				}
 				
 				if (request.getRequestType() == RequestType.TypeSeries) {
-					Series s = DB.getSeries(request.getId());
-					DB.delete(s);			
+					Series s = this.getDatabase().getSeries(request.getId());
+					this.getDatabase().delete(s);			
 					reenlist(s);			
 				}
 
 				if (request.getRequestType() == RequestType.TypeSeason) {
-					Season sn = DB.getSeason(request.getId());
-					DB.delete(sn);			
+					Season sn = this.getDatabase().getSeason(request.getId());
+					this.getDatabase().delete(sn);			
 					reenlist(sn);			
 				}
 
 				if (request.getRequestType() == RequestType.TypeEpisode) {
-					Episode ep = DB.getEpisode(request.getId());
-					DB.delete(ep);			
+					Episode ep = this.getDatabase().getEpisode(request.getId());
+					this.getDatabase().delete(ep);			
 					reenlist(ep);			
 				}
 				
@@ -582,12 +656,12 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		Thread t = new Thread(() -> {
 			try {
 				if (request.getRequestType() == RequestType.TypeMovie) {
-					Movie m = DB.getMovie(request.getId());
-					SubtitleDownloader.get().reenlistMovie(m);	
+					Movie m = this.getDatabase().getMovie(request.getId());
+					this.getSubtitleDownloader().reenlistMovie(m);	
 				}
 				else if (request.getRequestType() == RequestType.TypeEpisode) {
-					Episode ep = DB.getEpisode(request.getId());
-					SubtitleDownloader.get().reenlistEpisode(ep);
+					Episode ep = this.getDatabase().getEpisode(request.getId());
+					this.getSubtitleDownloader().reenlistEpisode(ep);
 				}
 			
 				done.run(Empty.newBuilder().build());
@@ -609,7 +683,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		FileRepresentation f = new FileRepresentation(md.getFilepath(), md.getFilename(), Util.getCurrentTimestamp(), file.length());
 		
 		// re-enlist the file into the movie identifier
-		MovieIdentifier.get().addFile(f);
+		this.getMovieIdentifier().addFile(f);
 	}
 
 	private void reenlist(Series s) {
@@ -645,17 +719,17 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		switch (request.getRequestType()) {		
 		case TypeMovie:
 			b.setMovie(
-				DB.searchMoviesByID(
+				this.getDatabase().searchMoviesByID(
 					request.getID()));
 			break;
 		case TypeSeries:
 			b.setSerie(
-				DB.searchSeriesById(
+				this.getDatabase().searchSeriesById(
 					request.getID()));
 			break;
 		case TypeSeason:
 			b.setSeason(
-				DB.searchSeasonById(
+				this.getDatabase().searchSeasonById(
 					request.getID()));
 			break;
 		default:
@@ -670,13 +744,13 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		Thread t = new Thread(() -> {
 			try {
 				if (request.getRequestType() == RequestType.TypeMovie) {
-					Movie m = DB.getMovie(request.getId());
-					MovieIdentifier.get().getMovieInfo(m, m.getMedia(0));
-					DB.save(m);	
+					Movie m = this.getDatabase().getMovie(request.getId());
+					this.getMovieIdentifier().getMovieInfo(m, m.getMedia(0));
+					this.getDatabase().save(m);	
 				}
 				else if (request.getRequestType() == RequestType.TypeEpisode) {
-					Episode ep = DB.getEpisode(request.getId());
-					Series s = DB.getSeriesByEpisode(request.getId());
+					Episode ep = this.getDatabase().getEpisode(request.getId());
+					Series s = this.getDatabase().getSeriesByEpisode(request.getId());
 					if (s != null) {
 						Log.Debug("Series found. Finding season...", LogType.COMM);
 						Season sn = DomainUtil.findSeasonByEpisodeId(s, request.getId());
@@ -704,14 +778,14 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			
 			Log.Debug("Season found. Updating info on episode...", LogType.COMM);
 			
-			s = MovieIdentifier.get().getSeriesInfo(
+			s = this.getMovieIdentifier().getSeriesInfo(
 					s, 
 					season, 
 					ep.getEpisodeNumber(), 
 					ep.getMedia(0));
 			
 			Episode newEpisode = DomainUtil.findEpisode(s, season, ep.getEpisodeNumber());
-			DB.save(newEpisode);
+			this.getDatabase().save(newEpisode);
 		}
 		else {
 			Log.Debug("Season not found -- exiting", LogType.COMM);
