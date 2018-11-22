@@ -9,6 +9,7 @@ import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.comm.JukeboxRpcServer;
 import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.ISettings;
+import se.qxx.jukebox.interfaces.ITcpListener;
 import se.qxx.jukebox.settings.Settings;
 
 @Singleton

@@ -14,7 +14,7 @@ import se.qxx.jukebox.interfaces.IMovieIdentifier;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.IStreamingWebServer;
 import se.qxx.jukebox.interfaces.ISubtitleDownloader;
-import se.qxx.jukebox.servercomm.ITcpListener;
+import se.qxx.jukebox.interfaces.ITcpListener;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
 import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.watcher.ExtensionFileFilter;

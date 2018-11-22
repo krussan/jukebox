@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,16 +14,20 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.builders.MovieBuilder;
 import se.qxx.jukebox.domain.JukeboxDomain.Rating;
+import se.qxx.jukebox.interfaces.ISettings;
+import se.qxx.jukebox.interfaces.IWebRetriever;
 import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.settings.JukeboxListenerSettings;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.tools.WebResult;
 import se.qxx.jukebox.tools.WebRetriever;
-
 
 public abstract class SubFinderBase {
 	private String className;
@@ -33,8 +38,28 @@ public abstract class SubFinderBase {
 	
 	private final int MAX_SUBS_DOWNLOADED = 15;
 	
+	private IWebRetriever webRetriever;
+	private Map<String, String> settings = new HashMap<String, String>(); 
+	
+	public SubFinderBase(@Assisted JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings subFinderSettings, 
+			IWebRetriever webRetriever) {
+		this.setWebRetriever(webRetriever);
+		//
+		for (JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings.Setting setting : subFinderSettings.getSetting()) {
+			this.settings.put(StringUtils.trim(setting.getKey()), StringUtils.trim(setting.getValue()));
+		}
+	}
+
 	protected String getClassName() {
 		return className;
+	}
+
+	public IWebRetriever getWebRetriever() {
+		return webRetriever;
+	}
+
+	public void setWebRetriever(IWebRetriever webRetriever) {
+		this.webRetriever = webRetriever;
 	}
 
 	protected void setClassName(String className) {
@@ -73,15 +98,7 @@ public abstract class SubFinderBase {
 		this.isRunning = isRunning;
 	}	
 
-	private HashMap<String, String> settings = new HashMap<String, String>();
-
 	public abstract List<SubFile> findSubtitles(MovieOrSeries mos, List<String> languages);
-	
-	public SubFinderBase(JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings subFinderSettings) {
-		for (JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings.Setting setting : subFinderSettings.getSetting()) {
-			this.settings.put(StringUtils.trim(setting.getKey()), StringUtils.trim(setting.getValue()));
-		}
-	}
 
 	protected String getSetting(String key) {
 		return this.settings.get(key);
@@ -126,7 +143,7 @@ public abstract class SubFinderBase {
 
 	private SubFile downloadSubFile(SubFile sf, String tempSubPath, int sizeCollection, int c)
 			throws IOException {
-		File file = WebRetriever.getWebFile(sf.getUrl(), tempSubPath);
+		File file = this.getWebRetriever().getWebFile(sf.getUrl(), tempSubPath);
 
 		if (file != null) {
 			sf.setFile(file);
