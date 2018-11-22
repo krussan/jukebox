@@ -1,6 +1,6 @@
 package se.qxx.jukebox.watcher;
 
-public interface INotifyClient {
+public interface IFileCreatedHandler {
 	public void fileModified(FileRepresentation f);
 	public void fileCreated(FileRepresentation f);
 }

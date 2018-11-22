@@ -17,7 +17,6 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.inject.Inject;
 import com.google.protobuf.Message;
 
-import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
@@ -27,7 +26,9 @@ import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.JukeboxDomain.SubtitleQueue;
 import se.qxx.jukebox.domain.MovieOrSeries;
+import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IDatabase;
+import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.protodb.DBType;
 import se.qxx.protodb.ProtoDB;
@@ -46,15 +47,55 @@ public class DB implements IDatabase {
 	private static ReentrantLock lock = new ReentrantLock();
 	
 	private ISettings settings;
+	private IJukeboxLogger mainLog;
+	private IJukeboxLogger upgradeLog;
+	private IJukeboxLogger findLog;
+	private IJukeboxLogger dbLog;
 	
 	@Inject
-	public DB(ISettings settings) {
+	public DB(ISettings settings, LoggerFactory loggerFactory) {
 		this.setSettings(settings);
+		this.setDbLog(loggerFactory.create(LogType.DB));
+		this.setMainLog(loggerFactory.create(LogType.MAIN));
+		this.setUpgradeLog(loggerFactory.create(LogType.UPGRADE));
+		this.setFindLog(loggerFactory.create(LogType.FIND));
 	} 
 
 	//---------------------------------------------------------------------------------------
-	//------------------------------------------------------------------------ Search
+	//------------------------------------------------------------------------ Get/Set
 	//---------------------------------------------------------------------------------------
+
+	public IJukeboxLogger getDbLog() {
+		return dbLog;
+	}
+
+	public void setDbLog(IJukeboxLogger dbLog) {
+		this.dbLog = dbLog;
+	}
+
+	public IJukeboxLogger getFindLog() {
+		return findLog;
+	}
+
+	public void setFindLog(IJukeboxLogger findLog) {
+		this.findLog = findLog;
+	}
+
+	public IJukeboxLogger getUpgradeLog() {
+		return upgradeLog;
+	}
+
+	public void setUpgradeLog(IJukeboxLogger upgradeLog) {
+		this.upgradeLog = upgradeLog;
+	}
+
+	public IJukeboxLogger getMainLog() {
+		return mainLog;
+	}
+
+	public void setMainLog(IJukeboxLogger mainLog) {
+		this.mainLog = mainLog;
+	}
 
 	public ISettings getSettings() {
 		return settings;
@@ -64,9 +105,10 @@ public class DB implements IDatabase {
 		this.settings = settings;
 	}
 
-	/* (non-Javadoc)
-	 * @see se.qxx.jukebox.IDatabase#searchMoviesByTitle(java.lang.String)
-	 */
+	//---------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------ Search
+	//---------------------------------------------------------------------------------------
+
 	@Override
 	public List<Movie> searchMoviesByTitle(String searchString) {
 		return searchMoviesByTitle(searchString, -1, -1);
@@ -125,7 +167,7 @@ public class DB implements IDatabase {
 		
 		}
 		catch (Exception e) {
-			Log.Error("Failed to retrieve series listing from DB", Log.LogType.MAIN, e);
+			this.getMainLog().Error("Failed to retrieve series listing from DB", e);
 			return null;
 		}		
 
@@ -198,7 +240,7 @@ public class DB implements IDatabase {
 			
 		}
 		catch (Exception e) {
-			Log.Error("Failed to retrieve series listing from DB", Log.LogType.MAIN, e);
+			this.getMainLog().Error("Failed to retrieve series listing from DB", e);
 			return new ArrayList<T>();
 		}		
 	}
@@ -218,7 +260,7 @@ public class DB implements IDatabase {
 	public Movie findMovie(String identifiedTitle) {
 		String searchString = replaceSearchString(identifiedTitle);
 		
-		Log.Debug(String.format("DB :: Series search string :: %s", searchString), LogType.FIND);
+		this.getFindLog().Debug(String.format("DB :: Series search string :: %s", searchString));
 		 
 		try {
 			ProtoDB db = getProtoDBInstance();
@@ -245,7 +287,7 @@ public class DB implements IDatabase {
 
 			
 		} catch (Exception e) {
-			Log.Error("failed to get information from database", Log.LogType.FIND, e);
+			this.getFindLog().Error("failed to get information from database", e);
 //			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
 			
 			return null;
@@ -259,7 +301,7 @@ public class DB implements IDatabase {
 	public Series findSeries(String identifiedTitle) {
 		String searchString = replaceSearchString(identifiedTitle) + "%";
 		
-		Log.Debug(String.format("DB :: Series search string :: %s", searchString), LogType.MAIN);
+		this.getMainLog().Debug(String.format("DB :: Series search string :: %s", searchString));
 		 
 		try {
 			ProtoDB db = getProtoDBInstance();
@@ -286,7 +328,7 @@ public class DB implements IDatabase {
 			}
 			
 		} catch (Exception e) {
-			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
+			this.getMainLog().Error("failed to get information from database", e);
 //			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
 			
 			return null;
@@ -326,7 +368,7 @@ public class DB implements IDatabase {
 			}
 			
 		} catch (Exception e) {
-			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
+			this.getMainLog().Error("failed to get information from database", e);
 		}
 		
 		return null;
@@ -366,7 +408,7 @@ public class DB implements IDatabase {
 			}
 			
 		} catch (Exception e) {
-			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
+			this.getMainLog().Error("failed to get information from database", e);
 		}
 		
 		return null;
@@ -398,7 +440,7 @@ public class DB implements IDatabase {
 			}
 			
 		} catch (Exception e) {
-			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
+			this.getMainLog().Error("failed to get information from database", e);
 			
 			
 		}
@@ -438,7 +480,7 @@ public class DB implements IDatabase {
 			}
 			
 		} catch (Exception e) {
-			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
+			this.getMainLog().Error("failed to get information from database", e);
 		}
 		
 		return null;
@@ -472,7 +514,7 @@ public class DB implements IDatabase {
 			}
 			
 		} catch (Exception e) {
-			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
+			this.getMainLog().Error("failed to get information from database", e);
 		}
 		
 		return null;
@@ -497,7 +539,7 @@ public class DB implements IDatabase {
 			}
 			
 		} catch (Exception e) {
-			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
+			this.getMainLog().Error("failed to get information from database", e);
 		}
 		
 		return null;
@@ -526,7 +568,7 @@ public class DB implements IDatabase {
 			
 		}
 		catch (Exception e) {
-			Log.Error("Failed to store movie to DB", Log.LogType.MAIN, e);
+			this.getMainLog().Error("Failed to store movie to DB", e);
 			
 			return null;
 		}
@@ -550,7 +592,7 @@ public class DB implements IDatabase {
 			}
 		}
 		catch (Exception e) {
-			Log.Error("Failed to store media to DB", Log.LogType.MAIN, e);
+			this.getMainLog().Error("Failed to store media to DB", e);
 			
 			return null;
 		}
@@ -574,7 +616,7 @@ public class DB implements IDatabase {
 			}
 		}
 		catch (Exception e) {
-			Log.Error("Failed to store episode to DB", Log.LogType.MAIN, e);
+			this.getMainLog().Error("Failed to store episode to DB", e);
 			
 			return null;
 		}
@@ -598,7 +640,7 @@ public class DB implements IDatabase {
 			}
 		}
 		catch (Exception e) {
-			Log.Error("Failed to store episode to DB", Log.LogType.MAIN, e);
+			this.getMainLog().Error("Failed to store episode to DB", e);
 			
 			return null;
 		}
@@ -625,7 +667,7 @@ public class DB implements IDatabase {
 				}
 			}
 			catch (Exception e) {
-				Log.Error("Failed to store episode to DB", Log.LogType.MAIN, e);
+				this.getMainLog().Error("Failed to store episode to DB", e);
 			}
 
 		});
@@ -656,7 +698,7 @@ public class DB implements IDatabase {
 
 		}
 		catch (ClassNotFoundException | SQLException | DatabaseNotSupportedException e) {
-			Log.Error("Failed to delete movie in DB", Log.LogType.MAIN, e);
+			this.getMainLog().Error("Failed to delete movie in DB", e);
 			
 			throw e;
 		}		
@@ -682,7 +724,7 @@ public class DB implements IDatabase {
 			
 		}
 		catch (ClassNotFoundException | SQLException | DatabaseNotSupportedException e) {
-			Log.Error("Failed to delete series in DB", Log.LogType.MAIN, e);
+			this.getMainLog().Error("Failed to delete series in DB", e);
 			
 			throw e;
 		}			
@@ -706,7 +748,7 @@ public class DB implements IDatabase {
 			}
 		}
 		catch (ClassNotFoundException | SQLException |  DatabaseNotSupportedException  e) {
-			Log.Error("Failed to delete season in DB", Log.LogType.MAIN, e);
+			this.getMainLog().Error("Failed to delete season in DB", e);
 			
 			throw e;
 		}			
@@ -730,7 +772,7 @@ public class DB implements IDatabase {
 
 		}
 		catch (ClassNotFoundException | SQLException | DatabaseNotSupportedException  e) {
-			Log.Error("Failed to delete episode in DB", Log.LogType.MAIN, e);
+			this.getMainLog().Error("Failed to delete episode in DB", e);
 			
 			throw e;
 		}				
@@ -758,7 +800,7 @@ public class DB implements IDatabase {
 			}
 		}
 		catch (Exception e) {
-			Log.Error("Failed to store movie to DB", Log.LogType.MAIN, e);
+			this.getMainLog().Error("Failed to store movie to DB", e);
 		}
 
 	}		
@@ -792,7 +834,7 @@ public class DB implements IDatabase {
 			}
        }
        catch (Exception e) {
-           Log.Error("Failed to retrieve movie listing from DB", LogType.MAIN, e);
+           this.getMainLog().Error("Failed to retrieve movie listing from DB", e);
        }
        
        return result;
@@ -819,7 +861,7 @@ public class DB implements IDatabase {
 				
 			}
 		} catch (Exception e) {
-			Log.Error(String.format("Failed to set download complete"), Log.LogType.MAIN, e);
+			this.getMainLog().Error(String.format("Failed to set download complete"), e);
 		}				
 	}
 
@@ -842,7 +884,7 @@ public class DB implements IDatabase {
 			}
 
 		} catch (Exception e) {
-			Log.Error(String.format("Failed to clean subtitle queue"), Log.LogType.MAIN, e);
+			this.getMainLog().Error(String.format("Failed to clean subtitle queue"), e);
 		}		
 	}
 
@@ -878,7 +920,7 @@ public class DB implements IDatabase {
 			}
 		}
 		catch (Exception e) {
-			Log.Error("Failed to store movie to DB", Log.LogType.MAIN, e);
+			this.getMainLog().Error("Failed to store movie to DB", e);
 		}
 		return m;
 	}
@@ -908,7 +950,7 @@ public class DB implements IDatabase {
 			}
 		}
 		catch (Exception ex) {
-			Log.Error("Failed to store epsiode to DB", Log.LogType.MAIN, ex);
+			this.getMainLog().Error("Failed to store epsiode to DB", ex);
 		}
 		return e;
 	}
@@ -969,7 +1011,7 @@ public class DB implements IDatabase {
 			result = constructSubtitleQueue(movies, series);
 		}
 		catch (Exception e) {
-			Log.Error("Failed to retrieve movie listing from DB", Log.LogType.MAIN, e);
+			this.getMainLog().Error("Failed to retrieve movie listing from DB", e);
 		}
 		
 		return result;
@@ -1000,7 +1042,7 @@ public class DB implements IDatabase {
 	@Override
 	public ProtoDB getProtoDBInstance(String driver, String connectionString, boolean populateBlobs) throws DatabaseNotSupportedException {
 		ProtoDB db = null; 
-		String logFilename = Log.getLoggerFilename(LogType.DB);
+		String logFilename = this.getDbLog().getLoggerFilename();
 	
 		if (StringUtils.isEmpty(logFilename))
 			db = ProtoDBFactory.getInstance(driver, connectionString);
@@ -1072,7 +1114,7 @@ public class DB implements IDatabase {
 			}
 		}
 		catch (Exception e) {
-			Log.Error("Failed to add movie to blacklist in DB", Log.LogType.MAIN, e);
+			this.getMainLog().Error("Failed to add movie to blacklist in DB", e);
 		}		
 	}
 
@@ -1255,9 +1297,9 @@ public class DB implements IDatabase {
 		}
 				
 		catch (Exception e) {
-			Log.Error("Upgrade failed", LogType.UPGRADE, e);
-			Log.Debug("Failing query was::", LogType.UPGRADE);
-			Log.Debug(sql, LogType.UPGRADE);
+			this.getUpgradeLog().Error("Upgrade failed", e);
+			this.getUpgradeLog().Debug("Failing query was::");
+			this.getUpgradeLog().Debug(sql);
 			
 			try {
 				conn.rollback();
@@ -1298,7 +1340,7 @@ public class DB implements IDatabase {
 			return true;
 		}
 		catch (Exception e) {
-			Log.Error("Purge failed", LogType.MAIN, e);
+			this.getMainLog().Error("Purge failed", e);
 			return false;
 		}
 		finally {
@@ -1326,7 +1368,7 @@ public class DB implements IDatabase {
 			}
 		} catch (ClassNotFoundException | SQLException
 				| IDFieldNotFoundException | DatabaseNotSupportedException e) {
-			Log.Error("Failed to setup database", Log.LogType.MAIN, e);
+			this.getMainLog().Error("Failed to setup database", e);
 			
 			throw e;
 		}
@@ -1366,7 +1408,7 @@ public class DB implements IDatabase {
 			}
 			
 		} catch (Exception e) {
-			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
+			this.getMainLog().Error("failed to get information from database", e);
 //			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
 			
 			return null;
@@ -1406,7 +1448,7 @@ public class DB implements IDatabase {
 			}
 			
 		} catch (Exception e) {
-			Log.Error("failed to get information from database", Log.LogType.MAIN, e);
+			this.getMainLog().Error("failed to get information from database", e);
 //			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
 			
 			return null;
@@ -1431,7 +1473,7 @@ public class DB implements IDatabase {
 				if (db.getDBType() == DBType.Sqlite) lock.unlock();
 			}
 		} catch (ClassNotFoundException | SQLException | DatabaseNotSupportedException e) {
-			Log.Error(String.format("Failed to get media %s", mediaId), Log.LogType.MAIN, e);
+			this.getMainLog().Error(String.format("Failed to get media %s", mediaId), e);
 		}
 		
 		return null;		
@@ -1465,7 +1507,7 @@ public class DB implements IDatabase {
 			}
 			
 		} catch (ClassNotFoundException | SQLException | SearchFieldNotFoundException | ProtoDBParserException | SearchOptionsNotInitializedException e) {
-			Log.Error(String.format("Failed to get movie with subs filename %s", subsFilename), Log.LogType.MAIN, e);
+			this.getMainLog().Error(String.format("Failed to get movie with subs filename %s", subsFilename), e);
 		}
 		
 		return null;
@@ -1499,7 +1541,7 @@ public class DB implements IDatabase {
 			}
 			
 		} catch (ClassNotFoundException | SQLException | SearchFieldNotFoundException | DatabaseNotSupportedException | ProtoDBParserException | SearchOptionsNotInitializedException e) {
-			Log.Error(String.format("Failed to purge series"), Log.LogType.MAIN, e);
+			this.getMainLog().Error(String.format("Failed to purge series"), e);
 		}		
 	}
 
@@ -1522,7 +1564,7 @@ public class DB implements IDatabase {
 			}
 
 		} catch (Exception e) {
-			Log.Error(String.format("Failed to clean subtitle queue"), Log.LogType.MAIN, e);
+			this.getMainLog().Error(String.format("Failed to clean subtitle queue"), e);
 		}		
 	}
 	
@@ -1546,7 +1588,7 @@ public class DB implements IDatabase {
 			}
 
 		} catch (Exception e) {
-			Log.Error(String.format("Failed to clean subtitle queue"), Log.LogType.MAIN, e);
+			this.getMainLog().Error(String.format("Failed to clean subtitle queue"), e);
 		}		
 		
 		return 0;
@@ -1572,7 +1614,7 @@ public class DB implements IDatabase {
 			}
 
 		} catch (Exception e) {
-			Log.Error(String.format("Failed to clean subtitle queue"), Log.LogType.MAIN, e);
+			this.getMainLog().Error(String.format("Failed to clean subtitle queue"), e);
 		}		
 		
 		return 0;
@@ -1598,7 +1640,7 @@ public class DB implements IDatabase {
 			}
 
 		} catch (Exception e) {
-			Log.Error(String.format("Failed to clean subtitle queue"), Log.LogType.MAIN, e);
+			this.getMainLog().Error(String.format("Failed to clean subtitle queue"), e);
 		}		
 		
 		return 0;		
@@ -1623,7 +1665,7 @@ public class DB implements IDatabase {
 			}
 
 		} catch (Exception e) {
-			Log.Error(String.format("Failed to clean subtitle queue"), Log.LogType.MAIN, e);
+			this.getMainLog().Error(String.format("Failed to clean subtitle queue"), e);
 		}		
 		
 		return 0;				
@@ -1658,7 +1700,7 @@ public class DB implements IDatabase {
 			}
 
 		} catch (Exception e) {
-			Log.Error(String.format("Failed to set download complete"), Log.LogType.MAIN, e);
+			this.getMainLog().Error(String.format("Failed to set download complete"), e);
 		}						
 	}
 
@@ -1695,7 +1737,7 @@ public class DB implements IDatabase {
 			}
 		}
 		catch (Exception e) {
-			Log.Error("Failed to retrieve movie listing from DB", Log.LogType.MAIN, e);
+			this.getMainLog().Error("Failed to retrieve movie listing from DB", e);
 		}
 		
 		if (series.size() > 0)
@@ -1723,7 +1765,7 @@ public class DB implements IDatabase {
 			}
 		}
 		catch (Exception e) {
-			Log.Error("Failed to store episode to DB", Log.LogType.MAIN, e);
+			this.getMainLog().Error("Failed to store episode to DB", e);
 			
 			return null;
 		}

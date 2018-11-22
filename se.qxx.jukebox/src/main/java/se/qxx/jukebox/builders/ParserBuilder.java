@@ -10,20 +10,18 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
-import se.qxx.jukebox.Log;
-import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.MovieOrSeries;
+import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.settings.parser.Parser;
 import se.qxx.jukebox.settings.parser.Parser.Keywords;
-import se.qxx.jukebox.settings.parser.ParserSettings;
 import se.qxx.jukebox.settings.parser.ParserType;
 import se.qxx.jukebox.settings.parser.WordType;
 
 public class ParserBuilder extends MovieBuilder {
 
-	public ParserBuilder(ISettings settings) {
-		super(settings);
+	public ParserBuilder(ISettings settings, IJukeboxLogger log) {
+		super(settings, log);
 	}
 
 	@Override
@@ -41,7 +39,7 @@ public class ParserBuilder extends MovieBuilder {
 		
 		String fileNameToMatch = FilenameUtils.getBaseName(md.getFilename());
 		
-		Log.Info(String.format("Running ParserBuilder on %s", fileNameToMatch), LogType.FIND);
+		this.getLog().Info(String.format("Running ParserBuilder on %s", fileNameToMatch));
 				
 		String stringToProcess = removeParenthesis(
 				removeInitialParenthesis(fileNameToMatch));

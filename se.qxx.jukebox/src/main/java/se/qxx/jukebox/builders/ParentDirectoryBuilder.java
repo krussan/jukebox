@@ -6,19 +6,17 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.FilenameUtils;
 
-import se.qxx.jukebox.Log;
-import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Identifier;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.MovieOrSeries;
+import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
-import se.qxx.jukebox.settings.Settings;
 
 public class ParentDirectoryBuilder extends ParserBuilder {
 
-	public ParentDirectoryBuilder(ISettings settings) {
-		super(settings);
+	public ParentDirectoryBuilder(ISettings settings, IJukeboxLogger log) {
+		super(settings, log);
 	}
 
 	@Override
@@ -32,12 +30,12 @@ public class ParentDirectoryBuilder extends ParserBuilder {
 		Matcher matcher = pattern.matcher(parentDirectoryName);
 		
 		if (matcher.matches()) {
-			Log.Info("ParentDirectory appears to be a CD indicator..", LogType.FIND);
+			this.getLog().Info("ParentDirectory appears to be a CD indicator..");
 			path = path.getParentFile();
 			filepath = path.getAbsolutePath();
 		}
 
-		Log.Info(String.format("ParentDirectoryBuilder path :: %s", filepath), LogType.FIND);
+		this.getLog().Info(String.format("ParentDirectoryBuilder path :: %s", filepath));
 
 		MovieOrSeries mos = null;
 		

@@ -17,34 +17,29 @@ public class FileReader implements IFileReader {
 		
 	}
 	
-	public byte[] readFile(File f) {
-		try {
-			FileInputStream fs = new FileInputStream(f);
-			long length = f.length();
-			if (length > Integer.MAX_VALUE) {
-				fs.close();
-				throw new ArrayIndexOutOfBoundsException();
-			}
-			byte[] data = new byte[(int) length];
-			int offset = 0;
-			int numRead = 0;
-			while (offset < data.length && (numRead = fs.read(data, offset, data.length - offset)) >= 0) {
-				offset += numRead;
-			}
-
-			// Ensure all the bytes have been read in
-			if (offset < data.length) {
-				fs.close();
-				throw new IOException("Could not completely read file " + f.getName());
-			}
-
-			// Close the input stream and return bytes
+	public byte[] readFile(File f) throws IOException {
+		FileInputStream fs = new FileInputStream(f);
+		long length = f.length();
+		if (length > Integer.MAX_VALUE) {
 			fs.close();
-			return data;
-		} catch (Exception e) {
-			Log.Error("Error when reading file", LogType.FIND, e);
-			return null;
+			throw new ArrayIndexOutOfBoundsException();
+		}
+		byte[] data = new byte[(int) length];
+		int offset = 0;
+		int numRead = 0;
+		while (offset < data.length && (numRead = fs.read(data, offset, data.length - offset)) >= 0) {
+			offset += numRead;
 		}
 
+		// Ensure all the bytes have been read in
+		if (offset < data.length) {
+			fs.close();
+			throw new IOException("Could not completely read file " + f.getName());
+		}
+
+		// Close the input stream and return bytes
+		fs.close();
+		return data;
+		
 	}
 }

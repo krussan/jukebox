@@ -8,6 +8,9 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import se.qxx.jukebox.Jukebox;
 import se.qxx.jukebox.interfaces.IImdbSettings;
 import se.qxx.jukebox.interfaces.IParserSettings;
@@ -19,7 +22,7 @@ import se.qxx.jukebox.settings.parser.Parser;
 import se.qxx.jukebox.settings.parser.ParserSettings;
 import se.qxx.jukebox.webserver.StreamingWebServer;
 
-
+@Singleton
 public class Settings implements ISettings {
 	private JukeboxListenerSettings settings;
 	private IImdbSettings imdbSettings;
@@ -27,6 +30,7 @@ public class Settings implements ISettings {
 	private IStreamingWebServer webServer;
 	public int serverPort = 45444;	
 	
+	@Inject
 	public Settings(IImdbSettings imdbSettings, IParserSettings parserSettings, IStreamingWebServer webServer) {
 		this.setImdbSettings(imdbSettings);
 		this.setParserSettings(parserSettings);

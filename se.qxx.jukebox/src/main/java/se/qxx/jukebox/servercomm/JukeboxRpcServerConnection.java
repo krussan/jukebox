@@ -11,10 +11,7 @@ import com.google.inject.Inject;
 import com.google.protobuf.RpcCallback;
 import com.google.protobuf.RpcController;
 
-import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
-import se.qxx.jukebox.core.DB;
-import se.qxx.jukebox.core.MovieIdentifier;
 import se.qxx.jukebox.domain.DomainUtil;
 import se.qxx.jukebox.domain.JukeboxDomain.Empty;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
@@ -41,23 +38,20 @@ import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
-import se.qxx.jukebox.imdb.IMDBFinder;
+import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IDistributor;
+import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IMovieIdentifier;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.IStreamingWebServer;
 import se.qxx.jukebox.interfaces.ISubtitleDownloader;
-import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Players.Server;
-import se.qxx.jukebox.subtitles.SubtitleDownloader;
 import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.vlc.VLCConnectionNotFoundException;
 import se.qxx.jukebox.watcher.FileRepresentation;
 import se.qxx.jukebox.webserver.StreamingFile;
-import se.qxx.jukebox.webserver.StreamingWebServer;
 import se.qxx.protodb.Logger;
-import se.qxx.jukebox.vlc.Distributor;
 
 public class JukeboxRpcServerConnection extends JukeboxService {
 	private IDatabase database;
@@ -66,6 +60,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	private IStreamingWebServer webServer;
 	private ISubtitleDownloader subtitleDownloader;
 	private IMovieIdentifier movieIdentifier;
+	private IJukeboxLogger log;
 	
 	@Inject
 	public JukeboxRpcServerConnection(
@@ -74,7 +69,8 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			IDistributor distributor,
 			IStreamingWebServer webServer,
 			ISubtitleDownloader subtitleDownloader,
-			IMovieIdentifier movieIdentifier) {
+			IMovieIdentifier movieIdentifier, 
+			LoggerFactory loggerFactory) {
 		super();
 		this.setDatabase(database);
 		this.setSettings(settings);
@@ -82,8 +78,17 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		this.setWebServer(webServer);
 		this.setSubtitleDownloader(subtitleDownloader);
 		this.setMovieIdentifier(movieIdentifier);
+		this.setLog(loggerFactory.create(LogType.COMM));
 	}
 	
+	public IJukeboxLogger getLog() {
+		return log;
+	}
+
+	public void setLog(IJukeboxLogger log) {
+		this.log = log;
+	}
+
 	public IMovieIdentifier getMovieIdentifier() {
 		return movieIdentifier;
 	}
@@ -134,7 +139,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			RpcCallback<JukeboxResponseListMovies> done) {
 
 		setPriority();
-		Log.Debug(String.format("ListMovies :: %s", request.getRequestType()), LogType.COMM);
+		this.getLog().Debug(String.format("ListMovies :: %s", request.getRequestType()));
 		
 		String searchString = request.getSearchString();
 		
@@ -175,8 +180,8 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	}
 
 	private void logResponse(JukeboxResponseListMovies response) {
-		Log.Debug(String.format("Movie count :: %s ", response.getMoviesCount()), LogType.COMM);
-		Log.Debug(String.format("Series count :: %s ", response.getSeriesCount()), LogType.COMM);
+		this.getLog().Debug(String.format("Movie count :: %s ", response.getMoviesCount()));
+		this.getLog().Debug(String.format("Series count :: %s ", response.getSeriesCount()));
 		logSeasons(response);
 		logEpisodes(response);
 	}
@@ -186,7 +191,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		for (Series s : response.getSeriesList())
 			c += s.getSeasonCount();
 		
-		Log.Debug(String.format("Season count :: %s ", c), LogType.COMM);
+		this.getLog().Debug(String.format("Season count :: %s ", c));
 	}
 	
 	private void logEpisodes (JukeboxResponseListMovies response) {
@@ -197,7 +202,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			}
 		}
 		
-		Log.Debug(String.format("Episode count :: %s ", c), LogType.COMM);
+		this.getLog().Debug(String.format("Episode count :: %s ", c));
 	}
 
 	@Override
@@ -205,7 +210,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			RpcCallback<JukeboxResponseListPlayers> done) {
 
 		setPriority();
-		Log.Debug("ListPlayers", LogType.COMM);
+		this.getLog().Debug("ListPlayers");
 
 		Collection<String> hostnames = new ArrayList<String>();
 		for (Server s : this.getSettings().getSettings().getPlayers().getServer()) {
@@ -223,8 +228,8 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			RpcCallback<JukeboxResponseStartMovie> done) {
 
 		setPriority();
-		Log.Debug("StartMovie", LogType.COMM);
-		Log.Debug(String.format("Starting %s with ID: %s on player %s", request.getRequestType(), request.getMovieOrEpisodeId(), request.getPlayerName()), Log.LogType.COMM);
+		this.getLog().Debug("StartMovie");
+		this.getLog().Debug(String.format("Starting %s with ID: %s on player %s", request.getRequestType(), request.getMovieOrEpisodeId(), request.getPlayerName()));
 		
 		try {
 			Media md = getMedia(request);
@@ -264,7 +269,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			else
 				controller.setFailed("Error occured when connecting to target media player"); 
 		} catch (VLCConnectionNotFoundException e) {
-			Log.Error("Error occured when starting movie", LogType.COMM, e);
+			this.getLog().Error("Error occured when starting movie", e);
 			controller.setFailed("Error occured when connecting to target media player"); 
 		}		
 		
@@ -286,7 +291,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		// https://github.com/matthewn4444/EBMLReader ??
 		StreamingFile streamingFile = this.getWebServer().registerFile(md);
 		
-		Log.Debug(String.format("Number of subtitles :: %s", md.getSubsCount()), LogType.COMM);
+		this.getLog().Debug(String.format("Number of subtitles :: %s", md.getSubsCount()));
 		for (Subtitle s : md.getSubsList()) {
 			StreamingFile subFile = this.getWebServer().registerSubtitle(s);
 			
@@ -302,8 +307,8 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			JukeboxRequestGeneral request, RpcCallback<Empty> done) {
 
 		setPriority();
-		Log.Debug("StopMovie", LogType.COMM);
-		Log.Debug(String.format("Stopping movie on player %s", request.getPlayerName()), Log.LogType.COMM);
+		this.getLog().Debug("StopMovie");
+		this.getLog().Debug(String.format("Stopping movie on player %s", request.getPlayerName()));
 		
 		try {
 			if (this.getDistributor().stopMovie(request.getPlayerName()))
@@ -322,8 +327,8 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			JukeboxRequestGeneral request, RpcCallback<Empty> done) {
 
 		setPriority();
-		Log.Debug("PauseMovie", LogType.COMM);
-		Log.Debug(String.format("Pausing movie on player %s", request.getPlayerName()), Log.LogType.COMM);
+		this.getLog().Debug("PauseMovie");
+		this.getLog().Debug(String.format("Pausing movie on player %s", request.getPlayerName()));
 		
 		try {
 			if (this.getDistributor().pauseMovie(request.getPlayerName()))
@@ -341,7 +346,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			RpcCallback<Empty> done) {
 
 		setPriority();
-		Log.Debug(String.format("Seeking on player %s to %s seconds", request.getPlayerName(), request.getSeconds()), Log.LogType.COMM);
+		this.getLog().Debug(String.format("Seeking on player %s to %s seconds", request.getPlayerName(), request.getSeconds()));
 		
 		try {
 			if (this.getDistributor().seek(request.getPlayerName(), request.getSeconds()))
@@ -358,8 +363,8 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			JukeboxRequestGeneral request, RpcCallback<Empty> done) {
 
 		setPriority();
-		Log.Debug("SwitchVRatio", LogType.COMM);
-		Log.Debug(String.format("Toggling vratio on %s...", request.getPlayerName()), Log.LogType.COMM);
+		this.getLog().Debug("SwitchVRatio");
+		this.getLog().Debug(String.format("Toggling vratio on %s...", request.getPlayerName()));
 		
 		try {
 			if (this.getDistributor().toggleVRatio(request.getPlayerName()))
@@ -377,8 +382,8 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			JukeboxRequestGeneral request, RpcCallback<JukeboxResponseTime> done) {
 
 		setPriority();
-		Log.Debug("GetTime", LogType.COMM);
-		Log.Debug(String.format("Getting time on %s...", request.getPlayerName()), Log.LogType.COMM);
+		this.getLog().Debug("GetTime");
+		this.getLog().Debug(String.format("Getting time on %s...", request.getPlayerName()));
 		
 		try {
 			String response = this.getDistributor().getTime(request.getPlayerName());
@@ -409,8 +414,8 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			RpcCallback<JukeboxResponseIsPlaying> done) {
 
 		setPriority();
-		Log.Debug("IsPlaying", LogType.COMM);
-		Log.Debug(String.format("Getting is playing status on %s...", request.getPlayerName()), Log.LogType.COMM);
+		this.getLog().Debug("IsPlaying");
+		this.getLog().Debug(String.format("Getting is playing status on %s...", request.getPlayerName()));
 		
 		try {
 			boolean isPlaying = this.getDistributor().isPlaying(request.getPlayerName());
@@ -429,7 +434,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		// TODO Auto-generated method stub
 		
 		setPriority();
-		Log.Debug("GetTitle -- EMPTY", LogType.COMM);
+		this.getLog().Debug("GetTitle -- EMPTY");
 	}
 
 	@Override
@@ -437,7 +442,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			JukeboxRequestID request, RpcCallback<Empty> done) {
 		
 		setPriority();
-		Log.Debug("Blacklist -- EMPTY", LogType.COMM);
+		this.getLog().Debug("Blacklist -- EMPTY");
 
 		if (request.getRequestType() == RequestType.TypeMovie) {
 			Movie m = this.getDatabase().getMovie(request.getId());
@@ -446,7 +451,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		}
 		
 		if (request.getRequestType() == RequestType.TypeEpisode) {
-			Log.Debug("Not Implemented yet -- Blacklist of episodes", LogType.COMM);
+			this.getLog().Debug("Not Implemented yet -- Blacklist of episodes");
 		}
 		
 		done.run(Empty.newBuilder().build());
@@ -458,7 +463,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		// TODO Auto-generated method stub
 		
 		setPriority();
-		Log.Debug("ToggleWatched -- EMPTY", LogType.COMM);
+		this.getLog().Debug("ToggleWatched -- EMPTY");
 	}
 
 	@Override
@@ -467,7 +472,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			RpcCallback<JukeboxResponseListSubtitles> done) {
 
 		setPriority();
-		Log.Debug(String.format("Getting list of subtitles for media ID :: %s", request.getMediaId()), Log.LogType.COMM);
+		this.getLog().Debug(String.format("Getting list of subtitles for media ID :: %s", request.getMediaId()));
 
 		
 		Media media = this.getDatabase().getMediaById(request.getMediaId());
@@ -483,7 +488,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			JukeboxRequestSetSubtitle request, RpcCallback<Empty> done) {
 		
 		setPriority();
-		Log.Debug(String.format("Setting subtitle on %s...", request.getPlayerName()), Log.LogType.COMM);
+		this.getLog().Debug(String.format("Setting subtitle on %s...", request.getPlayerName()));
 		
 		int mediaID = request.getMediaID();
 		Movie m = this.getDatabase().getMovieByMediaID(mediaID);
@@ -527,7 +532,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			RpcCallback<Empty> done) {
 
 		setPriority();
-		Log.Debug(String.format("Waking up player %s", request.getPlayerName()), Log.LogType.COMM);
+		this.getLog().Debug(String.format("Waking up player %s", request.getPlayerName()));
 		
 		try {
 			if (this.getDistributor().wakeup(request.getPlayerName()))		
@@ -546,7 +551,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			JukeboxRequestGeneral request, RpcCallback<Empty> done) {
 
 		setPriority();
-		Log.Debug(String.format("Suspending computer with player %s...", request.getPlayerName()), Log.LogType.COMM);
+		this.getLog().Debug(String.format("Suspending computer with player %s...", request.getPlayerName()));
 		
 		try {
 			if (this.getDistributor().suspend(request.getPlayerName()))
@@ -565,7 +570,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			JukeboxRequestGeneral request, RpcCallback<Empty> done) {
 
 		setPriority();
-		Log.Debug(String.format("Toggling fullscreen...", request.getPlayerName()), Log.LogType.COMM);
+		this.getLog().Debug(String.format("Toggling fullscreen...", request.getPlayerName()));
 		
 		try {
 			if (this.getDistributor().toggleFullscreen(request.getPlayerName()))
@@ -602,7 +607,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			RpcCallback<Empty> done) {
 		
 		setPriority();
-		Log.Debug("Re-identify -- EMPTY", LogType.COMM);
+		this.getLog().Debug("Re-identify -- EMPTY");
 
 		Thread t = new Thread(() -> {
 			try {
@@ -633,7 +638,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 				
 			}
 			catch (Exception e) {
-				Log.Error("Error occured when deleting object from database", LogType.COMM);
+				this.getLog().Error("Error occured when deleting object from database");
 			}			
 		});
 		t.start();
@@ -651,7 +656,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	public void reenlistSubtitles(RpcController controller,
 			JukeboxRequestID request, RpcCallback<Empty> done) {
 
-		Log.Debug(String.format("Re-enlist subtitle -- %s", request.getId()), LogType.COMM);
+		this.getLog().Debug(String.format("Re-enlist subtitle -- %s", request.getId()));
 
 		Thread t = new Thread(() -> {
 			try {
@@ -712,7 +717,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 	public void getItem(RpcController controller, JukeboxRequestGetItem request,
 			RpcCallback<JukeboxResponseGetItem> done) {
 		setPriority();
-		Log.Debug(String.format("GetItem :: %s - %s", request.getID(), request.getRequestType()), LogType.COMM);
+		this.getLog().Debug(String.format("GetItem :: %s - %s", request.getID(), request.getRequestType()));
 		
 		
 		JukeboxResponseGetItem.Builder b = JukeboxResponseGetItem.newBuilder();
@@ -752,13 +757,13 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 					Episode ep = this.getDatabase().getEpisode(request.getId());
 					Series s = this.getDatabase().getSeriesByEpisode(request.getId());
 					if (s != null) {
-						Log.Debug("Series found. Finding season...", LogType.COMM);
+						this.getLog().Debug("Series found. Finding season...");
 						Season sn = DomainUtil.findSeasonByEpisodeId(s, request.getId());
 						
 						updateEpisodeInfo(s, sn, ep);
 					}
 					else {
-						Log.Debug("Series not found. exiting...", LogType.COMM);
+						this.getLog().Debug("Series not found. exiting...");
 					}
 				}
 			
@@ -776,7 +781,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 		if (sn != null) {
 			int season = sn.getSeasonNumber();
 			
-			Log.Debug("Season found. Updating info on episode...", LogType.COMM);
+			this.getLog().Debug("Season found. Updating info on episode...");
 			
 			s = this.getMovieIdentifier().getSeriesInfo(
 					s, 
@@ -788,7 +793,7 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			this.getDatabase().save(newEpisode);
 		}
 		else {
-			Log.Debug("Season not found -- exiting", LogType.COMM);
+			this.getLog().Debug("Season not found -- exiting");
 		}
 	}
 	

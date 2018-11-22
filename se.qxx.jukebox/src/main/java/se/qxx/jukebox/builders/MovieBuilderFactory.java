@@ -6,9 +6,10 @@ import java.util.List;
 
 import com.google.inject.Inject;
 
-import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.MovieOrSeries;
+import se.qxx.jukebox.factories.LoggerFactory;
+import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IMovieBuilderFactory;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Builders.Builder;
@@ -17,12 +18,22 @@ import se.qxx.jukebox.tools.Util;
 public class MovieBuilderFactory implements IMovieBuilderFactory {
 
 	private ISettings settings;
+	private IJukeboxLogger log;
 	
 	@Inject
-	public MovieBuilderFactory(ISettings settings) {
+	public MovieBuilderFactory(ISettings settings, LoggerFactory loggerFactory) {
 		this.setSettings(settings);
+		this.setLog(loggerFactory.create(LogType.FIND));
 	}
 	
+	public IJukeboxLogger getLog() {
+		return log;
+	}
+
+	public void setLog(IJukeboxLogger log) {
+		this.log = log;
+	}
+
 	public ISettings getSettings() {
 		return settings;
 	}
@@ -45,12 +56,14 @@ public class MovieBuilderFactory implements IMovieBuilderFactory {
 			mos = proposals.get(0);
 
 			if (mos != null) {
-				Log.Debug(
-						String.format("MovieBuilder :: Selected proposal (%s) has rating of %s", mos.getIdentifier(), mos.getIdentifierRating()),
-						LogType.FIND);
+				this.getLog().Debug(
+					String.format(
+						"MovieBuilder :: Selected proposal (%s) has rating of %s", 
+							mos.getIdentifier(), 
+							mos.getIdentifierRating()));
 			}
 		} else {
-			Log.Info(String.format("Failed to identify movie with filename %s", filename), LogType.FIND);
+			this.getLog().Info(String.format("Failed to identify movie with filename %s", filename));
 		}
 		
 		mos = checkSeriesEpisode(mos, proposals);
@@ -99,8 +112,8 @@ public class MovieBuilderFactory implements IMovieBuilderFactory {
 	protected ArrayList<MovieOrSeries> identifyAndRate(String filepath, String filename) {
 		ArrayList<MovieOrSeries> proposals = new ArrayList<MovieOrSeries>();
 
-		Class<?>[] parTypes = new Class<?>[] {ISettings.class};
-		Object[] args = new Object[] {this.getSettings()};
+		Class<?>[] parTypes = new Class<?>[] {ISettings.class, IJukeboxLogger.class};
+		Object[] args = new Object[] {this.getSettings(), this.getLog()};
 		
 		for (Builder b : this.getSettings().getSettings().getBuilders().getBuilder()) {
 			String className = b.getClazz();
@@ -121,17 +134,14 @@ public class MovieBuilderFactory implements IMovieBuilderFactory {
 							if (verifyProposal(proposal)) {
 								proposals.add(proposal);
 							} else {
-								Log.Info(
-										"MovieBuilder :: Series ignored since it failed to identify season and episode",
-										LogType.FIND);
+								this.getLog().Info("MovieBuilder :: Series ignored since it failed to identify season and episode");
 
 							}
 						}
 					}
 				}
 			} catch (Exception e) {
-				Log.Error(String.format("Error when loading or executing movie builder %s", className),
-						Log.LogType.FIND, e);
+				this.getLog().Error(String.format("Error when loading or executing movie builder %s", className), e);
 			}
 		}
 

@@ -5,7 +5,7 @@ import java.util.List;
 import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.subtitles.SubFile;
 
-public interface ISubFileDownloader {
-	List<SubFile> downloadSubs(String subFileClass, MovieOrSeries mos, List<SubFile> listSubs);
-	void exit();
+public interface ISubFinder {
+	List<SubFile> findSubtitles(MovieOrSeries mos, List<String> languages);
+	String getClassName();
 }

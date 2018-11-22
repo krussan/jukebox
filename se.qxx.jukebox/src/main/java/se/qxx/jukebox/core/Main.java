@@ -1,14 +1,19 @@
 package se.qxx.jukebox.core;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.inject.Inject;
 
-import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.factories.FileSystemWatcherFactory;
+import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IArguments;
 import se.qxx.jukebox.interfaces.ICleaner;
 import se.qxx.jukebox.interfaces.IExecutor;
+import se.qxx.jukebox.interfaces.IFileSystemWatcher;
+import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IMain;
 import se.qxx.jukebox.interfaces.IMediaConverter;
 import se.qxx.jukebox.interfaces.IMovieIdentifier;
@@ -16,16 +21,14 @@ import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.IStreamingWebServer;
 import se.qxx.jukebox.interfaces.ISubtitleDownloader;
 import se.qxx.jukebox.interfaces.ITcpListener;
+import se.qxx.jukebox.settings.JukeboxListenerSettings;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
-import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.watcher.ExtensionFileFilter;
-import se.qxx.jukebox.watcher.FileCreatedHandler;
 import se.qxx.jukebox.watcher.FileRepresentation;
-import se.qxx.jukebox.watcher.FileSystemWatcher;
 import se.qxx.jukebox.watcher.IDownloadChecker;
-import se.qxx.jukebox.watcher.INotifyClient;
+import se.qxx.jukebox.watcher.IFileCreatedHandler;
 
-public class Main implements IMain, INotifyClient
+public class Main implements IMain, IFileCreatedHandler
 {
 	private Boolean isRunning;
 
@@ -39,7 +42,10 @@ public class Main implements IMain, INotifyClient
 	private IMovieIdentifier movieIdentifier;
 	private IDownloadChecker downloadChecker;
 	private IMediaConverter mediaConverter;
-
+	private IJukeboxLogger log;
+	private IFileCreatedHandler fileCreatedHandler;
+	private FileSystemWatcherFactory fileSystemWatcherFactory;
+	
 	@Inject
 	public Main(IArguments arguments, 
 			IExecutor executor, 
@@ -50,8 +56,13 @@ public class Main implements IMain, INotifyClient
 			ITcpListener tcpListener,
 			IMovieIdentifier movieIdentifier,
 			IDownloadChecker downloadChecker,
-			IMediaConverter mediaConverter) {
+			IMediaConverter mediaConverter,
+			LoggerFactory loggerFactory,
+			IFileCreatedHandler fileCreatedHandler,
+			FileSystemWatcherFactory fileSystemWatcherFactory) {
 		
+		this.setFileSystemWatcherFactory(fileSystemWatcherFactory);
+		this.setFileCreatedHandler(fileCreatedHandler);
 		this.setArguments(arguments);	
 		this.setExecutor(executor);
 		this.setSubtitleDownloader(subtitleDownloader);
@@ -62,8 +73,34 @@ public class Main implements IMain, INotifyClient
 		this.setMovieIdentifier(movieIdentifier);
 		this.setDownloadChecker(downloadChecker);
 		this.setMediaConverter(mediaConverter);
+		
+		this.setLog(loggerFactory.create(LogType.MAIN));
 	}	
 	
+	public FileSystemWatcherFactory getFileSystemWatcherFactory() {
+		return fileSystemWatcherFactory;
+	}
+
+	public void setFileSystemWatcherFactory(FileSystemWatcherFactory fileSystemWatcherFactory) {
+		this.fileSystemWatcherFactory = fileSystemWatcherFactory;
+	}
+
+	public IFileCreatedHandler getFileCreatedHandler() {
+		return fileCreatedHandler;
+	}
+
+	public void setFileCreatedHandler(IFileCreatedHandler fileCreatedHandler) {
+		this.fileCreatedHandler = fileCreatedHandler;
+	}
+
+	public IJukeboxLogger getLog() {
+		return log;
+	}
+
+	public void setLog(IJukeboxLogger log) {
+		this.log = log;
+	}
+
 	public IMediaConverter getMediaConverter() {
 		return mediaConverter;
 	}
@@ -182,10 +219,10 @@ public class Main implements IMain, INotifyClient
 			}
 		}
 		catch (Exception e) {
-			Log.Error("An error occured on main thread::", LogType.MAIN, e);
+			this.getLog().Error("An error occured on main thread::", e);
 		}
 		
-		Log.Info("Shutdown completed!", LogType.MAIN);
+		this.getLog().Info("Shutdown completed!");
 		cleanupStopperFile();
 	}
 
@@ -234,23 +271,24 @@ public class Main implements IMain, INotifyClient
 		filter.addExtension("xml");
 		filter.addExtension("stp");
 		
-		FileSystemWatcher configurationWatcher = new FileSystemWatcher("ConfigurationWatcher", ".", filter, true, true, false, 500);
+		IFileSystemWatcher configurationWatcher =
+				this.getFileSystemWatcherFactory().create("ConfigurationWatcher", ".", filter, true, true, false, 500);
 		configurationWatcher.setSleepTime(300);
 		configurationWatcher.registerClient(this);
-		this.getExecutor().start(configurationWatcher);
+		this.getExecutor().start(configurationWatcher.getRunnable());
 	}
 	
 
 	private void cleanupStopperFile() {
 		File f = new File("stopper.stp");
 		if (f.exists()) {
-			Log.Debug("Cleaning up stopper file", LogType.MAIN);
+			this.getLog().Debug("Cleaning up stopper file");
 			f.delete();
 		}
 	}
 
 	public void stop() {
-		Log.Info("Server is shutting down ...", LogType.MAIN);
+		this.getLog().Info("Server is shutting down ...");
 
 		try {
 			this.getExecutor().stop();
@@ -268,24 +306,22 @@ public class Main implements IMain, INotifyClient
 	}
 	
 	public void fileModified(FileRepresentation f) {
-		Log.Debug(String.format("-- file modified :: %s", f.getName()), LogType.MAIN);
+		this.getLog().Debug(String.format("-- file modified :: %s", f.getName()));
 		if (f.getName().endsWith("xml"))
 			s.release();
 	}
 	
 	public void fileCreated(FileRepresentation f){
-		Log.Debug(String.format("-- file created :: %s", f.getName()), LogType.MAIN);
+		this.getLog().Debug(String.format("-- file created :: %s", f.getName()));
 		if (f.getName().endsWith("stp"))
 			stop();
 	}
 	
 	private void setupCatalogs(){
-		FileCreatedHandler h = new FileCreatedHandler();
-			
 		this.getExecutor().stopWatchers();
 
 		ExtensionFileFilter ff = new ExtensionFileFilter();
-		ff.addExtensions(Util.getExtensions());
+		ff.addExtensions(getExtensions());
 		
 		int cc = 0;
 		for (Catalog c : this.getSettings().getSettings().getCatalogs().getCatalog()) {
@@ -293,21 +329,33 @@ public class Main implements IMain, INotifyClient
 			File path = new File(c.getPath());
 			
 			if (path.exists()) {
-				FileSystemWatcher f = new FileSystemWatcher(String.format("Catalog %s", cc),c.getPath(), ff, true, true, true, 10000);
-			
-				Log.Debug(String.format(
+				IFileSystemWatcher f =
+						this.getFileSystemWatcherFactory().create(String.format("Catalog %s", cc),c.getPath(), ff, true, true, true, 10000);
+
+				this.getLog().Debug(String.format(
 					"Starting listening on :: %s", 
-					c.getPath()), 
-					Log.LogType.FIND);
+					c.getPath()));
 			
-				f.registerClient(h);
+				f.registerClient(this.getFileCreatedHandler());
 				f.setSleepTime(500);
 				
-				this.getExecutor().start(f);
+				this.getExecutor().start(f.getRunnable());
 			
 			}
 		}
 	}
 
 
+	private List<String> getExtensions() {
+		List<String> list = new ArrayList<String>();
+		
+		for (JukeboxListenerSettings.Catalogs.Catalog c : this.getSettings().getSettings().getCatalogs().getCatalog()) {
+			for (JukeboxListenerSettings.Catalogs.Catalog.Extensions.Extension e : c.getExtensions().getExtension()) {
+				if (!list.contains(e.getValue()))
+					list.add(e.getValue());
+			}
+		}
+		
+		return list;
+	}
 }

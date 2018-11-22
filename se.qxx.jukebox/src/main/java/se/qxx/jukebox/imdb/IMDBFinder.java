@@ -1,6 +1,5 @@
 package se.qxx.jukebox.imdb;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -9,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -29,9 +30,11 @@ import se.qxx.jukebox.domain.JukeboxDomain.Movie.Builder;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.factories.IMDBParserFactory;
+import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IIMDBFinder;
 import se.qxx.jukebox.interfaces.IIMDBParser;
 import se.qxx.jukebox.interfaces.IIMDBUrlRewrite;
+import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.IWebRetriever;
 import se.qxx.jukebox.settings.imdb.Imdb;
@@ -47,15 +50,30 @@ public class IMDBFinder implements IIMDBFinder {
 	private IWebRetriever webRetriever;
 	private IIMDBUrlRewrite urlRewrite;
 	private IMDBParserFactory parserFactory;
+	private IJukeboxLogger log;
 	
 	@Inject
-	public IMDBFinder(ISettings settings, IWebRetriever webRetriever, IIMDBUrlRewrite urlRewrite, IMDBParserFactory parserFactory) {
+	public IMDBFinder(ISettings settings, 
+			IWebRetriever webRetriever, 
+			IIMDBUrlRewrite urlRewrite, 
+			IMDBParserFactory parserFactory,
+			LoggerFactory loggerFactory) {
+		
 		this.setSettings(settings);
 		this.setWebRetriever(webRetriever);
 		this.setUrlRewrite(urlRewrite);
 		this.setParserFactory(parserFactory);
+		this.setLog(loggerFactory.create(LogType.IMDB));
 	}
 	
+	public IJukeboxLogger getLog() {
+		return log;
+	}
+
+	public void setLog(IJukeboxLogger log) {
+		this.log = log;
+	}
+
 	public IMDBParserFactory getParserFactory() {
 		return parserFactory;
 	}
@@ -95,9 +113,9 @@ public class IMDBFinder implements IIMDBFinder {
 	public Movie Get(Movie m) throws IOException, NumberFormatException, ParseException {
 		lock.lock();
 		try {
-			Log.Debug("---------------------------------------------------------------------------", LogType.IMDB);
-			Log.Debug(String.format("Starting search on title :: %s (%s)", m.getTitle(), m.getYear()), LogType.IMDB);
-			Log.Debug("---------------------------------------------------------------------------", LogType.IMDB);
+			this.getLog().Debug("---------------------------------------------------------------------------");
+			this.getLog().Debug(String.format("Starting search on title :: %s (%s)", m.getTitle(), m.getYear()));
+			this.getLog().Debug("---------------------------------------------------------------------------");
 			String imdbUrl = m.getImdbUrl();
 	 
 			IMDBRecord rec = null;
@@ -105,7 +123,7 @@ public class IMDBFinder implements IIMDBFinder {
 				rec = Search(m.getTitle(), m.getYear(), m.getBlacklistList(), false); 
 			}
 			else {
-				Log.Debug(String.format("IMDB url found."), LogType.IMDB);
+				this.getLog().Debug(String.format("IMDB url found."));
 				
 				rec = getImdbResult(imdbUrl);
 			}
@@ -120,7 +138,7 @@ public class IMDBFinder implements IIMDBFinder {
 	private IMDBRecord getImdbResult(String url) throws IOException {
 		String internalUrl = this.getUrlRewrite().fixUrl(StringUtils.trim(url));
 		
-		Log.Debug(String.format("IMDBRECORD :: Making web request to url :: %s", internalUrl), LogType.IMDB);
+		this.getLog().Debug(String.format("IMDBRECORD :: Making web request to url :: %s", internalUrl));
 
 		WebResult webResult = this.getWebRetriever().getWebResult(internalUrl);
 		Document doc = Jsoup.parse(webResult.getResult());
@@ -139,9 +157,9 @@ public class IMDBFinder implements IIMDBFinder {
 	 */
 	@Override
 	public Series Get(Series series, int season, int episode) throws IOException, NumberFormatException, ParseException {
-		Log.Debug("---------------------------------------------------------------------------", LogType.IMDB);
-		Log.Debug(String.format("Starting search on series title :: %s (%s) S%s E%s", series.getTitle(), series.getYear(), season, episode), LogType.IMDB);
-		Log.Debug("---------------------------------------------------------------------------", LogType.IMDB);
+		this.getLog().Debug("---------------------------------------------------------------------------");
+		this.getLog().Debug(String.format("Starting search on series title :: %s (%s) S%s E%s", series.getTitle(), series.getYear(), season, episode));
+		this.getLog().Debug("---------------------------------------------------------------------------");
 
 
 		lock.lock();
@@ -150,7 +168,7 @@ public class IMDBFinder implements IIMDBFinder {
 			Season sn = DomainUtil.findSeason(s, season);
 			Episode ep = DomainUtil.findEpisode(sn, episode);
 	
-			Log.Debug(String.format("IMDB :: Number of episodes in season :: %s", sn.getEpisodeCount()), LogType.IMDB);		
+			this.getLog().Debug(String.format("IMDB :: Number of episodes in season :: %s", sn.getEpisodeCount()));		
 	
 			if (sn == null || s == null || ep == null)
 				throw new IllegalArgumentException("Object hierarchy for series need to be created before IMDB call");
@@ -165,7 +183,7 @@ public class IMDBFinder implements IIMDBFinder {
 					sn = populateSeason(sn, seriesRec);
 				}
 				else {
-					Log.Error("No series found in IMDB !!", LogType.IMDB);
+					this.getLog().Error("No series found in IMDB !!");
 				}
 			}			
 			
@@ -173,16 +191,16 @@ public class IMDBFinder implements IIMDBFinder {
 			ep = populateEpisode(sn.getImdbUrl(), ep);
 			
 			if (ep != null) {
-				Log.Debug("IMDB :: Updating episode in season object", LogType.IMDB);
+				this.getLog().Debug("IMDB :: Updating episode in season object");
 				sn = DomainUtil.updateEpisode(sn, ep);
 		
-				Log.Debug("IMDB :: Updating season in series object", LogType.IMDB);
+				this.getLog().Debug("IMDB :: Updating season in series object");
 				s = DomainUtil.updateSeason(s, sn);
 				
-				Log.Debug(String.format("IMDB :: Number of episodes in season :: %s", sn.getEpisodeCount()), LogType.IMDB);		
+				this.getLog().Debug(String.format("IMDB :: Number of episodes in season :: %s", sn.getEpisodeCount()));		
 			}
 			else {
-				Log.Debug("No episode found!", LogType.IMDB);
+				this.getLog().Debug("No episode found!");
 			}
 			return s;
 		}
@@ -195,7 +213,7 @@ public class IMDBFinder implements IIMDBFinder {
 			throws IOException, ParseException, MalformedURLException {
 		IMDBRecord episodeRec;
 
-		Log.Debug("IMDB :: Getting episode info", LogType.IMDB);
+		this.getLog().Debug("IMDB :: Getting episode info");
 		
 		if (!StringUtils.isEmpty(seasonUrl)) {
 			episodeRec = getEpisodeRec(seasonUrl, ep.getEpisodeNumber());
@@ -208,18 +226,18 @@ public class IMDBFinder implements IIMDBFinder {
 	}
 
 	private Season populateSeason(Season sn, IMDBRecord seriesRec) {
-		Log.Debug("IMDB :: Updating season object with urls", LogType.IMDB);
+		this.getLog().Debug("IMDB :: Updating season object with urls");
 		String seasonUrl = seriesRec.getAllSeasonUrls().get(sn.getSeasonNumber());
-		Log.Debug(String.format("IMDB :: Season URL :: %s", seasonUrl), LogType.IMDB);
+		this.getLog().Debug(String.format("IMDB :: Season URL :: %s", seasonUrl));
 		
 		return Season.newBuilder(sn)
 				.setImdbUrl(seasonUrl)
-				.setImdbId(Util.getImdbIdFromUrl(seasonUrl))
+				.setImdbId(getImdbIdFromUrl(seasonUrl))
 				.build();
 	}
 	
 	private Series populateSeries(Series s, IMDBRecord seriesRec) {
-		Log.Debug("IMDB :: Creating new series object", LogType.IMDB);
+		this.getLog().Debug("IMDB :: Creating new series object");
 		return extractSeriesInfo(s, seriesRec);					
 	}
 	
@@ -259,7 +277,7 @@ public class IMDBFinder implements IIMDBFinder {
 
 			// exit if series contains season or if the series record is null (no series found)
 			found = seriesRec == null || seriesRec.getAllSeasonUrls().containsKey(season);
-			seriesBlacklist.add(Util.getImdbIdFromUrl(seriesRec.getUrl()));
+			seriesBlacklist.add(getImdbIdFromUrl(seriesRec.getUrl()));
 		}
 		
 		return seriesRec; 
@@ -273,7 +291,7 @@ public class IMDBFinder implements IIMDBFinder {
 	 * @return
 	 */
 	private boolean urlIsBlacklisted(String imdbUrl, List<String> blacklist) {
-		String imdbid = Util.getImdbIdFromUrl(imdbUrl);
+		String imdbid = getImdbIdFromUrl(imdbUrl);
 		if (!StringUtils.isEmpty(imdbid) && blacklist != null) {	
 			for (String entry : blacklist) {	
 				if (StringUtils.equalsIgnoreCase(imdbid, entry)) {
@@ -308,11 +326,11 @@ public class IMDBFinder implements IIMDBFinder {
 			IMDBRecord rec = null;
 
 			if (webResult.isRedirected()) {
-				Log.Info(String.format("IMDB :: %s is redirected to movie", searchString), LogType.IMDB);
+				this.getLog().Info(String.format("IMDB :: %s is redirected to movie", searchString));
 				return getImdbResult(webResult.getResult());
 			}
 			else {				
-				Log.Info(String.format("IMDB :: %s is NOT redirected to movie", searchString), LogType.IMDB);
+				this.getLog().Info(String.format("IMDB :: %s is NOT redirected to movie", searchString));
 				String url = 
 					findUrl(blacklist
 						, webResult.getResult()
@@ -338,7 +356,7 @@ public class IMDBFinder implements IIMDBFinder {
 		long currentTimeStamp = Util.getCurrentTimestamp();
 		// wait a while to avoid hammering
 		if (currentTimeStamp < nextSearch) {
-			Log.Debug(String.format("Waiting %s seconds", (nextSearch - currentTimeStamp) / 1000), LogType.IMDB);
+			this.getLog().Debug(String.format("Waiting %s seconds", (nextSearch - currentTimeStamp) / 1000));
 			Thread.sleep(nextSearch - currentTimeStamp);
 		}
 	}
@@ -349,7 +367,7 @@ public class IMDBFinder implements IIMDBFinder {
 		String urlString = searchUrl.replace("%%TITLE%%", urlParameters);
 		//String urlString = "http://www.imdb.com/find?s=tt&q=" + urlParameters;
 
-		Log.Debug(String.format("Making web request. Url :: %s", urlString), LogType.IMDB);
+		this.getLog().Debug(String.format("Making web request. Url :: %s", urlString));
 
 		WebResult webResult = this.getWebRetriever().getWebResult(urlString);
 		return webResult;
@@ -372,7 +390,7 @@ public class IMDBFinder implements IIMDBFinder {
 			
 			Builder b = Movie.newBuilder(m)
 					.setImdbUrl(rec.getUrl())
-					.setImdbId(Util.getImdbIdFromUrl(rec.getUrl()))
+					.setImdbId(getImdbIdFromUrl(rec.getUrl()))
 					.setDirector(rec.getDirector())
 					.setDuration(rec.getDurationMinutes())
 					.setStory(rec.getStory())
@@ -383,18 +401,18 @@ public class IMDBFinder implements IIMDBFinder {
 				b.setTitle(preferredTitle);
 			
 			if (rec.getImage() != null) {
-				Log.Debug(String.format("Setting image. Length :: %s",  rec.getImage().length), LogType.IMDB);
+				this.getLog().Debug(String.format("Setting image. Length :: %s",  rec.getImage().length));
 				
 				ByteString image = ByteString.copyFrom(rec.getImage());
 				b.setImage(image);
 				try {
 					b.setThumbnail(Util.getScaledImage(image));
 				} catch (IOException e) {
-					Log.Error("Error when creating thumbnail", LogType.IMDB);
+					this.getLog().Error("Error when creating thumbnail");
 				}
 			}
 			else {
-				Log.Debug("Image IS NULL", LogType.IMDB);
+				this.getLog().Debug("Image IS NULL");
 			}
 			
 			if (m.getYear() == 0)
@@ -413,7 +431,7 @@ public class IMDBFinder implements IIMDBFinder {
 			
 			Episode.Builder b = Episode.newBuilder(ep)
 					.setImdbUrl(rec.getUrl())
-					.setImdbId(Util.getImdbIdFromUrl(rec.getUrl()))
+					.setImdbId(getImdbIdFromUrl(rec.getUrl()))
 					.setDirector(rec.getDirector())
 					.setDuration(rec.getDurationMinutes())
 					.setStory(rec.getStory())
@@ -428,14 +446,14 @@ public class IMDBFinder implements IIMDBFinder {
 				b.setTitle(preferredTitle);
 
 			if (rec.getImage() != null) {
-				Log.Debug(String.format("Setting image. Length :: %s",  rec.getImage().length), LogType.IMDB);
+				this.getLog().Debug(String.format("Setting image. Length :: %s",  rec.getImage().length));
 				
 				ByteString image = ByteString.copyFrom(rec.getImage());
 				b.setImage(image);
 				try {
 					b.setThumbnail(Util.getScaledImage(image));
 				} catch (IOException e) {
-					Log.Error("Error when creating thumbnail", LogType.IMDB);
+					this.getLog().Error("Error when creating thumbnail");
 				}
 			}
 
@@ -452,7 +470,7 @@ public class IMDBFinder implements IIMDBFinder {
 			
 			Series.Builder b = Series.newBuilder(s)
 					.setImdbUrl(rec.getUrl())
-					.setImdbId(Util.getImdbIdFromUrl(rec.getUrl()))
+					.setImdbId(getImdbIdFromUrl(rec.getUrl()))
 					.setStory(rec.getStory())
 					.setRating(rec.getRating())
 					.addAllGenre(rec.getAllGenres());
@@ -461,14 +479,14 @@ public class IMDBFinder implements IIMDBFinder {
 				b.setTitle(preferredTitle);
 			
 			if (rec.getImage() != null) {
-				Log.Debug(String.format("Setting image. Length :: %s",  rec.getImage().length), LogType.IMDB);
+				this.getLog().Debug(String.format("Setting image. Length :: %s",  rec.getImage().length));
 				
 				ByteString image = ByteString.copyFrom(rec.getImage());
 				b.setImage(image);
 				try {
 					b.setThumbnail(Util.getScaledImage(image));
 				} catch (IOException e) {
-					Log.Error("Error when creating thumbnail", LogType.IMDB);
+					this.getLog().Error("Error when creating thumbnail");
 				}
 			}
 			
@@ -506,7 +524,7 @@ public class IMDBFinder implements IIMDBFinder {
 				return (StringUtils.isEmpty(foundTitle) ? title : foundTitle);
 				
 			} catch (IOException e) {
-				Log.Error("Error when trying to get releaseinfo from IMDB", LogType.FIND, e);
+				this.getLog().Error("Error when trying to get releaseinfo from IMDB", e);
 			}
 		}
 		
@@ -535,7 +553,7 @@ public class IMDBFinder implements IIMDBFinder {
 			return url;
 		}
 		catch (Exception e) {
-			Log.Error(String.format("Error occured when trying to find %s in IMDB", text), LogType.FIND, e);
+			this.getLog().Error(String.format("Error occured when trying to find %s in IMDB", text), e);
 		}
 
 		return null;
@@ -580,7 +598,7 @@ public class IMDBFinder implements IIMDBFinder {
 	}
 
 	public String findPreferredTitle(String text, String country) {
-		Log.Info(String.format("Finding preferred title for %s", country), LogType.FIND);
+		this.getLog().Info(String.format("Finding preferred title for %s", country));
 		Imdb.Title t = this.getSettings().getImdb().getTitle();
 
 		if (!t.isUseOriginalIfExists()) {
@@ -596,7 +614,7 @@ public class IMDBFinder implements IIMDBFinder {
 	}
 
 	private IMDBRecord getEpisodeRec(String seasonUrl, int episode) throws IOException, NumberFormatException, ParseException {
-		Log.Debug(String.format("IMDB :: Epsiode :: %s - URL :: %s", episode, seasonUrl), LogType.IMDB);
+		this.getLog().Debug(String.format("IMDB :: Epsiode :: %s - URL :: %s", episode, seasonUrl));
 		
 		// get the record for the season page
 		IMDBRecord rec = getImdbResult(seasonUrl);
@@ -609,22 +627,15 @@ public class IMDBFinder implements IIMDBFinder {
 		return null;
 		
 	}
-	
-	private byte[] getWebFile(String url) {
-		File f;
-		try {
-			byte[] data = this.getWebRetriever().getWebFileData(url);
-			
-			Log.Debug(String.format("IMDBRECORD :: Setting image url :: %s", url), LogType.IMDB);
-			Log.Debug(String.format("IMDBRECORD :: Setting image (length) :: %s", data.length), LogType.IMDB);
-			
-			return data;
 
-		} catch (IOException e) {
-			Log.Error("Error when downloading file", LogType.IMDB);
-		}
-		
-		return null;		
+	private String getImdbIdFromUrl(String imdbUrl) {
+		// http://www.imdb.com/title/tt1541874/
+		Pattern p = Pattern.compile("\\/(tt\\d*)\\/", Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
+		Matcher m = p.matcher(imdbUrl);
+		if (m.find())
+			return m.group(1);
+		else
+			return StringUtils.EMPTY;
 	}
 
 }

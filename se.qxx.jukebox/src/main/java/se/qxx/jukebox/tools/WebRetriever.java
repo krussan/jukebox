@@ -19,18 +19,29 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.factories.LoggerFactory;
+import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IWebRetriever;
 
 @Singleton
 public class WebRetriever implements IWebRetriever {
 	
+	private IJukeboxLogger log;
+	
 	@Inject
-	public WebRetriever() {
-		
+	public WebRetriever(LoggerFactory loggerFactory) {
+		this.setLog(loggerFactory.create(LogType.MAIN));
 	}
 	
+	public IJukeboxLogger getLog() {
+		return log;
+	}
+
+	public void setLog(IJukeboxLogger log) {
+		this.log = log;
+	}
+
 	/* (non-Javadoc)
 	 * @see se.qxx.jukebox.tools.IWebRetriever#getWebResult(java.lang.String)
 	 */
@@ -91,7 +102,7 @@ public class WebRetriever implements IWebRetriever {
 		String contentDisposition = httpcon.getHeaderField("content-disposition");
 		String filename = url.getPath().substring(url.getPath().lastIndexOf("/") + 1, url.getPath().length());
 		
-		Log.Debug(String.format("Content-Disposition :: %s", contentDisposition), LogType.MAIN);
+		this.getLog().Debug(String.format("Content-Disposition :: %s", contentDisposition));
 		
 		if (!StringUtils.isEmpty(contentDisposition)) {
 			Pattern p = Pattern.compile("filename=\"?(.*?)\"?$", Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
@@ -127,7 +138,7 @@ public class WebRetriever implements IWebRetriever {
 
 					} catch (URISyntaxException e) {
 						
-						Log.Error("Error when parsing redirect url", Log.LogType.MAIN, e);
+						this.getLog().Error("Error when parsing redirect url", e);
 					}
 				}
 				

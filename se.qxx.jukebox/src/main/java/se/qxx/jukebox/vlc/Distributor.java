@@ -10,12 +10,13 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.domain.Sorter;
+import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IDistributor;
+import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.servercomm.HibernatorClientConnection;
 import se.qxx.jukebox.servercomm.WakeOnLan;
@@ -30,13 +31,23 @@ public class Distributor implements IDistributor {
 	private Hashtable<String, VLCConnection> connectors;
 
 	private ISettings settings;
+	private IJukeboxLogger log;
 	
 	@Inject
-	public Distributor(ISettings settings) {
+	public Distributor(ISettings settings, LoggerFactory loggerFactory) {
 		this.connectors = new Hashtable<String, VLCConnection>();
 		this.setSettings(settings);
+		this.setLog(loggerFactory.create(LogType.COMM));
 	}
 	
+	public IJukeboxLogger getLog() {
+		return log;
+	}
+
+	public void setLog(IJukeboxLogger log) {
+		this.log = log;
+	}
+
 	public ISettings getSettings() {
 		return settings;
 	}
@@ -81,7 +92,7 @@ public class Distributor implements IDistributor {
 		if (md != null) {
 			String filepath = md.getFilepath();
 			for (Catalog c : this.getSettings().getSettings().getCatalogs().getCatalog()) {
-				Log.Debug(String.format("Comparing %s with %s", c.getPath(), filepath), Log.LogType.COMM);
+				this.getLog().Debug(String.format("Comparing %s with %s", c.getPath(), filepath));
 				if (filepath.startsWith(c.getPath())) {
 					Path vlcPath = findLocalPath(c, hostName);
 					if (vlcPath != null) {
@@ -103,14 +114,14 @@ public class Distributor implements IDistributor {
 						return true;
 					}
 					else {
-						Log.Debug("Couldn't find vlc path in catalog", Log.LogType.COMM);
+						this.getLog().Debug("Couldn't find vlc path in catalog");
 					}
 				}
 			}
-			Log.Debug("Couldn't find filepath in settings", Log.LogType.COMM);
+			this.getLog().Debug("Couldn't find filepath in settings");
 		}
 		else {
-			Log.Debug("Movie was not found in database", Log.LogType.COMM);
+			this.getLog().Debug("Movie was not found in database");
 		}
 		
 		//conn.enqueue(filename);
@@ -229,7 +240,7 @@ public class Distributor implements IDistributor {
 			if (restartAtSamePosition)
 				seek(hostName, seconds);
 		} catch (InterruptedException e) {
-			Log.Error("Error occured when waiting to seek", LogType.COMM, e);
+			this.getLog().Error("Error occured when waiting to seek", e);
 		}
 		
 		return true;
@@ -296,11 +307,12 @@ public class Distributor implements IDistributor {
 		try {
 		if (s != null) {
 			WakeOnLan.sendPacket(s.getBroadcastAddress(), s.getMacAddress());
+			this.getLog().Info("Wake-on-LAN packet sent");
 			return true;
 		}
 		}
 		catch (IOException e) {
-			Log.Error("Error when sending wakeup packet", LogType.COMM, e);
+			this.getLog().Error("Error when sending wakeup packet", e);
 			return false;
 		}
 		
@@ -314,8 +326,8 @@ public class Distributor implements IDistributor {
 	public boolean suspend(String hostName) throws VLCConnectionNotFoundException {
 		Server s = findServerInSettings(hostName);
 		try {
-			if (s!=null) {
-				HibernatorClientConnection c = new HibernatorClientConnection(s.getHost(), s.getHibernatorPort());
+			if (s!=null) {				
+				HibernatorClientConnection c = new HibernatorClientConnection(s.getHost(), s.getHibernatorPort(), this.getLog());
 				c.suspend();
 				c.disconnect();
 				return true;
@@ -323,7 +335,7 @@ public class Distributor implements IDistributor {
 		}
 		catch (Exception e)
 		{
-			Log.Error("Error when sending suspend command", LogType.COMM, e);			
+			this.getLog().Error("Error when sending suspend command", e);			
 			return false;
 		}
 		
@@ -338,7 +350,7 @@ public class Distributor implements IDistributor {
 		Server s = findServerInSettings(hostName);
 		try {
 			if (s!=null) {
-				HibernatorClientConnection c = new HibernatorClientConnection(s.getHost(), s.getHibernatorPort());
+				HibernatorClientConnection c = new HibernatorClientConnection(s.getHost(), s.getHibernatorPort(), getLog());
 				c.hibernate();
 				c.disconnect();
 				return true;
@@ -346,7 +358,7 @@ public class Distributor implements IDistributor {
 		}
 		catch (Exception e)
 		{
-			Log.Error("Error when sending suspend command", LogType.COMM, e);			
+			this.getLog().Error("Error when sending suspend command", e);			
 			return false;
 		}
 		
@@ -354,10 +366,10 @@ public class Distributor implements IDistributor {
 	}	
 
 	private Path findLocalPath(Catalog c, String hostName) {
-		Log.Debug(String.format("Finding %s in %s", hostName, c.getPath()), Log.LogType.COMM);
-		Log.Debug(String.format("Number of vlc's :: %s", c.getLocalPaths().getPath().size()), Log.LogType.COMM);
+		this.getLog().Debug(String.format("Finding %s in %s", hostName, c.getPath()));
+		this.getLog().Debug(String.format("Number of vlc's :: %s", c.getLocalPaths().getPath().size()));
 		for (Path p : c.getLocalPaths().getPath()){
-			Log.Debug(String.format("vlc player name :: %s", p.getPlayer()), Log.LogType.COMM);	
+			this.getLog().Debug(String.format("vlc player name :: %s", p.getPlayer()));	
 			if (p.getPlayer().equals(hostName)) 
 				return p;
 		}
@@ -403,7 +415,7 @@ public class Distributor implements IDistributor {
 			if (this.connectors.containsKey(hostName))
 				this.connectors.remove(hostName);
 			
-			VLCConnection conn = new VLCConnection(s.getHost(), s.getPort());
+			VLCConnection conn = new VLCConnection(s.getHost(), s.getPort(), this.getLog());
 			this.connectors.put(hostName, conn);
 			return conn;			
 		}

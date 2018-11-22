@@ -12,9 +12,13 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+
 import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.builders.exceptions.SeriesNotSupportedException;
+import se.qxx.jukebox.interfaces.IJukeboxLogger;
 
 public class NFOScanner {
 	private final String[] presentsKeywords = {"presents"};
@@ -35,6 +39,21 @@ public class NFOScanner {
 	
 	private final String acceptedCharacters = "abcdefghijklmnopqrstuvwxyzåäöABCDEFGHIJKLMNOPQRSTUVWXYZåäö1234567890./\\-_\"\'()[]%$+-*/: ";
 	private File nfoFile;
+	private IJukeboxLogger log;
+
+	@Inject
+	public NFOScanner(IJukeboxLogger log, @Assisted File file) { 
+		this.setLog(log);
+		this.setNfoFile(file);
+	}
+
+	public IJukeboxLogger getLog() {
+		return log;
+	}
+
+	public void setLog(IJukeboxLogger log) {
+		this.log = log;
+	}
 
 	public File getNfoFile() {
 		return nfoFile;
@@ -44,9 +63,6 @@ public class NFOScanner {
 		this.nfoFile = nfoFile;
 	}
 
-	public NFOScanner(File file) { 
-		this.setNfoFile(file);
-	}
 	
 	public List<NFOLine> scan() throws SeriesNotSupportedException {
 		ArrayList<NFOLine> list = new ArrayList<NFOLine>();
@@ -76,7 +92,7 @@ public class NFOScanner {
 					
 					if (presentingMode) {
 						if (!StringUtils.isEmpty(StringUtils.trim(line))) {
-							Log.Debug(String.format("NfoScanner :: Presenting mode :: %s", line), LogType.FIND);
+							this.getLog().Debug(String.format("NfoScanner :: Presenting mode :: %s", line));
 							list.add(new NFOLine(NFOClass.Title, StringUtils.trim(line), line));
 							presentingMode = false;
 						}
@@ -100,7 +116,7 @@ public class NFOScanner {
 				}
 			}
 		} catch (Exception e) {
-			Log.Error(String.format("NFOScanner error while parsing %s:: ", this.nfoFile.getName()), LogType.FIND, e);
+			this.getLog().Error(String.format("NFOScanner error while parsing %s:: ", this.nfoFile.getName()), e);
 		}
 		finally {
 			try {

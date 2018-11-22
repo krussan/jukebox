@@ -27,8 +27,6 @@ public class WakeOnLan {
         DatagramSocket socket = new DatagramSocket();
         socket.send(packet);
         socket.close();
-        
-        Log.Info("Wake-on-LAN packet sent", LogType.COMM);
 	}
 		
    private static byte[] getMacBytes(String macStr) throws IllegalArgumentException {

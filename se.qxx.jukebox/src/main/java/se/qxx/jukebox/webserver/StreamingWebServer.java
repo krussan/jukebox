@@ -25,16 +25,18 @@ import com.google.protobuf.ByteString;
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.NanoHTTPD.Response.Status;
 import freemarker.template.TemplateException;
-import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.MediaConverterState;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
+import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IDatabase;
+import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.IStreamingWebServer;
+import se.qxx.jukebox.interfaces.ISubtitleFileWriter;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.WebServer.MimeTypeMap.Extension;
 import se.qxx.jukebox.tools.Util;
 import se.qxx.protodb.model.CaseInsensitiveMap;
@@ -44,6 +46,7 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 
 	private ISettings settings;
 	private IDatabase database;
+	private IJukeboxLogger log;
 	
 	// maps stream name to actual file name
 	private Map<String, String> streamingMap = null;
@@ -51,19 +54,42 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 	private Map<String, String> extensionMap = null;
 	
 	private AtomicInteger streamingIterator;
-	private String ipAddress; 
+	private String ipAddress;
+	private ISubtitleFileWriter subWriter; 
 	
 	@Inject
-	public StreamingWebServer(ISettings settings, IDatabase database) {
+	public StreamingWebServer(
+			ISettings settings, 
+			IDatabase database, 
+			LoggerFactory loggerFactory,
+			ISubtitleFileWriter subWriter) {
 		super("0.0.0.0", settings.getSettings().getTcpListener().getPort().getValue());
+		this.setSubWriter(subWriter);
 		this.setSettings(settings);
 		this.setDatabase(database);
+		this.setLog(loggerFactory.create(LogType.WEBSERVER));
 		
 		streamingIterator = new AtomicInteger();
 		streamingMap = new ConcurrentHashMap<String, String>();
 		
 		initializeMappings();
 		setIpAddress();
+	}
+
+	public ISubtitleFileWriter getSubWriter() {
+		return subWriter;
+	}
+
+	public void setSubWriter(ISubtitleFileWriter subWriter) {
+		this.subWriter = subWriter;
+	}
+
+	public IJukeboxLogger getLog() {
+		return log;
+	}
+
+	public void setLog(IJukeboxLogger log) {
+		this.log = log;
 	}
 
 	public IDatabase getDatabase() {
@@ -84,7 +110,7 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 
 	private void setIpAddress() {
 		this.setIpAddress(Util.findIpAddress());
-		Log.Info(String.format("Setting Ip Address :: %s", this.getIpAddress()), LogType.WEBSERVER);
+		this.getLog().Info(String.format("Setting Ip Address :: %s", this.getIpAddress()));
 	}
 	
 	/* (non-Javadoc)
@@ -118,8 +144,8 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 		streamingMap.put(streamingFile, filename);
 		
 		String uri = getStreamUri(streamingFile);
-		Log.Info(String.format("Registering file %s :: %s", streamingFile, filename), LogType.WEBSERVER);
-		Log.Info(String.format("URI :: %s", uri), LogType.WEBSERVER);
+		this.getLog().Info(String.format("Registering file %s :: %s", streamingFile, filename));
+		this.getLog().Info(String.format("URI :: %s", uri));
 				
 		return new StreamingFile(uri, getMimeType(uri, filename));
 	}
@@ -152,7 +178,7 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 		String extension = FilenameUtils.getExtension(file).toLowerCase();
 		
 		if (extensionMap.containsKey(extension)) {
-			Log.Debug(String.format("Overriding extension %s -> %s", extension, extensionMap.get(extension)), LogType.WEBSERVER);
+			this.getLog().Debug(String.format("Overriding extension %s -> %s", extension, extensionMap.get(extension)));
 			return extensionMap.get(extension);
 		}
 		
@@ -175,12 +201,12 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 
 		try {
 		
-			File tempFile = Util.writeSubtitleToTempFileVTT(sub);
+			File tempFile = this.getSubWriter().writeSubtitleToTempFileVTT(sub);
 			
 			return registerFile(tempFile.getAbsolutePath());
 			
 		} catch (Exception e) {
-			Log.Error("ERROR while parsing and writing subtitle file", LogType.WEBSERVER);
+			this.getLog().Error("ERROR while parsing and writing subtitle file");
 		}
 		
 		return null;
@@ -203,7 +229,7 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
     } 
 
 	private void logRequest(IHTTPSession session, Map<String, String> header, String uri) {
-		Log.Info(String.format("%s '%s'", session.getMethod(), uri), LogType.WEBSERVER);
+		this.getLog().Info(String.format("%s '%s'", session.getMethod(), uri));
 	    logHeaders(header);
 	}
 
@@ -211,7 +237,7 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 		Iterator<String> e = header.keySet().iterator();
 	    while (e.hasNext()) {
 	        String value = e.next();
-	        Log.Info(String.format("  HDR: '%s' = '%s'", value, header.get(value)), LogType.WEBSERVER);
+	        this.getLog().Info(String.format("  HDR: '%s' = '%s'", value, header.get(value)));
 	    }
 	}
 
@@ -219,7 +245,7 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
         uri = getUriWithoutArguments(uri);
         
         // This server only serves specific stream uri's  
-        Log.Info(String.format("Requesting file :: %s", uri), LogType.WEBSERVER);
+        this.getLog().Info(String.format("Requesting file :: %s", uri));
         
         if (uri.startsWith("stream")) {
             //TODO: If stream filename is not in one of the added files return
@@ -231,9 +257,9 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
             String filename = streamingMap.get(uri);
             File f = new File(filename);
             
-            Log.Debug(String.format("Serving file :: %s", filename), LogType.WEBSERVER);
+            this.getLog().Debug(String.format("Serving file :: %s", filename));
             if (!f.exists()) {
-            	Log.Debug("FILE DOES NOT EXIST", LogType.WEBSERVER);
+            	this.getLog().Debug("FILE DOES NOT EXIST");
             	return getNotFoundResponse();
             }
             
@@ -302,7 +328,7 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 
 		String extension = FilenameUtils.getExtension(filename);
 		if (mimeTypeMap.containsKey(extension)) {
-			Log.Debug(String.format("Overriding mimeType %s -> %s", extension, mimeTypeMap.get(extension)), LogType.WEBSERVER);
+			this.getLog().Debug(String.format("Overriding mimeType %s -> %s", extension, mimeTypeMap.get(extension)));
 			return mimeTypeMap.get(extension);
 		}
 			
@@ -311,12 +337,12 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 	}
 	
 	private void logResponse(Response response) {
-        Log.Debug("----- Response Headers ----", LogType.WEBSERVER);
-        Log.Debug(String.format("  Status :: %s", response.getStatus()), LogType.WEBSERVER);
-        Log.Debug(String.format("    Content-Type   :: %s", response.getHeader("Content-Type")), LogType.WEBSERVER);
-        Log.Debug(String.format("    Content-Length :: %s", response.getHeader("Content-Length")), LogType.WEBSERVER);
-        Log.Debug(String.format("    Content-Range  :: %s", response.getHeader("Content-Range")), LogType.WEBSERVER);
-        Log.Debug(String.format("    ETag           :: %s", response.getHeader("ETag")), LogType.WEBSERVER);
+        this.getLog().Debug("----- Response Headers ----");
+        this.getLog().Debug(String.format("  Status :: %s", response.getStatus()));
+        this.getLog().Debug(String.format("    Content-Type   :: %s", response.getHeader("Content-Type")));
+        this.getLog().Debug(String.format("    Content-Length :: %s", response.getHeader("Content-Length")));
+        this.getLog().Debug(String.format("    Content-Range  :: %s", response.getHeader("Content-Range")));
+        this.getLog().Debug(String.format("    ETag           :: %s", response.getHeader("ETag")));
 	}
 
 	private String getUriWithoutArguments(String uri) {
@@ -420,13 +446,13 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 
 
     protected Response getForbiddenResponse(String s) {
-    	Log.Error("FORBIDDEN", LogType.WEBSERVER);;
+    	this.getLog().Error("FORBIDDEN");;
         return createResponse(Response.Status.FORBIDDEN, NanoHTTPD.MIME_PLAINTEXT, "FORBIDDEN: "
             + s);
     }
     
     protected Response getNotFoundResponse() {
-    	Log.Error("NOT FOUND", LogType.WEBSERVER);;
+    	this.getLog().Error("NOT FOUND");;
         return createResponse(Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT,
             "Error 404, file not found.");
     }
@@ -481,10 +507,10 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
                     // and the startFrom of the range is satisfiable
                     // would return range from file
                     // respond with not-modified
-                	Log.Debug("Response type 1", LogType.WEBSERVER);
+                	this.getLog().Debug("Response type 1");
                     res = newFixedLengthResponse(Status.NOT_MODIFIED, mime, "");
                 } else {
-                	Log.Debug("Response type 2", LogType.WEBSERVER);
+                	this.getLog().Debug("Response type 2");
                 	res = getRangedResponse(file, mime, r);
                 }
             } else {
@@ -492,24 +518,24 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
                 if (headerIfRangeMissingOrMatching && range != null && r.getStartFrom() >= r.getFileLength()) {
                     // return the size of the file
                     // 4xx responses are not trumped by if-none-match
-                	Log.Debug("Response type 3", LogType.WEBSERVER);
+                	this.getLog().Debug("Response type 3");
                     res = newFixedLengthResponse(Status.RANGE_NOT_SATISFIABLE, NanoHTTPD.MIME_PLAINTEXT, "");
                     res.addHeader("Content-Range", String.format("bytes */%s", r.getFileLength()));
                 } else if (range == null && headerIfNoneMatchPresentAndMatching) {
                     // full-file-fetch request
                     // would return entire file
                     // respond with not-modified
-                	Log.Debug("Response type 4", LogType.WEBSERVER);
+                	this.getLog().Debug("Response type 4");
                     res = newFixedLengthResponse(Status.NOT_MODIFIED, mime, "");
                 } else if (!headerIfRangeMissingOrMatching && headerIfNoneMatchPresentAndMatching) {
                     // range request that doesn't match current etag
                     // would return entire (different) file
                     // respond with not-modified
-                	Log.Debug("Response type 5", LogType.WEBSERVER);
+                	this.getLog().Debug("Response type 5");
                     res = newFixedLengthResponse(Status.NOT_MODIFIED, mime, "");
                 } else {
                     // supply the file
-                	Log.Debug("Response type 6", LogType.WEBSERVER);
+                	this.getLog().Debug("Response type 6");
                     res = newFixedFileResponse(file, mime);
                     res.addHeader("Content-Length", "" + r.getFileLength());
                 }
@@ -560,8 +586,6 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
     }
 	
 	private String getStreamUri(String streamingFile) {
-		String uri = streamingFile;
-		
 		return String.format("http://%s%s/%s", 
 				this.getIpAddress(),  
 				this.getListeningPort() == 80 ? "" : String.format(":%s", this.getListeningPort()),

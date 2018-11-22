@@ -2,21 +2,15 @@ package se.qxx.jukebox.core;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
-import se.qxx.jukebox.builders.MovieBuilder;
 import se.qxx.jukebox.concurrent.JukeboxThread;
 import se.qxx.jukebox.concurrent.StringLockPool;
 import se.qxx.jukebox.domain.DomainUtil;
@@ -26,6 +20,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.MovieOrSeries;
+import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IArguments;
 import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IExecutor;
@@ -54,8 +49,9 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 			IArguments arguments,
 			ISubtitleDownloader subtitleDownloader,
 			IIMDBFinder imdbFinder,
-			IMovieBuilderFactory movieBuilderFactory) {
-		super("MovieIdentifier", 0, LogType.FIND, executor);
+			IMovieBuilderFactory movieBuilderFactory,
+			LoggerFactory loggerFactory) {
+		super("MovieIdentifier", 0, loggerFactory.create(LogType.FIND), executor);
 		
 		this.setDatabase(database);
 		this.setArguments(arguments);
@@ -141,28 +137,28 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 	 */
 	@Override
 	public void addFile(FileRepresentation f) {
-		Log.Debug(String.format("Adding file %s", f.getName()), LogType.FIND);
+		this.getLog().Debug(String.format("Adding file %s", f.getName()));
 		
 		if (!files.contains(f)) {
 			this.files.add(f);
 			signal();
 		} else {
-			Log.Debug("File already added", LogType.FIND);
+			this.getLog().Debug("File already added");
 		}
 	}
 
 	private void identify(FileRepresentation f) {
-		Log.Debug(String.format("Identifying :: %s", f.getName()), Log.LogType.FIND);
+		this.getLog().Debug(String.format("Identifying :: %s", f.getName()));
 
 		String filename = f.getName();
 		String path = f.getPath();
 
 		// Added ignore on all filename that contains the string sample
-		if (!Util.isExcludedFile(f, LogType.FIND)) {
+		if (!Util.isExcludedFile(f, this.getLog())) {
 			// check if the same media already exist in db
 			Media dbMedia = this.getDatabase().getMediaByFilename(filename);
 			if (dbMedia != null && StringUtils.equalsIgnoreCase(dbMedia.getFilepath(), path)) {
-				Log.Info("Media already exist in this.getDatabase(). Continuing...", LogType.FIND);
+				this.getLog().Info("Media already exist in this.getDatabase(). Continuing...");
 				return;
 			} else {
 				MovieOrSeries mos = this.getMovieBuilderFactory()
@@ -171,8 +167,7 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 				if (mos != null) {
 					matchMovieWithDatabase(mos);
 				} else {
-					Log.Info(String.format("Failed to identity movie with filename :: %s", f.getName()),
-							Log.LogType.FIND);
+					this.getLog().Info(String.format("Failed to identity movie with filename :: %s", f.getName()));
 				}
 			}
 
@@ -188,8 +183,8 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 	 * @param filename
 	 */
 	protected void matchMovieWithDatabase(MovieOrSeries mos) {
-		Log.Info(String.format("MovieIdentifier :: Object identified by %s as :: %s", mos.getIdentifier().toString(),
-				mos.getTitle()), Log.LogType.FIND);
+		this.getLog().Info(String.format("MovieIdentifier :: Object identified by %s as :: %s", mos.getIdentifier().toString(),
+				mos.getTitle()));
 
 		// Check if movie exists in db
 		// PartPattern pp = new PartPattern(filename); // ABOMINATION!
@@ -214,14 +209,14 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 		if (dbMovie == null) {
 			saveNewMovie(mos, newMedia);
 		} else {
-			Log.Debug("MovieIdentifier :: Movie found -- checking existing media", LogType.FIND);
+			this.getLog().Debug("MovieIdentifier :: Movie found -- checking existing media");
 			checkExistingMedia(dbMovie, newMedia);
 		}
 	}
 
 	private void saveNewMovie(MovieOrSeries mos, Media newMedia) {
 		
-		Log.Debug("MovieIdentifier :: Movie not found -- adding new", LogType.FIND);
+		this.getLog().Debug("MovieIdentifier :: Movie not found -- adding new");
 		
 		Thread t = new Thread(() -> {
 			Movie movie = getMovieInfo(mos.getMovie(), newMedia);
@@ -240,9 +235,9 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 		int episode = series.getSeason(0).getEpisode(0).getEpisodeNumber();
 		
 		if (season == 0 && episode == 0) {
-			Log.Error("MovieIdentifier :: Series identified but season and episode info not found!", LogType.FIND);
+			this.getLog().Error("MovieIdentifier :: Series identified but season and episode info not found!");
 		} else {
-			Log.Debug(String.format("MovieIndentifier :: Finding series :: %s", series.getTitle()), LogType.FIND);
+			this.getLog().Debug(String.format("MovieIndentifier :: Finding series :: %s", series.getTitle()));
 		}
 
 		// find series that matches
@@ -286,14 +281,14 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 	}
 
 	private void mergeExistingSeries(Series series, Media newMedia, int season, int episode, Series dbSeries) {
-		Log.Debug("MovieIdentifier :: Series found. Searching for season..", LogType.FIND);
-		// Log.Debug(String.format("MovieIdentifier :: dbSeries nr of episodes :: %s",
-		// DomainUtil.findSeason(dbSeries, season).getEpisodeCount()), LogType.FIND);
+		this.getLog().Debug("MovieIdentifier :: Series found. Searching for season..");
+		// this.getLog().Debug(String.format("MovieIdentifier :: dbSeries nr of episodes :: %s",
+		// DomainUtil.findSeason(dbSeries, season).getEpisodeCount()));
 
 		// verify if dbSeries have the episode.
 		// if it does then exit
 		if (checkSeries(dbSeries, season, episode)) {
-			Log.Debug("MovieIdentifier :: Episode already exist in this.getDatabase(). Exiting ... ", LogType.FIND);
+			this.getLog().Debug("MovieIdentifier :: Episode already exist in this.getDatabase(). Exiting ... ");
 		} else {
 			Series mergedSeries = mergeSeries(dbSeries, series, season, episode);
 
@@ -309,7 +304,7 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 
 	private void saveNewSeries(Series series, Media newMedia, int season, int episode) {
 		// no series exist
-		Log.Debug("MovieIdentifier :: No series found! Creating new", LogType.FIND);
+		this.getLog().Debug("MovieIdentifier :: No series found! Creating new");
 		updateSeries(series, newMedia, season, episode);
 	}
 
@@ -376,7 +371,7 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 			movie = Movie.newBuilder(movie).clearMedia().addMedia(md).build();
 		}
 
-		Log.Debug(String.format("Saving movie. Image length :: %s, Thumbnail length :: %s", movie.getImage().size(), movie.getThumbnail().size()), LogType.FIND);
+		this.getLog().Debug(String.format("Saving movie. Image length :: %s, Thumbnail length :: %s", movie.getImage().size(), movie.getThumbnail().size()));
 		return movie;
 	}
 
@@ -418,7 +413,7 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 		sn = DomainUtil.updateEpisode(sn, ep);
 		s = DomainUtil.updateSeason(s, sn);
 
-		Log.Debug(String.format("MovieIdentifier :: #3 Number of episodes :: %s", sn.getEpisodeCount()), LogType.FIND);
+		this.getLog().Debug(String.format("MovieIdentifier :: #3 Number of episodes :: %s", sn.getEpisodeCount()));
 		return s;
 	}
 
@@ -500,9 +495,9 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 			m = this.getImdbFinder().Get(m);
 
 			if (!StringUtils.isEmpty(m.getImdbUrl()))
-				Log.Info(String.format("IMDB link found for :: %s", m.getTitle()), LogType.FIND);
+				this.getLog().Info(String.format("IMDB link found for :: %s", m.getTitle()));
 		} catch (IOException | NumberFormatException | ParseException e) {
-			Log.Error("Error occured when finding IMDB link", Log.LogType.FIND, e);
+			this.getLog().Error("Error occured when finding IMDB link", e);
 		}
 
 		return m;
@@ -515,9 +510,9 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 			s = this.getImdbFinder().Get(series, season, episode);
 
 			if (!StringUtils.isEmpty(s.getImdbUrl()))
-				Log.Info(String.format("IMDB link found for :: %s", series.getTitle()), LogType.FIND);
+				this.getLog().Info(String.format("IMDB link found for :: %s", series.getTitle()));
 		} catch (IOException | NumberFormatException | ParseException e) {
-			Log.Error("Error occured when finding IMDB link", Log.LogType.FIND, e);
+			this.getLog().Error("Error occured when finding IMDB link", e);
 		}
 
 		return s;

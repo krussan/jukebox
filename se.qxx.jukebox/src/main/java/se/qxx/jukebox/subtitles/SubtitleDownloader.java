@@ -17,7 +17,6 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.protobuf.ByteString;
 
-import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.concurrent.JukeboxThread;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
@@ -27,41 +26,77 @@ import se.qxx.jukebox.domain.JukeboxDomain.Rating;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.domain.JukeboxDomain.SubtitleQueue;
 import se.qxx.jukebox.domain.MovieOrSeries;
+import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.IMovieBuilderFactory;
 import se.qxx.jukebox.interfaces.ISettings;
+import se.qxx.jukebox.interfaces.ISubFileDownloaderHelper;
+import se.qxx.jukebox.interfaces.ISubFinder;
 import se.qxx.jukebox.interfaces.ISubtitleDownloader;
+import se.qxx.jukebox.interfaces.IUnpacker;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder;
-import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings;
-import se.qxx.jukebox.tools.Unpacker;
 import se.qxx.jukebox.tools.Util;
 
 @Singleton
 public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownloader {
 	ReentrantLock lock = new ReentrantLock();
 	private String subsPath = StringUtils.EMPTY;
-	private List<SubFinderBase> subFinders;
+	private List<ISubFinder> subFinders;
 	private IDatabase database;
 	private ISettings settings;
 	private IMovieBuilderFactory movieBuilderFactory;
+	private ISubFileDownloaderHelper helper;
+	private IMkvSubtitleReader mkvSubtitleReader;
+	private IUnpacker unpacker;
 	
 	@Inject
 	public SubtitleDownloader(IDatabase database, 
 			IExecutor executor, 
 			ISettings settings,
-			IMovieBuilderFactory movieBuilderFactory) {
+			IMovieBuilderFactory movieBuilderFactory,
+			ISubFileDownloaderHelper helper,
+			IMkvSubtitleReader mkvSubtitleReader,
+			LoggerFactory loggerFactory,
+			IUnpacker unpacker) {
 		super(
 			"Subtitle", 
 			settings.getSettings().getSubFinders().getThreadWaitSeconds() * 1000,
-			LogType.SUBS,
+			loggerFactory.create(LogType.SUBS),
 			executor);
+		this.setUnpacker(unpacker);
+		this.setMkvSubtitleReader(mkvSubtitleReader);
 		this.setDatabase(database);
 		this.setSettings(settings);
 		this.setMovieBuilderFactory(movieBuilderFactory);
+		this.setHelper(helper);
 	}
 
-	public List<SubFinderBase> getSubFinders() {
+	public IUnpacker getUnpacker() {
+		return unpacker;
+	}
+
+	public void setUnpacker(IUnpacker unpacker) {
+		this.unpacker = unpacker;
+	}
+
+	public IMkvSubtitleReader getMkvSubtitleReader() {
+		return mkvSubtitleReader;
+	}
+
+	public void setMkvSubtitleReader(IMkvSubtitleReader mkvSubtitleReader) {
+		this.mkvSubtitleReader = mkvSubtitleReader;
+	}
+
+	public ISubFileDownloaderHelper getHelper() {
+		return helper;
+	}
+
+	public void setHelper(ISubFileDownloaderHelper helper) {
+		this.helper = helper;
+	}
+
+	public List<ISubFinder> getSubFinders() {
 		return subFinders;
 	}
 	
@@ -94,26 +129,26 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 		cleanupTempDirectory();
 		subsPath = this.getSettings().getSettings().getSubFinders().getSubsPath();
 		
-		Log.Debug("Retrieving list to process", LogType.SUBS);
+		this.getLog().Debug("Retrieving list to process");
 		this.getDatabase().cleanSubtitleQueue();
 		
 		setupSubFinders();
 	}
 
 	private void setupSubFinders() {
-		Util.waitForSettings();
-		
 
 		for (SubFinder f : this.getSettings().getSettings().getSubFinders().getSubFinder()) {
 			String className = f.getClazz();
 
+			
 			try {
-				SubFinderSettings[] args = new SubFinderSettings[] {f.getSubFinderSettings()};
+				ISubFileDownloaderHelper[] args = new ISubFileDownloaderHelper[] { this.getHelper() };
+				
 				getSubFinders().add(
-					(SubFinderBase)Util.getInstance(className, new Class[] {SubFinderSettings.class}, args));
+					(ISubFinder)Util.getInstance(className, new Class[] {ISubFileDownloaderHelper.class}, args));
 				
 			} catch (Exception e) {
-				Log.Error(String.format("Error when loading subfinder :: %s", className), Log.LogType.SUBS, e);
+				this.getLog().Error(String.format("Error when loading subfinder :: %s", className), e);
 			}
 		}
 	}
@@ -145,7 +180,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 				
 				
 			} catch (Exception e) {
-				Log.Error("Error when downloading subtitles", Log.LogType.SUBS, e);
+				this.getLog().Error("Error when downloading subtitles", e);
 				result = -1;
 			}
 			
@@ -204,13 +239,13 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	 * The temp directory should be empty except when an unclean shutdown has been performed.
 	 */
 	private void cleanupTempDirectory() {
-		Log.Info(String.format("Removing temporary directory :: %s", subsPath), LogType.SUBS);
+		this.getLog().Info(String.format("Removing temporary directory :: %s", subsPath));
 		File tempDir = new File(subsPath);
 		try {
 			if (tempDir.exists()) 
 				FileUtils.deleteDirectory(tempDir);
 		} catch (IOException e) {
-			Log.Error("Error when deleting temp directory", LogType.SUBS, e);
+			this.getLog().Error("Error when deleting temp directory", e);
 		}
 	}
 
@@ -320,15 +355,15 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	private boolean checkMatroskaFile(Media md) {
 		if (Util.isMatroskaFile(md)) {
 			if (md.getDownloadComplete()) {
-				Log.Debug(String.format("Checking mkv container for media %s",  md.getFilename()), LogType.SUBS);
+				this.getLog().Debug(String.format("Checking mkv container for media %s",  md.getFilename()));
 				
 				List<Subtitle> subs = 
-					MkvSubtitleReader.extractSubs(Util.getFullFilePath(md));
+					this.getMkvSubtitleReader().extractSubs(Util.getFullFilePath(md));
 				
 				if (subs == null || subs.size() == 0)
 					return false;
 	
-				Log.Debug(String.format("%s subs found in container. Saving...", subs.size()), LogType.SUBS);
+				this.getLog().Debug(String.format("%s subs found in container. Saving...", subs.size()));
 				
 				md = this.getDatabase().getMediaById(md.getID());
 				
@@ -386,7 +421,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 				}
 			}
 			
-			Log.Debug(String.format("Found %s subs for movie %s in movie folder", list.size(), mediaFilename), Log.LogType.SUBS);
+			this.getLog().Debug(String.format("Found %s subs for movie %s in movie folder", list.size(), mediaFilename));
 		}	
 		return list;
 	}
@@ -435,8 +470,8 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	 */
 	private List<Subtitle> extractSubs(MovieOrSeries mos, List<SubFile> files) {
 		String unpackPath = getUnpackedPath(mos);
-		String tempFilepath = SubFinderBase.createTempSubsPath(mos);
-		Log.Debug(String.format("Unpack path :: %s", unpackPath), LogType.SUBS);
+		String tempFilepath = this.getHelper().createTempSubsPath(mos);
+		this.getLog().Debug(String.format("Unpack path :: %s", unpackPath));
 		
 		List<Subtitle> subtitleList = new ArrayList<Subtitle>();
 		
@@ -445,12 +480,12 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 				File f = subfile.getFile();
 				clearPath(unpackPath);
 				
-				List<File> unpackedFiles = Unpacker.unpackFiles(f, unpackPath);
+				List<File> unpackedFiles = this.getUnpacker().unpackFiles(f, unpackPath);
 				subtitleList.addAll(
 					constructSubtitles(mos, subfile, unpackedFiles));
 
 			} catch (Exception e) {
-				Log.Error("Error when downloading subtitles... Continuing with next one", Log.LogType.SUBS, e);
+				this.getLog().Error("Error when downloading subtitles... Continuing with next one", e);
 			}
 		}
 		
@@ -485,7 +520,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 					
 				}
 				else {
-					Log.Debug(String.format("Failed to match sub %s against media for movie %s", unpackedFile.getName(), mos.getTitle()), LogType.SUBS);
+					this.getLog().Debug(String.format("Failed to match sub %s against media for movie %s", unpackedFile.getName(), mos.getTitle()));
 				}
 			}
 		}
@@ -497,7 +532,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 		try {
 			FileUtils.deleteDirectory(new File(tempFilepath));
 		} catch (IOException e) {
-			Log.Error(String.format("Error while deleting temporary dir :: %s", tempFilepath), LogType.SUBS);
+			this.getLog().Error(String.format("Error while deleting temporary dir :: %s", tempFilepath));
 		}
 	}
 	
@@ -529,13 +564,13 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 		    result = sb.toString();
 		} 
 		catch (IOException e) {
-			Log.Error(String.format("Error while reading sub file %s", unpackedFile.getName()), LogType.SUBS);
+			this.getLog().Error(String.format("Error while reading sub file %s", unpackedFile.getName()));
 		} 
 		finally {
 		    try {
 				br.close();
 			} catch (IOException e) {
-				Log.Error(String.format("Error while closing stream on sub file %s", unpackedFile.getName()), LogType.SUBS);
+				this.getLog().Error(String.format("Error while closing stream on sub file %s", unpackedFile.getName()));
 			}
 		}
 		
@@ -583,7 +618,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	 * @return The path
 	 */
 	private String getUnpackedPath(MovieOrSeries mos) {
-		String tempBase = SubFinderBase.createTempSubsPath(mos);
+		String tempBase = this.getHelper().createTempSubsPath(mos);
 		return String.format("%s/unpack", tempBase);
 	}
 
@@ -597,7 +632,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	 */
 	private List<SubFile> callSubtitleDownloaders(MovieOrSeries mos) {
 		ArrayList<SubFile> subtitleFiles = new ArrayList<SubFile>();
-		for (SubFinderBase finder : this.getSubFinders()) {
+		for (ISubFinder finder : this.getSubFinders()) {
 			ArrayList<String> languages = new ArrayList<String>();
 			languages.add("Eng");
 			languages.add("Swe");
@@ -617,9 +652,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 
 	@Override
 	public void end() {
-		for (SubFinderBase finder : this.getSubFinders()) {
-			finder.exit();
-		}
+		this.getHelper().exit();
 		
 		super.end();
 		

@@ -4,15 +4,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-import se.qxx.jukebox.Log;
-import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.interfaces.IExecutor;
-import se.qxx.jukebox.tools.Util;
+import se.qxx.jukebox.interfaces.IJukeboxLogger;
 
 public abstract class JukeboxThread implements Runnable {
 	private boolean isRunning;
 	private long sleepTime;
-	private LogType logType;
+	private IJukeboxLogger log;
 	private String name;
 	private IExecutor executor;
 	
@@ -22,13 +20,27 @@ public abstract class JukeboxThread implements Runnable {
 	@SuppressWarnings("unused")
 	private Condition condB = lock.newCondition();
 
-	public JukeboxThread(String name, long sleepTime, LogType logType, IExecutor executor) {
+	public JukeboxThread(
+			String name, 
+			long sleepTime, 
+			IJukeboxLogger log,
+			IExecutor executor) {
 		this.setName(name);
 		this.setSleepTime(sleepTime);
-		this.setLogType(logType);
+		this.setLog(log);
 		this.setExecutor(executor);
 	}
 	
+
+	public IJukeboxLogger getLog() {
+		return log;
+	}
+
+
+	public void setLog(IJukeboxLogger log) {
+		this.log = log;
+	}
+
 
 	public boolean isRunning() {
 		return isRunning;
@@ -47,13 +59,6 @@ public abstract class JukeboxThread implements Runnable {
 		this.sleepTime = sleepTime;
 	}
 	
-	public LogType getLogType() {
-		return logType;
-	}
-
-	public void setLogType(LogType logType) {
-		this.logType = logType;
-	}
 
 	protected abstract void initialize();
 	protected abstract void execute() throws InterruptedException;
@@ -61,12 +66,12 @@ public abstract class JukeboxThread implements Runnable {
 	@Override
 	public void run() {
 		this.setRunning(true);
-		Util.waitForSettings();
+		
 		mainLoop();
 	}
 	
 	protected void mainLoop() {
-		Log.Info(String.format("Starting up thread %s",  this.getName()), this.getLogType());
+		this.getLog().Info(String.format("Starting up thread %s",  this.getName()));
 		
 		initialize();
 		while(this.isRunning()) {
@@ -89,16 +94,16 @@ public abstract class JukeboxThread implements Runnable {
 				
 				
 			} catch (InterruptedException e) {
-				Log.Info(String.format("%s thread is shutting down", this.getName()), this.getLogType());
+				this.getLog().Info(String.format("%s thread is shutting down", this.getName()));
 			}
 		}
 		
-		Log.Info(String.format("Thread %s ended normally !",  this.getName()), this.getLogType());
+		this.getLog().Info(String.format("Thread %s ended normally !",  this.getName()));
 	}
 
 	
 	public void end() {
-		Log.Info(String.format("Stopping %s thread ...",  this.getName()), this.getLogType());
+		this.getLog().Info(String.format("Stopping %s thread ...",  this.getName()));
 		this.setRunning(false);
 	}
 

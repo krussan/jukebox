@@ -7,7 +7,6 @@ import java.util.List;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.concurrent.JukeboxThread;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
@@ -15,6 +14,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
+import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IArguments;
 import se.qxx.jukebox.interfaces.ICleaner;
 import se.qxx.jukebox.interfaces.IDatabase;
@@ -28,8 +28,8 @@ public class Cleaner extends JukeboxThread implements ICleaner {
 	private IArguments arguments;
 	
 	@Inject
-	public Cleaner(IDatabase database, IExecutor executor, IArguments arguments) {
-		super("Cleaner", 30*60*1000, LogType.FIND, executor);
+	public Cleaner(IDatabase database, IExecutor executor, IArguments arguments, LoggerFactory loggerFactory) {
+		super("Cleaner", 30*60*1000, loggerFactory.create(LogType.FIND), executor);
 		this.setDatabase(database);
 		this.setArguments(arguments);
 	}
@@ -56,22 +56,22 @@ public class Cleaner extends JukeboxThread implements ICleaner {
 
 	@Override
 	protected void execute() throws InterruptedException {
-		Log.Info("Starting up cleaner thread", LogType.FIND);
-		Log.Info("Cleaning up movies", LogType.FIND);
+		this.getLog().Info("Starting up cleaner thread");
+		this.getLog().Info("Cleaning up movies");
 		cleanMovies();	
 		
 		if (!this.isRunning())
 			return;
 		
 		Thread.sleep(15 * 60 * 1000);
-		Log.Info("Cleaning up episodes", LogType.FIND);
+		this.getLog().Info("Cleaning up episodes");
 		cleanEpisodes();
 		
 		if (!this.isRunning())
 			return;
 		
 		Thread.sleep(15 * 60 * 1000);
-		Log.Info("Cleaning up empty series", LogType.FIND);
+		this.getLog().Info("Cleaning up empty series");
 		cleanEmptySeries();
 		
 	}
@@ -83,13 +83,13 @@ public class Cleaner extends JukeboxThread implements ICleaner {
 		for (Movie m : movies) {
 			for (Media md : m.getMediaList()) {
 				if (!mediaExists(md)) {
-					Log.Debug(String.format("#####!!!!!! Media %s was not found. Deleting .... ", md.getFilename()), LogType.FIND);
+					this.getLog().Debug(String.format("#####!!!!!! Media %s was not found. Deleting .... ", md.getFilename()));
 					
 					try {
 						if (!this.getArguments().isCleanerLogOnly())
 							this.getDatabase().delete(m);
 					} catch (ClassNotFoundException | SQLException | DatabaseNotSupportedException ex) {
-						Log.Error("Deletion of media failed", LogType.FIND, ex);
+						this.getLog().Error("Deletion of media failed", ex);
 					}
 				}
 				
@@ -109,13 +109,13 @@ public class Cleaner extends JukeboxThread implements ICleaner {
 				for (Episode e : ss.getEpisodeList()) {
 					for (Media md : e.getMediaList()) {
 						if (!mediaExists(md)) {
-							Log.Debug(String.format("#####!!!!!! Media %s was not found. Deleting .... ", md.getFilename()), LogType.FIND);
+							this.getLog().Debug(String.format("#####!!!!!! Media %s was not found. Deleting .... ", md.getFilename()));
 							
 							try {
 								if (!this.getArguments().isCleanerLogOnly())
 									this.getDatabase().delete(e);
 							} catch (ClassNotFoundException | SQLException | DatabaseNotSupportedException ex) {
-								Log.Error("Deletion of media failed", LogType.FIND, ex);
+								this.getLog().Error("Deletion of media failed", ex);
 							}
 						}
 						

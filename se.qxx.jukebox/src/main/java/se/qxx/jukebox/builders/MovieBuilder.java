@@ -3,14 +3,26 @@ package se.qxx.jukebox.builders;
 import se.qxx.jukebox.builders.exceptions.DeprecatedBuilderException;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.MovieOrSeries;
+import se.qxx.jukebox.factories.LoggerFactory;
+import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.ISettings;
 
 public abstract class MovieBuilder {
 
 	private ISettings settings;
+	private IJukeboxLogger log;
 	
-	public MovieBuilder(ISettings settings) {
+	public MovieBuilder(ISettings settings, IJukeboxLogger log) {
 		this.setSettings(settings);
+		this.setLog(log);
+	}
+
+	public IJukeboxLogger getLog() {
+		return log;
+	}
+
+	public void setLog(IJukeboxLogger log) {
+		this.log = log;
 	}
 
 	public ISettings getSettings() {

@@ -22,7 +22,9 @@ import se.qxx.jukebox.core.Main;
 import se.qxx.jukebox.core.MovieIdentifier;
 import se.qxx.jukebox.core.Starter;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.factories.FileSystemWatcherFactory;
 import se.qxx.jukebox.factories.IMDBParserFactory;
+import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.imdb.IMDBFinder;
 import se.qxx.jukebox.imdb.IMDBParser;
 import se.qxx.jukebox.imdb.IMDBUrlRewrite;
@@ -32,10 +34,12 @@ import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IDistributor;
 import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.IFileReader;
+import se.qxx.jukebox.interfaces.IFileSystemWatcher;
 import se.qxx.jukebox.interfaces.IIMDBFinder;
 import se.qxx.jukebox.interfaces.IIMDBParser;
 import se.qxx.jukebox.interfaces.IIMDBUrlRewrite;
 import se.qxx.jukebox.interfaces.IImdbSettings;
+import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IMain;
 import se.qxx.jukebox.interfaces.IMediaConverter;
 import se.qxx.jukebox.interfaces.IMovieBuilderFactory;
@@ -44,20 +48,31 @@ import se.qxx.jukebox.interfaces.IParserSettings;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.IStarter;
 import se.qxx.jukebox.interfaces.IStreamingWebServer;
+import se.qxx.jukebox.interfaces.ISubFileDownloaderHelper;
 import se.qxx.jukebox.interfaces.ISubtitleDownloader;
+import se.qxx.jukebox.interfaces.ISubtitleFileWriter;
 import se.qxx.jukebox.interfaces.ITcpListener;
+import se.qxx.jukebox.interfaces.IUnpacker;
 import se.qxx.jukebox.interfaces.IUpgrader;
 import se.qxx.jukebox.interfaces.IWebRetriever;
 import se.qxx.jukebox.servercomm.TcpListener;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.imdb.ImdbSettings;
 import se.qxx.jukebox.settings.parser.ParserSettings;
+import se.qxx.jukebox.subtitles.IMkvSubtitleReader;
+import se.qxx.jukebox.subtitles.MkvSubtitleReader;
+import se.qxx.jukebox.subtitles.SubFileDownloaderHelper;
 import se.qxx.jukebox.subtitles.SubtitleDownloader;
+import se.qxx.jukebox.subtitles.SubtitleFileWriter;
+import se.qxx.jukebox.tools.Unpacker;
 import se.qxx.jukebox.tools.WebRetriever;
 import se.qxx.jukebox.upgrade.Upgrader;
 import se.qxx.jukebox.vlc.Distributor;
 import se.qxx.jukebox.watcher.DownloadChecker;
+import se.qxx.jukebox.watcher.FileCreatedHandler;
+import se.qxx.jukebox.watcher.FileSystemWatcher;
 import se.qxx.jukebox.watcher.IDownloadChecker;
+import se.qxx.jukebox.watcher.IFileCreatedHandler;
 import se.qxx.jukebox.webserver.StreamingWebServer;
 
 public class Jukebox {
@@ -106,12 +121,28 @@ public class Jukebox {
 				bind(IWebRetriever.class).to(WebRetriever.class);
 				bind(IIMDBUrlRewrite.class).to(IMDBUrlRewrite.class);
 				
+				bind(ISubFileDownloaderHelper.class).to(SubFileDownloaderHelper.class);
+				bind(ISubtitleFileWriter.class).to(SubtitleFileWriter.class);
+				bind(IMkvSubtitleReader.class).to(MkvSubtitleReader.class);
+				
+				bind(IUnpacker.class).to(Unpacker.class);
+				
+				bind(IFileCreatedHandler.class).to(FileCreatedHandler.class);
+				
 				install(
 					new FactoryModuleBuilder()
 						.implement(IIMDBParser.class, IMDBParser.class)
 						.build(IMDBParserFactory.class));
 				
-				
+				install(
+						new FactoryModuleBuilder()
+							.implement(IJukeboxLogger.class, Log.class)
+							.build(LoggerFactory.class));
+					
+				install(
+						new FactoryModuleBuilder()
+							.implement(IFileSystemWatcher.class, FileSystemWatcher.class)
+							.build(FileSystemWatcherFactory.class));
 			}
 		});
 		

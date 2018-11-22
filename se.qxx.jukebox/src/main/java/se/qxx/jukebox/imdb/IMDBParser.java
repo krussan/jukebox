@@ -1,7 +1,5 @@
 package se.qxx.jukebox.imdb;
 
-import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.time.Duration;
@@ -10,7 +8,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,15 +23,14 @@ import org.jsoup.select.Elements;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
-import se.qxx.jukebox.Log;
 import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IFileReader;
 import se.qxx.jukebox.interfaces.IIMDBParser;
 import se.qxx.jukebox.interfaces.IIMDBUrlRewrite;
+import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.IWebRetriever;
-import se.qxx.jukebox.tools.Util;
-import se.qxx.jukebox.tools.WebRetriever;
 
 public class IMDBParser implements IIMDBParser {
 	private IFileReader fileReader;
@@ -42,6 +38,7 @@ public class IMDBParser implements IIMDBParser {
 	private IIMDBUrlRewrite urlRewrite;
 	private IWebRetriever webRetriever;
 	private Document document;
+	private IJukeboxLogger log;
 
 	private final Pattern seasonPattern = Pattern.compile("season\\=(\\d*)");
 	private final Pattern episodePattern = Pattern.compile("ttep_ep(\\d*)");
@@ -51,14 +48,28 @@ public class IMDBParser implements IIMDBParser {
 			ISettings settings, 
 			IIMDBUrlRewrite urlRewrite, 
 			IWebRetriever webRetriever,
+			LoggerFactory loggerFactory,
 			@Assisted Document document) {
+		
 		this.setFileReader(fileReader);
 		this.setSettings(settings);
 		this.setDocument(document);
 		this.setUrlRewrite(urlRewrite);
 		this.setWebRetriever(webRetriever);
+		
+		this.setLog(loggerFactory.create(LogType.IMDB));
 	}
 	
+
+	public IJukeboxLogger getLog() {
+		return log;
+	}
+
+
+	public void setLog(IJukeboxLogger log) {
+		this.log = log;
+	}
+
 
 	public IWebRetriever getWebRetriever() {
 		return webRetriever;
@@ -108,9 +119,9 @@ public class IMDBParser implements IIMDBParser {
 			try {
 				url = this.getUrlRewrite().fixUrl(e.attr("href"));
 			} catch (MalformedURLException e1) {
-				Log.Error("Error parsing imdb url for season", LogType.IMDB);
+				this.getLog().Error("Error parsing imdb url for season");
 			}				
-			Log.Debug(String.format("IMDBRECORD :: Setting episode url :: %s", url), LogType.IMDB);
+			this.getLog().Debug(String.format("IMDBRECORD :: Setting episode url :: %s", url));
 			
 			Pair<Integer, String> entry = parseEpisodeUrl(url);
 			if (entry != null)
@@ -130,9 +141,9 @@ public class IMDBParser implements IIMDBParser {
 			try {
 				url = this.getUrlRewrite().fixUrl(e.attr("href"));
 			} catch (MalformedURLException e1) {
-				Log.Error("Error parsing imdb url for season", LogType.IMDB);
+				this.getLog().Error("Error parsing imdb url for season");
 			}				
-			Log.Debug(String.format("IMDBRECORD :: Setting season url :: %s", url), LogType.IMDB);
+			this.getLog().Debug(String.format("IMDBRECORD :: Setting season url :: %s", url));
 			
 			Pair<Integer, String> entry = parseSeasonUrl(url);
 			if (entry != null)
@@ -150,7 +161,7 @@ public class IMDBParser implements IIMDBParser {
 
 		if (elm.size() > 0) {
 			String unescapedValue = StringEscapeUtils.unescapeHtml4(elm.get(0).text());
-			Log.Debug(String.format("IMDBRECORD :: Setting story :: %s", unescapedValue), LogType.IMDB);
+			this.getLog().Debug(String.format("IMDBRECORD :: Setting story :: %s", unescapedValue));
 			return unescapedValue;
 		}
 		
@@ -164,7 +175,7 @@ public class IMDBParser implements IIMDBParser {
 
 		if (elm.size() > 0) {
 			String unescapedValue = StringEscapeUtils.unescapeHtml4(elm.get(0).text());
-			Log.Debug(String.format("IMDBRECORD :: Setting rating :: %s", unescapedValue), LogType.IMDB);
+			this.getLog().Debug(String.format("IMDBRECORD :: Setting rating :: %s", unescapedValue));
 			return unescapedValue;
 		}
 		
@@ -191,7 +202,7 @@ public class IMDBParser implements IIMDBParser {
 				dateValue = fetchAirDateByEpisodeAired(elm);
 			
 			if (StringUtils.isNotEmpty(dateValue)) {
-				Log.Debug(String.format("IMDBRECORD :: Setting first air date :: %s", dateValue), LogType.IMDB);
+				this.getLog().Debug(String.format("IMDBRECORD :: Setting first air date :: %s", dateValue));
 				return parseDate(dateValue);
 			}
 		}
@@ -228,7 +239,7 @@ public class IMDBParser implements IIMDBParser {
 			String genre = StringEscapeUtils.unescapeHtml4(elm.get(i).text()).trim();
 			result.add(genre);
 		}
-		Log.Debug(String.format("IMDBRECORD :: Setting genres :: %s", String.join(",", result)), LogType.IMDB);
+		this.getLog().Debug(String.format("IMDBRECORD :: Setting genres :: %s", String.join(",", result)));
 		
 		return result;
 	}
@@ -242,7 +253,7 @@ public class IMDBParser implements IIMDBParser {
 			Duration dur = Duration.parse(duration);
 			int minutes = (int) (dur.getSeconds() / 60);
 
-			Log.Debug(String.format("IMDBRECORD :: Setting duration :: %s", minutes), LogType.IMDB);
+			this.getLog().Debug(String.format("IMDBRECORD :: Setting duration :: %s", minutes));
 			return minutes;
 		}
 		
@@ -255,7 +266,7 @@ public class IMDBParser implements IIMDBParser {
 
 		if (elm.size() > 0) {
 			String unescapedValue = StringEscapeUtils.unescapeHtml4(elm.get(0).text());
-			Log.Debug(String.format("IMDBRECORD :: Setting director :: %s", unescapedValue), LogType.IMDB);
+			this.getLog().Debug(String.format("IMDBRECORD :: Setting director :: %s", unescapedValue));
 			return unescapedValue;
 		}
 		
@@ -289,7 +300,7 @@ public class IMDBParser implements IIMDBParser {
 				return unescapedValue;
 			} else if (type == TitleType.Title) {
 				String unescapedValue = StringEscapeUtils.unescapeHtml4(elm.text()).trim();
-				Log.Debug(String.format("IMDBRECORD :: Setting title :: %s", unescapedValue), LogType.IMDB);
+				this.getLog().Debug(String.format("IMDBRECORD :: Setting title :: %s", unescapedValue));
 				return unescapedValue;
 			}
 			
@@ -306,12 +317,12 @@ public class IMDBParser implements IIMDBParser {
 	
 	private Date parseDate(String date) {
 		try {
-			Log.Debug(String.format("IMDB :: parsing date :: %s", date), LogType.IMDB);
+			this.getLog().Debug(String.format("IMDB :: parsing date :: %s", date));
 			Date parsedDate = DateUtils.parseDate(date,
 					getSettings().getImdb().getDatePatterns().getPattern().toArray(new String[] {}));
-			Log.Debug(String.format("IMDB :: parsed date :: %s", parsedDate), LogType.IMDB);
+			this.getLog().Debug(String.format("IMDB :: parsed date :: %s", parsedDate));
 		} catch (ParseException e) {
-			Log.Info(String.format("IMDB :: Unable to parse date :: %s", date), LogType.IMDB);
+			this.getLog().Info(String.format("IMDB :: Unable to parse date :: %s", date));
 		}
 		
 		return null;
@@ -342,7 +353,7 @@ public class IMDBParser implements IIMDBParser {
 		IMDBRecord rec = new IMDBRecord(url);
 		
 		Document doc = Jsoup.parse(webResult);
-		Log.Debug(String.format("IMDBRECORD :: Initializing parsing"), LogType.IMDB);
+		this.getLog().Debug(String.format("IMDBRECORD :: Initializing parsing"));
 		
 		rec.setTitle(this.parseTitle());
 		rec.setDirector(this.parseDirector());

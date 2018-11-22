@@ -4,14 +4,20 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import se.qxx.jukebox.settings.JukeboxListenerSettings;
-import se.qxx.jukebox.settings.Settings;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 
-public class Log {
-	static final int DEBUG = 4;
-	static final int INFO = 3;
-	static final int ERROR = 2;
-	static final int CRITICAL = 1;
+import se.qxx.jukebox.interfaces.IJukeboxLogger;
+import se.qxx.jukebox.interfaces.ISettings;
+import se.qxx.jukebox.settings.JukeboxListenerSettings;
+
+public class Log implements IJukeboxLogger {
+	final int DEBUG = 4;
+	final int INFO = 3;
+	final int ERROR = 2;
+	final int CRITICAL = 1;
+	private ISettings settings;
+	private LogType logType;
 	
 	public enum LogType {
 		ALL,
@@ -28,41 +34,69 @@ public class Log {
 		CHECKER
 	}
 	
-	public static void Critical(String msg, LogType type) {
-		log(msg, type, "CRITICAL");
+	@Inject
+	public Log(ISettings settings, @Assisted LogType type) {
+		this.setLogType(type);
+		this.setSettings(settings);
 	}
 	
-	public static void Critical(String msg, LogType type, Exception e) {
-		log(msg, type, e, "CRITICAL");
-	}
-	
-	public static void Error(String msg, LogType type, Exception e) {
-		log(msg, type, e, "ERROR");
+	public LogType getLogType() {
+		return logType;
 	}
 
-	public static void Error(String msg, LogType type) {
-		log(msg, type, "ERROR");
+	public void setLogType(LogType logType) {
+		this.logType = logType;
 	}
 
-	public static void Debug(String msg, LogType type) {
-		log(msg, type, "DEBUG");
+	public ISettings getSettings() {
+		return settings;
+	}
+
+	public void setSettings(ISettings settings) {
+		this.settings = settings;
+	}
+
+	@Override
+	public void Critical(String msg) {
+		log(msg, "CRITICAL");
 	}
 	
-	public static void Info(String msg, LogType type) {
-		log(msg, type, "INFO");
+	@Override
+	public void Critical(String msg, Exception e) {
+		log(msg, e, "CRITICAL");
 	}
 	
-	private static void log(String msg, LogType type, String level) {
+	@Override
+	public void Error(String msg, Exception e) {
+		log(msg, e, "ERROR");
+	}
+
+	@Override
+	public void Error(String msg) {
+		log(msg, "ERROR");
+	}
+
+	@Override
+	public void Debug(String msg) {
+		log(msg, "DEBUG");
+	}
+	
+	@Override
+	public void Info(String msg) {
+		log(msg, "INFO");
+	}
+
+	private void log(String msg, String level) {
 		int msgLevel = getLevel(level);
 		String logMessage = getLogString(msg, level);
 		try {
 			
-			if (type == LogType.ALL) {
+			if (this.getLogType() == LogType.ALL) {
 				logToAll(msg, level);
 				return;
 			}
 			
-			JukeboxListenerSettings.Logs.Log l = getLogger(type);
+			JukeboxListenerSettings.Logs.Log l = getLogger();
 			
 			if (l != null) {
 				int logLevel = getLevel(l);
@@ -79,28 +113,30 @@ public class Log {
 		}
 	}
 	
-	private static void logToAll(String msg, String level) {
-		for(JukeboxListenerSettings.Logs.Log l : Settings.get().getLogs().getLog()) {
+	private void logToAll(String msg, String level) {
+		for(JukeboxListenerSettings.Logs.Log l : this.getSettings().getSettings().getLogs().getLog()) {
 			LogType logType = LogType.valueOf(l.getLogs());
 			
 			if (logType != LogType.ALL)
-				log(msg, logType, level);
+				log(msg, level);
 		}
 	}
 
-	public static JukeboxListenerSettings.Logs.Log getLogger(LogType type) {
-		for(JukeboxListenerSettings.Logs.Log l : Settings.get().getLogs().getLog()) {
+	@Override
+	public JukeboxListenerSettings.Logs.Log getLogger() {
+		for(JukeboxListenerSettings.Logs.Log l : this.getSettings().getSettings().getLogs().getLog()) {
 			LogType logType = LogType.valueOf(l.getLogs());
 			
-			if (logType == type)
+			if (logType == this.getLogType())
 				return l;
 		}
 		
 		return null;
 	}
 	
-	public static String getLoggerFilename(LogType type) {
-		JukeboxListenerSettings.Logs.Log l = getLogger(type);
+	@Override
+	public String getLoggerFilename() {
+		JukeboxListenerSettings.Logs.Log l = getLogger();
 		if (l != null)
 			return l.getFilename();
 		
@@ -108,19 +144,19 @@ public class Log {
 	}
 	
 	
-	private static void log(String msg, LogType type, Exception e, String level) {
-		log(msg, type, level);
-		log(e.toString(), type, level);
-		printStackTrace(e, type, level);
+	private void log(String msg, Exception e, String level) {
+		log(msg, level);
+		log(e.toString(), level);
+		printStackTrace(e, level);
 	}
 	
-	private static void printStackTrace(Exception e, LogType type, String level) {
+	private void printStackTrace(Exception e, String level) {
 		for (StackTraceElement ste : e.getStackTrace()) {
-			log(String.format("%s\n", ste), type, level);
+			log(String.format("%s\n", ste), level);
 		}
 	}
 	
-	private static void logToFile(String filename, String msg) {
+	private void logToFile(String filename, String msg) {
 		try {
 			java.io.FileWriter fs = new java.io.FileWriter(filename, true);
 			fs.write(String.format("%s\n", msg));
@@ -131,20 +167,20 @@ public class Log {
 		}
 	}
 	
-	private static void logToConsole(String msg) {
+	private void logToConsole(String msg) {
 		System.out.println(msg);
 	}
 	
-	private static void logToConsole(String msg, Exception e) {
+	private void logToConsole(String msg, Exception e) {
 		System.out.println(msg);
 		System.out.println(e.toString());
 	}
 	
-	private static int getLevel(JukeboxListenerSettings.Logs.Log l) {
+	private int getLevel(JukeboxListenerSettings.Logs.Log l) {
 		return getLevel(l.getLevel());
 	}
 	
-	private static int getLevel(String level) {
+	private int getLevel(String level) {
 		if (level.toUpperCase().equals("DEBUG"))
 			return DEBUG;
 		else if (level.toUpperCase().equals("INFO"))
@@ -158,10 +194,11 @@ public class Log {
 		
 	}
 	
-	private static String getLogString(String msg, String level) {
+	private String getLogString(String msg, String level) {
 		return String.format("%s - [%s] - %s - %s", getDateString(), Thread.currentThread().getId(), level, msg);
 	}
-	public static String getDateString() {
+	
+	private String getDateString() {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	    Date date = new Date();
 	    return dateFormat.format(date);
