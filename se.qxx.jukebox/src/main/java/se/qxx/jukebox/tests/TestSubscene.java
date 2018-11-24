@@ -3,24 +3,17 @@ package se.qxx.jukebox.tests;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+
 import javax.xml.bind.JAXBException;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 
-import se.qxx.jukebox.builders.MovieBuilder;
 import se.qxx.jukebox.builders.MovieBuilderFactory;
 import se.qxx.jukebox.core.Binder;
-import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.MovieOrSeries;
-import se.qxx.jukebox.factories.LoggerFactory;
-import se.qxx.jukebox.factories.NFOScannerFactory;
-import se.qxx.jukebox.interfaces.IDatabase;
-import se.qxx.jukebox.interfaces.IJukeboxLogger;
-import se.qxx.jukebox.interfaces.IMovieBuilderFactory;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.ISubFileDownloaderHelper;
-import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder;
 import se.qxx.jukebox.subtitles.Subscene;
 
