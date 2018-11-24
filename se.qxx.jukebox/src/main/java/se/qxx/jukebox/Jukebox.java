@@ -15,6 +15,7 @@ import se.qxx.jukebox.builders.MovieBuilderFactory;
 import se.qxx.jukebox.concurrent.Executor;
 import se.qxx.jukebox.converter.MediaConverter;
 import se.qxx.jukebox.core.Arguments;
+import se.qxx.jukebox.core.Binder;
 import se.qxx.jukebox.core.Cleaner;
 import se.qxx.jukebox.core.DB;
 import se.qxx.jukebox.core.FileReader;

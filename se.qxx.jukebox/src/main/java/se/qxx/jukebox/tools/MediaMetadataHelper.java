@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.inject.Singleton;
 
 import net.sourceforge.filebot.mediainfo.MediaInfo;
-import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;

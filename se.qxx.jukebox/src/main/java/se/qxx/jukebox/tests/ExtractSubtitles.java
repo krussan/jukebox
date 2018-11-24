@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.google.inject.Injector;
 
-import se.qxx.jukebox.Binder;
+import se.qxx.jukebox.core.Binder;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.interfaces.IDatabase;

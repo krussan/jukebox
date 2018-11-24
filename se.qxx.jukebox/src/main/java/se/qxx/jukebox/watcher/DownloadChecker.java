@@ -7,10 +7,10 @@ import java.util.concurrent.locks.ReentrantLock;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.concurrent.JukeboxThread;
 import se.qxx.jukebox.converter.FileChangedState;
 import se.qxx.jukebox.converter.FileRepresentationState;
+import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IDatabase;

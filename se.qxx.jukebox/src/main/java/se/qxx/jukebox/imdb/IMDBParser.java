@@ -23,7 +23,7 @@ import org.jsoup.select.Elements;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
-import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IFileReader;
 import se.qxx.jukebox.interfaces.IIMDBParser;

@@ -5,8 +5,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
-import se.qxx.jukebox.Log;
-import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.core.Log;
+import se.qxx.jukebox.core.Log.LogType;
 
 public class WakeOnLan {
 

@@ -15,9 +15,9 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
-import se.qxx.jukebox.Log;
-import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.builders.exceptions.SeriesNotSupportedException;
+import se.qxx.jukebox.core.Log;
+import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 
 public class NFOScanner {

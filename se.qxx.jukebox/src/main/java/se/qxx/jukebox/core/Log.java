@@ -1,4 +1,4 @@
-package se.qxx.jukebox;
+package se.qxx.jukebox.core;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

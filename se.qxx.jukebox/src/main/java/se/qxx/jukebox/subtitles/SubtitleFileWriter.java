@@ -16,7 +16,7 @@ import fr.noop.subtitle.model.SubtitleParsingException;
 import fr.noop.subtitle.model.SubtitleWriter;
 import fr.noop.subtitle.srt.SrtParser;
 import fr.noop.subtitle.vtt.VttWriter;
-import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;

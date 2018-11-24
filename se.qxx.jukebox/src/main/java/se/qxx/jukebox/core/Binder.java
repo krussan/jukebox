@@ -1,4 +1,4 @@
-package se.qxx.jukebox;
+package se.qxx.jukebox.core;
 
 import java.util.Arrays;
 import java.util.List;
@@ -13,13 +13,6 @@ import com.google.inject.name.Names;
 import se.qxx.jukebox.builders.MovieBuilderFactory;
 import se.qxx.jukebox.concurrent.Executor;
 import se.qxx.jukebox.converter.MediaConverter;
-import se.qxx.jukebox.core.Arguments;
-import se.qxx.jukebox.core.Cleaner;
-import se.qxx.jukebox.core.DB;
-import se.qxx.jukebox.core.FileReader;
-import se.qxx.jukebox.core.Main;
-import se.qxx.jukebox.core.MovieIdentifier;
-import se.qxx.jukebox.core.Starter;
 import se.qxx.jukebox.factories.FileSystemWatcherFactory;
 import se.qxx.jukebox.factories.IMDBParserFactory;
 import se.qxx.jukebox.factories.LoggerFactory;

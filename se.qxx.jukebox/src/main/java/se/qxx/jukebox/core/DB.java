@@ -17,7 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.inject.Inject;
 import com.google.protobuf.Message;
 
-import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;

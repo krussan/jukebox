@@ -7,40 +7,47 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.io.FilenameUtils;
-import org.mockito.Mock;
 
+import com.google.inject.Inject;
 import com.google.inject.Injector;
 
-import se.qxx.jukebox.Binder;
-import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.builders.NFOLine;
 import se.qxx.jukebox.builders.NFOScanner;
 import se.qxx.jukebox.builders.NfoBuilder;
 import se.qxx.jukebox.builders.exceptions.SeriesNotSupportedException;
+import se.qxx.jukebox.core.Binder;
+import se.qxx.jukebox.core.Log;
+import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
-import se.qxx.jukebox.interfaces.IJukeboxLogger;
-import se.qxx.jukebox.interfaces.IMovieBuilderFactory;
-import se.qxx.jukebox.interfaces.ISettings;
-import se.qxx.jukebox.interfaces.NFOScannerFactory;
 import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.factories.LoggerFactory;
+import se.qxx.jukebox.interfaces.NFOScannerFactory;
 import se.qxx.jukebox.settings.Settings;
 
 public class TestNfoScanner {
 	
+	private Log log;
+	private NFOScannerFactory nfoScannerFactory;
+	private Settings settings;
+
+	@Inject
+	public TestNfoScanner(NFOScannerFactory nfoScannerFactory, Settings settings, LoggerFactory loggerFactory ) {
+		this.nfoScannerFactory = nfoScannerFactory;
+		this.settings = settings;
+		this.log = loggerFactory.create(LogType.FIND);
+	}
+	
 	public static void main(String[] args) throws IOException, JAXBException, SeriesNotSupportedException {
 		Injector injector = Binder.setupBindings(args);
-		NFOScannerFactory nfoScannerFactory = injector.getInstance(NFOScannerFactory.class);
-		ISettings settings = injector.getInstance(ISettings.class);
-		LoggerFactory loggerFactory = injector.getInstance(LoggerFactory.class);
-		IJukeboxLogger log = loggerFactory.create(LogType.FIND);
-		
-	    String FileName = "example.nfo";
-	    System.out.println(String.format("Nr of args\t\t::%s", args.length));
+		TestNfoScanner prog = injector.getInstance(TestNfoScanner.class);
+	    
 	    if (args.length > 0)
-	        FileName = args[0];
-
-	    NFOScanner scanner = nfoScannerFactory.create(new File(FileName));
+	        prog.execute(args[0]);
+	    	    
+	}
+	
+	public void execute(String fileName) throws SeriesNotSupportedException {
+	    NFOScanner scanner = nfoScannerFactory.create(new File(fileName));
 	    List<NFOLine> lines = scanner.scan();
 	    
 	    for (int i = 0;i<lines.size();i++) {
@@ -51,8 +58,8 @@ public class TestNfoScanner {
 	    System.out.println("--------------------------------------------------------------");
 	    System.out.println("--------------------------------------------------------------");
 
-		String filePath = FilenameUtils.getFullPath(FileName);
-		String singleFile = FilenameUtils.getName(FileName);
+		String filePath = FilenameUtils.getFullPath(fileName);
+		String singleFile = FilenameUtils.getName(fileName);
  
 		NfoBuilder builder = new NfoBuilder(settings, log);
 		
@@ -66,6 +73,6 @@ public class TestNfoScanner {
 	    System.out.println(String.format("LANGUAGE\t::\t%s", m.getLanguage()));
 	    System.out.println(String.format("ID-RATING\t::\t%s", m.getIdentifierRating()));
 	    System.out.println(String.format("IMDB-URL\t::\t%s", m.getImdbUrl()));
-	    	    
+
 	}
 }

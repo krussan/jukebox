@@ -8,10 +8,10 @@ import javax.xml.bind.JAXBException;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 
-import se.qxx.jukebox.Binder;
-import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.builders.MovieBuilder;
 import se.qxx.jukebox.builders.MovieBuilderFactory;
+import se.qxx.jukebox.core.Binder;
+import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IDatabase;
