@@ -12,7 +12,6 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 
 import se.qxx.jukebox.builders.NFOLine;
-import se.qxx.jukebox.builders.NFOScanner;
 import se.qxx.jukebox.builders.NfoBuilder;
 import se.qxx.jukebox.builders.exceptions.SeriesNotSupportedException;
 import se.qxx.jukebox.core.Binder;
@@ -21,7 +20,8 @@ import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.factories.LoggerFactory;
-import se.qxx.jukebox.interfaces.NFOScannerFactory;
+import se.qxx.jukebox.factories.NFOScannerFactory;
+import se.qxx.jukebox.interfaces.INFOScanner;
 import se.qxx.jukebox.settings.Settings;
 
 public class TestNfoScanner {
@@ -47,7 +47,7 @@ public class TestNfoScanner {
 	}
 	
 	public void execute(String fileName) throws SeriesNotSupportedException {
-	    NFOScanner scanner = nfoScannerFactory.create(new File(fileName));
+	    INFOScanner scanner = nfoScannerFactory.create(new File(fileName));
 	    List<NFOLine> lines = scanner.scan();
 	    
 	    for (int i = 0;i<lines.size();i++) {

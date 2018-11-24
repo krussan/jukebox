@@ -19,8 +19,9 @@ import se.qxx.jukebox.builders.exceptions.SeriesNotSupportedException;
 import se.qxx.jukebox.core.Log;
 import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
+import se.qxx.jukebox.interfaces.INFOScanner;
 
-public class NFOScanner {
+public class NFOScanner implements INFOScanner {
 	private final String[] presentsKeywords = {"presents"};
 	private final String[] releaseKeywords = {"release", "release name"};
 	private final String[] titleKeywords = {"title", "presents", "original title"};
@@ -55,6 +56,10 @@ public class NFOScanner {
 		this.log = log;
 	}
 
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.builders.INFOScanner#getNfoFile()
+	 */
+	@Override
 	public File getNfoFile() {
 		return nfoFile;
 	}
@@ -64,6 +69,10 @@ public class NFOScanner {
 	}
 
 	
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.builders.INFOScanner#scan()
+	 */
+	@Override
 	public List<NFOLine> scan() throws SeriesNotSupportedException {
 		ArrayList<NFOLine> list = new ArrayList<NFOLine>();
 		

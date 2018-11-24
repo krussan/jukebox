@@ -11,11 +11,13 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
 
 import se.qxx.jukebox.builders.MovieBuilderFactory;
+import se.qxx.jukebox.builders.NFOScanner;
 import se.qxx.jukebox.concurrent.Executor;
 import se.qxx.jukebox.converter.MediaConverter;
 import se.qxx.jukebox.factories.FileSystemWatcherFactory;
 import se.qxx.jukebox.factories.IMDBParserFactory;
 import se.qxx.jukebox.factories.LoggerFactory;
+import se.qxx.jukebox.factories.NFOScannerFactory;
 import se.qxx.jukebox.imdb.IMDBFinder;
 import se.qxx.jukebox.imdb.IMDBParser;
 import se.qxx.jukebox.imdb.IMDBUrlRewrite;
@@ -35,9 +37,11 @@ import se.qxx.jukebox.interfaces.IImdbSettings;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IMain;
 import se.qxx.jukebox.interfaces.IMediaConverter;
+import se.qxx.jukebox.interfaces.IMediaMetadataHelper;
 import se.qxx.jukebox.interfaces.IMkvSubtitleReader;
 import se.qxx.jukebox.interfaces.IMovieBuilderFactory;
 import se.qxx.jukebox.interfaces.IMovieIdentifier;
+import se.qxx.jukebox.interfaces.INFOScanner;
 import se.qxx.jukebox.interfaces.IParserSettings;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.IStarter;
@@ -48,8 +52,10 @@ import se.qxx.jukebox.interfaces.ISubtitleFileWriter;
 import se.qxx.jukebox.interfaces.ITcpListener;
 import se.qxx.jukebox.interfaces.IUnpacker;
 import se.qxx.jukebox.interfaces.IUpgrader;
+import se.qxx.jukebox.interfaces.IWakeOnLan;
 import se.qxx.jukebox.interfaces.IWebRetriever;
 import se.qxx.jukebox.servercomm.TcpListener;
+import se.qxx.jukebox.servercomm.WakeOnLan;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.imdb.ImdbSettings;
 import se.qxx.jukebox.settings.parser.ParserSettings;
@@ -57,6 +63,7 @@ import se.qxx.jukebox.subtitles.MkvSubtitleReader;
 import se.qxx.jukebox.subtitles.SubFileDownloaderHelper;
 import se.qxx.jukebox.subtitles.SubtitleDownloader;
 import se.qxx.jukebox.subtitles.SubtitleFileWriter;
+import se.qxx.jukebox.tools.MediaMetadataHelper;
 import se.qxx.jukebox.tools.Unpacker;
 import se.qxx.jukebox.tools.WebRetriever;
 import se.qxx.jukebox.upgrade.Upgrader;
@@ -77,51 +84,78 @@ public class Binder {
 					.annotatedWith(Names.named("Commandline arguments"))
 					.toInstance(Arrays.asList(args));
 				
-				bind(IArguments.class).to(Arguments.class).asEagerSingleton();
+				//Settings
 				bind(ISettings.class).to(Settings.class);
 				bind(IImdbSettings.class).to(ImdbSettings.class);
 				bind(IParserSettings.class).to(ParserSettings.class);
-				bind(IStreamingWebServer.class).to(StreamingWebServer.class);
+				
+				//Core
+				bind(IArguments.class).to(Arguments.class).asEagerSingleton();
+				bind(IExecutor.class).to(Executor.class);
+				bind(IMain.class).to(Main.class);
 				bind(IDatabase.class).to(DB.class);
 				bind(IUpgrader.class).to(Upgrader.class);
 				bind(IStarter.class).to(Starter.class);
-				bind(IExecutor.class).to(Executor.class);
-				bind(IMain.class).to(Main.class);
-				bind(ISubtitleDownloader.class).to(SubtitleDownloader.class);
+				
+				//Webserver
+				bind(IStreamingWebServer.class).to(StreamingWebServer.class);
+				
+				//Watcher
 				bind(ICleaner.class).to(Cleaner.class);
-				bind(IIMDBFinder.class).to(IMDBFinder.class);
-				bind(IMovieIdentifier.class).to(MovieIdentifier.class);
-				bind(ITcpListener.class).to(TcpListener.class);
 				bind(IDownloadChecker.class).to(DownloadChecker.class);
-				bind(IMediaConverter.class).to(MediaConverter.class);
-				bind(IDistributor.class).to(Distributor.class);
-				bind(IMovieBuilderFactory.class).to(MovieBuilderFactory.class);
-				bind(IFileReader.class).to(FileReader.class);
-				bind(IWebRetriever.class).to(WebRetriever.class);
-				bind(IIMDBUrlRewrite.class).to(IMDBUrlRewrite.class);
-				
-				bind(ISubFileDownloaderHelper.class).to(SubFileDownloaderHelper.class);
-				bind(ISubtitleFileWriter.class).to(SubtitleFileWriter.class);
-				bind(IMkvSubtitleReader.class).to(MkvSubtitleReader.class);
-				
-				bind(IUnpacker.class).to(Unpacker.class);
-				
 				bind(IFileCreatedHandler.class).to(FileCreatedHandler.class);
+				bind(IFileReader.class).to(FileReader.class);
+				bind(IMediaMetadataHelper.class).to(MediaMetadataHelper.class);
+				bind(IMovieBuilderFactory.class).to(MovieBuilderFactory.class);
+				bind(IMovieIdentifier.class).to(MovieIdentifier.class);
+
+				install(
+					new FactoryModuleBuilder()
+						.implement(IFileSystemWatcher.class, FileSystemWatcher.class)
+						.build(FileSystemWatcherFactory.class));
+
+				install(
+					new FactoryModuleBuilder()
+						.implement(INFOScanner.class, NFOScanner.class)
+						.build(NFOScannerFactory.class));
+
+
+				//IMDB
+				bind(IIMDBFinder.class).to(IMDBFinder.class);
+				bind(IIMDBUrlRewrite.class).to(IMDBUrlRewrite.class);
 				
 				install(
 					new FactoryModuleBuilder()
 						.implement(IIMDBParser.class, IMDBParser.class)
 						.build(IMDBParserFactory.class));
+
 				
+				//Tcp Listener
+				bind(ITcpListener.class).to(TcpListener.class);
+
+				//Converter
+				bind(IMediaConverter.class).to(MediaConverter.class);
+				
+				//Comm
+				bind(IDistributor.class).to(Distributor.class);
+				bind(IWebRetriever.class).to(WebRetriever.class);
+				bind(IWakeOnLan.class).to(WakeOnLan.class);
+				
+				//Subs
+				bind(ISubtitleDownloader.class).to(SubtitleDownloader.class);
+				bind(ISubFileDownloaderHelper.class).to(SubFileDownloaderHelper.class);
+				bind(ISubtitleFileWriter.class).to(SubtitleFileWriter.class);
+				bind(IMkvSubtitleReader.class).to(MkvSubtitleReader.class);
+				
+				//Unpacker
+				bind(IUnpacker.class).to(Unpacker.class);
+			
+				//Log
 				install(
 						new FactoryModuleBuilder()
 							.implement(IJukeboxLogger.class, Log.class)
 							.build(LoggerFactory.class));
 					
-				install(
-						new FactoryModuleBuilder()
-							.implement(IFileSystemWatcher.class, FileSystemWatcher.class)
-							.build(FileSystemWatcherFactory.class));
 			}
 		});
 		

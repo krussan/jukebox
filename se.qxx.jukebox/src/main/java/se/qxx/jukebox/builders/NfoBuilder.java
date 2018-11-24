@@ -14,6 +14,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Identifier;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
+import se.qxx.jukebox.interfaces.INFOScanner;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.watcher.ExtensionFileFilter;
 
@@ -36,7 +37,7 @@ public class NfoBuilder extends MovieBuilder {
 			if (nfoFile != null) {			
 				this.getLog().Debug(String.format("NfoBuilder :: Opening file :: %s", nfoFile.getAbsolutePath()));
 			
-				NFOScanner scanner = new NFOScanner(this.getLog(), nfoFile);
+				INFOScanner scanner = new NFOScanner(this.getLog(), nfoFile);
 				List<NFOLine> lines = scanner.scan();
 				
 				String 	title = "",  	
