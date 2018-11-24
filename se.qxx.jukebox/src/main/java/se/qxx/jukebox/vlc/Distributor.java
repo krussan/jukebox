@@ -10,16 +10,16 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
-import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.Sorter;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IDistributor;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.ISettings;
+import se.qxx.jukebox.interfaces.IWakeOnLan;
 import se.qxx.jukebox.servercomm.HibernatorClientConnection;
-import se.qxx.jukebox.servercomm.WakeOnLan;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog.LocalPaths.Path;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Players.Server;
@@ -32,14 +32,24 @@ public class Distributor implements IDistributor {
 
 	private ISettings settings;
 	private IJukeboxLogger log;
+	private IWakeOnLan wakeOnLan;
 	
 	@Inject
-	public Distributor(ISettings settings, LoggerFactory loggerFactory) {
+	public Distributor(ISettings settings, LoggerFactory loggerFactory, IWakeOnLan wakeOnLan) {
+		this.setWakeOnLan(wakeOnLan);
 		this.connectors = new Hashtable<String, VLCConnection>();
 		this.setSettings(settings);
 		this.setLog(loggerFactory.create(LogType.COMM));
 	}
 	
+	public IWakeOnLan getWakeOnLan() {
+		return wakeOnLan;
+	}
+
+	public void setWakeOnLan(IWakeOnLan wakeOnLan) {
+		this.wakeOnLan = wakeOnLan;
+	}
+
 	public IJukeboxLogger getLog() {
 		return log;
 	}
@@ -306,7 +316,7 @@ public class Distributor implements IDistributor {
 		
 		try {
 		if (s != null) {
-			WakeOnLan.sendPacket(s.getBroadcastAddress(), s.getMacAddress());
+			wakeOnLan.sendPacket(s.getBroadcastAddress(), s.getMacAddress());
 			this.getLog().Info("Wake-on-LAN packet sent");
 			return true;
 		}
