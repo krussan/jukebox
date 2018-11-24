@@ -8,7 +8,6 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
-import com.google.inject.assistedinject.FactoryProvider;
 import com.google.inject.name.Names;
 
 import se.qxx.jukebox.builders.MovieBuilderFactory;
@@ -21,7 +20,6 @@ import se.qxx.jukebox.core.FileReader;
 import se.qxx.jukebox.core.Main;
 import se.qxx.jukebox.core.MovieIdentifier;
 import se.qxx.jukebox.core.Starter;
-import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.factories.FileSystemWatcherFactory;
 import se.qxx.jukebox.factories.IMDBParserFactory;
 import se.qxx.jukebox.factories.LoggerFactory;
@@ -75,18 +73,66 @@ import se.qxx.jukebox.watcher.IDownloadChecker;
 import se.qxx.jukebox.watcher.IFileCreatedHandler;
 import se.qxx.jukebox.webserver.StreamingWebServer;
 
-public class Jukebox {
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		Injector injector = Binder.setupBindings(args);
-		Starter starter = injector.getInstance(Starter.class);
-		Main main = injector.getInstance(Main.class);
+public class Binder {
+	public static Injector setupBindings(String[] args) {
 		
-		if (starter.checkStart())
-			main.run();
+		Injector injector = Guice.createInjector(new AbstractModule() {
+			
+			@Override
+			protected void configure() {
+				bind(new TypeLiteral<List<String>>() {})
+					.annotatedWith(Names.named("Commandline arguments"))
+					.toInstance(Arrays.asList(args));
+				
+				bind(IArguments.class).to(Arguments.class).asEagerSingleton();
+				bind(ISettings.class).to(Settings.class);
+				bind(IImdbSettings.class).to(ImdbSettings.class);
+				bind(IParserSettings.class).to(ParserSettings.class);
+				bind(IStreamingWebServer.class).to(StreamingWebServer.class);
+				bind(IDatabase.class).to(DB.class);
+				bind(IUpgrader.class).to(Upgrader.class);
+				bind(IStarter.class).to(Starter.class);
+				bind(IExecutor.class).to(Executor.class);
+				bind(IMain.class).to(Main.class);
+				bind(ISubtitleDownloader.class).to(SubtitleDownloader.class);
+				bind(ICleaner.class).to(Cleaner.class);
+				bind(IIMDBFinder.class).to(IMDBFinder.class);
+				bind(IMovieIdentifier.class).to(MovieIdentifier.class);
+				bind(ITcpListener.class).to(TcpListener.class);
+				bind(IDownloadChecker.class).to(DownloadChecker.class);
+				bind(IMediaConverter.class).to(MediaConverter.class);
+				bind(IDistributor.class).to(Distributor.class);
+				bind(IMovieBuilderFactory.class).to(MovieBuilderFactory.class);
+				bind(IFileReader.class).to(FileReader.class);
+				bind(IWebRetriever.class).to(WebRetriever.class);
+				bind(IIMDBUrlRewrite.class).to(IMDBUrlRewrite.class);
+				
+				bind(ISubFileDownloaderHelper.class).to(SubFileDownloaderHelper.class);
+				bind(ISubtitleFileWriter.class).to(SubtitleFileWriter.class);
+				bind(IMkvSubtitleReader.class).to(MkvSubtitleReader.class);
+				
+				bind(IUnpacker.class).to(Unpacker.class);
+				
+				bind(IFileCreatedHandler.class).to(FileCreatedHandler.class);
+				
+				install(
+					new FactoryModuleBuilder()
+						.implement(IIMDBParser.class, IMDBParser.class)
+						.build(IMDBParserFactory.class));
+				
+				install(
+						new FactoryModuleBuilder()
+							.implement(IJukeboxLogger.class, Log.class)
+							.build(LoggerFactory.class));
+					
+				install(
+						new FactoryModuleBuilder()
+							.implement(IFileSystemWatcher.class, FileSystemWatcher.class)
+							.build(FileSystemWatcherFactory.class));
+			}
+		});
+		
+		return injector;
 	}
-
 
 }

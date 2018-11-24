@@ -1,14 +1,18 @@
 package se.qxx.jukebox.tests;
 
 import java.io.IOException;
+
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang3.StringUtils;
 
-import se.qxx.jukebox.core.DB;
+import com.google.inject.Injector;
+
+import se.qxx.jukebox.Binder;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
-import se.qxx.jukebox.tools.Util;
+import se.qxx.jukebox.interfaces.IDatabase;
+import se.qxx.jukebox.interfaces.ISubtitleFileWriter;
 
 public class ExtractSubtitles {
 
@@ -18,15 +22,18 @@ public class ExtractSubtitles {
 			try {
 				
 				Media md = null;
+				Injector injector = Binder.setupBindings(args);
+				IDatabase db = injector.getInstance(IDatabase.class);
+				ISubtitleFileWriter fileWriter = injector.getInstance(ISubtitleFileWriter.class);
 				
 				if (StringUtils.isNumeric(args[0])) {
 					int id = Integer.parseInt(args[0]);
-					md = DB.getMediaById(id);
+					md = db.getMediaById(id);
 					
  					if (md != null) { 
 						for (Subtitle sub : md.getSubsList()) {
-							Util.writeSubtitleToTempFile(sub);
-							Util.writeSubtitleToTempFileVTT(sub);
+							fileWriter.writeSubtitleToTempFile(sub);
+							fileWriter.writeSubtitleToTempFileVTT(sub);
 						}
  					}
 					else 
@@ -47,6 +54,6 @@ public class ExtractSubtitles {
 			System.out.println("No arguments");
 		}
 	}
-	
+
 
 }

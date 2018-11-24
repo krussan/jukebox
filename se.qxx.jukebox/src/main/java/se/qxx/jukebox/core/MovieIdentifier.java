@@ -25,10 +25,10 @@ import se.qxx.jukebox.interfaces.IArguments;
 import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.IIMDBFinder;
+import se.qxx.jukebox.interfaces.IMediaMetadataHelper;
 import se.qxx.jukebox.interfaces.IMovieBuilderFactory;
 import se.qxx.jukebox.interfaces.IMovieIdentifier;
 import se.qxx.jukebox.interfaces.ISubtitleDownloader;
-import se.qxx.jukebox.tools.MediaMetadata;
 import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.watcher.FileRepresentation;
 
@@ -42,6 +42,7 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 	private ISubtitleDownloader subtitleDownloader;
 	private IIMDBFinder imdbFinder;
 	private IMovieBuilderFactory movieBuilderFactory;
+	private IMediaMetadataHelper mediaHelper;
 
 	@Inject
 	private MovieIdentifier(IExecutor executor, 
@@ -50,8 +51,10 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 			ISubtitleDownloader subtitleDownloader,
 			IIMDBFinder imdbFinder,
 			IMovieBuilderFactory movieBuilderFactory,
-			LoggerFactory loggerFactory) {
+			LoggerFactory loggerFactory,
+			IMediaMetadataHelper mediaHelper) {
 		super("MovieIdentifier", 0, loggerFactory.create(LogType.FIND), executor);
+		this.setMediaHelper(mediaHelper);
 		
 		this.setDatabase(database);
 		this.setArguments(arguments);
@@ -61,6 +64,16 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 		
 		this.files = new ConcurrentLinkedQueue<FileRepresentation>();
 		this.seriesLocks = new StringLockPool();
+	}
+
+
+	public IMediaMetadataHelper getMediaHelper() {
+		return mediaHelper;
+	}
+
+
+	public void setMediaHelper(IMediaMetadataHelper mediaHelper) {
+		this.mediaHelper = mediaHelper;
 	}
 
 
@@ -366,7 +379,7 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 
 		// Get media information from MediaInfo library
 		if (this.getArguments().isMediaInfoEnabled()) {
-			Media md = MediaMetadata.addMediaMetadata(media);
+			Media md = this.getMediaHelper().addMediaMetadata(media);
 
 			movie = Movie.newBuilder(movie).clearMedia().addMedia(md).build();
 		}
@@ -405,7 +418,7 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 
 		// Get media information from MediaInfo library
 		if (this.getArguments().isMediaInfoEnabled()) {
-			Media md = MediaMetadata.addMediaMetadata(media);
+			Media md = this.getMediaHelper().addMediaMetadata(media);
 
 			ep = Episode.newBuilder(ep).clearMedia().addMedia(md).build();
 		}
@@ -438,7 +451,7 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 		if (!mediaExists(movie, media)) {
 			// Add media metadata
 			if (this.getArguments().isMediaInfoEnabled())
-				media = MediaMetadata.addMediaMetadata(media);
+				media = this.getMediaHelper().addMediaMetadata(media);
 
 			// If movie exist but not the media then add the media
 			this.getDatabase().save(Movie.newBuilder(movie).addMedia(media).build());
@@ -456,7 +469,7 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 		if (!mediaExists(e, media)) {
 			// Add media metadata
 			if (this.getArguments().isMediaInfoEnabled())
-				media = MediaMetadata.addMediaMetadata(media);
+				media = this.getMediaHelper().addMediaMetadata(media);
 
 			// If movie exist but not the media then add the media
 			this.getDatabase().save(Episode.newBuilder(e).addMedia(media).build());

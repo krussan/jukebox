@@ -7,8 +7,16 @@ import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.inject.Injector;
+
+import se.qxx.jukebox.Binder;
+import se.qxx.jukebox.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
+import se.qxx.jukebox.factories.LoggerFactory;
+import se.qxx.jukebox.interfaces.IJukeboxLogger;
+import se.qxx.jukebox.interfaces.ISettings;
+import se.qxx.jukebox.interfaces.NFOScannerFactory;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.protodb.ProtoDB;
 import se.qxx.protodb.ProtoDBFactory;
@@ -18,12 +26,14 @@ import se.qxx.protodb.model.ProtoDBSearchOperator;
 public class TestSeriesFinder {
 
 	public static void main(String[] args) throws IOException, JAXBException {
-		Settings.initialize();
+		Injector injector = Binder.setupBindings(args);
+		ISettings settings = injector.getInstance(ISettings.class);
+		LoggerFactory loggerFactory = injector.getInstance(LoggerFactory.class);
 		
 		if (args.length > 0) {
 			try {
-				String driver = Settings.get().getDatabase().getDriver();
-				String connectionString = Settings.get().getDatabase().getConnectionString();
+				String driver = settings.getSettings().getDatabase().getDriver();
+				String connectionString = settings.getSettings().getDatabase().getConnectionString();
 				ProtoDB db = ProtoDBFactory.getInstance(driver, connectionString, "protodb_test.log");
 				
 				Series s = null;

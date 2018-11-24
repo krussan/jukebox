@@ -4,16 +4,22 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.io.FilenameUtils;
+
+import com.google.inject.Injector;
+
+import se.qxx.jukebox.Binder;
 import se.qxx.jukebox.builders.MovieBuilder;
 import se.qxx.jukebox.domain.MovieOrSeries;
+import se.qxx.jukebox.interfaces.IIMDBFinder;
+import se.qxx.jukebox.interfaces.IMovieBuilderFactory;
 import se.qxx.jukebox.settings.Settings;
 
 public class TestMovieBuilder {
 
 	public static void main(String[] args) throws IOException, JAXBException {
 		if (args.length > 0) {
-			
-			Settings.initialize();	
+			Injector injector = Binder.setupBindings(args);
+			IMovieBuilderFactory movieBuilderFactory = injector.getInstance(IMovieBuilderFactory.class);
 			
 			String filename = args[0];
 			
@@ -23,7 +29,7 @@ public class TestMovieBuilder {
 			System.out.println(filePath);
 			System.out.println(singleFile);
 			
-			MovieOrSeries mos = MovieBuilder.identify(filePath, singleFile);
+			MovieOrSeries mos = movieBuilderFactory.identify(filePath, singleFile);
 
 			System.out.println(String.format("Movie identified by :: %s", mos.getIdentifier()));
 			

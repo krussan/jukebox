@@ -4,18 +4,23 @@ import java.io.IOException;
 
 import javax.xml.bind.JAXBException;
 
+import com.google.inject.Injector;
+
+import se.qxx.jukebox.Binder;
 import se.qxx.jukebox.core.DB;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.settings.Settings;
 
 public class TestGetMovie {
 
 	public static void main(String[] args) throws IOException, JAXBException {
-		Settings.initialize();
-		
+		Injector injector = Binder.setupBindings(args);
+		IDatabase db = injector.getInstance(IDatabase.class);
+
 		if (args.length > 0) {
 			try {
-				Movie m = DB.getMovie(
+				Movie m = db.getMovie(
 					Integer.parseInt(args[0]));
 				
 					
