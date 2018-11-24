@@ -2,6 +2,7 @@ package se.qxx.jukebox.settings;
 
 import java.io.File;
 import java.io.IOException;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -11,16 +12,12 @@ import javax.xml.transform.stream.StreamSource;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import se.qxx.jukebox.Jukebox;
 import se.qxx.jukebox.interfaces.IImdbSettings;
 import se.qxx.jukebox.interfaces.IParserSettings;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.IStreamingWebServer;
 import se.qxx.jukebox.settings.imdb.Imdb;
-import se.qxx.jukebox.settings.imdb.ImdbSettings;
 import se.qxx.jukebox.settings.parser.Parser;
-import se.qxx.jukebox.settings.parser.ParserSettings;
-import se.qxx.jukebox.webserver.StreamingWebServer;
 
 @Singleton
 public class Settings implements ISettings {
@@ -31,10 +28,12 @@ public class Settings implements ISettings {
 	public int serverPort = 45444;	
 	
 	@Inject
-	public Settings(IImdbSettings imdbSettings, IParserSettings parserSettings, IStreamingWebServer webServer) {
+	public Settings(IImdbSettings imdbSettings, IParserSettings parserSettings, IStreamingWebServer webServer) throws IOException, JAXBException {
 		this.setImdbSettings(imdbSettings);
 		this.setParserSettings(parserSettings);
 		this.setWebServer(webServer);
+		
+		initialize();
 	}
 	
 	public JukeboxListenerSettings getSettings() {
@@ -75,10 +74,15 @@ public class Settings implements ISettings {
 	@Override
 	public void initialize() throws IOException, JAXBException {
 		readSettings();
-		this.getImdbSettings().readSettings();
-		this.getParserSettings().readSettings();
 		
-		this.getWebServer().initializeMappings();
+		if (this.getImdbSettings() != null)
+			this.getImdbSettings().readSettings();
+		
+		if (this.getParserSettings() != null)
+			this.getParserSettings().readSettings();
+
+		if (this.getWebServer() != null)
+			this.getWebServer().initializeMappings();
 	}
 	
 	/* (non-Javadoc)

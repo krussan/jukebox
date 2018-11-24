@@ -15,22 +15,44 @@ import java.util.ArrayList;
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.junit.Before;
 import org.junit.Test;
 
+import se.qxx.jukebox.core.FileReader;
+import se.qxx.jukebox.factories.IMDBParserFactory;
 import se.qxx.jukebox.imdb.IMDBFinder;
+import se.qxx.jukebox.imdb.IMDBParser;
 import se.qxx.jukebox.imdb.IMDBRecord;
+import se.qxx.jukebox.imdb.IMDBUrlRewrite;
+import se.qxx.jukebox.interfaces.IFileReader;
+import se.qxx.jukebox.interfaces.IIMDBUrlRewrite;
+import se.qxx.jukebox.interfaces.IImdbSettings;
+import se.qxx.jukebox.interfaces.IParserSettings;
 import se.qxx.jukebox.settings.Settings;
+import se.qxx.jukebox.settings.imdb.ImdbSettings;
+import se.qxx.jukebox.settings.parser.ParserSettings;
 
 public class TestImdbParser {
 	@Before
 	public void init() throws IOException, JAXBException {
-		Settings.initialize();
 	}
 	
 	@Test
 	public void TestImdbMovie() throws IOException {
 		String movieHtml = readResource("TestImdb1.html");
+
+		Document doc = Jsoup.parse(movieHtml);
+		
+		IParserSettings parserSettings = new ParserSettings();
+		IImdbSettings imdbSettings = new ImdbSettings();
+		Settings settings = new Settings(imdbSettings, parserSettings, null);
+		IFileReader fileReader = new FileReader();
+		IIMDBUrlRewrite urlRewrite = new IMDBUrlRewrite();
+		
+		IMDBParser parser = new IMDBParser(fileReader, settings, urlRewrite, loggerFactory, doc)
+		
 		IMDBRecord rec = IMDBRecord.parse(StringUtils.EMPTY, movieHtml);
 		
 		assertEquals("The Amazing Spider-Man 2", rec.getTitle());

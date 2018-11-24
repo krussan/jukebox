@@ -16,7 +16,7 @@ import se.qxx.jukebox.interfaces.IImdbSettings;
 public class ImdbSettings implements IImdbSettings {
 	private Imdb imdb;
 	
-	private ImdbSettings() {
+	public ImdbSettings() {
 	}
 	
 	public Imdb getImdb() {

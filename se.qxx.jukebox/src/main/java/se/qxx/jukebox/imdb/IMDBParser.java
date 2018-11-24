@@ -15,7 +15,6 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -36,7 +35,6 @@ public class IMDBParser implements IIMDBParser {
 	private IFileReader fileReader;
 	private ISettings settings;
 	private IIMDBUrlRewrite urlRewrite;
-	private IWebRetriever webRetriever;
 	private Document document;
 	private IJukeboxLogger log;
 
@@ -54,10 +52,10 @@ public class IMDBParser implements IIMDBParser {
 		this.setFileReader(fileReader);
 		this.setSettings(settings);
 		this.setDocument(document);
-		this.setUrlRewrite(urlRewrite);
-		this.setWebRetriever(webRetriever);
+		this.setUrlRewrite(urlRewrite);	
 		
-		this.setLog(loggerFactory.create(LogType.IMDB));
+		if (loggerFactory != null)
+			this.setLog(loggerFactory.create(LogType.IMDB));
 	}
 	
 
@@ -68,15 +66,6 @@ public class IMDBParser implements IIMDBParser {
 
 	public void setLog(IJukeboxLogger log) {
 		this.log = log;
-	}
-
-
-	public IWebRetriever getWebRetriever() {
-		return webRetriever;
-	}
-
-	public void setWebRetriever(IWebRetriever webRetriever) {
-		this.webRetriever = webRetriever;
 	}
 
 	public IIMDBUrlRewrite getUrlRewrite() {
@@ -352,7 +341,6 @@ public class IMDBParser implements IIMDBParser {
 	public IMDBRecord parse(String url, String webResult) {
 		IMDBRecord rec = new IMDBRecord(url);
 		
-		Document doc = Jsoup.parse(webResult);
 		this.getLog().Debug(String.format("IMDBRECORD :: Initializing parsing"));
 		
 		rec.setTitle(this.parseTitle());
