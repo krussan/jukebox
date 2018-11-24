@@ -2,6 +2,8 @@ package se.qxx.jukebox.watcher;
 
 import com.google.inject.Inject;
 
+import se.qxx.jukebox.interfaces.IDownloadChecker;
+import se.qxx.jukebox.interfaces.IFileCreatedHandler;
 import se.qxx.jukebox.interfaces.IMovieIdentifier;
 
 public class FileCreatedHandler implements IFileCreatedHandler {

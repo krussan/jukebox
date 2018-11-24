@@ -1,4 +1,4 @@
-package se.qxx.jukebox.servercomm;
+package se.qxx.jukebox.interfaces;
 
 import java.io.IOException;
 

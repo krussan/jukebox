@@ -11,7 +11,9 @@ import se.qxx.jukebox.factories.FileSystemWatcherFactory;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IArguments;
 import se.qxx.jukebox.interfaces.ICleaner;
+import se.qxx.jukebox.interfaces.IDownloadChecker;
 import se.qxx.jukebox.interfaces.IExecutor;
+import se.qxx.jukebox.interfaces.IFileCreatedHandler;
 import se.qxx.jukebox.interfaces.IFileSystemWatcher;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IMain;
@@ -25,8 +27,6 @@ import se.qxx.jukebox.settings.JukeboxListenerSettings;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
 import se.qxx.jukebox.watcher.ExtensionFileFilter;
 import se.qxx.jukebox.watcher.FileRepresentation;
-import se.qxx.jukebox.watcher.IDownloadChecker;
-import se.qxx.jukebox.watcher.IFileCreatedHandler;
 
 public class Main implements IMain, IFileCreatedHandler
 {

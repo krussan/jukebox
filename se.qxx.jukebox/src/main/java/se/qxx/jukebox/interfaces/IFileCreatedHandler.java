@@ -1,4 +1,6 @@
-package se.qxx.jukebox.watcher;
+package se.qxx.jukebox.interfaces;
+
+import se.qxx.jukebox.watcher.FileRepresentation;
 
 public interface IFileCreatedHandler {
 	public void fileModified(FileRepresentation f);

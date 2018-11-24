@@ -7,8 +7,8 @@ import com.google.inject.Injector;
 
 import se.qxx.jukebox.core.Binder;
 import se.qxx.jukebox.interfaces.IDatabase;
+import se.qxx.jukebox.interfaces.IMkvSubtitleReader;
 import se.qxx.jukebox.interfaces.ISubtitleFileWriter;
-import se.qxx.jukebox.subtitles.IMkvSubtitleReader;
 import se.qxx.jukebox.subtitles.MkvSubtitleReader;
 
 public class TestExtractMkv {

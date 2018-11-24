@@ -1,4 +1,4 @@
-package se.qxx.jukebox.subtitles;
+package se.qxx.jukebox.interfaces;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

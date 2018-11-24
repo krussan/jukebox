@@ -1,5 +1,7 @@
 package se.qxx.jukebox.watcher;
 
+import se.qxx.jukebox.interfaces.IFileCreatedHandler;
+
 public class FileChangedThread implements Runnable {
 
 	private IFileCreatedHandler client;
