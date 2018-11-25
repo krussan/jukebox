@@ -8,6 +8,7 @@ import java.util.TreeSet;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.google.inject.name.Named;
 
 import se.qxx.jukebox.concurrent.JukeboxThread;
 import se.qxx.jukebox.core.Log.LogType;
@@ -81,12 +82,12 @@ public class FileSystemWatcher extends JukeboxThread implements IFileSystemWatch
 	@Inject
 	public FileSystemWatcher(LoggerFactory loggerFactory,
 			IExecutor executor,
-			@Assisted String name, 
-			@Assisted String directoryName, 
+			@Assisted("Name") String name, 
+			@Assisted("Directory") String directoryName, 
 			@Assisted ExtensionFileFilter filter, 
-			@Assisted boolean watchCreated,
-			@Assisted boolean watchModified, 
-			@Assisted boolean recurse, 
+			@Assisted("WatchCreated") boolean watchCreated,
+			@Assisted("WatchModified") boolean watchModified, 
+			@Assisted("Recurse") boolean recurse, 
 			@Assisted int waitTime) {
 		super(name, waitTime, loggerFactory.create(LogType.FIND), executor);
 		

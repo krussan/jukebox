@@ -16,8 +16,8 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
 import se.qxx.jukebox.builders.exceptions.SeriesNotSupportedException;
-import se.qxx.jukebox.core.Log;
 import se.qxx.jukebox.core.Log.LogType;
+import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.INFOScanner;
 
@@ -43,8 +43,8 @@ public class NFOScanner implements INFOScanner {
 	private IJukeboxLogger log;
 
 	@Inject
-	public NFOScanner(IJukeboxLogger log, @Assisted File file) { 
-		this.setLog(log);
+	public NFOScanner(LoggerFactory loggerFactory, @Assisted File file) { 
+		this.setLog(loggerFactory.create(LogType.FIND));
 		this.setNfoFile(file);
 	}
 

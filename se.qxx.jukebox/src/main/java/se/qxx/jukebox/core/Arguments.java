@@ -3,13 +3,14 @@ package se.qxx.jukebox.core;
 import java.util.List;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 
 import se.qxx.jukebox.interfaces.IArguments;
 
+@Singleton
 public class Arguments implements IArguments {
 
-	
 	@Inject
 	public Arguments(@Named("Commandline arguments") List<String> args) {
 		this.initialize(args);

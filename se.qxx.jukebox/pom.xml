@@ -14,7 +14,6 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<fully.qualified.main.class>se.qxx.jukebox.Jukebox</fully.qualified.main.class>
 		<script.file>run.sh</script.file>
-		<powermock.version>1.6.6</powermock.version>
 	</properties>
 
 	<repositories>
@@ -37,19 +36,6 @@
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
 			<version>2.0.42-beta</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-module-junit4</artifactId>
-			<version>${powermock.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-api-mockito2</artifactId>
-			<version>${powermock.version}</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -180,13 +166,13 @@
 		<dependency>
 		    <groupId>com.google.inject</groupId>
 		    <artifactId>guice</artifactId>
-		    <version>4.2.2</version>
+		    <version>4.1.0</version>
 		</dependency>
 
 		<dependency>
 		    <groupId>com.google.inject.extensions</groupId>
 		    <artifactId>guice-assistedinject</artifactId>
-		    <version>4.2.2</version>
+		    <version>4.1.0</version>
 		</dependency>
 	</dependencies>
 

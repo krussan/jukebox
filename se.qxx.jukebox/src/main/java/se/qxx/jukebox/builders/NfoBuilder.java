@@ -9,6 +9,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.inject.Inject;
+
 import se.qxx.jukebox.builders.exceptions.SeriesNotSupportedException;
 import se.qxx.jukebox.domain.JukeboxDomain.Identifier;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
@@ -20,7 +22,7 @@ import se.qxx.jukebox.watcher.ExtensionFileFilter;
 
 public class NfoBuilder extends MovieBuilder {
 	
-
+	@Inject
 	public NfoBuilder(ISettings settings, IJukeboxLogger log) {
 		super(settings, log);
 	}
