@@ -6,16 +6,21 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.Stack;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import se.qxx.jukebox.core.DB;
 import se.qxx.jukebox.core.Version;
 import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IUpgrader;
 import se.qxx.protodb.exceptions.DatabaseNotSupportedException;
 
+@Singleton
 public class Upgrader implements IUpgrader {
 
 	private IDatabase database;
 	
+	@Inject
 	public Upgrader(IDatabase database) {
 		this.setDatabase(database);
 	}

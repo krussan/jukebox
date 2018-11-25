@@ -9,6 +9,8 @@ import java.util.List;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.google.protobuf.ByteString;
 import com.matthewn4444.ebml.Attachments;
 import com.matthewn4444.ebml.EBMLReader;
@@ -32,11 +34,13 @@ import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IMkvSubtitleReader;
 import se.qxx.jukebox.interfaces.ISubtitleFileWriter;
 
+@Singleton
 public class MkvSubtitleReader implements IMkvSubtitleReader {
 	
 	private ISubtitleFileWriter subFileWriter;
 	private IJukeboxLogger log;
 	
+	@Inject
 	public MkvSubtitleReader(ISubtitleFileWriter subFileWriter, LoggerFactory loggerFactory) {
 		this.setSubFileWriter(subFileWriter);
 		this.setLog(loggerFactory.create(LogType.SUBS));

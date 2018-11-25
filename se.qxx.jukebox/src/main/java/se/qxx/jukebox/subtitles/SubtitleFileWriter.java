@@ -11,6 +11,9 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BOMInputStream;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import fr.noop.subtitle.model.SubtitleObject;
 import fr.noop.subtitle.model.SubtitleParsingException;
 import fr.noop.subtitle.model.SubtitleWriter;
@@ -22,9 +25,12 @@ import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.ISubtitleFileWriter;
 
+@Singleton
 public class SubtitleFileWriter implements ISubtitleFileWriter {
 
 	private IJukeboxLogger log;
+	
+	@Inject
 	public SubtitleFileWriter(LoggerFactory loggerFactory) {
 		this.setLog(loggerFactory.create(LogType.WEBSERVER));
 	}

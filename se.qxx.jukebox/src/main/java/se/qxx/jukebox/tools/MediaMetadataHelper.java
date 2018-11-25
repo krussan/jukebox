@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import net.sourceforge.filebot.mediainfo.MediaInfo;
@@ -18,6 +19,7 @@ public class MediaMetadataHelper implements IMediaMetadataHelper  {
 
 	private IJukeboxLogger log;
 	
+	@Inject
 	public MediaMetadataHelper(LoggerFactory loggerFactory) {
 		this.setLog(loggerFactory.create(LogType.FIND));
 	}
