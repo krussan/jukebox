@@ -10,14 +10,14 @@ import com.google.inject.Injector;
 import se.qxx.jukebox.builders.ParserBuilder;
 import se.qxx.jukebox.builders.ParserMovie;
 import se.qxx.jukebox.core.Binder;
-import se.qxx.jukebox.core.Log;
 import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.factories.LoggerFactory;
+import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.ISettings;
 
 public class TestParserBuilder {
 	
-	private Log log;
+	private IJukeboxLogger log;
 	private ISettings settings;
 	
 	@Inject

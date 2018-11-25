@@ -144,7 +144,7 @@ public class IMDBFinder implements IIMDBFinder {
 		Document doc = Jsoup.parse(webResult.getResult());
 		
 		IIMDBParser parser = this.getParserFactory().create(doc);
-		IMDBRecord rec = parser.parse(webResult.getUrl(), webResult.getResult());
+		IMDBRecord rec = parser.parse(webResult.getUrl());
 		
 		if (!StringUtils.isEmpty(rec.getImageUrl())) 
 			rec.setImage(this.getWebRetriever().getWebFileData(rec.getImageUrl()));

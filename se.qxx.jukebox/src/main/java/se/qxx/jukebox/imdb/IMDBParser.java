@@ -338,7 +338,7 @@ public class IMDBParser implements IIMDBParser {
 	}
 
 	@Override
-	public IMDBRecord parse(String url, String webResult) {
+	public IMDBRecord parse(String url) {
 		IMDBRecord rec = new IMDBRecord(url);
 		
 		this.getLog().Debug(String.format("IMDBRECORD :: Initializing parsing"));

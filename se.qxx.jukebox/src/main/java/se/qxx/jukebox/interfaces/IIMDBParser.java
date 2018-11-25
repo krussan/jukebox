@@ -4,8 +4,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.jsoup.nodes.Document;
-
 import se.qxx.jukebox.imdb.IMDBRecord;
 
 public interface IIMDBParser {
@@ -22,6 +20,6 @@ public interface IIMDBParser {
 	Date parseFirstAirDate();
 	String parseImageUrl();
 	
-	IMDBRecord parse(String url, String webResult);
+	IMDBRecord parse(String url);
 	
 }

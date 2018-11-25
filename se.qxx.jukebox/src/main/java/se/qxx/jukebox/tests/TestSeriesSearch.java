@@ -11,7 +11,6 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 
 import se.qxx.jukebox.core.Binder;
-import se.qxx.jukebox.core.Log;
 import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
@@ -23,7 +22,6 @@ import se.qxx.protodb.ProtoDBFactory;
 
 public class TestSeriesSearch {
 
-	private Log log;
 	private IDatabase db;
 	private ISettings settings;
 
@@ -31,7 +29,7 @@ public class TestSeriesSearch {
 	public TestSeriesSearch(IDatabase db, ISettings settings, LoggerFactory factory) {
 		this.db = db;
 		this.settings = settings;
-		this.log = factory.create(LogType.FIND);
+		factory.create(LogType.FIND);
 	}
 	
 	public static void main(String[] args) throws IOException, JAXBException {

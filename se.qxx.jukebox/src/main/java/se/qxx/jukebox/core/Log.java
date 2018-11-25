@@ -31,7 +31,8 @@ public class Log implements IJukeboxLogger {
 		WEBSERVER,
 		DB,
 		CONVERTER,
-		CHECKER
+		CHECKER,
+		NONE
 	}
 	
 	@Inject
@@ -90,6 +91,9 @@ public class Log implements IJukeboxLogger {
 		int msgLevel = getLevel(level);
 		String logMessage = getLogString(msg, level);
 		try {
+			
+			if (this.getLogType() == LogType.NONE)
+				return;
 			
 			if (this.getLogType() == LogType.ALL) {
 				logToAll(msg, level);

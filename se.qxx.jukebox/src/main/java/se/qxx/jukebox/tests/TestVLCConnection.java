@@ -4,14 +4,14 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 
 import se.qxx.jukebox.core.Binder;
-import se.qxx.jukebox.core.Log;
 import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.factories.LoggerFactory;
-import se.qxx.jukebox.vlc.*;
+import se.qxx.jukebox.interfaces.IJukeboxLogger;
+import se.qxx.jukebox.vlc.VLCConnection;
 
 public class TestVLCConnection {
 
-	private Log log;
+	private IJukeboxLogger log;
 
 	@Inject
 	public TestVLCConnection(LoggerFactory factory) {
