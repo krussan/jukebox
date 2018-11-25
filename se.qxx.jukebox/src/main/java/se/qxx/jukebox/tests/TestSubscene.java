@@ -15,6 +15,7 @@ import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.ISubFileDownloaderHelper;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder;
+import se.qxx.jukebox.subtitles.Language;
 import se.qxx.jukebox.subtitles.Subscene;
 
 public class TestSubscene {
@@ -61,9 +62,9 @@ public class TestSubscene {
 						
 						
 						MovieOrSeries mos = movieBuilderFactory.identify(ff.getAbsolutePath(), ff.getName());
-						ArrayList<String> languages = new ArrayList<String>();
-						languages.add("Eng");
-						languages.add("Swe");
+						ArrayList<Language> languages = new ArrayList<Language>();
+						languages.add(Language.English);
+						languages.add(Language.Swedish);
 						
 						s.findSubtitles(mos, languages);
 						

@@ -43,6 +43,7 @@ import se.qxx.jukebox.interfaces.IMovieBuilderFactory;
 import se.qxx.jukebox.interfaces.IMovieIdentifier;
 import se.qxx.jukebox.interfaces.INFOScanner;
 import se.qxx.jukebox.interfaces.IParserSettings;
+import se.qxx.jukebox.interfaces.IRandomWaiter;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.IStarter;
 import se.qxx.jukebox.interfaces.IStreamingWebServer;
@@ -96,6 +97,7 @@ public class Binder {
 				bind(IDatabase.class).to(DB.class);
 				bind(IUpgrader.class).to(Upgrader.class);
 				bind(IStarter.class).to(Starter.class);
+				bind(IRandomWaiter.class).to(RandomWaiter.class);
 				
 				//Webserver
 				bind(IStreamingWebServer.class).to(StreamingWebServer.class);

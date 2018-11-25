@@ -14,7 +14,7 @@ public interface ISubFileDownloaderHelper {
 	boolean containsMatch(List<SubFile> subs);
 	String getSetting(String className, String setting);
 	String performSearch(String url);
-	List<SubFile> collectSubFiles(String className, Language language, MovieOrSeries mos, String webResult, String pattern, int urlGroup, int nameGroup,
+	List<SubFile> collectSubFiles(String className, List<Language> language, MovieOrSeries mos, String webResult, String pattern, int urlGroup, int nameGroup,
 			int languageGroup);
 	Rating rateSub(MovieOrSeries mos, String subFileDescription);
 	IJukeboxLogger getLog();

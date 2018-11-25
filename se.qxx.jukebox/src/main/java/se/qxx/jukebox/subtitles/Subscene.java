@@ -46,7 +46,7 @@ public class Subscene implements ISubFinder  {
 	@Override
 	public List<SubFile> findSubtitles(
 			MovieOrSeries mos,
-			List<String> languages) {
+			List<Language> languages) {
 		
 		String searchString = getSearchString(mos.getTitle());
 		
@@ -68,7 +68,7 @@ public class Subscene implements ISubFinder  {
 	public List<SubFile> parseSubtitleList(
 			String searchString,
 			MovieOrSeries mos,
-			List<String> languages) {
+			List<Language> languages) {
 
 		List<SubFile> files = new ArrayList<SubFile>(); 
 		
@@ -99,7 +99,7 @@ public class Subscene implements ISubFinder  {
 			if (!StringUtils.isEmpty(webResult)) {
 				files = this.getHelper().collectSubFiles(
 						this.getClassName(),
-						Language.Unknown,
+						languages,
 						mos, 
 						webResult, 
 						this.getSetting(SETTING_LISTRESULT_REGEX),

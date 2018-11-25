@@ -159,10 +159,12 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 		int result = 0;
 		List<MovieOrSeries> _listProcessing =  this.getDatabase().getSubtitleQueue();
 		
+		List<Language> languages = getPreferredLanguages();
+		
 		for (MovieOrSeries mos : _listProcessing) {
 			try {
 				if (mos != null) {
-					List<SubFile> files = getSubtitles(mos);
+					List<SubFile> files = getSubtitles(mos, languages);
 					
 					if (!this.isRunning())
 						break;
@@ -193,6 +195,14 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 		}			
 	}
 
+
+	@Override
+	public List<Language> getPreferredLanguages() {
+		List<Language> result = new ArrayList<Language>();
+		result.add(Language.English);
+		result.add(Language.Swedish);
+		return result;
+	}
 
 	private void saveSubtitleQueue(MovieOrSeries mos, int result) {
 		if (mos.isSeries()) {
@@ -327,7 +337,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	 * Wrapper function for getting subs for a specific movie
 	 * @param m
 	 */
-	private List<SubFile> getSubtitles(MovieOrSeries mos) {
+	private List<SubFile> getSubtitles(MovieOrSeries mos, List<Language> languages) {
 		// We only check if there exist subs for the first media file.
 		// If it does then it should exist from the others as well.
 		Media md = mos.getMedia();
@@ -340,7 +350,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 			if (files.size() == 0) {
 				// use reflection to get all subfinders
 				// get files
-				files = callSubtitleDownloaders(mos);
+				files = callSubtitleDownloaders(mos, languages);
 			}
 		}
 		
@@ -631,13 +641,9 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	 * @return A list of sub files downloaded. These files could be in raw format as delivered by the sub finder. I.e. they
 	 * 		   may have to be decompressed.
 	 */
-	private List<SubFile> callSubtitleDownloaders(MovieOrSeries mos) {
+	private List<SubFile> callSubtitleDownloaders(MovieOrSeries mos, List<Language> languages) {
 		ArrayList<SubFile> subtitleFiles = new ArrayList<SubFile>();
 		for (ISubFinder finder : this.getSubFinders()) {
-			ArrayList<String> languages = new ArrayList<String>();
-			languages.add("Eng");
-			languages.add("Swe");
-
 			// add list of downloaded files to list
 			subtitleFiles.addAll(
 				finder.findSubtitles(mos, languages));

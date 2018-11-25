@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,12 +17,13 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import se.qxx.jukebox.domain.JukeboxDomain.Rating;
 import se.qxx.jukebox.core.Log.LogType;
+import se.qxx.jukebox.domain.JukeboxDomain.Rating;
 import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IMovieBuilderFactory;
+import se.qxx.jukebox.interfaces.IRandomWaiter;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.ISubFileDownloaderHelper;
 import se.qxx.jukebox.interfaces.IWebRetriever;
@@ -45,17 +45,28 @@ public class SubFileDownloaderHelper implements ISubFileDownloaderHelper {
 	private IJukeboxLogger log;
 	
 	private Map<String, Map<String, String>> subSettings = new HashMap<String, Map<String, String>>();
+	private IRandomWaiter waiter;
 	
 	@Inject
 	public SubFileDownloaderHelper(ISettings settings, 
 			IWebRetriever webRetriever,
 			IMovieBuilderFactory movieBuilderFactory,
-			LoggerFactory loggerFactory) {
+			LoggerFactory loggerFactory,
+			IRandomWaiter waiter) {
 		
+		this.setWaiter(waiter);
 		this.setWebRetriever(webRetriever);
 		this.setSettings(settings);
 		this.setMovieBuilderFactory(movieBuilderFactory);
 		this.setLog(loggerFactory.create(LogType.SUBS));
+	}
+
+	public IRandomWaiter getWaiter() {
+		return waiter;
+	}
+
+	public void setWaiter(IRandomWaiter waiter) {
+		this.waiter = waiter;
 	}
 
 	@Override
@@ -135,7 +146,7 @@ public class SubFileDownloaderHelper implements ISubFileDownloaderHelper {
 			}
 			
 			if (listSubs.size() > 1) {
-				waitRandomly();
+				this.getWaiter().sleep(MAX_WAIT_SECONDS, MIN_WAIT_SECONDS);
 			}
 
 			if (!this.isRunning())
@@ -166,20 +177,6 @@ public class SubFileDownloaderHelper implements ISubFileDownloaderHelper {
 		return null;
 	}
 
-	private void waitRandomly() {
-		try {
-			Random r = new Random();
-			int n = r.nextInt((MAX_WAIT_SECONDS - MIN_WAIT_SECONDS) * 1000 + 1) + MIN_WAIT_SECONDS * 1000;
-			
-			this.getLog().Info(String.format("Sleeping for %s seconds", n));
-			// sleep randomly to avoid detection (from 10 sec to 30 sec)
-			Thread.sleep(n);
-			
-		} catch (InterruptedException e) {
-			this.getLog().Error("Subtitle downloader interrupted", e);
-		}
-		
-	}
 	
 	/**
 	 * Returns a temporary path to download subtitles to
@@ -261,7 +258,7 @@ public class SubFileDownloaderHelper implements ISubFileDownloaderHelper {
 	@Override
 	public List<SubFile> collectSubFiles(
 			String className,
-			Language language,
+			List<Language> languages,
 			MovieOrSeries mos, 
 			String webResult, 
 			String pattern, 
@@ -282,10 +279,15 @@ public class SubFileDownloaderHelper implements ISubFileDownloaderHelper {
 			String matchLanguage = matcher.group(languageGroup).trim();
 
 			
-			if (languageGroup == 0 || StringUtils.equalsIgnoreCase(matchLanguage, language.toString())) {
+			Optional<Language> lang = getLanguageMatch(matchLanguage, languages);
+			if (languageGroup == 0 || lang.isPresent()) {
 				// remove duplicate links and descriptions matching whole season
 				if (!linksContains(listSubs, urlString) && !matchesWholeSeason(mos.isSeries(), description)) {
-					SubFile sf = new SubFile(urlString, description, language);
+					SubFile sf = new SubFile(
+							urlString, 
+							description,  
+							languageGroup == 0 ? Language.Unknown : lang.get());
+					
 					Rating r = this.rateSub(mos, description);
 					sf.setRating(r);
 					this.getLog().Debug(String.format("%s :: Sub with description %s rated as %s", className, description, r.toString()));
@@ -300,6 +302,13 @@ public class SubFileDownloaderHelper implements ISubFileDownloaderHelper {
 			this.getLog().Debug(String.format("%s :: No subs found", className));
 
 		return filterResult(className, listSubs);
+	}
+
+	private Optional<Language> getLanguageMatch(String matchLanguage, List<Language> languages) {
+		return languages.stream()
+			.filter(x -> StringUtils.equalsIgnoreCase(matchLanguage, x.toString()))
+			.findFirst();
+		
 	}
 
 	private boolean matchesWholeSeason(boolean isEpisode, String description) {

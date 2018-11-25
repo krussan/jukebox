@@ -33,11 +33,13 @@ import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IImdbSettings;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IParserSettings;
+import se.qxx.jukebox.interfaces.IRandomWaiter;
 import se.qxx.jukebox.interfaces.ISubFileDownloaderHelper;
 import se.qxx.jukebox.interfaces.IWebRetriever;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.imdb.ImdbSettings;
 import se.qxx.jukebox.settings.parser.ParserSettings;
+import se.qxx.jukebox.subtitles.Language;
 import se.qxx.jukebox.subtitles.SubFile;
 import se.qxx.jukebox.subtitles.SubFileDownloaderHelper;
 import se.qxx.jukebox.subtitles.Subscene;
@@ -56,11 +58,10 @@ public class TestSubscene {
 	private IJukeboxLogger log;
 	private MovieBuilderFactory movieBuilderFactory;
 	
-	@Mock
-	private IWebRetriever webRetrieverMock;
-	
-	@Mock
-	LoggerFactory loggerFactoryMock;
+	@Mock private IWebRetriever webRetrieverMock;
+	@Mock private LoggerFactory loggerFactoryMock;
+	@Mock private IRandomWaiter waiterMock;
+
 	
 	@Before
 	public void init() throws IOException, JAXBException {
@@ -148,8 +149,8 @@ public class TestSubscene {
 						tempFilePath))
 		.thenReturn(new File("temp1"));
 		
-		List<String> lang = new ArrayList<String>();
-		lang.add("English");
+		List<Language> lang = new ArrayList<Language>();
+		lang.add(Language.English);
 		
 		List<SubFile> files = ss.findSubtitles(new MovieOrSeries(m), lang);
 		
@@ -157,6 +158,6 @@ public class TestSubscene {
 	}
 
 	public ISubFileDownloaderHelper createHelper() {
-		return new SubFileDownloaderHelper(settings, webRetrieverMock, movieBuilderFactory, loggerFactoryMock);
+		return new SubFileDownloaderHelper(settings, webRetrieverMock, movieBuilderFactory, loggerFactoryMock, waiterMock);
 	}
 }

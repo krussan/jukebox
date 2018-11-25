@@ -6,7 +6,6 @@ import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,7 +20,6 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.protobuf.ByteString;
 
-import se.qxx.jukebox.core.Log;
 import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.DomainUtil;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
@@ -35,6 +33,7 @@ import se.qxx.jukebox.interfaces.IIMDBFinder;
 import se.qxx.jukebox.interfaces.IIMDBParser;
 import se.qxx.jukebox.interfaces.IIMDBUrlRewrite;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
+import se.qxx.jukebox.interfaces.IRandomWaiter;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.IWebRetriever;
 import se.qxx.jukebox.settings.imdb.Imdb;
@@ -43,7 +42,6 @@ import se.qxx.jukebox.tools.WebResult;
 
 @Singleton
 public class IMDBFinder implements IIMDBFinder {
-	private long nextSearch = 0;
 	private static ReentrantLock lock = new ReentrantLock();			
 	
 	private ISettings settings;
@@ -51,14 +49,17 @@ public class IMDBFinder implements IIMDBFinder {
 	private IIMDBUrlRewrite urlRewrite;
 	private IMDBParserFactory parserFactory;
 	private IJukeboxLogger log;
+	private IRandomWaiter waiter;
 	
 	@Inject
 	public IMDBFinder(ISettings settings, 
 			IWebRetriever webRetriever, 
 			IIMDBUrlRewrite urlRewrite, 
 			IMDBParserFactory parserFactory,
-			LoggerFactory loggerFactory) {
+			LoggerFactory loggerFactory, 
+			IRandomWaiter waiter) {
 		
+		this.setWaiter(waiter);
 		this.setSettings(settings);
 		this.setWebRetriever(webRetriever);
 		this.setUrlRewrite(urlRewrite);
@@ -66,6 +67,14 @@ public class IMDBFinder implements IIMDBFinder {
 		this.setLog(loggerFactory.create(LogType.IMDB));
 	}
 	
+	public IRandomWaiter getWaiter() {
+		return waiter;
+	}
+
+	public void setWaiter(IRandomWaiter waiter) {
+		this.waiter = waiter;
+	}
+
 	public IJukeboxLogger getLog() {
 		return log;
 	}
@@ -318,7 +327,11 @@ public class IMDBFinder implements IIMDBFinder {
 		
 		lock.lock();
 		try {
-			waitRandom();
+			int minSeconds = this.getSettings().getImdb().getSettings().getSleepSecondsMin() * 1000;
+			int maxSeconds = this.getSettings().getImdb().getSettings().getSleepSecondsMax() * 1000;
+
+			this.getWaiter().sleep(minSeconds, maxSeconds);
+
 			WebResult webResult = getSearchResult(searchString, searchUrl);
 			
 			// Accomodate for that sometimes IMDB redirects you
@@ -341,25 +354,13 @@ public class IMDBFinder implements IIMDBFinder {
 					rec = getImdbResult(url);			
 			}
 			
-			setNextSearchTimer();
-
 			return rec;
-		} catch (InterruptedException e) {
-			return null;
 		}
 		finally {
 			lock.unlock();
 		}
 	}
 
-	private void waitRandom() throws InterruptedException {
-		long currentTimeStamp = Util.getCurrentTimestamp();
-		// wait a while to avoid hammering
-		if (currentTimeStamp < nextSearch) {
-			this.getLog().Debug(String.format("Waiting %s seconds", (nextSearch - currentTimeStamp) / 1000));
-			Thread.sleep(nextSearch - currentTimeStamp);
-		}
-	}
 
 	protected WebResult getSearchResult(String title, String searchUrl)
 			throws UnsupportedEncodingException, IOException {
@@ -373,15 +374,6 @@ public class IMDBFinder implements IIMDBFinder {
 		return webResult;
 	}
 
-	private void setNextSearchTimer() {
-		// sleep randomly to avoid detection
-		Random r = new Random();
-		int minSeconds = this.getSettings().getImdb().getSettings().getSleepSecondsMin() * 1000;
-		int maxSeconds = this.getSettings().getImdb().getSettings().getSleepSecondsMax() * 1000;
-		int n = r.nextInt(minSeconds) + maxSeconds - minSeconds;
-		
-		nextSearch = Util.getCurrentTimestamp() + n;
-	}
 
 	private Movie extractMovieInfo(Movie m, IMDBRecord rec) {
 		if (rec != null) {
