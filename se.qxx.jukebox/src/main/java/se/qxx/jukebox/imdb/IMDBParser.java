@@ -346,6 +346,7 @@ public class IMDBParser implements IIMDBParser {
 		this.getLog().Debug(String.format("IMDBRECORD :: Initializing parsing"));
 		
 		rec.setTitle(this.parseTitle());
+		rec.setYear(this.parseYear());
 		rec.setDirector(this.parseDirector());
 		rec.setDurationMinutes(this.parseDuration());
 		rec.addGenres(this.parseGenres());
