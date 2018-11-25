@@ -38,18 +38,17 @@ import se.qxx.jukebox.interfaces.IFileReader;
 import se.qxx.jukebox.interfaces.IIMDBUrlRewrite;
 import se.qxx.jukebox.interfaces.IImdbSettings;
 import se.qxx.jukebox.interfaces.IParserSettings;
+import se.qxx.jukebox.interfaces.IRandomWaiter;
 import se.qxx.jukebox.interfaces.IWebRetriever;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.imdb.ImdbSettings;
 import se.qxx.jukebox.settings.parser.ParserSettings;
 
 public class TestImdbParser {
-	@Mock
-	LoggerFactory loggerFactoryMock;
-	@Mock
-	IWebRetriever webRetrieverMock;
-	@Mock
-	IMDBParserFactory parserFactoryMock;
+	@Mock LoggerFactory loggerFactoryMock;
+	@Mock IWebRetriever webRetrieverMock;
+	@Mock IMDBParserFactory parserFactoryMock;
+	@Mock IRandomWaiter waiterMock;
 	
 	@Rule public MockitoRule mockitoRule = MockitoJUnit.rule(); 
 	
@@ -76,8 +75,6 @@ public class TestImdbParser {
 		
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		assertEquals("2014-05-02", format.format(rec.getFirstAirDate()));
-		assertNotNull(rec.getImage());
-		assertTrue(rec.getImage().length > 0);
 		
 	}
 	
@@ -183,10 +180,9 @@ public class TestImdbParser {
 		IParserSettings parserSettings = new ParserSettings();
 		IImdbSettings imdbSettings = new ImdbSettings();
 		Settings settings = new Settings(imdbSettings, parserSettings, null);
-		IFileReader fileReader = new FileReader();
 		IIMDBUrlRewrite urlRewrite = new IMDBUrlRewrite();
 
-		return new IMDBFinder(settings, webRetrieverMock, urlRewrite, parserFactoryMock, loggerFactoryMock);
+		return new IMDBFinder(settings, webRetrieverMock, urlRewrite, parserFactoryMock, loggerFactoryMock, waiterMock);
 	}
 
 }

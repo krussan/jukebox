@@ -310,6 +310,8 @@ public class IMDBParser implements IIMDBParser {
 			Date parsedDate = DateUtils.parseDate(date,
 					getSettings().getImdb().getDatePatterns().getPattern().toArray(new String[] {}));
 			this.getLog().Debug(String.format("IMDB :: parsed date :: %s", parsedDate));
+			
+			return parsedDate;
 		} catch (ParseException e) {
 			this.getLog().Info(String.format("IMDB :: Unable to parse date :: %s", date));
 		}
