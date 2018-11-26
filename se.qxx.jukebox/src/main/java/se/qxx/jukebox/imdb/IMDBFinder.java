@@ -327,10 +327,10 @@ public class IMDBFinder implements IIMDBFinder {
 		
 		lock.lock();
 		try {
-			int minSeconds = this.getSettings().getImdb().getSettings().getSleepSecondsMin() * 1000;
-			int maxSeconds = this.getSettings().getImdb().getSettings().getSleepSecondsMax() * 1000;
+			int minSeconds = this.getSettings().getImdb().getSettings().getSleepSecondsMin();
+			int maxSeconds = this.getSettings().getImdb().getSettings().getSleepSecondsMax();
 
-			this.getWaiter().sleep(minSeconds, maxSeconds);
+			this.getWaiter().sleep(maxSeconds, minSeconds);
 
 			WebResult webResult = getSearchResult(searchString, searchUrl);
 			

@@ -42,7 +42,8 @@ public class Executor implements IExecutor {
 		return this.getExecutorService().submit(callable);
 	}
 	
-	private ExecutorService getExecutorService() {
+	@Override
+	public ExecutorService getExecutorService() {
 		return executorService;
 	}
 

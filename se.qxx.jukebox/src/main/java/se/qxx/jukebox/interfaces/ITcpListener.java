@@ -1,10 +1,10 @@
 package se.qxx.jukebox.interfaces;
 
-import se.qxx.jukebox.comm.JukeboxRpcServer;
+import com.googlecode.protobuf.socketrpc.RpcServer;
 
 public interface ITcpListener {
 
-	public JukeboxRpcServer getServer();
+	public RpcServer getServer();
 	public Runnable getRunnable();
 
 }

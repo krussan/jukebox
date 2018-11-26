@@ -4,7 +4,7 @@
 
 	<groupId>se.qxx.jukebox</groupId>
 	<artifactId>jukebox</artifactId>
-	<version>0.28</version>
+	<version>0.30</version>
 	<packaging>jar</packaging>
 
 	<name>jukebox</name>
@@ -307,6 +307,8 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
+				<version>3.1.0</version>
+
 				<executions>
 					<execution>
 						<phase>package</phase>
@@ -319,10 +321,11 @@
 									<mainClass>${fully.qualified.main.class}</mainClass>
 								</manifest>
 							</archive>
-							<descriptorRefs>
-								<descriptorRef>jar-with-dependencies</descriptorRef>
-							</descriptorRefs>
+							<descriptors>
+					            <descriptor>jar-with-deps-with-exclude.xml</descriptor>
+					        </descriptors>
 						</configuration>
+						
 					</execution>
 				</executions>
 			</plugin>

@@ -121,6 +121,18 @@ public class Arguments implements IArguments {
 		if (arguments.contains("--setupdb")) {
 			this.setSetupDatabase(true);
 		}
+		
+		if (arguments.contains("--disable-all")) {
+			this.setTcpListenerEnabled(false);
+			this.setSubtitleDownloaderEnabled(false);
+			this.setImdbIdentifierEnabled(false);
+			this.setMediaInfoEnabled(false);
+			this.setWebServerEnabled(false);
+			this.setWatcherEnabled(false);
+			this.setCleanerEnabled(false);
+			this.setDownloadCheckerEnabled(false);
+			this.setMediaConverterEnabled(false);
+		}
 
 	}
 	

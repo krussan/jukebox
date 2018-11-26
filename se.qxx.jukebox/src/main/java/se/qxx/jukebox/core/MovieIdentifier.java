@@ -171,7 +171,7 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 			// check if the same media already exist in db
 			Media dbMedia = this.getDatabase().getMediaByFilename(filename);
 			if (dbMedia != null && StringUtils.equalsIgnoreCase(dbMedia.getFilepath(), path)) {
-				this.getLog().Info("Media already exist in this.getDatabase(). Continuing...");
+				this.getLog().Info("Media already exist in DB. Continuing...");
 				return;
 			} else {
 				MovieOrSeries mos = this.getMovieBuilderFactory()

@@ -9,7 +9,7 @@ import org.modelmapper.internal.util.Assert;
 
 import se.qxx.jukebox.watcher.FileRepresentation;
 
-public class FileRepresentationTests {
+public class TestFileRepresentation {
 
 	@Test
 	public void TestQueueContains() {

@@ -2,14 +2,13 @@ package se.qxx.jukebox.junit;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-
 import com.google.inject.Injector;
 
 import se.qxx.jukebox.core.Binder;
 import se.qxx.jukebox.core.Main;
 import se.qxx.jukebox.core.Starter;
 
-public class BinderTests {
+public class TestBinder {
 
 	@Test
 	public void TestBinder() {

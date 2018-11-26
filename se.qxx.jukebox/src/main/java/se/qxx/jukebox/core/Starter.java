@@ -78,6 +78,7 @@ public class Starter implements IStarter {
 		System.out.println("\t-dmc\tDisable media converter");
 		System.out.println("\t-dd\tDisable download checker");
 		System.out.println("");
+		System.out.println("\t--disable-all\tDisables all the above");
 		System.out.println("\t--purge\tPurges all content from database and exit");
 		System.out.println("\t--purgeSubs\tPurges all subtitles and queue from database");
 		System.out.println("\t--purgeSeries\tPurges all series and tv episodes from database");		
