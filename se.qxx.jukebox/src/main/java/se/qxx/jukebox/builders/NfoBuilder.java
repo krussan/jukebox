@@ -15,6 +15,7 @@ import se.qxx.jukebox.builders.exceptions.SeriesNotSupportedException;
 import se.qxx.jukebox.domain.JukeboxDomain.Identifier;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.MovieOrSeries;
+import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.INFOScanner;
 import se.qxx.jukebox.interfaces.ISettings;
@@ -22,7 +23,6 @@ import se.qxx.jukebox.watcher.ExtensionFileFilter;
 
 public class NfoBuilder extends MovieBuilder {
 	
-	@Inject
 	public NfoBuilder(ISettings settings, IJukeboxLogger log) {
 		super(settings, log);
 	}

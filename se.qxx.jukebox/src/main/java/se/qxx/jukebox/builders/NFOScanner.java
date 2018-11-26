@@ -42,9 +42,8 @@ public class NFOScanner implements INFOScanner {
 	private File nfoFile;
 	private IJukeboxLogger log;
 
-	@Inject
-	public NFOScanner(LoggerFactory loggerFactory, @Assisted File file) { 
-		this.setLog(loggerFactory.create(LogType.FIND));
+	public NFOScanner(IJukeboxLogger log, File file) { 
+		this.setLog(log);
 		this.setNfoFile(file);
 	}
 

@@ -1,10 +1,10 @@
 package se.qxx.jukebox.junit;
 
-import static org.mockito.Mockito.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -163,7 +163,7 @@ public class TestImdbParser {
 		
 		IParserSettings parserSettings = new ParserSettings();
 		IImdbSettings imdbSettings = new ImdbSettings();
-		Settings settings = new Settings(imdbSettings, parserSettings, null);
+		Settings settings = new Settings(imdbSettings, parserSettings);
 		IFileReader fileReader = new FileReader();
 		IIMDBUrlRewrite urlRewrite = new IMDBUrlRewrite();
 
@@ -179,7 +179,7 @@ public class TestImdbParser {
 	private IMDBFinder createFinder() throws IOException, JAXBException {
 		IParserSettings parserSettings = new ParserSettings();
 		IImdbSettings imdbSettings = new ImdbSettings();
-		Settings settings = new Settings(imdbSettings, parserSettings, null);
+		Settings settings = new Settings(imdbSettings, parserSettings);
 		IIMDBUrlRewrite urlRewrite = new IMDBUrlRewrite();
 
 		return new IMDBFinder(settings, webRetrieverMock, urlRewrite, parserFactoryMock, loggerFactoryMock, waiterMock);

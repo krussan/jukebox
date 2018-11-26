@@ -197,6 +197,7 @@ public class Main implements IMain, IFileCreatedHandler
 			
 			System.out.println("Initializing settings");
 			this.getSettings().initialize();
+			this.getWebServer().initializeMappings();
 			
 			startupThreads();
 			

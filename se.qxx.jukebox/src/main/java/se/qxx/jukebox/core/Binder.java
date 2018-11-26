@@ -17,7 +17,6 @@ import se.qxx.jukebox.converter.MediaConverter;
 import se.qxx.jukebox.factories.FileSystemWatcherFactory;
 import se.qxx.jukebox.factories.IMDBParserFactory;
 import se.qxx.jukebox.factories.LoggerFactory;
-import se.qxx.jukebox.factories.NFOScannerFactory;
 import se.qxx.jukebox.imdb.IMDBFinder;
 import se.qxx.jukebox.imdb.IMDBParser;
 import se.qxx.jukebox.imdb.IMDBUrlRewrite;
@@ -115,12 +114,6 @@ public class Binder {
 					new FactoryModuleBuilder()
 						.implement(IFileSystemWatcher.class, FileSystemWatcher.class)
 						.build(FileSystemWatcherFactory.class));
-
-				install(
-					new FactoryModuleBuilder()
-						.implement(INFOScanner.class, NFOScanner.class)
-						.build(NFOScannerFactory.class));
-
 
 				//IMDB
 				bind(IIMDBFinder.class).to(IMDBFinder.class);

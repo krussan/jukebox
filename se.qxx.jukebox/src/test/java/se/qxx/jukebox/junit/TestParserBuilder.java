@@ -1,7 +1,9 @@
 package se.qxx.jukebox.junit;
 
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,22 +18,16 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import se.qxx.jukebox.builders.MovieBuilder;
 import se.qxx.jukebox.builders.MovieBuilderFactory;
 import se.qxx.jukebox.builders.ParserBuilder;
 import se.qxx.jukebox.builders.ParserMovie;
-import se.qxx.jukebox.core.FileReader;
 import se.qxx.jukebox.core.Log;
 import se.qxx.jukebox.core.Log.LogType;
-import se.qxx.jukebox.domain.MovieOrSeries;
-import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
-import se.qxx.jukebox.imdb.IMDBFinder;
-import se.qxx.jukebox.imdb.IMDBUrlRewrite;
-import se.qxx.jukebox.interfaces.IFileReader;
-import se.qxx.jukebox.interfaces.IIMDBUrlRewrite;
+import se.qxx.jukebox.domain.MovieOrSeries;
+import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IImdbSettings;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IParserSettings;
@@ -56,7 +52,7 @@ public class TestParserBuilder {
 		IParserSettings parserSettings = new ParserSettings();
 		IImdbSettings imdbSettings = new ImdbSettings();
 		
-		settings = new Settings(imdbSettings, parserSettings, null);
+		settings = new Settings(imdbSettings, parserSettings);
 		log = new Log(settings, LogType.NONE);
 		
 		when(loggerFactoryMock.create(any(Log.LogType.class))).thenReturn(log);

@@ -68,7 +68,7 @@ public class TestSubscene {
 		IParserSettings parserSettings = new ParserSettings();
 		IImdbSettings imdbSettings = new ImdbSettings();
 		
-		settings = new Settings(imdbSettings, parserSettings, null);
+		settings = new Settings(imdbSettings, parserSettings);
 		log = new Log(settings, LogType.NONE);
 		
 		when(loggerFactoryMock.create(any(Log.LogType.class))).thenReturn(log);

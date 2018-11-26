@@ -24,14 +24,12 @@ public class Settings implements ISettings {
 	private JukeboxListenerSettings settings;
 	private IImdbSettings imdbSettings;
 	private IParserSettings parserSettings;
-	private IStreamingWebServer webServer;
 	public int serverPort = 45444;	
 	
 	@Inject
-	public Settings(IImdbSettings imdbSettings, IParserSettings parserSettings, IStreamingWebServer webServer) throws IOException, JAXBException {
+	public Settings(IImdbSettings imdbSettings, IParserSettings parserSettings) throws IOException, JAXBException {
 		this.setImdbSettings(imdbSettings);
 		this.setParserSettings(parserSettings);
-		this.setWebServer(webServer);
 		
 		initialize();
 	}
@@ -42,14 +40,6 @@ public class Settings implements ISettings {
 
 	public void setSettings(JukeboxListenerSettings settings) {
 		this.settings = settings;
-	}
-
-	public IStreamingWebServer getWebServer() {
-		return webServer;
-	}
-
-	public void setWebServer(IStreamingWebServer webServer) {
-		this.webServer = webServer;
 	}
 
 	public IParserSettings getParserSettings() {
@@ -80,9 +70,6 @@ public class Settings implements ISettings {
 		
 		if (this.getParserSettings() != null)
 			this.getParserSettings().readSettings();
-
-		if (this.getWebServer() != null)
-			this.getWebServer().initializeMappings();
 	}
 	
 	/* (non-Javadoc)
