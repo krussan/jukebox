@@ -48,11 +48,11 @@ public class Executor implements IExecutor {
 	}
 
 	@Override
-	public void stop() throws InterruptedException {
+	public void stop(int timeoutSeconds) throws InterruptedException {
 		endJukeboxThreads();
 		
 		this.getExecutorService().shutdownNow();
-		this.getExecutorService().awaitTermination(30, TimeUnit.SECONDS);
+		this.getExecutorService().awaitTermination(timeoutSeconds, TimeUnit.SECONDS);
 	}
 
 	private void endJukeboxThreads() {

@@ -231,6 +231,7 @@ public class Main implements IMain, IFileCreatedHandler
 		System.out.println("Starting threads ...");
 		if (this.getArguments().isTcpListenerEnabled()) {
 			System.out.println("Starting TCP listener");
+			this.getTcpListener().initialize(this.getSettings());
 			this.getExecutor().start(this.getTcpListener().getRunnable());
 		}
 		
@@ -292,7 +293,7 @@ public class Main implements IMain, IFileCreatedHandler
 		this.getLog().Info("Server is shutting down ...");
 
 		try {
-			this.getExecutor().stop();
+			this.getExecutor().stop(30);
 
 			// stop main thread
 			System.out.println("Stopping server ...");

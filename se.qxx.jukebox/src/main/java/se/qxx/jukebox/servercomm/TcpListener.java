@@ -6,33 +6,50 @@ import com.googlecode.protobuf.socketrpc.RpcServer;
 import com.googlecode.protobuf.socketrpc.ServerRpcConnectionFactory;
 import com.googlecode.protobuf.socketrpc.SocketRpcConnectionFactories;
 
-import se.qxx.jukebox.concurrent.JukeboxThread;
 import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxService;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IExecutor;
+import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.ITcpListener;
 
 @Singleton
-public class TcpListener extends JukeboxThread implements ITcpListener {
+public class TcpListener implements ITcpListener {
 
 	private RpcServer server;
-	private ISettings settings;
 	private JukeboxRpcServerConnection serverConnection;
+	private IJukeboxLogger log;
+	private IExecutor executor;
 	
 	@Inject
 	public TcpListener(
 			IExecutor executor, 
-			ISettings settings, 
 			LoggerFactory loggerFactory,
 			JukeboxRpcServerConnection conn) {
 		
-		super("TcpListener", 3000, loggerFactory.create(LogType.COMM), executor);
-		this.setSettings(settings);
+		this.setExecutor(executor);
 		this.setServerConnection(conn);
+		this.setLog(loggerFactory.create(LogType.COMM));
+
 	}
 	
+	public IExecutor getExecutor() {
+		return executor;
+	}
+
+	public void setExecutor(IExecutor executor) {
+		this.executor = executor;
+	}
+
+	public IJukeboxLogger getLog() {
+		return log;
+	}
+
+	public void setLog(IJukeboxLogger log) {
+		this.log = log;
+	}
+
 	public JukeboxRpcServerConnection getServerConnection() {
 		return serverConnection;
 	}
@@ -45,13 +62,6 @@ public class TcpListener extends JukeboxThread implements ITcpListener {
 		return this.getServerConnection();
 	}
 
-	public ISettings getSettings() {
-		return settings;
-	}
-	public void setSettings(ISettings settings) {
-		this.settings = settings;
-	}
-
 	@Override
 	public RpcServer getServer() {
 		return server;
@@ -61,10 +71,9 @@ public class TcpListener extends JukeboxThread implements ITcpListener {
 		this.server = server;
 	}
 
-
 	@Override
-	protected void initialize() {
-		int port = this.getSettings().getSettings().getTcpListener().getPort().getValue();
+	public void initialize(int port) {
+		
   
 		this.getLog().Info(String.format("Starting up RPC server. Listening on port %s",  port));
 		
@@ -81,22 +90,14 @@ public class TcpListener extends JukeboxThread implements ITcpListener {
 	}
 	
 	@Override
-	protected void execute() {
-	}
-	
-	@Override
-	public int getJukeboxPriority() {
-		return 3;
-	}
-	
-	@Override
-	public void end() {
-		this.getServer().shutDown();
-		super.end();
+	public Runnable getRunnable() {
+		return this.getServer().getServerRunnable();
 	}
 
 	@Override
-	public Runnable getRunnable() {
-		return this.getServer().getServerRunnable();
+	public void initialize(ISettings settings) {
+		int port = settings.getSettings().getTcpListener().getPort().getValue();
+		
+		initialize(port);
 	}
 }
