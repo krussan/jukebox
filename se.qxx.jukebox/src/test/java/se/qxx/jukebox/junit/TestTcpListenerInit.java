@@ -10,11 +10,14 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import com.googlecode.protobuf.socketrpc.RpcConnectionFactory;
+
 import se.qxx.jukebox.builders.MovieBuilderFactory;
 import se.qxx.jukebox.builders.ParserBuilder;
 import se.qxx.jukebox.concurrent.Executor;
 import se.qxx.jukebox.core.Log;
 import se.qxx.jukebox.core.Log.LogType;
+import se.qxx.jukebox.factories.JukeboxRpcServerFactory;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IDistributor;
@@ -39,29 +42,35 @@ public class TestTcpListenerInit {
 	@Mock IStreamingWebServer webServerMock;
 	@Mock ISubtitleDownloader subtitleDownloaderMock;
 	@Mock IMovieIdentifier movieIdentifierMock;
+	@Mock JukeboxRpcServerFactory rpcFactoryMock;
 	
 	
 	@Test
 	public void TestInitializeTcpListener() {
 		Executor executor = new Executor();
 		IJukeboxLogger log = new Log(settingsMock, LogType.NONE);
-		when(loggerFactoryMock.create(any(LogType.class))).thenReturn(log);
 		JukeboxRpcServerConnection conn = new JukeboxRpcServerConnection(
 				settingsMock, 
 				dbMock, 
 				distributorMock, 
-				webServerMock, 
 				subtitleDownloaderMock, 
 				movieIdentifierMock, 
-				loggerFactoryMock);
+				loggerFactoryMock, 
+				webServerMock);
+		
+		when(loggerFactoryMock.create(any(LogType.class))).thenReturn(log);
+		when(rpcFactoryMock.create(any(IStreamingWebServer.class))).thenReturn(conn);
 		
 		TcpListener listener = new TcpListener(
 				executor,  
 				loggerFactoryMock, 
-				conn);
+				rpcFactoryMock,
+				webServerMock,
+				2152);
 		
-		listener.initialize(2152);
+		listener.initialize();
 		executor.start(listener.getRunnable());
+		
 		try {
 			executor.stop(1);
 		} catch (InterruptedException e) {

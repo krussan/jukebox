@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.google.protobuf.RpcCallback;
 import com.google.protobuf.RpcController;
 
@@ -42,6 +43,7 @@ import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IDistributor;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
+import se.qxx.jukebox.interfaces.IJukeboxRpcServerConnection;
 import se.qxx.jukebox.interfaces.IMovieIdentifier;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.IStreamingWebServer;
@@ -53,7 +55,7 @@ import se.qxx.jukebox.watcher.FileRepresentation;
 import se.qxx.jukebox.webserver.StreamingFile;
 import se.qxx.protodb.Logger;
 
-public class JukeboxRpcServerConnection extends JukeboxService {
+public class JukeboxRpcServerConnection extends JukeboxService implements IJukeboxRpcServerConnection {
 	private IDatabase database;
 	private ISettings settings;
 	private IDistributor distributor;
@@ -67,11 +69,12 @@ public class JukeboxRpcServerConnection extends JukeboxService {
 			ISettings settings, 
 			IDatabase database, 
 			IDistributor distributor,
-			IStreamingWebServer webServer,
 			ISubtitleDownloader subtitleDownloader,
 			IMovieIdentifier movieIdentifier, 
-			LoggerFactory loggerFactory) {
+			LoggerFactory loggerFactory,
+			@Assisted("webserver") IStreamingWebServer webServer) {
 		super();
+		
 		this.setDatabase(database);
 		this.setSettings(settings);
 		this.setDistributor(distributor);

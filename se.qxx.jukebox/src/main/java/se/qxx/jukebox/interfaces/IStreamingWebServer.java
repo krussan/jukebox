@@ -10,7 +10,7 @@ public interface IStreamingWebServer {
 
 	public String getIpAddress();
 	public void setIpAddress(String ipAddress);
-	public void initializeMappings();
+	public void initializeMappings(ISettings settings);
 	public StreamingFile registerFile(String filename);
 	public StreamingFile registerFile(Media md);
 	public String getStreamingFilename(Media md);
@@ -19,5 +19,7 @@ public interface IStreamingWebServer {
 	public Response serve(IHTTPSession session);
 	public String getMimeType(String uri, String filename);
 	public Runnable getRunnable();
+	String getStreamUri(String streamingFile);
+	public void initialize();
 
 }

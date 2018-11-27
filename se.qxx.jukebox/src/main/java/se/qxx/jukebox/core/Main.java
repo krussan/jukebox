@@ -9,6 +9,8 @@ import com.google.inject.Inject;
 import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.factories.FileSystemWatcherFactory;
 import se.qxx.jukebox.factories.LoggerFactory;
+import se.qxx.jukebox.factories.TcpListenerFactory;
+import se.qxx.jukebox.factories.WebServerFactory;
 import se.qxx.jukebox.interfaces.IArguments;
 import se.qxx.jukebox.interfaces.ICleaner;
 import se.qxx.jukebox.interfaces.IDownloadChecker;
@@ -45,15 +47,19 @@ public class Main implements IMain, IFileCreatedHandler
 	private IJukeboxLogger log;
 	private IFileCreatedHandler fileCreatedHandler;
 	private FileSystemWatcherFactory fileSystemWatcherFactory;
+
+	private WebServerFactory webServerFactory;
+
+	private TcpListenerFactory tcpListenerFactory;
 	
 	@Inject
 	public Main(IArguments arguments, 
 			IExecutor executor, 
 			ISubtitleDownloader subtitleDownloader, 
 			ICleaner cleaner, 
-			IStreamingWebServer webServer, 
+			WebServerFactory webServerFactory,
 			ISettings settings,
-			ITcpListener tcpListener,
+			TcpListenerFactory tcpListenerFactory,
 			IMovieIdentifier movieIdentifier,
 			IDownloadChecker downloadChecker,
 			IMediaConverter mediaConverter,
@@ -61,6 +67,8 @@ public class Main implements IMain, IFileCreatedHandler
 			IFileCreatedHandler fileCreatedHandler,
 			FileSystemWatcherFactory fileSystemWatcherFactory) {
 		
+		this.setTcpListenerFactory(tcpListenerFactory);
+		this.setWebServerFactory(webServerFactory);
 		this.setFileSystemWatcherFactory(fileSystemWatcherFactory);
 		this.setFileCreatedHandler(fileCreatedHandler);
 		this.setArguments(arguments);	
@@ -77,6 +85,22 @@ public class Main implements IMain, IFileCreatedHandler
 		this.setLog(loggerFactory.create(LogType.MAIN));
 	}	
 	
+	public TcpListenerFactory getTcpListenerFactory() {
+		return tcpListenerFactory;
+	}
+
+	public void setTcpListenerFactory(TcpListenerFactory tcpListenerFactory) {
+		this.tcpListenerFactory = tcpListenerFactory;
+	}
+
+	public WebServerFactory getWebServerFactory() {
+		return webServerFactory;
+	}
+
+	public void setWebServerFactory(WebServerFactory webServerFactory) {
+		this.webServerFactory = webServerFactory;
+	}
+
 	public FileSystemWatcherFactory getFileSystemWatcherFactory() {
 		return fileSystemWatcherFactory;
 	}
@@ -197,7 +221,11 @@ public class Main implements IMain, IFileCreatedHandler
 			
 			System.out.println("Initializing settings");
 			this.getSettings().initialize();
-			this.getWebServer().initializeMappings();
+			
+			// Create instances of tcp listener and web server
+			setupFactoryInstances();
+			
+			this.getWebServer().initializeMappings(this.getSettings());
 			
 			startupThreads();
 			
@@ -227,11 +255,22 @@ public class Main implements IMain, IFileCreatedHandler
 		cleanupStopperFile();
 	}
 
+	private void setupFactoryInstances() {
+		//TODO: Extract webserver port to settings
+		if (this.getWebServer() == null)
+			this.setWebServer(this.getWebServerFactory().create(8001));
+
+		if (this.getTcpListener() == null)
+			this.setTcpListener(this.getTcpListenerFactory().create(
+					this.getWebServer(),
+					this.getSettings().getSettings().getTcpListener().getPort().getValue()));
+	}
+
 	private void startupThreads() {
 		System.out.println("Starting threads ...");
 		if (this.getArguments().isTcpListenerEnabled()) {
 			System.out.println("Starting TCP listener");
-			this.getTcpListener().initialize(this.getSettings());
+			this.getTcpListener().initialize();
 			this.getExecutor().start(this.getTcpListener().getRunnable());
 		}
 		
@@ -242,6 +281,7 @@ public class Main implements IMain, IFileCreatedHandler
 		
 		if (this.getArguments().isWebServerEnabled()) {
 			System.out.println("Starting web server");
+			this.getWebServer().initialize();
 			this.getExecutor().start(this.getWebServer().getRunnable());
 		}
 		

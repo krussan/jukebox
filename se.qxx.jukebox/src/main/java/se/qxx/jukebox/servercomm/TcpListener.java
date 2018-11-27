@@ -2,38 +2,62 @@ package se.qxx.jukebox.servercomm;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.google.inject.assistedinject.Assisted;
 import com.googlecode.protobuf.socketrpc.RpcServer;
 import com.googlecode.protobuf.socketrpc.ServerRpcConnectionFactory;
 import com.googlecode.protobuf.socketrpc.SocketRpcConnectionFactories;
 
 import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxService;
+import se.qxx.jukebox.factories.JukeboxRpcServerFactory;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.ISettings;
+import se.qxx.jukebox.interfaces.IStreamingWebServer;
 import se.qxx.jukebox.interfaces.ITcpListener;
 
-@Singleton
 public class TcpListener implements ITcpListener {
 
 	private RpcServer server;
 	private JukeboxRpcServerConnection serverConnection;
 	private IJukeboxLogger log;
 	private IExecutor executor;
+	private JukeboxRpcServerFactory rpcFactory;
+	private int port;
 	
 	@Inject
 	public TcpListener(
 			IExecutor executor, 
 			LoggerFactory loggerFactory,
-			JukeboxRpcServerConnection conn) {
+			JukeboxRpcServerFactory rpcFactory,
+			@Assisted("webserver") IStreamingWebServer webServer,
+			@Assisted("port") int port) {
 		
+		this.setPort(port);
+		this.setServerConnection((JukeboxRpcServerConnection)rpcFactory.create(webServer));
+		this.setRpcFactory(rpcFactory);
 		this.setExecutor(executor);
-		this.setServerConnection(conn);
 		this.setLog(loggerFactory.create(LogType.COMM));
 
 	}
 	
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+	public JukeboxRpcServerFactory getRpcFactory() {
+		return rpcFactory;
+	}
+
+	public void setRpcFactory(JukeboxRpcServerFactory rpcFactory) {
+		this.rpcFactory = rpcFactory;
+	}
+
 	public IExecutor getExecutor() {
 		return executor;
 	}
@@ -72,14 +96,14 @@ public class TcpListener implements ITcpListener {
 	}
 
 	@Override
-	public void initialize(int port) {
+	public void initialize() {
 		
   
-		this.getLog().Info(String.format("Starting up RPC server. Listening on port %s",  port));
+		this.getLog().Info(String.format("Starting up RPC server. Listening on port %s",  this.getPort()));
 		
 		ServerRpcConnectionFactory rpcConnectionFactory = 
 				SocketRpcConnectionFactories
-				.createServerRpcConnectionFactory(port);
+				.createServerRpcConnectionFactory(getPort());
 		
 		RpcServer server = new RpcServer(rpcConnectionFactory
 				, this.getExecutor().getExecutorService()
@@ -92,12 +116,5 @@ public class TcpListener implements ITcpListener {
 	@Override
 	public Runnable getRunnable() {
 		return this.getServer().getServerRunnable();
-	}
-
-	@Override
-	public void initialize(ISettings settings) {
-		int port = settings.getSettings().getTcpListener().getPort().getValue();
-		
-		initialize(port);
 	}
 }
