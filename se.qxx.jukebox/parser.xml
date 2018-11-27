@@ -34,6 +34,7 @@
         <word key="Season\s*(\d{1,2})" regex="true" group="1" lookahead="1" />
         <word key="(\d{1,2})sezon" regex="true" group="1" />
         <word key="s(\d{1,2})e(\d{1,2})" regex="true" group="1" recursiveCount="2" />
+        <word key="s(\d{1,2})e(\d{1,2})e(\d{1,2})" regex="true" group="1" recursiveCount="3" />
         <word key="(\d{1,2})x(\d{1,2})" regex="true" group="1" recursiveCount="2" />
         <word key="(\d{1,2})sezon(\d{1,2})[.|_|\s|-]*seriya" regex="true" group="1" recursiveCount="2" />
         <word key="Season(\d{1,2})Episode(\d{1,2})" regex="true" group="1" recursiveCount="2" />
@@ -44,6 +45,7 @@
         <word key="(\d{1,2})seriya" regex="true" group="1" />
         <word key="Episode\s*(\d{1,2})" regex="true" group="1" lookahead="1" />
         <word key="s(\d{1,2})e(\d{1,2})" regex="true" group="2" />
+        <word key="s(\d{1,2})e(\d{1,2})e(\d{1,2})" regex="true" group="2" />
         <word key="(\d{1,2})x(\d{1,2})" regex="true" group="2" />
         <word key="(\d{1,2})sezon(\d{1,2})seriya" regex="true" group="2" />
         <word key="Season(\d{1,2})Episode(\d{1,2})" regex="true" group="2" />
