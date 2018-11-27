@@ -124,6 +124,7 @@ public interface IDatabase {
 	Movie getMovieByMediaID(int mediaID);
 
 	Media getMediaByFilename(String filename);
+	Media getMediaByStartOfFilename(String startOfFilename);
 
 	Media getMediaById(int mediaId);
 

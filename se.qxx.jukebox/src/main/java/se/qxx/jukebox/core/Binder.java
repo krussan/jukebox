@@ -32,6 +32,7 @@ import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.IFileCreatedHandler;
 import se.qxx.jukebox.interfaces.IFileReader;
 import se.qxx.jukebox.interfaces.IFileSystemWatcher;
+import se.qxx.jukebox.interfaces.IFilenameChecker;
 import se.qxx.jukebox.interfaces.IIMDBFinder;
 import se.qxx.jukebox.interfaces.IIMDBParser;
 import se.qxx.jukebox.interfaces.IIMDBUrlRewrite;
@@ -76,6 +77,7 @@ import se.qxx.jukebox.vlc.Distributor;
 import se.qxx.jukebox.watcher.DownloadChecker;
 import se.qxx.jukebox.watcher.FileCreatedHandler;
 import se.qxx.jukebox.watcher.FileSystemWatcher;
+import se.qxx.jukebox.watcher.FilenameChecker;
 import se.qxx.jukebox.webserver.StreamingWebServer;
 
 public class Binder {
@@ -117,6 +119,7 @@ public class Binder {
 				bind(IMediaMetadataHelper.class).to(MediaMetadataHelper.class);
 				bind(IMovieBuilderFactory.class).to(MovieBuilderFactory.class);
 				bind(IMovieIdentifier.class).to(MovieIdentifier.class);
+				bind(IFilenameChecker.class).to(FilenameChecker.class);
 
 				install(
 					new FactoryModuleBuilder()

@@ -1456,6 +1456,40 @@ public class DB implements IDatabase {
 			
 	}
 	
+	public Media getMediaByStartOfFilename(String startOfFilename) {
+		try {
+			ProtoDB db = getProtoDBInstance();
+
+			try {
+				if (db.getDBType() == DBType.Sqlite) lock.lock();
+
+				List<Media> result =
+						db.search(
+							SearchOptions.newBuilder(JukeboxDomain.Media.getDefaultInstance())
+							.addFieldName("filename")
+							.addSearchArgument(startOfFilename + "%")
+							.addOperator(ProtoDBSearchOperator.Like)
+							.setShallow(false)
+							.addExcludedObject("subs"));
+					
+				if (result.size() > 0)
+					return result.get(0);
+				else 
+					return null;
+
+			}
+			finally {
+				if (db.getDBType() == DBType.Sqlite) lock.unlock();
+			}
+			
+		} catch (Exception e) {
+			this.getMainLog().Error("failed to get information from database", e);
+//			Log.Debug(String.format("Failing query was ::\n\t%s", statement), LogType.MAIN);
+			
+			return null;
+		}		
+	}
+	
 	/* (non-Javadoc)
 	 * @see se.qxx.jukebox.IDatabase#getMediaById(int)
 	 */

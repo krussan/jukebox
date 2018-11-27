@@ -16,6 +16,7 @@ import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.DomainUtil;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
+import se.qxx.jukebox.domain.JukeboxDomain.MediaConverterState;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
@@ -24,6 +25,7 @@ import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IArguments;
 import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IExecutor;
+import se.qxx.jukebox.interfaces.IFilenameChecker;
 import se.qxx.jukebox.interfaces.IIMDBFinder;
 import se.qxx.jukebox.interfaces.IMediaMetadataHelper;
 import se.qxx.jukebox.interfaces.IMovieBuilderFactory;
@@ -43,6 +45,7 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 	private IIMDBFinder imdbFinder;
 	private IMovieBuilderFactory movieBuilderFactory;
 	private IMediaMetadataHelper mediaHelper;
+	private IFilenameChecker filenameChecker;
 
 	@Inject
 	private MovieIdentifier(IExecutor executor, 
@@ -52,8 +55,10 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 			IIMDBFinder imdbFinder,
 			IMovieBuilderFactory movieBuilderFactory,
 			LoggerFactory loggerFactory,
-			IMediaMetadataHelper mediaHelper) {
+			IMediaMetadataHelper mediaHelper,
+			IFilenameChecker filenameChecker) {
 		super("MovieIdentifier", 0, loggerFactory.create(LogType.FIND), executor);
+		this.setFilenameChecker(filenameChecker);
 		this.setMediaHelper(mediaHelper);
 		
 		this.setDatabase(database);
@@ -64,6 +69,16 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 		
 		this.files = new ConcurrentLinkedQueue<FileRepresentation>();
 		this.seriesLocks = new StringLockPool();
+	}
+
+
+	public IFilenameChecker getFilenameChecker() {
+		return filenameChecker;
+	}
+
+
+	public void setFilenameChecker(IFilenameChecker filenameChecker) {
+		this.filenameChecker = filenameChecker;
 	}
 
 
@@ -167,7 +182,7 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 		String path = f.getPath();
 
 		// Added ignore on all filename that contains the string sample
-		if (!Util.isExcludedFile(f, this.getLog())) {
+		if (!this.getFilenameChecker().isExcludedFile(f)) {
 			// check if the same media already exist in db
 			Media dbMedia = this.getDatabase().getMediaByFilename(filename);
 			if (dbMedia != null && StringUtils.equalsIgnoreCase(dbMedia.getFilepath(), path)) {
@@ -183,8 +198,21 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 					this.getLog().Info(String.format("Failed to identity movie with filename :: %s", f.getName()));
 				}
 			}
-
 		}
+//		else if (this.getFilenameChecker().isConvertedFile(f.getName())) {
+//			// check that converted media exist in db and has converted state set to completed
+//			// unless converterstate is converting
+//			Media convMedia = this.getDatabase().getMediaByStartOfFilename(f.getName().substring(0, f.getName().indexOf("_[tazmo]" ) - 1));
+//			if (!StringUtils.equalsIgnoreCase(convMedia.getConvertedFileName(), f.getName()) &&
+//					convMedia.getConverterState() == MediaConverterState.Completed) {
+//				// converted media not registered
+//				MediaConverterState state = convMedia.getConverterState();
+//				if (state != MediaConverterState.Completed &&
+//					state != MediaConverterState.Converting &&
+//					state != MediaConverterState.Failed)
+//			}
+//			// otherwise the main file has not been identified yet
+//		}
 	}
 
 	/**
