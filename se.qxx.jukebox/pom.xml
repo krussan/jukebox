@@ -4,7 +4,7 @@
 
 	<groupId>se.qxx.jukebox</groupId>
 	<artifactId>jukebox</artifactId>
-	<version>0.26</version>
+	<version>0.30</version>
 	<packaging>jar</packaging>
 
 	<name>jukebox</name>
@@ -14,7 +14,6 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<fully.qualified.main.class>se.qxx.jukebox.Jukebox</fully.qualified.main.class>
 		<script.file>run.sh</script.file>
-		<powermock.version>1.6.6</powermock.version>
 	</properties>
 
 	<repositories>
@@ -37,19 +36,6 @@
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
 			<version>2.0.42-beta</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-module-junit4</artifactId>
-			<version>${powermock.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-api-mockito2</artifactId>
-			<version>${powermock.version}</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -83,7 +69,7 @@
 		<dependency>
 			<groupId>se.qxx.protodb</groupId>
 			<artifactId>protodb-java</artifactId>
-			<version>2.5.1</version>
+			<version>2.5.4</version>
 		</dependency>
 
 		<dependency>
@@ -177,7 +163,17 @@
 		    <version>4.2.2</version>
 		</dependency>
 
+		<dependency>
+		    <groupId>com.google.inject</groupId>
+		    <artifactId>guice</artifactId>
+		    <version>4.1.0</version>
+		</dependency>
 
+		<dependency>
+		    <groupId>com.google.inject.extensions</groupId>
+		    <artifactId>guice-assistedinject</artifactId>
+		    <version>4.1.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -311,6 +307,8 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
+				<version>3.1.0</version>
+
 				<executions>
 					<execution>
 						<phase>package</phase>
@@ -323,10 +321,11 @@
 									<mainClass>${fully.qualified.main.class}</mainClass>
 								</manifest>
 							</archive>
-							<descriptorRefs>
-								<descriptorRef>jar-with-dependencies</descriptorRef>
-							</descriptorRefs>
+							<descriptors>
+					            <descriptor>jar-with-deps-with-exclude.xml</descriptor>
+					        </descriptors>
 						</configuration>
+						
 					</execution>
 				</executions>
 			</plugin>

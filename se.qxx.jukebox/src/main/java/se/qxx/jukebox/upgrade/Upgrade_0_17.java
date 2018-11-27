@@ -4,17 +4,23 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import se.qxx.jukebox.DB;
-import se.qxx.jukebox.Version;
+
+import se.qxx.jukebox.core.DB;
+import se.qxx.jukebox.core.Version;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
+import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.domain.DomainUtil;
 
-public class Upgrade_0_17 implements IIncrimentalUpgrade {
+public class Upgrade_0_17 extends UpgraderBase implements IIncrimentalUpgrade {
 	
+	public Upgrade_0_17(IDatabase database) {
+		super(database);
+	}
+
 	@Override
 	public Version getThisVersion() {
 		return new Version(0,17);
@@ -30,16 +36,16 @@ public class Upgrade_0_17 implements IIncrimentalUpgrade {
 		try {
 	
 			// create thumbnails for each movie,series,season,episode
-			List<Movie> movies = DB.searchMoviesByTitle(StringUtils.EMPTY);
+			List<Movie> movies = this.getDatabase().searchMoviesByTitle(StringUtils.EMPTY);
 			for (Movie m: movies) {
 				if (!m.getImage().isEmpty() && m.getThumbnail().isEmpty()){
 					System.out.println(String.format("Creating thumbnail for %s", m.getTitle()));
 					Movie m_new = Movie.newBuilder(m).setThumbnail(Util.getScaledImage(m.getImage())).build();
-					DB.save(m_new);
+					this.getDatabase().save(m_new);
 				}
 			}
 			
-			List<Series> series = DB.searchSeriesByTitle(StringUtils.EMPTY);
+			List<Series> series = this.getDatabase().searchSeriesByTitle(StringUtils.EMPTY);
 			for (Series s : series) {
 				for (Season sn : s.getSeasonList()) {					
 					for (Episode e : sn.getEpisodeList()) {
@@ -66,7 +72,7 @@ public class Upgrade_0_17 implements IIncrimentalUpgrade {
 					s_new = Series.newBuilder(s).setThumbnail(Util.getScaledImage(s.getImage())).build();
 				}
 				
-				DB.save(s_new);
+				this.getDatabase().save(s_new);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -9,8 +9,7 @@ import java.net.Socket;
 
 import org.apache.commons.lang3.StringUtils;
 
-import se.qxx.jukebox.Log;
-import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.interfaces.IJukeboxLogger;
 
 public class TcpClient {
 	String host;
@@ -19,17 +18,29 @@ public class TcpClient {
 	int readTimeout = 0;
 	
 	Socket _sock;
+	private IJukeboxLogger log;
 	
-	public TcpClient(String clientName, String host, int port, int readTimeout) {
+	public TcpClient(String clientName, String host, int port, int readTimeout, IJukeboxLogger log) {
 		this.host = host;
 		this.port = port;
 		this.clientName = clientName;
 		this.readTimeout = readTimeout;
+		this.setLog(log);
 		
 		connect();		
 	}
 
 	
+	public IJukeboxLogger getLog() {
+		return log;
+	}
+
+
+	public void setLog(IJukeboxLogger log) {
+		this.log = log;
+	}
+
+
 	public boolean isConnected() {
 		if (_sock == null)
 			return false;
@@ -39,12 +50,12 @@ public class TcpClient {
 	
 	private void connect() {
 		try {
-			Log.Debug(String.format("Connecting to %s at %s port %s", this.clientName, this.host, this.port), Log.LogType.COMM);
+			this.getLog().Debug(String.format("Connecting to %s at %s port %s", this.clientName, this.host, this.port));
 			_sock = new Socket(this.host, this.port);
 			_sock.setSoTimeout(this.readTimeout);
-			Log.Debug("Connected...", Log.LogType.COMM);
+			this.getLog().Debug("Connected...");
 		} catch (Exception e) {
-			Log.Error(String.format("Unable to connect to %s host :: %s port :: %s", this.clientName, this.host, this.port), Log.LogType.COMM, e);
+			this.getLog().Error(String.format("Unable to connect to %s host :: %s port :: %s", this.clientName, this.host, this.port), e);
 		}
 	}
 
@@ -58,7 +69,7 @@ public class TcpClient {
 			_sock.close();
 		} catch (IOException e) {
 			
-			Log.Error(String.format("Disconnect failed to %s on host :: %s port :: %s", this.clientName, this.host, this.port), Log.LogType.COMM, e);
+			this.getLog().Error(String.format("Disconnect failed to %s on host :: %s port :: %s", this.clientName, this.host, this.port), e);
 		}
 	}
 	
@@ -113,7 +124,7 @@ public class TcpClient {
 		
 		for (int i = 0; i<nrOfLines;i++) {
 			line = r.readLine();
-			Log.Debug(String.format("Response was :: %s", line), LogType.COMM);			
+			this.getLog().Debug(String.format("Response was :: %s", line));			
 		}
 		
 		return line;

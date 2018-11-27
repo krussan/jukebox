@@ -14,7 +14,8 @@ public class TestUpgrade {
 	@Test
 	public void TestUpgrade_0_20() throws DatabaseNotSupportedException {
 		DatabaseBackend db = new MockDatabaseBackend();
-		Upgrade_0_20 up = new Upgrade_0_20();
+		
+		Upgrade_0_20 up = new Upgrade_0_20(null);
 		List<String> dbScripts = up.getDatabaseUpgradeScripts(db);
 		
 		assertEquals(2, dbScripts.size());

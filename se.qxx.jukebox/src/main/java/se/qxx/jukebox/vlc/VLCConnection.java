@@ -1,14 +1,12 @@
 package se.qxx.jukebox.vlc;
 
 import java.io.IOException;
-import java.net.SocketException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
-import se.qxx.jukebox.Log;
-import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.servercomm.TcpClient;
 import se.qxx.jukebox.tools.Util;
 
@@ -20,6 +18,7 @@ import se.qxx.jukebox.tools.Util;
 public class VLCConnection extends TcpClient {
 	private static String mutex = "MUTEX";
 	private final static int COMMAND_TIMEOUT = 3000;
+
 	
 	/**
 	 * Initializes a new connection to a VLC player. The VLC player has to be initiated with the RC interface.
@@ -27,8 +26,8 @@ public class VLCConnection extends TcpClient {
 	 * @param host	The IP number of the host to connect to
 	 * @param port	The port number of the host to connect to
 	 */
-	public VLCConnection(String host, int port) {
-		super("VLC", host, port, COMMAND_TIMEOUT);
+	public VLCConnection(String host, int port, IJukeboxLogger log) {
+		super("VLC", host, port, COMMAND_TIMEOUT, log);
 	}
 		
 	/**
@@ -50,7 +49,7 @@ public class VLCConnection extends TcpClient {
 				this.sendCommand("fullscreen\n");
 			}
 			catch (Exception e) {
-				Log.Error("Error while setting fullscreen mode.", Log.LogType.COMM, e);
+				this.getLog().Error("Error while setting fullscreen mode.", e);
 			}
 		}
 	}
@@ -70,13 +69,13 @@ public class VLCConnection extends TcpClient {
 
 			output += "\n";
 	
-			Log.Debug(String.format("Sending enqueue command:: %s", output), LogType.COMM);
+			this.getLog().Debug(String.format("Sending enqueue command:: %s", output));
 			try {
 				this.sendCommand(output);
 				this.readLinesUntilFound("add:\\sreturned.*");
 				
 			} catch (Exception e) {
-				Log.Error("Error while adding file to playlist", Log.LogType.COMM, e);
+				this.getLog().Error("Error while adding file to playlist", e);
 			}
 		}
 	}
@@ -90,7 +89,7 @@ public class VLCConnection extends TcpClient {
 				this.sendCommand("stop\n");
 				this.readLinesUntilFound("stop:\\sreturned.*");
 			} catch (Exception e) {
-				Log.Error("Error while stopping movie", Log.LogType.COMM, e);
+				this.getLog().Error("Error while stopping movie", e);
 			}
 		}
 	}
@@ -104,7 +103,7 @@ public class VLCConnection extends TcpClient {
 				this.sendCommand("pause\n");
 				this.readLinesUntilFound("pause:\\sreturned.*");
 			} catch (Exception e) {
-				Log.Error("Error while pausing movie", Log.LogType.COMM, e);
+				this.getLog().Error("Error while pausing movie", e);
 			}
 		}
 	}
@@ -118,7 +117,7 @@ public class VLCConnection extends TcpClient {
 				this.sendCommand("clear\n");
 				this.readLinesUntilFound("clear:\\sreturned.*");
 			} catch (Exception e) {
-				Log.Error("Error while clearing playlist", Log.LogType.COMM, e);
+				this.getLog().Error("Error while clearing playlist", e);
 			}
 		}
 	}
@@ -133,7 +132,7 @@ public class VLCConnection extends TcpClient {
 				this.sendCommand(String.format("seek %s\n", seconds));
 				this.readLinesUntilFound("seek:\\sreturned.*");
 			} catch (Exception e) {
-				Log.Error("Error while seeking in file", Log.LogType.COMM, e);
+				this.getLog().Error("Error while seeking in file", e);
 			}	
 		}
 	}
@@ -148,7 +147,7 @@ public class VLCConnection extends TcpClient {
 				this.sendCommand("vratio\n");
 				this.readResponseLine();
 			} catch (Exception e) {
-				Log.Error("Error while setting vertical ratio", Log.LogType.COMM, e);
+				this.getLog().Error("Error while setting vertical ratio", e);
 			}	
 		}
 	}
@@ -160,11 +159,11 @@ public class VLCConnection extends TcpClient {
 	public void setSubtitle(int subtitleID) {
 		synchronized (mutex) {
 			try {
-				Log.Debug(String.format("Setting subtitle track %s", subtitleID), LogType.COMM);
+				this.getLog().Debug(String.format("Setting subtitle track %s", subtitleID));
 				this.sendCommand(String.format("strack %s\n", subtitleID));
 				this.readResponseLine();
 			} catch (Exception e) {
-				Log.Error("Error while setting subtitle track", Log.LogType.COMM, e);
+				this.getLog().Error("Error while setting subtitle track", e);
 			}
 		}
 	}
@@ -181,7 +180,7 @@ public class VLCConnection extends TcpClient {
 				
 				return response;
 			} catch (Exception e) {
-				Log.Error("Error while setting subtitle track", Log.LogType.COMM, e);
+				this.getLog().Error("Error while setting subtitle track", e);
 			}		
 		
 			return "0";
@@ -202,11 +201,9 @@ public class VLCConnection extends TcpClient {
 					return false;
 				else
 					return true;
-			} catch (SocketException e) {
-				Log.Error("Error while setting subtitle track", Log.LogType.COMM, e);
 			} catch (IOException e) {
-				e.printStackTrace();
-			}		
+				this.getLog().Error("Error while setting subtitle track", e);
+			}
 			
 			return false;
 		}
@@ -224,7 +221,7 @@ public class VLCConnection extends TcpClient {
 				
 				return response;
 			} catch (Exception e) {
-				Log.Error("Error while setting subtitle track", Log.LogType.COMM, e);
+				this.getLog().Error("Error while setting subtitle track", e);
 			}		
 			
 			return StringUtils.EMPTY;
@@ -242,7 +239,7 @@ public class VLCConnection extends TcpClient {
 		long startTime = Util.getCurrentTimestamp();
 		String line = StringUtils.EMPTY;
 
-		Log.Debug(String.format("Waiting for response like :: %s", pattern), LogType.COMM);
+		this.getLog().Debug(String.format("Waiting for response like :: %s", pattern));
 		Pattern p = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 		
 		while (!found && Util.getCurrentTimestamp() - startTime <= COMMAND_TIMEOUT) {
@@ -290,7 +287,7 @@ public class VLCConnection extends TcpClient {
 //				val = true;
 //			}
 //			catch (IOException e){
-//				Log.Error(String.format("VLC Connection is not live - reinitialize"), LogType.COMM, e);
+//				this.getLog().Error(String.format("VLC Connection is not live - reinitialize"), e);
 //			}
 //		}
 //		

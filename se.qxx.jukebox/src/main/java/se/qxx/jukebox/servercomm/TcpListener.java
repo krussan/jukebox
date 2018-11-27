@@ -1,53 +1,103 @@
 package se.qxx.jukebox.servercomm;
 
-import se.qxx.jukebox.JukeboxThread;
-import se.qxx.jukebox.Log;
-import se.qxx.jukebox.Log.LogType;
-import se.qxx.jukebox.comm.JukeboxRpcServer;
-import se.qxx.jukebox.settings.Settings;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import com.googlecode.protobuf.socketrpc.RpcServer;
+import com.googlecode.protobuf.socketrpc.ServerRpcConnectionFactory;
+import com.googlecode.protobuf.socketrpc.SocketRpcConnectionFactories;
 
-public class TcpListener extends JukeboxThread {
+import se.qxx.jukebox.core.Log.LogType;
+import se.qxx.jukebox.domain.JukeboxDomain.JukeboxService;
+import se.qxx.jukebox.factories.LoggerFactory;
+import se.qxx.jukebox.interfaces.IExecutor;
+import se.qxx.jukebox.interfaces.IJukeboxLogger;
+import se.qxx.jukebox.interfaces.ISettings;
+import se.qxx.jukebox.interfaces.ITcpListener;
 
-	JukeboxRpcServer server;
+@Singleton
+public class TcpListener implements ITcpListener {
+
+	private RpcServer server;
+	private JukeboxRpcServerConnection serverConnection;
+	private IJukeboxLogger log;
+	private IExecutor executor;
 	
-	public JukeboxRpcServer getServer() {
+	@Inject
+	public TcpListener(
+			IExecutor executor, 
+			LoggerFactory loggerFactory,
+			JukeboxRpcServerConnection conn) {
+		
+		this.setExecutor(executor);
+		this.setServerConnection(conn);
+		this.setLog(loggerFactory.create(LogType.COMM));
+
+	}
+	
+	public IExecutor getExecutor() {
+		return executor;
+	}
+
+	public void setExecutor(IExecutor executor) {
+		this.executor = executor;
+	}
+
+	public IJukeboxLogger getLog() {
+		return log;
+	}
+
+	public void setLog(IJukeboxLogger log) {
+		this.log = log;
+	}
+
+	public JukeboxRpcServerConnection getServerConnection() {
+		return serverConnection;
+	}
+
+	public void setServerConnection(JukeboxRpcServerConnection serverConnection) {
+		this.serverConnection = serverConnection;
+	}
+
+	public JukeboxService getService() {
+		return this.getServerConnection();
+	}
+
+	@Override
+	public RpcServer getServer() {
 		return server;
 	}
 
-	public void setServer(JukeboxRpcServer server) {
+	public void setServer(RpcServer server) {
 		this.server = server;
 	}
 
-	public TcpListener() {
-		super("TcpListener", 3000, LogType.COMM);
+	@Override
+	public void initialize(int port) {
+		
+  
+		this.getLog().Info(String.format("Starting up RPC server. Listening on port %s",  port));
+		
+		ServerRpcConnectionFactory rpcConnectionFactory = 
+				SocketRpcConnectionFactories
+				.createServerRpcConnectionFactory(port);
+		
+		RpcServer server = new RpcServer(rpcConnectionFactory
+				, this.getExecutor().getExecutorService()
+				, true);
+		
+		server.registerService(this.getService());
+		this.setServer(server);
+	}
+	
+	@Override
+	public Runnable getRunnable() {
+		return this.getServer().getServerRunnable();
 	}
 
 	@Override
-	protected void initialize() {
-		int port = Settings.get().getTcpListener().getPort().getValue();
-		this.setServer(new JukeboxRpcServer(port));
-  
-		Log.Info(String.format("Starting up RPC server. Listening on port %s",  port), LogType.COMM);
+	public void initialize(ISettings settings) {
+		int port = settings.getSettings().getTcpListener().getPort().getValue();
 		
-		try {
-			this.getServer().runServer(JukeboxRpcServerConnection.class);
-		} catch (InstantiationException | IllegalAccessException e) {
-			Log.Error("Error occured when starting up RPC server", LogType.COMM, e);
-		}
-	}
-	
-	@Override
-	protected void execute() {
-	}
-	
-	@Override
-	public int getJukeboxPriority() {
-		return 3;
-	}
-	
-	@Override
-	public void end() {
-		this.getServer().stopServer();
-		super.end();
+		initialize(port);
 	}
 }

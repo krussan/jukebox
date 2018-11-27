@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,7 @@ import se.qxx.android.jukebox.comm.Connector;
 import se.qxx.android.jukebox.dialogs.ActionDialog;
 import se.qxx.android.jukebox.model.Constants;
 import se.qxx.android.jukebox.model.Model;
+import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
@@ -144,7 +146,7 @@ public class JukeboxFragment extends ListFragment implements
 	}
 	
 	private void initializeView(View v) {
-		ListView lv = (ListView) v.findViewById(R.id.listView1);
+		ListView lv = v.findViewById(R.id.listItems);
 		lv.setOnItemClickListener(this);
 		lv.setOnItemLongClickListener(this);
 
@@ -154,6 +156,8 @@ public class JukeboxFragment extends ListFragment implements
 		v.findViewById(R.id.btnPreferences).setOnClickListener(this);
 		v.findViewById(R.id.btnOn).setOnClickListener(this);
 		v.findViewById(R.id.btnOff).setOnClickListener(this);
+
+		v.findViewById(R.id.txtListTitle).setVisibility(View.GONE);
 
 		scrollListener = new EndlessScrollListener(this) {
             @Override
@@ -183,6 +187,7 @@ public class JukeboxFragment extends ListFragment implements
         else if (this.getMode() == ViewMode.Series) {
             _seriesLayoutAdapter = new SeriesLayoutAdapter(v.getContext(), new ArrayList<JukeboxDomain.Series>());
             lv.setAdapter(_seriesLayoutAdapter);
+
         }
 
         connector.setupOnOffButton(v);

@@ -6,11 +6,19 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.TreeSet;
 
-import se.qxx.jukebox.JukeboxThread;
-import se.qxx.jukebox.Log.LogType;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.name.Named;
+
+import se.qxx.jukebox.concurrent.JukeboxThread;
+import se.qxx.jukebox.core.Log.LogType;
+import se.qxx.jukebox.factories.LoggerFactory;
+import se.qxx.jukebox.interfaces.IExecutor;
+import se.qxx.jukebox.interfaces.IFileCreatedHandler;
+import se.qxx.jukebox.interfaces.IFileSystemWatcher;
 import se.qxx.jukebox.tools.Util;
 
-public class FileSystemWatcher extends JukeboxThread {
+public class FileSystemWatcher extends JukeboxThread implements IFileSystemWatcher {
 
 	TreeSet<FileRepresentation> currentRepresentation ;
 	
@@ -32,9 +40,9 @@ public class FileSystemWatcher extends JukeboxThread {
 		this.directory = directory;
 	}
 
-	protected List<INotifyClient> clients = new ArrayList<INotifyClient>();
+	protected List<IFileCreatedHandler> clients = new ArrayList<IFileCreatedHandler>();
 
-	public List<INotifyClient> getClients() {
+	public List<IFileCreatedHandler> getClients() {
 		return clients;
 	}
 
@@ -71,9 +79,17 @@ public class FileSystemWatcher extends JukeboxThread {
 
 	private boolean recurse = false;
 
-	public FileSystemWatcher(String name, String directoryName, ExtensionFileFilter filter, boolean watchCreated,
-			boolean watchModified, boolean recurse) {
-		super(name, 10000, LogType.FIND);
+	@Inject
+	public FileSystemWatcher(LoggerFactory loggerFactory,
+			IExecutor executor,
+			@Assisted("Name") String name, 
+			@Assisted("Directory") String directoryName, 
+			@Assisted ExtensionFileFilter filter, 
+			@Assisted("WatchCreated") boolean watchCreated,
+			@Assisted("WatchModified") boolean watchModified, 
+			@Assisted("Recurse") boolean recurse, 
+			@Assisted int waitTime) {
+		super(name, waitTime, loggerFactory.create(LogType.FIND), executor);
 		
 		File directoryToWatch = new File(directoryName);
 
@@ -95,7 +111,11 @@ public class FileSystemWatcher extends JukeboxThread {
 		this.recurse = recurse;
 	}
 
-	public void registerClient(INotifyClient client) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.watcher.IFileSystemWatcher#registerClient(se.qxx.jukebox.watcher.IFileCreatedHandler)
+	 */
+	@Override
+	public void registerClient(IFileCreatedHandler client) {
 		clients.add(client);
 	}
 
@@ -120,14 +140,14 @@ public class FileSystemWatcher extends JukeboxThread {
 	}
 
 	public void notifyCreated(FileRepresentation f) {
-		for (INotifyClient client : this.getClients()) {
+		for (IFileCreatedHandler client : this.getClients()) {
 			Thread t = new Thread(new FileChangedThread(client, f, true, false));
 			t.start();
 		}
 	}
 
 	public void notifyModified(FileRepresentation f) {
-		for (INotifyClient client : clients) {
+		for (IFileCreatedHandler client : clients) {
 			Thread t = new Thread(new FileChangedThread(client, f, false, true));
 			t.start();
 		}
@@ -180,6 +200,11 @@ public class FileSystemWatcher extends JukeboxThread {
 
 	public void setFilter(ExtensionFileFilter filter) {
 		this.filter = filter;
+	}
+
+	@Override
+	public Runnable getRunnable() {
+		return this;
 	}
 
 }

@@ -1,8 +1,13 @@
 package se.qxx.jukebox.upgrade;
 
-import se.qxx.jukebox.Version;
+import se.qxx.jukebox.core.Version;
+import se.qxx.jukebox.interfaces.IDatabase;
 
-public class Upgrade_0_7 implements IIncrimentalUpgrade {
+public class Upgrade_0_7 extends UpgraderBase implements IIncrimentalUpgrade {
+
+	public Upgrade_0_7(IDatabase database) {
+		super(database);
+	}
 
 	static final String[] DbScripts = {
 		"CREATE TABLE Media (" +
@@ -77,7 +82,7 @@ public class Upgrade_0_7 implements IIncrimentalUpgrade {
 
 	@Override
 	public void performUpgrade() throws UpgradeFailedException {
-		Upgrader.runDatabasescripts(DbScripts);
+		runDatabasescripts(DbScripts);
 
 	}
 }

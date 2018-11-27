@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,7 +33,8 @@ public class EpisodeLayoutAdapter extends GenericListLayoutAdapter<Episode> impl
 	}
 
 	public void addEpisodes(List<Episode> episodes) {
-        this.getEpisodes().addAll(episodes);
+        this.getEpisodes().addAll(
+            sortEpisodes(episodes));
 	}
 
 	public void clearEpisodes() {
@@ -51,13 +54,17 @@ public class EpisodeLayoutAdapter extends GenericListLayoutAdapter<Episode> impl
 
 		this.setSeasonNumber(seasonNumber);
 		this.clearEpisodes();
-		this.addEpisodes(episodes);
+		this.addEpisodes(sortEpisodes(episodes));
 	}
 
     @Override
     public void initializeView(View v, Episode ep) {
         if (ep != null) {
-            GUITools.setTextOnTextview(R.id.toptext, String.format("S%sE%s - %s", this.getSeasonNumber(), ep.getEpisodeNumber(), ep.getTitle()), v);
+            String label = String.format("E%s - %s",
+                    StringUtils.leftPad(Integer.toString(ep.getEpisodeNumber()), 2, '0'),
+                    ep.getTitle());
+
+            GUITools.setTextOnTextview(R.id.toptext, label, v);
             GUITools.setTextOnTextview(R.id.txtDescription, ep.getStory(), v);
 
             setupDownloadedAndCompletedIcons(v, ep.getMediaList());
@@ -116,6 +123,13 @@ public class EpisodeLayoutAdapter extends GenericListLayoutAdapter<Episode> impl
         return null;
     }
 
+    private List<JukeboxDomain.Episode> sortEpisodes(List<JukeboxDomain.Episode> episodes) {
+        List<JukeboxDomain.Episode> newList = new ArrayList<>(episodes);
+
+        Collections.sort(newList, (x, y) -> Integer.compare(x.getEpisodeNumber(), y.getEpisodeNumber()));
+
+        return newList;
+    }
 
 
 }

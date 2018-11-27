@@ -9,8 +9,8 @@
     <ListView 
         android:id="@android:id/list"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
-    </ListView>
+        android:layout_height="fill_parent"
+        android:visibility="invisible" />
         
     <RelativeLayout 
         android:layout_width="fill_parent"
@@ -21,11 +21,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@null"
-            android:layout_gravity="left"
+            android:layout_gravity="start"
 			android:src="@drawable/btnrefresh"
 			android:scaleType="centerInside"
 			android:gravity="center"
-        />
+            android:contentDescription="TODO" />
 
 		<ImageButton
 		    android:id="@+id/btnSelectMediaPlayer" 
@@ -37,7 +37,7 @@
 			android:scaleType="centerInside"
 			android:gravity="center"
 			android:background="@null"
-		/>
+            android:contentDescription="@string/descSelectMediaPlayer" />
         
 		<ImageButton
 		    android:id="@+id/btnCurrentMovie" 
@@ -87,12 +87,22 @@
 			android:gravity="center"
 			android:background="@null"
 		/>
-		
+
+        <TextView
+            android:id="@+id/txtListTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/btnRefresh"
+            android:text="@string/lblSeriesTitle"
+            android:padding="6dp"
+            android:textColor="#FFFFFF"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+
 		<ListView
-		    android:id="@+id/listView1"
+		    android:id="@+id/listItems"
 		    android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
-		    android:layout_below="@id/btnRefresh">
+		    android:layout_below="@id/txtListTitle">
 		</ListView>		
     </RelativeLayout>
 

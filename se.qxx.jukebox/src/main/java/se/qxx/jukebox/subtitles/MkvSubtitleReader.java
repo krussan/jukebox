@@ -6,8 +6,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.commons.lang3.StringUtils;
+
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.google.protobuf.ByteString;
 import com.matthewn4444.ebml.Attachments;
 import com.matthewn4444.ebml.EBMLReader;
@@ -23,20 +26,52 @@ import fr.noop.subtitle.srt.SrtWriter;
 import fr.noop.subtitle.util.SubtitlePlainText;
 import fr.noop.subtitle.util.SubtitleTextLine;
 import fr.noop.subtitle.util.SubtitleTimeCode;
+import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Rating;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
-import se.qxx.jukebox.tools.Util;
+import se.qxx.jukebox.factories.LoggerFactory;
+import se.qxx.jukebox.interfaces.IJukeboxLogger;
+import se.qxx.jukebox.interfaces.IMkvSubtitleReader;
+import se.qxx.jukebox.interfaces.ISubtitleFileWriter;
 
-public class MkvSubtitleReader {
-	public static void extractSubs(String filename, String outputPath) throws FileNotFoundException, IOException, SubtitleParsingException {
-		List<Subtitle> subs = MkvSubtitleReader.extractSubs(filename);
+@Singleton
+public class MkvSubtitleReader implements IMkvSubtitleReader {
+	
+	private ISubtitleFileWriter subFileWriter;
+	private IJukeboxLogger log;
+	
+	@Inject
+	public MkvSubtitleReader(ISubtitleFileWriter subFileWriter, LoggerFactory loggerFactory) {
+		this.setSubFileWriter(subFileWriter);
+		this.setLog(loggerFactory.create(LogType.SUBS));
+	}
+	
+	public IJukeboxLogger getLog() {
+		return log;
+	}
+
+	public void setLog(IJukeboxLogger log) {
+		this.log = log;
+	}
+
+	public ISubtitleFileWriter getSubFileWriter() {
+		return subFileWriter;
+	}
+	public void setSubFileWriter(ISubtitleFileWriter subFileWriter) {
+		this.subFileWriter = subFileWriter;
+	}
+	
+	@Override
+	public void extractSubs(String filename, String outputPath) throws FileNotFoundException, IOException, SubtitleParsingException {
+		List<Subtitle> subs = extractSubs(filename);
 		for (Subtitle s : subs) {
 			File destinationFile = new File(String.format("%s/%s", outputPath, s.getFilename()));
-			Util.writeSubtitleToFile(s, destinationFile);
+			this.getSubFileWriter().writeSubtitleToFile(s, destinationFile);
 		}
 	}
 	
-	public static List<Subtitle> extractSubs(String filename) {
+	@Override
+	public List<Subtitle> extractSubs(String filename) {
 		// Please run the code in a thread or AsyncTask (in Android)
 		// You must follow the order of function calls to read the subtitles and
 		// attachments successfully
@@ -73,7 +108,7 @@ public class MkvSubtitleReader {
 		    readSubs(reader, languages, result);
 		    
 		} catch (IOException e) {
-		    e.printStackTrace();
+			this.getLog().Error("Error when getting subs from mkv", e);
 		} finally {
 		    try {
 		        // Remember to close this!
@@ -84,7 +119,7 @@ public class MkvSubtitleReader {
 		return result;
 	}
 
-	private static void readSubs(EBMLReader reader, List<String> languages, List<Subtitle> result) throws IOException {
+	private void readSubs(EBMLReader reader, List<String> languages, List<Subtitle> result) throws IOException {
 		// OPTIONAL: we get the subtitle data that was just read
 		for (int i = 0; i < reader.getSubtitles().size(); i++) {
 		    List<Caption> subtitles = reader.getSubtitles().get(i).readUnreadSubtitles();
@@ -107,7 +142,7 @@ public class MkvSubtitleReader {
 		}
 	}
 
-	private static void readCueFrames(EBMLReader reader) throws IOException {
+	private void readCueFrames(EBMLReader reader) throws IOException {
 		// Read all the subtitles from the file each from cue index.
 		// Once a cue is parsed, it is cached, so if you read the same cue again,
 		// it will not waste time.
@@ -118,7 +153,7 @@ public class MkvSubtitleReader {
 		}
 	}
 
-	private static List<String> readHeaders(EBMLReader reader) {
+	private List<String> readHeaders(EBMLReader reader) {
 		List<String> languages = new ArrayList<String>();
 		for (int i = 0; i < reader.getSubtitles().size(); i++) {
 			Subtitles ss = reader.getSubtitles().get(i);
@@ -129,7 +164,7 @@ public class MkvSubtitleReader {
 		return languages;
 	}
 
-	private static Subtitle getSubtitle(SrtObject srt, int i, String language) throws IOException {
+	private Subtitle getSubtitle(SrtObject srt, int i, String language) throws IOException {
 		SubtitleWriter writer = new SrtWriter("utf-8");
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		writer.write(srt, baos);
@@ -150,7 +185,7 @@ public class MkvSubtitleReader {
 			.build();
 	}
 
-	private static void readAttachements(EBMLReader reader)
+	private void readAttachements(EBMLReader reader)
 			throws IOException, FileNotFoundException {
 		// Extract the attachments: fonts, images etc
 		// This function takes a couple of milliseconds usually less than 500ms
@@ -171,7 +206,7 @@ public class MkvSubtitleReader {
 		}
 	}
 
-	private static SrtObject getSubtitlesAsSrt(List<Caption> subtitles) {
+	private SrtObject getSubtitlesAsSrt(List<Caption> subtitles) {
 		SrtObject srt = new SrtObject();
 		for (Caption cap : subtitles) {
 			SrtCue cue = new SrtCue();

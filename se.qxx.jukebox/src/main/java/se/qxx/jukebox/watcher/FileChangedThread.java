@@ -1,13 +1,15 @@
 package se.qxx.jukebox.watcher;
 
+import se.qxx.jukebox.interfaces.IFileCreatedHandler;
+
 public class FileChangedThread implements Runnable {
 
-	private INotifyClient client;
+	private IFileCreatedHandler client;
 	private FileRepresentation file;
 	private boolean isCreated = false;
 	private boolean isModified = false;
 
-	public FileChangedThread(INotifyClient client, FileRepresentation f, boolean isCreated, boolean isModified) {
+	public FileChangedThread(IFileCreatedHandler client, FileRepresentation f, boolean isCreated, boolean isModified) {
 		this.client = client;
 		this.file = f;
 		this.isCreated = isCreated;

@@ -146,11 +146,11 @@ public class JukeboxConnectionHandler {
                     .build();
 
             service.stopMovie(controller, request, arg0 -> {
-onRequestComplete(controller);
+                onRequestComplete(controller);
 
-if (callback != null)
-callback.run(arg0);
-});
+                if (callback != null)
+                callback.run(arg0);
+            });
         });
 		t.start();
 		
@@ -200,10 +200,10 @@ callback.run(arg0);
 
             try {
                 service.listMovies(controller, request, response -> {
-onRequestComplete(controller);
-if (callback != null)
-callback.run(response);
-});
+                    onRequestComplete(controller);
+                    if (callback != null)
+                    callback.run(response);
+                });
             }
             catch (Exception e) {
                 onRequestComplete(controller);
@@ -260,11 +260,11 @@ callback.run(response);
                     .build();
 
             service.isPlaying(controller, request, response -> {
-onRequestComplete(controller);
+                onRequestComplete(controller);
 
-if (callback != null)
-callback.run(response);
-});
+                if (callback != null)
+                callback.run(response);
+            });
         });
 		t.start();
 		
@@ -282,11 +282,11 @@ callback.run(response);
                     .build();
 
             service.getTime(controller, request, response -> {
-onRequestComplete(controller);
+                onRequestComplete(controller);
 
-if (callback != null)
-callback.run(response);
-});
+                if (callback != null)
+                callback.run(response);
+            });
         });
 		t.start();		
 
@@ -303,11 +303,11 @@ callback.run(response);
                     .build();
 
             service.getTitle(controller, request, response -> {
-onRequestComplete(controller);
+                onRequestComplete(controller);
 
-if (callback != null)
-callback.run(response);
-});
+                if (callback != null)
+                callback.run(response);
+            });
         });
 		t.start();
 		
@@ -362,11 +362,11 @@ callback.run(response);
                     .build();
 
             service.listSubtitles(controller, request, response -> {
-onRequestComplete(controller);
+                onRequestComplete(controller);
 
-if (callback != null)
-callback.run(response);
-});
+                if (callback != null)
+                callback.run(response);
+            });
         });
 		t.start();
 		
@@ -426,6 +426,45 @@ callback.run(response);
 		
 
 	}
+	
+	public void reenlistSub(final int id, final RequestType requestType) {
+		final RpcController controller = new SocketRpcController();
+
+		Thread t = new Thread(() -> {
+            JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
+
+            JukeboxRequestID request = JukeboxRequestID.newBuilder()
+                    .setId(id)
+                    .setRequestType(requestType)
+                    .build();
+
+            service.reenlistSubtitles(controller, request, arg0 -> onRequestComplete(controller));
+
+        });
+		t.start();
+		
+		
+	}
+
+	public void reenlistMetadata(final int id, final RequestType requestType) {
+		final RpcController controller = new SocketRpcController();
+
+		Thread t = new Thread(() -> {
+            JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
+
+            JukeboxRequestID request = JukeboxRequestID.newBuilder()
+                    .setId(id)
+                    .setRequestType(requestType)
+                    .build();
+
+            service.reenlistMetadata(controller, request, arg0 -> onRequestComplete(controller));
+
+        });
+		t.start();
+
+
+	}
+
 
 	private JukeboxResponseListener getListener() {
 		return listener;

@@ -42,10 +42,11 @@ import fr.noop.subtitle.model.SubtitleParsingException;
 import fr.noop.subtitle.model.SubtitleWriter;
 import fr.noop.subtitle.srt.SrtParser;
 import fr.noop.subtitle.vtt.VttWriter;
-import se.qxx.jukebox.Log;
-import se.qxx.jukebox.Log.LogType;
+import se.qxx.jukebox.core.Log;
+import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
+import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.settings.JukeboxListenerSettings;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.watcher.ExtensionFileFilter;
@@ -213,81 +214,7 @@ public class Util {
 		return con.newInstance(args);		
 	}
 
-	public static String getImdbIdFromUrl(String imdbUrl) {
-		// http://www.imdb.com/title/tt1541874/
-		Pattern p = Pattern.compile("\\/(tt\\d*)\\/", Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
-		Matcher m = p.matcher(imdbUrl);
-		if (m.find())
-			return m.group(1);
-		else
-			return StringUtils.EMPTY;
-	}
 
-	public static void waitForSettings() {
-		while (Settings.get() == null) {
-			Log.Info("Settings has not been initialized. Sleeping for 10 seconds", Log.LogType.MAIN);
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-			}
-		}		
-	}
-
-	public static List<String> getExtensions() {
-		List<String> list = new ArrayList<String>();
-		
-		for (JukeboxListenerSettings.Catalogs.Catalog c : Settings.get().getCatalogs().getCatalog()) {
-			for (JukeboxListenerSettings.Catalogs.Catalog.Extensions.Extension e : c.getExtensions().getExtension()) {
-				if (!list.contains(e.getValue()))
-					list.add(e.getValue());
-			}
-		}
-		
-		return list;
-	}
-	
-	public static File writeSubtitleToTempFileVTT(Subtitle sub) throws FileNotFoundException, IOException, SubtitleParsingException {
-		File tempDir = FileUtils.getTempDirectory();
-		File tempFile = new File(String.format("%s/%s.vtt", tempDir.getAbsolutePath(), FilenameUtils.removeExtension(sub.getFilename())));
-
-		Log.Info(String.format("Writing sub to file :: %s", tempFile.getAbsolutePath()), LogType.WEBSERVER);
-		return Util.writeSubtitleToFileVTT(sub, tempFile);
-	}
-
-	public static File writeSubtitleToTempFile(Subtitle sub) throws FileNotFoundException, IOException, SubtitleParsingException {
-		File tempDir = FileUtils.getTempDirectory();
-		File tempFile = new File(String.format("%s/%s", tempDir.getAbsolutePath(), sub.getFilename()));
-
-		Log.Info(String.format("Writing sub to file :: %s", tempFile.getAbsolutePath()), LogType.WEBSERVER);
-		return Util.writeSubtitleToFile(sub, tempFile);
-	}
-	
-	public static File writeSubtitleToFile(Subtitle sub, File destinationFile) throws IOException, SubtitleParsingException, FileNotFoundException {
-		BOMInputStream bom = new BOMInputStream(new ByteArrayInputStream(sub.getTextdata().toByteArray()));
-		
-		IOUtils.copy(bom, new FileOutputStream(destinationFile));
-		
-		return destinationFile;
-	}
-	
-
-	public static File writeSubtitleToFileVTT(Subtitle sub, File destinationFile) throws IOException, SubtitleParsingException, FileNotFoundException {
-		BOMInputStream bom = new BOMInputStream(new ByteArrayInputStream(sub.getTextdata().toByteArray()));
-		
-		//TODO: change this based on extension
-		SrtParser parser = new SrtParser("UTF-8");
-		SubtitleObject srt = parser.parse(bom);
-		
-		SubtitleWriter writer = new VttWriter("utf-8");
-		
-		FileOutputStream fos = new FileOutputStream(destinationFile);
-		writer.write(srt, fos);
-		
-		fos.flush();
-		fos.close();
-		
-		return destinationFile;
-	}
 	
 	public static ByteString getScaledImage(ByteString imagedata) throws IOException {
 		BufferedImage img = ImageIO.read(new ByteArrayInputStream(imagedata.toByteArray()));
@@ -312,6 +239,13 @@ public class Util {
 			md.getFilename());
 	}
 	
+	public static String getFullFilePath(String filePath, String fileName) {
+		return getFilePath(
+			FilenameUtils.normalizeNoEndSeparator(filePath), 
+			fileName);
+	}
+	
+	
 	public static String getConvertedFullFilepath(Media md) {
 		return getFilePath(
 				FilenameUtils.normalizeNoEndSeparator(md.getFilepath()), 
@@ -322,9 +256,9 @@ public class Util {
 		return String.format("%s/%s", filepath, filename);
 	}
 
-	public static boolean isExcludedFile(FileRepresentation f, LogType logType) {
+	public static boolean isExcludedFile(FileRepresentation f, IJukeboxLogger log) {
 		if (StringUtils.containsIgnoreCase(f.getName(), "sample")) {
-			Log.Info(String.format("Ignoring %s as this appears to be a sample", f.getName()), logType);
+			log.Info(String.format("Ignoring %s as this appears to be a sample", f.getName()));
 			return true;
 		}
 		else if (FilenameUtils.removeExtension(f.getName()).endsWith("[tazmo]")) {
@@ -332,7 +266,7 @@ public class Util {
 			return true;
 		}		
 		else if (f.getFileSize() < 104857600) {
-			Log.Info(String.format("Ignoring %s as this has a file size of less than 100MB", f.getName()), logType);
+			log.Info(String.format("Ignoring %s as this has a file size of less than 100MB", f.getName()));
 			return true;
 		}
 

@@ -10,6 +10,9 @@ import android.widget.ListView;
 
 import com.google.android.gms.cast.framework.CastContext;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import se.qxx.android.jukebox.R;
@@ -23,6 +26,7 @@ import se.qxx.android.jukebox.dialogs.ActionDialog;
 import se.qxx.android.jukebox.model.Constants;
 import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
+import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
@@ -135,7 +139,7 @@ public class ListActivity extends AppCompatActivity implements
 	}
 
 	private void initializeView() {
-		ListView lv = findViewById(R.id.listView1);
+		ListView lv = findViewById(R.id.listItems);
 		lv.setOnItemClickListener(this);
 		lv.setOnItemLongClickListener(this);
 
@@ -174,9 +178,10 @@ public class ListActivity extends AppCompatActivity implements
         if (this.getMode() == ViewMode.Season) {
             _seasonLayoutAdapter = new SeasonLayoutAdapter(
                     this.getApplicationContext(),
-                    this.getSeries());
+                    this.getSeries().getSeasonList());
 
             lv.setAdapter(_seasonLayoutAdapter);
+            GUITools.setTextOnTextview(R.id.txtListTitle, this.getSeries().getTitle(), getRootView());
         }
         else if (this.getMode() == ViewMode.Episode) {
             _episodeLayoutAdapter =
@@ -186,6 +191,7 @@ public class ListActivity extends AppCompatActivity implements
                         this.getSeason().getEpisodeList());
 
             lv.setAdapter(_episodeLayoutAdapter);
+            GUITools.setTextOnTextview(R.id.txtListTitle, String.format("%s - Season %s", this.getSeries().getTitle(), this.getSeason().getSeasonNumber()), getRootView());
         }
 
         connector.setupOnOffButton(this.getRootView());

@@ -1,5 +1,6 @@
 package se.qxx.android.jukebox.dialogs;
 
+import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
@@ -7,69 +8,52 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.content.res.Resources;
 
 public class ActionDialog implements OnClickListener{
 	long id;
 	RequestType reqType;
 	Activity activity;
-	
-	final String[] commands = {
-		"Blacklist",
-		"Toggle watched",
-		"Re-identify"
-	};
+    Resources res;
 	
 	public ActionDialog(Activity activity, long id, RequestType requestType) {
 		this.reqType = requestType;
 		this.id = id;
 		this.activity = activity;
+        this.res = activity.getResources();
 	}
 	
 	public void show() {
 		AlertDialog.Builder b = new AlertDialog.Builder(this.activity);
-		b.setItems(commands, this);
+		b.setItems(res.getStringArray(R.array.actionDialogMenu), this);
 		
 		b.show();		
 	}
 
 	@Override
-	public void onClick(DialogInterface dialog, int which) {
-		final long id = this.id;
-		final RequestType requestType = this.reqType;
-		final int choice = which;		
-		
+	public void onClick(DialogInterface dialog, int choice) {
+        Resources res = this.activity.getResources();
+
+		JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
+				JukeboxSettings.get().getServerIpAddress(),
+				JukeboxSettings.get().getServerPort(),
+				JukeboxConnectionProgressDialog.build(this.activity, res.getStringArray(R.array.actionDialogStrings)[choice]));
+
+		// Removed threads as the connectionHandler is threader itself
 		switch (choice) {
 		case 0:
-			final JukeboxConnectionHandler jh1 = new JukeboxConnectionHandler(
-					JukeboxSettings.get().getServerIpAddress(),
-					JukeboxSettings.get().getServerPort(),
-					JukeboxConnectionProgressDialog.build(this.activity, "Blacklisting..."));
-			
-			Thread t1 = new Thread(new Runnable() {
-				@Override
-				public void run() {
-					jh1.blacklist((int)id, requestType);
-				}
-			});
-			t1.start();
+			jh.blacklist((int) this.id, this.reqType);
 			break;
 		case 1:
-			final JukeboxConnectionHandler jh2 = new JukeboxConnectionHandler(
-					JukeboxSettings.get().getServerIpAddress(), 
-					JukeboxSettings.get().getServerPort(),
-					JukeboxConnectionProgressDialog.build(this.activity, "Toggling watched status..."));
-			Thread t2 = new Thread(() -> jh2.toggleWatched((int)id, requestType));
-			t2.start();
+			jh.toggleWatched((int) this.id, this.reqType);
 			break;
 		case 2:
-			final JukeboxConnectionHandler jh3 = new JukeboxConnectionHandler(
-					JukeboxSettings.get().getServerIpAddress(), 
-					JukeboxSettings.get().getServerPort(),
-					JukeboxConnectionProgressDialog.build(this.activity, "Marking object for re-identify..."));
-			Thread t3 = new Thread(() -> jh3.reIdentify((int)id, requestType));
-			t3.start();
+			jh.reIdentify((int) this.id, this.reqType);
 			break;
-		}	
+		case 3:
+			jh.reenlistSub((int) this.id, this.reqType);
+			break;
+		}
 		
 	}
 }

@@ -8,24 +8,44 @@ import javax.xml.bind.JAXBException;
 
 import org.apache.commons.io.FilenameUtils;
 
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+
 import se.qxx.jukebox.builders.NFOLine;
 import se.qxx.jukebox.builders.NFOScanner;
 import se.qxx.jukebox.builders.NfoBuilder;
 import se.qxx.jukebox.builders.exceptions.SeriesNotSupportedException;
+import se.qxx.jukebox.core.Binder;
+import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.MovieOrSeries;
+import se.qxx.jukebox.factories.LoggerFactory;
+import se.qxx.jukebox.interfaces.IJukeboxLogger;
+import se.qxx.jukebox.interfaces.INFOScanner;
 import se.qxx.jukebox.settings.Settings;
 
 public class TestNfoScanner {
-	public static void main(String[] args) throws IOException, JAXBException, SeriesNotSupportedException {
-		Settings.initialize();
-		
-	    String FileName = "example.nfo";
-	    System.out.println(String.format("Nr of args\t\t::%s", args.length));
-	    if (args.length > 0)
-	        FileName = args[0];
+	
+	private IJukeboxLogger log;
+	private Settings settings;
 
-	    NFOScanner scanner = new NFOScanner(new File(FileName));
+	@Inject
+	public TestNfoScanner(Settings settings, LoggerFactory loggerFactory ) {
+		this.settings = settings;
+		this.log = loggerFactory.create(LogType.FIND);
+	}
+	
+	public static void main(String[] args) throws IOException, JAXBException, SeriesNotSupportedException {
+		Injector injector = Binder.setupBindings(args);
+		TestNfoScanner prog = injector.getInstance(TestNfoScanner.class);
+	    
+	    if (args.length > 0)
+	        prog.execute(args[0]);
+	    	    
+	}
+	
+	public void execute(String fileName) throws SeriesNotSupportedException {
+		INFOScanner scanner = new NFOScanner(this.log, new File(fileName));
 	    List<NFOLine> lines = scanner.scan();
 	    
 	    for (int i = 0;i<lines.size();i++) {
@@ -36,10 +56,10 @@ public class TestNfoScanner {
 	    System.out.println("--------------------------------------------------------------");
 	    System.out.println("--------------------------------------------------------------");
 
-		String filePath = FilenameUtils.getFullPath(FileName);
-		String singleFile = FilenameUtils.getName(FileName);
+		String filePath = FilenameUtils.getFullPath(fileName);
+		String singleFile = FilenameUtils.getName(fileName);
  
-		NfoBuilder builder = new NfoBuilder();
+		NfoBuilder builder = new NfoBuilder(settings, log);
 		
 	    MovieOrSeries mos = builder.extract(filePath, singleFile);
 	    Movie m = mos.getMovie();
@@ -51,6 +71,6 @@ public class TestNfoScanner {
 	    System.out.println(String.format("LANGUAGE\t::\t%s", m.getLanguage()));
 	    System.out.println(String.format("ID-RATING\t::\t%s", m.getIdentifierRating()));
 	    System.out.println(String.format("IMDB-URL\t::\t%s", m.getImdbUrl()));
-	    	    
+
 	}
 }

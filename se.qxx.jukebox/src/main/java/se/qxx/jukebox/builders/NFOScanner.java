@@ -12,11 +12,16 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
-import se.qxx.jukebox.Log;
-import se.qxx.jukebox.Log.LogType;
-import se.qxx.jukebox.builders.exceptions.SeriesNotSupportedException;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 
-public class NFOScanner {
+import se.qxx.jukebox.builders.exceptions.SeriesNotSupportedException;
+import se.qxx.jukebox.core.Log.LogType;
+import se.qxx.jukebox.factories.LoggerFactory;
+import se.qxx.jukebox.interfaces.IJukeboxLogger;
+import se.qxx.jukebox.interfaces.INFOScanner;
+
+public class NFOScanner implements INFOScanner {
 	private final String[] presentsKeywords = {"presents"};
 	private final String[] releaseKeywords = {"release", "release name"};
 	private final String[] titleKeywords = {"title", "presents", "original title"};
@@ -35,7 +40,25 @@ public class NFOScanner {
 	
 	private final String acceptedCharacters = "abcdefghijklmnopqrstuvwxyzåäöABCDEFGHIJKLMNOPQRSTUVWXYZåäö1234567890./\\-_\"\'()[]%$+-*/: ";
 	private File nfoFile;
+	private IJukeboxLogger log;
 
+	public NFOScanner(IJukeboxLogger log, File file) { 
+		this.setLog(log);
+		this.setNfoFile(file);
+	}
+
+	public IJukeboxLogger getLog() {
+		return log;
+	}
+
+	public void setLog(IJukeboxLogger log) {
+		this.log = log;
+	}
+
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.builders.INFOScanner#getNfoFile()
+	 */
+	@Override
 	public File getNfoFile() {
 		return nfoFile;
 	}
@@ -44,10 +67,11 @@ public class NFOScanner {
 		this.nfoFile = nfoFile;
 	}
 
-	public NFOScanner(File file) { 
-		this.setNfoFile(file);
-	}
 	
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.builders.INFOScanner#scan()
+	 */
+	@Override
 	public List<NFOLine> scan() throws SeriesNotSupportedException {
 		ArrayList<NFOLine> list = new ArrayList<NFOLine>();
 		
@@ -76,7 +100,7 @@ public class NFOScanner {
 					
 					if (presentingMode) {
 						if (!StringUtils.isEmpty(StringUtils.trim(line))) {
-							Log.Debug(String.format("NfoScanner :: Presenting mode :: %s", line), LogType.FIND);
+							this.getLog().Debug(String.format("NfoScanner :: Presenting mode :: %s", line));
 							list.add(new NFOLine(NFOClass.Title, StringUtils.trim(line), line));
 							presentingMode = false;
 						}
@@ -100,7 +124,7 @@ public class NFOScanner {
 				}
 			}
 		} catch (Exception e) {
-			Log.Error(String.format("NFOScanner error while parsing %s:: ", this.nfoFile.getName()), LogType.FIND, e);
+			this.getLog().Error(String.format("NFOScanner error while parsing %s:: ", this.nfoFile.getName()), e);
 		}
 		finally {
 			try {

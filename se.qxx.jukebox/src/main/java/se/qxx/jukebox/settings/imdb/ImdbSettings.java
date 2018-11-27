@@ -11,27 +11,28 @@ import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
 import javax.xml.transform.stream.StreamSource;
 
-public class ImdbSettings {
-	private static ImdbSettings _instance;
-	private Imdb _imdb;
+import se.qxx.jukebox.interfaces.IImdbSettings;
+
+public class ImdbSettings implements IImdbSettings {
+	private Imdb imdb;
 	
-	private ImdbSettings() {
+	public ImdbSettings() {
 	}
 	
-	private static ImdbSettings getInstance() {
-		if (_instance == null) {
-			_instance = new ImdbSettings();
-		}
-			
-		return _instance;
+	public Imdb getImdb() {
+		return imdb;
 	}
-	
-	public static Imdb get() {
-		return getInstance()._imdb;
+
+	public void setImdb(Imdb imdb) {
+		this.imdb = imdb;
 	}
-	
-	public static void readSettings() throws IOException, JAXBException {
-		getInstance().readSettingFile();
+
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.settings.imdb.IImdbSettings#readSettings()
+	 */
+	@Override
+	public void readSettings() throws IOException, JAXBException {
+		readSettingFile();
 	}
 	
 	private void readSettingFile() throws IOException, JAXBException {
@@ -46,8 +47,7 @@ public class ImdbSettings {
 			});
 		
 		JAXBElement<Imdb> root = u.unmarshal(new StreamSource(new File("imdb.xml")), Imdb.class);
-		_imdb = root.getValue();
-		
+		this.setImdb(root.getValue());
 	}
 
 }

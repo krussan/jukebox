@@ -5,8 +5,12 @@ import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang3.StringUtils;
 
-import se.qxx.jukebox.DB;
+import com.google.inject.Injector;
+
+import se.qxx.jukebox.core.Binder;
+import se.qxx.jukebox.core.DB;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
+import se.qxx.jukebox.interfaces.IDatabase;
 
 public class DeleteSeries {
 
@@ -15,13 +19,14 @@ public class DeleteSeries {
 			
 			try {
 				Series s = null;
+				IDatabase db = getDatabaseClass(args);
 				
 				if (StringUtils.isNumeric(args[0])) {
 					int id = Integer.parseInt(args[0]);
-					s = DB.getSeries(id);
+					s = db.getSeries(id);
 					
 					if (s != null) 
-						DB.delete(s);
+						db.delete(s);
 					else 
 						System.out.println("Nothing found!");					
 				}
@@ -39,6 +44,12 @@ public class DeleteSeries {
 		else {
 			System.out.println("No arguments");
 		}
+	}
+
+	private static IDatabase getDatabaseClass(String[] args) {
+		Injector injector = Binder.setupBindings(args);
+		IDatabase db = injector.getInstance(IDatabase.class);
+		return db;
 	}
 	
 

@@ -10,57 +10,28 @@ import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
 import javax.xml.transform.stream.StreamSource;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
-public class ParserSettings {
-	private static ParserSettings _instance;
+import se.qxx.jukebox.interfaces.IParserSettings;
+
+
+@Singleton
+public class ParserSettings implements IParserSettings {
 	private Parser settings;
 	
-//	Hashtable<ParserType, List<String>> keywords = new Hashtable<ParserType, List<String>>();
-
-	private ParserSettings() {
-//		keywords.put(ParserType.TYPE, new ArrayList<String>());
-//		keywords.put(ParserType.FORMAT, new ArrayList<String>());
-//		keywords.put(ParserType.SOUND, new ArrayList<String>());
-//		keywords.put(ParserType.LANGUAGE, new ArrayList<String>());
-//		keywords.put(ParserType.OTHER, new ArrayList<String>());
-//		keywords.put(ParserType.PART, new ArrayList<String>());
-//		keywords.put(ParserType.SEASON, new ArrayList<String>());
-//		keywords.put(ParserType.EPISODE, new ArrayList<String>());
+	@Inject
+	public ParserSettings() {
 	}
 	
-	public static ParserSettings getInstance() {
-		if (_instance == null) {
-			_instance = new ParserSettings();
-		}
-			
-		return _instance;
-	}
-	
-	public static void readSettings() throws IOException, JAXBException {
-		getInstance().readSettingFile();
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.settings.parser.IParserSettings#readSettings()
+	 */
+	@Override
+	public void readSettings() throws IOException, JAXBException {
+		readSettingFile();
 	}
 		
-//	private void loadList(ParserType type, List<WordType> values) {
-//		for (WordType wt : values)
-//			keywords.get(type).add(wt.getKey());
-//	}
-	
-//	public ParserType checkToken(String searchString) {
-//		for (ParserType type : ParserType.values()) 
-//			if (listContains(type, searchString))
-//				return type;
-//		
-//		return ParserType.UNKNOWN;
-//	}
-//	
-//	public boolean listContains(ParserType type, String searchString) {
-//		if (this.keywords.containsKey(type)) {
-//			for (String listItem : this.keywords.get(type))
-//				if (StringUtils.equalsIgnoreCase(listItem, searchString))
-//					return true;
-//		}
-//		return false;
-//	}
 
 	private void readSettingFile() throws IOException, JAXBException {
 		JAXBContext c = JAXBContext.newInstance(Parser.class);
@@ -76,14 +47,12 @@ public class ParserSettings {
 		JAXBElement<Parser> root = u.unmarshal(new StreamSource(new File("parser.xml")), Parser.class);
 		this.setSettings(root.getValue());
 		
-//		this.loadList(ParserType.TYPE, p.getKeywords().getType().getWord());
-//		this.loadList(ParserType.FORMAT, p.getKeywords().getFormat().getWord());
-//		this.loadList(ParserType.SOUND, p.getKeywords().getSound().getWord());
-//		this.loadList(ParserType.LANGUAGE, p.getKeywords().getLanguage().getWord());
-//		this.loadList(ParserType.OTHER, p.getKeywords().getOther().getWord());
-		
 	}
 
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.settings.parser.IParserSettings#getSettings()
+	 */
+	@Override
 	public Parser getSettings() {
 		return settings;
 	}

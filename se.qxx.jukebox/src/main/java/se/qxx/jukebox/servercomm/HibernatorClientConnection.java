@@ -1,12 +1,12 @@
 package se.qxx.jukebox.servercomm;
 
-import se.qxx.jukebox.Log;
+import se.qxx.jukebox.interfaces.IJukeboxLogger;
 
 public class HibernatorClientConnection extends TcpClient {
 		
-	public HibernatorClientConnection(String host, int port) 
+	public HibernatorClientConnection(String host, int port, IJukeboxLogger log) 
 	{
-		super("Hibernator", host, port, 0);
+		super("Hibernator", host, port, 0, log);
 	}
 	
 	public void suspend() {
@@ -14,7 +14,7 @@ public class HibernatorClientConnection extends TcpClient {
 			this.sendCommand("suspend;");
 		}
 		catch (Exception e) {
-			Log.Error("Error while suspending computer.", Log.LogType.COMM, e);
+			this.getLog().Error("Error while suspending computer.", e);
 		}
 	}
 	
@@ -23,7 +23,7 @@ public class HibernatorClientConnection extends TcpClient {
 			this.sendCommand("hibernate;");
 		}
 		catch (Exception e) {
-			Log.Error("Error while suspending computer.", Log.LogType.COMM, e);
+			this.getLog().Error("Error while suspending computer.", e);
 		}
 	}	
 }

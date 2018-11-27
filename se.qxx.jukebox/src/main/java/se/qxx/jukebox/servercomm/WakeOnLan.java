@@ -5,14 +5,22 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
-import se.qxx.jukebox.Log;
-import se.qxx.jukebox.Log.LogType;
+import com.google.inject.Inject;
 
-public class WakeOnLan {
+import se.qxx.jukebox.core.Log;
+import se.qxx.jukebox.core.Log.LogType;
+import se.qxx.jukebox.interfaces.IWakeOnLan;
 
-	public static final int PORT = 9;
+public class WakeOnLan implements IWakeOnLan {
+
+	@Inject
+	public WakeOnLan() {
+		
+	}
 	
-	public static void sendPacket(String ipAddress, String macAddress) throws IOException {
+	public final int PORT = 9;
+	
+	public void sendPacket(String ipAddress, String macAddress) throws IOException {
         byte[] macBytes = getMacBytes(macAddress);
         byte[] bytes = new byte[6 + 16 * macBytes.length];
         for (int i = 0; i < 6; i++) {
@@ -27,11 +35,9 @@ public class WakeOnLan {
         DatagramSocket socket = new DatagramSocket();
         socket.send(packet);
         socket.close();
-        
-        Log.Info("Wake-on-LAN packet sent", LogType.COMM);
 	}
 		
-   private static byte[] getMacBytes(String macStr) throws IllegalArgumentException {
+   private byte[] getMacBytes(String macStr) throws IllegalArgumentException {
         byte[] bytes = new byte[6];
         String[] hex = macStr.split("(\\:|\\-)");
         

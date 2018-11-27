@@ -7,56 +7,73 @@ import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang3.StringUtils;
 
-import se.qxx.jukebox.DB;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+
+import se.qxx.jukebox.core.Binder;
+import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
-import se.qxx.jukebox.settings.Settings;
+import se.qxx.jukebox.factories.LoggerFactory;
+import se.qxx.jukebox.interfaces.IDatabase;
+import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.protodb.ProtoDB;
 import se.qxx.protodb.ProtoDBFactory;
 
 public class TestSeriesSearch {
 
+	private IDatabase db;
+	private ISettings settings;
+
+	@Inject
+	public TestSeriesSearch(IDatabase db, ISettings settings, LoggerFactory factory) {
+		this.db = db;
+		this.settings = settings;
+		factory.create(LogType.FIND);
+	}
+	
 	public static void main(String[] args) throws IOException, JAXBException {
-		Settings.initialize();
+		Injector injector = Binder.setupBindings(args);
+		TestSeriesSearch prog = injector.getInstance(TestSeriesSearch.class);
+		prog.execute(args[0]);
 		
 		if (args.length > 0) {
-			try {
-				String driver = Settings.get().getDatabase().getDriver();
-				String connectionString = Settings.get().getDatabase().getConnectionString();
-				ProtoDB db = ProtoDBFactory.getInstance(driver, connectionString, "protodb_test.log");
-				
-				Series s = null;
-				
-				if (StringUtils.isNumeric(args[0]))
-					s = db.get(Integer.parseInt(args[0]), JukeboxDomain.Series.getDefaultInstance());
-				else {
-					List<Series> result = DB.searchSeriesByTitle(args[0], 15, 0);
-					
-//						db.find(JukeboxDomain.Series.getDefaultInstance(), 
-//							"title", 
-//							args[0], 
-//							true);
-					
-					if (result.size() > 0)
-						s = result.get(0);
-				}
-				
-				if (s != null) {
-					System.out.println(s);
-				}
-				else 
-					System.out.println("Nothing found!");
-				
-			} catch (Exception e) {
-				System.out.println("failed to get information from database");
-				System.out.println(e.toString());
-
-			}
+			prog.execute(args[0]);
 		}
 		else {
 			System.out.println("No arguments");
 		}
 	}
-	
+
+	public void execute(String seriesNameOrId) {
+		try {
+			String driver = settings.getSettings().getDatabase().getDriver();
+			String connectionString = settings.getSettings().getDatabase().getConnectionString();
+			ProtoDB protoDB = ProtoDBFactory.getInstance(driver, connectionString, "protodb_test.log");
+			
+			Series s = null;
+			
+			if (StringUtils.isNumeric(seriesNameOrId))
+				s = protoDB.get(Integer.parseInt(seriesNameOrId), JukeboxDomain.Series.getDefaultInstance());
+			else {
+				List<Series> result = db.searchSeriesByTitle(seriesNameOrId, 15, 0);
+				
+				if (result.size() > 0)
+					s = result.get(0);
+			}
+			
+			if (s != null) {
+				System.out.println(s);
+			}
+			else 
+				System.out.println("Nothing found!");
+			
+		} catch (Exception e) {
+			System.out.println("failed to get information from database");
+			System.out.println(e.toString());
+
+		}
+
+	}
 
 }

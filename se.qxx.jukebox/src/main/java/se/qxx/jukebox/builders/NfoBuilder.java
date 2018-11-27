@@ -1,6 +1,7 @@
 package se.qxx.jukebox.builders;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -8,31 +9,37 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import se.qxx.jukebox.Log;
-import se.qxx.jukebox.Log.LogType;
+import com.google.inject.Inject;
+
 import se.qxx.jukebox.builders.exceptions.SeriesNotSupportedException;
 import se.qxx.jukebox.domain.JukeboxDomain.Identifier;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
-import se.qxx.jukebox.watcher.ExtensionFileFilter;
 import se.qxx.jukebox.domain.MovieOrSeries;
+import se.qxx.jukebox.factories.LoggerFactory;
+import se.qxx.jukebox.interfaces.IJukeboxLogger;
+import se.qxx.jukebox.interfaces.INFOScanner;
+import se.qxx.jukebox.interfaces.ISettings;
+import se.qxx.jukebox.watcher.ExtensionFileFilter;
 
 public class NfoBuilder extends MovieBuilder {
 	
-	
-	
+	public NfoBuilder(ISettings settings, IJukeboxLogger log) {
+		super(settings, log);
+	}
+
 	@Override
 	public MovieOrSeries extract(String filepath, String filename) {
 		Movie m = null;
-		Log.Debug(String.format("NfoBuilder :: filepath :: %s", filepath), LogType.FIND);
-		Log.Debug(String.format("NfoBuilder :: filename :: %s", filename), LogType.FIND);
+		this.getLog().Debug(String.format("NfoBuilder :: filepath :: %s", filepath));
+		this.getLog().Debug(String.format("NfoBuilder :: filename :: %s", filename));
 
 		try {
 			File nfoFile = findNfoFile(filepath, filename);
 			
 			if (nfoFile != null) {			
-				Log.Debug(String.format("NfoBuilder :: Opening file :: %s", nfoFile.getAbsolutePath()), LogType.FIND);
+				this.getLog().Debug(String.format("NfoBuilder :: Opening file :: %s", nfoFile.getAbsolutePath()));
 			
-				NFOScanner scanner = new NFOScanner(nfoFile);
+				INFOScanner scanner = new NFOScanner(this.getLog(), nfoFile);
 				List<NFOLine> lines = scanner.scan();
 				
 				String 	title = "",  	
@@ -127,14 +134,14 @@ public class NfoBuilder extends MovieBuilder {
 			}
 		} 
 		catch (SeriesNotSupportedException sns) {
-			Log.Debug("Series found. Ignoring!", LogType.FIND);
+			this.getLog().Debug("Series found. Ignoring!");
 		}
 		catch (Exception e) {
-			Log.Error("NfoBuilder :: Error", LogType.FIND, e);
+			this.getLog().Error("NfoBuilder :: Error", e);
 		}
 		
 		if (m==null)
-			Log.Debug("No movie found", LogType.FIND);
+			this.getLog().Debug("No movie found");
 		
 		return new MovieOrSeries(m);
 	}
@@ -143,7 +150,7 @@ public class NfoBuilder extends MovieBuilder {
 		String filenameWithoutExt = FilenameUtils.getBaseName(filename);
 		ExtensionFileFilter eff = new ExtensionFileFilter();
 		eff.addExtension("nfo");
-		Log.Debug(String.format("NfoBuilder :: finding files in :: %s", filepath), LogType.FIND);
+		this.getLog().Debug(String.format("NfoBuilder :: finding files in :: %s", filepath));
 		
 		File dir = new File(filepath);
 		File[] files = dir.listFiles(eff);
@@ -183,4 +190,18 @@ public class NfoBuilder extends MovieBuilder {
 		
 		return m.matches();
 	}
+	
+	
+	private ArrayList<String> getGroupsToCheck() {
+		ArrayList<String> groupsToCheck = new ArrayList<String>();
+		groupsToCheck.add("title");
+		groupsToCheck.add("year");
+		groupsToCheck.add("type");
+		groupsToCheck.add("format");
+		groupsToCheck.add("sound");
+		groupsToCheck.add("language");
+		groupsToCheck.add("group");
+		return groupsToCheck;
+	}
+
 }

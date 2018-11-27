@@ -260,6 +260,12 @@ public class ParserMovie {
 		if (!StringUtils.isEmpty(movieName))
 			groupsMatched++;
 		
+		if (this.getSeason() > 0)
+			groupsMatched++;
+		
+		if (this.getEpisode() > 0)
+			groupsMatched++;
+		
 		if (this.getTitles().size() > 0)
 			groupsMatched++;
 		
@@ -287,7 +293,7 @@ public class ParserMovie {
 		if (!StringUtils.isEmpty(groupName))
 			groupsMatched++;
 		
-		return Math.round(100 * groupsMatched / 10);
+		return Math.round(100 * groupsMatched / 12);
 	}
 
 	public int getPart() {

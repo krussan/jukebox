@@ -321,7 +321,9 @@ service JukeboxService {
 	rpc Blacklist(JukeboxRequestID) returns (Empty);
 	rpc ToggleWatched(JukeboxRequestID) returns (Empty);	
 	rpc ReIdentify(JukeboxRequestID) returns (Empty);
-	
+	rpc ReenlistSubtitles(JukeboxRequestID) returns (Empty);
+	rpc ReenlistMetadata(JukeboxRequestID) returns (Empty);
+
 	rpc ListSubtitles(JukeboxRequestListSubtitles) returns (JukeboxResponseListSubtitles);
 	rpc SetSubtitle(JukeboxRequestSetSubtitle) returns (Empty);
 	
