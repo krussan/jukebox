@@ -286,7 +286,9 @@ public class IMDBFinder implements IIMDBFinder {
 
 			// exit if series contains season or if the series record is null (no series found)
 			found = seriesRec == null || seriesRec.getAllSeasonUrls().containsKey(season);
-			seriesBlacklist.add(getImdbIdFromUrl(seriesRec.getUrl()));
+			
+			if (seriesRec != null)
+				seriesBlacklist.add(getImdbIdFromUrl(seriesRec.getUrl()));
 		}
 		
 		return seriesRec; 
