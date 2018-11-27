@@ -148,15 +148,15 @@ public abstract class GenericListLayoutAdapter<T> extends BaseAdapter {
     }
 
     protected void hideDownloadAndCompletedIcons(View v) {
-	    GUITools.hideView(R.id.imgWatched, v);
-	    GUITools.hideView(R.id.imgConverted, v);
-	    GUITools.hideView(R.id.imgSub, v);
-        GUITools.hideView(R.id.imgDownloading, v);
+	    v.findViewById(R.id.imgWatched).setVisibility(View.GONE);
+        v.findViewById(R.id.imgConverted).setVisibility(View.GONE);
+        v.findViewById(R.id.imgSub).setVisibility(View.GONE);
+        v.findViewById(R.id.imgDownloading).setVisibility(View.GONE);
     }
 
     protected void setupDownloadedAndCompletedIcons(View v, List<Media> mediaList) {
         // set this to false for now until we have a way of identifying watched items
-        GUITools.hideView(R.id.imgWatched, v);
+        v.findViewById(R.id.imgWatched).setVisibility(View.GONE);
 
         // If all media has a meta duration then hide the download icon
         boolean downloadFinished = true;
@@ -169,9 +169,9 @@ public abstract class GenericListLayoutAdapter<T> extends BaseAdapter {
 
         }
         if (downloadFinished)
-            GUITools.hideView(R.id.imgDownloading, v);
+            v.findViewById(R.id.imgDownloading).setVisibility(View.GONE);
         if (!conversionFinished)
-            GUITools.hideView(R.id.imgConverted, v);
+            v.findViewById(R.id.imgConverted).setVisibility(View.GONE);
     }
 
     protected void setupSubtitles(View v, List<Subtitle> subtitleList) {

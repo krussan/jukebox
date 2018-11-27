@@ -50,9 +50,11 @@ public class SeasonLayoutAdapter extends GenericListLayoutAdapter<Season> {
 			    String label = String.format("Season %s%s",
                         ss.getSeasonNumber(),
                         StringUtils.isEmpty(ss.getTitle()) ? "" : " - " + ss.getTitle());
-				GUITools.setTextOnTextview(R.id.toptext, label, v);
 
-				setYear(v, ss);
+				GUITools.setTextOnTextview(R.id.toptext, label, v);
+				GUITools.setTextOnTextview(R.id.bottomtext, ss.getYear() > 0 ? Integer.toString(ss.getYear()) : StringUtils.EMPTY, v);
+				GUITools.setTextOnTextview(R.id.txtRating, StringUtils.EMPTY, v);
+
 				hideDownloadAndCompletedIcons(v);
 				setupThumbnail(v, ss.getThumbnail());
 				setupSubtitles(v, new ArrayList<>());
@@ -61,14 +63,6 @@ public class SeasonLayoutAdapter extends GenericListLayoutAdapter<Season> {
 		catch (Exception e) {
 			Logger.Log().e("Error occured while populating list", e);
 		}
-	}
-
-	private void setYear(View v, Season ss) {
-		int year = ss.getYear();
-		if (year > 0)
-            GUITools.setTextOnTextview(R.id.bottomtext, Integer.toString(year), v);
-        else
-            GUITools.hideView(R.id.bottomtext, v);
 	}
 
 	@Override

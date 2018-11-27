@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,9 +44,11 @@ public class SeriesLayoutAdapter extends GenericListLayoutAdapter<Series> {
     @Override
     public void initializeView(View v, Series s) {
 	    if (s != null) {
-            GUITools.setTextOnTextview(R.id.toptext, s.getTitle(), v);
 
-            setYear(v, s);
+            GUITools.setTextOnTextview(R.id.toptext, s.getTitle(), v);
+            GUITools.setTextOnTextview(R.id.bottomtext, s.getYear() > 0 ? Integer.toString(s.getYear()) : StringUtils.EMPTY, v);
+            GUITools.setTextOnTextview(R.id.txtRating, StringUtils.EMPTY, v);
+
             hideDownloadAndCompletedIcons(v);
             setupThumbnail(v, s.getThumbnail());
             setupSubtitles(v, new ArrayList<>());

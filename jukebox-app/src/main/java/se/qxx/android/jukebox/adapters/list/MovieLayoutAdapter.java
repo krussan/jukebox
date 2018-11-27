@@ -42,10 +42,10 @@ public class MovieLayoutAdapter extends GenericListLayoutAdapter<Movie> {
             GUITools.setTextOnTextview(R.id.toptext, m.getTitle(), v);
             GUITools.setTextOnTextview(R.id.bottomtext, Integer.toString(m.getYear()), v);
             GUITools.setTextOnTextview(R.id.txtRating, m.getRating(), v);
+            GUITools.hideView(R.id.txtListTitle, v);
 
             setupDownloadedAndCompletedIcons(v, m.getMediaList());
             setupThumbnail(v, m.getThumbnail());
-
             setupSubtitles(v, m.getMedia(0).getSubsList());
 
 

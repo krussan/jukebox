@@ -34,7 +34,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="6dp"
-            android:layout_below="@id/bottomtext"
+            android:layout_alignParentRight="true"
             android:text="@string/lblRating"
             />
 
@@ -52,16 +52,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_star_exact"
-            android:layout_alignParentRight="true"/>
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/bottomtext"
+            />
 
 
         <ImageView
             android:id="@+id/imgDownloading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:layout_below="@id/imgSub"
+            android:layout_below="@id/bottomtext"
             android:contentDescription="@string/descDownloading"
             android:src="@drawable/ic_download_completed" />
 
@@ -70,9 +70,8 @@
             android:id="@+id/imgWatched"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/imgSub"
-            android:layout_toLeftOf="@id/imgDownloading"
-            android:layout_alignParentBottom="true"
+            android:layout_below="@id/bottomtext"
+            android:layout_toRightOf="@id/imgDownloading"
             android:src="@drawable/ic_watched"
             android:contentDescription="@string/descWatched" />
 
@@ -81,8 +80,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_below="@id/imgSub"
-            android:layout_toLeftOf="@id/imgWatched"
+            android:layout_below="@id/bottomtext"
+            android:layout_toRightOf="@id/imgWatched"
             android:contentDescription="@string/descConverted"
             android:src="@drawable/ic_conversion_completed" />
 

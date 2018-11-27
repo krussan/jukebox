@@ -19,33 +19,32 @@ public class IncludeSubtitleRating {
 	    	GUITools.setTextOnTextview(R.id.lblSubLanguage, sub.getLanguage(), v);
 
 			setSubtitleRating(sub, v);
-	    }
-	}
-
-	public static void setSubtitleRating(Subtitle sub, View v) {
-		if (sub != null) {
-			Rating rating = sub.getRating();
-
-			switch (rating) {
-				case SubsExist:
-					GUITools.setImageResourceOnImageView(R.id.imgSub, R.drawable.ic_star_subsexist, v);
-					break;
-				case ExactMatch:
-					GUITools.setImageResourceOnImageView(R.id.imgSub, R.drawable.ic_star_exact, v);
-					break;
-				case PositiveMatch:
-					GUITools.setImageResourceOnImageView(R.id.imgSub, R.drawable.ic_star_positive, v);
-					break;
-				case ProbableMatch:
-					GUITools.setImageResourceOnImageView(R.id.imgSub, R.drawable.ic_star_probable, v);
-					break;
-				case NotMatched:
-					GUITools.hideView(R.id.imgSub, v);
-					break;
-			}
 		}
 		else {
 			GUITools.hideView(R.id.imgSub, v);
+		}
+
+	}
+
+	private static void setSubtitleRating(Subtitle sub, View v) {
+		Rating rating = sub.getRating();
+
+		switch (rating) {
+			case SubsExist:
+				GUITools.setImageResourceOnImageView(R.id.imgSub, R.drawable.ic_star_subsexist, v);
+				break;
+			case ExactMatch:
+				GUITools.setImageResourceOnImageView(R.id.imgSub, R.drawable.ic_star_exact, v);
+				break;
+			case PositiveMatch:
+				GUITools.setImageResourceOnImageView(R.id.imgSub, R.drawable.ic_star_positive, v);
+				break;
+			case ProbableMatch:
+				GUITools.setImageResourceOnImageView(R.id.imgSub, R.drawable.ic_star_probable, v);
+				break;
+			case NotMatched:
+				GUITools.hideView(R.id.imgSub, v);
+				break;
 		}
 	}
 

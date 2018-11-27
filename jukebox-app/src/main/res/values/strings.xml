@@ -48,6 +48,8 @@
     <string name="tabSeason">Season</string>
     <string name="descConverted">Converted</string>
     <string name="loremipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat</string>
+    <string name="lblSeriesTitle">Series title</string>
+    <string name="descSelectMediaPlayer">Select media player</string>
     <string-array name="actionDialogMenu">
         <item>Blacklist</item>
         <item>Toggle watched</item>
