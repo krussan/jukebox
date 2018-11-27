@@ -3,6 +3,8 @@ package se.qxx.jukebox.watcher;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.inject.Inject;
+
 import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IFilenameChecker;
@@ -11,6 +13,8 @@ import se.qxx.jukebox.interfaces.IJukeboxLogger;
 public class FilenameChecker implements IFilenameChecker {
 
 	private IJukeboxLogger log;
+	
+	@Inject
 	public FilenameChecker(LoggerFactory loggerFactory) {
 		this.setLog(loggerFactory.create(LogType.FIND));
 	}

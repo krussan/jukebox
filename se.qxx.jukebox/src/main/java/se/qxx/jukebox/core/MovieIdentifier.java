@@ -199,20 +199,6 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 				}
 			}
 		}
-//		else if (this.getFilenameChecker().isConvertedFile(f.getName())) {
-//			// check that converted media exist in db and has converted state set to completed
-//			// unless converterstate is converting
-//			Media convMedia = this.getDatabase().getMediaByStartOfFilename(f.getName().substring(0, f.getName().indexOf("_[tazmo]" ) - 1));
-//			if (!StringUtils.equalsIgnoreCase(convMedia.getConvertedFileName(), f.getName()) &&
-//					convMedia.getConverterState() == MediaConverterState.Completed) {
-//				// converted media not registered
-//				MediaConverterState state = convMedia.getConverterState();
-//				if (state != MediaConverterState.Completed &&
-//					state != MediaConverterState.Converting &&
-//					state != MediaConverterState.Failed)
-//			}
-//			// otherwise the main file has not been identified yet
-//		}
 	}
 
 	/**

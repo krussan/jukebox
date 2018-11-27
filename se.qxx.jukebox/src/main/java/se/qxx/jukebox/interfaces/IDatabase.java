@@ -154,4 +154,6 @@ public interface IDatabase {
 
 	Season save(Season season);
 
+	void forceConversion(int mediaID);
+
 }

@@ -817,16 +817,28 @@ public class DB implements IDatabase {
 			try {
 				if (db.getDBType() == DBType.Sqlite) lock.lock();
 
-               // Restrict result to 5.
+               // Restrict result to 1.
     	   	   // should only have the queue state Queued if download completed
+				
+				// forced results are prioritized
                result = db.search(
         		   SearchOptions.newBuilder(JukeboxDomain.Media.getDefaultInstance())
         		   	.addFieldName("converterState")
         		   	.addOperator(ProtoDBSearchOperator.Equals)
-        		   	.addSearchArgument("Queued")
-        		   	.setNumberOfResults(5)
+        		   	.addSearchArgument("Forced")
+        		   	.setNumberOfResults(1)
         		   	.setOffset(0));
 
+               	if (result.size() == 0) {
+    				// forced results are prioritized
+                    result = db.search(
+             		   SearchOptions.newBuilder(JukeboxDomain.Media.getDefaultInstance())
+             		   	.addFieldName("converterState")
+             		   	.addOperator(ProtoDBSearchOperator.Equals)
+             		   	.addSearchArgument("Queued")
+             		   	.setNumberOfResults(1)
+             		   	.setOffset(0));
+               	}
 			}
 			finally {
 				if (db.getDBType() == DBType.Sqlite) lock.unlock();
@@ -877,6 +889,26 @@ public class DB implements IDatabase {
 				if (db.getDBType() == DBType.Sqlite) lock.lock();
 
 				String sql = "UPDATE Media SET _converterstate_ID = 2 WHERE _converterstate_ID IN (4,5)";
+				db.executeNonQuery(sql);
+			}
+			finally {
+				if (db.getDBType() == DBType.Sqlite) lock.unlock();
+			}
+
+		} catch (Exception e) {
+			this.getMainLog().Error(String.format("Failed to clean subtitle queue"), e);
+		}		
+	}
+
+	@Override
+	public  void forceConversion(int mediaID) {
+		try {
+			ProtoDB db = getProtoDBInstance();
+			
+			try {
+				if (db.getDBType() == DBType.Sqlite) lock.lock();
+
+				String sql = String.format("UPDATE Media SET _converterstate_ID = 6 WHERE IN = ?", mediaID);
 				db.executeNonQuery(sql);
 			}
 			finally {

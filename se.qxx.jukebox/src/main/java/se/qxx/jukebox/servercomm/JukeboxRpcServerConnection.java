@@ -44,6 +44,7 @@ import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IDistributor;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IJukeboxRpcServerConnection;
+import se.qxx.jukebox.interfaces.IMediaConverter;
 import se.qxx.jukebox.interfaces.IMovieIdentifier;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.IStreamingWebServer;
@@ -74,7 +75,6 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 			LoggerFactory loggerFactory,
 			@Assisted("webserver") IStreamingWebServer webServer) {
 		super();
-		
 		this.setDatabase(database);
 		this.setSettings(settings);
 		this.setDistributor(distributor);
@@ -798,6 +798,12 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 		else {
 			this.getLog().Debug("Season not found -- exiting");
 		}
+	}
+
+	@Override
+	public void forceConverter(RpcController controller, JukeboxRequestID request, RpcCallback<Empty> done) {
+		this.getDatabase().forceConversion(request.getId());
+		done.run(Empty.newBuilder().build());
 	}
 	
 }
