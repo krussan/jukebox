@@ -390,7 +390,7 @@ public class JukeboxConnectionHandler {
 
 	}
 	
-	public void setSubtitle(final String playerName, final Media md, final Subtitle subtitle) {
+	public void setSubtitle(final String playerName, final int mediaId, final Subtitle subtitle) {
 		final RpcController controller = new SocketRpcController();
 
 		Thread t = new Thread(() -> {
@@ -398,7 +398,7 @@ public class JukeboxConnectionHandler {
 
             JukeboxRequestSetSubtitle request = JukeboxRequestSetSubtitle.newBuilder()
                     .setPlayerName(playerName)
-                    .setMediaID(md.getID())
+                    .setMediaID(mediaId)
                     .setSubtitleDescription(subtitle.getDescription())
                     .build();
 
