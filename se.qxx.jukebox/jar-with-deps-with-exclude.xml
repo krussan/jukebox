@@ -21,7 +21,7 @@
     </dependencySets>
     <fileSets>
       <fileSet>
-        <outputDirectory>/</outputDirectory>
+        <outputDirectory></outputDirectory>
         <directory>${project.build.outputDirectory}</directory>
       </fileSet>
     </fileSets>
