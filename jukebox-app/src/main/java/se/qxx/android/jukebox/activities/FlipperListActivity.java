@@ -59,7 +59,6 @@ public class FlipperListActivity extends AppCompatActivity {
         pager = (ViewPager)this.getRootView();
 
         JukeboxFragmentAdapter mfa = new JukeboxFragmentAdapter(getSupportFragmentManager(), this);
-
         pager.setAdapter(mfa);
 
 		mCastContext = CastContext.getSharedInstance(this);

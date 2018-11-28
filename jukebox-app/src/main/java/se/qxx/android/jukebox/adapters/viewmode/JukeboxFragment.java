@@ -20,6 +20,7 @@ import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.FlipperActivity;
 import se.qxx.android.jukebox.activities.JukeboxPreferenceActivity;
 import se.qxx.android.jukebox.activities.ListActivity;
+import se.qxx.android.jukebox.activities.MovieDetailActivity;
 import se.qxx.android.jukebox.activities.PlayerPickerActivity;
 import se.qxx.android.jukebox.activities.ViewMode;
 import se.qxx.android.jukebox.adapters.list.MovieLayoutAdapter;
@@ -209,9 +210,9 @@ public class JukeboxFragment extends ListFragment implements
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
         if (this.getMode() == ViewMode.Movie) {
-            Intent i = new Intent(arg1.getContext(), FlipperActivity.class);
+            Intent i = new Intent(arg1.getContext(), MovieDetailActivity.class);
             i.putExtra("mode", ViewMode.Movie);
-            i.putExtra("position", pos);
+            i.putExtra("movie", _jukeboxMovieLayoutAdapter.getItem(pos));
             //i.putExtra("movies", (ArrayList<JukeboxDomain.Movie>)_jukeboxMovieLayoutAdapter.getMovies());
 
             startActivity(i);
@@ -219,7 +220,7 @@ public class JukeboxFragment extends ListFragment implements
         else if (this.getMode() == ViewMode.Series) {
             Intent intentSeries = new Intent(this.getActivity(), ListActivity.class);
             intentSeries.putExtra("mode", ViewMode.Season);
-            intentSeries.putExtra("series", (JukeboxDomain.Series)_seriesLayoutAdapter.getItem(pos));
+            intentSeries.putExtra("series", _seriesLayoutAdapter.getItem(pos));
 
             startActivity(intentSeries);
         }
