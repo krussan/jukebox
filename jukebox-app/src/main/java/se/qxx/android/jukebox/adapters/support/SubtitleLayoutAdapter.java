@@ -81,6 +81,8 @@ public class SubtitleLayoutAdapter extends BaseAdapter implements AdapterView.On
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		final Subtitle sub = (Subtitle) arg0.getItemAtPosition(arg2);
 
+		this.selectedSubId = sub.getID();
+
 		Logger.Log().d(String.format("Setting subtitle to %s", sub.getDescription()));
 
 
@@ -103,6 +105,8 @@ public class SubtitleLayoutAdapter extends BaseAdapter implements AdapterView.On
 			t.run();
 
 		}
+
+		notifyDataSetInvalidated();
 	}
 
 }

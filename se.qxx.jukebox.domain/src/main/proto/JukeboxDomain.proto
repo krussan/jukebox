@@ -218,6 +218,7 @@ message JukeboxRequestGetItem {
 	optional int32 ID = 1;
 	optional bool returnFullSizePictures = 2 [default=true];
 	optional RequestType requestType = 3;
+	repeated RequestFilter filter = 4;	
 }
 
 message JukeboxRequestStartMovie {

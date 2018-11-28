@@ -110,15 +110,15 @@ public class DB implements IDatabase {
 	//---------------------------------------------------------------------------------------
 
 	@Override
-	public List<Movie> searchMoviesByTitle(String searchString) {
-		return searchMoviesByTitle(searchString, -1, -1);
+	public List<Movie> searchMoviesByTitle(String searchString, boolean excludeImages, boolean excludeTextData) {
+		return searchMoviesByTitle(searchString, -1, -1, excludeImages, excludeTextData);
 	}
 	
 	/* (non-Javadoc)
 	 * @see se.qxx.jukebox.IDatabase#searchMoviesByTitle(java.lang.String, int, int)
 	 */
 	@Override
-	public List<Movie> searchMoviesByTitle(String searchString, int numberOfResults, int offset) {
+	public List<Movie> searchMoviesByTitle(String searchString, int numberOfResults, int offset, boolean excludeImages, boolean excludeTextData) {
 		List<String> excludedObjects = new ArrayList<String>();
 		excludedObjects.add("media.subs.textdata");
 		excludedObjects.add("image");
@@ -136,7 +136,7 @@ public class DB implements IDatabase {
 	 * @see se.qxx.jukebox.IDatabase#searchMoviesByID(int)
 	 */
 	@Override
-	public Movie searchMoviesByID(int id) {
+	public Movie searchMoviesByID(int id, boolean excludeImages, boolean excludeTextData) {
 		try {
 			List<String> excludedObjects = new ArrayList<String>();
 			excludedObjects.add("media.subs.textdata");
@@ -178,15 +178,15 @@ public class DB implements IDatabase {
 	 * @see se.qxx.jukebox.IDatabase#searchSeriesByTitle(java.lang.String)
 	 */
 	@Override
-	public List<Series> searchSeriesByTitle(String searchString) {
-		return searchSeriesByTitle(searchString, -1, -1);		
+	public List<Series> searchSeriesByTitle(String searchString, boolean excludeImages) {
+		return searchSeriesByTitle(searchString, -1, -1, excludeImages);		
 	}
 
 	/* (non-Javadoc)
 	 * @see se.qxx.jukebox.IDatabase#searchSeriesByTitle(java.lang.String, int, int)
 	 */
 	@Override
-	public List<Series> searchSeriesByTitle(String searchString, int numberOfResults, int offset) {
+	public List<Series> searchSeriesByTitle(String searchString, int numberOfResults, int offset, boolean excludeImages) {
 		List<String> excludedObjects = new ArrayList<String>();
 		excludedObjects.add("season"); // exclude underlying seasons
 		excludedObjects.add("image"); // exclude full size image
@@ -339,7 +339,7 @@ public class DB implements IDatabase {
 	 * @see se.qxx.jukebox.IDatabase#searchSeriesById(int)
 	 */
 	@Override
-	public Series searchSeriesById(int id) {
+	public Series searchSeriesById(int id, boolean excludeImages) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			
@@ -378,7 +378,7 @@ public class DB implements IDatabase {
 	 * @see se.qxx.jukebox.IDatabase#searchSeasonById(int)
 	 */
 	@Override
-	public Season searchSeasonById(int id) {
+	public Season searchSeasonById(int id, boolean excludeImages, boolean excludeTextData) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			

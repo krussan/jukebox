@@ -35,6 +35,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseTime;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxService;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
+import se.qxx.jukebox.domain.JukeboxDomain.RequestFilter;
 import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
@@ -146,6 +147,8 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 		String searchString = request.getSearchString();
 		
 		JukeboxResponseListMovies.Builder b = JukeboxResponseListMovies.newBuilder();
+		boolean excludeImages = request.getFilterList().stream().anyMatch(r -> r == RequestFilter.Images);
+		boolean excludeTextData = request.getFilterList().stream().anyMatch(r -> r == RequestFilter.SubsTextdata);
 		
 		switch (request.getRequestType()) {
 		case TypeMovie:
@@ -153,7 +156,9 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 				this.getDatabase().searchMoviesByTitle(
 						searchString, 
 						request.getNrOfItems(), 
-						request.getStartIndex()));
+						request.getStartIndex(),
+						excludeImages,
+						excludeTextData));
 			
 			b.setTotalMovies(
 				this.getDatabase().getTotalNrOfMovies());
@@ -164,7 +169,8 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 				this.getDatabase().searchSeriesByTitle(
 						searchString, 
 						request.getNrOfItems(), 
-						request.getStartIndex()));
+						request.getStartIndex(),
+						excludeImages));
 			
 			b.setTotalSeries(
 				this.getDatabase().getTotalNrOfSeries());
@@ -721,23 +727,30 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 		setPriority();
 		this.getLog().Debug(String.format("GetItem :: %s - %s", request.getID(), request.getRequestType()));
 		
-		
 		JukeboxResponseGetItem.Builder b = JukeboxResponseGetItem.newBuilder();
+		boolean excludeImages = request.getFilterList().stream().anyMatch(r -> r == RequestFilter.Images);
+		boolean excludeTextData = request.getFilterList().stream().anyMatch(r -> r == RequestFilter.SubsTextdata);
+		
 		switch (request.getRequestType()) {		
 		case TypeMovie:
 			b.setMovie(
 				this.getDatabase().searchMoviesByID(
-					request.getID()));
+					request.getID(),
+					excludeImages,
+					excludeTextData));
 			break;
 		case TypeSeries:
 			b.setSerie(
 				this.getDatabase().searchSeriesById(
-					request.getID()));
+					request.getID(),
+					excludeImages));
 			break;
 		case TypeSeason:
 			b.setSeason(
 				this.getDatabase().searchSeasonById(
-					request.getID()));
+					request.getID(),
+					excludeImages,
+					excludeTextData));
 			break;
 		default:
 			break;
