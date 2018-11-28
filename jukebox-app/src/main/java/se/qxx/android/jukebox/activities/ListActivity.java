@@ -228,12 +228,14 @@ public class ListActivity extends AppCompatActivity implements
             d = new ActionDialog(
                     this,
                     this.getSeries().getSeason(position).getID(),
+                    0,
                     JukeboxDomain.RequestType.TypeMovie);
         }
         else if (this.getMode() == ViewMode.Episode) {
             d = new ActionDialog(
                     this,
                     this.getSeason().getEpisode(position).getID(),
+                    this.getSeason().getEpisode(position).getMedia(0).getID(),
                     JukeboxDomain.RequestType.TypeSeries);
         }
 

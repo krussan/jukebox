@@ -102,8 +102,9 @@
 		    android:id="@+id/listItems"
 		    android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
-		    android:layout_below="@id/txtListTitle">
-		</ListView>		
+		    android:layout_below="@id/txtListTitle"
+			android:focusable="true"
+			/>
     </RelativeLayout>
 
 

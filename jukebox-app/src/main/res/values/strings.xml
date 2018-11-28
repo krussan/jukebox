@@ -55,6 +55,7 @@
         <item>Toggle watched</item>
         <item>Re-identify</item>
         <item>Reenlist subtitles</item>
+        <item>Force conversion</item>
     </string-array>
     <string-array name="actionDialogStrings">
         <item>Blacklisting...</item>

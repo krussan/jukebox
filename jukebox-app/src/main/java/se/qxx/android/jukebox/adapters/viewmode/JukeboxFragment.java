@@ -232,15 +232,18 @@ public class JukeboxFragment extends ListFragment implements
 		ActionDialog d = null;
 
         if (this.getMode() == ViewMode.Movie) {
+            JukeboxDomain.Movie m = _jukeboxMovieLayoutAdapter.getItem(pos);
             d = new ActionDialog(
                     this.getActivity(),
                     _jukeboxMovieLayoutAdapter.getItemId(pos),
+                    _jukeboxMovieLayoutAdapter.getMediaId(pos),
                     RequestType.TypeMovie);
         }
         else if (this.getMode() == ViewMode.Series) {
             d = new ActionDialog(
                     this.getActivity(),
                     _seriesLayoutAdapter.getItemId(pos),
+                    0,
                     RequestType.TypeSeries);
         }
 

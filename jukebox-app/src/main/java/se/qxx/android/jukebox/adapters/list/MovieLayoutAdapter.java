@@ -76,6 +76,12 @@ public class MovieLayoutAdapter extends GenericListLayoutAdapter<Movie> {
         return ((Movie)getDataObject(position)).getID();
     }
 
+    public int getMediaId(int position) {
+        if (this.getItem(position).getMediaCount() > 0)
+            return this.getItem(position).getMedia(0).getID();
+        else
+            return 0;
+    }
 
 }
 	

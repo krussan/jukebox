@@ -465,6 +465,23 @@ public class JukeboxConnectionHandler {
 
 	}
 
+	public void forceconversion(final int mediaId) {
+		final RpcController controller = new SocketRpcController();
+
+		Thread t = new Thread(() -> {
+			JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
+
+			JukeboxRequestID request = JukeboxRequestID.newBuilder()
+					.setId(mediaId)
+					.setRequestType(RequestType.TypeMovie)
+					.build();
+
+			service.forceConverter(controller, request, arg0 -> onRequestComplete(controller));
+
+		});
+		t.start();
+	}
+
 
 	private JukeboxResponseListener getListener() {
 		return listener;

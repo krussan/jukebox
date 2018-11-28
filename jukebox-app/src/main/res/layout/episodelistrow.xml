@@ -84,6 +84,7 @@
             android:layout_centerVertical="true"
             android:src="@android:drawable/ic_media_play"
             android:contentDescription="@string/descDownloading"
+            android:focusable="false"
             />
 
     </RelativeLayout>
