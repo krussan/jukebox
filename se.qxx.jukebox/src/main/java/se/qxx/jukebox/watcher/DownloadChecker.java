@@ -16,6 +16,7 @@ import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IDownloadChecker;
 import se.qxx.jukebox.interfaces.IExecutor;
+import se.qxx.jukebox.interfaces.IFilenameChecker;
 import se.qxx.jukebox.tools.Util;
 
 @Singleton
@@ -27,6 +28,7 @@ public class DownloadChecker extends JukeboxThread implements IDownloadChecker {
 	private IDatabase database;
 	// <string, string>
 	// <filename - FileRepresentation, state, exist in db?, downloadflag from db>
+	private IFilenameChecker filenameChecker;
 	
 	// initialization -- setup all
 	// file, initialized
@@ -46,9 +48,18 @@ public class DownloadChecker extends JukeboxThread implements IDownloadChecker {
 	// ------state WATCH
 	
 	@Inject
-	private DownloadChecker(IExecutor executor, IDatabase database, LoggerFactory loggerFactory) {
+	private DownloadChecker(IExecutor executor, IDatabase database, LoggerFactory loggerFactory, IFilenameChecker filenameChecker) {
 		super("DownloadChecker", 300000, loggerFactory.create(LogType.CHECKER), executor);
+		this.setFilenameChecker(filenameChecker);
 		this.setDatabase(database);
+	}
+
+	public IFilenameChecker getFilenameChecker() {
+		return filenameChecker;
+	}
+
+	public void setFilenameChecker(IFilenameChecker filenameChecker) {
+		this.filenameChecker = filenameChecker;
 	}
 
 	public IDatabase getDatabase() {
@@ -131,7 +142,7 @@ public class DownloadChecker extends JukeboxThread implements IDownloadChecker {
 		lock.lock();
 		try {
 			if (this.isRunning()) {
-				if (!Util.isExcludedFile(f, this.getLog())) {
+				if (!this.getFilenameChecker().isExcludedFile(f)) {
 					FileRepresentationState fs = new FileRepresentationState(f);
 					String filename = f.getFullPath().toLowerCase();
 					

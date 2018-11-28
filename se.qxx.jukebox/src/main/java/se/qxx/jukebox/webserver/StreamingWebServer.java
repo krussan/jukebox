@@ -20,6 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.google.inject.assistedinject.Assisted;
 import com.google.protobuf.ByteString;
 
 import fi.iki.elonen.NanoHTTPD;
@@ -41,10 +42,8 @@ import se.qxx.jukebox.settings.JukeboxListenerSettings.WebServer.MimeTypeMap.Ext
 import se.qxx.jukebox.tools.Util;
 import se.qxx.protodb.model.CaseInsensitiveMap;
 
-@Singleton
 public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer {
 
-	private ISettings settings;
 	private IDatabase database;
 	private IJukeboxLogger log;
 	
@@ -59,20 +58,18 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 	
 	@Inject
 	public StreamingWebServer(
-			ISettings settings, 
 			IDatabase database, 
 			LoggerFactory loggerFactory,
-			ISubtitleFileWriter subWriter) {
-		super("0.0.0.0", settings.getSettings().getTcpListener().getPort().getValue());
+			ISubtitleFileWriter subWriter,
+			@Assisted("webserverport") Integer port) {
+		super(port);
 		this.setSubWriter(subWriter);
-		this.setSettings(settings);
 		this.setDatabase(database);
 		this.setLog(loggerFactory.create(LogType.WEBSERVER));
 		
 		streamingIterator = new AtomicInteger();
 		streamingMap = new ConcurrentHashMap<String, String>();
 		
-		initializeMappings();
 		setIpAddress();
 	}
 
@@ -100,14 +97,6 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 		this.database = database;
 	}
 
-	public ISettings getSettings() {
-		return settings;
-	}
-
-	public void setSettings(ISettings settings) {
-		this.settings = settings;
-	}
-
 	private void setIpAddress() {
 		this.setIpAddress(Util.findIpAddress());
 		this.getLog().Info(String.format("Setting Ip Address :: %s", this.getIpAddress()));
@@ -117,16 +106,16 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 	 * @see se.qxx.jukebox.webserver.IStreamingWebServer#initializeMappings()
 	 */
 	@Override
-	public void initializeMappings() {
+	public void initializeMappings(ISettings settings) {
 		mimeTypeMap = new CaseInsensitiveMap();
 		extensionMap = new CaseInsensitiveMap();
 		
-		for (Extension e : this.getSettings().getSettings().getWebServer().getMimeTypeMap().getExtension() ) {
+		for (Extension e : settings.getSettings().getWebServer().getMimeTypeMap().getExtension() ) {
 			mimeTypeMap.put(e.getValue(), e.getMimeType());
 		}
 	
 		for (se.qxx.jukebox.settings.JukeboxListenerSettings.WebServer.ExtensionOverrideMap.Extension e :
-			this.getSettings().getSettings().getWebServer().getExtensionOverrideMap().getExtension()) {
+			settings.getSettings().getWebServer().getExtensionOverrideMap().getExtension()) {
 			extensionMap.put(e.getValue(), e.getOverride());
 		}
 	}
@@ -585,7 +574,8 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
         return res;
     }
 	
-	private String getStreamUri(String streamingFile) {
+    @Override
+	public String getStreamUri(String streamingFile) {
 		return String.format("http://%s%s/%s", 
 				this.getIpAddress(),  
 				this.getListeningPort() == 80 ? "" : String.format(":%s", this.getListeningPort()),
@@ -609,5 +599,14 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 	@Override
 	public Runnable getRunnable() {
 		return this.createServerRunnable(SOCKET_READ_TIMEOUT);
+	}
+
+	@Override
+	public void initialize() {
+		try {
+			super.start(SOCKET_READ_TIMEOUT, false);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}		
 	}
 }

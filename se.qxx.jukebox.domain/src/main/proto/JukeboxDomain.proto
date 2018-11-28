@@ -35,6 +35,7 @@ enum MediaConverterState {
     Completed = 3;
     Converting = 4;
     Failed = 5;
+    Forced = 6;
 }
 
 
@@ -323,6 +324,7 @@ service JukeboxService {
 	rpc ReIdentify(JukeboxRequestID) returns (Empty);
 	rpc ReenlistSubtitles(JukeboxRequestID) returns (Empty);
 	rpc ReenlistMetadata(JukeboxRequestID) returns (Empty);
+	rpc ForceConverter(JukeboxRequestID) returns (Empty);
 
 	rpc ListSubtitles(JukeboxRequestListSubtitles) returns (JukeboxResponseListSubtitles);
 	rpc SetSubtitle(JukeboxRequestSetSubtitle) returns (Empty);

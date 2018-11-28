@@ -150,9 +150,10 @@ public class MediaConverter extends JukeboxThread implements IMediaConverter {
 		this.getLog().Info(String.format("Target video codec :: %s", videoCodec));
 		this.getLog().Info(String.format("Target audio codec :: %s", audioCodec));
 		boolean needsConversion = 
-				FilenameUtils.getExtension(md.getFilename()).equalsIgnoreCase("mp4") ||
+				!FilenameUtils.getExtension(md.getFilename()).equalsIgnoreCase("mp4") ||
 				!StringUtils.equals(audioCodec, "copy") ||
-				!StringUtils.equals(videoCodec, "copy");
+				!StringUtils.equals(videoCodec, "copy") ||
+				md.getConverterState() == MediaConverterState.Forced;
 		
 		return new ConversionProbeResult(needsConversion, videoCodec, audioCodec);
 	}

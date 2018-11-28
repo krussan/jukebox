@@ -8,7 +8,6 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.View;
-import android.view.View.OnLongClickListener;
 import android.widget.Toast;
 
 import com.google.android.gms.cast.framework.CastContext;
@@ -19,12 +18,9 @@ import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.adapters.detail.MovieFragmentAdapter;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
 import se.qxx.android.jukebox.comm.Connector;
-import se.qxx.android.jukebox.dialogs.ActionDialog;
-import se.qxx.android.jukebox.model.Model;
 import se.qxx.jukebox.domain.JukeboxDomain;
-import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
 
-public class FlipperActivity extends AppCompatActivity implements OnPageChangeListener, OnLongClickListener, Connector.ConnectorCallbackEventListener {
+public class FlipperActivity extends AppCompatActivity implements OnPageChangeListener, Connector.ConnectorCallbackEventListener {
 	ViewPager pager;
 	private CastContext mCastContext;
     MovieFragmentAdapter mfa;
@@ -52,8 +48,6 @@ public class FlipperActivity extends AppCompatActivity implements OnPageChangeLi
 
 		connector = new Connector(this);
         connector.connect(getCurrentPosition(), 1, this.getMode(), -1, -1);
-
-        this.getRootView().setOnLongClickListener(this);
 
         pager = (ViewPager)getRootView();
         pager.addOnPageChangeListener(this);
@@ -118,17 +112,6 @@ public class FlipperActivity extends AppCompatActivity implements OnPageChangeLi
 	public void onPageSelected(int arg0) {
         this.setCurrentPosition(arg0);
 
-	}
-
-	@Override
-	public boolean onLongClick(View v) {
-		ActionDialog d = new ActionDialog(
-		        this,
-                this.getCurrentMovie().getID(),
-                RequestType.TypeMovie);
-
-		d.show();
-		return false;
 	}
 
 	private int getPosition() {

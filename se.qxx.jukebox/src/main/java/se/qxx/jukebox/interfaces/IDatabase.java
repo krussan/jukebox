@@ -124,6 +124,7 @@ public interface IDatabase {
 	Movie getMovieByMediaID(int mediaID);
 
 	Media getMediaByFilename(String filename);
+	Media getMediaByStartOfFilename(String startOfFilename);
 
 	Media getMediaById(int mediaId);
 
@@ -152,5 +153,7 @@ public interface IDatabase {
 	Series getSeriesByEpisode(int id);
 
 	Season save(Season season);
+
+	void forceConversion(int mediaID);
 
 }

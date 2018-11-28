@@ -256,23 +256,7 @@ public class Util {
 		return String.format("%s/%s", filepath, filename);
 	}
 
-	public static boolean isExcludedFile(FileRepresentation f, IJukeboxLogger log) {
-		if (StringUtils.containsIgnoreCase(f.getName(), "sample")) {
-			log.Info(String.format("Ignoring %s as this appears to be a sample", f.getName()));
-			return true;
-		}
-		else if (FilenameUtils.removeExtension(f.getName()).endsWith("[tazmo]")) {
-			//Log.Info(String.format("Ignoring %s as this is a converted file", f.getName()), logType);
-			return true;
-		}		
-		else if (f.getFileSize() < 104857600) {
-			log.Info(String.format("Ignoring %s as this has a file size of less than 100MB", f.getName()));
-			return true;
-		}
-
-		
-		return false;
-	}
+	
 
 	public static String findIpAddress() {
 

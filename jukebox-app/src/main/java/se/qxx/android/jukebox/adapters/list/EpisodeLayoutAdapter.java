@@ -131,6 +131,12 @@ public class EpisodeLayoutAdapter extends GenericListLayoutAdapter<Episode> impl
         return newList;
     }
 
+    public int getMediaId(int position) {
+        if (this.getItem(position).getMediaCount() > 0)
+            return this.getItem(position).getMedia(0).getID();
+        else
+            return 0;
+    }
 
 }
 	

@@ -15,13 +15,15 @@ public class ActionDialog implements OnClickListener{
 	RequestType reqType;
 	Activity activity;
     Resources res;
-	
-	public ActionDialog(Activity activity, long id, RequestType requestType) {
+    private int mediaId;
+
+    public ActionDialog(Activity activity, long id, int mediaId, RequestType requestType) {
 		this.reqType = requestType;
 		this.id = id;
 		this.activity = activity;
         this.res = activity.getResources();
-	}
+        this.mediaId = mediaId;
+    }
 	
 	public void show() {
 		AlertDialog.Builder b = new AlertDialog.Builder(this.activity);
@@ -52,6 +54,9 @@ public class ActionDialog implements OnClickListener{
 			break;
 		case 3:
 			jh.reenlistSub((int) this.id, this.reqType);
+			break;
+		case 4:
+			jh.forceconversion(this.mediaId);
 			break;
 		}
 		

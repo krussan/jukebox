@@ -16,7 +16,10 @@ import se.qxx.jukebox.concurrent.Executor;
 import se.qxx.jukebox.converter.MediaConverter;
 import se.qxx.jukebox.factories.FileSystemWatcherFactory;
 import se.qxx.jukebox.factories.IMDBParserFactory;
+import se.qxx.jukebox.factories.JukeboxRpcServerFactory;
 import se.qxx.jukebox.factories.LoggerFactory;
+import se.qxx.jukebox.factories.TcpListenerFactory;
+import se.qxx.jukebox.factories.WebServerFactory;
 import se.qxx.jukebox.imdb.IMDBFinder;
 import se.qxx.jukebox.imdb.IMDBParser;
 import se.qxx.jukebox.imdb.IMDBUrlRewrite;
@@ -29,11 +32,13 @@ import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.IFileCreatedHandler;
 import se.qxx.jukebox.interfaces.IFileReader;
 import se.qxx.jukebox.interfaces.IFileSystemWatcher;
+import se.qxx.jukebox.interfaces.IFilenameChecker;
 import se.qxx.jukebox.interfaces.IIMDBFinder;
 import se.qxx.jukebox.interfaces.IIMDBParser;
 import se.qxx.jukebox.interfaces.IIMDBUrlRewrite;
 import se.qxx.jukebox.interfaces.IImdbSettings;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
+import se.qxx.jukebox.interfaces.IJukeboxRpcServerConnection;
 import se.qxx.jukebox.interfaces.IMain;
 import se.qxx.jukebox.interfaces.IMediaConverter;
 import se.qxx.jukebox.interfaces.IMediaMetadataHelper;
@@ -54,6 +59,7 @@ import se.qxx.jukebox.interfaces.IUnpacker;
 import se.qxx.jukebox.interfaces.IUpgrader;
 import se.qxx.jukebox.interfaces.IWakeOnLan;
 import se.qxx.jukebox.interfaces.IWebRetriever;
+import se.qxx.jukebox.servercomm.JukeboxRpcServerConnection;
 import se.qxx.jukebox.servercomm.TcpListener;
 import se.qxx.jukebox.servercomm.WakeOnLan;
 import se.qxx.jukebox.settings.Settings;
@@ -71,6 +77,7 @@ import se.qxx.jukebox.vlc.Distributor;
 import se.qxx.jukebox.watcher.DownloadChecker;
 import se.qxx.jukebox.watcher.FileCreatedHandler;
 import se.qxx.jukebox.watcher.FileSystemWatcher;
+import se.qxx.jukebox.watcher.FilenameChecker;
 import se.qxx.jukebox.webserver.StreamingWebServer;
 
 public class Binder {
@@ -99,7 +106,10 @@ public class Binder {
 				bind(IRandomWaiter.class).to(RandomWaiter.class);
 				
 				//Webserver
-				bind(IStreamingWebServer.class).to(StreamingWebServer.class);
+				install(
+					new FactoryModuleBuilder()
+						.implement(IStreamingWebServer.class, StreamingWebServer.class)
+						.build(WebServerFactory.class));
 				
 				//Watcher
 				bind(ICleaner.class).to(Cleaner.class);
@@ -109,6 +119,7 @@ public class Binder {
 				bind(IMediaMetadataHelper.class).to(MediaMetadataHelper.class);
 				bind(IMovieBuilderFactory.class).to(MovieBuilderFactory.class);
 				bind(IMovieIdentifier.class).to(MovieIdentifier.class);
+				bind(IFilenameChecker.class).to(FilenameChecker.class);
 
 				install(
 					new FactoryModuleBuilder()
@@ -126,7 +137,16 @@ public class Binder {
 
 				
 				//Tcp Listener
-				bind(ITcpListener.class).to(TcpListener.class);
+				install(
+					new FactoryModuleBuilder()
+						.implement(ITcpListener.class, TcpListener.class)
+						.build(TcpListenerFactory.class));
+				
+				install(
+					new FactoryModuleBuilder()
+						.implement(IJukeboxRpcServerConnection.class, JukeboxRpcServerConnection.class)
+						.build(JukeboxRpcServerFactory.class));
+				
 
 				//Converter
 				bind(IMediaConverter.class).to(MediaConverter.class);
