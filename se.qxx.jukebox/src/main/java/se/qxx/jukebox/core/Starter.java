@@ -133,7 +133,7 @@ public class Starter implements IStarter {
 				return false;
 			}
 						
-			return true;
+			return checkDatabase();
 		} catch (IOException | JAXBException e1) {
 			e1.printStackTrace();
 		}		
