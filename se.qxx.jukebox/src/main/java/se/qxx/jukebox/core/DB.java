@@ -120,8 +120,12 @@ public class DB implements IDatabase {
 	@Override
 	public List<Movie> searchMoviesByTitle(String searchString, int numberOfResults, int offset, boolean excludeImages, boolean excludeTextData) {
 		List<String> excludedObjects = new ArrayList<String>();
-		excludedObjects.add("media.subs.textdata");
-		excludedObjects.add("image");
+		
+		if (excludeTextData)
+			excludedObjects.add("media.subs.textdata");
+		
+		if (excludeImages)
+			excludedObjects.add("image");
 		
 		return searchByTitle(JukeboxDomain.Movie.getDefaultInstance()
 				, "title"
@@ -139,8 +143,12 @@ public class DB implements IDatabase {
 	public Movie searchMoviesByID(int id, boolean excludeImages, boolean excludeTextData) {
 		try {
 			List<String> excludedObjects = new ArrayList<String>();
-			excludedObjects.add("media.subs.textdata");
-			excludedObjects.add("image");
+			
+			if (excludeTextData)
+				excludedObjects.add("media.subs.textdata");
+			
+			if (excludeImages)
+				excludedObjects.add("image");
 	
 			ProtoDB db = getProtoDBInstance(true);
 	
@@ -189,7 +197,9 @@ public class DB implements IDatabase {
 	public List<Series> searchSeriesByTitle(String searchString, int numberOfResults, int offset, boolean excludeImages) {
 		List<String> excludedObjects = new ArrayList<String>();
 		excludedObjects.add("season"); // exclude underlying seasons
-		excludedObjects.add("image"); // exclude full size image
+		
+		if (excludeImages)
+			excludedObjects.add("image"); // exclude full size image
 		
 		return searchByTitle(JukeboxDomain.Series.getDefaultInstance()
 				, "title"
@@ -346,14 +356,20 @@ public class DB implements IDatabase {
 			try {
 				if (db.getDBType() == DBType.Sqlite) lock.lock();
 
+				List<String> excludedObjects = new ArrayList<String>();
+				excludedObjects.add("season.episode");
+				
+				if (excludeImages) {
+					excludedObjects.add("image");
+					excludedObjects.add("season.image");
+				}
+				
 				List<Series> result = 
 						db.search(SearchOptions.newBuilder(JukeboxDomain.Series.getDefaultInstance()) 
 							.addFieldName("ID") 
 							.addSearchArgument(id) 
 							.addOperator(ProtoDBSearchOperator.Equals)
-							.addExcludedObject("season.episode")
-							.addExcludedObject("image")
-							.addExcludedObject("season.image"));
+							.addAllExcludedObjects(excludedObjects));
 						
 
 					if (result.size() > 0)
@@ -384,22 +400,27 @@ public class DB implements IDatabase {
 			
 			try {
 				if (db.getDBType() == DBType.Sqlite) lock.lock();
+				List<String> excludedObjects = new ArrayList<String>();
+				
+				if (excludeImages) {
+					excludedObjects.add("image");
+					excludedObjects.add("episode.image");
+				}
+				
+				if (excludeTextData)
+					excludedObjects.add("episode.media.subs.textdata");
 
 				List<Season> result = 
 						db.search(SearchOptions.newBuilder(JukeboxDomain.Season.getDefaultInstance()) 
 							.addFieldName("ID") 
 							.addSearchArgument(id) 
 							.addOperator(ProtoDBSearchOperator.Equals)
-							.addExcludedObject("image")
-							.addExcludedObject("episode.image")
-							.addExcludedObject("episode.media.subs.textdata"));
-					
-						
+							.addAllExcludedObjects(excludedObjects));
 
-					if (result.size() > 0)
-						return result.get(0);
-					else
-						return null;
+				if (result.size() > 0)
+					return result.get(0);
+				else
+					return null;
 
 			}
 			finally {
