@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <JukeboxListenerSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="JukeboxSettings.xsd">
   <catalogs>
-    <catalog includeSubdirectories="true" path="/c/media/BitTorrent">
+    <catalog includeSubdirectories="true" path="/media/ultra/BitTorrent">
       <localPaths>
-      	<path player="vlc_main" path="file:///media/ultra/BitTorrent" />
+      	<path player="vlc_main" path="file:///media/ultra/BitTorrent2" />
       	<path player="black_hell_front" path="file:///Z:/BitTorrent" />
       </localPaths>
       <extensions>
@@ -36,7 +36,7 @@
       </extensions>
     </catalog>        
   </catalogs>
-  <subFinders subsPath="/c/media/Subs" threadWaitSeconds="25">
+  <subFinders subsPath="/media/ultra/Subs" threadWaitSeconds="25">
 	<subFinder class="se.qxx.jukebox.subtitles.Subscene" enabled="true">
     	<subFinderSettings>
     		<setting>
@@ -77,7 +77,7 @@
 			</setting>			
     		<setting>
     			<key>url</key>
-    			<value><![CDATA[https://subscene.com/subtitles/release?q=__searchString__]]></value>
+    			<value><![CDATA[https://subscene.com/subtitles/title?q=__searchString__]]></value>
     		</setting>
     	</subFinderSettings>
     </subFinder>    
@@ -132,9 +132,38 @@
   	<log type="file" filename="imdb.log" level="DEBUG" logs="IMDB" />	
   	<log type="file" filename="webserver.log" level="DEBUG" logs="WEBSERVER" />
   	<!-- <log type="file" filename="db.log" level="DEBUG" logs="DB" /> -->
+  	<log type="file" filename="converter.log" level="DEBUG" logs="CONVERTER" />
+  	<log type="file" filename="checker.log" level="DEBUG" logs="CHECKER" />
   </logs>  
   <database>
     <driver>com.mysql.jdbc.Driver</driver>
     <connectionString>jdbc:mysql://192.168.1.120/jukebox?user=jukebox&amp;password=jukebox</connectionString>
   </database>
+  <webServer>
+  	<mimeTypeMap>
+		<extension value="mkv" mimeType="video/mp4" />
+        <extension value="avi" mimeType="video/mp4" />
+        <extension value="mp4" mimeType="video/mp4" />
+        <extension value="vtt" mimeType="text/vtt" />  		
+  	</mimeTypeMap>
+  	<extensionOverrideMap>
+  		<extension value="mkv" override="mp4" />
+  	</extensionOverrideMap>
+  	
+  </webServer>
+  <converter>
+  	<acceptedVideoCodecs>
+  		<codec tag="h264" />
+  		<codec tag="h265" />
+  	</acceptedVideoCodecs>
+  	<acceptedAudioCodecs>
+  		<codec tag="aac" />
+  		<codec tag="mp3" />
+  		<codec tag="vorbis" />
+  		<codec tag="lcpm" />
+  		<codec tag="wav" />
+  		<codec tag="flac" />
+  		<codec tag="opus" />
+  	</acceptedAudioCodecs>
+  </converter>
 </JukeboxListenerSettings>

@@ -11,15 +11,11 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import se.qxx.jukebox.Log;
-import se.qxx.jukebox.Log.LogType;
-import se.qxx.jukebox.domain.JukeboxDomain.Movie;
-import se.qxx.jukebox.domain.JukeboxDomain.Rating;
 import se.qxx.jukebox.domain.MovieOrSeries;
-import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder.SubFinderSettings;
-import se.qxx.jukebox.tools.Util;
+import se.qxx.jukebox.interfaces.ISubFileDownloaderHelper;
+import se.qxx.jukebox.interfaces.ISubFinder;
 
-public class Subscene extends SubFinderBase {
+public class Subscene implements ISubFinder  {
 
 	private final String SETTING_URL = "url";
 	private final String SETTING_SEARCHRESULT_REGEX = "searchResultRegex";
@@ -31,27 +27,26 @@ public class Subscene extends SubFinderBase {
 	private final String SETTING_LISTRESULT_LANGUAGEGROUP = "listResultLanguageGroup";
 	private final String SETTING_DOWNLOAD_REGEX = "downloadUrlRegex";
 	private final String SETTING_DOWNLOAD_URLGROUP = "downloadUrlGroup";
+
+	private ISubFileDownloaderHelper helper;
+
 	
-	
-	public Subscene(SubFinderSettings subFinderSettings) {
-		super(subFinderSettings);
-		this.setClassName("Subscene");
-		this.setLanguage(Language.English);
-	}
-	
-	public Subscene(SubFinderSettings subFinderSettings, int minWaitSeconds, int maxWaitSeconds) {
-		super(subFinderSettings);
-		this.setClassName("Subscene");
-		this.setLanguage(Language.English);
-		this.setMinWaitSeconds(minWaitSeconds);
-		this.setMaxWaitSeconds(maxWaitSeconds);
+	public Subscene(ISubFileDownloaderHelper helper) {
+		this.setHelper(helper);
 	}
 
+	public ISubFileDownloaderHelper getHelper() {
+		return helper;
+	}
+
+	public void setHelper(ISubFileDownloaderHelper helper) {
+		this.helper = helper;
+	}
 
 	@Override
 	public List<SubFile> findSubtitles(
 			MovieOrSeries mos,
-			List<String> languages) {
+			List<Language> languages) {
 		
 		String searchString = getSearchString(mos.getTitle());
 		
@@ -59,7 +54,7 @@ public class Subscene extends SubFinderBase {
 		List<SubFile> listOnTitle = parseSubtitleList(searchString, mos, languages);
 		
 		// if no match found - try searching on title
-		if (!containsMatch(listOnTitle)) {
+		if (!this.getHelper().containsMatch(listOnTitle)) {
 			searchString = getSearchString(FilenameUtils.getBaseName(mos.getMedia().getFilename()));
 			List<SubFile> listOnFilename = parseSubtitleList(searchString, mos, languages);
 			
@@ -73,7 +68,7 @@ public class Subscene extends SubFinderBase {
 	public List<SubFile> parseSubtitleList(
 			String searchString,
 			MovieOrSeries mos,
-			List<String> languages) {
+			List<Language> languages) {
 
 		List<SubFile> files = new ArrayList<SubFile>(); 
 		
@@ -81,18 +76,18 @@ public class Subscene extends SubFinderBase {
 			String url = this.getSetting(SETTING_URL).replaceAll("__searchString__", searchString);
 			String baseUrl = getBaseUrl(url);
 
-			Log.Debug(String.format("%s :: searchUrl :: %s", this.getClassName(), url), LogType.SUBS);
-			String webResult = performSearch(url);
+			this.getHelper().getLog().Debug(String.format("%s :: searchUrl :: %s", this.getClassName(), url));
+			String webResult = getHelper().performSearch(url);
 			
 			//Get the first result 
 			url = getMatchingResult(webResult);
-			Log.Debug(String.format("Matching url :: %s", url), LogType.SUBS);
+			this.getHelper().getLog().Debug(String.format("Matching url :: %s", url));
 			
 			if (!StringUtils.isEmpty(url)) {
 				url = getFullUrl(url, baseUrl);
 				
 				// Get the subfiles from the underlying web result
-				webResult = performSearch(url);
+				webResult = getHelper().performSearch(url);
 			}
 			else {
 				//We could have been redirected directly to the list (!)
@@ -102,7 +97,9 @@ public class Subscene extends SubFinderBase {
 			// Now we have a list of subs. But each download link is hidden one step below.
 			// The list is enough to rate the list at least.
 			if (!StringUtils.isEmpty(webResult)) {
-				files = collectSubFiles(
+				files = this.getHelper().collectSubFiles(
+						this.getClassName(),
+						languages,
 						mos, 
 						webResult, 
 						this.getSetting(SETTING_LISTRESULT_REGEX),
@@ -124,7 +121,7 @@ public class Subscene extends SubFinderBase {
 		// We get an error because listsubs is null
 		listSubs = replaceDownloadLinks(listSubs, baseUrl);
 		
-		return downloadSubs(mos, listSubs);
+		return this.getHelper().downloadSubs(baseUrl, mos, listSubs);
 	}
 	
 	private String getBaseUrl(String url) {
@@ -134,8 +131,7 @@ public class Subscene extends SubFinderBase {
 			fullUrl = new URL(url);
 			result = String.format("%s://%s", fullUrl.getProtocol(), fullUrl.getHost());
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			Log.Error("Illegal url in subfinder", LogType.SUBS);
+			this.getHelper().getLog().Error("Illegal url in subfinder");
 		}
 		
 		return result;
@@ -151,7 +147,7 @@ public class Subscene extends SubFinderBase {
 			
 			String url = getFullUrl(sf.getUrl(), baseUrl);
 			
-			String webResult = performSearch(url);
+			String webResult = this.getHelper().performSearch(url);
 			
 			Pattern p = Pattern.compile(this.getSetting(SETTING_DOWNLOAD_REGEX), Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.UNICODE_CASE | Pattern.UNIX_LINES);
 			Matcher matcher = p.matcher(webResult);
@@ -196,4 +192,14 @@ public class Subscene extends SubFinderBase {
 			return url;
 	}
 
+	@Override
+	public String getClassName() {
+		return "SubScene";
+	}
+
+	
+	private String getSetting(String setting) {
+		return this.getHelper().getSetting("se.qxx.jukebox.subtitles.Subscene", setting);
+	}
+	
 }

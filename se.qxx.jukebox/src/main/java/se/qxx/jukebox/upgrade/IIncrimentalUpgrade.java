@@ -1,6 +1,6 @@
 package se.qxx.jukebox.upgrade;
 
-import se.qxx.jukebox.Version;
+import se.qxx.jukebox.core.Version;
 
 public interface IIncrimentalUpgrade {
 	public Version getThisVersion();

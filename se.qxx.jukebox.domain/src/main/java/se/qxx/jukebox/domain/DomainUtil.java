@@ -17,13 +17,25 @@ public class DomainUtil {
 	}
 	
 	public static Season updateEpisode(Season season, Episode newEpisode) {
-		int episodeIndex = findEpisodeIndex(season, newEpisode.getEpisodeNumber());
+		Season.Builder sb = removeEpisode(season, newEpisode);
+		
+		return sb.addEpisode(newEpisode).build();
+	}
+
+	private static Season.Builder removeEpisode(Season season, Episode newEpisode) {
+		int episodeIndex = findEpisodeIndex(
+			season, 
+			newEpisode.getEpisodeNumber());
+
 		Season.Builder sb = Season.newBuilder(season);
+		
+		if (episodeIndex < 0)
+			episodeIndex = findEpisodeIndexById(season, newEpisode.getID());
 		
 		if (episodeIndex >= 0)
 			sb.removeEpisode(episodeIndex);
 		
-		return sb.addEpisode(newEpisode).build();
+		return sb;
 	}
 	
 	public static int findSeasonIndex(Series s, int season) {
@@ -52,6 +64,18 @@ public class DomainUtil {
 					return i;
 			}
 		}
+
+		
+		return -1;
+	}
+	
+	public static int findEpisodeIndexById(Season sn, int episodeID) {
+		
+		for (int i=0; i<sn.getEpisodeCount();i++) {
+			if (sn.getEpisode(i).getID() == episodeID) {
+				return i;
+			}
+		}
 		
 		return -1;
 	}
@@ -63,4 +87,24 @@ public class DomainUtil {
 		else
 			return null;
 	}
+	
+	public static Season findSeasonByEpisodeId(Series s, int episodeId) {
+		for (int i=0;i < s.getSeasonCount();i++) {
+			for (int j=0;j<s.getSeason(i).getEpisodeCount();j++) {
+				if (s.getSeason(i).getEpisode(j).getID() == episodeId)
+					return s.getSeason(i);
+			}
+		}
+		return null;
+	}
+
+	public static Episode findEpisode(Series s, int season, int episode) {
+		for (int i=0;i < s.getSeasonCount();i++) {
+			if (s.getSeason(i).getSeasonNumber() == season) {
+				return findEpisode(s.getSeason(i), episode);				
+			}
+		}
+		return null;
+	}
+
 }

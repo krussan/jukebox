@@ -20,6 +20,7 @@ if [ "$FILE" != "" ] && [ "$MYSQL_USER" != "" ] && [ "$MYSQL_PASS" != "" ] && [ 
 	 ./dumpTable.sh $FILE $tbl > dump/$tbl.sql
 
          ./importChunks.sh $tbl $MYSQL_HOST $MYSQL_DB $MYSQL_USER $MYSQL_PASS
+         mysql -h $MYSQL_HOST -u $MYSQL_USER --password=$MYSQL_PASS -D $MYSQL_DB -e "DELETE FROM $tbl"
       fi
    done
 else

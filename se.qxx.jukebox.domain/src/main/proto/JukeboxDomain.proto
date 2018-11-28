@@ -29,6 +29,15 @@ enum RequestType {
 	TypeEpisode = 4;
 }
 
+enum MediaConverterState {
+    NotNeeded = 1;
+    Queued = 2;
+    Completed = 3;
+    Converting = 4;
+    Failed = 5;
+}
+
+
 //---------------------------------------------------------------------------------------
 //----------------------------------------------------------------------- Objects
 //---------------------------------------------------------------------------------------
@@ -167,6 +176,9 @@ message Media {
 	optional int32 metaDuration = 5;
 	optional string metaFramerate = 6;
 	repeated Subtitle subs = 7;
+    optional MediaConverterState converterState = 8;
+    optional string convertedFileName = 9;	
+    required bool downloadComplete = 10 [default=false];
 }
 
 //---------------------------------------------------------------------------------------
@@ -191,9 +203,13 @@ message JukeboxRequestListMovies {
 	optional int32 startIndex = 4;
 	optional int32 nrOfItems = 5;
 	optional RequestType requestType = 6;
-	
-	optional int32 seriesID = 7;
-	optional int32 seasonID = 8;
+
+}
+
+message JukeboxRequestGetItem {
+	optional int32 ID = 1;
+	optional bool returnFullSizePictures = 2 [default=true];
+	optional RequestType requestType = 3;
 }
 
 message JukeboxRequestStartMovie {
@@ -242,7 +258,19 @@ message JukeboxFrontSetSubtitle {
 message JukeboxResponseListMovies {
 	repeated Movie movies = 1;
 	repeated Series series = 2;
+	repeated Season season = 3;
+	optional int32 totalMovies = 4;
+	optional int32 totalSeries = 5;
+	optional int32 totalSeasons = 6;
+	optional int32 totalEpisodes = 7;  
 }
+
+message JukeboxResponseGetItem {
+	optional Movie movie = 1;
+	optional Series serie = 2;
+	optional Season season = 3;
+}
+
 
 message JukeboxResponseListPlayers {
 	repeated string hostname = 1;
@@ -256,6 +284,7 @@ message JukeboxResponseStartMovie {
 	repeated Subtitle subtitle = 1;
 	optional string uri = 2;
 	repeated string subtitleUris = 3;
+	optional string mimeType = 4;
 }
 
 message JukeboxResponseTime {
@@ -276,6 +305,7 @@ message JukeboxResponseGetTitle {
 //---------------------------------------------------------------------------------------
 
 service JukeboxService {
+    rpc GetItem (JukeboxRequestGetItem) returns (JukeboxResponseGetItem);
 	rpc ListMovies (JukeboxRequestListMovies) returns (JukeboxResponseListMovies);
 	rpc ListPlayers (Empty) returns (JukeboxResponseListPlayers);
 	rpc StartMovie(JukeboxRequestStartMovie) returns (JukeboxResponseStartMovie);
@@ -291,7 +321,9 @@ service JukeboxService {
 	rpc Blacklist(JukeboxRequestID) returns (Empty);
 	rpc ToggleWatched(JukeboxRequestID) returns (Empty);	
 	rpc ReIdentify(JukeboxRequestID) returns (Empty);
-	
+	rpc ReenlistSubtitles(JukeboxRequestID) returns (Empty);
+	rpc ReenlistMetadata(JukeboxRequestID) returns (Empty);
+
 	rpc ListSubtitles(JukeboxRequestListSubtitles) returns (JukeboxResponseListSubtitles);
 	rpc SetSubtitle(JukeboxRequestSetSubtitle) returns (Empty);
 	

@@ -1,9 +1,9 @@
 package se.qxx.jukebox.domain.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
-import junit.framework.TestCase;
 import se.qxx.jukebox.domain.MovieOrSeries;
 
 public class TestPadLeft {

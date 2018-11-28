@@ -1,5 +1,7 @@
 package se.qxx.jukebox.watcher;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class FileRepresentation {
 
 	private String _path;
@@ -40,5 +42,19 @@ public class FileRepresentation {
 
 	public void setFileSize(long _fileSize) {
 		this._fileSize = _fileSize;
+	}
+	
+	public String getFullPath() {
+		return String.format("%s/%s", this.getPath(), this.getName());
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof FileRepresentation))
+			return false;
+		
+		return StringUtils.equalsIgnoreCase(
+				((FileRepresentation)o).getFullPath(), 
+				this.getFullPath());
 	}
 }

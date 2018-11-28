@@ -3,15 +3,13 @@ package se.qxx.jukebox.tests;
 import java.io.IOException;
 import javax.xml.bind.JAXBException;
 
-import org.apache.commons.lang3.StringUtils;
+import com.google.inject.Injector;
 
-import se.qxx.jukebox.domain.JukeboxDomain;
-import se.qxx.jukebox.domain.JukeboxDomain.Media;
-import se.qxx.jukebox.domain.JukeboxDomain.Series;
-import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
+import se.qxx.jukebox.core.Binder;
+import se.qxx.jukebox.interfaces.IDatabase;
+import se.qxx.jukebox.interfaces.IMkvSubtitleReader;
+import se.qxx.jukebox.interfaces.ISubtitleFileWriter;
 import se.qxx.jukebox.subtitles.MkvSubtitleReader;
-import se.qxx.jukebox.tools.Util;
-import se.qxx.protodb.ProtoDB;
 
 public class TestExtractMkv {
 
@@ -19,9 +17,12 @@ public class TestExtractMkv {
 		if (args.length > 1) {
 			
 			try {
+				Injector injector = Binder.setupBindings(args);
+				IMkvSubtitleReader subtitleReader = injector.getInstance(IMkvSubtitleReader.class);
+
 				String filename = args[0];
 				String outputPath = args[1];
-				MkvSubtitleReader.extractSubs(filename, outputPath);
+				subtitleReader.extractSubs(filename, outputPath);
 				
 			} catch (Exception e) {
 				System.out.println("failed to get information from database");

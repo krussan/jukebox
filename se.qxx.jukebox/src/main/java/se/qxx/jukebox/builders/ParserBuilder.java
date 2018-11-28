@@ -11,16 +11,26 @@ import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.MovieOrSeries;
-import se.qxx.jukebox.settings.parser.ParserSettings;
+import se.qxx.jukebox.interfaces.IJukeboxLogger;
+import se.qxx.jukebox.interfaces.ISettings;
+import se.qxx.jukebox.settings.parser.Parser;
+import se.qxx.jukebox.settings.parser.Parser.Keywords;
 import se.qxx.jukebox.settings.parser.ParserType;
 import se.qxx.jukebox.settings.parser.WordType;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class ParserBuilder extends MovieBuilder {
+
+	public ParserBuilder(ISettings settings, IJukeboxLogger log) {
+		super(settings, log);
+	}
 
 	@Override
 	public MovieOrSeries extract(String filepath, String filename) {
 		return extractMovieParser(filepath, filename).build();
+	}
+	
+	private Parser getParser() {
+		return this.getSettings().getParser();
 	}
 	
 	public ParserMovie extractMovieParser(String filepath, String filename) {
@@ -29,7 +39,11 @@ public class ParserBuilder extends MovieBuilder {
 		
 		String fileNameToMatch = FilenameUtils.getBaseName(md.getFilename());
 		
-		String stringToProcess = removeParenthesis(fileNameToMatch);
+		this.getLog().Info(String.format("Running ParserBuilder on %s", fileNameToMatch));
+				
+		String stringToProcess = removeParenthesis(
+				removeInitialParenthesis(fileNameToMatch));
+		
 		String[] tokens = StringUtils.split(stringToProcess, " _.-");
 		
 		// assume movie name always comes first. The next token after that identifies the end of filename.
@@ -96,7 +110,7 @@ public class ParserBuilder extends MovieBuilder {
 		
 		// if we get to an unknown token we switch to titlemode
 		if (pt.equals(ParserType.UNKNOWN) && !titleMode)
-			titleMode = !titleMode;
+			titleMode = true;
 		
 		// if we are in titlemode and we get to non unknown token
 		// we push the title. All other unkown tokens will be ignored 
@@ -139,7 +153,7 @@ public class ParserBuilder extends MovieBuilder {
 			pm.addMovieNameToken(resultingToken);
 			break;
 		default:
-			throw new NotImplementedException();
+			break;
 		}
 
 		if (recursiveCount > 1) {
@@ -244,27 +258,28 @@ public class ParserBuilder extends MovieBuilder {
 	}
 
 	private List<WordType> getWordList(ParserType pt) {
+		Keywords keyWords = this.getParser().getKeywords();
 		switch (pt) {
 		case EPISODE:
-			return ParserSettings.getInstance().getSettings().getKeywords().getEpisode().getWord();	
+			return keyWords.getEpisode().getWord();	
 		case FORMAT:
-			return ParserSettings.getInstance().getSettings().getKeywords().getFormat().getWord();
+			return keyWords.getFormat().getWord();
 		case LANGUAGE:
-			return ParserSettings.getInstance().getSettings().getKeywords().getLanguage().getWord();
+			return keyWords.getLanguage().getWord();
 		case OTHER:
-			return ParserSettings.getInstance().getSettings().getKeywords().getOther().getWord();
+			return keyWords.getOther().getWord();
 		case PART:
-			return ParserSettings.getInstance().getSettings().getKeywords().getParts().getWord();
+			return keyWords.getParts().getWord();
 		case SEASON:
-			return ParserSettings.getInstance().getSettings().getKeywords().getSeason().getWord();
+			return keyWords.getSeason().getWord();
 		case SOUND:
-			return ParserSettings.getInstance().getSettings().getKeywords().getSound().getWord();
+			return keyWords.getSound().getWord();
 		case TYPE:
-			return ParserSettings.getInstance().getSettings().getKeywords().getType().getWord();
+			return keyWords.getType().getWord();
 		case YEAR:
-			return ParserSettings.getInstance().getSettings().getKeywords().getYear().getWord();
+			return keyWords.getYear().getWord();
 		case GROUP:
-			return ParserSettings.getInstance().getSettings().getKeywords().getGroups().getWord();		
+			return keyWords.getGroups().getWord();		
 		default:
 			return new ArrayList<WordType>();
 		}
@@ -280,5 +295,19 @@ public class ParserBuilder extends MovieBuilder {
 			ret = StringUtils.replace(ret, searchString, " ");
 
 		return ret;
+	}
+
+	private String removeInitialParenthesis(String string) {
+		String ret = handleInitialParenthesis(string, "\\[", "\\]");
+		ret = handleInitialParenthesis(ret, "\\(", "\\)");
+		return ret;
+	}
+
+	private String handleInitialParenthesis(String string, String start, String end) {
+		String pattern = String.format("^%s.*?%s", start, end);
+		Pattern p = Pattern.compile(pattern);
+		Matcher m = p.matcher(string);
+	
+		return m.replaceAll("");
 	}	
 }

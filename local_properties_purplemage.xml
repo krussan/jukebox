@@ -1,7 +1,0 @@
-<project name="local_properties">
-	<property name="jukebox.xjc.comm" value="/usr/bin/xjc" />
-	<property name="jukebox.protoc.comm" value="/usr/local/bin/protoc" />
-	<property name="jukebox.key.file" value="/home/chris/.ssh/id_rsa" />
-</project>
-
-

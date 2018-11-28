@@ -6,155 +6,205 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.TreeSet;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.name.Named;
+
+import se.qxx.jukebox.concurrent.JukeboxThread;
+import se.qxx.jukebox.core.Log.LogType;
+import se.qxx.jukebox.factories.LoggerFactory;
+import se.qxx.jukebox.interfaces.IExecutor;
+import se.qxx.jukebox.interfaces.IFileCreatedHandler;
+import se.qxx.jukebox.interfaces.IFileSystemWatcher;
 import se.qxx.jukebox.tools.Util;
 
-public class FileSystemWatcher implements Runnable {
+public class FileSystemWatcher extends JukeboxThread implements IFileSystemWatcher {
 
-	private Boolean isRunning = false;
+	TreeSet<FileRepresentation> currentRepresentation ;
 	
-	  private static Comparator<FileRepresentation> comparator = new Comparator<FileRepresentation>() {
+	private static Comparator<FileRepresentation> comparator = new Comparator<FileRepresentation>() {
 
-	    public int compare(FileRepresentation fr0, FileRepresentation fr1) {
-	      return fr0.getName().compareTo(fr1.getName());
-	    }
-
-	  };
-	  
-	  protected File directory;
-	  protected List<INotifyClient> clients;
-
-	  private TreeSet<FileRepresentation> files;
-	  private long sleepTime = 10000;
-
-	  private ExtensionFileFilter _filter;
-
-  	  private boolean watchCreated = false;
-  	  private boolean watchModified = false;
-  	  
-	  public FileSystemWatcher(String directoryName, ExtensionFileFilter filter, boolean watchCreated, boolean watchModified) {
-	    File directoryToWatch = new File(directoryName);
-	    /*if (!directoryToWatch.isDirectory()) {
-	      throw new RuntimeException("It needs to be a directory");
-	    }*/
-	    
-	    this.directory = directoryToWatch;
-	    this._filter = filter;
-	    this.files = getCurrentRepresentation();
-	    this.clients = new ArrayList<INotifyClient>();
-	    
-	    this.watchCreated = watchCreated;
-	    this.watchModified = watchModified;
-	  }
-
-	  public void setSleepTime(long sleepTime) {
-	    this.sleepTime = sleepTime;
-	  }
-
-	  public long getSleepTime() {
-	    return this.sleepTime;
-	  }
-
-	  public void registerClient(INotifyClient client) {
-	    clients.add(client);
-	  }
-
-	  public java.util.TreeSet<FileRepresentation> getCurrentRepresentation() {
-		  TreeSet<FileRepresentation> rep = new TreeSet<FileRepresentation>(comparator);
-		  
-		  List<File> list = Util.getFileListing(directory, _filter);
-		  //List<File> list = Util.getFileListingWorkAround(directory, _filter);
-		  
-		  for (File f : list) {
-			  rep.add(new FileRepresentation(f.getParent(), f.getName(), f.lastModified(), f.length()));
-		  }
-		  
-		  return rep;		
-	  }
-
-
-
-	  private class FileChangedThread implements Runnable {
-
-		  private INotifyClient client;
-		  private FileRepresentation file;
-		  private boolean isCreated = false;
-		  private boolean isModified = false;
-		  
-		  public FileChangedThread(INotifyClient client, FileRepresentation f, boolean isCreated, boolean isModified) {
-			  this.client = client;
-			  this.file = f;
-			  this.isCreated = isCreated;
-			  this.isModified = isModified;
-		  }
-		  
-		@Override
-		public void run() {
-			if (this.isCreated)
-				client.fileCreated(this.file);
-			
-			if (this.isModified)
-				client.fileModified(this.file);
+		public int compare(FileRepresentation fr0, FileRepresentation fr1) {
+			return fr0.getName().compareTo(fr1.getName());
 		}
-		  
-	  }
-	  
-	  public void notifyCreated(FileRepresentation f) {
-	    for (INotifyClient client : clients) {
-	    	Thread t = new Thread(new FileChangedThread(client, f, true, false));
-	    	t.start();
-	    }
-	  }
-	  
-	  public void notifyModified(FileRepresentation f) {
-	    for (INotifyClient client : clients) {
-	    	Thread t = new Thread(new FileChangedThread(client, f, false, true));
-	    	t.start();
-	    }
-	  }
-  
-	  public void run() {
-		  isRunning = true;
-		  TreeSet<FileRepresentation> currentRepresentation = getCurrentRepresentation();
-		  
-		 for (FileRepresentation f : currentRepresentation) {
-			 notifyCreated(f);
-		 }	
-		  
-	    while (isRunning) {
-	      currentRepresentation = getCurrentRepresentation();
-	      
-	      for (FileRepresentation f : currentRepresentation) {
-	    	  if (!files.contains(f) && this.watchCreated)
-	    		  notifyCreated(f);
 
-	    	  for (FileRepresentation o : files) {
-	    		  if (o.getName() == f.getName()) {
-	    			  if (o.getLastModified() != f.getLastModified() && this.watchModified) {
-	    				  notifyModified(f);
-	    			  }
-	    		  }
-	    	  }
-	    	  
-	      }
+	};
 
-	      files = currentRepresentation;
-	      
-	      try {
-	        Thread.sleep(getSleepTime());
-	      } catch (InterruptedException e) {
-	        return;
-	      }
-	    }
+	protected File directory;
 
-	  }
-	  
-	  public void startListening() {
-		  Thread t = new Thread(this);
-		  t.start();
-	  }
-	  
-	  public void stopListening() {
-		  isRunning = false;
-	  }
+	public File getDirectory() {
+		return directory;
 	}
 
+	public void setDirectory(File directory) {
+		this.directory = directory;
+	}
+
+	protected List<IFileCreatedHandler> clients = new ArrayList<IFileCreatedHandler>();
+
+	public List<IFileCreatedHandler> getClients() {
+		return clients;
+	}
+
+	private TreeSet<FileRepresentation> files;
+
+	public TreeSet<FileRepresentation> getFiles() {
+		return files;
+	}
+
+	public void setFiles(TreeSet<FileRepresentation> files) {
+		this.files = files;
+	}
+
+	private ExtensionFileFilter filter;
+	private boolean watchCreated = false;
+
+	public boolean isWatchCreated() {
+		return watchCreated;
+	}
+
+	public void setWatchCreated(boolean watchCreated) {
+		this.watchCreated = watchCreated;
+	}
+
+	private boolean watchModified = false;
+
+	public boolean isWatchModified() {
+		return watchModified;
+	}
+
+	public void setWatchModified(boolean watchModified) {
+		this.watchModified = watchModified;
+	}
+
+	private boolean recurse = false;
+
+	@Inject
+	public FileSystemWatcher(LoggerFactory loggerFactory,
+			IExecutor executor,
+			@Assisted("Name") String name, 
+			@Assisted("Directory") String directoryName, 
+			@Assisted ExtensionFileFilter filter, 
+			@Assisted("WatchCreated") boolean watchCreated,
+			@Assisted("WatchModified") boolean watchModified, 
+			@Assisted("Recurse") boolean recurse, 
+			@Assisted int waitTime) {
+		super(name, waitTime, loggerFactory.create(LogType.FIND), executor);
+		
+		File directoryToWatch = new File(directoryName);
+
+		this.setDirectory(directoryToWatch);
+		this.setFilter(filter);
+
+		this.setFiles(getCurrentRepresentation());
+
+		this.setWatchCreated(watchCreated);
+		this.setWatchModified(watchModified);
+		this.setRecurse(recurse);
+	}
+
+	public boolean isRecurse() {
+		return recurse;
+	}
+
+	public void setRecurse(boolean recurse) {
+		this.recurse = recurse;
+	}
+
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.watcher.IFileSystemWatcher#registerClient(se.qxx.jukebox.watcher.IFileCreatedHandler)
+	 */
+	@Override
+	public void registerClient(IFileCreatedHandler client) {
+		clients.add(client);
+	}
+
+	public java.util.TreeSet<FileRepresentation> getCurrentRepresentation() {
+		TreeSet<FileRepresentation> rep = new TreeSet<FileRepresentation>(comparator);
+
+		List<File> list = Util.getFileListing(
+			this.getDirectory(), 
+			this.getFilter(), 
+			this.isRecurse());
+
+		for (File f : list) {
+			rep.add(
+				new FileRepresentation(
+					f.getParent(),
+					f.getName(), 
+					f.lastModified(), 
+					f.length()));
+		}
+
+		return rep;
+	}
+
+	public void notifyCreated(FileRepresentation f) {
+		for (IFileCreatedHandler client : this.getClients()) {
+			Thread t = new Thread(new FileChangedThread(client, f, true, false));
+			t.start();
+		}
+	}
+
+	public void notifyModified(FileRepresentation f) {
+		for (IFileCreatedHandler client : clients) {
+			Thread t = new Thread(new FileChangedThread(client, f, false, true));
+			t.start();
+		}
+	}
+
+	@Override
+	public void initialize() {
+		currentRepresentation = getCurrentRepresentation();
+
+		for (FileRepresentation f : currentRepresentation) {
+			notifyCreated(f);
+			if (!this.isRunning())
+				break;
+		}		
+	}
+	
+	@Override
+	public void execute() {
+		currentRepresentation = getCurrentRepresentation();
+
+		for (FileRepresentation f : currentRepresentation) {
+			if (!fileExistsInCurrentRepresentation(f)) {				
+				notifyCreated(f);
+			}
+
+			if (!this.isRunning())
+				break;
+		}
+
+		files = currentRepresentation;		
+	}
+
+	private boolean fileExistsInCurrentRepresentation(FileRepresentation f) {
+		for (FileRepresentation o : files) {
+			if (o.getName().equals(f.getName())) {
+				if (o.getLastModified() != f.getLastModified() && this.isWatchModified()) {
+					notifyModified(f);
+				}
+				
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
+	public ExtensionFileFilter getFilter() {
+		return filter;
+	}
+
+	public void setFilter(ExtensionFileFilter filter) {
+		this.filter = filter;
+	}
+
+	@Override
+	public Runnable getRunnable() {
+		return this;
+	}
+
+}

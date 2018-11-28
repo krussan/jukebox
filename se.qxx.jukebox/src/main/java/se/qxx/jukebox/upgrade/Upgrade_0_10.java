@@ -1,8 +1,14 @@
 package se.qxx.jukebox.upgrade;
 
-import se.qxx.jukebox.Version;
+import se.qxx.jukebox.core.Version;
+import se.qxx.jukebox.interfaces.IDatabase;
+import se.qxx.jukebox.interfaces.IUpgrader;
 
-public class Upgrade_0_10 implements IIncrimentalUpgrade {
+public class Upgrade_0_10 extends UpgraderBase implements IIncrimentalUpgrade {
+
+	public Upgrade_0_10(IDatabase database) {
+		super(database);
+	}
 
 	static final String[] DbScripts = {
 		"ALTER TABLE Movie ADD isTvEpisode bool NOT NULL DEFAULT 0",
@@ -30,7 +36,7 @@ public class Upgrade_0_10 implements IIncrimentalUpgrade {
 
 	@Override
 	public void performUpgrade() throws UpgradeFailedException {
-		Upgrader.runDatabasescripts(DbScripts);
+		runDatabasescripts(DbScripts);
 
 	}
 }
