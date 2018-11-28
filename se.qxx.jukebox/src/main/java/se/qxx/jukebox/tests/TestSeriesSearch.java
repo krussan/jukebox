@@ -56,7 +56,7 @@ public class TestSeriesSearch {
 			if (StringUtils.isNumeric(seriesNameOrId))
 				s = protoDB.get(Integer.parseInt(seriesNameOrId), JukeboxDomain.Series.getDefaultInstance());
 			else {
-				List<Series> result = db.searchSeriesByTitle(seriesNameOrId, 15, 0);
+				List<Series> result = db.searchSeriesByTitle(seriesNameOrId, 15, 0, true);
 				
 				if (result.size() > 0)
 					s = result.get(0);

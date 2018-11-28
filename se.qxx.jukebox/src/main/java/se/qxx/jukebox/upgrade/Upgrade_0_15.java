@@ -47,7 +47,7 @@ public class Upgrade_0_15 extends UpgraderBase implements IIncrimentalUpgrade {
 		try {
 	
 			// create thumbnails for each movie,series,season,episode
-			List<Movie> movies = this.getDatabase().searchMoviesByTitle(StringUtils.EMPTY);
+			List<Movie> movies = this.getDatabase().searchMoviesByTitle(StringUtils.EMPTY, false, false);
 			for (Movie m: movies) {
 				if (!m.getImage().isEmpty()){
 					Movie m_new = Movie.newBuilder(m).setThumbnail(Util.getScaledImage(m.getImage())).build();
@@ -55,7 +55,7 @@ public class Upgrade_0_15 extends UpgraderBase implements IIncrimentalUpgrade {
 				}
 			}
 			
-			List<Series> series = this.getDatabase().searchSeriesByTitle(StringUtils.EMPTY);
+			List<Series> series = this.getDatabase().searchSeriesByTitle(StringUtils.EMPTY, false);
 			for (Series s : series) {
 				for (Season sn : s.getSeasonList()) {					
 					for (Episode e : sn.getEpisodeList()) {
