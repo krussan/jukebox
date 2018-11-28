@@ -85,6 +85,16 @@
             android:contentDescription="@string/descConverted"
             android:src="@drawable/ic_conversion_completed" />
 
+        <ImageView
+            android:id="@+id/imgConverting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@id/bottomtext"
+            android:layout_toRightOf="@id/imgWatched"
+            android:contentDescription="@string/descConverted"
+            android:src="@drawable/ic_converting" />
+
     </RelativeLayout>
    
 </LinearLayout>

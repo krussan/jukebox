@@ -51,8 +51,8 @@
             android:id="@+id/imgConverted"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
             android:layout_below="@id/txtDescription"
+            android:layout_alignParentBottom="true"
             android:contentDescription="@string/descConverted"
             android:src="@drawable/ic_conversion_completed" />
 
@@ -75,6 +75,16 @@
             android:layout_alignParentBottom="true"
             android:contentDescription="@string/descDownloading"
             android:src="@drawable/ic_download_completed" />
+
+        <ImageView
+            android:id="@+id/imgConverting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/txtDescription"
+            android:layout_toRightOf="@id/imgWatched"
+            android:layout_alignParentBottom="true"
+            android:contentDescription="@string/descConverted"
+            android:src="@drawable/ic_converting" />
 
         <ImageButton
             android:id="@+id/btnPlayEpisode"

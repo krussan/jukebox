@@ -150,6 +150,7 @@ public abstract class GenericListLayoutAdapter<T> extends BaseAdapter {
     protected void hideDownloadAndCompletedIcons(View v) {
 	    v.findViewById(R.id.imgWatched).setVisibility(View.GONE);
         v.findViewById(R.id.imgConverted).setVisibility(View.GONE);
+        v.findViewById(R.id.imgConverting).setVisibility(View.GONE);
         v.findViewById(R.id.imgSub).setVisibility(View.GONE);
         v.findViewById(R.id.imgDownloading).setVisibility(View.GONE);
     }
@@ -161,17 +162,32 @@ public abstract class GenericListLayoutAdapter<T> extends BaseAdapter {
         // If all media has a meta duration then hide the download icon
         boolean downloadFinished = true;
         boolean conversionFinished = true;
+        boolean converting = false;
+
+        JukeboxDomain.MediaConverterState state = JukeboxDomain.MediaConverterState.Completed;
+
         for (Media md : mediaList) {
             if (!md.getDownloadComplete())
                 downloadFinished = false;
+
+            if (md.getConverterState() == JukeboxDomain.MediaConverterState.Converting || md.getConverterState() == JukeboxDomain.MediaConverterState.Queued)
+                converting = true;
+
             if (md.getConverterState() != JukeboxDomain.MediaConverterState.Completed && md.getConverterState() != JukeboxDomain.MediaConverterState.NotNeeded)
                 conversionFinished = false;
-
         }
+
         if (downloadFinished)
             v.findViewById(R.id.imgDownloading).setVisibility(View.GONE);
-        if (!conversionFinished)
+
+        if (!conversionFinished || converting) {
             v.findViewById(R.id.imgConverted).setVisibility(View.GONE);
+        }
+
+        if (!converting) {
+            v.findViewById(R.id.imgConverting).setVisibility(View.GONE);
+        }
+
     }
 
     protected void setupSubtitles(View v, List<Subtitle> subtitleList) {

@@ -62,5 +62,6 @@
         <item>Toggling watched status...</item>
         <item>Marking object for re-identify...</item>
         <item>Triggering subtitle downloader...</item>
+        <item>Starting converter...</item>
     </string-array>
 </resources>

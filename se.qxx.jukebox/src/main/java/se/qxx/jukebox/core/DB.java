@@ -904,12 +904,14 @@ public class DB implements IDatabase {
 	public  void forceConversion(int mediaID) {
 		try {
 			ProtoDB db = getProtoDBInstance();
-			
+			Connection conn = db.getConnection();
+
 			try {
 				if (db.getDBType() == DBType.Sqlite) lock.lock();
+				PreparedStatement prep = conn.prepareStatement("UPDATE Media SET _converterstate_ID = 6 WHERE ID = ?");
+				prep.setInt(1, mediaID);
 
-				String sql = String.format("UPDATE Media SET _converterstate_ID = 6 WHERE IN = ?", mediaID);
-				db.executeNonQuery(sql);
+				prep.execute();
 			}
 			finally {
 				if (db.getDBType() == DBType.Sqlite) lock.unlock();
