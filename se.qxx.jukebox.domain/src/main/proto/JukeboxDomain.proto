@@ -38,6 +38,12 @@ enum MediaConverterState {
     Forced = 6;
 }
 
+enum RequestFilter {
+    Subs = 1;
+    Images = 2;
+    Thumbnails = 3;
+    SubsTextdata = 4;
+}
 
 //---------------------------------------------------------------------------------------
 //----------------------------------------------------------------------- Objects
@@ -204,6 +210,7 @@ message JukeboxRequestListMovies {
 	optional int32 startIndex = 4;
 	optional int32 nrOfItems = 5;
 	optional RequestType requestType = 6;
+	repeated RequestFilter filter = 7;
 
 }
 
