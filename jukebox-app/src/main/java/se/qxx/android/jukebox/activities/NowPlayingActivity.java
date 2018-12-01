@@ -110,30 +110,25 @@ public class NowPlayingActivity
             sb.setOnSeekBarChangeListener(this);
             sb.setVisibility(View.VISIBLE);
 
+
             if (this.getMode() == ViewMode.Episode) {
                 Episode ep = getEpisode();
 
                 if (ep != null) {
-                    this.setMediaList(ep.getMediaList());
-                    this.setCurrentMediaIndex(0);
-                    initializeView(
-                            String.format("S%sE%s - %s",
-                                    this.getSeasonNumber(),
-                                    ep.getEpisodeNumber(),
-                                    ep.getTitle()),
-                            ep.getImage());
-
-                    castProvider.initialize(ep);
+                    comm.getItem(ep.getID(), JukeboxDomain.RequestType.TypeEpisode, false, true,
+                            response -> {
+                                initializeView(JukeboxDomain.RequestType.TypeEpisode, response);
+                            });
                 }
             }
             else {
                 Movie m = getMovie();
 
                 if (m != null) {
-                    this.setMediaList(m.getMediaList());
-                    this.setCurrentMediaIndex(0);
-                    initializeView(m.getTitle(), m.getImage());
-                    castProvider.initialize(m);
+                    comm.getItem(m.getID(), JukeboxDomain.RequestType.TypeMovie, false, true,
+                        response -> {
+                            initializeView(JukeboxDomain.RequestType.TypeMovie, response);
+                        });
                 }
             }
 
@@ -145,6 +140,36 @@ public class NowPlayingActivity
 
         } catch (Exception e) {
             Logger.Log().e("Unable to initialize NowPlayingActivity", e);
+        }
+    }
+
+    private void initializeView(JukeboxDomain.RequestType requestType, JukeboxDomain.JukeboxResponseGetItem response) {
+
+        if (requestType == JukeboxDomain.RequestType.TypeEpisode) {
+            Episode ep = response.getEpisode();
+
+            if (ep != null) {
+                this.setMediaList(ep.getMediaList());
+                this.setCurrentMediaIndex(0);
+                initializeView(
+                        String.format("S%sE%s - %s",
+                                this.getSeasonNumber(),
+                                ep.getEpisodeNumber(),
+                                ep.getTitle()),
+                        ep.getImage());
+
+                castProvider.initialize(ep);
+            }
+        }
+        else if (requestType == JukeboxDomain.RequestType.TypeMovie) {
+            Movie m = response.getMovie();
+
+            if (m!= null) {
+                this.setMediaList(m.getMediaList());
+                this.setCurrentMediaIndex(0);
+                initializeView(m.getTitle(), m.getImage());
+                castProvider.initialize(m);
+            }
         }
     }
 

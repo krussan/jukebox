@@ -73,7 +73,7 @@ public class Connector {
     }
 */
 
-	public void connect(final int offset, final int nrOfItems, ViewMode modelType, final int seriesID, int seasonID) {
+	public void connect(final int offset, final int nrOfItems, ViewMode modelType, final int seriesID, int seasonID, boolean excludeImages, boolean excludeTextdata) {
 		final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
 				JukeboxSettings.get().getServerIpAddress(),
 				JukeboxSettings.get().getServerPort());
@@ -86,6 +86,8 @@ public class Connector {
 				jh.listMovies("",
 						nrOfItems,
 						offset,
+						excludeImages,
+						excludeTextdata,
 						response -> {
                             //TODO: if repsonse is null probably the server is down..
                             if (response != null) {
@@ -102,6 +104,8 @@ public class Connector {
 			    jh.listSeries("",
                         nrOfItems,
                         offset,
+						excludeImages,
+						excludeTextdata,
 						response -> {
                             //TODO: if repsonse is null probably the server is down..
                             if (response != null) {

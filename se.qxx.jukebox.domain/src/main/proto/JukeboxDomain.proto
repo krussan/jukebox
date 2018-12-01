@@ -353,3 +353,4 @@ service JukeboxFrontService {
 	rpc isPlaying(Empty) returns (JukeboxResponseIsPlaying);
 	rpc GetTitle(Empty) returns (JukeboxResponseGetTitle);
 }
+*

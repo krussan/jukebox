@@ -198,11 +198,11 @@ public class ListActivity extends AppCompatActivity implements
 	}
 
     private void loadMoreData(int offset, int seriesID) {
-        connector.connect(offset, NR_OF_ITEMS, this.getMode(), seriesID, -1);
+        connector.connect(offset, NR_OF_ITEMS, this.getMode(), seriesID, -1, true, true);
     }
 
     private void loadMoreData(int offset, int seriesID, int seasonID) {
-        connector.connect(offset, NR_OF_ITEMS, this.getMode(), seriesID, seasonID);
+        connector.connect(offset, NR_OF_ITEMS, this.getMode(), seriesID, seasonID, true, true);
     }
 
     @Override

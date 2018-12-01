@@ -33,9 +33,6 @@
             android:name=".activities.SubSelectActivity"
             android:theme="@style/Theme.AppCompat" />
         <activity
-            android:name=".activities.FlipperActivity"
-            android:theme="@style/Theme.AppCompat" />
-        <activity
             android:name=".activities.NowPlayingActivity"
             android:theme="@style/Theme.AppCompat" />
         <activity

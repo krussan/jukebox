@@ -47,15 +47,16 @@ public class JukeboxConnectionHandler {
 	//--------------------------------------------------------------------------------------------------- RPC Calls
 	//----------------------------------------------------------------------------------------------------------------
 
-	public void getItem(final int id, final RequestType requestType,final RpcCallback<JukeboxDomain.JukeboxResponseGetItem> callback) {
+	public void getItem(final int id, final RequestType requestType, boolean excludeImages, boolean excludeTextData, final RpcCallback<JukeboxDomain.JukeboxResponseGetItem> callback) {
 		final RpcController controller = new SocketRpcController();
+		List<JukeboxDomain.RequestFilter> filter = getFilter(excludeImages, excludeTextData);
 
 		Thread t = new Thread(() -> {
 			JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
 			JukeboxDomain.JukeboxRequestGetItem request = JukeboxDomain.JukeboxRequestGetItem.newBuilder()
 					.setRequestType(requestType)
 					.setID(id)
-					.setReturnFullSizePictures(false)
+					.addAllFilter(filter)
 					.build();
 
 			service.getItem(controller, request, response -> {

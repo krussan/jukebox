@@ -11,13 +11,11 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import se.qxx.android.jukebox.R;
-import se.qxx.android.jukebox.activities.FlipperActivity;
 import se.qxx.android.jukebox.activities.JukeboxPreferenceActivity;
 import se.qxx.android.jukebox.activities.ListActivity;
 import se.qxx.android.jukebox.activities.MovieDetailActivity;
@@ -31,7 +29,6 @@ import se.qxx.android.jukebox.comm.Connector;
 import se.qxx.android.jukebox.dialogs.ActionDialog;
 import se.qxx.android.jukebox.model.Constants;
 import se.qxx.android.jukebox.model.Model;
-import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
@@ -203,7 +200,9 @@ public class JukeboxFragment extends ListFragment implements
                 Constants.NR_OF_ITEMS,
                 this.getMode(),
                 -1,
-                -1);
+                -1,
+                true,
+                true);
     }
 
 
