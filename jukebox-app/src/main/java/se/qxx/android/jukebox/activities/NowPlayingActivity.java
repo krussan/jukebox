@@ -1,7 +1,5 @@
 package se.qxx.android.jukebox.activities;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
@@ -15,7 +13,6 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.ProgressBar;
@@ -107,10 +104,8 @@ public class NowPlayingActivity
     }
 
     private boolean isLocalPlayer() {
-        if (castProvider == null)
-            return true;
+        return castProvider == null || castProvider.usesMediaController();
 
-        return castProvider.usesMediaController();
     }
 
     private void initializeView() {
@@ -121,9 +116,7 @@ public class NowPlayingActivity
             sb.setVisibility(View.VISIBLE);
 
             comm.getItem(this.getID(), this.getRequestType(), false, true,
-                response -> {
-                    initializeView(this.getRequestType(), response);
-                });
+                response -> initializeView(this.getRequestType(), response));
 
 
         } catch (Exception e) {
@@ -155,20 +148,19 @@ public class NowPlayingActivity
             Movie m = response.getMovie();
 
             this.setImdbUrl(m.getImdbUrl());
-            if (m!= null) {
-                this.setMediaList(m.getMediaList());
-                this.setCurrentMediaIndex(0);
-                initializeView(m.getTitle(), m.getImage());
-                castProvider.initialize(m);
-            }
+            this.setMediaList(m.getMediaList());
+            this.setCurrentMediaIndex(0);
+            initializeView(m.getTitle(), m.getImage());
+            castProvider.initialize(m);
         }
 
-        initializeMediaController();
-        initializeSessionManager();
+        runOnUiThread(() -> {
+            initializeMediaController();
+            initializeSessionManager();
 
-        if (!screenChange)
-            startMedia();
-
+            if (!screenChange)
+                startMedia();
+        });
     }
 
     private void startMedia() {
@@ -199,8 +191,6 @@ public class NowPlayingActivity
     }
 
     private void initializeMediaController() {
-
-        SurfaceView sv = findViewById(R.id.surfaceview);
         boolean surfaceViewVisible = isLocalPlayer();
         setVisibility(surfaceViewVisible);
 
@@ -260,16 +250,18 @@ public class NowPlayingActivity
         return holder;
     }
 
-    private void initializeView(String title, ByteString image) {
-        View rootView = GUITools.getRootView(this);
+    private void initializeView(final String title, final ByteString image) {
+        runOnUiThread(() -> {
+            View rootView = GUITools.getRootView(this);
 
-        if (!image.isEmpty()) {
-            Bitmap bm = GUITools.getBitmapFromByteArray(image.toByteArray());
-            Bitmap scaledImage = GUITools.scaleImage(300, bm, this);
-            GUITools.setImageOnImageView(R.id.imgNowPlaying, scaledImage, rootView);
-        }
+            if (!image.isEmpty()) {
+                Bitmap bm = GUITools.getBitmapFromByteArray(image.toByteArray());
+                Bitmap scaledImage = GUITools.scaleImage(300, bm, this);
+                GUITools.setImageOnImageView(R.id.imgNowPlaying, scaledImage, rootView);
+            }
 
-        GUITools.setTextOnTextview(R.id.lblNowPlayingTitle, title, rootView);
+            GUITools.setTextOnTextview(R.id.lblNowPlayingTitle, title, rootView);
+        });
 
     }
 
@@ -466,11 +458,6 @@ public class NowPlayingActivity
 
     //endregion
 
-    public void startLocalVideo(final int movieId, final String title, final String movieUrl, final List<String> subtitleUris, final List<JukeboxDomain.Subtitle> subs) {
-        MediaPlayer mediaPlayer = MediaPlayer.create(this, Uri.parse(movieUrl));
-        mediaPlayer.start();
-    }
-
 
     /***
      * Handles request complete from JukeboxResponseListener
@@ -478,21 +465,14 @@ public class NowPlayingActivity
      */
     public void onRequestComplete(final JukeboxConnectionMessage message) {
         if (!message.result()) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(NowPlayingActivity.this,
-                            "Failed :: " + message.getMessage(),
-                            Toast.LENGTH_LONG).show();
-                }
-            });
+            runOnUiThread(() -> Toast.makeText(NowPlayingActivity.this,
+                    "Failed :: " + message.getMessage(),
+                    Toast.LENGTH_LONG).show());
         }
 
 
         loadingVisible = false;
-        runOnUiThread(() -> {
-            setVisibility(isLocalPlayer());
-        });
+        runOnUiThread(() -> setVisibility(isLocalPlayer()));
 
     }
 
@@ -504,11 +484,7 @@ public class NowPlayingActivity
             mcontroller.setAnchorView(findViewById(R.id.surfaceview));
             mcontroller.setEnabled(true);
 
-            new Handler().post(new Runnable() {
-                public void run() {
-                    mcontroller.show();
-                }
-            });
+            new Handler().post(() -> mcontroller.show());
         }
     }
 

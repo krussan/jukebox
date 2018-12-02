@@ -24,15 +24,18 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         setContentView(R.layout.movieitem);
 
+        initializeView();
     }
 
-    private void initializeView(View v) {
+    private void initializeView() {
         JukeboxDomain.Movie m = this.getMovie();
+        View v = findViewById(android.R.id.content);
 
         if (m != null) {
             if (!m.getThumbnail().isEmpty()) {
                 Bitmap bm = GUITools.getBitmapFromByteArray(m.getThumbnail().toByteArray());
-                Bitmap scaledImage = GUITools.scaleImage(120, bm, v.getContext());
+                Bitmap scaledImage = GUITools.scaleImage(120, bm, getApplicationContext());
+
                 GUITools.setImageOnImageView(R.id.imageView1, scaledImage, v);
             }
 

@@ -108,5 +108,35 @@
         android:paddingBottom="4dp"
 	/>
 
+	<LinearLayout
+		android:id="@+id/linearLayout1"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true"
+		android:gravity="center_horizontal" >
+
+		<ImageButton
+			android:id="@+id/btnPlay"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:background="@null"
+			android:src="@drawable/btnplay"
+			android:onClick="onButtonClicked"
+			/>
+
+		<ImageButton
+			android:id="@+id/btnViewInfo"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:background="@null"
+			android:hapticFeedbackEnabled="true"
+			android:src="@drawable/infoabout"
+			android:contentDescription="@string/descViewInfo"
+			android:onClick="onButtonClicked"
+
+			/>
+
+	</LinearLayout>
+
     
 </RelativeLayout>
