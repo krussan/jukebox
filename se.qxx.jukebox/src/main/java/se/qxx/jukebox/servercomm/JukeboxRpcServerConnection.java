@@ -752,6 +752,13 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 					excludeImages,
 					excludeTextData));
 			break;
+		case TypeEpisode:
+			b.setEpisode(
+				this.getDatabase().searchEpisodeById(
+					request.getID(),
+					excludeImages,
+					excludeTextData));
+						
 		default:
 			break;
 		}

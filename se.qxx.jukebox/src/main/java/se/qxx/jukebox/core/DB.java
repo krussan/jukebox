@@ -435,6 +435,47 @@ public class DB implements IDatabase {
 		return null;
 	}
 
+	@Override
+	public Episode searchEpisodeById(int id, boolean excludeImages, boolean excludeTextData) {
+		try {
+			ProtoDB db = getProtoDBInstance();
+			
+			try {
+				if (db.getDBType() == DBType.Sqlite) lock.lock();
+				List<String> excludedObjects = new ArrayList<String>();
+				
+				if (excludeImages) {
+					excludedObjects.add("image");
+				}
+				
+				if (excludeTextData)
+					excludedObjects.add("media.subs.textdata");
+
+				List<Episode> result = 
+						db.search(SearchOptions.newBuilder(JukeboxDomain.Episode.getDefaultInstance()) 
+							.addFieldName("ID") 
+							.addSearchArgument(id) 
+							.addOperator(ProtoDBSearchOperator.Equals)
+							.addAllExcludedObjects(excludedObjects));
+
+				if (result.size() > 0)
+					return result.get(0);
+				else
+					return null;
+
+			}
+			finally {
+				if (db.getDBType() == DBType.Sqlite) lock.unlock();
+				
+			}
+			
+		} catch (Exception e) {
+			this.getMainLog().Error("failed to get information from database", e);
+		}
+		
+		return null;
+	}
+
 	//---------------------------------------------------------------------------------------
 	//------------------------------------------------------------------------ Get
 	//---------------------------------------------------------------------------------------

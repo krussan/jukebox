@@ -42,6 +42,8 @@ public interface IDatabase {
 
 	Season searchSeasonById(int id, boolean excludeImages, boolean excludeTextData);
 
+	Episode searchEpisodeById(int id, boolean excludeImages, boolean excludeTextData);
+
 	Movie getMovie(int id);
 
 	Series getSeries(int id);
