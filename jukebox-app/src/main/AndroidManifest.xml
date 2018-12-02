@@ -33,7 +33,7 @@
             android:name=".activities.SubSelectActivity"
             android:theme="@style/Theme.AppCompat" />
         <activity
-            android:name=".activities.NowPlayingActivity"
+            android:name=".activities.NowPlayingRemoteActivity"
             android:theme="@style/Theme.AppCompat" />
         <activity
             android:name=".activities.SeriesActivity"

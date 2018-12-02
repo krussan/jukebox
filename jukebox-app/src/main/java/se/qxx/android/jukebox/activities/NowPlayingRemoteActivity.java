@@ -35,6 +35,7 @@ import java.util.List;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.cast.CastProvider;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
+import se.qxx.android.jukebox.media.VideoControllerView;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.jukebox.widgets.Seeker;
 import se.qxx.android.jukebox.widgets.SeekerListener;
@@ -48,13 +49,14 @@ import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 
-public class NowPlayingActivity
+public class NowPlayingRemoteActivity
     extends AppCompatActivity
         implements OnSeekBarChangeListener, SeekerListener, JukeboxResponseListener, MediaPlayer.OnPreparedListener, SessionManagerListener<Session> {
 
     private Seeker seeker;
     private boolean isManualSeeking = false;
     private JukeboxConnectionHandler comm;
+    private VideoControllerView controller;
 
     private CastProvider castProvider;
     MediaController mcontroller ;
@@ -89,7 +91,7 @@ public class NowPlayingActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.nowplaying);
+        setContentView(R.layout.nowplaying_local);
 
         comm = new JukeboxConnectionHandler(
                 JukeboxSettings.get().getServerIpAddress(),
@@ -120,7 +122,7 @@ public class NowPlayingActivity
 
 
         } catch (Exception e) {
-            Logger.Log().e("Unable to initialize NowPlayingActivity", e);
+            Logger.Log().e("Unable to initialize NowPlayingRemoteActivity", e);
         }
     }
 
@@ -465,7 +467,7 @@ public class NowPlayingActivity
      */
     public void onRequestComplete(final JukeboxConnectionMessage message) {
         if (!message.result()) {
-            runOnUiThread(() -> Toast.makeText(NowPlayingActivity.this,
+            runOnUiThread(() -> Toast.makeText(NowPlayingRemoteActivity.this,
                     "Failed :: " + message.getMessage(),
                     Toast.LENGTH_LONG).show());
         }
