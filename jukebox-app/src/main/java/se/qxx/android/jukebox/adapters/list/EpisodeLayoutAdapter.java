@@ -90,7 +90,7 @@ public class EpisodeLayoutAdapter extends GenericListLayoutAdapter<Episode> impl
                 case R.id.btnPlayEpisode:
                     Intent iPlay = new Intent(this.getContext(), NowPlayingActivity.class);
                     iPlay.putExtra("mode", ViewMode.Episode);
-                    iPlay.putExtra("episode", e);
+                    iPlay.putExtra("ID", e.getID());
                     iPlay.putExtra("seasonNumber", getSeasonNumber());
 
                     this.getContext().startActivity(iPlay);

@@ -75,7 +75,8 @@ public class MovieDetailActivity extends AppCompatActivity {
         switch (id) {
             case R.id.btnPlay:
                 Intent iPlay = new Intent(this, NowPlayingActivity.class);
-                iPlay.putExtra("movie", this.getMovie());
+                iPlay.putExtra("mode", ViewMode.Movie);
+                iPlay.putExtra("ID", this.getMovie().getID());
                 startActivity(iPlay);
                 break;
             case R.id.btnViewInfo:

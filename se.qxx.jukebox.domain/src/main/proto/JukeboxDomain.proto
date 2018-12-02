@@ -278,6 +278,7 @@ message JukeboxResponseGetItem {
 	optional Movie movie = 1;
 	optional Series serie = 2;
 	optional Season season = 3;
+	optional Episode episode = 4;
 }
 
 
@@ -353,4 +354,3 @@ service JukeboxFrontService {
 	rpc isPlaying(Empty) returns (JukeboxResponseIsPlaying);
 	rpc GetTitle(Empty) returns (JukeboxResponseGetTitle);
 }
-*

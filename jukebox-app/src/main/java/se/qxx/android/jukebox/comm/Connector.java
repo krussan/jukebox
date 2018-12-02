@@ -117,7 +117,7 @@ public class Connector {
                         });
 			}
             else if (modelType == ViewMode.Season) {
-				jh.getItem(seriesID, JukeboxDomain.RequestType.TypeSeries,
+				jh.getItem(seriesID, JukeboxDomain.RequestType.TypeSeries, excludeImages, excludeTextdata,
                         response -> {
                             //TODO: if repsonse is null probably the server is down..
                             if (response != null) {
@@ -132,7 +132,7 @@ public class Connector {
                         });
             }
 			else if (modelType == ViewMode.Episode) {
-			    jh.getItem(seasonID, JukeboxDomain.RequestType.TypeSeason,
+			    jh.getItem(seasonID, JukeboxDomain.RequestType.TypeSeason, excludeImages, excludeTextdata,
                         response -> {
 			                if (response != null) {
                                 this.getCallback().handleEpisodesUpdated(response.getSeason().getEpisodeList(), response.getSeason().getEpisodeCount());

@@ -31,6 +31,8 @@ import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.google.protobuf.ByteString;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.List;
 
 import se.qxx.android.jukebox.R;
@@ -61,6 +63,7 @@ public class NowPlayingActivity
     MediaController mcontroller ;
     private List<JukeboxDomain.Media> mediaList;
     private int currentMediaIndex = 0;
+    private String imdbUrl = StringUtils.EMPTY;
 
     private boolean loadingVisible = false;
     private static boolean screenChange = false;
@@ -74,6 +77,13 @@ public class NowPlayingActivity
             }
         }
         return ViewMode.Movie;
+    }
+
+    private JukeboxDomain.RequestType getRequestType() {
+        if (this.getMode() == ViewMode.Episode)
+            return JukeboxDomain.RequestType.TypeEpisode;
+        else
+            return JukeboxDomain.RequestType.TypeMovie;
     }
 
 
@@ -110,33 +120,11 @@ public class NowPlayingActivity
             sb.setOnSeekBarChangeListener(this);
             sb.setVisibility(View.VISIBLE);
 
+            comm.getItem(this.getID(), this.getRequestType(), false, true,
+                response -> {
+                    initializeView(this.getRequestType(), response);
+                });
 
-            if (this.getMode() == ViewMode.Episode) {
-                Episode ep = getEpisode();
-
-                if (ep != null) {
-                    comm.getItem(ep.getID(), JukeboxDomain.RequestType.TypeEpisode, false, true,
-                            response -> {
-                                initializeView(JukeboxDomain.RequestType.TypeEpisode, response);
-                            });
-                }
-            }
-            else {
-                Movie m = getMovie();
-
-                if (m != null) {
-                    comm.getItem(m.getID(), JukeboxDomain.RequestType.TypeMovie, false, true,
-                        response -> {
-                            initializeView(JukeboxDomain.RequestType.TypeMovie, response);
-                        });
-                }
-            }
-
-            initializeMediaController();
-            initializeSessionManager();
-
-            if (!screenChange )
-                startMedia();
 
         } catch (Exception e) {
             Logger.Log().e("Unable to initialize NowPlayingActivity", e);
@@ -151,6 +139,8 @@ public class NowPlayingActivity
             if (ep != null) {
                 this.setMediaList(ep.getMediaList());
                 this.setCurrentMediaIndex(0);
+                this.setImdbUrl(ep.getImdbUrl());
+
                 initializeView(
                         String.format("S%sE%s - %s",
                                 this.getSeasonNumber(),
@@ -164,6 +154,7 @@ public class NowPlayingActivity
         else if (requestType == JukeboxDomain.RequestType.TypeMovie) {
             Movie m = response.getMovie();
 
+            this.setImdbUrl(m.getImdbUrl());
             if (m!= null) {
                 this.setMediaList(m.getMediaList());
                 this.setCurrentMediaIndex(0);
@@ -171,6 +162,13 @@ public class NowPlayingActivity
                 castProvider.initialize(m);
             }
         }
+
+        initializeMediaController();
+        initializeSessionManager();
+
+        if (!screenChange)
+            startMedia();
+
     }
 
     private void startMedia() {
@@ -409,17 +407,13 @@ public class NowPlayingActivity
                 this.finish();
                 break;
             case R.id.btnViewInfo:
-                Movie m = getMovie();
-
-                if (m != null) {
-                    String url = m.getImdbUrl();
-                    if (url != null && url.length() > 0) {
-                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                        startActivity(browserIntent);
-                    } else {
-                        Toast.makeText(this, "No IMDB link available", Toast.LENGTH_SHORT).show();
-                    }
+                if (StringUtils.isNotEmpty(this.getImdbUrl())) {
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(this.getImdbUrl()));
+                    startActivity(browserIntent);
+                } else {
+                    Toast.makeText(this, "No IMDB link available", Toast.LENGTH_SHORT).show();
                 }
+
                 break;
             case R.id.btnSubSelection:
                 Intent i = new Intent(this, SubSelectActivity.class);
@@ -598,14 +592,6 @@ public class NowPlayingActivity
         CastContext.getSharedInstance().getSessionManager().removeSessionManagerListener(this);
     }
 
-    private Movie getMovie() {
-        Bundle b = getIntent().getExtras();
-        if (b != null)
-            return (Movie)b.getSerializable("movie");
-
-        return null;
-    }
-
     private int getSeasonNumber() {
         Bundle b = getIntent().getExtras();
         if (b != null)
@@ -614,12 +600,12 @@ public class NowPlayingActivity
         return 0;
     }
 
-    private Episode getEpisode() {
+    private int getID() {
         Bundle b = getIntent().getExtras();
         if (b != null)
-            return (Episode)b.getSerializable("episode");
+            return b.getInt("ID");
 
-        return null;
+        return -1;
     }
 
     public List<JukeboxDomain.Media> getMediaList() {
@@ -636,5 +622,13 @@ public class NowPlayingActivity
 
     public void setCurrentMediaIndex(int currentMediaIndex) {
         this.currentMediaIndex = currentMediaIndex;
+    }
+
+    public String getImdbUrl() {
+        return imdbUrl;
+    }
+
+    public void setImdbUrl(String imdbUrl) {
+        this.imdbUrl = imdbUrl;
     }
 }
