@@ -96,7 +96,7 @@ class LocalCastProvider extends CastProvider implements MediaPlayer.OnBufferingU
     @Override
     public void seekTo(int position) {
         if (mediaPlayer != null) {
-            mediaPlayer.seekTo(position * 1000);
+            mediaPlayer.seekTo(position);
         }
     }
 
@@ -154,6 +154,12 @@ class LocalCastProvider extends CastProvider implements MediaPlayer.OnBufferingU
     @Override
     public void surfaceCreated(SurfaceView view) {
         surfaceView = view;
+    }
+
+    @Override
+    public void surfaceDestroyed() {
+        if (mediaPlayer != null)
+            mediaPlayer.setDisplay(null);
     }
 
     public void setViewLayoutRatio() {

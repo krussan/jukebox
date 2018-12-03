@@ -189,4 +189,9 @@ class JukeboxCastProvider extends CastProvider {
 
     }
 
+    @Override
+    public void surfaceDestroyed() {
+
+    }
+
 }

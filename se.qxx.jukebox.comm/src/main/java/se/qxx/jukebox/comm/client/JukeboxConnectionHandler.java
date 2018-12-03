@@ -530,7 +530,7 @@ public class JukeboxConnectionHandler {
 		JukeboxConnectionMessage msg = checkResponse(controller);
 		
 		if (this.getListener() != null)
-			this.listener.onRequestComplete(msg);		
+			this.getListener().onRequestComplete(msg);
 	}
 
 

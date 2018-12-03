@@ -1,12 +1,11 @@
 package se.qxx.android.jukebox.activities.fragments;
 
+import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -51,6 +50,14 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
             return b.getInt("seasonNumber");
 
         return 0;
+    }
+
+    protected boolean getScreenChanged() {
+        Bundle b = getArguments();
+        if (b != null)
+            return b.getBoolean("screenChanged");
+
+        return false;
     }
 
     public List<JukeboxDomain.Media> getMediaList() {
@@ -104,7 +111,7 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
 
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         this.setConnectionHandler(
@@ -117,38 +124,8 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
 
     }
 
-    protected void setVisibility(View v, boolean surfaceViewVisible) {
-        SurfaceView sv = v.findViewById(R.id.surfaceview);
-
-        SeekBar sb = v.findViewById(R.id.seekBarDuration);
-        LinearLayout linearLayout2 = v.findViewById(R.id.linearLayout2);
-        LinearLayout linearLayout1 = v.findViewById(R.id.linearLayout1);
-        LinearLayout linearLayoutButtons1 = v.findViewById(R.id.linearLayoutButtons1);
-        TextView txtSeekIndicator = v.findViewById(R.id.txtSeekIndicator);
-        ProgressBar spinner = v.findViewById(R.id.spinner);
-
-        boolean boolLoadingVisible = this.getLoadingVisible();
-
-        int standardControlsMode = surfaceViewVisible || boolLoadingVisible ? View.GONE : View.VISIBLE;
-        int mediaControllerMode = !surfaceViewVisible || boolLoadingVisible ? View.GONE : View.VISIBLE;
-        int spinnerVisible = boolLoadingVisible ? View.VISIBLE : View.GONE;
-
-        sb.setVisibility(standardControlsMode);
-        linearLayout1.setVisibility(standardControlsMode);
-        linearLayout2.setVisibility(standardControlsMode);
-        linearLayoutButtons1.setVisibility(standardControlsMode);
-        txtSeekIndicator.setVisibility(standardControlsMode);
-
-        sv.setVisibility(mediaControllerMode);
-
-        spinner.setVisibility(spinnerVisible);
-
-    }
-
-    protected void initializeView(final String title, final ByteString image) {
+    protected void initializeView(View v, final String title, final ByteString image) {
         getActivity().runOnUiThread(() -> {
-            View v = GUITools.getRootView(getContext());
-
             if (!image.isEmpty()) {
                 Bitmap bm = GUITools.getBitmapFromByteArray(image.toByteArray());
                 Bitmap scaledImage = GUITools.scaleImage(300, bm, getContext());
@@ -161,15 +138,13 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
     }
 
 
-    protected void initializeCastProvider(MediaPlayer.OnPreparedListener preparedListener, SeekerListener seekerListener) {
-        SurfaceHolder holder = getSurfaceHolder();
-
+    protected void initializeCastProvider(View v, MediaPlayer.OnPreparedListener preparedListener, SeekerListener seekerListener, SurfaceHolder surfaceHolder) {
         castProvider = CastProvider.getCaster(
                 this.getActivity(),
                 this.getConnectionHandler(),
                 null,
                 seekerListener,
-                holder,
+                surfaceHolder,
                 preparedListener);
     }
 
@@ -182,31 +157,10 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
         }
 
 
-        loadingVisible = false;
-        getActivity().runOnUiThread(() -> setVisibility(getView(), isLocalPlayer()));
+        this.setLoadingVisible(false);
+        getActivity().runOnUiThread(() -> setVisibility(getView()));
     }
 
-    private SurfaceHolder getSurfaceHolder() {
-        final SurfaceView view = getView().findViewById(R.id.surfaceview);
-        SurfaceHolder holder = view.getHolder();
-        holder.addCallback(new SurfaceHolder.Callback() {
-            @Override
-            public void surfaceCreated(SurfaceHolder surfaceHolder) {
-                castProvider.surfaceCreated(view);
-            }
-
-            @Override
-            public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-
-            }
-        });
-        return holder;
-    }
 
     private ViewMode getMode() {
         Intent i = getActivity().getIntent();
@@ -237,7 +191,7 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
         return -1;
     }
 
-    private void initializeView(JukeboxDomain.RequestType requestType, JukeboxDomain.JukeboxResponseGetItem response) {
+    protected void initializeView(View v, JukeboxDomain.RequestType requestType, JukeboxDomain.JukeboxResponseGetItem response) {
 
         if (requestType == JukeboxDomain.RequestType.TypeEpisode) {
             JukeboxDomain.Episode ep = response.getEpisode();
@@ -247,7 +201,7 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
                 this.setCurrentMediaIndex(0);
                 this.setImdbUrl(ep.getImdbUrl());
 
-                initializeView(
+                initializeView(v,
                         String.format("S%sE%s - %s",
                                 this.getSeasonNumber(),
                                 ep.getEpisodeNumber(),
@@ -263,7 +217,7 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
             this.setImdbUrl(m.getImdbUrl());
             this.setMediaList(m.getMediaList());
             this.setCurrentMediaIndex(0);
-            initializeView(m.getTitle(), m.getImage());
+            initializeView(v, m.getTitle(), m.getImage());
             castProvider.initialize(m);
         }
 
@@ -271,14 +225,51 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
 
     protected void startMedia() {
         loadingVisible = true;
-        setVisibility(isLocalPlayer());
+        getActivity().runOnUiThread(() -> setVisibility(getView()));
 
         castProvider.startMovie();
     }
 
 
+    public static Fragment newInstance(boolean isLocalPlayer, boolean screenChanged) {
+        Bundle b = new Bundle();
+        Fragment fm = null;
+        if (isLocalPlayer)
+            fm = new LocalPlayerFragment();
+        else
+            fm = new RemotePlayerFragment();
+
+        b.putBoolean("screenChanged", screenChanged);
+
+        fm.setArguments(b);
+
+        return fm;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        getConnectionHandler().getItem(
+                this.getID(),
+                this.getRequestType(),
+                false,
+                true,
+                response -> {
+                    initializeView(getView(), this.getRequestType(), response);
+                    onGetItemCompleted();
+
+                    getActivity().runOnUiThread(() -> {
+                        setVisibility(getView());
+                    });
+
+                    if (!this.getScreenChanged())
+                        startMedia();
+                });
+    }
 
 
-    public abstract boolean isLocalPlayer();
+    public abstract void setVisibility(View v);
+    public abstract void onGetItemCompleted();
 
 }
