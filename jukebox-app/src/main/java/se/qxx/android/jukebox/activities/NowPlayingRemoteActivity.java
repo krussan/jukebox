@@ -51,7 +51,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 
 public class NowPlayingRemoteActivity
     extends AppCompatActivity
-        implements OnSeekBarChangeListener, SeekerListener, JukeboxResponseListener, MediaPlayer.OnPreparedListener, SessionManagerListener<Session> {
+        implements OnSeekBarChangeListener, SeekerListener, JukeboxResponseListener, SessionManagerListener<Session> {
 
     private Seeker seeker;
     private boolean isManualSeeking = false;
@@ -59,12 +59,7 @@ public class NowPlayingRemoteActivity
     private VideoControllerView controller;
 
     private CastProvider castProvider;
-    MediaController mcontroller ;
-    private List<JukeboxDomain.Media> mediaList;
-    private int currentMediaIndex = 0;
-    private String imdbUrl = StringUtils.EMPTY;
 
-    private boolean loadingVisible = false;
     private static boolean screenChange = false;
 
     private ViewMode getMode() {
@@ -78,12 +73,6 @@ public class NowPlayingRemoteActivity
         return ViewMode.Movie;
     }
 
-    private JukeboxDomain.RequestType getRequestType() {
-        if (this.getMode() == ViewMode.Episode)
-            return JukeboxDomain.RequestType.TypeEpisode;
-        else
-            return JukeboxDomain.RequestType.TypeMovie;
-    }
 
 
     //region --Initialization--
@@ -93,13 +82,6 @@ public class NowPlayingRemoteActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.nowplaying_local);
 
-        comm = new JukeboxConnectionHandler(
-                JukeboxSettings.get().getServerIpAddress(),
-                JukeboxSettings.get().getServerPort());
-
-        comm.setListener(this);
-
-        initializeCastProvider();
         initializeView();
 
         screenChange = false;
@@ -107,165 +89,15 @@ public class NowPlayingRemoteActivity
 
     private boolean isLocalPlayer() {
         return castProvider == null || castProvider.usesMediaController();
-
     }
 
     private void initializeView() {
-        try {
-
-            SeekBar sb = findViewById(R.id.seekBarDuration);
-            sb.setOnSeekBarChangeListener(this);
-            sb.setVisibility(View.VISIBLE);
-
-            comm.getItem(this.getID(), this.getRequestType(), false, true,
-                response -> initializeView(this.getRequestType(), response));
-
-
-        } catch (Exception e) {
-            Logger.Log().e("Unable to initialize NowPlayingRemoteActivity", e);
-        }
     }
 
-    private void initializeView(JukeboxDomain.RequestType requestType, JukeboxDomain.JukeboxResponseGetItem response) {
-
-        if (requestType == JukeboxDomain.RequestType.TypeEpisode) {
-            Episode ep = response.getEpisode();
-
-            if (ep != null) {
-                this.setMediaList(ep.getMediaList());
-                this.setCurrentMediaIndex(0);
-                this.setImdbUrl(ep.getImdbUrl());
-
-                initializeView(
-                        String.format("S%sE%s - %s",
-                                this.getSeasonNumber(),
-                                ep.getEpisodeNumber(),
-                                ep.getTitle()),
-                        ep.getImage());
-
-                castProvider.initialize(ep);
-            }
-        }
-        else if (requestType == JukeboxDomain.RequestType.TypeMovie) {
-            Movie m = response.getMovie();
-
-            this.setImdbUrl(m.getImdbUrl());
-            this.setMediaList(m.getMediaList());
-            this.setCurrentMediaIndex(0);
-            initializeView(m.getTitle(), m.getImage());
-            castProvider.initialize(m);
-        }
-
-        runOnUiThread(() -> {
-            initializeMediaController();
-            initializeSessionManager();
-
-            if (!screenChange)
-                startMedia();
-        });
-    }
-
-    private void startMedia() {
-        loadingVisible = true;
-        setVisibility(isLocalPlayer());
-
-        castProvider.startMovie();
-    }
-
-    private void initializeCastProvider() {
-        SurfaceHolder holder = getSurfaceHolder();
-
-        castProvider = CastProvider.getCaster(
-                this,
-                this.comm,
-                null,
-                this,
-                holder,
-                this);
-    }
-
-    private void initializeSessionManager() {
-        SessionManager sessionManager = CastContext.getSharedInstance().getSessionManager();
-
-        if (sessionManager != null) {
-            sessionManager.addSessionManagerListener(this);
-        }
-    }
-
-    private void initializeMediaController() {
-        boolean surfaceViewVisible = isLocalPlayer();
-        setVisibility(surfaceViewVisible);
-
-        if (surfaceViewVisible) {
-            mcontroller = new MediaController(this);
-            mcontroller.setMediaPlayer(castProvider);
-        }
-    }
-
-    private void setVisibility(boolean surfaceViewVisible) {
-        SurfaceView sv = findViewById(R.id.surfaceview);
-
-        SeekBar sb = findViewById(R.id.seekBarDuration);
-        LinearLayout linearLayout2 = findViewById(R.id.linearLayout2);
-        LinearLayout linearLayout1 = findViewById(R.id.linearLayout1);
-        LinearLayout linearLayoutButtons1 = findViewById(R.id.linearLayoutButtons1);
-        TextView txtSeekIndicator = findViewById(R.id.txtSeekIndicator);
-        ProgressBar spinner = findViewById(R.id.spinner);
-
-        int standardControlsMode = surfaceViewVisible || loadingVisible ? View.GONE : View.VISIBLE;
-        int mediaControllerMode = !surfaceViewVisible || loadingVisible ? View.GONE : View.VISIBLE;
-        int spinnerVisible = loadingVisible ? View.VISIBLE : View.GONE;
-
-        sb.setVisibility(standardControlsMode);
-        linearLayout1.setVisibility(standardControlsMode);
-        linearLayout2.setVisibility(standardControlsMode);
-        linearLayoutButtons1.setVisibility(standardControlsMode);
-        txtSeekIndicator.setVisibility(standardControlsMode);
-
-        sv.setVisibility(mediaControllerMode);
-
-        spinner.setVisibility(spinnerVisible);
 
 
-    }
 
-    @NonNull
-    private SurfaceHolder getSurfaceHolder() {
-        final SurfaceView view = findViewById(R.id.surfaceview);
-        SurfaceHolder holder = view.getHolder();
-        holder.addCallback(new SurfaceHolder.Callback() {
-            @Override
-            public void surfaceCreated(SurfaceHolder surfaceHolder) {
-                castProvider.surfaceCreated(view);
-            }
 
-            @Override
-            public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-
-            }
-        });
-        return holder;
-    }
-
-    private void initializeView(final String title, final ByteString image) {
-        runOnUiThread(() -> {
-            View rootView = GUITools.getRootView(this);
-
-            if (!image.isEmpty()) {
-                Bitmap bm = GUITools.getBitmapFromByteArray(image.toByteArray());
-                Bitmap scaledImage = GUITools.scaleImage(300, bm, this);
-                GUITools.setImageOnImageView(R.id.imgNowPlaying, scaledImage, rootView);
-            }
-
-            GUITools.setTextOnTextview(R.id.lblNowPlayingTitle, title, rootView);
-        });
-
-    }
 
     //endregion
 
@@ -301,81 +133,6 @@ public class NowPlayingRemoteActivity
 
     //region --SEEKBAR--
 
-    @Override
-    public void onProgressChanged(SeekBar seekBar, int progress,
-                                  boolean fromUser) {
-
-        if (this.isManualSeeking)
-            updateSeekbarText(progress, seekBar.getMax());
-    }
-
-    private void updateSeekbarText(long progress, long duration) {
-        final TextView tv = findViewById(R.id.txtSeekIndicator);
-
-        runOnUiThread(new UpdateSeekIndicator(progress, duration, tv));
-    }
-
-    @Override
-    public void onStartTrackingTouch(SeekBar seekBar) {
-        this.isManualSeeking = true;
-    }
-
-    @Override
-    public void onStopTrackingTouch(SeekBar seekBar) {
-        int seconds = seekBar.getProgress();
-
-        Logger.Log().d("Request --- Seek");
-        castProvider.seekTo(seconds);
-
-        this.isManualSeeking = false;
-    }
-
-    @Override
-    public void updateSeeker(final long seconds, final long duration) {
-        final TextView tv = findViewById(R.id.txtSeekIndicator);
-        final SeekBar seekBar = findViewById(R.id.seekBarDuration);
-
-        final long actualDuration = duration == 0 ? seekBar.getMax() : duration;
-
-        if (!this.isManualSeeking)
-            runOnUiThread(new UpdateSeekIndicator(seconds, actualDuration, tv, seekBar));
-
-    }
-
-    @Override
-    public void increaseSeeker(int advanceSeconds) {
-        final TextView tv = findViewById(R.id.txtSeekIndicator);
-        final SeekBar seekBar = findViewById(R.id.seekBarDuration);
-        int seconds = seekBar.getProgress();
-
-        if (!this.isManualSeeking)
-            runOnUiThread(new UpdateSeekIndicator(seconds + advanceSeconds, seekBar.getMax(), tv, seekBar));
-    }
-
-    @Override
-    public void setDuration(int seconds) {
-        SeekBar sb = findViewById(R.id.seekBarDuration);
-        if (sb != null && sb.getMax() != seconds)
-            sb.setMax(seconds);
-    }
-
-    @Override
-    public void initializeSeeker() {
-        seeker = new Seeker(this);
-    }
-
-    @Override
-    public void startSeekerTimer() {
-        seeker.start();
-    }
-
-    @Override
-    public void stopSeekerTimer() {
-        seeker.stop();
-    }
-
-
-    //endregion
 
     //region --BUTTONS--
 
@@ -478,17 +235,6 @@ public class NowPlayingRemoteActivity
 
     }
 
-    @Override
-    public void onPrepared(MediaPlayer mediaPlayer) {
-        if (isLocalPlayer()) {
-            mcontroller.setMediaPlayer(castProvider);
-
-            mcontroller.setAnchorView(findViewById(R.id.surfaceview));
-            mcontroller.setEnabled(true);
-
-            new Handler().post(() -> mcontroller.show());
-        }
-    }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -576,14 +322,6 @@ public class NowPlayingRemoteActivity
             return b.getInt("seasonNumber");
 
         return 0;
-    }
-
-    private int getID() {
-        Bundle b = getIntent().getExtras();
-        if (b != null)
-            return b.getInt("ID");
-
-        return -1;
     }
 
     public List<JukeboxDomain.Media> getMediaList() {
