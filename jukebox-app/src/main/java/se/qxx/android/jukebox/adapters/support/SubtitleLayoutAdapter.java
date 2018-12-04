@@ -1,16 +1,5 @@
 package se.qxx.android.jukebox.adapters.support;
 
-import se.qxx.android.jukebox.activities.IncludeSubtitleRating;
-import se.qxx.android.jukebox.R;
-import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
-import se.qxx.android.jukebox.dialogs.JukeboxConnectionProgressDialog;
-import se.qxx.android.jukebox.model.Model;
-import se.qxx.android.jukebox.settings.JukeboxSettings;
-import se.qxx.android.tools.Logger;
-import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
-import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
-import se.qxx.jukebox.domain.Sorter;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +10,15 @@ import android.widget.BaseAdapter;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 
 import java.util.List;
+
+import se.qxx.android.jukebox.R;
+import se.qxx.android.jukebox.activities.IncludeSubtitleRating;
+import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
+import se.qxx.android.jukebox.settings.JukeboxSettings;
+import se.qxx.android.tools.Logger;
+import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
+import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
+import se.qxx.jukebox.domain.Sorter;
 
 public class SubtitleLayoutAdapter extends BaseAdapter implements AdapterView.OnItemClickListener {
 

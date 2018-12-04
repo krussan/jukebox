@@ -5,16 +5,11 @@ import android.content.Context;
 import android.view.View;
 import android.widget.Toast;
 
-import com.google.protobuf.RpcCallback;
-
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.ViewMode;
 import se.qxx.android.jukebox.dialogs.JukeboxConnectionProgressDialog;
-import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
@@ -79,8 +74,6 @@ public class Connector {
 				JukeboxSettings.get().getServerPort());
 
 		try {
-			Model.get().setLoading(true);
-
 			if (modelType == ViewMode.Movie) {
 				Logger.Log().d("Listing movies");
 				jh.listMovies("",
@@ -91,13 +84,8 @@ public class Connector {
 						response -> {
                             //TODO: if repsonse is null probably the server is down..
                             if (response != null) {
-                                //Model.get().clearMovies(); //Dont clear movies when doing partial load
                                 this.getCallback().handleMoviesUpdated(response.getMoviesList(), response.getTotalMovies());
-                                Model.get().setInitialized(true);
                             }
-
-                            Model.get().setLoading(false);
-
                         });
 			}
 			else if (modelType == ViewMode.Series) {
@@ -110,10 +98,7 @@ public class Connector {
                             //TODO: if repsonse is null probably the server is down..
                             if (response != null) {
                                 this.getCallback().handleSeriesUpdated(response.getSeriesList(), response.getTotalSeries());
-                                Model.get().setInitialized(true);
                             }
-
-                            Model.get().setLoading(false);
                         });
 			}
             else if (modelType == ViewMode.Season) {
@@ -125,10 +110,7 @@ public class Connector {
 										response.getSerie().getSeasonList(),
 										response.getSerie().getSeasonCount());
 
-                                Model.get().setInitialized(true);
                             }
-
-                            Model.get().setLoading(false);
                         });
             }
 			else if (modelType == ViewMode.Episode) {
@@ -136,8 +118,6 @@ public class Connector {
                         response -> {
 			                if (response != null) {
                                 this.getCallback().handleEpisodesUpdated(response.getSeason().getEpisodeList(), response.getSeason().getEpisodeCount());
-
-                                Model.get().setInitialized(true);
                             }
                         });
 			}
@@ -145,8 +125,6 @@ public class Connector {
 		} catch (Exception e) {
 
 		}
-
-		Model.get().setLoading(false);
 	}
 
 	

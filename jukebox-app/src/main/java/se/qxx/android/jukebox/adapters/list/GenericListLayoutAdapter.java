@@ -16,13 +16,9 @@ import java.util.List;
 
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.IncludeSubtitleRating;
-import se.qxx.android.jukebox.model.IModelAdapter;
-import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
-import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
-import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.domain.Sorter;
 
@@ -36,6 +32,7 @@ public abstract class GenericListLayoutAdapter<T> extends BaseAdapter {
     // the serverListSize is the total number of items on the server side,
     // which should be returned from the web request results
     protected int serverListSize = -1;
+    protected boolean isLoading;
 
 	protected Context getContext() { return context; }
     protected int getListItemId() {
@@ -44,6 +41,10 @@ public abstract class GenericListLayoutAdapter<T> extends BaseAdapter {
 
     private final int VIEWTYPE_ITEM = 0;
 	private final int VIEWTYPE_FOOTER = 1;
+
+	public void setLoading(boolean isLoading) {
+	    this.isLoading = isLoading;
+    }
 
     public void setServerListSize(int serverListSize){
         this.serverListSize = serverListSize;
@@ -83,7 +84,7 @@ public abstract class GenericListLayoutAdapter<T> extends BaseAdapter {
         View pb = v.findViewById(R.id.pbFooterProgress);
 
         if (pb != null) {
-            if (Model.get().isLoading())
+            if (this.isLoading)
                 pb.setVisibility(View.VISIBLE);
             else
                 pb.setVisibility(View.INVISIBLE);

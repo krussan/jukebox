@@ -28,7 +28,6 @@ import se.qxx.android.jukebox.adapters.support.IOffsetHandler;
 import se.qxx.android.jukebox.comm.Connector;
 import se.qxx.android.jukebox.dialogs.ActionDialog;
 import se.qxx.android.jukebox.model.Constants;
-import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
@@ -44,6 +43,7 @@ public class JukeboxFragment extends ListFragment implements
     private int offset;
     private int totalItems;
     private Connector connector;
+    private boolean isLoading;
 
     public int getTotalItems() {
         return totalItems;
@@ -163,9 +163,7 @@ public class JukeboxFragment extends ListFragment implements
                 if (totalItemsCount >= getTotalItems())
                     return false;
 
-                if (!Model.get().isLoading()) {
-                    Model.get().setLoading(true);
-
+                if (!isLoading) {
                     this.getHandler().setOffset(page * Constants.NR_OF_ITEMS);
 
                     Logger.Log().d("EndlessScroll event - Loading more data");
@@ -195,6 +193,7 @@ public class JukeboxFragment extends ListFragment implements
 	}
 
 	private void loadMoreData(int offset) {
+        setLoading(true);
         connector.connect(
                 offset,
                 Constants.NR_OF_ITEMS,
@@ -291,6 +290,7 @@ public class JukeboxFragment extends ListFragment implements
 
     @Override
     public void handleMoviesUpdated(List<JukeboxDomain.Movie> movies, int totalMovies) {
+        setLoading(false);
         this.setTotalItems(totalMovies);
 	    if (_jukeboxMovieLayoutAdapter != null) {
             _jukeboxMovieLayoutAdapter.addMovies(movies);
@@ -314,6 +314,7 @@ public class JukeboxFragment extends ListFragment implements
     @Override
     public void handleSeriesUpdated(List<JukeboxDomain.Series> series, int totalSeries) {
         this.setTotalItems(totalSeries);
+        setLoading(false);
         if (_seriesLayoutAdapter != null) {
             _seriesLayoutAdapter.addSeries(series);
             _seriesLayoutAdapter.setServerListSize(totalSeries);
@@ -344,4 +345,12 @@ public class JukeboxFragment extends ListFragment implements
         }
     }
 
+    private void setLoading(boolean isLoading) {
+        this.isLoading = isLoading;
+        if (_jukeboxMovieLayoutAdapter != null)
+            _jukeboxMovieLayoutAdapter.setLoading(isLoading);
+
+        if (_seriesLayoutAdapter != null)
+            _seriesLayoutAdapter.setLoading(isLoading);
+    }
 }
