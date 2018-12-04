@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.ProgressBar;
@@ -34,7 +36,7 @@ import se.qxx.android.jukebox.widgets.SeekerListener;
 import se.qxx.android.jukebox.widgets.UpdateSeekIndicator;
 import se.qxx.android.tools.Logger;
 
-public class RemotePlayerFragment extends PlayerFragment implements SeekerListener, SeekBar.OnSeekBarChangeListener, SessionManagerListener<Session> {
+public class RemotePlayerFragment extends PlayerFragment implements SeekerListener, SeekBar.OnSeekBarChangeListener, SessionManagerListener<Session>, View.OnClickListener {
     private boolean loadingVisible;
     private MediaController mcontroller ;
     private Seeker seeker;
@@ -59,7 +61,20 @@ public class RemotePlayerFragment extends PlayerFragment implements SeekerListen
     private void initializeView(View v) {
         SeekBar sb = v.findViewById(R.id.seekBarDuration);
         sb.setOnSeekBarChangeListener(this);
-        sb.setVisibility(View.VISIBLE);
+
+        setupButtons((ViewGroup)v);
+    }
+
+    private void setupButtons(ViewGroup group) {
+        for(int i = 0; i < group.getChildCount(); i++) {
+            View v = group.getChildAt(i);
+            if (v instanceof ViewGroup) {
+                setupButtons((ViewGroup)v);
+            }
+            else if (v instanceof ImageButton) {
+                v.setOnClickListener(this);
+            }
+        }
     }
 
     public void setVisibility(View v) {
@@ -71,7 +86,7 @@ public class RemotePlayerFragment extends PlayerFragment implements SeekerListen
         ProgressBar spinner = v.findViewById(R.id.spinner);
 
         int standardControlsVisible = this.getLoadingVisible() ? View.GONE : View.VISIBLE;
-        int spinnerVisible = !this.getLoadingVisible() ? View.GONE : View.VISIBLE;
+        int spinnerVisible = this.getLoadingVisible() ? View.VISIBLE : View.GONE;
 
         sb.setVisibility(standardControlsVisible);
         linearLayout1.setVisibility(standardControlsVisible);
@@ -135,12 +150,19 @@ public class RemotePlayerFragment extends PlayerFragment implements SeekerListen
 
     @Override
     public void increaseSeeker(int advanceSeconds) {
-        final TextView tv = getView().findViewById(R.id.txtSeekIndicator);
-        final SeekBar seekBar = getView().findViewById(R.id.seekBarDuration);
-        int seconds = seekBar.getProgress();
+        View v = getView();
 
-        if (!this.isManualSeeking)
-            getActivity().runOnUiThread(new UpdateSeekIndicator(seconds + advanceSeconds, seekBar.getMax(), tv, seekBar));
+        if (v != null) {
+            final TextView tv = v.findViewById(R.id.txtSeekIndicator);
+            final SeekBar seekBar = v.findViewById(R.id.seekBarDuration);
+
+            if (seekBar != null && tv != null) {
+                int seconds = seekBar.getProgress();
+
+                if (!this.isManualSeeking)
+                    getActivity().runOnUiThread(new UpdateSeekIndicator(seconds + advanceSeconds, seekBar.getMax(), tv, seekBar));
+            }
+        }
     }
 
     @Override
@@ -170,7 +192,8 @@ public class RemotePlayerFragment extends PlayerFragment implements SeekerListen
 
     //region --BUTTONS--
 
-    public void onButtonClicked(View v) {
+    @Override
+    public void onClick(View v) {
         int id = v.getId();
 
         switch (id) {
@@ -305,4 +328,29 @@ public class RemotePlayerFragment extends PlayerFragment implements SeekerListen
     public void onGetItemCompleted() {
         getActivity().runOnUiThread(() -> initializeSessionManager());
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (seeker != null)
+            seeker.stop();
+    }
+
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        if (seeker != null)
+            seeker.stop();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (seeker != null)
+            seeker.start();
+    }
+
 }

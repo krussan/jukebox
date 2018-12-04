@@ -114,5 +114,13 @@ public class LocalPlayerFragment extends PlayerFragment implements MediaPlayer.O
         return holder;
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        if (getCastProvider() != null)
+            getCastProvider().stop();
+    }
+
 
 }

@@ -269,6 +269,7 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
     }
 
 
+
     public abstract void setVisibility(View v);
     public abstract void onGetItemCompleted();
 

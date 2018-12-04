@@ -45,33 +45,6 @@ public class NowPlayingActivity extends AppCompatActivity {
 
     }
 
-    /*
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (seeker != null)
-            seeker.stop();
-    }
-
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (seeker != null)
-            seeker.stop();
-
-        if (castProvider != null && isLocalPlayer())
-            castProvider.stop();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        if (seeker != null)
-            seeker.start();
-    }
-*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

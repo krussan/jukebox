@@ -20,7 +20,6 @@
                 android:layout_height="wrap_content"
                 android:background="#00000000"
                 android:hapticFeedbackEnabled="true"
-                android:onClick="onButtonClicked"
                 android:src="@drawable/infoabout"
                 android:contentDescription="@string/descViewInfo" />
 
@@ -31,7 +30,6 @@
 	            android:src="@drawable/btnfullscreen"
 				android:background="@null"
 	            android:hapticFeedbackEnabled="true"
-	            android:onClick="onButtonClicked"
 			/>
 	        
 	        <ImageButton
@@ -41,7 +39,6 @@
 	            android:src="@drawable/btnsubtitles"
 	            android:hapticFeedbackEnabled="true"
 				android:background="@null"
-	            android:onClick="onButtonClicked"
 			/>
 	        	        
                         
@@ -62,8 +59,7 @@
             android:src="@drawable/btnbackward"
 			android:background="@null"
             android:hapticFeedbackEnabled="true"
-            android:onClick="onButtonClicked"
-		/>        
+		/>
         
         <ImageButton
             android:id="@+id/btnPlay"
@@ -71,7 +67,6 @@
             android:layout_height="wrap_content"
             android:src="@drawable/btnplay"
 			android:background="@null"
-            android:onClick="onButtonClicked"
         />
 
         <ImageButton
@@ -81,7 +76,7 @@
             android:src="@drawable/btnpause"
 			android:background="@null"
             android:hapticFeedbackEnabled="true"
-            android:onClick="onButtonClicked" />
+		/>
 
         <ImageButton
             android:id="@+id/btnStop"
@@ -90,7 +85,6 @@
             android:src="@drawable/btnstop"
 			android:background="@null"
             android:hapticFeedbackEnabled="true"
-            android:onClick="onButtonClicked"
 		/>
 
         <ImageButton
@@ -100,7 +94,6 @@
             android:src="@drawable/btnforward"
 			android:background="@null"
             android:hapticFeedbackEnabled="true"
-            android:onClick="onButtonClicked"
 		/>
 
     </LinearLayout>
@@ -141,13 +134,6 @@
         android:layout_centerHorizontal="true"
         android:layout_centerInParent="true"
      />
-
-    <SurfaceView
-        android:id="@+id/surfaceview"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-		android:layout_centerVertical="true"
-		/>
 
     <SeekBar
         android:id="@+id/seekBarDuration"

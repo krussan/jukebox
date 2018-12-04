@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -13,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.adapters.support.MovieMediaLayoutAdapter;
+import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
 import se.qxx.android.tools.GUITools;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
@@ -95,6 +97,15 @@ public class MovieDetailActivity extends AppCompatActivity {
             default:
                 break;
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+
+        ChromeCastConfiguration.createMenu(this, getMenuInflater(), menu);
+
+        return true;
     }
 
 
