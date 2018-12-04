@@ -43,7 +43,7 @@ import se.qxx.jukebox.tools.Util;
 public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownloader {
 	ReentrantLock lock = new ReentrantLock();
 	private String subsPath = StringUtils.EMPTY;
-	private List<ISubFinder> subFinders;
+	private List<ISubFinder> subFinders = new ArrayList<ISubFinder>();
 	private IDatabase database;
 	private ISettings settings;
 	private IMovieBuilderFactory movieBuilderFactory;
