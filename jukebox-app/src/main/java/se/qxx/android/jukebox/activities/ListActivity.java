@@ -10,9 +10,6 @@ import android.widget.ListView;
 
 import com.google.android.gms.cast.framework.CastContext;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import se.qxx.android.jukebox.R;
@@ -24,16 +21,15 @@ import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
 import se.qxx.android.jukebox.comm.Connector;
 import se.qxx.android.jukebox.dialogs.ActionDialog;
 import se.qxx.android.jukebox.model.Constants;
-import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
+import static se.qxx.android.jukebox.model.Constants.NR_OF_ITEMS;
+
 public class ListActivity extends AppCompatActivity implements
     AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, View.OnClickListener, Connector.ConnectorCallbackEventListener, IOffsetHandler {
-
-    private final int NR_OF_ITEMS = 15;
 
 	private CastContext mCastContext;
 	private SeasonLayoutAdapter _seasonLayoutAdapter;
@@ -42,6 +38,7 @@ public class ListActivity extends AppCompatActivity implements
 	private boolean firstIsLast = false;
 	private int totalItems = 0;
 	private Connector connector;
+	private boolean isLoading;
 
     protected View getRootView() {
 		return findViewById(R.id.rootMain);
@@ -117,7 +114,6 @@ public class ListActivity extends AppCompatActivity implements
         
         initializeView();
 
-
         loadMoreData(0, getSeriesID(), getSeasonID());
     }
 
@@ -156,8 +152,8 @@ public class ListActivity extends AppCompatActivity implements
                 if (totalItemsCount >= getTotalItems())
                     return false;
 
-                if (!Model.get().isLoading() && !isFirstIsLast()) {
-                    int offset = page * Constants.NR_OF_ITEMS;
+                if (!isLoading && !isFirstIsLast()) {
+                    int offset = page * NR_OF_ITEMS;
 
                     this.getHandler().setOffset(offset);
 
@@ -198,11 +194,13 @@ public class ListActivity extends AppCompatActivity implements
 	}
 
     private void loadMoreData(int offset, int seriesID) {
-        connector.connect(offset, NR_OF_ITEMS, this.getMode(), seriesID, -1);
+        setIsLoading(true);
+        connector.connect(offset, Constants.NR_OF_ITEMS, this.getMode(), seriesID, -1, true, true);
     }
 
     private void loadMoreData(int offset, int seriesID, int seasonID) {
-        connector.connect(offset, NR_OF_ITEMS, this.getMode(), seriesID, seasonID);
+        setIsLoading(true);
+        connector.connect(offset, Constants.NR_OF_ITEMS, this.getMode(), seriesID, seasonID, true, true);
     }
 
     @Override
@@ -304,12 +302,14 @@ public class ListActivity extends AppCompatActivity implements
 
     @Override
     public void handleSeasonsUpdated(final List<JukeboxDomain.Season> seasons, int totalSeasons) {
+        setIsLoading(false);
         if (this.getMode() == ViewMode.Season) {
             this.setTotalItems(totalSeasons);
             if (_seasonLayoutAdapter != null) {
                 _seasonLayoutAdapter.addSeasons(seasons);
 
-                if (this.getOffset() == 0 && seasons.size() <= Constants.NR_OF_ITEMS)
+
+                if (this.getOffset() == 0 && seasons.size() <= NR_OF_ITEMS)
                     this.setFirstIsLast(true);
 
                 notifySeasons();
@@ -317,14 +317,25 @@ public class ListActivity extends AppCompatActivity implements
         }
     }
 
+    private void setIsLoading(boolean isLoading) {
+        this.isLoading = isLoading;
+
+        if (_episodeLayoutAdapter != null)
+            _episodeLayoutAdapter.setLoading(isLoading);
+
+        if (_seasonLayoutAdapter != null)
+            _seasonLayoutAdapter.setLoading(isLoading);
+    }
+
     @Override
     public void handleEpisodesUpdated(List<JukeboxDomain.Episode> episodes, int totalEpisodes) {
+        setIsLoading(false);
         if (this.getMode() == ViewMode.Episode) {
             this.setTotalItems(totalEpisodes);
             if (_episodeLayoutAdapter != null) {
                 _episodeLayoutAdapter.addEpisodes(episodes);
 
-                if (this.getOffset() == 0 && episodes.size() <= Constants.NR_OF_ITEMS)
+                if (this.getOffset() == 0 && episodes.size() <= NR_OF_ITEMS)
                     this.setFirstIsLast(true);
 
                 notifyEpisodes();

@@ -110,18 +110,22 @@ public class DB implements IDatabase {
 	//---------------------------------------------------------------------------------------
 
 	@Override
-	public List<Movie> searchMoviesByTitle(String searchString) {
-		return searchMoviesByTitle(searchString, -1, -1);
+	public List<Movie> searchMoviesByTitle(String searchString, boolean excludeImages, boolean excludeTextData) {
+		return searchMoviesByTitle(searchString, -1, -1, excludeImages, excludeTextData);
 	}
 	
 	/* (non-Javadoc)
 	 * @see se.qxx.jukebox.IDatabase#searchMoviesByTitle(java.lang.String, int, int)
 	 */
 	@Override
-	public List<Movie> searchMoviesByTitle(String searchString, int numberOfResults, int offset) {
+	public List<Movie> searchMoviesByTitle(String searchString, int numberOfResults, int offset, boolean excludeImages, boolean excludeTextData) {
 		List<String> excludedObjects = new ArrayList<String>();
-		excludedObjects.add("media.subs.textdata");
-		excludedObjects.add("image");
+		
+		if (excludeTextData)
+			excludedObjects.add("media.subs.textdata");
+		
+		if (excludeImages)
+			excludedObjects.add("image");
 		
 		return searchByTitle(JukeboxDomain.Movie.getDefaultInstance()
 				, "title"
@@ -136,11 +140,15 @@ public class DB implements IDatabase {
 	 * @see se.qxx.jukebox.IDatabase#searchMoviesByID(int)
 	 */
 	@Override
-	public Movie searchMoviesByID(int id) {
+	public Movie searchMoviesByID(int id, boolean excludeImages, boolean excludeTextData) {
 		try {
 			List<String> excludedObjects = new ArrayList<String>();
-			excludedObjects.add("media.subs.textdata");
-			excludedObjects.add("image");
+			
+			if (excludeTextData)
+				excludedObjects.add("media.subs.textdata");
+			
+			if (excludeImages)
+				excludedObjects.add("image");
 	
 			ProtoDB db = getProtoDBInstance(true);
 	
@@ -178,18 +186,20 @@ public class DB implements IDatabase {
 	 * @see se.qxx.jukebox.IDatabase#searchSeriesByTitle(java.lang.String)
 	 */
 	@Override
-	public List<Series> searchSeriesByTitle(String searchString) {
-		return searchSeriesByTitle(searchString, -1, -1);		
+	public List<Series> searchSeriesByTitle(String searchString, boolean excludeImages) {
+		return searchSeriesByTitle(searchString, -1, -1, excludeImages);		
 	}
 
 	/* (non-Javadoc)
 	 * @see se.qxx.jukebox.IDatabase#searchSeriesByTitle(java.lang.String, int, int)
 	 */
 	@Override
-	public List<Series> searchSeriesByTitle(String searchString, int numberOfResults, int offset) {
+	public List<Series> searchSeriesByTitle(String searchString, int numberOfResults, int offset, boolean excludeImages) {
 		List<String> excludedObjects = new ArrayList<String>();
 		excludedObjects.add("season"); // exclude underlying seasons
-		excludedObjects.add("image"); // exclude full size image
+		
+		if (excludeImages)
+			excludedObjects.add("image"); // exclude full size image
 		
 		return searchByTitle(JukeboxDomain.Series.getDefaultInstance()
 				, "title"
@@ -339,21 +349,27 @@ public class DB implements IDatabase {
 	 * @see se.qxx.jukebox.IDatabase#searchSeriesById(int)
 	 */
 	@Override
-	public Series searchSeriesById(int id) {
+	public Series searchSeriesById(int id, boolean excludeImages) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			
 			try {
 				if (db.getDBType() == DBType.Sqlite) lock.lock();
 
+				List<String> excludedObjects = new ArrayList<String>();
+				excludedObjects.add("season.episode");
+				
+				if (excludeImages) {
+					excludedObjects.add("image");
+					excludedObjects.add("season.image");
+				}
+				
 				List<Series> result = 
 						db.search(SearchOptions.newBuilder(JukeboxDomain.Series.getDefaultInstance()) 
 							.addFieldName("ID") 
 							.addSearchArgument(id) 
 							.addOperator(ProtoDBSearchOperator.Equals)
-							.addExcludedObject("season.episode")
-							.addExcludedObject("image")
-							.addExcludedObject("season.image"));
+							.addAllExcludedObjects(excludedObjects));
 						
 
 					if (result.size() > 0)
@@ -378,28 +394,74 @@ public class DB implements IDatabase {
 	 * @see se.qxx.jukebox.IDatabase#searchSeasonById(int)
 	 */
 	@Override
-	public Season searchSeasonById(int id) {
+	public Season searchSeasonById(int id, boolean excludeImages, boolean excludeTextData) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 			
 			try {
 				if (db.getDBType() == DBType.Sqlite) lock.lock();
+				List<String> excludedObjects = new ArrayList<String>();
+				
+				if (excludeImages) {
+					excludedObjects.add("image");
+					excludedObjects.add("episode.image");
+				}
+				
+				if (excludeTextData)
+					excludedObjects.add("episode.media.subs.textdata");
 
 				List<Season> result = 
 						db.search(SearchOptions.newBuilder(JukeboxDomain.Season.getDefaultInstance()) 
 							.addFieldName("ID") 
 							.addSearchArgument(id) 
 							.addOperator(ProtoDBSearchOperator.Equals)
-							.addExcludedObject("image")
-							.addExcludedObject("episode.image")
-							.addExcludedObject("episode.media.subs.textdata"));
-					
-						
+							.addAllExcludedObjects(excludedObjects));
 
-					if (result.size() > 0)
-						return result.get(0);
-					else
-						return null;
+				if (result.size() > 0)
+					return result.get(0);
+				else
+					return null;
+
+			}
+			finally {
+				if (db.getDBType() == DBType.Sqlite) lock.unlock();
+				
+			}
+			
+		} catch (Exception e) {
+			this.getMainLog().Error("failed to get information from database", e);
+		}
+		
+		return null;
+	}
+
+	@Override
+	public Episode searchEpisodeById(int id, boolean excludeImages, boolean excludeTextData) {
+		try {
+			ProtoDB db = getProtoDBInstance();
+			
+			try {
+				if (db.getDBType() == DBType.Sqlite) lock.lock();
+				List<String> excludedObjects = new ArrayList<String>();
+				
+				if (excludeImages) {
+					excludedObjects.add("image");
+				}
+				
+				if (excludeTextData)
+					excludedObjects.add("media.subs.textdata");
+
+				List<Episode> result = 
+						db.search(SearchOptions.newBuilder(JukeboxDomain.Episode.getDefaultInstance()) 
+							.addFieldName("ID") 
+							.addSearchArgument(id) 
+							.addOperator(ProtoDBSearchOperator.Equals)
+							.addAllExcludedObjects(excludedObjects));
+
+				if (result.size() > 0)
+					return result.get(0);
+				else
+					return null;
 
 			}
 			finally {

@@ -2,7 +2,6 @@ package se.qxx.android.jukebox.adapters.support;
 
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.jukebox.R;
-import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
 import android.content.Context;

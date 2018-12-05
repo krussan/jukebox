@@ -77,7 +77,7 @@ public class Cleaner extends JukeboxThread implements ICleaner {
 	}
 	
 	private void cleanMovies() {
-		List<Movie> movies = this.getDatabase().searchMoviesByTitle("");
+		List<Movie> movies = this.getDatabase().searchMoviesByTitle("", true, true);
 		
 		//TODO: check that the path is part of a listener
 		for (Movie m : movies) {
@@ -101,7 +101,7 @@ public class Cleaner extends JukeboxThread implements ICleaner {
 	}
 
 	private void cleanEpisodes() {
-		List<Series> series = this.getDatabase().searchSeriesByTitle("");
+		List<Series> series = this.getDatabase().searchSeriesByTitle("", true);
 		
 		//TODO: check that the path is part of a listener
 		for (Series s : series) {

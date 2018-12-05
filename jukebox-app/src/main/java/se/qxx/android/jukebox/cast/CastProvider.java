@@ -163,6 +163,19 @@ public abstract class CastProvider implements MediaController.MediaPlayerControl
         return provider;
     }
 
+    public static boolean isLocalPlayer() {
+        switch (ChromeCastConfiguration.getCastType()) {
+            case ChromeCast:
+                if (ChromeCastConfiguration.isChromecastConnected())
+                    return false;
+                else
+                    return true;
+            case JukeboxCast:
+                return false;
+            default:
+                return true;
+        }
+    }
 
     public void startMovie() {
         // override local player with chromecast in server (move this to server in time)
@@ -226,4 +239,5 @@ public abstract class CastProvider implements MediaController.MediaPlayerControl
     public abstract void stop();
     public abstract boolean usesMediaController();
     public abstract void surfaceCreated(SurfaceView view);
+    public abstract void surfaceDestroyed();
 }

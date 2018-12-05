@@ -27,9 +27,6 @@ public class Seeker implements Runnable {
        	h.getTime(JukeboxSettings.get().getCurrentMediaPlayer(), response -> {
                // The time command also returns the name of the currently playing file.
                // If it differs from the model then set the current media
-               //if (!StringUtils.equalsIgnoreCase(response.getFilename(), Model.get().getCurrentMedia().getFilename()))
-				// Model.get().setCurrentMedia(response.getFilename());
-
 			if (response != null && listener != null)
                    listener.updateSeeker(response.getSeconds(), 0);
            });

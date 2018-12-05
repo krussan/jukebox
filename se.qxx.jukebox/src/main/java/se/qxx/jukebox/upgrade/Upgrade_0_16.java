@@ -43,8 +43,8 @@ public class Upgrade_0_16 extends UpgraderBase implements IIncrimentalUpgrade {
 
 			System.out.println("Re-adding all media to subtitle queue");
 			
-			List<Movie> movies = this.getDatabase().searchMoviesByTitle("");
-			List<Series> series = this.getDatabase().searchSeriesByTitle("");
+			List<Movie> movies = this.getDatabase().searchMoviesByTitle("",true, true);
+			List<Series> series = this.getDatabase().searchSeriesByTitle("", true);
 			
 			int mSize = movies.size();
 

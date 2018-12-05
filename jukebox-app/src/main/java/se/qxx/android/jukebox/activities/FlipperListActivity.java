@@ -11,9 +11,6 @@ import com.google.android.gms.cast.framework.CastContext;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.adapters.viewmode.JukeboxFragmentAdapter;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
-import se.qxx.android.jukebox.comm.Connector;
-import se.qxx.android.jukebox.model.Constants;
-import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 
 public class FlipperListActivity extends AppCompatActivity {
@@ -59,7 +56,6 @@ public class FlipperListActivity extends AppCompatActivity {
         pager = (ViewPager)this.getRootView();
 
         JukeboxFragmentAdapter mfa = new JukeboxFragmentAdapter(getSupportFragmentManager(), this);
-
         pager.setAdapter(mfa);
 
 		mCastContext = CastContext.getSharedInstance(this);

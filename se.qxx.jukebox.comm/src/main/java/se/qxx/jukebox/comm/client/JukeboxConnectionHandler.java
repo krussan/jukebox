@@ -4,6 +4,9 @@ import com.google.protobuf.RpcCallback;
 import com.google.protobuf.RpcController;
 import com.googlecode.protobuf.socketrpc.SocketRpcController;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Empty;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
@@ -44,15 +47,16 @@ public class JukeboxConnectionHandler {
 	//--------------------------------------------------------------------------------------------------- RPC Calls
 	//----------------------------------------------------------------------------------------------------------------
 
-	public void getItem(final int id, final RequestType requestType,final RpcCallback<JukeboxDomain.JukeboxResponseGetItem> callback) {
+	public void getItem(final int id, final RequestType requestType, boolean excludeImages, boolean excludeTextData, final RpcCallback<JukeboxDomain.JukeboxResponseGetItem> callback) {
 		final RpcController controller = new SocketRpcController();
+		List<JukeboxDomain.RequestFilter> filter = getFilter(excludeImages, excludeTextData);
 
 		Thread t = new Thread(() -> {
 			JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
 			JukeboxDomain.JukeboxRequestGetItem request = JukeboxDomain.JukeboxRequestGetItem.newBuilder()
 					.setRequestType(requestType)
 					.setID(id)
-					.setReturnFullSizePictures(false)
+					.addAllFilter(filter)
 					.build();
 
 			service.getItem(controller, request, response -> {
@@ -176,15 +180,22 @@ public class JukeboxConnectionHandler {
 		
 	}
 	
-	public void listMovies(String searchString, int nrOfItems, int offset, final RpcCallback<JukeboxResponseListMovies> callback) {
-		list(searchString, RequestType.TypeMovie, nrOfItems, offset, callback); 
+	public void listMovies(String searchString, int nrOfItems, int offset, boolean excludeImages, boolean excludeTextdata, final RpcCallback<JukeboxResponseListMovies> callback) {
+        List<JukeboxDomain.RequestFilter> requestFilters = getFilter(excludeImages, excludeTextdata);
+		list(searchString, RequestType.TypeMovie, nrOfItems, offset, requestFilters, callback);
 	}
 	
-	public void listSeries(String searchString, int nrOfItems, int offset, final RpcCallback<JukeboxResponseListMovies> callback) {
-		list(searchString, RequestType.TypeSeries, nrOfItems, offset, callback);
+	public void listSeries(String searchString, int nrOfItems, int offset, boolean excludeImages, boolean excludeTextdata, final RpcCallback<JukeboxResponseListMovies> callback) {
+        List<JukeboxDomain.RequestFilter> requestFilters = getFilter(excludeImages, excludeTextdata);
+		list(searchString, RequestType.TypeSeries, nrOfItems, offset, requestFilters, callback);
 	}
 
-	private void list(final String searchString, final RequestType type, final int nrOfItems, final int offset, final RpcCallback<JukeboxResponseListMovies> callback) {
+	private void list(final String searchString,
+                      final RequestType type,
+                      final int nrOfItems,
+                      final int offset,
+                      final List<JukeboxDomain.RequestFilter> requestFilters,
+                      final RpcCallback<JukeboxResponseListMovies> callback) {
 		final RpcController controller = new SocketRpcController();
 
 		Thread t = new Thread(() -> {
@@ -196,6 +207,7 @@ public class JukeboxConnectionHandler {
                     .setNrOfItems(nrOfItems)
                     .setStartIndex(offset)
                     .setReturnFullSizePictures(false)
+                    .addAllFilter(requestFilters)
                     .build();
 
             try {
@@ -214,6 +226,25 @@ public class JukeboxConnectionHandler {
 		
 	}
 
+	public List<JukeboxDomain.RequestFilter> getDefaultFilter() {
+		List<JukeboxDomain.RequestFilter> result = new ArrayList<JukeboxDomain.RequestFilter>();
+		result.add(JukeboxDomain.RequestFilter.Images);
+		result.add(JukeboxDomain.RequestFilter.SubsTextdata);
+
+		return result;
+	}
+
+    public List<JukeboxDomain.RequestFilter> getFilter(boolean excludeImages, boolean excludeTextData) {
+        List<JukeboxDomain.RequestFilter> result = new ArrayList<JukeboxDomain.RequestFilter>();
+
+        if (excludeImages)
+            result.add(JukeboxDomain.RequestFilter.Images);
+
+        if (excludeTextData)
+            result.add(JukeboxDomain.RequestFilter.SubsTextdata);
+
+        return result;
+    }
 	
 	public void wakeup(final String playerName) {
 		final RpcController controller = new SocketRpcController();
@@ -499,7 +530,7 @@ public class JukeboxConnectionHandler {
 		JukeboxConnectionMessage msg = checkResponse(controller);
 		
 		if (this.getListener() != null)
-			this.listener.onRequestComplete(msg);		
+			this.getListener().onRequestComplete(msg);
 	}
 
 

@@ -1,13 +1,11 @@
 package se.qxx.android.jukebox.cast;
 
-import android.app.Activity;
 import android.view.SurfaceView;
 
 import com.google.protobuf.RpcCallback;
 
 import org.apache.commons.lang3.StringUtils;
 
-import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain;
@@ -186,6 +184,11 @@ class JukeboxCastProvider extends CastProvider {
 
     @Override
     public void surfaceCreated(SurfaceView view) {
+
+    }
+
+    @Override
+    public void surfaceDestroyed() {
 
     }
 

@@ -17,15 +17,15 @@ import se.qxx.protodb.exceptions.IDFieldNotFoundException;
 
 public interface IDatabase {
 
-	List<Movie> searchMoviesByTitle(String searchString);
+	List<Movie> searchMoviesByTitle(String searchString, boolean excludeImages, boolean excludeTextData);
 
-	List<Movie> searchMoviesByTitle(String searchString, int numberOfResults, int offset);
+	List<Movie> searchMoviesByTitle(String searchString, int numberOfResults, int offset, boolean excludeImages, boolean excludeTextData);
 
-	Movie searchMoviesByID(int id);
+	Movie searchMoviesByID(int id, boolean excludeImages, boolean excludeTextData);
 
-	List<Series> searchSeriesByTitle(String searchString);
+	List<Series> searchSeriesByTitle(String searchString, boolean excludeImages);
 
-	List<Series> searchSeriesByTitle(String searchString, int numberOfResults, int offset);
+	List<Series> searchSeriesByTitle(String searchString, int numberOfResults, int offset, boolean excludeImages);
 
 	Movie findMovie(String identifiedTitle);
 
@@ -38,9 +38,11 @@ public interface IDatabase {
 	 * @param id
 	 * @return
 	 */
-	Series searchSeriesById(int id);
+	Series searchSeriesById(int id, boolean excludeImages);
 
-	Season searchSeasonById(int id);
+	Season searchSeasonById(int id, boolean excludeImages, boolean excludeTextData);
+
+	Episode searchEpisodeById(int id, boolean excludeImages, boolean excludeTextData);
 
 	Movie getMovie(int id);
 

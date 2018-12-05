@@ -272,6 +272,11 @@ public class ChromeCastProvider extends CastProvider implements RemoteMediaClien
     }
 
     @Override
+    public void surfaceDestroyed() {
+
+    }
+
+    @Override
     public boolean isPlaying() {
         RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(getParentContext());
 

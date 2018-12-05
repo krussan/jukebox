@@ -38,6 +38,12 @@ enum MediaConverterState {
     Forced = 6;
 }
 
+enum RequestFilter {
+    Subs = 1;
+    Images = 2;
+    Thumbnails = 3;
+    SubsTextdata = 4;
+}
 
 //---------------------------------------------------------------------------------------
 //----------------------------------------------------------------------- Objects
@@ -204,6 +210,7 @@ message JukeboxRequestListMovies {
 	optional int32 startIndex = 4;
 	optional int32 nrOfItems = 5;
 	optional RequestType requestType = 6;
+	repeated RequestFilter filter = 7;
 
 }
 
@@ -211,6 +218,7 @@ message JukeboxRequestGetItem {
 	optional int32 ID = 1;
 	optional bool returnFullSizePictures = 2 [default=true];
 	optional RequestType requestType = 3;
+	repeated RequestFilter filter = 4;	
 }
 
 message JukeboxRequestStartMovie {
@@ -270,6 +278,7 @@ message JukeboxResponseGetItem {
 	optional Movie movie = 1;
 	optional Series serie = 2;
 	optional Season season = 3;
+	optional Episode episode = 4;
 }
 
 

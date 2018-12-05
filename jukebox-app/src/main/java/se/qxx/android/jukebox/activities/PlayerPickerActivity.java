@@ -1,20 +1,15 @@
 package se.qxx.android.jukebox.activities;
 
-import java.util.EventObject;
 import java.util.List;
 
 import com.google.android.gms.cast.framework.CastContext;
-import com.google.protobuf.RpcCallback;
 
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.adapters.support.PlayerLayoutAdapter;
 import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
-import se.qxx.jukebox.domain.JukeboxDomain;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers;
 import se.qxx.android.jukebox.dialogs.JukeboxConnectionProgressDialog;
-import se.qxx.android.jukebox.model.Model;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -23,8 +18,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-
-import org.apache.commons.lang3.StringUtils;
 
 public class PlayerPickerActivity extends AppCompatActivity implements OnItemClickListener {
 

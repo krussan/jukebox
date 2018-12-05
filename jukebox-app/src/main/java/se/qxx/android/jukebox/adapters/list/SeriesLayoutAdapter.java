@@ -1,18 +1,11 @@
 package se.qxx.android.jukebox.adapters.list;
 
 import se.qxx.android.jukebox.R;
-import se.qxx.android.jukebox.model.Model;
 import se.qxx.android.tools.GUITools;
-import se.qxx.android.tools.Logger;
-import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 
 import org.apache.commons.lang3.StringUtils;
 

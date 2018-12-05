@@ -347,7 +347,7 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 	}
 	
 	private Response serveRootHtml() {
-		List<Movie> movies = this.getDatabase().searchMoviesByTitle("");
+		List<Movie> movies = this.getDatabase().searchMoviesByTitle("", true, true);
 		
 		try {
 			return createResponse(Response.Status.OK, NanoHTTPD.MIME_HTML, TemplateEngine.get().listMovies(movies));

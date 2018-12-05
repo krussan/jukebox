@@ -2,11 +2,7 @@ package se.qxx.android.jukebox.adapters.list;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 
 import org.apache.commons.lang3.StringUtils;
@@ -19,7 +15,6 @@ import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.NowPlayingActivity;
 import se.qxx.android.jukebox.activities.ViewMode;
 import se.qxx.android.tools.GUITools;
-import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 
@@ -90,7 +85,7 @@ public class EpisodeLayoutAdapter extends GenericListLayoutAdapter<Episode> impl
                 case R.id.btnPlayEpisode:
                     Intent iPlay = new Intent(this.getContext(), NowPlayingActivity.class);
                     iPlay.putExtra("mode", ViewMode.Episode);
-                    iPlay.putExtra("episode", e);
+                    iPlay.putExtra("ID", e.getID());
                     iPlay.putExtra("seasonNumber", getSeasonNumber());
 
                     this.getContext().startActivity(iPlay);

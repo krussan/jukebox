@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId "se.qxx.android.jukebox"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 27
 
         // Enabling multidex support.
