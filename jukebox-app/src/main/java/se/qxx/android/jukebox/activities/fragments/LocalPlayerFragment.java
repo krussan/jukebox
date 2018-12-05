@@ -15,13 +15,14 @@ import android.widget.MediaController;
 import android.widget.ProgressBar;
 
 import se.qxx.android.jukebox.R;
+import se.qxx.android.jukebox.media.VideoControllerView;
 import se.qxx.android.tools.Logger;
 
 public class LocalPlayerFragment extends PlayerFragment implements MediaPlayer.OnPreparedListener {
     private static final String TAG="LocalPlayerFragment";
 
     private boolean loadingVisible;
-    private MediaController mcontroller ;
+    private VideoControllerView mcontroller ;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,7 +59,7 @@ public class LocalPlayerFragment extends PlayerFragment implements MediaPlayer.O
     public void onPrepared(MediaPlayer mediaPlayer) {
         mcontroller.setMediaPlayer(this.getCastProvider());
 
-        mcontroller.setAnchorView(getView().findViewById(R.id.surfaceview));
+        mcontroller.setAnchorView(getView().findViewById(R.id.videoSurfaceContainer));
         mcontroller.setEnabled(true);
 
         new Handler().post(() -> mcontroller.show());
@@ -66,7 +67,7 @@ public class LocalPlayerFragment extends PlayerFragment implements MediaPlayer.O
 
 
     private void initializeMediaController() {
-        mcontroller = new MediaController(getContext());
+        mcontroller = new VideoControllerView(getContext());
         mcontroller.setMediaPlayer(this.getCastProvider());
     }
 

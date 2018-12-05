@@ -126,8 +126,13 @@ class LocalCastProvider extends CastProvider implements MediaPlayer.OnBufferingU
     }
 
     @Override
-    public int getAudioSessionId() {
-        return mediaPlayer.getAudioSessionId();
+    public boolean isFullScreen() {
+        return false;
+    }
+
+    @Override
+    public void toggleFullScreen() {
+
     }
 
     @Override

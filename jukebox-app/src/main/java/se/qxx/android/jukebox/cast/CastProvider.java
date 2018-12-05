@@ -14,12 +14,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.qxx.android.jukebox.dialogs.JukeboxConnectionProgressDialog;
+import se.qxx.android.jukebox.media.VideoControllerView;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.jukebox.widgets.SeekerListener;
 import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
-public abstract class CastProvider implements MediaController.MediaPlayerControl {
+public abstract class CastProvider implements VideoControllerView.MediaPlayerControl {
 
     public int getCurrentMediaIndex() {
         return currentMediaIndex;

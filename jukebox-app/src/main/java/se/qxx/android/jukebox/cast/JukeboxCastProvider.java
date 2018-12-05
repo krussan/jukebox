@@ -110,8 +110,13 @@ class JukeboxCastProvider extends CastProvider {
     }
 
     @Override
-    public int getAudioSessionId() {
-        return 0;
+    public boolean isFullScreen() {
+        return false;
+    }
+
+    @Override
+    public void toggleFullScreen() {
+
     }
 
     private class OnStatusComplete implements RpcCallback<JukeboxDomain.JukeboxResponseIsPlaying> {

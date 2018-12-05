@@ -307,7 +307,13 @@ public class ChromeCastProvider extends CastProvider implements RemoteMediaClien
     }
 
     @Override
-    public int getAudioSessionId() {
-        return 0;
+    public boolean isFullScreen() {
+        return true;
     }
+
+    @Override
+    public void toggleFullScreen() {
+
+    }
+
 }
