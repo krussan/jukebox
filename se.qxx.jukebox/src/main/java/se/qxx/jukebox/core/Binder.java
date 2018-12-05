@@ -52,6 +52,7 @@ import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.IStarter;
 import se.qxx.jukebox.interfaces.IStreamingWebServer;
 import se.qxx.jukebox.interfaces.ISubFileDownloaderHelper;
+import se.qxx.jukebox.interfaces.ISubFileUtilHelper;
 import se.qxx.jukebox.interfaces.ISubtitleDownloader;
 import se.qxx.jukebox.interfaces.ISubtitleFileWriter;
 import se.qxx.jukebox.interfaces.ITcpListener;
@@ -67,6 +68,7 @@ import se.qxx.jukebox.settings.imdb.ImdbSettings;
 import se.qxx.jukebox.settings.parser.ParserSettings;
 import se.qxx.jukebox.subtitles.MkvSubtitleReader;
 import se.qxx.jukebox.subtitles.SubFileDownloaderHelper;
+import se.qxx.jukebox.subtitles.SubFileUtilHelper;
 import se.qxx.jukebox.subtitles.SubtitleDownloader;
 import se.qxx.jukebox.subtitles.SubtitleFileWriter;
 import se.qxx.jukebox.tools.MediaMetadataHelper;
@@ -161,6 +163,7 @@ public class Binder {
 				bind(ISubFileDownloaderHelper.class).to(SubFileDownloaderHelper.class);
 				bind(ISubtitleFileWriter.class).to(SubtitleFileWriter.class);
 				bind(IMkvSubtitleReader.class).to(MkvSubtitleReader.class);
+				bind(ISubFileUtilHelper.class).to(SubFileUtilHelper.class);
 				
 				//Unpacker
 				bind(IUnpacker.class).to(Unpacker.class);

@@ -7,6 +7,10 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
+import javax.xml.bind.JAXBException;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -17,9 +21,14 @@ import se.qxx.jukebox.core.Log;
 import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IDatabase;
+import se.qxx.jukebox.interfaces.IImdbSettings;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
+import se.qxx.jukebox.interfaces.IParserSettings;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.ISubtitleFileWriter;
+import se.qxx.jukebox.settings.Settings;
+import se.qxx.jukebox.settings.imdb.ImdbSettings;
+import se.qxx.jukebox.settings.parser.ParserSettings;
 import se.qxx.jukebox.webserver.StreamingWebServer;
 
 public class TestWebServer {
@@ -27,33 +36,58 @@ public class TestWebServer {
 	@Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 	
 	@Mock LoggerFactory loggerFactoryMock;
-	@Mock ISettings settingsMock;
+	ISettings settings;
 	@Mock IDatabase dbMock;
 	@Mock ISubtitleFileWriter subWriterMock;
+	IJukeboxLogger log;
+	StreamingWebServer webServer;
 	
-
-	@Test
-	public void TestStreamUri() throws InterruptedException, IOException {
+	@Before
+	public void initialize() throws IOException, JAXBException {
+		IParserSettings parserSettings = new ParserSettings();
+		IImdbSettings imdbSettings = new ImdbSettings();
 		
-		IJukeboxLogger log = new Log(settingsMock, LogType.NONE);
+		settings = new Settings(imdbSettings, parserSettings);
+		
+		log = new Log(settings, LogType.NONE)
+				;
+		
 		when(loggerFactoryMock.create(any(LogType.class))).thenReturn(log);
 		
-		StreamingWebServer webServer = new StreamingWebServer(
+		webServer = new StreamingWebServer(
 				dbMock, 
 				loggerFactoryMock, 
 				subWriterMock,
 				8001);
 		
-		
 		webServer.setIpAddress("127.0.0.1");
-		webServer.initialize();
+		webServer.initializeMappings(settings);
+	}
+	
+	@After
+	public void tearDown() {
+		webServer.stop();
+	}
+
+	@Test
+	public void TestStreamUri() throws InterruptedException, IOException {
+		webServer.initialize();		
 
 		String uri = webServer.getStreamUri("stream1.mp4");
 		
 		assertTrue(webServer.isAlive());
 		assertEquals("http://127.0.0.1:8001/stream1.mp4", uri);
 		
-		webServer.stop();
 		
+	}
+	
+	@Test
+	public void TestDuplicateRegistrationSubtitle() {
+		webServer.registerFile("stream1.mp4", "original_file.mp4");
+		webServer.registerFile("stream1.mp4", "other_file.mp4");
+		
+		String streamingFile = webServer.getRegisteredFile("stream1.mp4");
+		assertEquals("original_file.mp4", streamingFile);
+
 	}
 }

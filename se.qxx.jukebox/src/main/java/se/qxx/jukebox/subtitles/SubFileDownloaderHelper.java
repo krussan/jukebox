@@ -21,6 +21,7 @@ import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Rating;
 import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.factories.LoggerFactory;
+import se.qxx.jukebox.interfaces.ISubFileUtilHelper;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IMovieBuilderFactory;
 import se.qxx.jukebox.interfaces.IRandomWaiter;
@@ -43,6 +44,7 @@ public class SubFileDownloaderHelper implements ISubFileDownloaderHelper {
 	private IWebRetriever webRetriever;
 	private IMovieBuilderFactory movieBuilderFactory;
 	private IJukeboxLogger log;
+	private ISubFileUtilHelper fileUtilHelper;
 	
 	private Map<String, Map<String, String>> subSettings = new HashMap<String, Map<String, String>>();
 	private IRandomWaiter waiter;
@@ -52,13 +54,23 @@ public class SubFileDownloaderHelper implements ISubFileDownloaderHelper {
 			IWebRetriever webRetriever,
 			IMovieBuilderFactory movieBuilderFactory,
 			LoggerFactory loggerFactory,
-			IRandomWaiter waiter) {
+			IRandomWaiter waiter,
+			ISubFileUtilHelper fileUtilHelper) {
 		
+		this.setFileUtilHelper(fileUtilHelper);
 		this.setWaiter(waiter);
 		this.setWebRetriever(webRetriever);
 		this.setSettings(settings);
 		this.setMovieBuilderFactory(movieBuilderFactory);
 		this.setLog(loggerFactory.create(LogType.SUBS));
+	}
+
+	public ISubFileUtilHelper getFileUtilHelper() {
+		return fileUtilHelper;
+	}
+
+	public void setFileUtilHelper(ISubFileUtilHelper fileUtilHelper) {
+		this.fileUtilHelper = fileUtilHelper;
 	}
 
 	public IRandomWaiter getWaiter() {
@@ -124,7 +136,7 @@ public class SubFileDownloaderHelper implements ISubFileDownloaderHelper {
 		
 		//Store downloaded files in temporary storage
 		//SubtitleDownloader will move them to correct path
-		String tempSubPath = createTempSubsPath(mos);
+		String tempSubPath = this.getFileUtilHelper().createTempSubsPath(mos);
 		
 		int sizeCollection = listSubs.size();
 		int c = 1;
@@ -178,26 +190,6 @@ public class SubFileDownloaderHelper implements ISubFileDownloaderHelper {
 	}
 
 	
-	/**
-	 * Returns a temporary path to download subtitles to
-	 * @return
-	 */
-	@Override
-	public String createTempSubsPath(MovieOrSeries mos) {
-		String tempPath = 
-			FilenameUtils.normalize(
-				String.format("%s/temp/%s"
-					, this.getSettings().getSettings().getSubFinders().getSubsPath()
-					, mos.getID()));
-
-		File path = new File(tempPath);
-		if (!path.exists())
-			path.mkdirs();
-		
-		return tempPath;
-	}
-	
-
 	@Override
 	public void exit() {
 		this.setRunning(false);
