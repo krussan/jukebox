@@ -9,10 +9,8 @@ import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 
 public interface ISubtitleFileWriter {
 
-	File writeSubtitleToTempFileVTT(Subtitle sub) throws FileNotFoundException, IOException, SubtitleParsingException;
-
-	File writeSubtitleToTempFile(Subtitle sub) throws FileNotFoundException, IOException, SubtitleParsingException;
-
+	File getTempFile(Subtitle sub, String extension);
+	
 	File writeSubtitleToFile(Subtitle sub, File destinationFile)
 			throws IOException, SubtitleParsingException, FileNotFoundException;
 

@@ -206,8 +206,11 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 				filename = streamingMap.get(streamingFile);
 			}
 			else {
-				File tempFile = this.getSubWriter().writeSubtitleToTempFileVTT(sub);
+				File tempFile = this.getSubWriter().getTempFile(sub, "vtt");
 				filename = tempFile.getAbsolutePath();
+				
+				if (!tempFile.exists())
+					this.getSubWriter().writeSubtitleToFileVTT(sub, tempFile);
 			}
 			
 			return registerFile(

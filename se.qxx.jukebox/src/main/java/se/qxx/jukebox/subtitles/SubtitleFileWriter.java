@@ -10,6 +10,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BOMInputStream;
+import org.apache.commons.lang3.StringUtils;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -43,26 +44,20 @@ public class SubtitleFileWriter implements ISubtitleFileWriter {
 		this.log = log;
 	}
 
-	@Override
-	public File writeSubtitleToTempFileVTT(Subtitle sub) throws FileNotFoundException, IOException, SubtitleParsingException {
-		File tempDir = FileUtils.getTempDirectory();
-		File tempFile = new File(String.format("%s/%s.vtt", tempDir.getAbsolutePath(), FilenameUtils.removeExtension(sub.getFilename())));
-
-		this.getLog().Info(String.format("Writing sub to file :: %s", tempFile.getAbsolutePath()));
-		return writeSubtitleToFileVTT(sub, tempFile);
-	}
 
 	@Override
-	public File writeSubtitleToTempFile(Subtitle sub) throws FileNotFoundException, IOException, SubtitleParsingException {
+	public File getTempFile(Subtitle sub, String extension) {
 		File tempDir = FileUtils.getTempDirectory();
-		File tempFile = new File(String.format("%s/%s", tempDir.getAbsolutePath(), sub.getFilename()));
-
-		this.getLog().Info(String.format("Writing sub to file :: %s", tempFile.getAbsolutePath()));
-		return writeSubtitleToFile(sub, tempFile);
+		
+		return new File(String.format("%s/%s.%s", 
+				tempDir.getAbsolutePath(), 
+				FilenameUtils.removeExtension(sub.getFilename())),
+				extension);
 	}
 	
 	@Override
 	public File writeSubtitleToFile(Subtitle sub, File destinationFile) throws IOException, SubtitleParsingException, FileNotFoundException {
+		this.getLog().Info(String.format("Writing sub to file :: %s", destinationFile.getAbsolutePath()));
 		BOMInputStream bom = new BOMInputStream(new ByteArrayInputStream(sub.getTextdata().toByteArray()));
 		
 		IOUtils.copy(bom, new FileOutputStream(destinationFile));
@@ -73,6 +68,8 @@ public class SubtitleFileWriter implements ISubtitleFileWriter {
 
 	@Override
 	public File writeSubtitleToFileVTT(Subtitle sub, File destinationFile) throws IOException, SubtitleParsingException, FileNotFoundException {
+		this.getLog().Info(String.format("Writing sub to file :: %s", destinationFile.getAbsolutePath()));
+
 		BOMInputStream bom = new BOMInputStream(new ByteArrayInputStream(sub.getTextdata().toByteArray()));
 		
 		//TODO: change this based on extension
