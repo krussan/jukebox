@@ -29,27 +29,48 @@
 
         <ImageButton android:id="@+id/prev"
             style="@android:style/MediaButton.Previous"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
             android:contentDescription="@string/description" />
 
         <ImageButton android:id="@+id/rew"
             style="@android:style/MediaButton.Rew"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
             android:contentDescription="@string/description" />
 
         <ImageButton android:id="@+id/pause"
             style="@android:style/MediaButton.Play"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
             android:contentDescription="@string/description" />
 
         <ImageButton android:id="@+id/ffwd"
             style="@android:style/MediaButton.Ffwd"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
             android:contentDescription="@string/description" />
 
         <ImageButton android:id="@+id/next"
             style="@android:style/MediaButton.Next"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
             android:contentDescription="@string/description" />
 
     </LinearLayout>
 
     <LinearLayout
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
