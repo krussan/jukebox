@@ -139,6 +139,8 @@ class LocalCastProvider extends CastProvider implements MediaPlayer.OnBufferingU
     public void stop() {
         mediaPlayer.stop();
         mediaPlayer.release();
+
+
     }
 
     @Override

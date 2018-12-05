@@ -64,7 +64,8 @@ public class SubSelectActivity extends AppCompatActivity implements OnDismissLis
             this.getMedia(),
 				(response) -> {
             		runOnUiThread(() -> {
-						SubtitleLayoutAdapter adapter = new SubtitleLayoutAdapter(this, getMedia().getID(), response.getSubtitleList());
+						SubtitleLayoutAdapter adapter =
+							new SubtitleLayoutAdapter(this, getMedia().getID(), response.getSubtitleList());
                         v.setOnItemClickListener(adapter);
                         v.setAdapter(adapter);
 					});

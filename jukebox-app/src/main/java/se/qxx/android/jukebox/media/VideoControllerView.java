@@ -72,6 +72,7 @@ public class VideoControllerView extends FrameLayout {
     private static final String TAG = "VideoControllerView";
 
     private MediaPlayerControl  mPlayer;
+    private MediaPlayerEventListener eventListener;
     private Context             mContext;
     private ViewGroup           mAnchor;
     private View                mRoot;
@@ -95,6 +96,7 @@ public class VideoControllerView extends FrameLayout {
     private ImageButton         mPrevButton;
     private ImageButton         mFullscreenButton;
     private Handler             mHandler = new MessageHandler(this);
+    private ImageButton         mStop;
 
     public VideoControllerView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -134,6 +136,10 @@ public class VideoControllerView extends FrameLayout {
         updateFullScreen();
     }
 
+    public void setEventListener(MediaPlayerEventListener listener) {
+        eventListener = listener;
+    }
+
     /**
      * Set the view that acts as the anchor for the control view.
      * This can for example be a VideoView, or your Activity's main view.
@@ -168,19 +174,19 @@ public class VideoControllerView extends FrameLayout {
     }
 
     private void initControllerView(View v) {
-        mPauseButton = (ImageButton) v.findViewById(R.id.pause);
+        mPauseButton = v.findViewById(R.id.pause);
         if (mPauseButton != null) {
             mPauseButton.requestFocus();
             mPauseButton.setOnClickListener(mPauseListener);
         }
 
-        mFullscreenButton = (ImageButton) v.findViewById(R.id.fullscreen);
+        mFullscreenButton = v.findViewById(R.id.fullscreen);
         if (mFullscreenButton != null) {
             mFullscreenButton.requestFocus();
             mFullscreenButton.setOnClickListener(mFullscreenListener);
         }
 
-        mFfwdButton = (ImageButton) v.findViewById(R.id.ffwd);
+        mFfwdButton = v.findViewById(R.id.ffwd);
         if (mFfwdButton != null) {
             mFfwdButton.setOnClickListener(mFfwdListener);
             if (!mFromXml) {
@@ -188,7 +194,7 @@ public class VideoControllerView extends FrameLayout {
             }
         }
 
-        mRewButton = (ImageButton) v.findViewById(R.id.rew);
+        mRewButton = v.findViewById(R.id.rew);
         if (mRewButton != null) {
             mRewButton.setOnClickListener(mRewListener);
             if (!mFromXml) {
@@ -197,16 +203,16 @@ public class VideoControllerView extends FrameLayout {
         }
 
         // By default these are hidden. They will be enabled when setPrevNextListeners() is called 
-        mNextButton = (ImageButton) v.findViewById(R.id.next);
+        mNextButton = v.findViewById(R.id.next);
         if (mNextButton != null && !mFromXml && !mListenersSet) {
             mNextButton.setVisibility(View.GONE);
         }
-        mPrevButton = (ImageButton) v.findViewById(R.id.prev);
+        mPrevButton = v.findViewById(R.id.prev);
         if (mPrevButton != null && !mFromXml && !mListenersSet) {
             mPrevButton.setVisibility(View.GONE);
         }
 
-        mProgress = (ProgressBar) v.findViewById(R.id.mediacontroller_progress);
+        mProgress = v.findViewById(R.id.mediacontroller_progress);
         if (mProgress != null) {
             if (mProgress instanceof SeekBar) {
                 SeekBar seeker = (SeekBar) mProgress;
@@ -215,8 +221,13 @@ public class VideoControllerView extends FrameLayout {
             mProgress.setMax(1000);
         }
 
-        mEndTime = (TextView) v.findViewById(R.id.time);
-        mCurrentTime = (TextView) v.findViewById(R.id.time_current);
+        mStop = v.findViewById(R.id.stop);
+        if (mStop != null) {
+            mPauseButton.setOnClickListener(mStopListener);
+        }
+
+        mEndTime = v.findViewById(R.id.time);
+        mCurrentTime = v.findViewById(R.id.time_current);
         mFormatBuilder = new StringBuilder();
         mFormatter = new Formatter(mFormatBuilder, Locale.getDefault());
 
@@ -420,19 +431,24 @@ public class VideoControllerView extends FrameLayout {
         return super.dispatchKeyEvent(event);
     }
 
-    private View.OnClickListener mPauseListener = new View.OnClickListener() {
-        public void onClick(View v) {
-            doPauseResume();
-            show(sDefaultTimeout);
-        }
+    private View.OnClickListener mPauseListener = v -> {
+        doPauseResume();
+        show(sDefaultTimeout);
     };
 
-    private View.OnClickListener mFullscreenListener = new View.OnClickListener() {
-        public void onClick(View v) {
-            doToggleFullscreen();
-            show(sDefaultTimeout);
-        }
+    private View.OnClickListener mFullscreenListener = v -> {
+        doToggleFullscreen();
+        show(sDefaultTimeout);
     };
+
+    private View.OnClickListener mStopListener = v -> {
+        if (mPlayer != null)
+            mPlayer.stop();
+
+        if (eventListener != null)
+            eventListener.onMediaPlayerStop();
+    };
+
 
     public void updatePausePlay() {
         if (mRoot == null || mPauseButton == null || mPlayer == null) {
@@ -622,6 +638,7 @@ public class VideoControllerView extends FrameLayout {
     public interface MediaPlayerControl {
         void    start();
         void    pause();
+        void    stop();
         int     getDuration();
         int     getCurrentPosition();
         void    seekTo(int pos);
@@ -632,6 +649,12 @@ public class VideoControllerView extends FrameLayout {
         boolean canSeekForward();
         boolean isFullScreen();
         void    toggleFullScreen();
+    }
+
+    public interface MediaPlayerEventListener {
+        void onMediaPlayerStop();
+        void onMediaPlayerSubtitleClick();
+        void onMediaPlayerFullscreen();
     }
 
     private static class MessageHandler extends Handler {

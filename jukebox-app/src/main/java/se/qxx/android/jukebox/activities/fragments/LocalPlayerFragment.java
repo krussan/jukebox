@@ -1,6 +1,7 @@
 package se.qxx.android.jukebox.activities.fragments;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,10 +16,11 @@ import android.widget.MediaController;
 import android.widget.ProgressBar;
 
 import se.qxx.android.jukebox.R;
+import se.qxx.android.jukebox.activities.SubSelectActivity;
 import se.qxx.android.jukebox.media.VideoControllerView;
 import se.qxx.android.tools.Logger;
 
-public class LocalPlayerFragment extends PlayerFragment implements MediaPlayer.OnPreparedListener {
+public class LocalPlayerFragment extends PlayerFragment implements MediaPlayer.OnPreparedListener, VideoControllerView.MediaPlayerEventListener {
     private static final String TAG="LocalPlayerFragment";
 
     private boolean loadingVisible;
@@ -58,6 +60,7 @@ public class LocalPlayerFragment extends PlayerFragment implements MediaPlayer.O
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
         mcontroller.setMediaPlayer(this.getCastProvider());
+        mcontroller.setEventListener(this);
 
         mcontroller.setAnchorView(getView().findViewById(R.id.videoSurfaceContainer));
         mcontroller.setEnabled(true);
@@ -124,4 +127,20 @@ public class LocalPlayerFragment extends PlayerFragment implements MediaPlayer.O
     }
 
 
+    @Override
+    public void onMediaPlayerStop() {
+        getActivity().finish();
+    }
+
+    @Override
+    public void onMediaPlayerSubtitleClick() {
+        Intent i = new Intent(getActivity(), SubSelectActivity.class);
+        i.putExtra("media", this.getMediaList().get(this.getCurrentMediaIndex()));
+        startActivity(i);
+    }
+
+    @Override
+    public void onMediaPlayerFullscreen() {
+
+    }
 }

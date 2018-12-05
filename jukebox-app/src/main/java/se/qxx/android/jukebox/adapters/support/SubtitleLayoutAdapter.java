@@ -13,28 +13,35 @@ import java.util.List;
 
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.IncludeSubtitleRating;
+import se.qxx.android.jukebox.cast.CastProvider;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.domain.Sorter;
+import se.qxx.jukebox.domain.SubtitleUri;
 
 public class SubtitleLayoutAdapter extends BaseAdapter implements AdapterView.OnItemClickListener {
 
 	private Context context;
 	private int mediaId;
-	private List<Subtitle> sortedSubtitles = null;
+	private List<SubtitleUri> sortedSubtitles = null;
 	private int selectedSubId = 0;
 
-	public SubtitleLayoutAdapter(Context context, int mediaId, List<Subtitle> subtitles) {
+	public interface SubtitleSelectedListener {
+		void onSubtitleSelected(int id);
+	}
+
+	public SubtitleLayoutAdapter(Context context, int mediaId, List<SubtitleUri> subtitles) {
 		super();
 		this.context = context;
 		this.mediaId = mediaId;
-		this.sortedSubtitles = Sorter.sortSubtitlesByRating(subtitles);
+		this.sortedSubtitles = Sorter.sortSubtitlesUrisByRating(subtitles);
 
-		if (this.sortedSubtitles.size() > 0)
-		    this.selectedSubId = this.sortedSubtitles.get(0).getID();
+		if (this.sortedSubtitles.size() > 0) {
+			this.selectedSubId = this.sortedSubtitles.get(0).getSubtitle().getID();
+		}
 	}
 	
 	@Override
@@ -83,14 +90,17 @@ public class SubtitleLayoutAdapter extends BaseAdapter implements AdapterView.On
 
 		Logger.Log().d(String.format("Setting subtitle to %s", sub.getDescription()));
 
-
 		if (ChromeCastConfiguration.isChromeCastActive()) {
 			RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(this.context);
 
 			if (client != null) {
 				client.setActiveMediaTracks(new long[]{(long) arg2});
 			}
-		} else {
+		}
+		else if (CastProvider.isLocalPlayer()) {
+
+		}
+		else {
 			final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
 					JukeboxSettings.get().getServerIpAddress(),
 					JukeboxSettings.get().getServerPort());
