@@ -82,12 +82,12 @@ public class TestWebServer {
 	}
 	
 	@Test
-	public void TestDuplicateRegistrationSubtitle() {
+	public void TestDuplicateRegistrationSubtitle_returnsLatestFile() {
 		webServer.registerFile("stream1.mp4", "original_file.mp4");
 		webServer.registerFile("stream1.mp4", "other_file.mp4");
 		
 		String streamingFile = webServer.getRegisteredFile("stream1.mp4");
-		assertEquals("original_file.mp4", streamingFile);
+		assertEquals("other_file.mp4", streamingFile);
 
 	}
 }

@@ -137,8 +137,7 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 	@Override
 	public StreamingFile registerFile(String streamingFilename, String filename) {
 		
-		if (!fileIsRegistered(streamingFilename))
-			streamingMap.put(streamingFilename, filename);
+		streamingMap.put(streamingFilename, filename);
 		
 		String uri = getStreamUri(streamingFilename);
 		this.getLog().Info(String.format("Registering file %s :: %s", streamingFilename, filename));
