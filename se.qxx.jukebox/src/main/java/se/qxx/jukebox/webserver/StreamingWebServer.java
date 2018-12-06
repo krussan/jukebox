@@ -673,7 +673,7 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 	}
 	
 	private String getStreamingUri(String type, int id, String extension) {
-		return String.format("%s%s.%s", id, extension);
+		return String.format("%s%s.%s", type, id, extension);
 	}
 	
 	@Override

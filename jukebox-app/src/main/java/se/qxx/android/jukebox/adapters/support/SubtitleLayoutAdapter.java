@@ -55,12 +55,12 @@ public class SubtitleLayoutAdapter extends BaseAdapter implements AdapterView.On
 	            LayoutInflater vi = (LayoutInflater)this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	            v = vi.inflate(R.layout.subtitleitem, null);
 	        }
-	        Subtitle sub = (Subtitle)this.getItem(position);
+	        JukeboxDomain.SubtitleUri sub = (JukeboxDomain.SubtitleUri)this.getItem(position);
 
-	        if (sub.getID() != this.selectedSubId)
+	        if (sub.getSubtitle().getID() != this.selectedSubId)
 	            v.findViewById(R.id.imgSelected).setVisibility(View.GONE);
 
-	        IncludeSubtitleRating.initialize(sub, v);
+	        IncludeSubtitleRating.initialize(sub.getSubtitle(), v);
 		}
 		catch (Exception e) {
 			Logger.Log().e("Error occured while populating subtitle list", e);
