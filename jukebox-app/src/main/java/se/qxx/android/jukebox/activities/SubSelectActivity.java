@@ -8,11 +8,13 @@ import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.android.jukebox.dialogs.JukeboxConnectionProgressDialog;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
+import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -20,10 +22,14 @@ import android.view.View;
 import android.widget.ListView;
 
 import com.google.android.gms.cast.framework.CastContext;
-import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 
-public class SubSelectActivity extends AppCompatActivity implements OnDismissListener {
+public class SubSelectActivity extends AppCompatActivity  implements SubtitleLayoutAdapter.SubtitleSelectedListener{
     private CastContext mCastContext;
+
+    public enum SubSelectMode {
+        Stay,
+        Return
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,18 +71,13 @@ public class SubSelectActivity extends AppCompatActivity implements OnDismissLis
 				(response) -> {
             		runOnUiThread(() -> {
 						SubtitleLayoutAdapter adapter =
-							new SubtitleLayoutAdapter(this, getMedia().getID(), response.getSubtitleList());
+							new SubtitleLayoutAdapter(this, getMedia().getID(), response.getSubtitleUrisList(), this);
                         v.setOnItemClickListener(adapter);
                         v.setAdapter(adapter);
 					});
 				});
 
     }
-
-	@Override
-	public void onDismiss(DialogInterface dialog) {
-		this.finish();
-	}
 
 	public Media getMedia() {
         Bundle b = getIntent().getExtras();
@@ -85,7 +86,25 @@ public class SubSelectActivity extends AppCompatActivity implements OnDismissLis
             return (Media)b.getSerializable("media");
         }
 
+
         return null;
     }
-	
+
+    public SubSelectMode getSubSelectMode() {
+        Bundle b = getIntent().getExtras();
+        if (b != null)
+            return (SubSelectMode)b.getSerializable("subSelectMode");
+
+        return SubSelectMode.Stay;
+    }
+
+    @Override
+    public void onSubtitleSelected(JukeboxDomain.SubtitleUri subtitleUri) {
+        Intent i = new Intent();
+        i.putExtra("SubSelected", subtitleUri);
+        setResult(RESULT_OK, i);
+
+        if (this.getSubSelectMode() == SubSelectMode.Return)
+            this.finish();
+    }
 }

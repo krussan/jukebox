@@ -18,26 +18,28 @@ import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
+import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.domain.Sorter;
-import se.qxx.jukebox.domain.SubtitleUri;
 
 public class SubtitleLayoutAdapter extends BaseAdapter implements AdapterView.OnItemClickListener {
 
 	private Context context;
 	private int mediaId;
-	private List<SubtitleUri> sortedSubtitles = null;
+	private List<JukeboxDomain.SubtitleUri> sortedSubtitles = null;
 	private int selectedSubId = 0;
+	private SubtitleSelectedListener subtitleSelectedListener = null;
 
 	public interface SubtitleSelectedListener {
-		void onSubtitleSelected(int id);
+		void onSubtitleSelected(JukeboxDomain.SubtitleUri subtitleUri);
 	}
 
-	public SubtitleLayoutAdapter(Context context, int mediaId, List<SubtitleUri> subtitles) {
+	public SubtitleLayoutAdapter(Context context, int mediaId, List<JukeboxDomain.SubtitleUri> subtitles, SubtitleSelectedListener subtitleSelectedListener) {
 		super();
 		this.context = context;
 		this.mediaId = mediaId;
 		this.sortedSubtitles = Sorter.sortSubtitlesUrisByRating(subtitles);
+		this.subtitleSelectedListener = subtitleSelectedListener;
 
 		if (this.sortedSubtitles.size() > 0) {
 			this.selectedSubId = this.sortedSubtitles.get(0).getSubtitle().getID();
@@ -84,35 +86,14 @@ public class SubtitleLayoutAdapter extends BaseAdapter implements AdapterView.On
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-		final Subtitle sub = (Subtitle) arg0.getItemAtPosition(arg2);
+		JukeboxDomain.SubtitleUri sub = (JukeboxDomain.SubtitleUri) arg0.getItemAtPosition(arg2);
 
-		this.selectedSubId = sub.getID();
+		this.selectedSubId = sub.getSubtitle().getID();
 
-		Logger.Log().d(String.format("Setting subtitle to %s", sub.getDescription()));
+		Logger.Log().d(String.format("Setting subtitle to %s", sub.getSubtitle().getDescription()));
 
-		if (ChromeCastConfiguration.isChromeCastActive()) {
-			RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(this.context);
-
-			if (client != null) {
-				client.setActiveMediaTracks(new long[]{(long) arg2});
-			}
-		}
-		else if (CastProvider.isLocalPlayer()) {
-
-		}
-		else {
-			final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
-					JukeboxSettings.get().getServerIpAddress(),
-					JukeboxSettings.get().getServerPort());
-
-			Thread t = new Thread(() ->
-					jh.setSubtitle(
-							JukeboxSettings.get().getCurrentMediaPlayer(),
-							this.mediaId,
-							sub));
-			t.run();
-
-		}
+		if (subtitleSelectedListener != null)
+			subtitleSelectedListener.onSubtitleSelected(sub);
 
 		notifyDataSetInvalidated();
 	}

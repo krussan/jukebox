@@ -19,6 +19,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.cast.MediaTrack;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.Session;
 import com.google.android.gms.cast.framework.SessionManager;
@@ -26,6 +27,8 @@ import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.List;
 
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.SubSelectActivity;
@@ -35,10 +38,11 @@ import se.qxx.android.jukebox.widgets.Seeker;
 import se.qxx.android.jukebox.widgets.SeekerListener;
 import se.qxx.android.jukebox.widgets.UpdateSeekIndicator;
 import se.qxx.android.tools.Logger;
+import se.qxx.jukebox.domain.JukeboxDomain;
+
+import static android.app.Activity.RESULT_OK;
 
 public class RemotePlayerFragment extends PlayerFragment implements SeekerListener, SeekBar.OnSeekBarChangeListener, SessionManagerListener<Session>, View.OnClickListener {
-    private boolean loadingVisible;
-    private MediaController mcontroller ;
     private Seeker seeker;
     private boolean isManualSeeking = false;
 
@@ -227,7 +231,8 @@ public class RemotePlayerFragment extends PlayerFragment implements SeekerListen
             case R.id.btnSubSelection:
                 Intent i = new Intent(getActivity(), SubSelectActivity.class);
                 i.putExtra("media", this.getMediaList().get(this.getCurrentMediaIndex()));
-                startActivity(i);
+                i.putExtra("subSelectMode", SubSelectActivity.SubSelectMode.Stay);
+                startActivityForResult(i, 2);
                 break;
             default:
                 break;
@@ -353,4 +358,47 @@ public class RemotePlayerFragment extends PlayerFragment implements SeekerListen
             seeker.start();
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 2) {
+            if(resultCode == RESULT_OK) {
+                JukeboxDomain.SubtitleUri subtitleUri = (JukeboxDomain.SubtitleUri)data.getExtras().getSerializable("SubSelected");
+                setSubtitle(subtitleUri);
+            }
+        }
+    }
+
+    private void setSubtitle(JukeboxDomain.SubtitleUri subtitleUri) {
+        if (ChromeCastConfiguration.isChromeCastActive()) {
+            RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(this.getContext());
+
+            int id = getMediaTrackID(client, subtitleUri);
+            if (id >= 0)
+                client.setActiveMediaTracks(new long[] {(long) id});
+
+            //if (client != null)
+                //client.setActiveMediaTracks(new long[]{(long) arg2});
+        }
+        else {
+            Thread t = new Thread(() ->
+                    this.getConnectionHandler().setSubtitle(
+                        JukeboxSettings.get().getCurrentMediaPlayer(),
+                        this.getID(),
+                        subtitleUri.getSubtitle()));
+            t.run();
+
+        }
+
+    }
+
+    private int getMediaTrackID(RemoteMediaClient client, JukeboxDomain.SubtitleUri subtitleUri) {
+        List<MediaTrack> tracks = client.getMediaInfo().getMediaTracks();
+        for (int i = 0; i< tracks.size(); i++) {
+            if (tracks.get(0).getContentId() == subtitleUri.getUrl())
+                return i;
+        }
+
+        return -1;
+    }
 }

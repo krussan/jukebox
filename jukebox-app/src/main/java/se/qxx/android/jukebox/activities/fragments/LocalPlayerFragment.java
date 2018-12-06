@@ -20,6 +20,8 @@ import se.qxx.android.jukebox.activities.SubSelectActivity;
 import se.qxx.android.jukebox.media.VideoControllerView;
 import se.qxx.android.tools.Logger;
 
+import static android.app.Activity.RESULT_OK;
+
 public class LocalPlayerFragment extends PlayerFragment implements MediaPlayer.OnPreparedListener, VideoControllerView.MediaPlayerEventListener {
     private static final String TAG="LocalPlayerFragment";
 
@@ -136,11 +138,22 @@ public class LocalPlayerFragment extends PlayerFragment implements MediaPlayer.O
     public void onMediaPlayerSubtitleClick() {
         Intent i = new Intent(getActivity(), SubSelectActivity.class);
         i.putExtra("media", this.getMediaList().get(this.getCurrentMediaIndex()));
-        startActivity(i);
+        i.putExtra("subSelectMode", SubSelectActivity.SubSelectMode.Return);
+        startActivityForResult(i, 1);
     }
 
     @Override
     public void onMediaPlayerFullscreen() {
 
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if(resultCode == RESULT_OK) {
+                String strEditText = data.getStringExtra("editTextValue");
+            }
+        }
     }
 }
