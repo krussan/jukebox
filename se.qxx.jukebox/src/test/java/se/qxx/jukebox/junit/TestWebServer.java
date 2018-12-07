@@ -5,7 +5,9 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import javax.xml.bind.JAXBException;
 
@@ -14,11 +16,16 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import com.google.protobuf.ByteString;
+
 import se.qxx.jukebox.core.Log;
 import se.qxx.jukebox.core.Log.LogType;
+import se.qxx.jukebox.domain.JukeboxDomain.Rating;
+import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IImdbSettings;
@@ -29,6 +36,7 @@ import se.qxx.jukebox.interfaces.ISubtitleFileWriter;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.imdb.ImdbSettings;
 import se.qxx.jukebox.settings.parser.ParserSettings;
+import se.qxx.jukebox.webserver.StreamingFile;
 import se.qxx.jukebox.webserver.StreamingWebServer;
 
 public class TestWebServer {
@@ -89,5 +97,24 @@ public class TestWebServer {
 		String streamingFile = webServer.getRegisteredFile("stream1.mp4");
 		assertEquals("other_file.mp4", streamingFile);
 
+	}
+	
+	@Test
+	public void TestRegisterSubtitle() throws UnsupportedEncodingException {
+		webServer.initialize();	
+		
+		Subtitle sub = Subtitle.newBuilder()
+			.setID(1)
+			.setFilename("abc.srt")
+			.setMediaIndex(0)
+			.setRating(Rating.ExactMatch)
+			.setDescription("ABC-SUB")
+			.setLanguage("SE")
+			.setTextdata(ByteString.copyFrom("This is a text", "iso-8859-1"))
+			.build();
+		
+		when(subWriterMock.getTempFile(any(Subtitle.class), any(String.class))).thenReturn(new File("sub1.vtt"));
+		StreamingFile file = webServer.registerSubtitle(sub);
+		assertEquals("http://127.0.0.1:8001/sub1.vtt", file.getUri());
 	}
 }
