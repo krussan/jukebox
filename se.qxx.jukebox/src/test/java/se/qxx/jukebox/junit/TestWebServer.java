@@ -57,9 +57,7 @@ public class TestWebServer {
 		
 		settings = new Settings(imdbSettings, parserSettings);
 		
-		log = new Log(settings, LogType.NONE)
-				;
-		
+		log = new Log(settings, LogType.NONE);
 		when(loggerFactoryMock.create(any(LogType.class))).thenReturn(log);
 		
 		webServer = new StreamingWebServer(

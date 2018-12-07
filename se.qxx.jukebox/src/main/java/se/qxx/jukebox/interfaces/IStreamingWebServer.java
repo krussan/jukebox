@@ -33,4 +33,7 @@ public interface IStreamingWebServer {
 
 	public boolean fileIsRegistered(String streamingFile);
 	public String getRegisteredFile(String streamingFile);
+
+	int getListeningPort();
+	
 }

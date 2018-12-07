@@ -16,5 +16,5 @@ public interface ISubtitleFileWriter {
 
 	File writeSubtitleToFileVTT(Subtitle sub, File destinationFile)
 			throws IOException, SubtitleParsingException, FileNotFoundException;
-
+	
 }
