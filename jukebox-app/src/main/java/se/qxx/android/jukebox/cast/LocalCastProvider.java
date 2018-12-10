@@ -137,10 +137,6 @@ class LocalCastProvider extends CastProvider implements MediaPlayer.OnBufferingU
 
     @Override
     public void stop() {
-        mediaPlayer.stop();
-        mediaPlayer.release();
-
-
     }
 
     @Override
@@ -161,12 +157,15 @@ class LocalCastProvider extends CastProvider implements MediaPlayer.OnBufferingU
     @Override
     public void surfaceCreated(SurfaceView view) {
         surfaceView = view;
+        if (mediaPlayer != null)
+            mediaPlayer.setDisplay(view.getHolder());
     }
 
     @Override
     public void surfaceDestroyed() {
-        if (mediaPlayer != null)
+        if (mediaPlayer != null) {
             mediaPlayer.setDisplay(null);
+        }
     }
 
     public void setViewLayoutRatio() {

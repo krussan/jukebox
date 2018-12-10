@@ -223,7 +223,7 @@ public class VideoControllerView extends FrameLayout {
 
         mStop = v.findViewById(R.id.stop);
         if (mStop != null) {
-            mPauseButton.setOnClickListener(mStopListener);
+            mStop.setOnClickListener(mStopListener);
         }
 
         mEndTime = v.findViewById(R.id.time);
@@ -449,6 +449,10 @@ public class VideoControllerView extends FrameLayout {
             eventListener.onMediaPlayerStop();
     };
 
+    private View.OnClickListener mSubtitlesListener = v -> {
+        if (eventListener != null)
+            eventListener.onMediaPlayerSubtitleClick();
+    };
 
     public void updatePausePlay() {
         if (mRoot == null || mPauseButton == null || mPlayer == null) {

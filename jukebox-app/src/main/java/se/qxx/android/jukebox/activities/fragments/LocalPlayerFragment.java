@@ -131,6 +131,9 @@ public class LocalPlayerFragment extends PlayerFragment implements MediaPlayer.O
 
     @Override
     public void onMediaPlayerStop() {
+        if (getCastProvider() != null)
+            getCastProvider().stop();
+
         getActivity().finish();
     }
 
