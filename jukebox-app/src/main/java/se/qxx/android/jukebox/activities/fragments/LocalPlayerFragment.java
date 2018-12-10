@@ -1,23 +1,21 @@
 package se.qxx.android.jukebox.activities.fragments;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.MediaController;
 import android.widget.ProgressBar;
 
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.SubSelectActivity;
 import se.qxx.android.jukebox.media.VideoControllerView;
+import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.tools.Logger;
 
 import static android.app.Activity.RESULT_OK;
@@ -32,6 +30,7 @@ public class LocalPlayerFragment extends PlayerFragment implements MediaPlayer.O
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        JukeboxSettings.init(getContext());
     }
 
     @Override
@@ -124,6 +123,7 @@ public class LocalPlayerFragment extends PlayerFragment implements MediaPlayer.O
     public void onStop() {
         super.onStop();
 
+        //TODO: Save the media ID and position from media player
         if (getCastProvider() != null)
             getCastProvider().stop();
     }
@@ -140,7 +140,7 @@ public class LocalPlayerFragment extends PlayerFragment implements MediaPlayer.O
     @Override
     public void onMediaPlayerSubtitleClick() {
         Intent i = new Intent(getActivity(), SubSelectActivity.class);
-        i.putExtra("media", this.getMediaList().get(this.getCurrentMediaIndex()));
+        i.putExtra("media", this.getMedia());
         i.putExtra("subSelectMode", SubSelectActivity.SubSelectMode.Return);
         startActivityForResult(i, 1);
     }

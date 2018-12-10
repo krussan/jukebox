@@ -18,12 +18,15 @@ import android.widget.Toast;
 import com.google.protobuf.ByteString;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONException;
 
+import java.io.IOException;
 import java.util.List;
 
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.ViewMode;
 import se.qxx.android.jukebox.cast.CastProvider;
+import se.qxx.android.jukebox.settings.CacheData;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.jukebox.widgets.SeekerListener;
 import se.qxx.android.tools.GUITools;
@@ -42,6 +45,7 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
     private int currentMediaIndex = 0;
 
     private String imdbUrl = StringUtils.EMPTY;
+    private CacheData cacheData;
 
 
     private int getSeasonNumber() {
@@ -108,12 +112,16 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
         this.loadingVisible = loadingVisible;
     }
 
+    protected JukeboxDomain.Media getMedia() {
+        return this.getMediaList().get(this.getCurrentMediaIndex());
+    }
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        cacheData = new CacheData(getContext());
         this.setConnectionHandler(
             new JukeboxConnectionHandler(
                 JukeboxSettings.get().getServerIpAddress(),
@@ -268,6 +276,17 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
                 });
     }
 
+
+    @Override
+    public void onStop() {
+        //save media state
+        //cacheData.saveMediaState(this.getMedia().getID(), getPla);
+        super.onStop();
+    }
+
+    protected void saveMediaState(int seekPosition) {
+        cacheData.saveMediaState(this.getMedia().getID(), seekPosition);
+    }
 
 
     public abstract void setVisibility(View v);

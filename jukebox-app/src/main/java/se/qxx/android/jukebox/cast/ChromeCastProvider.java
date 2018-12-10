@@ -247,12 +247,22 @@ public class ChromeCastProvider extends CastProvider implements RemoteMediaClien
 
     @Override
     public int getDuration() {
-        return 0;
+        RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(getParentContext());
+
+        if (client == null)
+            return 0;
+        else
+            return (int)client.getStreamDuration();
     }
 
     @Override
     public int getCurrentPosition() {
-        return 0;
+        RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(getParentContext());
+
+        if (client == null)
+            return 0;
+        else
+            return (int)client.getApproximateStreamPosition();
     }
 
     @Override
