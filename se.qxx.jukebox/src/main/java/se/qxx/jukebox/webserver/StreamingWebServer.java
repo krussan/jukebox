@@ -218,7 +218,7 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 					filename);
 			
 		} catch (Exception e) {
-			this.getLog().Error("ERROR while parsing and writing subtitle file");
+			this.getLog().Error("ERROR while parsing and writing subtitle file", e);
 		}
 		
 		return null;

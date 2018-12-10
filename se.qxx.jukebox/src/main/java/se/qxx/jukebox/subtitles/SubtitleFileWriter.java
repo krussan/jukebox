@@ -51,8 +51,8 @@ public class SubtitleFileWriter implements ISubtitleFileWriter {
 		
 		return new File(String.format("%s/%s.%s", 
 				tempDir.getAbsolutePath(), 
-				FilenameUtils.removeExtension(sub.getFilename())),
-				extension);
+				FilenameUtils.removeExtension(sub.getFilename()),
+				extension));
 	}
 	
 	@Override
