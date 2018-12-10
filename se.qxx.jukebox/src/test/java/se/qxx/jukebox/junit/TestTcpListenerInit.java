@@ -47,8 +47,11 @@ public class TestTcpListenerInit {
 	
 	@Test
 	public void TestInitializeTcpListener() {
-		Executor executor = new Executor();
 		IJukeboxLogger log = new Log(settingsMock, LogType.NONE);
+		when(loggerFactoryMock.create(any(LogType.class))).thenReturn(log);
+		
+		Executor executor = new Executor(loggerFactoryMock);
+		
 		JukeboxRpcServerConnection conn = new JukeboxRpcServerConnection(
 				settingsMock, 
 				dbMock, 
@@ -58,7 +61,6 @@ public class TestTcpListenerInit {
 				loggerFactoryMock, 
 				webServerMock);
 		
-		when(loggerFactoryMock.create(any(LogType.class))).thenReturn(log);
 		when(rpcFactoryMock.create(any(IStreamingWebServer.class))).thenReturn(conn);
 		
 		TcpListener listener = new TcpListener(
