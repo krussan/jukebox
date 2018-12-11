@@ -17,10 +17,11 @@ import se.qxx.android.jukebox.activities.SubSelectActivity;
 import se.qxx.android.jukebox.media.VideoControllerView;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.tools.Logger;
+import se.qxx.jukebox.domain.JukeboxDomain;
 
 import static android.app.Activity.RESULT_OK;
 
-public class LocalPlayerFragment extends PlayerFragment implements MediaPlayer.OnPreparedListener, VideoControllerView.MediaPlayerEventListener {
+public class LocalPlayerFragment extends PlayerFragment implements MediaPlayer.OnPreparedListener, VideoControllerView.MediaPlayerEventListener  {
     private static final String TAG="LocalPlayerFragment";
 
     private boolean loadingVisible;
@@ -139,10 +140,11 @@ public class LocalPlayerFragment extends PlayerFragment implements MediaPlayer.O
 
     @Override
     public void onMediaPlayerSubtitleClick() {
-        Intent i = new Intent(getActivity(), SubSelectActivity.class);
-        i.putExtra("media", this.getMedia());
-        i.putExtra("subSelectMode", SubSelectActivity.SubSelectMode.Return);
-        startActivityForResult(i, 1);
+        //Intent i = new Intent(getActivity(), SubSelectActivity.class);
+        //i.putExtra("media", this.getMedia());
+        //i.putExtra("subSelectMode", SubSelectActivity.SubSelectMode.Return);
+        //startActivityForResult(i, 1);
+        showSubtitleDialog();
     }
 
     @Override
@@ -158,5 +160,11 @@ public class LocalPlayerFragment extends PlayerFragment implements MediaPlayer.O
                 String strEditText = data.getStringExtra("editTextValue");
             }
         }
+    }
+
+    @Override
+    public void SubtitleSelected(int id) {
+        this.getCastProvider().
+        Log.d(TAG, String.format("Setting subtitle :: %s", subtitleUri.getSubtitle().getFilename()));
     }
 }

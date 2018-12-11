@@ -241,4 +241,5 @@ public abstract class CastProvider implements VideoControllerView.MediaPlayerCon
     public abstract boolean usesMediaController();
     public abstract void surfaceCreated(SurfaceView view);
     public abstract void surfaceDestroyed();
+    public abstract void setSubtitle(JukeboxDomain.SubtitleUri subtitleUri);
 }

@@ -2,12 +2,17 @@ package se.qxx.android.jukebox.cast;
 
 import android.content.Context;
 import android.media.MediaPlayer;
+import android.media.TimedText;
 import android.net.Uri;
+import android.util.Log;
 import android.view.SurfaceView;
 
 import com.google.protobuf.RpcCallback;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.IOException;
+import java.util.List;
 
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
@@ -15,8 +20,10 @@ import se.qxx.jukebox.domain.JukeboxDomain;
 
 class LocalCastProvider extends CastProvider implements MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnVideoSizeChangedListener {
 
+    private static final String TAG = "LocalCastProvider";
     MediaPlayer mediaPlayer = null;
     SurfaceView surfaceView = null;
+    List<String> subtitleUriList;
 
     @Override
     public void initialize() {
@@ -28,6 +35,8 @@ class LocalCastProvider extends CastProvider implements MediaPlayer.OnBufferingU
     public RpcCallback<JukeboxDomain.JukeboxResponseStartMovie> getCallback() {
         return response -> {
             if (response != null) {
+                subtitleUriList = response.getSubtitleUrisList();
+
                 Context context = getParentContext();
                 Uri uri = Uri.parse(response.getUri());
 
@@ -51,7 +60,6 @@ class LocalCastProvider extends CastProvider implements MediaPlayer.OnBufferingU
 
                     mediaPlayer.start();
 
-                    initializeSubtitles();
                 }
             }
         };
@@ -75,7 +83,10 @@ class LocalCastProvider extends CastProvider implements MediaPlayer.OnBufferingU
 
     @Override
     public void start() {
-        mediaPlayer.start();
+        if (mediaPlayer != null)
+            mediaPlayer.start();
+        else
+            Log.d(TAG, "Mediaplayer is null on start");
     }
 
     @Override
@@ -85,12 +96,19 @@ class LocalCastProvider extends CastProvider implements MediaPlayer.OnBufferingU
 
     @Override
     public int getDuration() {
-        return mediaPlayer.getDuration();
+
+        if (mediaPlayer != null)
+            return mediaPlayer.getDuration();
+        else
+            return 0;
     }
 
     @Override
     public int getCurrentPosition() {
-        return mediaPlayer.getCurrentPosition();
+        if (mediaPlayer != null)
+            return mediaPlayer.getCurrentPosition();
+        else
+            return 0;
     }
 
     @Override
@@ -102,7 +120,10 @@ class LocalCastProvider extends CastProvider implements MediaPlayer.OnBufferingU
 
     @Override
     public boolean isPlaying() {
-        return mediaPlayer.isPlaying();
+        if (mediaPlayer != null)
+            return mediaPlayer.isPlaying();
+        else
+            return false;
     }
 
     @Override
@@ -165,6 +186,18 @@ class LocalCastProvider extends CastProvider implements MediaPlayer.OnBufferingU
     public void surfaceDestroyed() {
         if (mediaPlayer != null) {
             mediaPlayer.setDisplay(null);
+        }
+    }
+
+    @Override
+    public void setSubtitle(JukeboxDomain.SubtitleUri subtitleUri) {
+        for (int i=0;i<mediaPlayer.getTrackInfo().length;i++) {
+            MediaPlayer.TrackInfo info = mediaPlayer.getTrackInfo()[i];
+            
+            if (info.getTrackType() == MediaPlayer.TrackInfo.MEDIA_TRACK_TYPE_TIMEDTEXT)
+                    //&& StringUtils.equalsIgnoreCase(info., subtitleUri.getUrl())) {
+                mediaPlayer.selectTrack(i);
+            }
         }
     }
 

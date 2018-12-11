@@ -97,6 +97,7 @@ public class VideoControllerView extends FrameLayout {
     private ImageButton         mFullscreenButton;
     private Handler             mHandler = new MessageHandler(this);
     private ImageButton         mStop;
+    private ImageButton         mSubtitles;
 
     public VideoControllerView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -222,9 +223,12 @@ public class VideoControllerView extends FrameLayout {
         }
 
         mStop = v.findViewById(R.id.stop);
-        if (mStop != null) {
+        if (mStop != null)
             mStop.setOnClickListener(mStopListener);
-        }
+
+        mSubtitles = v.findViewById(R.id.subtitles);
+        if (mSubtitles != null)
+            mSubtitles.setOnClickListener(mSubtitlesListener);
 
         mEndTime = v.findViewById(R.id.time);
         mCurrentTime = v.findViewById(R.id.time_current);
@@ -526,26 +530,25 @@ public class VideoControllerView extends FrameLayout {
         }
 
         public void onProgressChanged(SeekBar bar, int progress, boolean fromuser) {
-            if (mPlayer == null) {
-                return;
-            }
-
-            if (!fromuser) {
-                // We're not interested in programmatically generated changes to
-                // the progress bar's position.
-                return;
-            }
-
-            long duration = mPlayer.getDuration();
-            long newposition = (duration * progress) / 1000L;
-            mPlayer.seekTo( (int) newposition);
             if (mCurrentTime != null)
-                mCurrentTime.setText(stringForTime( (int) newposition));
+                mCurrentTime.setText(stringForTime( (int) getNewPosition(progress)));
+
+            mDragging = fromuser;
+
         }
 
         public void onStopTrackingTouch(SeekBar bar) {
+            if (mPlayer != null && mDragging) {
+                int position = getNewPosition(
+                        bar.getProgress());
+
+                Log.d(TAG, String.format("Setting position to :: %s", position));
+                mPlayer.seekTo(position);
+
+            }
+
             mDragging = false;
-            setProgress();
+            //setProgress();
             updatePausePlay();
             show(sDefaultTimeout);
 
@@ -553,6 +556,11 @@ public class VideoControllerView extends FrameLayout {
             // the call to show() does not guarantee this because it is a
             // no-op if we are already showing.
             mHandler.sendEmptyMessage(SHOW_PROGRESS);
+        }
+
+        public int getNewPosition(int progress) {
+            long duration = mPlayer.getDuration();
+            return (int)((duration * progress) / 1000L);
         }
     };
 

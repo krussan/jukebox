@@ -6,6 +6,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.View;
@@ -43,6 +44,7 @@ import se.qxx.jukebox.domain.JukeboxDomain;
 import static android.app.Activity.RESULT_OK;
 
 public class RemotePlayerFragment extends PlayerFragment implements SeekerListener, SeekBar.OnSeekBarChangeListener, SessionManagerListener<Session>, View.OnClickListener {
+    private static final String TAG = "RemotePlayerFragment";
     private Seeker seeker;
     private boolean isManualSeeking = false;
 
@@ -400,5 +402,10 @@ public class RemotePlayerFragment extends PlayerFragment implements SeekerListen
         }
 
         return -1;
+    }
+
+    @Override
+    public void SubtitleSelected(JukeboxDomain.SubtitleUri subtitleUri) {
+        Log.d(TAG, String.format("Setting subtitle :: %s", subtitleUri.getSubtitle().getFilename()));
     }
 }

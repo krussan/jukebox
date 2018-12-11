@@ -62,4 +62,5 @@ public class NowPlayingActivity extends AppCompatActivity {
         screenChange = true;
     }
 
+
 }

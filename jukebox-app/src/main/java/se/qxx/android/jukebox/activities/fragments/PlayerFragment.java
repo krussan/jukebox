@@ -1,6 +1,7 @@
 package se.qxx.android.jukebox.activities.fragments;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
@@ -25,6 +26,7 @@ import java.util.List;
 
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.ViewMode;
+import se.qxx.android.jukebox.activities.fragments.SubtitleSelectFragment.SubtitleSelectDialogListener;
 import se.qxx.android.jukebox.cast.CastProvider;
 import se.qxx.android.jukebox.settings.CacheData;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
@@ -35,7 +37,7 @@ import se.qxx.jukebox.comm.client.JukeboxConnectionMessage;
 import se.qxx.jukebox.comm.client.JukeboxResponseListener;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
-public abstract class PlayerFragment extends Fragment implements JukeboxResponseListener {
+public abstract class PlayerFragment extends Fragment implements JukeboxResponseListener, SubtitleSelectDialogListener {
 
     private boolean loadingVisible;
     private CastProvider castProvider;
@@ -288,8 +290,15 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
         cacheData.saveMediaState(this.getMedia().getID(), seekPosition);
     }
 
-
     public abstract void setVisibility(View v);
     public abstract void onGetItemCompleted();
+
+    protected void showSubtitleDialog() {
+        FragmentManager fm = getFragmentManager();
+
+        SubtitleSelectFragment subtitleSelectFragment = SubtitleSelectFragment.newInstance(this.getMedia(), this);
+        subtitleSelectFragment.show(fm, "subtitleSelectFragment");
+
+    }
 
 }

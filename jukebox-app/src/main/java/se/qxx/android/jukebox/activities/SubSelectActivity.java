@@ -12,6 +12,7 @@ import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 
+import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
@@ -38,7 +39,7 @@ public class SubSelectActivity extends AppCompatActivity  implements SubtitleLay
         setContentView(R.layout.subtitlepicker);
         mCastContext = CastContext.getSharedInstance(this);
 
-        initializeView();
+        //initializeView();
     }
 
 	@Override
@@ -50,34 +51,6 @@ public class SubSelectActivity extends AppCompatActivity  implements SubtitleLay
 		return true;
 	}
 
-	private void initializeView() {
-	    Media md = getMedia();
-	    View rootView = GUITools.getRootView(this);
-
-	    GUITools.setTextOnTextview(R.id.lblSubpickerFilename, md.getFilename(), rootView);
-
-	    initializeSubtitles();
-	}
-
-    protected void initializeSubtitles() {
-        final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
-                JukeboxSettings.get().getServerIpAddress(),
-                JukeboxSettings.get().getServerPort());
-
-        final ListView v = (ListView)findViewById(R.id.listSubtitlePicker);
-
-        jh.listSubtitles(
-            this.getMedia(),
-				(response) -> {
-            		runOnUiThread(() -> {
-						SubtitleLayoutAdapter adapter =
-							new SubtitleLayoutAdapter(this, getMedia().getID(), response.getSubtitleUrisList(), this);
-                        v.setOnItemClickListener(adapter);
-                        v.setAdapter(adapter);
-					});
-				});
-
-    }
 
 	public Media getMedia() {
         Bundle b = getIntent().getExtras();
