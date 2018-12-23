@@ -202,7 +202,7 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
                         .setActiveTrackIds(activeTrackIds)
                         .build();
 
-                client.load(mi, mlo)
+                mRemoteMediaClient.load(mi, mlo)
                         .setResultCallback(mediaChannelResult -> {
                             Status status = mediaChannelResult.getStatus();
 
@@ -224,8 +224,7 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
 
     @Override
     public void onProgressUpdated(long currentPosition, long duration) {
-        if (getSeekerListener() != null)
-            getSeekerListener().updateSeeker((int)currentPosition / 1000, (int)duration / 1000);
+        updateSeeker((int)currentPosition / 1000, (int)duration / 1000);
     }
 
     private void setupCastListener() {
