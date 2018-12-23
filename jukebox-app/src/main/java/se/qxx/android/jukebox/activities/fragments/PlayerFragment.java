@@ -29,6 +29,8 @@ import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.ViewMode;
 import se.qxx.android.jukebox.activities.fragments.SubtitleSelectFragment.SubtitleSelectDialogListener;
 import se.qxx.android.jukebox.cast.CastProvider;
+import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
+import se.qxx.android.jukebox.cast.JukeboxCastType;
 import se.qxx.android.jukebox.settings.CacheData;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.jukebox.widgets.SeekerListener;
@@ -41,7 +43,6 @@ import se.qxx.jukebox.domain.JukeboxDomain;
 public abstract class PlayerFragment extends Fragment implements JukeboxResponseListener, SubtitleSelectDialogListener {
 
     private boolean loadingVisible;
-    private CastProvider castProvider;
     private JukeboxConnectionHandler connectionHandler;
 
     private List<JukeboxDomain.Media> mediaList;
@@ -101,14 +102,6 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
 
     public void setConnectionHandler(JukeboxConnectionHandler connectionHandler) {
         this.connectionHandler = connectionHandler;
-    }
-
-    public CastProvider getCastProvider() {
-        return castProvider;
-    }
-
-    public void setCastProvider(CastProvider castProvider) {
-        this.castProvider = castProvider;
     }
 
     public boolean getLoadingVisible() {
@@ -266,10 +259,13 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
     public static Fragment newInstance(boolean isLocalPlayer, boolean screenChanged) {
         Bundle b = new Bundle();
         Fragment fm = null;
+
         if (isLocalPlayer)
             fm = new LocalPlayerFragment();
+        else if (ChromeCastConfiguration.getCastType() == JukeboxCastType.ChromeCast && ChromeCastConfiguration.isChromecastConnected())
+            fm = new ChromecastPlayerFragment();
         else
-            fm = new RemotePlayerFragment();
+            fm = new JukeboxPlayerFragment();
 
         b.putBoolean("screenChanged", screenChanged);
 
