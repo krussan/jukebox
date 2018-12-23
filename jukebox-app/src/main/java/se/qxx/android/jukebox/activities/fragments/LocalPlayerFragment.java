@@ -1,7 +1,9 @@
 package se.qxx.android.jukebox.activities.fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -11,21 +13,43 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.VideoView;
+
+import com.google.protobuf.RpcCallback;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.SubSelectActivity;
 import se.qxx.android.jukebox.media.VideoControllerView;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
+import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
 import static android.app.Activity.RESULT_OK;
 
-public class LocalPlayerFragment extends PlayerFragment implements MediaPlayer.OnPreparedListener, VideoControllerView.MediaPlayerEventListener  {
+public class LocalPlayerFragment extends PlayerFragment
+        implements MediaPlayer.OnPreparedListener,
+            VideoControllerView.MediaPlayerEventListener,
+            MediaPlayer.OnBufferingUpdateListener,
+            MediaPlayer.OnCompletionListener,
+            MediaPlayer.OnVideoSizeChangedListener,
+            VideoControllerView.MediaPlayerControl {
+
     private static final String TAG="LocalPlayerFragment";
 
     private boolean loadingVisible;
     private VideoControllerView mcontroller ;
+
+    MediaPlayer mediaPlayer = null;
+    SurfaceView surfaceView = null;
+    List<String> subtitleUriList;
+    private int firstTextTrack = -1;
+
+    SurfaceHolder surfaceHolder;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,9 +61,9 @@ public class LocalPlayerFragment extends PlayerFragment implements MediaPlayer.O
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.nowplaying_local, container, false);
-        SurfaceHolder holder = getSurfaceHolder(v);
+        surfaceHolder = getSurfaceHolder(v);
 
-        initializeCastProvider(v, this, null, holder);
+        //initializeCastProvider(v, this, null, holder);
         initializeView(v);
 
         return v;
@@ -78,7 +102,7 @@ public class LocalPlayerFragment extends PlayerFragment implements MediaPlayer.O
 
 
     public void setVisibility(View v) {
-        SurfaceView sv = v.findViewById(R.id.surfaceview);
+        VideoView sv = v.findViewById(R.id.surfaceview);
         ProgressBar spinner = v.findViewById(R.id.spinner);
 
         boolean boolLoadingVisible = this.getLoadingVisible();
@@ -96,14 +120,16 @@ public class LocalPlayerFragment extends PlayerFragment implements MediaPlayer.O
         getActivity().runOnUiThread(() -> initializeMediaController());
     }
 
-
     private SurfaceHolder getSurfaceHolder(View v) {
         final SurfaceView view = v.findViewById(R.id.surfaceview);
         SurfaceHolder holder = view.getHolder();
+
         holder.addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder surfaceHolder) {
-                getCastProvider().surfaceCreated(view);
+                surfaceView = view;
+                if (mediaPlayer != null)
+                    mediaPlayer.setDisplay(view.getHolder());
             }
 
             @Override
@@ -114,7 +140,10 @@ public class LocalPlayerFragment extends PlayerFragment implements MediaPlayer.O
             @Override
             public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
                 Log.d(TAG, "Surface destroyed");
-                getCastProvider().surfaceDestroyed();
+                if (mediaPlayer != null) {
+                    mediaPlayer.release();
+                    mediaPlayer.setDisplay(null);
+                }
             }
         });
         return holder;
@@ -163,8 +192,193 @@ public class LocalPlayerFragment extends PlayerFragment implements MediaPlayer.O
     }
 
     @Override
-    public void SubtitleSelected(int id) {
-        this.getCastProvider().
+    public void SubtitleSelected(JukeboxDomain.SubtitleUri subtitleUri) {
         Log.d(TAG, String.format("Setting subtitle :: %s", subtitleUri.getSubtitle().getFilename()));
+
+        this.getCastProvider().setSubtitle(subtitleUri);
     }
+
+    @Override
+    public RpcCallback<JukeboxDomain.JukeboxResponseStartMovie> getCallback() {
+
+        return response -> {
+            if (response != null) {
+                subtitleUriList = response.getSubtitleUrisList();
+
+                Uri uri = Uri.parse(response.getUri());
+
+                mediaPlayer = MediaPlayer.create(getContext(), uri);
+                if (mediaPlayer != null) {
+                    setupMediaPlayer();
+                    firstTextTrack = mediaPlayer.getTrackInfo().length;
+
+                    for (String subUri : response.getSubtitleUrisList()) {
+                        try {
+                            mediaPlayer.addTimedTextSource(
+                                    getContext(),
+                                    Uri.parse(subUri),
+                                    MediaPlayer.MEDIA_MIMETYPE_TEXT_SUBRIP);
+                        } catch (IOException e) {
+                            Logger.Log().e("Unable to add substitle", e);
+                        }
+                    }
+
+                    if (response.getSubtitleUrisCount() > 0)
+                        mediaPlayer.selectTrack(firstTextTrack);
+
+                    mediaPlayer.setDisplay(surfaceHolder);
+                    setViewLayoutRatio();
+
+                    mediaPlayer.start();
+
+                }
+            }
+        };
+
+    }
+
+
+    public void setupMediaPlayer() {
+        mediaPlayer.setOnBufferingUpdateListener(this);
+        mediaPlayer.setOnCompletionListener(this);
+        mediaPlayer.setOnPreparedListener(this);
+        mediaPlayer.setScreenOnWhilePlaying(true);
+        mediaPlayer.setOnVideoSizeChangedListener(this);
+        //mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+    }
+
+    public void setViewLayoutRatio() {
+        if (mediaPlayer != null && surfaceView != null) {
+            //Get the dimensions of the video
+            final int videoWidth = mediaPlayer.getVideoWidth();
+            final int videoHeight = mediaPlayer.getVideoHeight();
+
+            //Get the width of the screen
+            final int screenWidth = GUITools.getDisplayMetrics(getActivity()).widthPixels;
+
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    //Get the SurfaceView layout parameters
+                    android.view.ViewGroup.LayoutParams lp = surfaceView.getLayoutParams();
+
+                    //Set the width of the SurfaceView to the width of the screen
+                    lp.width = screenWidth;
+
+                    //Set the height of the SurfaceView to match the aspect ratio of the video
+                    //be sure to cast these as floats otherwise the calculation will likely be 0
+                    lp.height = (int) (((float) videoHeight / (float) videoWidth) * (float) screenWidth);
+
+                    //Commit the layout parameters
+                    surfaceView.setLayoutParams(lp);
+                }
+            });
+        }
+    }
+
+
+    @Override
+    public void start() {
+        if (mediaPlayer != null)
+            mediaPlayer.start();
+        else
+            Log.d(TAG, "Mediaplayer is null on start");
+    }
+
+    @Override
+    public void pause() {
+        mediaPlayer.pause();
+    }
+
+    @Override
+    public int getDuration() {
+
+        if (mediaPlayer != null)
+            return mediaPlayer.getDuration();
+        else
+            return 0;
+    }
+
+    @Override
+    public int getCurrentPosition() {
+        if (mediaPlayer != null)
+            return mediaPlayer.getCurrentPosition();
+        else
+            return 0;
+    }
+
+    @Override
+    public void seekTo(int position) {
+        if (mediaPlayer != null) {
+            mediaPlayer.seekTo(position);
+        }
+    }
+
+    @Override
+    public boolean isPlaying() {
+        if (mediaPlayer != null)
+            return mediaPlayer.isPlaying();
+        else
+            return false;
+    }
+
+    @Override
+    public int getBufferPercentage() {
+        return 0;
+    }
+
+    @Override
+    public boolean canPause() {
+        return true;
+    }
+
+    @Override
+    public boolean canSeekBackward() {
+        return true;
+    }
+
+    @Override
+    public boolean canSeekForward() {
+        return true;
+    }
+
+    @Override
+    public boolean isFullScreen() {
+        return false;
+    }
+
+    @Override
+    public void toggleFullScreen() {
+
+    }
+
+    @Override
+    public void stop() {
+    }
+
+    @Override
+    public void onBufferingUpdate(MediaPlayer mediaPlayer, int i) {
+
+    }
+
+    @Override
+    public void onCompletion(MediaPlayer mediaPlayer) {
+
+    }
+
+    @Override
+    public void onVideoSizeChanged(MediaPlayer mediaPlayer, int i, int i1) {
+
+    }
+
+    @Override
+    public void setSubtitle(JukeboxDomain.SubtitleUri subtitleUri) {
+        int index = Collections.binarySearch(subtitleUriList, subtitleUri.getUrl());
+
+        if (index >= 0 && firstTextTrack >= 0) {
+            mediaPlayer.selectTrack(firstTextTrack + index);
+        }
+
+    }
+
 }

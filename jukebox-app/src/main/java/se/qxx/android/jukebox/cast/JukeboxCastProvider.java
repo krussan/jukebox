@@ -197,4 +197,14 @@ class JukeboxCastProvider extends CastProvider {
 
     }
 
+    @Override
+    public void setSubtitle(JukeboxDomain.SubtitleUri subtitleUri) {
+        Thread t = new Thread(() ->
+                this.getJukeboxConnectionHandler().setSubtitle(
+                        JukeboxSettings.get().getCurrentMediaPlayer(),
+                        this.getID(),
+                        subtitleUri.getSubtitle()));
+        t.run();
+    }
+
 }

@@ -287,6 +287,25 @@ public class ChromeCastProvider extends CastProvider implements RemoteMediaClien
     }
 
     @Override
+    public void setSubtitle(JukeboxDomain.SubtitleUri subtitleUri) {
+        RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(this.getParentContext());
+
+        int id = getMediaTrackID(client, subtitleUri);
+        if (id >= 0)
+            client.setActiveMediaTracks(new long[] {(long) id});
+    }
+
+    private int getMediaTrackID(RemoteMediaClient client, JukeboxDomain.SubtitleUri subtitleUri) {
+        List<MediaTrack> tracks = client.getMediaInfo().getMediaTracks();
+        for (int i = 0; i< tracks.size(); i++) {
+            if (tracks.get(0).getContentId() == subtitleUri.getUrl())
+                return i;
+        }
+
+        return -1;
+    }
+
+    @Override
     public boolean isPlaying() {
         RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(getParentContext());
 

@@ -366,42 +366,9 @@ public class RemotePlayerFragment extends PlayerFragment implements SeekerListen
         if (requestCode == 2) {
             if(resultCode == RESULT_OK) {
                 JukeboxDomain.SubtitleUri subtitleUri = (JukeboxDomain.SubtitleUri)data.getExtras().getSerializable("SubSelected");
-                setSubtitle(subtitleUri);
+                this.getCastProvider().setSubtitle(subtitleUri);
             }
         }
-    }
-
-    private void setSubtitle(JukeboxDomain.SubtitleUri subtitleUri) {
-        if (ChromeCastConfiguration.isChromeCastActive()) {
-            RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(this.getContext());
-
-            int id = getMediaTrackID(client, subtitleUri);
-            if (id >= 0)
-                client.setActiveMediaTracks(new long[] {(long) id});
-
-            //if (client != null)
-                //client.setActiveMediaTracks(new long[]{(long) arg2});
-        }
-        else {
-            Thread t = new Thread(() ->
-                    this.getConnectionHandler().setSubtitle(
-                        JukeboxSettings.get().getCurrentMediaPlayer(),
-                        this.getID(),
-                        subtitleUri.getSubtitle()));
-            t.run();
-
-        }
-
-    }
-
-    private int getMediaTrackID(RemoteMediaClient client, JukeboxDomain.SubtitleUri subtitleUri) {
-        List<MediaTrack> tracks = client.getMediaInfo().getMediaTracks();
-        for (int i = 0; i< tracks.size(); i++) {
-            if (tracks.get(0).getContentId() == subtitleUri.getUrl())
-                return i;
-        }
-
-        return -1;
     }
 
     @Override

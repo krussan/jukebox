@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.protobuf.ByteString;
+import com.google.protobuf.RpcCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
@@ -49,6 +50,10 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
     private String imdbUrl = StringUtils.EMPTY;
     private CacheData cacheData;
 
+    private String currentTitle;
+    private int currentId;
+    private JukeboxDomain.Movie currentMovie;
+    private JukeboxDomain.Episode currentEpisode;
 
     private int getSeasonNumber() {
         Bundle b = getActivity().getIntent().getExtras();
@@ -147,17 +152,6 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
 
     }
 
-
-    protected void initializeCastProvider(View v, MediaPlayer.OnPreparedListener preparedListener, SeekerListener seekerListener, SurfaceHolder surfaceHolder) {
-        castProvider = CastProvider.getCaster(
-                this.getActivity(),
-                this.getConnectionHandler(),
-                null,
-                seekerListener,
-                surfaceHolder,
-                preparedListener);
-    }
-
     @Override
     public void onRequestComplete(JukeboxConnectionMessage message) {
         if (!message.result()) {
@@ -218,7 +212,8 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
                                 ep.getTitle()),
                         ep.getImage());
 
-                castProvider.initialize(ep);
+                initializeMedia(ep);
+                //castProvider.initialize(ep);
             }
         }
         else if (requestType == JukeboxDomain.RequestType.TypeMovie) {
@@ -228,18 +223,45 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
             this.setMediaList(m.getMediaList());
             this.setCurrentMediaIndex(0);
             initializeView(v, m.getTitle(), m.getImage());
-            castProvider.initialize(m);
+            initializeMedia(m);
+            //castProvider.initialize(m);
         }
 
+    }
+
+    private void initializeMedia(JukeboxDomain.Movie m) {
+        currentId = m.getID();
+        currentMovie = m;
+        currentTitle = m.getIdentifiedTitle();
+        currentEpisode = null;
+    }
+
+    private void initializeMedia(JukeboxDomain.Episode ep) {
+        currentId = ep.getID();
+        currentMovie = null;
+        currentTitle = ep.getTitle();
+        currentEpisode = ep;
     }
 
     protected void startMedia() {
         loadingVisible = true;
         getActivity().runOnUiThread(() -> setVisibility(getView()));
 
-        castProvider.startMovie();
+        this.getConnectionHandler()
+            .startMovie(
+                getPlayerName(),
+                currentMovie,
+                currentEpisode,
+                getCallback());
     }
 
+    protected String getPlayerName() {
+        String player = JukeboxSettings.get().getCurrentMediaPlayer();
+        if (StringUtils.equalsIgnoreCase(player, "local"))
+            player = "ChromeCast";
+
+        return player;
+    }
 
     public static Fragment newInstance(boolean isLocalPlayer, boolean screenChanged) {
         Bundle b = new Bundle();
@@ -292,6 +314,8 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
 
     public abstract void setVisibility(View v);
     public abstract void onGetItemCompleted();
+    public abstract RpcCallback<JukeboxDomain.JukeboxResponseStartMovie> getCallback();
+    public abstract void setSubtitle(JukeboxDomain.SubtitleUri subtitleUri);
 
     protected void showSubtitleDialog() {
         FragmentManager fm = getFragmentManager();

@@ -178,22 +178,6 @@ public abstract class CastProvider implements VideoControllerView.MediaPlayerCon
         }
     }
 
-    public void startMovie() {
-        // override local player with chromecast in server (move this to server in time)
-        // this to force a publish of the streams
-
-        String player = JukeboxSettings.get().getCurrentMediaPlayer();
-        if (StringUtils.equalsIgnoreCase(player, "local"))
-            player = "ChromeCast";
-
-        comm.startMovie(
-                player,
-                this.getMovie(),
-                this.getEpisode(),
-                getCallback());
-    }
-
-
     public void initialize(JukeboxDomain.Movie movie){
         this.setTitle(movie.getIdentifiedTitle());
         this.setID(movie.getID());
