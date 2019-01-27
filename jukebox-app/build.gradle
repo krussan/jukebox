@@ -78,7 +78,7 @@ android {
 
 play {
     track = "internal"
-    jsonFile = file(appJsonFile)
+    serviceAccountCredentials = file(appJsonFile)
 }
 
 dependencies {

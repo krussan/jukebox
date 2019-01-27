@@ -1,16 +1,15 @@
 package se.qxx.android.jukebox.activities.fragments;
 
 
+import android.app.Fragment;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaLoadOptions;
@@ -30,7 +29,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.cast.CastProvider;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
 import se.qxx.android.jukebox.dialogs.JukeboxConnectionProgressDialog;
@@ -44,6 +42,7 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
         implements RemoteMediaClient.ProgressListener {
 
     RemoteMediaClient mRemoteMediaClient;
+
 
 
     public ChromecastPlayerFragment() {
