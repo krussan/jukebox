@@ -36,7 +36,6 @@ import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.SubSelectActivity;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
 import se.qxx.android.jukebox.cast.ChromeCastProvider;
-import se.qxx.android.jukebox.cast.JukeboxCastProvider;
 import se.qxx.android.jukebox.media.VideoControllerView;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.jukebox.widgets.Seeker;
