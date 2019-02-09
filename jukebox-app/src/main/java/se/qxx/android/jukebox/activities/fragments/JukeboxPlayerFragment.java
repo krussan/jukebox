@@ -1,16 +1,15 @@
 package se.qxx.android.jukebox.activities.fragments;
 
 
-import android.os.Bundle;
 import android.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+import android.os.Bundle;
 
 import com.google.protobuf.RpcCallback;
 
-import se.qxx.android.jukebox.R;
+import org.apache.commons.lang3.StringUtils;
+
+import se.qxx.android.jukebox.settings.JukeboxSettings;
+import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
 /**
@@ -23,18 +22,125 @@ public class JukeboxPlayerFragment extends RemotePlayerFragment {
         // Required empty public constructor
     }
 
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        TextView textView = new TextView(getActivity());
-        textView.setText(R.string.hello_blank_fragment);
-        return textView;
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        JukeboxSettings.init(getContext());
+    }
+
+    /***
+     * When activity starts it launches a call to the server checking if something
+     * is playing on the remote player
+     */
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        initializeJukeboxCast();
+    }
+
+    /***
+     * Makes call to server to check if something is playing
+     */
+    private void initializeJukeboxCast() {
+        Logger.Log().d("Request -- IsPlaying");
+        this.getConnectionHandler().isPlaying(
+                JukeboxSettings.get().getCurrentMediaPlayer(),
+                new OnStatusComplete());
+    }
+
+    /***
+     * Callback from initial isPlaying.
+     * If something is playing then make call to server to get whats playing
+     * otherwise start the new movie
+     */
+    private class OnStatusComplete implements RpcCallback<JukeboxDomain.JukeboxResponseIsPlaying> {
+        @Override
+        public void run(JukeboxDomain.JukeboxResponseIsPlaying response) {
+            Logger.Log().d("Response --- IsPlaying");
+            if (response != null) {
+                if (response.getIsPlaying()) {
+                    Logger.Log().d("Request --- GetTitle");
+                    getConnectionHandler().getTitle(JukeboxSettings.get().getCurrentMediaPlayer(), new OnGetTitleComplete());
+                } else {
+                    Logger.Log().d("Request --- StartMovie");
+                    startMedia();
+                }
+            }
+        }
+    }
+
+    /***
+     * Callback from the get title call
+     * If the title is the same as the one selected then continue playing
+     * Otherwise stop movie and start the new one in the callback
+     */
+    private class OnGetTitleComplete implements RpcCallback<JukeboxDomain.JukeboxResponseGetTitle> {
+        @Override
+        public void run(JukeboxDomain.JukeboxResponseGetTitle response) {
+            Logger.Log().d("Response --- GetTitle");
+            if (response != null) {
+                String playerFilename = response.getTitle();
+                int mediaIndex = matchCurrentFilenameAgainstMedia(playerFilename);
+                if (mediaIndex >= 0) {
+                    //initialize seeker and get subtitles if app has been reinitialized
+                    setCurrentMediaIndex(mediaIndex);
+                    setDuration(getMedia().getMetaDuration());
+
+                    //Start seeker and get time asap as the movie is playing
+                    startSeekerTimer();
+
+                    //initializeSubtitles();
+                }
+            } else {
+                Thread t2 = new Thread(() -> {
+                    Logger.Log().d("Request --- StopMovie");
+                    getConnectionHandler().stopMovie(
+                            JukeboxSettings.get().getCurrentMediaPlayer(),
+                            new OnStopMovieComplete());
+                });
+                t2.start();
+            }
+        }
+    }
+
+    /***
+     * Matches a filename with the current media
+     * @param playerFilename remote filename to match against
+     * @return mediaIndex if found. -1 if not found
+     */
+    protected int matchCurrentFilenameAgainstMedia(String playerFilename) {
+        for (int i = 0; i < this.getMediaList().size(); i++) {
+            if (StringUtils.equalsIgnoreCase(playerFilename, this.getMediaList().get(i).getFilename())) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    /***
+     * Callback to stop media
+     * start the new media
+     */
+    private class OnStopMovieComplete implements RpcCallback<JukeboxDomain.Empty> {
+        @Override
+        public void run(JukeboxDomain.Empty arg0) {
+            Logger.Log().d("Response --- StopMovie");
+
+            startMedia();
+        }
     }
 
     @Override
     public RpcCallback<JukeboxDomain.JukeboxResponseStartMovie> getCallback() {
-        return null;
+        return parameter -> {
+            Logger.Log().d("Response --- StartMovie");
+
+            setDuration(this.getMedia().getMetaDuration());
+            startSeekerTimer();
+        };
     }
 
     @Override
@@ -54,7 +160,10 @@ public class JukeboxPlayerFragment extends RemotePlayerFragment {
 
     @Override
     public void stop() {
+        String player = JukeboxSettings.get().getCurrentMediaPlayer();
 
+        stopSeekerTimer();
+        this.getConnectionHandler().stopMovie(player, null);
     }
 
     @Override
@@ -69,7 +178,9 @@ public class JukeboxPlayerFragment extends RemotePlayerFragment {
 
     @Override
     public void seekTo(int pos) {
-
+        this.getConnectionHandler().seek(
+                JukeboxSettings.get().getCurrentMediaPlayer(),
+                pos);
     }
 
     @Override

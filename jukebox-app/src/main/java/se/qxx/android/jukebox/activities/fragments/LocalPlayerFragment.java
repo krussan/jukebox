@@ -1,6 +1,5 @@
 package se.qxx.android.jukebox.activities.fragments;
 
-import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -22,14 +21,11 @@ import java.util.Collections;
 import java.util.List;
 
 import se.qxx.android.jukebox.R;
-import se.qxx.android.jukebox.activities.SubSelectActivity;
 import se.qxx.android.jukebox.media.VideoControllerView;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain;
-
-import static android.app.Activity.RESULT_OK;
 
 public class LocalPlayerFragment extends PlayerFragment
         implements MediaPlayer.OnPreparedListener,
@@ -69,10 +65,16 @@ public class LocalPlayerFragment extends PlayerFragment
         return v;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        startMedia();
+    }
 
     private void initializeView(View v) {
         try {
             v.setOnTouchListener((view, event) -> {
+                view.performClick();
                 mcontroller.show();
 
                 return false;
@@ -83,9 +85,9 @@ public class LocalPlayerFragment extends PlayerFragment
         }
     }
 
-    @Override
+
     public void onPrepared(MediaPlayer mediaPlayer) {
-        mcontroller.setMediaPlayer(this.getCastProvider());
+        mcontroller.setMediaPlayer(this);
         mcontroller.setEventListener(this);
 
         mcontroller.setAnchorView(getView().findViewById(R.id.videoSurfaceContainer));
@@ -97,7 +99,7 @@ public class LocalPlayerFragment extends PlayerFragment
 
     private void initializeMediaController() {
         mcontroller = new VideoControllerView(getContext());
-        mcontroller.setMediaPlayer(this.getCastProvider());
+        mcontroller.setMediaPlayer(this);
     }
 
 
@@ -154,15 +156,13 @@ public class LocalPlayerFragment extends PlayerFragment
         super.onStop();
 
         //TODO: Save the media ID and position from media player
-        if (getCastProvider() != null)
-            getCastProvider().stop();
+        stop();
     }
 
 
     @Override
     public void onMediaPlayerStop() {
-        if (getCastProvider() != null)
-            getCastProvider().stop();
+        stop();
 
         getActivity().finish();
     }
@@ -184,18 +184,19 @@ public class LocalPlayerFragment extends PlayerFragment
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1) {
-            if(resultCode == RESULT_OK) {
-                String strEditText = data.getStringExtra("editTextValue");
-            }
-        }
+        // was supposed to get the result from the subtitle view but it has been replaced by a dialog
+//        if (requestCode == 1) {
+//            if(resultCode == RESULT_OK) {
+//                String strEditText = data.getStringExtra("editTextValue");
+//            }
+//        }
     }
 
     @Override
     public void SubtitleSelected(JukeboxDomain.SubtitleUri subtitleUri) {
         Log.d(TAG, String.format("Setting subtitle :: %s", subtitleUri.getSubtitle().getFilename()));
 
-        this.getCastProvider().setSubtitle(subtitleUri);
+        this.setSubtitle(subtitleUri);
     }
 
     @Override
@@ -208,6 +209,7 @@ public class LocalPlayerFragment extends PlayerFragment
                 Uri uri = Uri.parse(response.getUri());
 
                 mediaPlayer = MediaPlayer.create(getContext(), uri);
+
                 if (mediaPlayer != null) {
                     setupMediaPlayer();
                     firstTextTrack = mediaPlayer.getTrackInfo().length;
@@ -256,22 +258,19 @@ public class LocalPlayerFragment extends PlayerFragment
             //Get the width of the screen
             final int screenWidth = GUITools.getDisplayMetrics(getActivity()).widthPixels;
 
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    //Get the SurfaceView layout parameters
-                    android.view.ViewGroup.LayoutParams lp = surfaceView.getLayoutParams();
+            getActivity().runOnUiThread(() -> {
+                //Get the SurfaceView layout parameters
+                ViewGroup.LayoutParams lp = surfaceView.getLayoutParams();
 
-                    //Set the width of the SurfaceView to the width of the screen
-                    lp.width = screenWidth;
+                //Set the width of the SurfaceView to the width of the screen
+                lp.width = screenWidth;
 
-                    //Set the height of the SurfaceView to match the aspect ratio of the video
-                    //be sure to cast these as floats otherwise the calculation will likely be 0
-                    lp.height = (int) (((float) videoHeight / (float) videoWidth) * (float) screenWidth);
+                //Set the height of the SurfaceView to match the aspect ratio of the video
+                //be sure to cast these as floats otherwise the calculation will likely be 0
+                lp.height = (int) (((float) videoHeight / (float) videoWidth) * (float) screenWidth);
 
-                    //Commit the layout parameters
-                    surfaceView.setLayoutParams(lp);
-                }
+                //Commit the layout parameters
+                surfaceView.setLayoutParams(lp);
             });
         }
     }
@@ -354,6 +353,10 @@ public class LocalPlayerFragment extends PlayerFragment
 
     @Override
     public void stop() {
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+        }
     }
 
     @Override

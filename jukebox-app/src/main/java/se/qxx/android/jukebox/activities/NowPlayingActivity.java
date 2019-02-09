@@ -8,9 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 
 import se.qxx.android.jukebox.R;
-import se.qxx.android.jukebox.activities.fragments.LocalPlayerFragment;
 import se.qxx.android.jukebox.activities.fragments.PlayerFragment;
-import se.qxx.android.jukebox.cast.CastProvider;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
 
 public class NowPlayingActivity extends AppCompatActivity {
@@ -40,7 +38,10 @@ public class NowPlayingActivity extends AppCompatActivity {
     public void initializeView() {
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        ft.add(R.id.fragmentContainer, PlayerFragment.newInstance(CastProvider.isLocalPlayer(), screenChange));
+        ft.add(R.id.fragmentContainer,
+                PlayerFragment.newInstance(
+                        ChromeCastConfiguration.isLocalPlayer(),
+                        screenChange));
         ft.commit();
 
     }

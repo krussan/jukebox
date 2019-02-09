@@ -2,7 +2,6 @@ package se.qxx.android.jukebox.activities.fragments;
 
 
 import android.app.Fragment;
-import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,9 +28,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.qxx.android.jukebox.cast.CastProvider;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
-import se.qxx.android.jukebox.dialogs.JukeboxConnectionProgressDialog;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
@@ -42,8 +39,6 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
         implements RemoteMediaClient.ProgressListener {
 
     RemoteMediaClient mRemoteMediaClient;
-
-
 
     public ChromecastPlayerFragment() {
         // Required empty public constructor
@@ -59,22 +54,22 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+
+        startMedia();
+    }
+
+    @Override
     public RpcCallback<JukeboxDomain.JukeboxResponseStartMovie> getCallback() {
         return response -> {
-            JukeboxConnectionProgressDialog dialog = getDialog();
-            
-            if (dialog != null)
-                dialog.close();
-
             if (response != null) {
                 startCastVideo(
-                        getTitle(),
+                        getCurrentTitle(),
                         response.getUri(),
                         response.getSubtitleUrisList(),
                         response.getSubtitleList(),
                         response.getMimeType());
-
-                initializeSubtitles();
             }
         };
     }
@@ -84,9 +79,9 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
     public void setSubtitle(JukeboxDomain.SubtitleUri subtitleUri) {
 
 
-        int id = getMediaTrackID(client, subtitleUri);
+        int id = getMediaTrackID(mRemoteMediaClient, subtitleUri);
         if (id >= 0)
-            client.setActiveMediaTracks(new long[] {(long) id});
+            mRemoteMediaClient.setActiveMediaTracks(new long[] {(long) id});
     }
 
     @Override
@@ -96,7 +91,8 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
 
     @Override
     public void pause() {
-
+        if (mRemoteMediaClient != null)
+            mRemoteMediaClient.pause();
     }
 
     @Override
@@ -174,7 +170,7 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
 
         // Get a handler that can be used to post to the main thread
         Handler mainHandler = new Handler(getContext().getMainLooper());
-        final Context mAppContext = getContext().getApplicationContext();
+        //final Context mAppContext = getContext().getApplicationContext();
         final RemoteMediaClient.ProgressListener listener = this;
 
         Runnable myRunnable = () -> {
@@ -294,7 +290,7 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
                                 , movieUri.getProtocol()
                                 , movieUri.getHost()
                                 , movieUri.getPort()
-                                , this.getCastProviderMode() == CastProvider.CastProviderMode.Movie ? "" : "epi"
+                                , this.getRequestType() == JukeboxDomain.RequestType.TypeMovie ? "" : "epi"
                                 , id
                         ));
 

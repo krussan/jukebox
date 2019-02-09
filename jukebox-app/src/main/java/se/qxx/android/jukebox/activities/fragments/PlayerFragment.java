@@ -4,36 +4,25 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.SeekBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.RpcCallback;
 
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONException;
 
-import java.io.IOException;
 import java.util.List;
 
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.ViewMode;
 import se.qxx.android.jukebox.activities.fragments.SubtitleSelectFragment.SubtitleSelectDialogListener;
-import se.qxx.android.jukebox.cast.CastProvider;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
 import se.qxx.android.jukebox.cast.JukeboxCastType;
 import se.qxx.android.jukebox.settings.CacheData;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
-import se.qxx.android.jukebox.widgets.SeekerListener;
 import se.qxx.android.tools.GUITools;
 import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.jukebox.comm.client.JukeboxConnectionMessage;
@@ -133,6 +122,7 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
     }
 
     protected void initializeView(View v, final String title, final ByteString image) {
+        this.setCurrentTitle(title);
         getActivity().runOnUiThread(() -> {
             if (!image.isEmpty()) {
                 Bitmap bm = GUITools.getBitmapFromByteArray(image.toByteArray());
@@ -290,9 +280,6 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
                     getActivity().runOnUiThread(() -> {
                         setVisibility(getView());
                     });
-
-                    if (!this.getScreenChanged())
-                        startMedia();
                 });
     }
 
@@ -321,4 +308,12 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
 
     }
 
+
+    public String getCurrentTitle() {
+        return currentTitle;
+    }
+
+    public void setCurrentTitle(String currentTitle) {
+        this.currentTitle = currentTitle;
+    }
 }

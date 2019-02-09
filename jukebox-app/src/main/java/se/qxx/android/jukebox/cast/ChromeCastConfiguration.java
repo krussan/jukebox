@@ -8,8 +8,6 @@ import android.graphics.Color;
 import android.view.Menu;
 import android.view.MenuInflater;
 
-import com.google.android.gms.cast.CastRemoteDisplayClient;
-import com.google.android.gms.cast.CastRemoteDisplayLocalService;
 import com.google.android.gms.cast.TextTrackStyle;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
@@ -20,8 +18,8 @@ import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.apache.commons.lang3.StringUtils;
 
-import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.jukebox.R;
+import se.qxx.android.jukebox.settings.JukeboxSettings;
 
 /**
  * Created by chris on 2/18/17.
@@ -109,5 +107,19 @@ public class ChromeCastConfiguration {
                 .getCurrentCastSession();
 
         return castSession != null;
+    }
+
+    public static boolean isLocalPlayer() {
+        switch (ChromeCastConfiguration.getCastType()) {
+            case ChromeCast:
+                if (ChromeCastConfiguration.isChromecastConnected())
+                    return false;
+                else
+                    return true;
+            case JukeboxCast:
+                return false;
+            default:
+                return true;
+        }
     }
 }
