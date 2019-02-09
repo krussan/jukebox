@@ -227,7 +227,7 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
     }
 
     protected void startMedia() {
-        loadingVisible = true;
+        this.setLoadingVisible(true);
         getActivity().runOnUiThread(() -> setVisibility(getView()));
 
         this.getConnectionHandler()
