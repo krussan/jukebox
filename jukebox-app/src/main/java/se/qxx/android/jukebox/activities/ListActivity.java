@@ -39,6 +39,7 @@ public class ListActivity extends AppCompatActivity implements
 	private int totalItems = 0;
 	private Connector connector;
 	private boolean isLoading;
+	private JukeboxSettings settings;
 
     protected View getRootView() {
 		return findViewById(R.id.rootMain);
@@ -105,7 +106,7 @@ public class ListActivity extends AppCompatActivity implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-		JukeboxSettings.init(this);
+        settings = new JukeboxSettings(this);
 
 		setContentView(R.layout.main);
 

@@ -17,6 +17,7 @@ public class FlipperListActivity extends AppCompatActivity {
 	ViewPager pager;
 	private CastContext mCastContext;
     private ViewMode mode = ViewMode.Movie;
+    private JukeboxSettings settings;
 
 
     protected View getRootView() {
@@ -45,7 +46,7 @@ public class FlipperListActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-		JukeboxSettings.init(this);
+        settings = new JukeboxSettings(this);
 
         if (getIntent() != null && getIntent().getExtras() != null) {
             Bundle b = getIntent().getExtras();

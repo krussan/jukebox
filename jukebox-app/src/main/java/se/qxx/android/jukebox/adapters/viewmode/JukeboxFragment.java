@@ -28,6 +28,7 @@ import se.qxx.android.jukebox.adapters.support.IOffsetHandler;
 import se.qxx.android.jukebox.comm.Connector;
 import se.qxx.android.jukebox.dialogs.ActionDialog;
 import se.qxx.android.jukebox.model.Constants;
+import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
@@ -44,6 +45,7 @@ public class JukeboxFragment extends ListFragment implements
     private int totalItems;
     private Connector connector;
     private boolean isLoading;
+    private JukeboxSettings settings;
 
     public int getTotalItems() {
         return totalItems;
@@ -112,6 +114,7 @@ public class JukeboxFragment extends ListFragment implements
         }
 
         connector = new Connector(this);
+        settings = new JukeboxSettings(this.getContext());
 
         clearData();
         Logger.Log().d("Initializing - loading data");

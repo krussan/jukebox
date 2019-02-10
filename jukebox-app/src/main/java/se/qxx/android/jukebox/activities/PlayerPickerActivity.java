@@ -1,16 +1,5 @@
 package se.qxx.android.jukebox.activities;
 
-import java.util.List;
-
-import com.google.android.gms.cast.framework.CastContext;
-
-import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
-import se.qxx.android.jukebox.settings.JukeboxSettings;
-import se.qxx.android.jukebox.R;
-import se.qxx.android.jukebox.adapters.support.PlayerLayoutAdapter;
-import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
-import se.qxx.android.jukebox.dialogs.JukeboxConnectionProgressDialog;
-
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -19,21 +8,34 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
+import com.google.android.gms.cast.framework.CastContext;
+
+import java.util.List;
+
+import se.qxx.android.jukebox.R;
+import se.qxx.android.jukebox.adapters.support.PlayerLayoutAdapter;
+import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
+import se.qxx.android.jukebox.dialogs.JukeboxConnectionProgressDialog;
+import se.qxx.android.jukebox.settings.JukeboxSettings;
+import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
+
 public class PlayerPickerActivity extends AppCompatActivity implements OnItemClickListener {
 
 	PlayerLayoutAdapter adapter;
 	List<String> values;
 	private CastContext mCastContext;
+	private JukeboxSettings settings;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 
         setContentView(R.layout.playerpicker);
+        settings = new JukeboxSettings(this);
 
 		final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
-				JukeboxSettings.get().getServerIpAddress(),
-				JukeboxSettings.get().getServerPort(),	    		
+				settings.getServerIpAddress(),
+				settings.getServerPort(),
 	    		JukeboxConnectionProgressDialog.build(this, "Getting list of players..."));
 
         adapter = new PlayerLayoutAdapter(this);
@@ -69,7 +71,7 @@ public class PlayerPickerActivity extends AppCompatActivity implements OnItemCli
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		String playerName = (String)arg0.getItemAtPosition(arg2);
-		JukeboxSettings.get().setCurrentMediaPlayer(playerName);
+		settings.setCurrentMediaPlayer(playerName);
 
 		mCastContext = CastContext.getSharedInstance(this);
 		//updateList();
