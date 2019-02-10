@@ -39,6 +39,7 @@ import java.util.Formatter;
 import java.util.Locale;
 
 import se.qxx.android.jukebox.R;
+import se.qxx.android.tools.Logger;
 
 /**
  * A view containing controls for a MediaPlayer. Typically contains the
@@ -55,49 +56,49 @@ import se.qxx.android.jukebox.R;
  * <p>
  * Functions like show() and hide() have no effect when MediaController
  * is created in an xml layout.
- *
+ * <p>
  * MediaController will hide and
  * show the buttons according to these rules:
  * <ul>
  * <li> The "previous" and "next" buttons are hidden until setPrevNextListeners()
- *   has been called
+ * has been called
  * <li> The "previous" and "next" buttons are visible but disabled if
- *   setPrevNextListeners() was called with null listeners
+ * setPrevNextListeners() was called with null listeners
  * <li> The "rewind" and "fastforward" buttons are shown unless requested
- *   otherwise by using the MediaController(Context, boolean) constructor
- *   with the boolean set to false
+ * otherwise by using the MediaController(Context, boolean) constructor
+ * with the boolean set to false
  * </ul>
  */
 public class VideoControllerView extends FrameLayout {
     private static final String TAG = "VideoControllerView";
 
-    private MediaPlayerControl  mPlayer;
+    private MediaPlayerControl mPlayer;
     private MediaPlayerEventListener eventListener;
-    private Context             mContext;
-    private ViewGroup           mAnchor;
-    private View                mRoot;
-    private ProgressBar         mProgress;
-    private TextView            mEndTime, mCurrentTime;
-    private boolean             mShowing;
-    private boolean             mDragging;
-    private static final int    sDefaultTimeout = 3000;
-    private static final int    FADE_OUT = 1;
-    private static final int    SHOW_PROGRESS = 2;
-    private boolean             mUseFastForward;
-    private boolean             mFromXml;
-    private boolean             mListenersSet;
+    private Context mContext;
+    private ViewGroup mAnchor;
+    private View mRoot;
+    private ProgressBar mProgress;
+    private TextView mEndTime, mCurrentTime;
+    private boolean mShowing;
+    private boolean mDragging;
+    private static final int sDefaultTimeout = 3000;
+    private static final int FADE_OUT = 1;
+    private static final int SHOW_PROGRESS = 2;
+    private boolean mUseFastForward;
+    private boolean mFromXml;
+    private boolean mListenersSet;
     private View.OnClickListener mNextListener, mPrevListener;
-    StringBuilder               mFormatBuilder;
-    Formatter                   mFormatter;
-    private ImageButton         mPauseButton;
-    private ImageButton         mFfwdButton;
-    private ImageButton         mRewButton;
-    private ImageButton         mNextButton;
-    private ImageButton         mPrevButton;
-    private ImageButton         mFullscreenButton;
-    private Handler             mHandler = new MessageHandler(this);
-    private ImageButton         mStop;
-    private ImageButton         mSubtitles;
+    StringBuilder mFormatBuilder;
+    Formatter mFormatter;
+    private ImageButton mPauseButton;
+    private ImageButton mFfwdButton;
+    private ImageButton mRewButton;
+    private ImageButton mNextButton;
+    private ImageButton mPrevButton;
+    private ImageButton mFullscreenButton;
+    private Handler mHandler = new MessageHandler(this);
+    private ImageButton mStop;
+    private ImageButton mSubtitles;
 
     public VideoControllerView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -144,6 +145,7 @@ public class VideoControllerView extends FrameLayout {
     /**
      * Set the view that acts as the anchor for the control view.
      * This can for example be a VideoView, or your Activity's main view.
+     *
      * @param view The view to which to anchor the controller when it is visible.
      */
     public void setAnchorView(ViewGroup view) {
@@ -162,6 +164,7 @@ public class VideoControllerView extends FrameLayout {
     /**
      * Create the view that holds the widgets that control playback.
      * Derived classes can override this to create their own.
+     *
      * @return The controller view.
      * @hide This doesn't work as advertised
      */
@@ -276,8 +279,9 @@ public class VideoControllerView extends FrameLayout {
     /**
      * Show the controller on screen. It will go away
      * automatically after 'timeout' milliseconds of inactivity.
+     *
      * @param timeout The timeout in milliseconds. Use 0 to show
-     * the controller until hide() is called.
+     *                the controller until hide() is called.
      */
     public void show(int timeout) {
         if (!mShowing && mAnchor != null) {
@@ -337,7 +341,7 @@ public class VideoControllerView extends FrameLayout {
 
         int seconds = totalSeconds % 60;
         int minutes = (totalSeconds / 60) % 60;
-        int hours   = totalSeconds / 3600;
+        int hours = totalSeconds / 3600;
 
         mFormatBuilder.setLength(0);
         if (hours > 0) {
@@ -353,22 +357,30 @@ public class VideoControllerView extends FrameLayout {
             return 0;
         }
 
-        int position = mPlayer.getCurrentPosition();
-        int duration = mPlayer.getDuration();
-        if (mProgress != null) {
-            if (duration > 0) {
-                // use long to avoid overflow
-                long pos = 1000L * position / duration;
-                mProgress.setProgress( (int) pos);
-            }
-            int percent = mPlayer.getBufferPercentage();
-            mProgress.setSecondaryProgress(percent * 10);
-        }
+        int position = 0;
+        try {
 
-        if (mEndTime != null)
-            mEndTime.setText(stringForTime(duration));
-        if (mCurrentTime != null)
-            mCurrentTime.setText(stringForTime(position));
+            position = mPlayer.getCurrentPosition();
+            int duration = mPlayer.getDuration();
+            if (mProgress != null) {
+                if (duration > 0) {
+                    // use long to avoid overflow
+                    long pos = 1000L * position / duration;
+                    mProgress.setProgress((int) pos);
+                }
+                int percent = mPlayer.getBufferPercentage();
+                mProgress.setSecondaryProgress(percent * 10);
+            }
+
+            if (mEndTime != null)
+                mEndTime.setText(stringForTime(duration));
+            if (mCurrentTime != null)
+                mCurrentTime.setText(stringForTime(position));
+
+        }
+        catch (IllegalStateException stateEx) {
+            Logger.Log().e("Illegal state exception ignored.");
+        }
 
         return position;
     }
@@ -394,7 +406,7 @@ public class VideoControllerView extends FrameLayout {
         int keyCode = event.getKeyCode();
         final boolean uniqueDown = event.getRepeatCount() == 0
                 && event.getAction() == KeyEvent.ACTION_DOWN;
-        if (keyCode ==  KeyEvent.KEYCODE_HEADSETHOOK
+        if (keyCode == KeyEvent.KEYCODE_HEADSETHOOK
                 || keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE
                 || keyCode == KeyEvent.KEYCODE_SPACE) {
             if (uniqueDown) {
@@ -447,11 +459,13 @@ public class VideoControllerView extends FrameLayout {
     };
 
     private View.OnClickListener mStopListener = v -> {
+        if (eventListener != null)
+            eventListener.onMediaPlayerStop();
+
         if (mPlayer != null)
             mPlayer.stop();
 
-        if (eventListener != null)
-            eventListener.onMediaPlayerStop();
+
     };
 
     private View.OnClickListener mSubtitlesListener = v -> {
@@ -478,8 +492,7 @@ public class VideoControllerView extends FrameLayout {
 
         if (mPlayer.isFullScreen()) {
             mFullscreenButton.setImageResource(R.drawable.ic_media_fullscreen_shrink);
-        }
-        else {
+        } else {
             mFullscreenButton.setImageResource(R.drawable.ic_media_fullscreen_stretch);
         }
     }
@@ -532,7 +545,7 @@ public class VideoControllerView extends FrameLayout {
 
         public void onProgressChanged(SeekBar bar, int progress, boolean fromuser) {
             if (mCurrentTime != null)
-                mCurrentTime.setText(stringForTime( (int) getNewPosition(progress)));
+                mCurrentTime.setText(stringForTime((int) getNewPosition(progress)));
 
             mDragging = fromuser;
 
@@ -561,7 +574,7 @@ public class VideoControllerView extends FrameLayout {
 
         public int getNewPosition(int progress) {
             long duration = mPlayer.getDuration();
-            return (int)((duration * progress) / 1000L);
+            return (int) ((duration * progress) / 1000L);
         }
     };
 
@@ -649,24 +662,38 @@ public class VideoControllerView extends FrameLayout {
     }
 
     public interface MediaPlayerControl {
-        void    start();
-        void    pause();
-        void    stop();
-        int     getDuration();
-        int     getCurrentPosition();
-        void    seekTo(int pos);
+        void start();
+
+        void pause();
+
+        void stop();
+
+        int getDuration();
+
+        int getCurrentPosition();
+
+        void seekTo(int pos);
+
         boolean isPlaying();
-        int     getBufferPercentage();
+
+        int getBufferPercentage();
+
         boolean canPause();
+
         boolean canSeekBackward();
+
         boolean canSeekForward();
+
         boolean isFullScreen();
-        void    toggleFullScreen();
+
+        void toggleFullScreen();
     }
 
     public interface MediaPlayerEventListener {
         void onMediaPlayerStop();
+
         void onMediaPlayerSubtitleClick();
+
         void onMediaPlayerFullscreen();
     }
 
@@ -676,6 +703,7 @@ public class VideoControllerView extends FrameLayout {
         MessageHandler(VideoControllerView view) {
             mView = new WeakReference<VideoControllerView>(view);
         }
+
         @Override
         public void handleMessage(Message msg) {
             VideoControllerView view = mView.get();
@@ -683,18 +711,23 @@ public class VideoControllerView extends FrameLayout {
                 return;
             }
 
-            int pos;
-            switch (msg.what) {
-                case FADE_OUT:
-                    view.hide();
-                    break;
-                case SHOW_PROGRESS:
-                    pos = view.setProgress();
-                    if (!view.mDragging && view.mShowing && view.mPlayer.isPlaying()) {
-                        msg = obtainMessage(SHOW_PROGRESS);
-                        sendMessageDelayed(msg, 1000 - (pos % 1000));
-                    }
-                    break;
+            try {
+                int pos;
+                switch (msg.what) {
+                    case FADE_OUT:
+                        view.hide();
+                        break;
+                    case SHOW_PROGRESS:
+                        pos = view.setProgress();
+                        if (!view.mDragging && view.mShowing && view.mPlayer.isPlaying()) {
+                            msg = obtainMessage(SHOW_PROGRESS);
+                            sendMessageDelayed(msg, 1000 - (pos % 1000));
+                        }
+                        break;
+                }
+            }
+            catch (IllegalStateException stateEx) {
+                Logger.Log().e("Illegal state ignored (!)");
             }
         }
     }

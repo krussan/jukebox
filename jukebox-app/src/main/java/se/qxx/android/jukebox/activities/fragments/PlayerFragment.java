@@ -40,10 +40,10 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
     private CacheData cacheData;
 
     private String currentTitle;
-    private int currentId;
     private JukeboxDomain.Movie currentMovie;
     private JukeboxDomain.Episode currentEpisode;
     private JukeboxSettings settings;
+    private int exitPosition;
 
     protected JukeboxSettings getSettings() {
         return settings;
@@ -106,7 +106,10 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
     }
 
     protected JukeboxDomain.Media getMedia() {
-        return this.getMediaList().get(this.getCurrentMediaIndex());
+        if (this.getMediaList() != null)
+            return this.getMediaList().get(this.getCurrentMediaIndex());
+
+        return null;
     }
 
 
@@ -219,14 +222,12 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
     }
 
     private void initializeMedia(JukeboxDomain.Movie m) {
-        currentId = m.getID();
         currentMovie = m;
         currentTitle = m.getIdentifiedTitle();
         currentEpisode = null;
     }
 
     private void initializeMedia(JukeboxDomain.Episode ep) {
-        currentId = ep.getID();
         currentMovie = null;
         currentTitle = ep.getTitle();
         currentEpisode = ep;
@@ -289,16 +290,24 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
                 });
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
 
     @Override
     public void onStop() {
-        //save media state
-        //cacheData.saveMediaState(this.getMedia().getID(), getPla);
         super.onStop();
-    }
 
-    protected void saveMediaState(int seekPosition) {
-        cacheData.saveMediaState(this.getMedia().getID(), seekPosition);
+        //save media state
+        if (this.getExitPosition() > 0)
+            cacheData.saveMediaState(this.getMedia().getID(), getExitPosition());
+
     }
 
     public abstract void setVisibility(View v);
@@ -321,5 +330,17 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
 
     public void setCurrentTitle(String currentTitle) {
         this.currentTitle = currentTitle;
+    }
+
+    public int getExitPosition() {
+        return exitPosition;
+    }
+
+    public void setExitPosition(int exitPosition) {
+        this.exitPosition = exitPosition;
+    }
+
+    public int getCachedPosition(int mediaID) {
+        return cacheData.getMediaState(mediaID);
     }
 }

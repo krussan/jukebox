@@ -5,6 +5,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
@@ -19,6 +20,9 @@ import com.google.protobuf.RpcCallback;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.media.VideoControllerView;
@@ -26,27 +30,25 @@ import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
-import static android.media.MediaPlayer.SEEK_CLOSEST;
-
 public class LocalPlayerFragment extends PlayerFragment
         implements MediaPlayer.OnPreparedListener,
-            VideoControllerView.MediaPlayerEventListener,
-            MediaPlayer.OnBufferingUpdateListener,
-            MediaPlayer.OnCompletionListener,
-            MediaPlayer.OnVideoSizeChangedListener,
-            VideoControllerView.MediaPlayerControl {
+        VideoControllerView.MediaPlayerEventListener,
+        MediaPlayer.OnBufferingUpdateListener,
+        MediaPlayer.OnCompletionListener,
+        MediaPlayer.OnVideoSizeChangedListener,
+        VideoControllerView.MediaPlayerControl {
 
-    private static final String TAG="LocalPlayerFragment";
+    private static final String TAG = "LocalPlayerFragment";
 
     private boolean loadingVisible;
-    private VideoControllerView mcontroller ;
+    private VideoControllerView mcontroller;
 
     MediaPlayer mediaPlayer = null;
-    SurfaceView surfaceView = null;
     List<String> subtitleUriList;
     private int firstTextTrack = -1;
 
-    SurfaceHolder surfaceHolder;
+    Lock startLock = new ReentrantLock();
+    Condition surfaceAquired = startLock.newCondition();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,17 +58,30 @@ public class LocalPlayerFragment extends PlayerFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.nowplaying_local, container, false);
-        surfaceHolder = getSurfaceHolder(v);
 
-        //initializeCastProvider(v, this, null, holder);
+        initializeSurfaceHolder(v);
         initializeView(v);
+        initializeMediaPlayer();
 
         return v;
     }
 
+    private void initializeMediaPlayer() {
+        mediaPlayer = new MediaPlayer();
+
+        mediaPlayer.setOnBufferingUpdateListener(this);
+        mediaPlayer.setOnCompletionListener(this);
+        mediaPlayer.setOnPreparedListener(this);
+        mediaPlayer.setScreenOnWhilePlaying(true);
+        mediaPlayer.setOnVideoSizeChangedListener(this);
+
+        //mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
+    }
+
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         startMedia();
     }
 
@@ -85,6 +100,7 @@ public class LocalPlayerFragment extends PlayerFragment
     }
 
 
+    @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
         mcontroller.setMediaPlayer(this);
         mcontroller.setEventListener(this);
@@ -118,19 +134,25 @@ public class LocalPlayerFragment extends PlayerFragment
 
     @Override
     public void onGetItemCompleted() {
-        getActivity().runOnUiThread(() -> initializeMediaController());
+        getActivity().runOnUiThread(this::initializeMediaController);
     }
 
-    private SurfaceHolder getSurfaceHolder(View v) {
-        final SurfaceView view = v.findViewById(R.id.surfaceview);
+    private void initializeSurfaceHolder(View v) {
+        SurfaceView view = v.findViewById(R.id.surfaceview);
         SurfaceHolder holder = view.getHolder();
 
         holder.addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder surfaceHolder) {
-                surfaceView = view;
-                if (mediaPlayer != null)
-                    mediaPlayer.setDisplay(view.getHolder());
+                startLock.lock();
+                try {
+                    if (mediaPlayer != null)
+                        mediaPlayer.setDisplay(surfaceHolder);
+                    surfaceAquired.signal();
+                }
+                finally {
+                    startLock.unlock();
+                }
             }
 
             @Override
@@ -141,27 +163,37 @@ public class LocalPlayerFragment extends PlayerFragment
             @Override
             public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
                 Log.d(TAG, "Surface destroyed");
-                if (mediaPlayer != null) {
-                    mediaPlayer.release();
-//                    mediaPlayer.setDisplay(null);
+                try {
+                    if (mediaPlayer != null) {
+                        mediaPlayer.setDisplay(null);
+                    }
+                }
+                catch (IllegalStateException stateEx) {
+                    Logger.Log().e("Ignoring IllegalStateException");
                 }
             }
         });
-        return holder;
     }
 
     @Override
     public void onStop() {
+        try {
+            setExitPosition(mediaPlayer.getCurrentPosition());
+        }
+        catch (IllegalStateException stateEx) {
+            Logger.Log().e("Illegal state ignored (!)");
+        }
+
         super.onStop();
 
         //TODO: Save the media ID and position from media player
-        stop();
+        pause();
     }
 
 
     @Override
     public void onMediaPlayerStop() {
-        stop();
+        setExitPosition(mediaPlayer.getCurrentPosition());
 
         getActivity().finish();
     }
@@ -207,48 +239,78 @@ public class LocalPlayerFragment extends PlayerFragment
 
                 Uri uri = Uri.parse(response.getUri());
 
-                mediaPlayer = MediaPlayer.create(getContext(), uri);
+                //mediaPlayer = MediaPlayer.create(getContext(), uri);
 
-                if (mediaPlayer != null) {
-                    setupMediaPlayer();
-                    firstTextTrack = mediaPlayer.getTrackInfo().length;
-
-                    for (String subUri : response.getSubtitleUrisList()) {
-                        try {
-                            mediaPlayer.addTimedTextSource(
-                                    getContext(),
-                                    Uri.parse(subUri),
-                                    MediaPlayer.MEDIA_MIMETYPE_TEXT_SUBRIP);
-                        } catch (IOException e) {
-                            Logger.Log().e("Unable to add substitle", e);
-                        }
-                    }
-
-                    if (response.getSubtitleUrisCount() > 0)
-                        mediaPlayer.selectTrack(firstTextTrack);
-
-                    mediaPlayer.setDisplay(surfaceHolder);
-                    setViewLayoutRatio();
-
-                    mediaPlayer.start();
-
-                }
+                startMediaPlayer(response);
             }
         };
 
     }
 
+    private void startMediaPlayer(JukeboxDomain.JukeboxResponseStartMovie response) {
+        startLock.lock();
+        try {
+            surfaceAquired.await(); // releases lock and waits until doSomethingElse is called
 
-    public void setupMediaPlayer() {
-        mediaPlayer.setOnBufferingUpdateListener(this);
-        mediaPlayer.setOnCompletionListener(this);
-        mediaPlayer.setOnPreparedListener(this);
-        mediaPlayer.setScreenOnWhilePlaying(true);
-        mediaPlayer.setOnVideoSizeChangedListener(this);
-        //mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            if (mediaPlayer != null) {
+                try {
+                    mediaPlayer.setDataSource(response.getUri());
+                    mediaPlayer.prepare();
+                } catch (IOException e) {
+                    Logger.Log().e(String.format("Error when preparing movie URI :: %s", response.getUri()));
+                }
+
+                setupSubtitles(response);
+                setViewLayoutRatio();
+
+                mediaPlayer.start();
+
+                seekToStartPosition();
+
+            }
+        } catch (InterruptedException e) {
+            Logger.Log().e("Lock interrupted (!)");
+        } finally {
+            startLock.unlock();
+        }
+
     }
 
+    /***
+     * Gets the cached position for the media
+     * and seeks to that position at start of media playback
+     */
+    private void seekToStartPosition() {
+        if (this.getMedia() != null) {
+            // get media state
+            int position = getCachedPosition(this.getMedia().getID());
+            if (position > 0)
+                seekTo(position);
+        }
+    }
+
+    private void setupSubtitles(JukeboxDomain.JukeboxResponseStartMovie response) {
+        firstTextTrack = mediaPlayer.getTrackInfo().length;
+
+        for (String subUri : response.getSubtitleUrisList()) {
+            try {
+                mediaPlayer.addTimedTextSource(
+                        getContext(),
+                        Uri.parse(subUri),
+                        MediaPlayer.MEDIA_MIMETYPE_TEXT_SUBRIP);
+            } catch (IOException e) {
+                Logger.Log().e("Unable to add substitle", e);
+            }
+        }
+
+        if (response.getSubtitleUrisCount() > 0)
+            mediaPlayer.selectTrack(firstTextTrack);
+    }
+
+
     public void setViewLayoutRatio() {
+        SurfaceView surfaceView = getView().findViewById(R.id.surfaceview);
+
         if (mediaPlayer != null && surfaceView != null) {
             //Get the dimensions of the video
             final int videoWidth = mediaPlayer.getVideoWidth();
@@ -308,7 +370,7 @@ public class LocalPlayerFragment extends PlayerFragment
     @Override
     public void seekTo(int position) {
         if (mediaPlayer != null) {
-            mediaPlayer.seekTo(position, SEEK_CLOSEST);
+            mediaPlayer.seekTo(position);
         }
     }
 
@@ -352,10 +414,16 @@ public class LocalPlayerFragment extends PlayerFragment
 
     @Override
     public void stop() {
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-            mediaPlayer.release();
+        try {
+            if (mediaPlayer != null) {
+                mediaPlayer.stop();
+                mediaPlayer.release();
+            }
         }
+        catch (IllegalStateException stateEx) {
+            Logger.Log().e("Illegal state ignored (!)");
+        }
+
     }
 
     @Override

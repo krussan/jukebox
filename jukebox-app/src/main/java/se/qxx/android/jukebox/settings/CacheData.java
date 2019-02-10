@@ -3,11 +3,9 @@ package se.qxx.android.jukebox.settings;
 import android.content.Context;
 import android.util.Log;
 
-import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -17,8 +15,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 
 public class CacheData {
@@ -41,7 +37,17 @@ public class CacheData {
         catch (IOException|JSONException iox) {
             Log.e(TAG, "Error when saving cache data", iox);
         }
+    }
 
+    public int getMediaState(int mediaID) {
+        try {
+            JSONObject json = new JSONObject(getJsonFile());
+            return Integer.parseInt(json.get(Integer.toString(mediaID)).toString());
+        }
+        catch (IOException|JSONException iox) {
+            Log.e(TAG, "Error when getting cache data", iox);
+            return 0;
+        }
     }
 
     private void saveCacheFile(JSONObject json) throws IOException {
@@ -70,7 +76,7 @@ public class CacheData {
             e.printStackTrace();
         }
 
-        return StringUtils.EMPTY;
+        return "{}";
     }
 
     private File getCacheFile() {
