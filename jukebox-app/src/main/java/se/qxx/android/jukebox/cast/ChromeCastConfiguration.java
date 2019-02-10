@@ -19,7 +19,6 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.android.jukebox.R;
-import se.qxx.android.jukebox.settings.JukeboxSettings;
 
 /**
  * Created by chris on 2/18/17.
@@ -54,22 +53,22 @@ public class ChromeCastConfiguration {
         return false;
     }
 
-    public static boolean isChromeCastActive() {
-        return getCastType() == JukeboxCastType.ChromeCast;
+    public static boolean isChromeCastActive(String currentMediaPlayer) {
+        return getCastType(currentMediaPlayer) == JukeboxCastType.ChromeCast;
     }
 
-    public static JukeboxCastType getCastType() {
-        if (StringUtils.equalsIgnoreCase("Chromecast", JukeboxSettings.get().getCurrentMediaPlayer()))
+    public static JukeboxCastType getCastType(String currentMediaPlayer) {
+        if (StringUtils.equalsIgnoreCase("Chromecast", currentMediaPlayer))
             return JukeboxCastType.ChromeCast;
 
-        if (StringUtils.equalsIgnoreCase("LOCAL", JukeboxSettings.get().getCurrentMediaPlayer()))
+        if (StringUtils.equalsIgnoreCase("LOCAL", currentMediaPlayer))
             return JukeboxCastType.Local;
 
         return JukeboxCastType.JukeboxCast;
     }
 
-    public static void createMenu(Context context, MenuInflater inflater, Menu menu) {
-        if (isChromeCastActive()) {
+    public static void createMenu(Context context, MenuInflater inflater, Menu menu, String currentMediaPlayer) {
+        if (isChromeCastActive(currentMediaPlayer)) {
             inflater.inflate(R.menu.cast, menu);
             CastButtonFactory.setUpMediaRouteButton(context.getApplicationContext(),
                     menu,
@@ -109,8 +108,8 @@ public class ChromeCastConfiguration {
         return castSession != null;
     }
 
-    public static boolean isLocalPlayer() {
-        switch (ChromeCastConfiguration.getCastType()) {
+    public static boolean isLocalPlayer(String currentMediaPlayer) {
+        switch (ChromeCastConfiguration.getCastType(currentMediaPlayer)) {
             case ChromeCast:
                 if (ChromeCastConfiguration.isChromecastConnected())
                     return false;

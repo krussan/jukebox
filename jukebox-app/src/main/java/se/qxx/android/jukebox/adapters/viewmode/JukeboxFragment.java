@@ -113,8 +113,9 @@ public class JukeboxFragment extends ListFragment implements
             this.setMode((ViewMode) b.getSerializable("mode"));
         }
 
-        connector = new Connector(this);
         settings = new JukeboxSettings(this.getContext());
+        connector = new Connector(this, settings);
+
 
         clearData();
         Logger.Log().d("Initializing - loading data");

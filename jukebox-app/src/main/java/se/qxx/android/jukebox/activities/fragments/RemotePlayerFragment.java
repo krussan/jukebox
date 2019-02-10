@@ -26,7 +26,6 @@ import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.SubSelectActivity;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
 import se.qxx.android.jukebox.media.VideoControllerView;
-import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.jukebox.widgets.Seeker;
 import se.qxx.android.jukebox.widgets.SeekerListener;
 import se.qxx.android.jukebox.widgets.UpdateSeekIndicator;
@@ -49,7 +48,6 @@ public abstract class RemotePlayerFragment extends PlayerFragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
     }
 
@@ -177,7 +175,7 @@ public abstract class RemotePlayerFragment extends PlayerFragment
 
     @Override
     public void initializeSeeker() {
-        seeker = new Seeker(this);
+        seeker = new Seeker(this, getSettings());
     }
 
     @Override
@@ -239,8 +237,8 @@ public abstract class RemotePlayerFragment extends PlayerFragment
     }
 
     private void pauseMovie() {
-        String player = JukeboxSettings.get().getCurrentMediaPlayer();
-        if (ChromeCastConfiguration.isChromeCastActive()) {
+        String player = getSettings().getCurrentMediaPlayer();
+        if (ChromeCastConfiguration.isChromeCastActive(getSettings().getCurrentMediaPlayer())) {
             RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(this.getContext());
 
             if (client != null) {
@@ -255,8 +253,8 @@ public abstract class RemotePlayerFragment extends PlayerFragment
 
     private void setupFullscreen() {
 
-        String player = JukeboxSettings.get().getCurrentMediaPlayer();
-        if (!ChromeCastConfiguration.isChromeCastActive()) {
+        String player = getSettings().getCurrentMediaPlayer();
+        if (!ChromeCastConfiguration.isChromeCastActive(getSettings().getCurrentMediaPlayer())) {
             this.getConnectionHandler().toggleFullscreen(player);
         }
 

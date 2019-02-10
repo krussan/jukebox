@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 public class JukeboxSettings extends SettingsBase {
-	private static JukeboxSettings _instance = null;
 	private SharedPreferences preferences;
 	private SharedPreferences storage;
 	

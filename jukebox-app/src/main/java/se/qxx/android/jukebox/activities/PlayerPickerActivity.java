@@ -55,7 +55,7 @@ public class PlayerPickerActivity extends AppCompatActivity implements OnItemCli
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 
-		ChromeCastConfiguration.createMenu(this, getMenuInflater(), menu);
+		ChromeCastConfiguration.createMenu(this, getMenuInflater(), menu, settings.getCurrentMediaPlayer());
 
 		return true;
 	}

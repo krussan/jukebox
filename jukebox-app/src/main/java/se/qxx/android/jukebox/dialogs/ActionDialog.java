@@ -1,14 +1,15 @@
 package se.qxx.android.jukebox.dialogs;
 
-import se.qxx.android.jukebox.R;
-import se.qxx.android.jukebox.settings.JukeboxSettings;
-import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
-import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.res.Resources;
+
+import se.qxx.android.jukebox.R;
+import se.qxx.android.jukebox.settings.JukeboxSettings;
+import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
+import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
 
 public class ActionDialog implements OnClickListener{
 	long id;
@@ -16,6 +17,7 @@ public class ActionDialog implements OnClickListener{
 	Activity activity;
     Resources res;
     private int mediaId;
+    private JukeboxSettings settings;
 
     public ActionDialog(Activity activity, long id, int mediaId, RequestType requestType) {
 		this.reqType = requestType;
@@ -23,6 +25,7 @@ public class ActionDialog implements OnClickListener{
 		this.activity = activity;
         this.res = activity.getResources();
         this.mediaId = mediaId;
+        this.settings = new JukeboxSettings(activity);
     }
 	
 	public void show() {
@@ -37,8 +40,8 @@ public class ActionDialog implements OnClickListener{
         Resources res = this.activity.getResources();
 
 		JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
-				JukeboxSettings.get().getServerIpAddress(),
-				JukeboxSettings.get().getServerPort(),
+				this.settings.getServerIpAddress(),
+				this.settings.getServerPort(),
 				JukeboxConnectionProgressDialog.build(this.activity, res.getStringArray(R.array.actionDialogStrings)[choice]));
 
 		// Removed threads as the connectionHandler is threader itself

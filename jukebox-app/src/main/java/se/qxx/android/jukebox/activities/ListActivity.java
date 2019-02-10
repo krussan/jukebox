@@ -111,7 +111,7 @@ public class ListActivity extends AppCompatActivity implements
 		setContentView(R.layout.main);
 
         mCastContext = CastContext.getSharedInstance(this);
-        connector = new Connector(this);
+        connector = new Connector(this, settings);
         
         initializeView();
 
@@ -130,7 +130,10 @@ public class ListActivity extends AppCompatActivity implements
 	        Menu menu) {
 		super.onCreateOptionsMenu(menu);
 
-		ChromeCastConfiguration.createMenu(this, getMenuInflater(), menu);
+		ChromeCastConfiguration.createMenu(this,
+                getMenuInflater(),
+                menu,
+                settings.getCurrentMediaPlayer());
 
 		return true;
 	}

@@ -2,18 +2,14 @@ package se.qxx.android.jukebox.activities.fragments;
 
 
 import android.app.DialogFragment;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import se.qxx.android.jukebox.R;
-import se.qxx.android.jukebox.activities.SubSelectActivity;
 import se.qxx.android.jukebox.adapters.support.SubtitleLayoutAdapter;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.tools.GUITools;
@@ -27,6 +23,7 @@ public class SubtitleSelectFragment extends DialogFragment implements SubtitleLa
 
     private JukeboxDomain.Media mMedia;
     private SubtitleSelectDialogListener mListener;
+    private JukeboxSettings settings;
 
     public interface SubtitleSelectDialogListener {
         void SubtitleSelected(JukeboxDomain.SubtitleUri subtitleUri);
@@ -42,6 +39,8 @@ public class SubtitleSelectFragment extends DialogFragment implements SubtitleLa
         if (getArguments() != null) {
             mMedia = (JukeboxDomain.Media)getArguments().getSerializable("media");
         }
+
+        settings = new JukeboxSettings(getContext());
     }
 
 
@@ -62,8 +61,8 @@ public class SubtitleSelectFragment extends DialogFragment implements SubtitleLa
 
     protected void initializeSubtitles(View v) {
         final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
-                JukeboxSettings.get().getServerIpAddress(),
-                JukeboxSettings.get().getServerPort());
+                settings.getServerIpAddress(),
+                settings.getServerPort());
 
         final ListView lv = (ListView)v.findViewById(R.id.listSubtitlePicker);
 

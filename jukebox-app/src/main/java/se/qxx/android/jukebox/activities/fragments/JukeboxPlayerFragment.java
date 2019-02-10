@@ -8,7 +8,6 @@ import com.google.protobuf.RpcCallback;
 
 import org.apache.commons.lang3.StringUtils;
 
-import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
@@ -25,8 +24,6 @@ public class JukeboxPlayerFragment extends RemotePlayerFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        JukeboxSettings.init(getContext());
     }
 
     /***
@@ -46,7 +43,7 @@ public class JukeboxPlayerFragment extends RemotePlayerFragment {
     private void initializeJukeboxCast() {
         Logger.Log().d("Request -- IsPlaying");
         this.getConnectionHandler().isPlaying(
-                JukeboxSettings.get().getCurrentMediaPlayer(),
+                getSettings().getCurrentMediaPlayer(),
                 new OnStatusComplete());
     }
 
@@ -62,7 +59,7 @@ public class JukeboxPlayerFragment extends RemotePlayerFragment {
             if (response != null) {
                 if (response.getIsPlaying()) {
                     Logger.Log().d("Request --- GetTitle");
-                    getConnectionHandler().getTitle(JukeboxSettings.get().getCurrentMediaPlayer(), new OnGetTitleComplete());
+                    getConnectionHandler().getTitle(getSettings().getCurrentMediaPlayer(), new OnGetTitleComplete());
                 } else {
                     Logger.Log().d("Request --- StartMovie");
                     startMedia();
@@ -97,7 +94,7 @@ public class JukeboxPlayerFragment extends RemotePlayerFragment {
                 Thread t2 = new Thread(() -> {
                     Logger.Log().d("Request --- StopMovie");
                     getConnectionHandler().stopMovie(
-                            JukeboxSettings.get().getCurrentMediaPlayer(),
+                            getSettings().getCurrentMediaPlayer(),
                             new OnStopMovieComplete());
                 });
                 t2.start();
@@ -160,7 +157,7 @@ public class JukeboxPlayerFragment extends RemotePlayerFragment {
 
     @Override
     public void stop() {
-        String player = JukeboxSettings.get().getCurrentMediaPlayer();
+        String player = getSettings().getCurrentMediaPlayer();
 
         stopSeekerTimer();
         this.getConnectionHandler().stopMovie(player, null);
@@ -179,7 +176,7 @@ public class JukeboxPlayerFragment extends RemotePlayerFragment {
     @Override
     public void seekTo(int pos) {
         this.getConnectionHandler().seek(
-                JukeboxSettings.get().getCurrentMediaPlayer(),
+                getSettings().getCurrentMediaPlayer(),
                 pos);
     }
 

@@ -19,7 +19,6 @@ import java.util.List;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.ViewMode;
 import se.qxx.android.jukebox.activities.fragments.SubtitleSelectFragment.SubtitleSelectDialogListener;
-import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
 import se.qxx.android.jukebox.cast.JukeboxCastType;
 import se.qxx.android.jukebox.settings.CacheData;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
@@ -44,6 +43,11 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
     private int currentId;
     private JukeboxDomain.Movie currentMovie;
     private JukeboxDomain.Episode currentEpisode;
+    private JukeboxSettings settings;
+
+    protected JukeboxSettings getSettings() {
+        return settings;
+    }
 
     private int getSeasonNumber() {
         Bundle b = getActivity().getIntent().getExtras();
@@ -111,10 +115,12 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
         super.onCreate(savedInstanceState);
 
         cacheData = new CacheData(getContext());
+        settings = new JukeboxSettings(getContext());
+
         this.setConnectionHandler(
             new JukeboxConnectionHandler(
-                JukeboxSettings.get().getServerIpAddress(),
-                JukeboxSettings.get().getServerPort()));
+                settings.getServerIpAddress(),
+                settings.getServerPort()));
 
         this.getConnectionHandler()
             .setListener(this);
@@ -239,22 +245,22 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
     }
 
     protected String getPlayerName() {
-        String player = JukeboxSettings.get().getCurrentMediaPlayer();
+        String player = getSettings().getCurrentMediaPlayer();
         if (StringUtils.equalsIgnoreCase(player, "local"))
             player = "ChromeCast";
 
         return player;
     }
 
-    public static Fragment newInstance(boolean isLocalPlayer, boolean screenChanged) {
+    public static Fragment newInstance(JukeboxCastType type, boolean screenChanged) {
         Bundle b = new Bundle();
-        Fragment fm = null;
+        Fragment fm;
 
-        if (isLocalPlayer)
+        if (type == JukeboxCastType.Local)
             fm = new LocalPlayerFragment();
-        else if (ChromeCastConfiguration.getCastType() == JukeboxCastType.ChromeCast && ChromeCastConfiguration.isChromecastConnected())
+        else if (type == JukeboxCastType.ChromeCast) {
             fm = new ChromecastPlayerFragment();
-        else
+        } else
             fm = new JukeboxPlayerFragment();
 
         b.putBoolean("screenChanged", screenChanged);

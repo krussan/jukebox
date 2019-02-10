@@ -19,6 +19,7 @@ import se.qxx.jukebox.domain.JukeboxDomain;
 public class Connector {
 
     private ConnectorCallbackEventListener callback;
+    private final JukeboxSettings settings;
 
     public ConnectorCallbackEventListener getCallback() {
         return callback;
@@ -35,8 +36,9 @@ public class Connector {
         void handleEpisodesUpdated(List<JukeboxDomain.Episode> episodes, int totalEpisodes);
     }
 
-    public Connector(ConnectorCallbackEventListener callback) {
-        this.setCallback(callback);
+    public Connector(ConnectorCallbackEventListener callback, JukeboxSettings settings) {
+        this.callback = callback;
+        this.settings = settings;
     }
 /*
     private static final synchronized void fireMoviesUpdated(List<JukeboxDomain.Movie> movies, int totalMovies){
@@ -70,8 +72,8 @@ public class Connector {
 
 	public void connect(final int offset, final int nrOfItems, ViewMode modelType, final int seriesID, int seasonID, boolean excludeImages, boolean excludeTextdata) {
 		final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
-				JukeboxSettings.get().getServerIpAddress(),
-				JukeboxSettings.get().getServerPort());
+				settings.getServerIpAddress(),
+				settings.getServerPort());
 
 		try {
 			if (modelType == ViewMode.Movie) {
@@ -135,13 +137,12 @@ public class Connector {
 
 	public void onoff(Activity a) {
 		// TODO: Check if computer is live.
-		final boolean isOnline = JukeboxSettings.get().isCurrentMediaPlayerOn();
-		final String currentMediaPlayer = JukeboxSettings.get()
-				.getCurrentMediaPlayer();
+		final boolean isOnline = settings.isCurrentMediaPlayerOn();
+		final String currentMediaPlayer = settings.getCurrentMediaPlayer();
 	
 		final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
-				JukeboxSettings.get().getServerIpAddress(), 
-				JukeboxSettings.get().getServerPort(),				
+				settings.getServerIpAddress(),
+				settings.getServerPort(),
 				JukeboxConnectionProgressDialog.build(a,
 						isOnline ? "Suspending target media player..."
 								: "Waking up..."));
@@ -154,11 +155,11 @@ public class Connector {
         });
 		t.start();
 	
-		JukeboxSettings.get().setIsCurrentMediaPlayerOn(!isOnline);
+        settings.setIsCurrentMediaPlayerOn(!isOnline);
 	}
 	
 	public void setupOnOffButton(View v) {
-		if (JukeboxSettings.get().isCurrentMediaPlayerOn()) {
+		if (settings.isCurrentMediaPlayerOn()) {
 			GUITools.showView(R.id.btnOff, v);
 			GUITools.hideView(R.id.btnOn, v);
 		} else {
