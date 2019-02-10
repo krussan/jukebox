@@ -59,7 +59,10 @@ public class ChromeCastConfiguration {
 
     public static JukeboxCastType getCastType(String currentMediaPlayer) {
         if (StringUtils.equalsIgnoreCase("Chromecast", currentMediaPlayer))
-            return JukeboxCastType.ChromeCast;
+            if (isChromecastConnected())
+                return JukeboxCastType.ChromeCast;
+            else
+                return JukeboxCastType.Local;
 
         if (StringUtils.equalsIgnoreCase("LOCAL", currentMediaPlayer))
             return JukeboxCastType.Local;

@@ -26,6 +26,8 @@ import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
+import static android.media.MediaPlayer.SEEK_CLOSEST;
+
 public class LocalPlayerFragment extends PlayerFragment
         implements MediaPlayer.OnPreparedListener,
             VideoControllerView.MediaPlayerEventListener,
@@ -141,7 +143,7 @@ public class LocalPlayerFragment extends PlayerFragment
                 Log.d(TAG, "Surface destroyed");
                 if (mediaPlayer != null) {
                     mediaPlayer.release();
-                    mediaPlayer.setDisplay(null);
+//                    mediaPlayer.setDisplay(null);
                 }
             }
         });
@@ -306,7 +308,7 @@ public class LocalPlayerFragment extends PlayerFragment
     @Override
     public void seekTo(int position) {
         if (mediaPlayer != null) {
-            mediaPlayer.seekTo(position);
+            mediaPlayer.seekTo(position, SEEK_CLOSEST);
         }
     }
 

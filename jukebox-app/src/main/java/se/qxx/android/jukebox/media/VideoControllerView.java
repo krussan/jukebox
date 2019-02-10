@@ -347,6 +347,7 @@ public class VideoControllerView extends FrameLayout {
         }
     }
 
+
     private int setProgress() {
         if (mPlayer == null || mDragging) {
             return 0;
