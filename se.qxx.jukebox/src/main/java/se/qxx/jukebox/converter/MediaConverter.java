@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -82,25 +83,33 @@ public class MediaConverter extends JukeboxThread implements IMediaConverter {
 		for (Media md : _listProcessing) {
 			try {
 				if (md != null) {
-					FFmpegProbeResult probeResult = getProbeResult(md);
-					ConversionProbeResult conversionCheckResult = checkConversion(md, probeResult);
+					String fullFilePath = Util.getFullFilePath(md);
+					File f = new File(fullFilePath);
 					
-					if (conversionCheckResult.getNeedsConversion()) {
-						saveConvertedMedia(md, MediaConverterState.Converting);
-						MediaConverterResult result = triggerConverter(md, probeResult, conversionCheckResult);
+					if (f.exists()) {
+						FFmpegProbeResult probeResult = getProbeResult(fullFilePath);
+						ConversionProbeResult conversionCheckResult = checkConversion(md, probeResult);
 						
-						if (result.getState() == MediaConverterResult.State.Completed) {
-							saveConvertedMedia(md, result.getConvertedFilename());
-						}
-						else if (result.getState() == MediaConverterResult.State.Aborted) {
-							saveConvertedMedia(md, MediaConverterState.Queued);
+						if (conversionCheckResult.getNeedsConversion()) {
+							saveConvertedMedia(md, MediaConverterState.Converting);
+							MediaConverterResult result = triggerConverter(md, probeResult, conversionCheckResult);
+							
+							if (result.getState() == MediaConverterResult.State.Completed) {
+								saveConvertedMedia(md, result.getConvertedFilename());
+							}
+							else if (result.getState() == MediaConverterResult.State.Aborted) {
+								saveConvertedMedia(md, MediaConverterState.Queued);
+							}
+							else {
+								saveConvertedMedia(md, MediaConverterState.Failed);
+							}
 						}
 						else {
-							saveConvertedMedia(md, MediaConverterState.Failed);
+							saveConvertedMedia(md, MediaConverterState.NotNeeded);
 						}
 					}
 					else {
-						saveConvertedMedia(md, MediaConverterState.NotNeeded);
+						this.getLog().Info(String.format("File does not exist :: %s", fullFilePath));
 					}
 				}
 			} catch (Exception e) {
@@ -113,10 +122,10 @@ public class MediaConverter extends JukeboxThread implements IMediaConverter {
 		}
 	}
 
-	private FFmpegProbeResult getProbeResult(Media md) throws IOException {
+	private FFmpegProbeResult getProbeResult(String fullFilePath) throws IOException {
 		FFprobe ffprobe = new FFprobe();
-		this.getLog().Info(String.format("Probing :: %s", md.getFilename()));
-		return ffprobe.probe(Util.getFullFilePath(md));
+		this.getLog().Info(String.format("Probing :: %s", fullFilePath));
+		return ffprobe.probe(fullFilePath);
 	}
 
 	private ConversionProbeResult checkConversion(Media md, FFmpegProbeResult probeResult) {
