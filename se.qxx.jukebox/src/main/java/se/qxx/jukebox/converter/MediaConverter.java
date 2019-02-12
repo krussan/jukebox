@@ -70,14 +70,14 @@ public class MediaConverter extends JukeboxThread implements IMediaConverter {
 	@Override
 	protected void initialize() {
 		this.getLog().Info("Starting up converter thread [...]");
-		this.getLog().Debug("Cleaning up converter queue ..");
+		this.getLog().Info("Cleaning up converter queue ..");
 		this.getDatabase().cleanupConverterQueue();
 
 	}
 
 	@Override
 	protected void execute() {
-		this.getLog().Debug("Retrieving list to process");
+		this.getLog().Info("Retrieving list to process");
 		List<Media> _listProcessing = this.getDatabase().getConverterQueue();
 
 		for (Media md : _listProcessing) {
@@ -110,6 +110,7 @@ public class MediaConverter extends JukeboxThread implements IMediaConverter {
 					}
 					else {
 						this.getLog().Info(String.format("File does not exist :: %s", fullFilePath));
+						saveConvertedMedia(md, MediaConverterState.Failed);
 					}
 				}
 			} catch (Exception e) {
@@ -193,7 +194,7 @@ public class MediaConverter extends JukeboxThread implements IMediaConverter {
 		String newFilepath = Util.getFullFilePath(filePath, newFilename);
 
 		if (checkFileExists(newFilepath)) {
-			this.getLog().Debug(String.format("Conversion already exist on :: %s", filename));
+			this.getLog().Info(String.format("Conversion already exist on :: %s", filename));
 			return new MediaConverterResult(filePath, filename, newFilename, MediaConverterResult.State.Completed);
 		}
 			
@@ -207,8 +208,8 @@ public class MediaConverter extends JukeboxThread implements IMediaConverter {
 				.setAudioCodec(checkResult.getTargetAudioCodec())
 				.done();
 
-			this.getLog().Debug(String.format("Starting converter on :: %s", filename));
-			this.getLog().Debug(String.format(" --> new file :: %s", newFilepath));
+			this.getLog().Info(String.format("Starting converter on :: %s", filename));
+			this.getLog().Info(String.format(" --> new file :: %s", newFilepath));
 	
 			final double duration_ns = getDurationNs(probeResult);			
 			FFmpegJob job = runConversion(ffmpeg, ffprobe, builder, duration_ns);
@@ -242,7 +243,7 @@ public class MediaConverter extends JukeboxThread implements IMediaConverter {
 						progress.fps.doubleValue(),
 						progress.speed);
 				
-				getLog().Info(logMessage);
+				getLog().Debug(logMessage);
 			}
 			
 		});
@@ -262,16 +263,16 @@ public class MediaConverter extends JukeboxThread implements IMediaConverter {
 		
 		switch (state) {
 		case FINISHED:
-			this.getLog().Debug(String.format("Conversion completed on :: %s", filename));
+			this.getLog().Info(String.format("Conversion completed on :: %s", filename));
 			return new MediaConverterResult(filepath, filename, newFilename, MediaConverterResult.State.Completed);
 		case FAILED:
-			this.getLog().Debug(String.format("Conversion FAILED on :: %s", filename));
+			this.getLog().Info(String.format("Conversion FAILED on :: %s", filename));
 			break;
 		case RUNNING:
-			this.getLog().Debug(String.format("Conversion STILL RUNNING on :: %s", filename));
+			this.getLog().Info(String.format("Conversion STILL RUNNING on :: %s", filename));
 			break;
 		case WAITING:
-			this.getLog().Debug(String.format("Conversion WAITING on :: %s", filename));
+			this.getLog().Info(String.format("Conversion WAITING on :: %s", filename));
 			break;
 		}
 		
