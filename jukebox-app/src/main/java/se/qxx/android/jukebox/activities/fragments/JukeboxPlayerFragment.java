@@ -131,13 +131,11 @@ public class JukeboxPlayerFragment extends RemotePlayerFragment {
     }
 
     @Override
-    public RpcCallback<JukeboxDomain.JukeboxResponseStartMovie> getCallback() {
-        return parameter -> {
-            Logger.Log().d("Response --- StartMovie");
+    public void onStartMovieComplete(JukeboxDomain.JukeboxResponseStartMovie response) {
+        Logger.Log().d("Response --- StartMovie");
 
-            setDuration(this.getMedia().getMetaDuration());
-            startSeekerTimer();
-        };
+        setDuration(this.getMedia().getMetaDuration());
+        startSeekerTimer();
     }
 
     @Override

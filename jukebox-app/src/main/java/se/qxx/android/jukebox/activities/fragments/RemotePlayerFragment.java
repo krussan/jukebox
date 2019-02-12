@@ -222,7 +222,8 @@ public abstract class RemotePlayerFragment extends PlayerFragment
                 break;
             case R.id.btnStop:
                 Logger.Log().d("Request --- StopMove");
-                this.stop();
+                setExitPosition(getCurrentPosition());
+
                 getActivity().finish();
 
                 break;
@@ -343,10 +344,14 @@ public abstract class RemotePlayerFragment extends PlayerFragment
 
     @Override
     public void onStop() {
-        super.onStop();
-
         if (seeker != null)
             seeker.stop();
+
+        setExitPosition(getCurrentPosition());
+        pause();
+
+        super.onStop();
+
     }
 
     @Override

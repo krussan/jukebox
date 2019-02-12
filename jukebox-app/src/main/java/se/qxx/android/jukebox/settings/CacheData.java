@@ -42,12 +42,16 @@ public class CacheData {
     public int getMediaState(int mediaID) {
         try {
             JSONObject json = new JSONObject(getJsonFile());
-            return Integer.parseInt(json.get(Integer.toString(mediaID)).toString());
+            String key = Integer.toString(mediaID);
+            if (json.has(key))
+                return Integer.parseInt(json.get(key).toString());
         }
         catch (IOException|JSONException iox) {
             Log.e(TAG, "Error when getting cache data", iox);
-            return 0;
         }
+
+        return 0;
+
     }
 
     private void saveCacheFile(JSONObject json) throws IOException {

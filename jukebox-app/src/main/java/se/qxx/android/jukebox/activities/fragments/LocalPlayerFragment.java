@@ -15,14 +15,10 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.VideoView;
 
-import com.google.protobuf.RpcCallback;
-
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.CountDownLatch;
 
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.media.VideoControllerView;
@@ -47,8 +43,8 @@ public class LocalPlayerFragment extends PlayerFragment
     List<String> subtitleUriList;
     private int firstTextTrack = -1;
 
-    Lock startLock = new ReentrantLock();
-    Condition surfaceAquired = startLock.newCondition();
+    CountDownLatch surfaceAquired = new CountDownLatch(1);
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -144,15 +140,11 @@ public class LocalPlayerFragment extends PlayerFragment
         holder.addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder surfaceHolder) {
-                startLock.lock();
-                try {
-                    if (mediaPlayer != null)
-                        mediaPlayer.setDisplay(surfaceHolder);
-                    surfaceAquired.signal();
-                }
-                finally {
-                    startLock.unlock();
-                }
+
+                if (mediaPlayer != null)
+                    mediaPlayer.setDisplay(surfaceHolder);
+
+                surfaceAquired.countDown();
             }
 
             @Override
@@ -179,6 +171,8 @@ public class LocalPlayerFragment extends PlayerFragment
     public void onStop() {
         try {
             setExitPosition(mediaPlayer.getCurrentPosition());
+            //TODO: Save the media ID and position from media player
+            pause();
         }
         catch (IllegalStateException stateEx) {
             Logger.Log().e("Illegal state ignored (!)");
@@ -186,14 +180,13 @@ public class LocalPlayerFragment extends PlayerFragment
 
         super.onStop();
 
-        //TODO: Save the media ID and position from media player
-        pause();
     }
 
 
     @Override
     public void onMediaPlayerStop() {
         setExitPosition(mediaPlayer.getCurrentPosition());
+
 
         getActivity().finish();
     }
@@ -231,26 +224,18 @@ public class LocalPlayerFragment extends PlayerFragment
     }
 
     @Override
-    public RpcCallback<JukeboxDomain.JukeboxResponseStartMovie> getCallback() {
+    public void onStartMovieComplete(JukeboxDomain.JukeboxResponseStartMovie response) {
+        if (response != null) {
+            subtitleUriList = response.getSubtitleUrisList();
 
-        return response -> {
-            if (response != null) {
-                subtitleUriList = response.getSubtitleUrisList();
-
-                Uri uri = Uri.parse(response.getUri());
-
-                //mediaPlayer = MediaPlayer.create(getContext(), uri);
-
-                startMediaPlayer(response);
-            }
-        };
-
+            Uri uri = Uri.parse(response.getUri());
+            startMediaPlayer(response);
+        }
     }
 
     private void startMediaPlayer(JukeboxDomain.JukeboxResponseStartMovie response) {
-        startLock.lock();
         try {
-            surfaceAquired.await(); // releases lock and waits until doSomethingElse is called
+            surfaceAquired.await(); // be sure surface has been aquired
 
             if (mediaPlayer != null) {
                 try {
@@ -270,24 +255,9 @@ public class LocalPlayerFragment extends PlayerFragment
             }
         } catch (InterruptedException e) {
             Logger.Log().e("Lock interrupted (!)");
-        } finally {
-            startLock.unlock();
-        }
-
-    }
-
-    /***
-     * Gets the cached position for the media
-     * and seeks to that position at start of media playback
-     */
-    private void seekToStartPosition() {
-        if (this.getMedia() != null) {
-            // get media state
-            int position = getCachedPosition(this.getMedia().getID());
-            if (position > 0)
-                seekTo(position);
         }
     }
+
 
     private void setupSubtitles(JukeboxDomain.JukeboxResponseStartMovie response) {
         firstTextTrack = mediaPlayer.getTrackInfo().length;

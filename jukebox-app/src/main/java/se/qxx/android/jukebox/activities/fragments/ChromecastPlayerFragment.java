@@ -1,6 +1,7 @@
 package se.qxx.android.jukebox.activities.fragments;
 
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,7 +20,6 @@ import com.google.android.gms.cast.TextTrackStyle;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.common.images.WebImage;
-import com.google.protobuf.RpcCallback;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -27,6 +27,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
 import se.qxx.android.tools.Logger;
@@ -39,6 +42,10 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
         implements RemoteMediaClient.ProgressListener {
 
     RemoteMediaClient mRemoteMediaClient;
+
+    Lock handlerLock = new ReentrantLock();
+    Condition startVideoComplete = handlerLock.newCondition();
+
 
     public ChromecastPlayerFragment() {
         // Required empty public constructor
@@ -61,17 +68,15 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
     }
 
     @Override
-    public RpcCallback<JukeboxDomain.JukeboxResponseStartMovie> getCallback() {
-        return response -> {
-            if (response != null) {
-                startCastVideo(
-                        getCurrentTitle(),
-                        response.getUri(),
-                        response.getSubtitleUrisList(),
-                        response.getSubtitleList(),
-                        response.getMimeType());
-            }
-        };
+    public void onStartMovieComplete(JukeboxDomain.JukeboxResponseStartMovie response) {
+        if (response != null) {
+            startCastVideo(
+                    getCurrentTitle(),
+                    response.getUri(),
+                    response.getSubtitleUrisList(),
+                    response.getSubtitleList(),
+                    response.getMimeType());
+        }
     }
 
 
@@ -112,14 +117,16 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
         if (mRemoteMediaClient == null)
             return 0;
         else
-            return (int)mRemoteMediaClient.getApproximateStreamPosition();
+            return (int)mRemoteMediaClient.getApproximateStreamPosition() / 1000;
     }
 
 
     @Override
     public void seekTo(int position) {
-        if (mRemoteMediaClient != null) {
-            mRemoteMediaClient.seek(position * 1000);
+        Activity a = getActivity();
+        if (mRemoteMediaClient != null && a != null) {
+            a.runOnUiThread(() -> mRemoteMediaClient.seek(position * 1000));
+
         }
 
     }
@@ -210,10 +217,39 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
 
             }
 
+            signalHandlerLock();
         };
         mainHandler.post(myRunnable);
 
+
+        // Wait until runnable completes
+        waitForHandlerSignal();
+
     }
+
+    private void waitForHandlerSignal() {
+        handlerLock.lock();
+        try {
+            startVideoComplete.await();
+        }
+        catch (InterruptedException ex) {
+            Logger.Log().e("Interrupted ::", ex);
+        }
+        finally {
+            handlerLock.unlock();
+        }
+    }
+
+    private void signalHandlerLock() {
+        handlerLock.lock();
+        try {
+            startVideoComplete.signal();
+        }
+        finally {
+            handlerLock.unlock();
+        }
+    }
+
 
     @Override
     public void onProgressUpdated(long currentPosition, long duration) {

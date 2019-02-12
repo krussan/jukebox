@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.google.protobuf.ByteString;
-import com.google.protobuf.RpcCallback;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -242,7 +241,10 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
                 getPlayerName(),
                 currentMovie,
                 currentEpisode,
-                getCallback());
+                    (response) -> {
+                        onStartMovieComplete(response);
+                        seekToStartPosition();
+                    });
     }
 
     protected String getPlayerName() {
@@ -312,8 +314,10 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
 
     public abstract void setVisibility(View v);
     public abstract void onGetItemCompleted();
-    public abstract RpcCallback<JukeboxDomain.JukeboxResponseStartMovie> getCallback();
+    //public abstract RpcCallback<JukeboxDomain.JukeboxResponseStartMovie> getCallback();
+    public abstract void onStartMovieComplete(JukeboxDomain.JukeboxResponseStartMovie response);
     public abstract void setSubtitle(JukeboxDomain.SubtitleUri subtitleUri);
+    public abstract void seekTo(int position);
 
     protected void showSubtitleDialog() {
         FragmentManager fm = getFragmentManager();
@@ -343,4 +347,18 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
     public int getCachedPosition(int mediaID) {
         return cacheData.getMediaState(mediaID);
     }
+
+    /***
+     * Gets the cached position for the media
+     * and seeks to that position at start of media playback
+     */
+    protected void seekToStartPosition() {
+        if (this.getMedia() != null) {
+            // get media state
+            int position = getCachedPosition(this.getMedia().getID());
+            if (position > 0)
+                seekTo(position);
+        }
+    }
+
 }
