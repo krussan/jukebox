@@ -11,6 +11,7 @@ import com.google.android.gms.cast.framework.CastContext;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.adapters.viewmode.JukeboxFragmentAdapter;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
+import se.qxx.android.jukebox.cast.JukeboxCastType;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 
 public class FlipperListActivity extends AppCompatActivity {
@@ -45,6 +46,9 @@ public class FlipperListActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (ChromeCastConfiguration.getCastType(settings.getCurrentMediaPlayer()) == JukeboxCastType.ChromeCast)
+            ChromeCastConfiguration.checkGooglePlayServices(this);
 
         settings = new JukeboxSettings(this);
 

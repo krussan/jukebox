@@ -3,7 +3,6 @@ package se.qxx.android.jukebox.cast;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -42,12 +41,7 @@ public class ChromeCastConfiguration {
             default:
                 Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(activity, googlePlayServicesCheck, 0);
 
-                dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialogInterface) {
-                        activity.finish();
-                    }
-                });
+                dialog.setOnCancelListener(dialogInterface -> activity.finish());
                 dialog.show();
         }
         return false;

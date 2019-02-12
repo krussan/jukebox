@@ -15,6 +15,7 @@ import java.util.List;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.adapters.support.PlayerLayoutAdapter;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
+import se.qxx.android.jukebox.cast.JukeboxCastType;
 import se.qxx.android.jukebox.dialogs.JukeboxConnectionProgressDialog;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
@@ -72,6 +73,9 @@ public class PlayerPickerActivity extends AppCompatActivity implements OnItemCli
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		String playerName = (String)arg0.getItemAtPosition(arg2);
 		settings.setCurrentMediaPlayer(playerName);
+
+		if (ChromeCastConfiguration.getCastType(settings.getCurrentMediaPlayer()) == JukeboxCastType.ChromeCast)
+			ChromeCastConfiguration.checkGooglePlayServices(this);
 
 		mCastContext = CastContext.getSharedInstance(this);
 		//updateList();
