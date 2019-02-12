@@ -75,10 +75,8 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
     }
 
 
-    @Override
+
     public void setSubtitle(JukeboxDomain.SubtitleUri subtitleUri) {
-
-
         int id = getMediaTrackID(mRemoteMediaClient, subtitleUri);
         if (id >= 0)
             mRemoteMediaClient.setActiveMediaTracks(new long[] {(long) id});
@@ -306,7 +304,7 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
     private int getMediaTrackID(RemoteMediaClient client, JukeboxDomain.SubtitleUri subtitleUri) {
         List<MediaTrack> tracks = client.getMediaInfo().getMediaTracks();
         for (int i = 0; i< tracks.size(); i++) {
-            if (tracks.get(0).getContentId() == subtitleUri.getUrl())
+            if (tracks.get(i).getContentId().equals(subtitleUri.getUrl()))
                 return i;
         }
 
@@ -320,6 +318,5 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
         else
             return new long[] {};
     }
-
 
 }

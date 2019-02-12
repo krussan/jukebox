@@ -65,7 +65,7 @@ public class ChromeCastConfiguration {
     }
 
     public static void createMenu(Context context, MenuInflater inflater, Menu menu, String currentMediaPlayer) {
-        if (isChromeCastActive(currentMediaPlayer)) {
+        if (StringUtils.equalsIgnoreCase(currentMediaPlayer, "Chromecast")) {
             inflater.inflate(R.menu.cast, menu);
             CastButtonFactory.setUpMediaRouteButton(context.getApplicationContext(),
                     menu,
