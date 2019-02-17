@@ -39,6 +39,7 @@ public class ListActivity extends AppCompatActivity implements
 	private int totalItems = 0;
 	private Connector connector;
 	private boolean isLoading;
+	private JukeboxSettings settings;
 
     protected View getRootView() {
 		return findViewById(R.id.rootMain);
@@ -105,12 +106,12 @@ public class ListActivity extends AppCompatActivity implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-		JukeboxSettings.init(this);
+        settings = new JukeboxSettings(this);
 
 		setContentView(R.layout.main);
 
         mCastContext = CastContext.getSharedInstance(this);
-        connector = new Connector(this);
+        connector = new Connector(this, settings);
         
         initializeView();
 
@@ -129,7 +130,10 @@ public class ListActivity extends AppCompatActivity implements
 	        Menu menu) {
 		super.onCreateOptionsMenu(menu);
 
-		ChromeCastConfiguration.createMenu(this, getMenuInflater(), menu);
+		ChromeCastConfiguration.createMenu(this,
+                getMenuInflater(),
+                menu,
+                settings.getCurrentMediaPlayer());
 
 		return true;
 	}

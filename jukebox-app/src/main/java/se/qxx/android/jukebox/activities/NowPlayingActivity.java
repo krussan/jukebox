@@ -8,13 +8,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 
 import se.qxx.android.jukebox.R;
-import se.qxx.android.jukebox.activities.fragments.LocalPlayerFragment;
 import se.qxx.android.jukebox.activities.fragments.PlayerFragment;
-import se.qxx.android.jukebox.cast.CastProvider;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
+import se.qxx.android.jukebox.settings.JukeboxSettings;
 
 public class NowPlayingActivity extends AppCompatActivity {
     private static boolean screenChange = false;
+    private JukeboxSettings settings;
 
     private ViewMode getMode() {
         Intent i = getIntent();
@@ -32,6 +32,7 @@ public class NowPlayingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.nowplaying_container);
 
+        settings = new JukeboxSettings(this);
         initializeView();
 
         screenChange = false;
@@ -40,7 +41,10 @@ public class NowPlayingActivity extends AppCompatActivity {
     public void initializeView() {
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        ft.add(R.id.fragmentContainer, PlayerFragment.newInstance(CastProvider.isLocalPlayer(), screenChange));
+        ft.add(R.id.fragmentContainer,
+                PlayerFragment.newInstance(
+                        ChromeCastConfiguration.getCastType(settings.getCurrentMediaPlayer()),
+                        screenChange));
         ft.commit();
 
     }
@@ -50,7 +54,7 @@ public class NowPlayingActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
 
-        ChromeCastConfiguration.createMenu(this, getMenuInflater(), menu);
+        ChromeCastConfiguration.createMenu(this, getMenuInflater(), menu, settings.getCurrentMediaPlayer());
 
         return true;
     }
@@ -61,5 +65,6 @@ public class NowPlayingActivity extends AppCompatActivity {
 
         screenChange = true;
     }
+
 
 }

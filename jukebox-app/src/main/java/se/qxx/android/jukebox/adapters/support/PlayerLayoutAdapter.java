@@ -1,9 +1,5 @@
 package se.qxx.android.jukebox.adapters.support;
 
-import se.qxx.android.jukebox.settings.JukeboxSettings;
-import se.qxx.android.jukebox.R;
-import se.qxx.android.tools.GUITools;
-import se.qxx.android.tools.Logger;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,14 +9,21 @@ import android.widget.BaseAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.qxx.android.jukebox.R;
+import se.qxx.android.jukebox.settings.JukeboxSettings;
+import se.qxx.android.tools.GUITools;
+import se.qxx.android.tools.Logger;
+
 public class PlayerLayoutAdapter extends BaseAdapter {
 
 	private Context context;
 	private List<String> players = new ArrayList<String>();
+	private JukeboxSettings settings;
 
 	public PlayerLayoutAdapter(Context context) {
 		super();
 		this.context = context;
+		settings = new JukeboxSettings(context);
 	}
 
 	public void addPlayer(String player) {
@@ -51,7 +54,7 @@ public class PlayerLayoutAdapter extends BaseAdapter {
 	        }
 
 			String name = (String)this.getItem(position);
-	        String currentMediaPlayer = JukeboxSettings.get().getCurrentMediaPlayer();
+	        String currentMediaPlayer = settings.getCurrentMediaPlayer();
 	        
 	        GUITools.setTextOnTextview(R.id.txtPlayerName, name, v);
 	        

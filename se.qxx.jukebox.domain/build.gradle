@@ -1,6 +1,8 @@
-apply plugin: 'java'
-apply plugin: 'com.google.protobuf'
-apply plugin: 'idea'
+plugins {
+    id 'idea'
+    id 'java'
+    id 'com.google.protobuf'
+}
 
 group = 'se.qxx.jukebox'
 version = '1.0-SNAPSHOT'

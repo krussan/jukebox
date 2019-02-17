@@ -8,6 +8,8 @@ import android.view.View;
 
 import com.google.android.gms.cast.framework.CastContext;
 
+import org.apache.commons.lang3.StringUtils;
+
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.adapters.viewmode.JukeboxFragmentAdapter;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
@@ -17,6 +19,7 @@ public class FlipperListActivity extends AppCompatActivity {
 	ViewPager pager;
 	private CastContext mCastContext;
     private ViewMode mode = ViewMode.Movie;
+    private JukeboxSettings settings;
 
 
     protected View getRootView() {
@@ -45,7 +48,10 @@ public class FlipperListActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-		JukeboxSettings.init(this);
+        settings = new JukeboxSettings(this);
+
+        if (StringUtils.equalsIgnoreCase(settings.getCurrentMediaPlayer(), "Chromecast"))
+            ChromeCastConfiguration.checkGooglePlayServices(this);
 
         if (getIntent() != null && getIntent().getExtras() != null) {
             Bundle b = getIntent().getExtras();
@@ -66,7 +72,7 @@ public class FlipperListActivity extends AppCompatActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 
-		ChromeCastConfiguration.createMenu(this, getMenuInflater(), menu);
+		ChromeCastConfiguration.createMenu(this, getMenuInflater(), menu, settings.getCurrentMediaPlayer());
 
 		return true;
 	}

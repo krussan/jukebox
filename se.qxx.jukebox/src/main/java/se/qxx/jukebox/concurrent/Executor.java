@@ -13,7 +13,10 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import se.qxx.jukebox.core.Log.LogType;
+import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IExecutor;
+import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.watcher.FileSystemWatcher;
 
 @Singleton
@@ -21,11 +24,22 @@ public class Executor implements IExecutor {
 
 	private List<Object> runnables = new ArrayList<Object>();
 	private ExecutorService executorService = Executors.newCachedThreadPool();
+	private IJukeboxLogger log;
+	
 	
 	@Inject
-	public Executor() {
+	public Executor(LoggerFactory loggerFactory) {
+		this.setLog(loggerFactory.create(LogType.MAIN));
 	}
 	
+	public IJukeboxLogger getLog() {
+		return log;
+	}
+
+	public void setLog(IJukeboxLogger log) {
+		this.log = log;
+	}
+
 	public List<Object> getRunnables() {
 		return runnables;
 	}
@@ -58,7 +72,9 @@ public class Executor implements IExecutor {
 	private void endJukeboxThreads() {
 		for (Object o : this.getRunnables()) {
 			if (o instanceof JukeboxThread) {
-				((JukeboxThread)o).end();
+				JukeboxThread t = (JukeboxThread)o;
+				this.getLog().Info(String.format("Exeutor is ending thread %s", t.getName()));
+				t.end();
 			}
 		}
 	}

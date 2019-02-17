@@ -175,6 +175,11 @@ message Subtitle {
 	required bytes textdata = 7;
 }
 
+message SubtitleUri {
+	required Subtitle subtitle = 1;
+	optional string url = 2;
+}
+
 message Media {
 	required int32 ID = 1;
 	required int32 index = 2;
@@ -287,7 +292,7 @@ message JukeboxResponseListPlayers {
 }
 
 message JukeboxResponseListSubtitles {
-	repeated Subtitle subtitle = 1;
+	repeated SubtitleUri subtitleUris = 1;
 }
 
 message JukeboxResponseStartMovie { 

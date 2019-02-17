@@ -10,7 +10,7 @@ import se.qxx.jukebox.subtitles.SubFile;
 public interface ISubFileDownloaderHelper {
 	List<SubFile> downloadSubs(String subFileClass, MovieOrSeries mos, List<SubFile> listSubs);
 	void exit();
-	String createTempSubsPath(MovieOrSeries mos);
+	
 	boolean containsMatch(List<SubFile> subs);
 	String getSetting(String className, String setting);
 	String performSearch(String url);

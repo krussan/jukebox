@@ -1,19 +1,15 @@
 package se.qxx.android.jukebox.activities.fragments;
 
-import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -28,17 +24,22 @@ import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.android.jukebox.R;
-import se.qxx.android.jukebox.activities.SubSelectActivity;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
-import se.qxx.android.jukebox.settings.JukeboxSettings;
+import se.qxx.android.jukebox.media.VideoControllerView;
 import se.qxx.android.jukebox.widgets.Seeker;
 import se.qxx.android.jukebox.widgets.SeekerListener;
 import se.qxx.android.jukebox.widgets.UpdateSeekIndicator;
 import se.qxx.android.tools.Logger;
+import se.qxx.jukebox.domain.JukeboxDomain;
 
-public class RemotePlayerFragment extends PlayerFragment implements SeekerListener, SeekBar.OnSeekBarChangeListener, SessionManagerListener<Session>, View.OnClickListener {
-    private boolean loadingVisible;
-    private MediaController mcontroller ;
+public abstract class RemotePlayerFragment extends PlayerFragment
+        implements SeekerListener,
+            SeekBar.OnSeekBarChangeListener,
+            SessionManagerListener<Session>,
+            View.OnClickListener,
+            VideoControllerView.MediaPlayerControl{
+
+    private static final String TAG = "RemotePlayerFragment";
     private Seeker seeker;
     private boolean isManualSeeking = false;
 
@@ -46,13 +47,11 @@ public class RemotePlayerFragment extends PlayerFragment implements SeekerListen
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.nowplaying_remote, container, false);
-        initializeCastProvider(v,null, this, null);
 
         initializeView(v);
         return v;
@@ -116,9 +115,14 @@ public class RemotePlayerFragment extends PlayerFragment implements SeekerListen
     }
 
     private void updateSeekbarText(long progress, long duration) {
-        final TextView tv = getView().findViewById(R.id.txtSeekIndicator);
+        View v = getView();
+        Activity a = getActivity();
 
-        getActivity().runOnUiThread(new UpdateSeekIndicator(progress, duration, tv));
+        if (v != null && a != null) {
+            final TextView tv = v.findViewById(R.id.txtSeekIndicator);
+
+            a.runOnUiThread(new UpdateSeekIndicator(progress, duration, tv));
+        }
     }
 
     @Override
@@ -131,21 +135,24 @@ public class RemotePlayerFragment extends PlayerFragment implements SeekerListen
         int seconds = seekBar.getProgress();
 
         Logger.Log().d("Request --- Seek");
-        this.getCastProvider().seekTo(seconds);
+        this.seekTo(seconds);
 
         this.isManualSeeking = false;
     }
 
     @Override
     public void updateSeeker(final long seconds, final long duration) {
-        final TextView tv = getView().findViewById(R.id.txtSeekIndicator);
-        final SeekBar seekBar = getView().findViewById(R.id.seekBarDuration);
+        View v = getView();
 
-        final long actualDuration = duration == 0 ? seekBar.getMax() : duration;
+        if (v != null) {
+            final TextView tv = v.findViewById(R.id.txtSeekIndicator);
+            final SeekBar seekBar = v.findViewById(R.id.seekBarDuration);
 
-        if (!this.isManualSeeking)
-            getActivity().runOnUiThread(new UpdateSeekIndicator(seconds, actualDuration, tv, seekBar));
+            final long actualDuration = duration == 0 ? seekBar.getMax() : duration;
 
+            if (!this.isManualSeeking)
+                getActivity().runOnUiThread(new UpdateSeekIndicator(seconds, actualDuration, tv, seekBar));
+        }
     }
 
     @Override
@@ -167,14 +174,18 @@ public class RemotePlayerFragment extends PlayerFragment implements SeekerListen
 
     @Override
     public void setDuration(int seconds) {
-        SeekBar sb = getView().findViewById(R.id.seekBarDuration);
-        if (sb != null && sb.getMax() != seconds)
-            sb.setMax(seconds);
+        View v = getView();
+
+        if (v != null) {
+            SeekBar sb = v.findViewById(R.id.seekBarDuration);
+            if (sb != null && sb.getMax() != seconds)
+                sb.setMax(seconds);
+        }
     }
 
     @Override
     public void initializeSeeker() {
-        seeker = new Seeker(this);
+        seeker = new Seeker(this, getSettings());
     }
 
     @Override
@@ -199,7 +210,7 @@ public class RemotePlayerFragment extends PlayerFragment implements SeekerListen
         switch (id) {
             case R.id.btnPlay:
                 Logger.Log().d("Request --- StartMovie");
-                getCastProvider().startMovie();
+                //startMovie();
                 break;
             case R.id.btnFullscreen:
                 Logger.Log().d("Request --- ToggleFullScreen");
@@ -211,7 +222,8 @@ public class RemotePlayerFragment extends PlayerFragment implements SeekerListen
                 break;
             case R.id.btnStop:
                 Logger.Log().d("Request --- StopMove");
-                this.getCastProvider().stop();
+                setExitPosition(getCurrentPosition());
+
                 getActivity().finish();
 
                 break;
@@ -225,9 +237,7 @@ public class RemotePlayerFragment extends PlayerFragment implements SeekerListen
 
                 break;
             case R.id.btnSubSelection:
-                Intent i = new Intent(getActivity(), SubSelectActivity.class);
-                i.putExtra("media", this.getMediaList().get(this.getCurrentMediaIndex()));
-                startActivity(i);
+                showSubtitleDialog();
                 break;
             default:
                 break;
@@ -235,8 +245,8 @@ public class RemotePlayerFragment extends PlayerFragment implements SeekerListen
     }
 
     private void pauseMovie() {
-        String player = JukeboxSettings.get().getCurrentMediaPlayer();
-        if (ChromeCastConfiguration.isChromeCastActive()) {
+        String player = getSettings().getCurrentMediaPlayer();
+        if (ChromeCastConfiguration.isChromeCastActive(getSettings().getCurrentMediaPlayer())) {
             RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(this.getContext());
 
             if (client != null) {
@@ -251,8 +261,8 @@ public class RemotePlayerFragment extends PlayerFragment implements SeekerListen
 
     private void setupFullscreen() {
 
-        String player = JukeboxSettings.get().getCurrentMediaPlayer();
-        if (!ChromeCastConfiguration.isChromeCastActive()) {
+        String player = getSettings().getCurrentMediaPlayer();
+        if (!ChromeCastConfiguration.isChromeCastActive(getSettings().getCurrentMediaPlayer())) {
             this.getConnectionHandler().toggleFullscreen(player);
         }
 
@@ -264,15 +274,12 @@ public class RemotePlayerFragment extends PlayerFragment implements SeekerListen
     @Override
     public void onSessionStarting(Session session) {
         // stop the current cast provider
-        if (this.getCastProvider() != null) {
-            this.getCastProvider().stop();
-        }
+        this.stop();
     }
 
     @Override
     public void onSessionStarted(Session session, String s) {
-        initializeCastProvider(getView(),null, this, null);
-        // start movie and seek?
+
     }
 
     @Override
@@ -287,11 +294,9 @@ public class RemotePlayerFragment extends PlayerFragment implements SeekerListen
     @Override
     public void onSessionEnded(Session session, int i) {
         // stop the current cast provider
-        if (this.getCastProvider() != null) {
-            if (this.getCastProvider().isPlaying()) {
-                this.getCastProvider().stop();
-                initializeCastProvider(getView(), null, this, null);
-            }
+        if (this.isPlaying()) {
+            this.stop();
+            //initializeCastProvider(getView(), null, this, null);
         }
 
         // start movie and seek?
@@ -339,10 +344,14 @@ public class RemotePlayerFragment extends PlayerFragment implements SeekerListen
 
     @Override
     public void onStop() {
-        super.onStop();
-
         if (seeker != null)
             seeker.stop();
+
+        setExitPosition(getCurrentPosition());
+        pause();
+
+        super.onStop();
+
     }
 
     @Override
@@ -351,6 +360,12 @@ public class RemotePlayerFragment extends PlayerFragment implements SeekerListen
 
         if (seeker != null)
             seeker.start();
+    }
+
+    @Override
+    public void SubtitleSelected(JukeboxDomain.SubtitleUri subtitleUri) {
+        Log.d(TAG, String.format("Setting subtitle :: %s", subtitleUri.getSubtitle().getFilename()));
+        this.setSubtitle(subtitleUri);
     }
 
 }

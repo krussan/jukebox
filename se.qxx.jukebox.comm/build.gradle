@@ -1,5 +1,7 @@
-apply plugin: 'java'
-apply plugin: 'idea'
+plugins {
+   id 'java'
+   id 'idea'
+}
 
 group = 'se.qxx.jukebox'
 version = '1.0-SNAPSHOT'

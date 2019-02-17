@@ -1,18 +1,12 @@
 package se.qxx.android.jukebox.activities.fragments;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.SeekBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.protobuf.ByteString;
@@ -23,26 +17,36 @@ import java.util.List;
 
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.ViewMode;
-import se.qxx.android.jukebox.cast.CastProvider;
+import se.qxx.android.jukebox.activities.fragments.SubtitleSelectFragment.SubtitleSelectDialogListener;
+import se.qxx.android.jukebox.cast.JukeboxCastType;
+import se.qxx.android.jukebox.settings.CacheData;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
-import se.qxx.android.jukebox.widgets.SeekerListener;
 import se.qxx.android.tools.GUITools;
 import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.jukebox.comm.client.JukeboxConnectionMessage;
 import se.qxx.jukebox.comm.client.JukeboxResponseListener;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
-public abstract class PlayerFragment extends Fragment implements JukeboxResponseListener {
+public abstract class PlayerFragment extends Fragment implements JukeboxResponseListener, SubtitleSelectDialogListener {
 
     private boolean loadingVisible;
-    private CastProvider castProvider;
     private JukeboxConnectionHandler connectionHandler;
 
     private List<JukeboxDomain.Media> mediaList;
     private int currentMediaIndex = 0;
 
     private String imdbUrl = StringUtils.EMPTY;
+    private CacheData cacheData;
 
+    private String currentTitle;
+    private JukeboxDomain.Movie currentMovie;
+    private JukeboxDomain.Episode currentEpisode;
+    private JukeboxSettings settings;
+    private int exitPosition;
+
+    protected JukeboxSettings getSettings() {
+        return settings;
+    }
 
     private int getSeasonNumber() {
         Bundle b = getActivity().getIntent().getExtras();
@@ -92,14 +96,6 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
         this.connectionHandler = connectionHandler;
     }
 
-    public CastProvider getCastProvider() {
-        return castProvider;
-    }
-
-    public void setCastProvider(CastProvider castProvider) {
-        this.castProvider = castProvider;
-    }
-
     public boolean getLoadingVisible() {
         return loadingVisible;
     }
@@ -108,16 +104,25 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
         this.loadingVisible = loadingVisible;
     }
 
+    protected JukeboxDomain.Media getMedia() {
+        if (this.getMediaList() != null)
+            return this.getMediaList().get(this.getCurrentMediaIndex());
+
+        return null;
+    }
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        cacheData = new CacheData(getContext());
+        settings = new JukeboxSettings(getContext());
+
         this.setConnectionHandler(
             new JukeboxConnectionHandler(
-                JukeboxSettings.get().getServerIpAddress(),
-                JukeboxSettings.get().getServerPort()));
+                settings.getServerIpAddress(),
+                settings.getServerPort()));
 
         this.getConnectionHandler()
             .setListener(this);
@@ -125,6 +130,7 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
     }
 
     protected void initializeView(View v, final String title, final ByteString image) {
+        this.setCurrentTitle(title);
         getActivity().runOnUiThread(() -> {
             if (!image.isEmpty()) {
                 Bitmap bm = GUITools.getBitmapFromByteArray(image.toByteArray());
@@ -135,17 +141,6 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
             GUITools.setTextOnTextview(R.id.lblNowPlayingTitle, title, v);
         });
 
-    }
-
-
-    protected void initializeCastProvider(View v, MediaPlayer.OnPreparedListener preparedListener, SeekerListener seekerListener, SurfaceHolder surfaceHolder) {
-        castProvider = CastProvider.getCaster(
-                this.getActivity(),
-                this.getConnectionHandler(),
-                null,
-                seekerListener,
-                surfaceHolder,
-                preparedListener);
     }
 
     @Override
@@ -208,7 +203,8 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
                                 ep.getTitle()),
                         ep.getImage());
 
-                castProvider.initialize(ep);
+                initializeMedia(ep);
+                //castProvider.initialize(ep);
             }
         }
         else if (requestType == JukeboxDomain.RequestType.TypeMovie) {
@@ -218,26 +214,57 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
             this.setMediaList(m.getMediaList());
             this.setCurrentMediaIndex(0);
             initializeView(v, m.getTitle(), m.getImage());
-            castProvider.initialize(m);
+            initializeMedia(m);
+            //castProvider.initialize(m);
         }
 
     }
 
-    protected void startMedia() {
-        loadingVisible = true;
-        getActivity().runOnUiThread(() -> setVisibility(getView()));
-
-        castProvider.startMovie();
+    private void initializeMedia(JukeboxDomain.Movie m) {
+        currentMovie = m;
+        currentTitle = m.getIdentifiedTitle();
+        currentEpisode = null;
     }
 
+    private void initializeMedia(JukeboxDomain.Episode ep) {
+        currentMovie = null;
+        currentTitle = ep.getTitle();
+        currentEpisode = ep;
+    }
 
-    public static Fragment newInstance(boolean isLocalPlayer, boolean screenChanged) {
+    protected void startMedia() {
+        this.setLoadingVisible(true);
+        getActivity().runOnUiThread(() -> setVisibility(getView()));
+
+        this.getConnectionHandler()
+            .startMovie(
+                getPlayerName(),
+                currentMovie,
+                currentEpisode,
+                    (response) -> {
+                        onStartMovieComplete(response);
+                        seekToStartPosition();
+                    });
+    }
+
+    protected String getPlayerName() {
+        String player = getSettings().getCurrentMediaPlayer();
+        if (StringUtils.equalsIgnoreCase(player, "local"))
+            player = "ChromeCast";
+
+        return player;
+    }
+
+    public static Fragment newInstance(JukeboxCastType type, boolean screenChanged) {
         Bundle b = new Bundle();
-        Fragment fm = null;
-        if (isLocalPlayer)
+        Fragment fm;
+
+        if (type == JukeboxCastType.Local)
             fm = new LocalPlayerFragment();
-        else
-            fm = new RemotePlayerFragment();
+        else if (type == JukeboxCastType.ChromeCast) {
+            fm = new ChromecastPlayerFragment();
+        } else
+            fm = new JukeboxPlayerFragment();
 
         b.putBoolean("screenChanged", screenChanged);
 
@@ -262,15 +289,76 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
                     getActivity().runOnUiThread(() -> {
                         setVisibility(getView());
                     });
-
-                    if (!this.getScreenChanged())
-                        startMedia();
                 });
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        //save media state
+        if (this.getExitPosition() > 0)
+            cacheData.saveMediaState(this.getMedia().getID(), getExitPosition());
+
+    }
 
     public abstract void setVisibility(View v);
     public abstract void onGetItemCompleted();
+    //public abstract RpcCallback<JukeboxDomain.JukeboxResponseStartMovie> getCallback();
+    public abstract void onStartMovieComplete(JukeboxDomain.JukeboxResponseStartMovie response);
+    public abstract void setSubtitle(JukeboxDomain.SubtitleUri subtitleUri);
+    public abstract void seekTo(int position);
+
+    protected void showSubtitleDialog() {
+        FragmentManager fm = getFragmentManager();
+
+        SubtitleSelectFragment subtitleSelectFragment = SubtitleSelectFragment.newInstance(this.getMedia(), this);
+        subtitleSelectFragment.show(fm, "subtitleSelectFragment");
+
+    }
+
+
+    public String getCurrentTitle() {
+        return currentTitle;
+    }
+
+    public void setCurrentTitle(String currentTitle) {
+        this.currentTitle = currentTitle;
+    }
+
+    public int getExitPosition() {
+        return exitPosition;
+    }
+
+    public void setExitPosition(int exitPosition) {
+        this.exitPosition = exitPosition;
+    }
+
+    public int getCachedPosition(int mediaID) {
+        return cacheData.getMediaState(mediaID);
+    }
+
+    /***
+     * Gets the cached position for the media
+     * and seeks to that position at start of media playback
+     */
+    protected void seekToStartPosition() {
+        if (this.getMedia() != null) {
+            // get media state
+            int position = getCachedPosition(this.getMedia().getID());
+            if (position > 0)
+                seekTo(position);
+        }
+    }
 
 }

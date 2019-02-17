@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 public class JukeboxSettings extends SettingsBase {
-	private static JukeboxSettings _instance = null;
 	private SharedPreferences preferences;
 	private SharedPreferences storage;
 	
@@ -46,20 +45,20 @@ public class JukeboxSettings extends SettingsBase {
 		this.putString(storage, CURRENT_MEDIA_PLAYER, mediaPlayerName);
 	}
 
-	private JukeboxSettings(Context c) {
+	public JukeboxSettings(Context c) {
 		preferences = PreferenceManager.getDefaultSharedPreferences(c);
 		storage = c.getSharedPreferences("jukeboxstorage", 0);
 	}
 			
-	public static JukeboxSettings init(Context c) {
-		if (_instance == null)
-			_instance = new JukeboxSettings(c);
-		
-		return _instance;
-	}
-	
-	public static JukeboxSettings get(){
-		return _instance;
-	}
-			
+//	public static JukeboxSettings init(Context c) {
+//		if (_instance == null)
+//			_instance = new JukeboxSettings(c);
+//
+//		return _instance;
+//	}
+
+//	public static JukeboxSettings get(){
+//		return _instance;
+//	}
+
 }

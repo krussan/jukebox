@@ -3,13 +3,10 @@ package se.qxx.android.jukebox.cast;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.view.Menu;
 import android.view.MenuInflater;
 
-import com.google.android.gms.cast.CastRemoteDisplayClient;
-import com.google.android.gms.cast.CastRemoteDisplayLocalService;
 import com.google.android.gms.cast.TextTrackStyle;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
@@ -20,7 +17,6 @@ import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.apache.commons.lang3.StringUtils;
 
-import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.jukebox.R;
 
 /**
@@ -45,33 +41,31 @@ public class ChromeCastConfiguration {
             default:
                 Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(activity, googlePlayServicesCheck, 0);
 
-                dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialogInterface) {
-                        activity.finish();
-                    }
-                });
+                dialog.setOnCancelListener(dialogInterface -> activity.finish());
                 dialog.show();
         }
         return false;
     }
 
-    public static boolean isChromeCastActive() {
-        return getCastType() == JukeboxCastType.ChromeCast;
+    public static boolean isChromeCastActive(String currentMediaPlayer) {
+        return getCastType(currentMediaPlayer) == JukeboxCastType.ChromeCast;
     }
 
-    public static JukeboxCastType getCastType() {
-        if (StringUtils.equalsIgnoreCase("Chromecast", JukeboxSettings.get().getCurrentMediaPlayer()))
-            return JukeboxCastType.ChromeCast;
+    public static JukeboxCastType getCastType(String currentMediaPlayer) {
+        if (StringUtils.equalsIgnoreCase("Chromecast", currentMediaPlayer))
+            if (isChromecastConnected())
+                return JukeboxCastType.ChromeCast;
+            else
+                return JukeboxCastType.Local;
 
-        if (StringUtils.equalsIgnoreCase("LOCAL", JukeboxSettings.get().getCurrentMediaPlayer()))
+        if (StringUtils.equalsIgnoreCase("LOCAL", currentMediaPlayer))
             return JukeboxCastType.Local;
 
         return JukeboxCastType.JukeboxCast;
     }
 
-    public static void createMenu(Context context, MenuInflater inflater, Menu menu) {
-        if (isChromeCastActive()) {
+    public static void createMenu(Context context, MenuInflater inflater, Menu menu, String currentMediaPlayer) {
+        if (StringUtils.equalsIgnoreCase(currentMediaPlayer, "Chromecast")) {
             inflater.inflate(R.menu.cast, menu);
             CastButtonFactory.setUpMediaRouteButton(context.getApplicationContext(),
                     menu,
@@ -109,5 +103,19 @@ public class ChromeCastConfiguration {
                 .getCurrentCastSession();
 
         return castSession != null;
+    }
+
+    public static boolean isLocalPlayer(String currentMediaPlayer) {
+        switch (ChromeCastConfiguration.getCastType(currentMediaPlayer)) {
+            case ChromeCast:
+                if (ChromeCastConfiguration.isChromecastConnected())
+                    return false;
+                else
+                    return true;
+            case JukeboxCast:
+                return false;
+            default:
+                return true;
+        }
     }
 }

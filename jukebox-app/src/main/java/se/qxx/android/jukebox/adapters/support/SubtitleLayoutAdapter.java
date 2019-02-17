@@ -7,34 +7,36 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 
-import com.google.android.gms.cast.framework.media.RemoteMediaClient;
-
 import java.util.List;
 
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.IncludeSubtitleRating;
-import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
-import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.tools.Logger;
-import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
-import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
+import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.Sorter;
 
 public class SubtitleLayoutAdapter extends BaseAdapter implements AdapterView.OnItemClickListener {
 
 	private Context context;
 	private int mediaId;
-	private List<Subtitle> sortedSubtitles = null;
+	private List<JukeboxDomain.SubtitleUri> sortedSubtitles = null;
 	private int selectedSubId = 0;
+	private SubtitleSelectedListener subtitleSelectedListener = null;
 
-	public SubtitleLayoutAdapter(Context context, int mediaId, List<Subtitle> subtitles) {
+	public interface SubtitleSelectedListener {
+		void onSubtitleSelected(JukeboxDomain.SubtitleUri subtitleUri);
+	}
+
+	public SubtitleLayoutAdapter(Context context, int mediaId, List<JukeboxDomain.SubtitleUri> subtitles, SubtitleSelectedListener subtitleSelectedListener) {
 		super();
 		this.context = context;
 		this.mediaId = mediaId;
-		this.sortedSubtitles = Sorter.sortSubtitlesByRating(subtitles);
+		this.sortedSubtitles = Sorter.sortSubtitlesUrisByRating(subtitles);
+		this.subtitleSelectedListener = subtitleSelectedListener;
 
-		if (this.sortedSubtitles.size() > 0)
-		    this.selectedSubId = this.sortedSubtitles.get(0).getID();
+		if (this.sortedSubtitles.size() > 0) {
+			this.selectedSubId = this.sortedSubtitles.get(0).getSubtitle().getID();
+		}
 	}
 	
 	@Override
@@ -46,12 +48,12 @@ public class SubtitleLayoutAdapter extends BaseAdapter implements AdapterView.On
 	            LayoutInflater vi = (LayoutInflater)this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	            v = vi.inflate(R.layout.subtitleitem, null);
 	        }
-	        Subtitle sub = (Subtitle)this.getItem(position);
+	        JukeboxDomain.SubtitleUri sub = (JukeboxDomain.SubtitleUri)this.getItem(position);
 
-	        if (sub.getID() != this.selectedSubId)
+	        if (sub.getSubtitle().getID() != this.selectedSubId)
 	            v.findViewById(R.id.imgSelected).setVisibility(View.GONE);
 
-	        IncludeSubtitleRating.initialize(sub, v);
+	        IncludeSubtitleRating.initialize(sub.getSubtitle(), v);
 		}
 		catch (Exception e) {
 			Logger.Log().e("Error occured while populating subtitle list", e);
@@ -77,32 +79,14 @@ public class SubtitleLayoutAdapter extends BaseAdapter implements AdapterView.On
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-		final Subtitle sub = (Subtitle) arg0.getItemAtPosition(arg2);
+		JukeboxDomain.SubtitleUri sub = (JukeboxDomain.SubtitleUri) arg0.getItemAtPosition(arg2);
 
-		this.selectedSubId = sub.getID();
+		this.selectedSubId = sub.getSubtitle().getID();
 
-		Logger.Log().d(String.format("Setting subtitle to %s", sub.getDescription()));
+		Logger.Log().d(String.format("Setting subtitle to %s", sub.getSubtitle().getDescription()));
 
-
-		if (ChromeCastConfiguration.isChromeCastActive()) {
-			RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(this.context);
-
-			if (client != null) {
-				client.setActiveMediaTracks(new long[]{(long) arg2});
-			}
-		} else {
-			final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
-					JukeboxSettings.get().getServerIpAddress(),
-					JukeboxSettings.get().getServerPort());
-
-			Thread t = new Thread(() ->
-					jh.setSubtitle(
-							JukeboxSettings.get().getCurrentMediaPlayer(),
-							this.mediaId,
-							sub));
-			t.run();
-
-		}
+		if (subtitleSelectedListener != null)
+			subtitleSelectedListener.onSubtitleSelected(sub);
 
 		notifyDataSetInvalidated();
 	}

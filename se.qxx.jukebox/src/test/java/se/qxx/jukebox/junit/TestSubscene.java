@@ -34,7 +34,9 @@ import se.qxx.jukebox.interfaces.IImdbSettings;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IParserSettings;
 import se.qxx.jukebox.interfaces.IRandomWaiter;
+import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.ISubFileDownloaderHelper;
+import se.qxx.jukebox.interfaces.ISubFileUtilHelper;
 import se.qxx.jukebox.interfaces.IWebRetriever;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.imdb.ImdbSettings;
@@ -61,6 +63,7 @@ public class TestSubscene {
 	@Mock private IWebRetriever webRetrieverMock;
 	@Mock private LoggerFactory loggerFactoryMock;
 	@Mock private IRandomWaiter waiterMock;
+	@Mock private ISubFileUtilHelper fileUtilHelperMock;
 
 	
 	@Before
@@ -119,7 +122,9 @@ public class TestSubscene {
 						.setDownloadComplete(false)
 						.build())
 				.build();
-		
+
+		Mockito.when(fileUtilHelperMock.createTempSubsPath(Mockito.anyObject())).thenReturn(".");
+
 		WebResult resultSearch = new WebResult(new URL("https://subscene.com/subtitles/title?q=Mockito"), searchResult, false);
 		Mockito.when(webRetrieverMock.getWebResult("https://subscene.com/subtitles/title?q=Mockito")).thenReturn(resultSearch);
 
@@ -136,17 +141,15 @@ public class TestSubscene {
 		WebResult resultDownload2 = new WebResult(new URL("https://subscene.com/subtitles/Mockito/1123456"), download2Result, false);
 		Mockito.when(webRetrieverMock.getWebResult("https://subscene.com/subtitles/Mockito/1123456")).thenReturn(resultDownload2);
 		
-		MovieOrSeries mos = new MovieOrSeries(m);
-		String tempFilePath = helper.createTempSubsPath(mos);
-		
 		Mockito.when(
 				webRetrieverMock.getWebFile("https://subscene.com/subtitle/download?mac=minYVuJCyMyRv2laUi3x4JRZpygROrUboH6SnmAZMHI0BjB2Ect5yTARB0a8KolifMxdZlSEtc-I5wEKPCP7OxtfvN6JYKOmrUtlONkO-4MWpvB-nqHp421TU8WptRiE0", 
-						tempFilePath))
+						"."))
 		.thenReturn(new File("temp1"));
+		
 
 		Mockito.when(
 				webRetrieverMock.getWebFile("https://subscene.com/subtitle/download?mac=maxYVuJCyMyRv2laUi3x4JRZpygROrUboH6SnmAZMHI0BjB2Ect5yTARB0a8KolifMxdZlSEtc-I5wEKPCP7OxtfvN6JYKOmrUtlONkO-4MWpvB-nqHp421TU8WptRiE0", 
-						tempFilePath))
+						"."))
 		.thenReturn(new File("temp1"));
 		
 		List<Language> lang = new ArrayList<Language>();
@@ -158,6 +161,6 @@ public class TestSubscene {
 	}
 
 	public ISubFileDownloaderHelper createHelper() {
-		return new SubFileDownloaderHelper(settings, webRetrieverMock, movieBuilderFactory, loggerFactoryMock, waiterMock);
+		return new SubFileDownloaderHelper(settings, webRetrieverMock, movieBuilderFactory, loggerFactoryMock, waiterMock, fileUtilHelperMock);
 	}
 }

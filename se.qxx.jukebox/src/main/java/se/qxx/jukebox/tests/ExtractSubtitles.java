@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.xml.bind.JAXBException;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.inject.Injector;
@@ -32,8 +33,8 @@ public class ExtractSubtitles {
 					
  					if (md != null) { 
 						for (Subtitle sub : md.getSubsList()) {
-							fileWriter.writeSubtitleToTempFile(sub);
-							fileWriter.writeSubtitleToTempFileVTT(sub);
+							fileWriter.writeSubtitleToFile(sub, fileWriter.getTempFile(sub, FilenameUtils.getExtension(sub.getFilename())));
+							fileWriter.writeSubtitleToFileVTT(sub, fileWriter.getTempFile(sub, "vtt"));
 						}
  					}
 					else 

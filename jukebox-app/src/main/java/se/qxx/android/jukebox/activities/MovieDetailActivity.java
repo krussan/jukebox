@@ -3,8 +3,8 @@ package se.qxx.android.jukebox.activities;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ListView;
@@ -15,15 +15,19 @@ import org.apache.commons.lang3.StringUtils;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.adapters.support.MovieMediaLayoutAdapter;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
+import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.tools.GUITools;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
 public class MovieDetailActivity extends AppCompatActivity {
 
+    private JukeboxSettings settings;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        settings = new JukeboxSettings(this);
         setContentView(R.layout.movieitem);
 
         initializeView();
@@ -103,7 +107,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
 
-        ChromeCastConfiguration.createMenu(this, getMenuInflater(), menu);
+        ChromeCastConfiguration.createMenu(this, getMenuInflater(), menu, settings.getCurrentMediaPlayer());
 
         return true;
     }

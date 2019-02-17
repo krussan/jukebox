@@ -33,6 +33,7 @@ import se.qxx.jukebox.interfaces.IMkvSubtitleReader;
 import se.qxx.jukebox.interfaces.IMovieBuilderFactory;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.ISubFileDownloaderHelper;
+import se.qxx.jukebox.interfaces.ISubFileUtilHelper;
 import se.qxx.jukebox.interfaces.ISubFinder;
 import se.qxx.jukebox.interfaces.ISubtitleDownloader;
 import se.qxx.jukebox.interfaces.IUnpacker;
@@ -50,6 +51,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	private ISubFileDownloaderHelper helper;
 	private IMkvSubtitleReader mkvSubtitleReader;
 	private IUnpacker unpacker;
+	private ISubFileUtilHelper fileUtilHelper;
 	
 	@Inject
 	public SubtitleDownloader(IDatabase database, 
@@ -59,18 +61,29 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 			ISubFileDownloaderHelper helper,
 			IMkvSubtitleReader mkvSubtitleReader,
 			LoggerFactory loggerFactory,
-			IUnpacker unpacker) {
+			IUnpacker unpacker,
+			ISubFileUtilHelper fileUtilHelper) {
 		super(
 			"Subtitle", 
 			settings.getSettings().getSubFinders().getThreadWaitSeconds() * 1000,
 			loggerFactory.create(LogType.SUBS),
 			executor);
+		
+		this.setFileUtilHelper(fileUtilHelper);
 		this.setUnpacker(unpacker);
 		this.setMkvSubtitleReader(mkvSubtitleReader);
 		this.setDatabase(database);
 		this.setSettings(settings);
 		this.setMovieBuilderFactory(movieBuilderFactory);
 		this.setHelper(helper);
+	}
+
+	public ISubFileUtilHelper getFileUtilHelper() {
+		return fileUtilHelper;
+	}
+
+	public void setFileUtilHelper(ISubFileUtilHelper fileUtilHelper) {
+		this.fileUtilHelper = fileUtilHelper;
 	}
 
 	public IUnpacker getUnpacker() {
@@ -481,7 +494,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	 */
 	private List<Subtitle> extractSubs(MovieOrSeries mos, List<SubFile> files) {
 		String unpackPath = getUnpackedPath(mos);
-		String tempFilepath = this.getHelper().createTempSubsPath(mos);
+		String tempFilepath = this.getFileUtilHelper().createTempSubsPath(mos);
 		this.getLog().Debug(String.format("Unpack path :: %s", unpackPath));
 		
 		List<Subtitle> subtitleList = new ArrayList<Subtitle>();
@@ -629,7 +642,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	 * @return The path
 	 */
 	private String getUnpackedPath(MovieOrSeries mos) {
-		String tempBase = this.getHelper().createTempSubsPath(mos);
+		String tempBase = this.getFileUtilHelper().createTempSubsPath(mos);
 		return String.format("%s/unpack", tempBase);
 	}
 

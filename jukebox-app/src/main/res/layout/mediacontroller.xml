@@ -51,6 +51,15 @@
             android:padding="10dp"
             android:contentDescription="@string/description" />
 
+        <ImageButton android:id="@+id/stop"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:src="@drawable/ic_media_stop_dark"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/description" />
+
         <ImageButton android:id="@+id/ffwd"
             style="@android:style/MediaButton.Ffwd"
             android:layout_weight="1"
@@ -74,6 +83,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
+
+        <ImageButton android:id="@+id/subtitles"
+            android:layout_marginTop="-7dp"
+            android:paddingTop="4dip"
+            android:paddingBottom="4dip"
+            android:paddingLeft="10dip"
+            android:paddingRight="4dip"
+            android:layout_gravity="top"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:src="@drawable/baseline_subtitles_white_36"
+            android:contentDescription="@string/description" />
 
         <TextView android:id="@+id/time_current"
             android:textSize="14sp"

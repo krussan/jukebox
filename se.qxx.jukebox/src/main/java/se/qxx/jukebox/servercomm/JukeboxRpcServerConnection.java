@@ -481,12 +481,14 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 
 		setPriority();
 		this.getLog().Debug(String.format("Getting list of subtitles for media ID :: %s", request.getMediaId()));
-
 		
 		Media media = this.getDatabase().getMediaById(request.getMediaId());
-
-		JukeboxResponseListSubtitles.Builder b = JukeboxResponseListSubtitles.newBuilder();
-		b.addAllSubtitle(media.getSubsList());
+		
+		JukeboxResponseListSubtitles.Builder b = 
+			JukeboxResponseListSubtitles.newBuilder()
+				.addAllSubtitleUris(
+					this.getWebServer()
+						.getSubtitleUris(media));
 	
 		done.run(b.build());
 	}
