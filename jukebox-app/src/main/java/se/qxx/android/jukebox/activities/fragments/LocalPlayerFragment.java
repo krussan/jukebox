@@ -242,13 +242,13 @@ public class LocalPlayerFragment extends PlayerFragment
                 try {
                     Uri uri = Uri.parse(response.getUri());
                     mediaPlayer.setDataSource(this.getContext(), uri);
-                    mediaPlayer.setOnPreparedListener(mp -> {
-                        setupSubtitles(response);
-                        setViewLayoutRatio();
+                    mediaPlayer.prepare();
 
-                        mp.start();
-                    });
-                    mediaPlayer.prepareAsync();
+                    setupSubtitles(response);
+                    setViewLayoutRatio();
+
+                    mediaPlayer.start();
+
 
                 } catch (IOException e) {
                     Logger.Log().e(String.format("Error when preparing movie URI :: %s", response.getUri()));
