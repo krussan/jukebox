@@ -12,11 +12,14 @@ import se.qxx.jukebox.converter.FileChangedState;
 import se.qxx.jukebox.converter.FileRepresentationState;
 import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
+import se.qxx.jukebox.domain.JukeboxDomain.MediaConverterState;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IDownloadChecker;
 import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.IFilenameChecker;
+import se.qxx.jukebox.interfaces.IMediaMetadataHelper;
+import se.qxx.jukebox.tools.MediaMetadata;
 import se.qxx.jukebox.tools.Util;
 
 @Singleton
@@ -29,7 +32,7 @@ public class DownloadChecker extends JukeboxThread implements IDownloadChecker {
 	// <string, string>
 	// <filename - FileRepresentation, state, exist in db?, downloadflag from db>
 	private IFilenameChecker filenameChecker;
-	
+	private IMediaMetadataHelper metaDataHelper;
 	// initialization -- setup all
 	// file, initialized
 	// file changed
@@ -48,10 +51,19 @@ public class DownloadChecker extends JukeboxThread implements IDownloadChecker {
 	// ------state WATCH
 	
 	@Inject
-	private DownloadChecker(IExecutor executor, IDatabase database, LoggerFactory loggerFactory, IFilenameChecker filenameChecker) {
+	private DownloadChecker(IExecutor executor, IDatabase database, LoggerFactory loggerFactory, IFilenameChecker filenameChecker, IMediaMetadataHelper metaDataHelper) {
 		super("DownloadChecker", 300000, loggerFactory.create(LogType.CHECKER), executor);
+		this.setMetaDataHelper(metaDataHelper);
 		this.setFilenameChecker(filenameChecker);
 		this.setDatabase(database);
+	}
+
+	public IMediaMetadataHelper getMetaDataHelper() {
+		return metaDataHelper;
+	}
+
+	public void setMetaDataHelper(IMediaMetadataHelper metaDataHelper) {
+		this.metaDataHelper = metaDataHelper;
 	}
 
 	public IFilenameChecker getFilenameChecker() {
@@ -89,7 +101,7 @@ public class DownloadChecker extends JukeboxThread implements IDownloadChecker {
 				markCompleted(fs, filename);
 				break;
 			case WAIT:
-				// check DB again. If present change to INIT
+				// check DB again. If present change WAIT->INIT
 				checkFileNotPresentInMap(fs, filename);
 				break;
 			case DONE:
@@ -121,13 +133,35 @@ public class DownloadChecker extends JukeboxThread implements IDownloadChecker {
 		
 		// should never be null, but anyway
 		if (md != null) {
-			this.getDatabase().setDownloadCompleted(md.getID());
-			/*
-			 *TODO: Fix reenlist matroska file
-			if (Util.isMatroskaFile(md)) {				
-				SubtitleDownloader.get().reenlistEpisode(ep);
-			}
-			*/
+			setMediaComplete(md);
+		}
+		
+		store(fs, filename);
+		
+	}
+	
+	private void setMediaComplete(Media md) {
+		MediaMetadata meta = this.getMetaDataHelper().getMediaMetadata(md);
+		
+		Media newMedia = Media.newBuilder(md)
+				.setDownloadComplete(true)
+				.setConverterState(MediaConverterState.Queued)
+				.setMetaDuration(meta.getDurationSeconds())
+				.setMetaFramerate(meta.getFramerate())
+				.build();
+				
+		this.getDatabase().save(newMedia);
+	}
+
+	private void markInProgress(FileRepresentationState fs, String filename) {
+		this.getLog().Debug(String.format("-- STATE -- %s -> CHANGED on :: %s",  fs.getState(), filename));
+		fs.setState(FileChangedState.CHANGED);
+		
+		Media md = this.getDatabase().getMediaByFilename(fs.getName());
+		
+		// should never be null, but anyway
+		if (md != null) {
+			this.getDatabase().setDownloadInProgress(md.getID());
 		}
 		
 		store(fs, filename);
@@ -169,8 +203,16 @@ public class DownloadChecker extends JukeboxThread implements IDownloadChecker {
 	private void checkFilePresentInMap(FileRepresentationState fs, String filename) {
 		FileRepresentationState fsOld = this.files.get(filename);
 		
-		if (fsOld.getState() != FileChangedState.DONE && fsOld.getState() != FileChangedState.WAIT) {
-			this.getLog().Debug(String.format("-- STATE -- File exists in map. Setting state to CHANGED on :: %s", filename));
+		if (fsOld.getState() == FileChangedState.DONE) {
+			// A file that was supposedly done has changed
+			// reset the file and update database
+			
+			markInProgress(fs, filename);
+		}
+		else if (fsOld.getState() != FileChangedState.WAIT) {
+			// A file was changed. Set state to changed.
+			// Ignore those in WAIT state until watcher finishes
+			this.getLog().Debug(String.format("-- STATE -- File exists in map. State %s -> CHANGED on :: %s", fsOld.getState(), filename));
 			fs.setState(FileChangedState.CHANGED);
 			store(fs, filename);
 		}
