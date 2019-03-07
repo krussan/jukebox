@@ -67,6 +67,7 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
         startMedia();
     }
 
+
     @Override
     public void onStartMovieComplete(JukeboxDomain.JukeboxResponseStartMovie response) {
         if (response != null) {
@@ -80,11 +81,10 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
     }
 
 
-
     public void setSubtitle(JukeboxDomain.SubtitleUri subtitleUri) {
         int id = getMediaTrackID(mRemoteMediaClient, subtitleUri);
         if (id >= 0)
-            mRemoteMediaClient.setActiveMediaTracks(new long[] {(long) id});
+            mRemoteMediaClient.setActiveMediaTracks(new long[]{(long) id});
     }
 
     @Override
@@ -109,7 +109,7 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
         if (mRemoteMediaClient == null)
             return 0;
         else
-            return (int)mRemoteMediaClient.getStreamDuration();
+            return (int) mRemoteMediaClient.getStreamDuration();
     }
 
     @Override
@@ -117,7 +117,7 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
         if (mRemoteMediaClient == null)
             return 0;
         else
-            return (int)mRemoteMediaClient.getApproximateStreamPosition() / 1000;
+            return (int) mRemoteMediaClient.getApproximateStreamPosition() / 1000;
     }
 
 
@@ -208,8 +208,7 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
 
                             if (status.isSuccess()) {
                                 Logger.Log().d(String.format("MEDIALOAD -- Media load success :: %s", status.getStatusMessage()));
-                            }
-                            else {
+                            } else {
                                 Logger.Log().d(String.format("MEDIALOAD -- Media load FAILURE :: %s", status.getStatusMessage()));
                             }
 
@@ -231,11 +230,9 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
         handlerLock.lock();
         try {
             startVideoComplete.await();
-        }
-        catch (InterruptedException ex) {
+        } catch (InterruptedException ex) {
             Logger.Log().e("Interrupted ::", ex);
-        }
-        finally {
+        } finally {
             handlerLock.unlock();
         }
     }
@@ -244,8 +241,7 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
         handlerLock.lock();
         try {
             startVideoComplete.signal();
-        }
-        finally {
+        } finally {
             handlerLock.unlock();
         }
     }
@@ -253,7 +249,7 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
 
     @Override
     public void onProgressUpdated(long currentPosition, long duration) {
-        updateSeeker((int)currentPosition / 1000, (int)duration / 1000);
+        updateSeeker((int) currentPosition / 1000, (int) duration / 1000);
     }
 
     private void setupCastListener() {
@@ -281,8 +277,8 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
     private List<MediaTrack> getSubtitleTracks(List<JukeboxDomain.Subtitle> subs, List<String> subtitleUris) {
         List<MediaTrack> tracks = new ArrayList<>();
 
-        for (int i=0;i<subtitleUris.size();i++) {
-            if (i<subs.size()) {
+        for (int i = 0; i < subtitleUris.size(); i++) {
+            if (i < subs.size()) {
                 JukeboxDomain.Subtitle currentSub = subs.get(i);
 
                 MediaTrack subtitle = new MediaTrack.Builder(i + 1, MediaTrack.TYPE_TEXT)
@@ -339,7 +335,7 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
 
     private int getMediaTrackID(RemoteMediaClient client, JukeboxDomain.SubtitleUri subtitleUri) {
         List<MediaTrack> tracks = client.getMediaInfo().getMediaTracks();
-        for (int i = 0; i< tracks.size(); i++) {
+        for (int i = 0; i < tracks.size(); i++) {
             if (tracks.get(i).getContentId().equals(subtitleUri.getUrl()))
                 return i;
         }
@@ -350,9 +346,9 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
     @NonNull
     private long[] getActiveTracks(List<String> subtitleUris) {
         if (subtitleUris.size() > 0)
-            return new long[] {1};
+            return new long[]{1};
         else
-            return new long[] {};
+            return new long[]{};
     }
 
 }

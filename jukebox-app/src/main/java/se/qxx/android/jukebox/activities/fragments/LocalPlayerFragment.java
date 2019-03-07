@@ -65,6 +65,8 @@ public class LocalPlayerFragment extends PlayerFragment
     private void initializeMediaPlayer() {
         mediaPlayer = new MediaPlayer();
 
+        mediaPlayer.setOnCompletionListener(mp -> mp.release());
+
         mediaPlayer.setOnBufferingUpdateListener(this);
         mediaPlayer.setOnCompletionListener(this);
         mediaPlayer.setOnPreparedListener(this);
@@ -228,7 +230,6 @@ public class LocalPlayerFragment extends PlayerFragment
         if (response != null) {
             subtitleUriList = response.getSubtitleUrisList();
 
-            Uri uri = Uri.parse(response.getUri());
             startMediaPlayer(response);
         }
     }
@@ -239,19 +240,19 @@ public class LocalPlayerFragment extends PlayerFragment
 
             if (mediaPlayer != null) {
                 try {
-                    mediaPlayer.setDataSource(response.getUri());
+                    Uri uri = Uri.parse(response.getUri());
+                    mediaPlayer.setDataSource(this.getContext(), uri);
                     mediaPlayer.prepare();
+
+                    setupSubtitles(response);
+                    setViewLayoutRatio();
+
+                    mediaPlayer.start();
+
+
                 } catch (IOException e) {
                     Logger.Log().e(String.format("Error when preparing movie URI :: %s", response.getUri()));
                 }
-
-                setupSubtitles(response);
-                setViewLayoutRatio();
-
-                mediaPlayer.start();
-
-                seekToStartPosition();
-
             }
         } catch (InterruptedException e) {
             Logger.Log().e("Lock interrupted (!)");

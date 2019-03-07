@@ -348,7 +348,7 @@ public abstract class RemotePlayerFragment extends PlayerFragment
             seeker.stop();
 
         setExitPosition(getCurrentPosition());
-        pause();
+        //pause();
 
         super.onStop();
 

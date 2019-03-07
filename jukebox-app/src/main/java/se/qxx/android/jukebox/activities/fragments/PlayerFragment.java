@@ -14,6 +14,9 @@ import com.google.protobuf.ByteString;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.ViewMode;
@@ -22,6 +25,7 @@ import se.qxx.android.jukebox.cast.JukeboxCastType;
 import se.qxx.android.jukebox.settings.CacheData;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.tools.GUITools;
+import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.jukebox.comm.client.JukeboxConnectionMessage;
 import se.qxx.jukebox.comm.client.JukeboxResponseListener;
@@ -47,6 +51,9 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
     protected JukeboxSettings getSettings() {
         return settings;
     }
+
+    Lock handlerLock = new ReentrantLock();
+    Condition getVideoInfoComplete = handlerLock.newCondition();
 
     private int getSeasonNumber() {
         Bundle b = getActivity().getIntent().getExtras();
@@ -129,8 +136,7 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
 
     }
 
-    protected void initializeView(View v, final String title, final ByteString image) {
-        this.setCurrentTitle(title);
+    protected void initializeView(View v, final ByteString image) {
         getActivity().runOnUiThread(() -> {
             if (!image.isEmpty()) {
                 Bitmap bm = GUITools.getBitmapFromByteArray(image.toByteArray());
@@ -138,7 +144,7 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
                 GUITools.setImageOnImageView(R.id.imgNowPlaying, scaledImage, v);
             }
 
-            GUITools.setTextOnTextview(R.id.lblNowPlayingTitle, title, v);
+            GUITools.setTextOnTextview(R.id.lblNowPlayingTitle, getCurrentTitle(), v);
         });
 
     }
@@ -196,14 +202,9 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
                 this.setCurrentMediaIndex(0);
                 this.setImdbUrl(ep.getImdbUrl());
 
-                initializeView(v,
-                        String.format("S%sE%s - %s",
-                                this.getSeasonNumber(),
-                                ep.getEpisodeNumber(),
-                                ep.getTitle()),
-                        ep.getImage());
-
                 initializeMedia(ep);
+                initializeView(v, ep.getImage());
+
                 //castProvider.initialize(ep);
             }
         }
@@ -213,8 +214,10 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
             this.setImdbUrl(m.getImdbUrl());
             this.setMediaList(m.getMediaList());
             this.setCurrentMediaIndex(0);
-            initializeView(v, m.getTitle(), m.getImage());
+
             initializeMedia(m);
+            initializeView(v, m.getImage());
+
             //castProvider.initialize(m);
         }
 
@@ -228,13 +231,19 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
 
     private void initializeMedia(JukeboxDomain.Episode ep) {
         currentMovie = null;
-        currentTitle = ep.getTitle();
+        currentTitle = String.format("S%sE%s - %s",
+                this.getSeasonNumber(),
+                ep.getEpisodeNumber(),
+                ep.getTitle());
         currentEpisode = ep;
     }
 
     protected void startMedia() {
         this.setLoadingVisible(true);
         getActivity().runOnUiThread(() -> setVisibility(getView()));
+
+        // Wait for other thread to complete information retrieval
+        waitForGetInfoComplete();
 
         this.getConnectionHandler()
             .startMovie(
@@ -278,18 +287,20 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
         super.onActivityCreated(savedInstanceState);
 
         getConnectionHandler().getItem(
-                this.getID(),
-                this.getRequestType(),
-                false,
-                true,
-                response -> {
-                    initializeView(getView(), this.getRequestType(), response);
-                    onGetItemCompleted();
+            this.getID(),
+            this.getRequestType(),
+            false,
+            true,
+            response -> {
+                initializeView(getView(), this.getRequestType(), response);
 
-                    getActivity().runOnUiThread(() -> {
-                        setVisibility(getView());
-                    });
+                signalGetInfoCopmlete();
+                onGetItemCompleted();
+
+                getActivity().runOnUiThread(() -> {
+                    setVisibility(getView());
                 });
+            });
     }
 
     @Override
@@ -329,12 +340,9 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
 
 
     public String getCurrentTitle() {
-        return currentTitle;
+        return this.currentTitle;
     }
 
-    public void setCurrentTitle(String currentTitle) {
-        this.currentTitle = currentTitle;
-    }
 
     public int getExitPosition() {
         return exitPosition;
@@ -358,6 +366,26 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
             int position = getCachedPosition(this.getMedia().getID());
             if (position > 0)
                 seekTo(position);
+        }
+    }
+
+    private void waitForGetInfoComplete() {
+        handlerLock.lock();
+        try {
+            getVideoInfoComplete.await();
+        } catch (InterruptedException ex) {
+            Logger.Log().e("Interrupted ::", ex);
+        } finally {
+            handlerLock.unlock();
+        }
+    }
+
+    private void signalGetInfoCopmlete() {
+        handlerLock.lock();
+        try {
+            getVideoInfoComplete.signal();
+        } finally {
+            handlerLock.unlock();
         }
     }
 
