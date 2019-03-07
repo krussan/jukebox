@@ -17,6 +17,7 @@ import se.qxx.android.jukebox.adapters.support.MovieMediaLayoutAdapter;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.tools.GUITools;
+import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
 public class MovieDetailActivity extends AppCompatActivity {
