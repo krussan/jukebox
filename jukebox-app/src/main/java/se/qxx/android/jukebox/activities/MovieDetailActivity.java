@@ -7,7 +7,10 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import org.apache.commons.lang3.StringUtils;
@@ -15,18 +18,22 @@ import org.apache.commons.lang3.StringUtils;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.adapters.support.MovieMediaLayoutAdapter;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
+import se.qxx.android.jukebox.settings.CacheData;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.tools.GUITools;
+import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
 public class MovieDetailActivity extends AppCompatActivity {
 
     private JukeboxSettings settings;
+    private CacheData cacheData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        cacheData = new CacheData(this);
         settings = new JukeboxSettings(this);
         setContentView(R.layout.movieitem);
 
@@ -61,6 +68,13 @@ public class MovieDetailActivity extends AppCompatActivity {
             MovieMediaLayoutAdapter adapter = new MovieMediaLayoutAdapter(v.getContext(), m);
             ListView listView = (ListView)v.findViewById(R.id.listViewFilename);
             listView.setAdapter(adapter);
+
+            ProgressBar progressWatched = findViewById(R.id.progressWatched);
+            int progress = 0;
+            if (duration > 0) {
+                progress = (int)(100f * (float)getCachedPosition(m.getMedia(0).getID()) / (float)(duration * 60));
+            }
+            progressWatched.setProgress(progress);
 
             //detector = new SimpleGestureFilter(this, this);
         }
@@ -112,5 +126,9 @@ public class MovieDetailActivity extends AppCompatActivity {
         return true;
     }
 
+
+    public int getCachedPosition(int mediaID) {
+        return cacheData.getMediaState(mediaID);
+    }
 
 }

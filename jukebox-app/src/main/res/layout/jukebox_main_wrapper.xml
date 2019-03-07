@@ -24,6 +24,14 @@
 			android:paddingBottom="5dp" />
 
 	</android.support.v4.view.ViewPager>
-    
-		
+
+
+	<fragment
+		android:id="@+id/castMiniController"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true"
+		android:visibility="gone"
+		class="com.google.android.gms.cast.framework.media.widget.MiniControllerFragment" />
+
 </RelativeLayout>

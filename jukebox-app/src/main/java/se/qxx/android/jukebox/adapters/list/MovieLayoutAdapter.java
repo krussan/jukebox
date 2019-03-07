@@ -2,11 +2,13 @@ package se.qxx.android.jukebox.adapters.list;
 
 import android.content.Context;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import se.qxx.android.jukebox.R;
+import se.qxx.android.jukebox.settings.CacheData;
 import se.qxx.android.tools.GUITools;
 import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
@@ -17,10 +19,10 @@ import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 public class MovieLayoutAdapter extends GenericListLayoutAdapter<Movie> {
 
     private List<Movie> movies = new ArrayList<>();
-
     public List<Movie> getMovies() {
         return movies;
     }
+    private CacheData cacheData;
 
     public void addMovies(List<Movie> movies) {
         this.getMovies().addAll(movies);
@@ -34,7 +36,9 @@ public class MovieLayoutAdapter extends GenericListLayoutAdapter<Movie> {
 		super(context, R.layout.movielistrow);
 		this.clearMovies();
 		this.addMovies(movies);
-	}
+        cacheData = new CacheData(context);
+
+    }
 
 	@Override
 	public void initializeView(View v, Movie m) {
@@ -48,6 +52,17 @@ public class MovieLayoutAdapter extends GenericListLayoutAdapter<Movie> {
             setupThumbnail(v, m.getThumbnail());
             setupSubtitles(v, m.getMedia(0).getSubsList());
 
+            int duration = m.getDuration();
+            ProgressBar progressWatched = v.findViewById(R.id.progressWatched);
+            int progress = 0;
+            if (duration > 0) {
+                progress = (int)(100f * (float)cacheData.getMediaState(m.getMedia(0).getID()) / (float)(duration * 60));
+            }
+
+            if (progress > 0)
+                progressWatched.setProgress(progress);
+            else
+                progressWatched.setVisibility(View.INVISIBLE);
 
         }
 	}

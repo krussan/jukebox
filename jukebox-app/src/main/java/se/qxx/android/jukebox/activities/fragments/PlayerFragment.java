@@ -287,19 +287,21 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
         super.onActivityCreated(savedInstanceState);
 
         getConnectionHandler().getItem(
-            this.getID(),
+            getID(),
             this.getRequestType(),
             false,
             true,
             response -> {
-                initializeView(getView(), this.getRequestType(), response);
+                if (response != null) {
+                    initializeView(getView(), this.getRequestType(), response);
 
-                signalGetInfoCopmlete();
-                onGetItemCompleted();
+                    signalGetInfoCopmlete();
+                    onGetItemCompleted();
 
-                getActivity().runOnUiThread(() -> {
-                    setVisibility(getView());
-                });
+                    getActivity().runOnUiThread(() -> {
+                        setVisibility(getView());
+                    });
+                }
             });
     }
 

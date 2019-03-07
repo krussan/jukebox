@@ -108,21 +108,32 @@
         android:paddingBottom="4dp"
 	/>
 
+	<ProgressBar
+		android:id="@+id/progressWatched"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+		android:max="100"
+		android:progress="50"
+		android:theme="@style/progressBarRed"
+		android:layout_below="@id/textViewStory"
+		/>
+
 	<LinearLayout
 		android:id="@+id/linearLayout1"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_alignParentBottom="true"
+		android:layout_above="@id/castMiniController"
+		android:layout_alignWithParentIfMissing="true"
 		android:gravity="center_horizontal" >
 
 		<ImageButton
 			android:id="@+id/btnPlay"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
+			android:layout_width="60dp"
+			android:layout_height="match_parent"
 			android:background="@null"
-			android:src="@drawable/btnplay"
 			android:onClick="onButtonClicked"
-			/>
+			android:src="@drawable/btnplay" />
 
 		<ImageButton
 			android:id="@+id/btnViewInfo"
@@ -138,5 +149,12 @@
 
 	</LinearLayout>
 
-    
+	<fragment
+		android:id="@+id/castMiniController"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true"
+		android:visibility="visible"
+		class="com.google.android.gms.cast.framework.media.widget.MiniControllerFragment" />
+
 </RelativeLayout>

@@ -12,6 +12,8 @@ import com.google.android.gms.cast.framework.media.NotificationOptions;
 import java.util.Arrays;
 import java.util.List;
 
+import se.qxx.android.jukebox.activities.NowPlayingActivity;
+
 /**
  * Created by vagrant on 4/7/18.
  */
@@ -23,6 +25,7 @@ public class CastOptionsProvider implements OptionsProvider {
     @Override
     public CastOptions getCastOptions(Context context) {
         NotificationOptions notificationOptions = new NotificationOptions.Builder()
+                .setTargetActivityClassName(NowPlayingActivity.class.getName())
                 .setActions(Arrays.asList(
                         MediaIntentReceiver.ACTION_TOGGLE_PLAYBACK,
                         MediaIntentReceiver.ACTION_STOP_CASTING,
@@ -32,6 +35,7 @@ public class CastOptionsProvider implements OptionsProvider {
 
         CastMediaOptions mediaOptions = new CastMediaOptions.Builder()
                 .setNotificationOptions(notificationOptions)
+                .setExpandedControllerActivityClassName(NowPlayingActivity.class.getName())
                 .build();
 
         return new CastOptions.Builder()

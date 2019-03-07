@@ -46,10 +46,30 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
     Lock handlerLock = new ReentrantLock();
     Condition startVideoComplete = handlerLock.newCondition();
 
+    private static final int PROGRESS_LISTENER_INTERVAL = 300;
 
     public ChromecastPlayerFragment() {
         // Required empty public constructor
     }
+
+
+    // Overriden to get the ID from the currently playing media
+    // on chromecast
+    protected int getID() {
+        if (mRemoteMediaClient != null) {
+            MediaInfo mi = mRemoteMediaClient.getMediaInfo();
+            if (mi != null && (mRemoteMediaClient.isPlaying() || mRemoteMediaClient.isPaused())) {
+                MediaMetadata meta = mi.getMetadata();
+                if (meta != null) {
+                    int id = meta.getInt("ID");
+                    if (id > 0)
+                        return id;
+                }
+            }
+        }
+        return super.getID();
+    }
+
 
 
     @Override
@@ -64,9 +84,17 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
     public void onStart() {
         super.onStart();
 
-        startMedia();
+        if (!this.isPlaying())
+            startMedia();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (mRemoteMediaClient != null)
+            mRemoteMediaClient.addProgressListener(this, PROGRESS_LISTENER_INTERVAL);
+    }
 
     @Override
     public void onStartMovieComplete(JukeboxDomain.JukeboxResponseStartMovie response) {
@@ -100,8 +128,9 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
 
     @Override
     public void stop() {
-        if (mRemoteMediaClient != null)
+        if (mRemoteMediaClient != null) {
             mRemoteMediaClient.stop();
+        }
     }
 
     @Override
@@ -180,7 +209,7 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
 
         Runnable myRunnable = () -> {
             if (mRemoteMediaClient != null) {
-                mRemoteMediaClient.addProgressListener(listener, 300);
+                mRemoteMediaClient.addProgressListener(listener, PROGRESS_LISTENER_INTERVAL);
 
                 MediaMetadata md = getMediaMetadata(title, movieUrl);
 
@@ -197,12 +226,15 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
                         .setTextTrackStyle(style)
                         .build();
 
-                MediaLoadOptions mlo = new MediaLoadOptions.Builder()
+                MediaLoadOptions.Builder mlo = new MediaLoadOptions.Builder()
                         .setAutoplay(true)
-                        .setActiveTrackIds(activeTrackIds)
-                        .build();
+                        .setActiveTrackIds(activeTrackIds);
 
-                mRemoteMediaClient.load(mi, mlo)
+                long position = (long)getCachedPosition(this.getMedia().getID());
+                if (position > 0)
+                    mlo.setPlayPosition(position * 1000);
+
+                mRemoteMediaClient.load(mi, mlo.build())
                         .setResultCallback(mediaChannelResult -> {
                             Status status = mediaChannelResult.getStatus();
 
@@ -212,11 +244,13 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
                                 Logger.Log().d(String.format("MEDIALOAD -- Media load FAILURE :: %s", status.getStatusMessage()));
                             }
 
+                            // Signal handler so app can continue
+                            signalHandlerLock();
                         });
 
             }
 
-            signalHandlerLock();
+
         };
         mainHandler.post(myRunnable);
 
@@ -300,7 +334,7 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
     private MediaMetadata getMediaMetadata(String title, String movieUrl) {
         MediaMetadata md = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
         md.putString(MediaMetadata.KEY_TITLE, title);
-
+        md.putInt("ID", this.getID());
         //addMetadataImage(movieUrl, md);
 
         return md;
@@ -351,4 +385,12 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
             return new long[]{};
     }
 
+    /****
+     * Override this to avoid seeking twice.
+     * Chromecast initializes startposition in the load
+     */
+    @Override
+    protected void seekToStartPosition() {
+
+    }
 }
