@@ -35,6 +35,7 @@ public class CastOptionsProvider implements OptionsProvider {
 
         CastMediaOptions mediaOptions = new CastMediaOptions.Builder()
                 .setNotificationOptions(notificationOptions)
+                .setExpandedControllerActivityClassName(NowPlayingActivity.class.getName())
                 .build();
 
         return new CastOptions.Builder()
