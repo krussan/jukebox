@@ -136,8 +136,7 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
 
     }
 
-    protected void initializeView(View v, final String title, final ByteString image) {
-        this.setCurrentTitle(title);
+    protected void initializeView(View v, final ByteString image) {
         getActivity().runOnUiThread(() -> {
             if (!image.isEmpty()) {
                 Bitmap bm = GUITools.getBitmapFromByteArray(image.toByteArray());
@@ -145,7 +144,7 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
                 GUITools.setImageOnImageView(R.id.imgNowPlaying, scaledImage, v);
             }
 
-            GUITools.setTextOnTextview(R.id.lblNowPlayingTitle, title, v);
+            GUITools.setTextOnTextview(R.id.lblNowPlayingTitle, getCurrentTitle(), v);
         });
 
     }
@@ -203,14 +202,9 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
                 this.setCurrentMediaIndex(0);
                 this.setImdbUrl(ep.getImdbUrl());
 
-                initializeView(v,
-                        String.format("S%sE%s - %s",
-                                this.getSeasonNumber(),
-                                ep.getEpisodeNumber(),
-                                ep.getTitle()),
-                        ep.getImage());
-
                 initializeMedia(ep);
+                initializeView(v, ep.getImage());
+
                 //castProvider.initialize(ep);
             }
         }
@@ -220,8 +214,10 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
             this.setImdbUrl(m.getImdbUrl());
             this.setMediaList(m.getMediaList());
             this.setCurrentMediaIndex(0);
-            initializeView(v, m.getTitle(), m.getImage());
+
             initializeMedia(m);
+            initializeView(v, m.getImage());
+
             //castProvider.initialize(m);
         }
 
@@ -235,7 +231,10 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
 
     private void initializeMedia(JukeboxDomain.Episode ep) {
         currentMovie = null;
-        currentTitle = ep.getTitle();
+        currentTitle = String.format("S%sE%s - %s",
+                this.getSeasonNumber(),
+                ep.getEpisodeNumber(),
+                ep.getTitle());
         currentEpisode = ep;
     }
 
@@ -341,12 +340,9 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
 
 
     public String getCurrentTitle() {
-        return currentTitle;
+        return this.currentTitle;
     }
 
-    public void setCurrentTitle(String currentTitle) {
-        this.currentTitle = currentTitle;
-    }
 
     public int getExitPosition() {
         return exitPosition;
