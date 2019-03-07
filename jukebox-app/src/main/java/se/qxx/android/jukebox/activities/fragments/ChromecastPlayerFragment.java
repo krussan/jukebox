@@ -67,6 +67,7 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
         startMedia();
     }
 
+
     @Override
     public void onStartMovieComplete(JukeboxDomain.JukeboxResponseStartMovie response) {
         if (response != null) {
