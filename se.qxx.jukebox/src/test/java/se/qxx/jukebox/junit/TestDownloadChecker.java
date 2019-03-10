@@ -141,6 +141,24 @@ public class TestDownloadChecker {
 		
 	}
 	
+	@Test
+	public void Should_set_state_to_DONE_if_file_was_not_changed() {
+		registerDatabaseMock(false);
+		registerMediaHelperMock();
+		
+		// register file. -> INIT
+		FileRepresentation f = new FileRepresentation("/etc/test", "testfile", 1000, 1000);
+		downloadChecker.checkFile(f);
+
+		// executor runs. Nothing happened. Set state to DONE
+		downloadChecker.checkCachedFiles();
+
+		assertEquals(1, downloadChecker.getFiles().size());
+		assertEquals(true, downloadChecker.getFiles().containsKey("/etc/test/testfile"));
+		assertEquals(FileChangedState.DONE, downloadChecker.getFiles().get("/etc/test/testfile").getState());
+
+	}
+	
 	private void registerDatabaseMock(boolean downloadComplete) {
 		when(databaseMock.getMediaByFilename(any(String.class))).thenReturn(
 				Media.newBuilder()
