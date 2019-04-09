@@ -96,5 +96,4 @@ dependencies {
     implementation 'com.google.android.gms:play-services-cast-framework:16.1.2'
     implementation 'org.apache.commons:commons-collections4:4.1'
     implementation 'com.android.support:mediarouter-v7:27.1.1'
-    implementation 'com.robertlevonyan.view:MaterialExpansionPanel:1.2.0'
 }
