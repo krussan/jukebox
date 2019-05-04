@@ -218,6 +218,18 @@ public class ListActivity extends AppCompatActivity implements
 
             startActivity(intentSeries);
         }
+        else if (this.getMode() == ViewMode.Episode) {
+            JukeboxDomain.Episode e = (JukeboxDomain.Episode) _episodeLayoutAdapter.getItem(pos);
+
+            if (e != null) {
+                Intent iPlay = new Intent(this, NowPlayingActivity.class);
+                iPlay.putExtra("mode", ViewMode.Episode);
+                iPlay.putExtra("ID", e.getID());
+                iPlay.putExtra("seasonNumber", this.getSeason().getSeasonNumber());
+
+                startActivity(iPlay);
+            }
+        }
     }
 
     @Override
@@ -234,10 +246,12 @@ public class ListActivity extends AppCompatActivity implements
                     JukeboxDomain.RequestType.TypeMovie);
         }
         else if (this.getMode() == ViewMode.Episode) {
+            JukeboxDomain.Episode e = (JukeboxDomain.Episode) _episodeLayoutAdapter.getItem(position);
+
             d = new ActionDialog(
                     this,
-                    this.getSeason().getEpisode(position).getID(),
-                    this.getSeason().getEpisode(position).getMedia(0).getID(),
+                    e.getID(),
+                    e.getMedia(0).getID(),
                     JukeboxDomain.RequestType.TypeSeries);
         }
 

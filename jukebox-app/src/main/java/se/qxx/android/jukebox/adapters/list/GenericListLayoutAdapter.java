@@ -73,7 +73,7 @@ public abstract class GenericListLayoutAdapter<T> extends BaseAdapter {
             return layoutProgress(vi);
         }
         else {
-            View v = vi.inflate(getListItemId(), null);
+            View v = vi.inflate(getListItemId(), parent, false);
             initializeView(v, this.getItem(position));
             return v;
         }
