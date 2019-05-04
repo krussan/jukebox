@@ -258,7 +258,7 @@ public class ListActivity extends AppCompatActivity implements
         if (d != null)
             d.show();
 
-        return false;
+        return true;
     }
 
     @Override
