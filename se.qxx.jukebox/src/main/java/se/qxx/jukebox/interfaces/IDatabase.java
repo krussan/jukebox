@@ -78,7 +78,8 @@ public interface IDatabase {
 	List<Media> getConverterQueue();
 
 	void setDownloadCompleted(int id);
-
+	void setDownloadInProgress(int id);
+	
 	void cleanupConverterQueue();
 
 	Movie addMovieToSubtitleQueue(Movie m);
