@@ -357,14 +357,13 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 
 		List<SubFile> files = new ArrayList<SubFile>();
 		
-		if (!checkMatroskaFile(md)) {			
-			files = checkMovieDirForSubs(md);
-			
-			if (files.size() == 0) {
-				// use reflection to get all subfinders
-				// get files
-				files = callSubtitleDownloaders(mos, languages);
-			}
+		boolean hasMatroskaSubtitles = checkMatroskaFile(md);
+		files = checkMovieDirForSubs(md);
+		
+		if (files.size() == 0 && !hasMatroskaSubtitles) {
+			// use reflection to get all subfinders
+			// get files
+			files = callSubtitleDownloaders(mos, languages);
 		}
 		
 		return files;
