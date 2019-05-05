@@ -92,6 +92,7 @@ public class MediaConverter extends JukeboxThread implements IMediaConverter {
 						
 						if (conversionCheckResult.getNeedsConversion()) {
 							saveConvertedMedia(md, MediaConverterState.Converting);
+							
 							MediaConverterResult result = triggerConverter(md, probeResult, conversionCheckResult);
 							
 							if (result.getState() == MediaConverterResult.State.Completed) {
@@ -193,7 +194,7 @@ public class MediaConverter extends JukeboxThread implements IMediaConverter {
 		String filePath = md.getFilepath();
 		String newFilepath = Util.getFullFilePath(filePath, newFilename);
 
-		if (checkFileExists(newFilepath)) {
+		if (checkFileExists(newFilepath) && md.getConverterState() != MediaConverterState.Forced && md.getConverterState() != MediaConverterState.Failed) {
 			this.getLog().Info(String.format("Conversion already exist on :: %s", filename));
 			return new MediaConverterResult(filePath, filename, newFilename, MediaConverterResult.State.Completed);
 		}

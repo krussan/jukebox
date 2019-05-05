@@ -678,8 +678,6 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 					Episode ep = this.getDatabase().getEpisode(request.getId());
 					this.getSubtitleDownloader().reenlistEpisode(ep);
 				}
-			
-				done.run(Empty.newBuilder().build());
 			}
 			catch (Exception e) {
 				Logger.log("Error occured in reenlistSubtitles", e);
