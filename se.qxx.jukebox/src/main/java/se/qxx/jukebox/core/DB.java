@@ -940,6 +940,30 @@ public class DB implements IDatabase {
 	}
 
 	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.IDatabase#setDownloadInProgress(int)
+	 */
+	@Override
+	public void setDownloadInProgress(int id) {
+		try {
+			ProtoDB db = getProtoDBInstance();
+			
+			try {
+				if (db.getDBType() == DBType.Sqlite) lock.lock();
+
+				String sql = String.format("UPDATE Media SET downloadcomplete = 0 WHERE ID = %s", id);
+				db.executeNonQuery(sql);
+
+			}
+			finally {
+				if (db.getDBType() == DBType.Sqlite) lock.unlock();
+				
+			}
+		} catch (Exception e) {
+			this.getMainLog().Error(String.format("Failed to set download in progress"), e);
+		}				
+	}
+
+	/* (non-Javadoc)
 	 * @see se.qxx.jukebox.IDatabase#cleanupConverterQueue()
 	 */
 	@Override
