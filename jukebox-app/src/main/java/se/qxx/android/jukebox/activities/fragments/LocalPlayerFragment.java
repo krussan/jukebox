@@ -1,6 +1,7 @@
 package se.qxx.android.jukebox.activities.fragments;
 
 import android.content.Intent;
+import android.media.MediaFormat;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -265,10 +266,13 @@ public class LocalPlayerFragment extends PlayerFragment
 
         for (String subUri : response.getSubtitleUrisList()) {
             try {
+                //TODO: Issue #79 - Download srt converted subtitle and use local temporary file
+                // Web URL (text/vtt) does not seem to work :(
+
                 mediaPlayer.addTimedTextSource(
                         getContext(),
                         Uri.parse(subUri),
-                        MediaPlayer.MEDIA_MIMETYPE_TEXT_SUBRIP);
+                        MediaFormat.MIMETYPE_TEXT_VTT);
             } catch (IOException e) {
                 Logger.Log().e("Unable to add substitle", e);
             }
