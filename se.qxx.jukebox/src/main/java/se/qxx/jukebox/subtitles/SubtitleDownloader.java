@@ -143,7 +143,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 		cleanupTempDirectory();
 		subsPath = this.getSettings().getSettings().getSubFinders().getSubsPath();
 		
-		this.getLog().Debug("Retrieving list to process");
+		this.getLog().Debug("Cleaning up subtitle queue");
 		this.getDatabase().cleanSubtitleQueue();
 		
 		setupSubFinders();
@@ -170,6 +170,8 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	@Override
 	protected void execute() {
 		int result = 0;
+		
+		this.getLog().Debug("Retrieving list to process");
 		List<MovieOrSeries> _listProcessing =  this.getDatabase().getSubtitleQueue();
 		
 		List<Language> languages = getPreferredLanguages();
@@ -205,7 +207,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 			if (!this.isRunning())
 				break;
 			
-		}			
+		}
 	}
 
 

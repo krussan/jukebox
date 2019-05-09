@@ -246,19 +246,21 @@ public class ListActivity extends AppCompatActivity implements
                     JukeboxDomain.RequestType.TypeMovie);
         }
         else if (this.getMode() == ViewMode.Episode) {
-            JukeboxDomain.Episode e = (JukeboxDomain.Episode) _episodeLayoutAdapter.getItem(position);
+            JukeboxDomain.Episode e = _episodeLayoutAdapter.getItem(position);
 
             d = new ActionDialog(
                     this,
                     e.getID(),
                     e.getMedia(0).getID(),
-                    JukeboxDomain.RequestType.TypeSeries);
+                    JukeboxDomain.RequestType.TypeEpisode);
         }
 
-        if (d != null)
+        if (d != null) {
             d.show();
+            return true;
+        }
 
-        return true;
+        return false;
     }
 
     @Override
