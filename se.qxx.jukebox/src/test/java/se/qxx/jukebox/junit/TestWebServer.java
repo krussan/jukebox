@@ -26,6 +26,7 @@ import se.qxx.jukebox.core.Log;
 import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Rating;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
+import se.qxx.jukebox.domain.JukeboxDomain.SubtitleRequestType;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IImdbSettings;
@@ -112,7 +113,7 @@ public class TestWebServer {
 			.build();
 		
 		when(subWriterMock.getTempFile(any(Subtitle.class), any(String.class))).thenReturn(new File("sub1.vtt"));
-		StreamingFile file = webServer.registerSubtitle(sub);
+		StreamingFile file = webServer.registerSubtitle(sub, SubtitleRequestType.WebVTT);
 		assertEquals("http://127.0.0.1:8001/sub1.vtt", file.getUri());
 	}
 }

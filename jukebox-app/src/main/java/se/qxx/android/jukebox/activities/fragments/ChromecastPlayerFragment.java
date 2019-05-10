@@ -393,4 +393,9 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
     protected void seekToStartPosition() {
 
     }
+
+    @Override
+    public JukeboxDomain.SubtitleRequestType getSubtitleRequestType() {
+        return JukeboxDomain.SubtitleRequestType.WebVTT;
+    }
 }

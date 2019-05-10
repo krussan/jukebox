@@ -67,7 +67,7 @@ public class TestSubsConverter {
 					e.printStackTrace();
 				}
 				
-				File f = subFileWriter.writeSubtitleToFileVTT(sub, subFileWriter.getTempFile(sub, "vtt"));
+				File f = subFileWriter.writeSubtitleToFileConvert(sub, subFileWriter.getTempFile(sub, "vtt"));
 				System.out.println(String.format("Wrote file :: %s", f.getAbsolutePath()));
 			}
 			else {

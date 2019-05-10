@@ -110,6 +110,7 @@ public class JukeboxConnectionHandler {
 			final String playerName, 
 			final Movie m,
 			final Episode ep,
+			final JukeboxDomain.SubtitleRequestType subtitleRequestType,
 			final RpcCallback<JukeboxResponseStartMovie> callback) {
 		final RpcController controller = new SocketRpcController();
 
@@ -123,6 +124,7 @@ public class JukeboxConnectionHandler {
 						.setPlayerName(playerName)  // JukeboxSettings.get().getCurrentMediaPlayer()
 						.setMovieOrEpisodeId(id) // Model.get().getCurrentMovie().getID()
 						.setRequestType(requestType)
+						.setSubtitleRequestType(subtitleRequestType)
 						.build();
 
 				service.startMovie(controller, request, response -> {

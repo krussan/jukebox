@@ -14,9 +14,20 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.google.android.gms.common.util.IOUtils;
+
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -233,6 +244,10 @@ public class LocalPlayerFragment extends PlayerFragment
 
             startMediaPlayer(response);
         }
+        else {
+            Toast.makeText(this.getContext(), "Start movie failed. No response from server", Toast.LENGTH_LONG);
+            this.getActivity().finish();
+        }
     }
 
     private void startMediaPlayer(JukeboxDomain.JukeboxResponseStartMovie response) {
@@ -264,22 +279,53 @@ public class LocalPlayerFragment extends PlayerFragment
     private void setupSubtitles(JukeboxDomain.JukeboxResponseStartMovie response) {
         firstTextTrack = mediaPlayer.getTrackInfo().length;
 
-        for (String subUri : response.getSubtitleUrisList()) {
-            try {
-                //TODO: Issue #79 - Download srt converted subtitle and use local temporary file
-                // Web URL (text/vtt) does not seem to work :(
+        final List<String> localFiles = saveSubtitles(response.getSubtitleUrisList());
 
-                mediaPlayer.addTimedTextSource(
-                        getContext(),
-                        Uri.parse(subUri),
-                        MediaFormat.MIMETYPE_TEXT_VTT);
-            } catch (IOException e) {
-                Logger.Log().e("Unable to add substitle", e);
+        this.getActivity().runOnUiThread(() -> {
+             for (String filename : localFiles) {
+
+                try {
+                    //TODO: Issue #79 - Download srt converted subtitle and use local temporary file
+                    // Web URL (text/vtt) does not seem to work :(
+                    mediaPlayer.addTimedTextSource(filename, MediaPlayer.MEDIA_MIMETYPE_TEXT_SUBRIP);
+
+                } catch (IOException e) {
+                    Logger.Log().e("Unable to add substitle", e);
+                }
             }
+
+            if (response.getSubtitleUrisCount() > 0)
+                mediaPlayer.selectTrack(firstTextTrack);
+
+        });
+    }
+
+    public List<String> saveSubtitles(List<String> subtitleUris) {
+        String cacheDir = this.getContext().getCacheDir().getAbsolutePath();
+
+        List<String> result = new ArrayList<>();
+
+        for (String uri : subtitleUris) {
+            try {
+                URL u = new URL(uri);
+                try(InputStream is = u.openStream()) {
+                    String filename = uri.substring(uri.lastIndexOf("/"));
+                    String outputFilename = String.format("%s/%s", cacheDir, filename);
+                    try(FileOutputStream fos = new FileOutputStream(new File(outputFilename))) {
+                        IOUtils.copyStream(is, fos);
+                    }
+
+                    result.add(outputFilename);
+                }
+
+            } catch (IOException e) {
+                Log.e(TAG, String.format("Error when downloading subtitle %s", uri), e);
+            }
+
         }
 
-        if (response.getSubtitleUrisCount() > 0)
-            mediaPlayer.selectTrack(firstTextTrack);
+        return result;
+
     }
 
 
@@ -426,4 +472,8 @@ public class LocalPlayerFragment extends PlayerFragment
 
     }
 
+    @Override
+    public JukeboxDomain.SubtitleRequestType getSubtitleRequestType() {
+        return JukeboxDomain.SubtitleRequestType.SubRip;
+    }
 }

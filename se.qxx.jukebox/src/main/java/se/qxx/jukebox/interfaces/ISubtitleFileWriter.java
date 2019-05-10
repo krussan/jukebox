@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import fr.noop.subtitle.model.SubtitleParsingException;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
+import se.qxx.jukebox.domain.JukeboxDomain.SubtitleRequestType;
 
 public interface ISubtitleFileWriter {
 
@@ -13,8 +14,8 @@ public interface ISubtitleFileWriter {
 	
 	File writeSubtitleToFile(Subtitle sub, File destinationFile)
 			throws IOException, SubtitleParsingException, FileNotFoundException;
-
-	File writeSubtitleToFileVTT(Subtitle sub, File destinationFile)
+	
+	File writeSubtitleToFileConvert(Subtitle sub, File destinationFile)
 			throws IOException, SubtitleParsingException, FileNotFoundException;
 	
 }

@@ -250,6 +250,7 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
                 getPlayerName(),
                 currentMovie,
                 currentEpisode,
+                getSubtitleRequestType(),
                     (response) -> {
                         onStartMovieComplete(response);
                         seekToStartPosition();
@@ -331,6 +332,7 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
     public abstract void onStartMovieComplete(JukeboxDomain.JukeboxResponseStartMovie response);
     public abstract void setSubtitle(JukeboxDomain.SubtitleUri subtitleUri);
     public abstract void seekTo(int position);
+    public abstract JukeboxDomain.SubtitleRequestType getSubtitleRequestType();
 
     protected void showSubtitleDialog() {
         FragmentManager fm = getFragmentManager();

@@ -6,6 +6,7 @@ import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import fi.iki.elonen.NanoHTTPD.Response;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
+import se.qxx.jukebox.domain.JukeboxDomain.SubtitleRequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.SubtitleUri;
 import se.qxx.jukebox.webserver.StreamingFile;
 
@@ -17,9 +18,9 @@ public interface IStreamingWebServer {
 	
 	public StreamingFile registerFile(String streamingFilename, String filename);
 	public StreamingFile registerFile(Media md);
-	public StreamingFile registerSubtitle(Subtitle sub);
+	public StreamingFile registerSubtitle(Subtitle sub, SubtitleRequestType subtitleRequestType);
 	
-	public List<SubtitleUri> getSubtitleUris(Media md);
+	public List<SubtitleUri> getSubtitleUris(Media md, SubtitleRequestType subtitleRequestType);
 	
 	public String getStreamingFilename(Media md);
 	public void deregisterFile(String streamingFile);
