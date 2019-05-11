@@ -2,15 +2,21 @@ package se.qxx.jukebox.junit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 
 import javax.xml.bind.JAXBException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -22,6 +28,7 @@ import org.mockito.junit.MockitoRule;
 
 import com.google.protobuf.ByteString;
 
+import fr.noop.subtitle.model.SubtitleParsingException;
 import se.qxx.jukebox.core.Log;
 import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Rating;
@@ -84,4 +91,58 @@ public class TestSubtitleFileWriter {
 		assertEquals("ACB1.vtt", file.getName());
 	}
 	
+	
+	@Test
+	public void TestWriteSrtFile_does_not_create_double_newlines() throws IOException, SubtitleParsingException {
+		SubtitleFileWriter writer = new SubtitleFileWriter(loggerFactoryMock);
+
+		String subtitleData = readResource("TestSubtitle.txt");
+		
+		Subtitle sub1 = Subtitle.newBuilder()
+				.setID(100)
+				.setFilename("ACB1.srt")
+				.setMediaIndex(0)
+				.setLanguage("SE")
+				.setRating(Rating.ExactMatch)
+				.setTextdata(ByteString.copyFrom(subtitleData, "iso-8859-1"))
+				.setDescription("ABC")
+				.build();
+		
+		File file = writer.getTempFile(sub1, "srt");
+		
+		writer.writeSubtitleToFileConvert(sub1, file);
+		
+		try (FileInputStream fis = new FileInputStream(file)) {
+			try (Reader r = new InputStreamReader(fis)) {
+				try (BufferedReader br = new BufferedReader(r)) {
+					String line = null;
+					int c = 0;
+					while((line = br.readLine()) != null) {
+						if (StringUtils.isEmpty(line)) {
+							c++;
+							if (c==2)
+								fail("More than one empty lines found");
+						}
+						else {
+							c = 0;
+						}
+					}
+				}
+			}
+		}
+		
+	}
+
+	private String readResource(String resourceName) throws IOException {
+		BufferedReader in = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream(resourceName)));
+		StringBuilder sb = new StringBuilder();
+		
+		String line;
+		while ((line = in.readLine()) != null){
+			sb.append(line).append("\n");
+		}
+		
+		return sb.toString();	
+	}
+
 }

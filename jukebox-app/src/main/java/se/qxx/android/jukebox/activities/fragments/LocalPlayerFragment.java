@@ -3,6 +3,7 @@ package se.qxx.android.jukebox.activities.fragments;
 import android.content.Intent;
 import android.media.MediaFormat;
 import android.media.MediaPlayer;
+import android.media.TimedText;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -260,7 +261,18 @@ public class LocalPlayerFragment extends PlayerFragment
                     mediaPlayer.setDataSource(this.getContext(), uri);
                     mediaPlayer.prepare();
 
+
+                    mediaPlayer.setOnTimedTextListener(new MediaPlayer.OnTimedTextListener() {
+                        @Override
+                        public void onTimedText(final MediaPlayer mediaPlayer, final TimedText timedText) {
+                            if (timedText != null) {
+                                Log.d("test", "subtitle: " + timedText.getText());
+                            }
+                        }
+                    });
+
                     setupSubtitles(response);
+
                     setViewLayoutRatio();
 
                     mediaPlayer.start();
@@ -285,8 +297,6 @@ public class LocalPlayerFragment extends PlayerFragment
              for (String filename : localFiles) {
 
                 try {
-                    //TODO: Issue #79 - Download srt converted subtitle and use local temporary file
-                    // Web URL (text/vtt) does not seem to work :(
                     mediaPlayer.addTimedTextSource(filename, MediaPlayer.MEDIA_MIMETYPE_TEXT_SUBRIP);
 
                 } catch (IOException e) {
