@@ -15,6 +15,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -57,6 +58,7 @@ public class LocalPlayerFragment extends PlayerFragment
     private int firstTextTrack = -1;
 
     CountDownLatch surfaceAquired = new CountDownLatch(1);
+    TextView txtSubtitle = null;
 
 
     @Override
@@ -98,6 +100,8 @@ public class LocalPlayerFragment extends PlayerFragment
 
     private void initializeView(View v) {
         try {
+            txtSubtitle = v.findViewById(R.id.txtSubtitle);
+
             v.setOnTouchListener((view, event) -> {
                 view.performClick();
                 mcontroller.show();
@@ -262,12 +266,10 @@ public class LocalPlayerFragment extends PlayerFragment
                     mediaPlayer.prepare();
 
 
-                    mediaPlayer.setOnTimedTextListener(new MediaPlayer.OnTimedTextListener() {
-                        @Override
-                        public void onTimedText(final MediaPlayer mediaPlayer, final TimedText timedText) {
-                            if (timedText != null) {
-                                Log.d("test", "subtitle: " + timedText.getText());
-                            }
+                    mediaPlayer.setOnTimedTextListener((mediaPlayer, timedText) -> {
+                        if (timedText != null && txtSubtitle != null) {
+                            Log.d("test", "subtitle: " + timedText.getText());
+                            txtSubtitle.setText(timedText.getText());
                         }
                     });
 

@@ -28,6 +28,16 @@
             android:layout_centerVertical="true"
             />
 
+        <TextView
+            android:id="@+id/txtSubtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="SUBTITLE IS HERE"
+            android:textSize="16dp"
+            android:textStyle="bold"
+            />
+
     </FrameLayout>
 
 </RelativeLayout>
