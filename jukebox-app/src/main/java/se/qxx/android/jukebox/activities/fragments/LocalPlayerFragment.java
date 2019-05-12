@@ -15,6 +15,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -121,6 +122,7 @@ public class LocalPlayerFragment extends PlayerFragment
         mcontroller.setEventListener(this);
 
         mcontroller.setAnchorView(getView().findViewById(R.id.videoSurfaceContainer));
+
         mcontroller.setEnabled(true);
 
         new Handler().post(() -> mcontroller.show());
@@ -268,7 +270,7 @@ public class LocalPlayerFragment extends PlayerFragment
 
                     mediaPlayer.setOnTimedTextListener((mediaPlayer, timedText) -> {
                         if (timedText != null && txtSubtitle != null) {
-                            Log.d("test", "subtitle: " + timedText.getText());
+                            //Log.d("test", "subtitle: " + timedText.getText());
                             txtSubtitle.setText(timedText.getText());
                         }
                     });
