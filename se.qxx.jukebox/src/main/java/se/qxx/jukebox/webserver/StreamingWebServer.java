@@ -404,7 +404,7 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 		Movie m = this.getDatabase().getMovie(id);
 		
 		if (m != null && m.getThumbnail() != null) {
-			serveImage(m.getThumbnail());
+			return serveImage(m.getThumbnail());
 		}
 		
 		return emptyResponse(); 
