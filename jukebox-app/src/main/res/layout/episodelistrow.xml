@@ -12,6 +12,7 @@
         android:src="@drawable/icon" 
         android:contentDescription="@string/descPosterImage"
         android:layout_margin="5dp"
+        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
     />
