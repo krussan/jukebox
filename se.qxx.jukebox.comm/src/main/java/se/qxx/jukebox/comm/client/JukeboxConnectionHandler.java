@@ -392,13 +392,14 @@ public class JukeboxConnectionHandler {
 
             JukeboxRequestListSubtitles request = JukeboxRequestListSubtitles.newBuilder()
                     .setMediaId(md.getID())
+					.setSubtitleRequestType(JukeboxDomain.SubtitleRequestType.WebVTT)
                     .build();
 
             service.listSubtitles(controller, request, response -> {
                 onRequestComplete(controller);
 
                 if (callback != null)
-                callback.run(response);
+                	callback.run(response);
             });
         });
 		t.start();
