@@ -191,7 +191,7 @@ public class LocalPlayerFragment extends PlayerFragment
     @Override
     public void onStop() {
         try {
-            setExitPosition(mediaPlayer.getCurrentPosition());
+            setExitPosition(mediaPlayer.getCurrentPosition() / 1000);
             //TODO: Save the media ID and position from media player
             pause();
         }
@@ -206,7 +206,7 @@ public class LocalPlayerFragment extends PlayerFragment
 
     @Override
     public void onMediaPlayerStop() {
-        setExitPosition(mediaPlayer.getCurrentPosition());
+        setExitPosition(mediaPlayer.getCurrentPosition() / 1000);
 
 
         getActivity().finish();
@@ -405,7 +405,7 @@ public class LocalPlayerFragment extends PlayerFragment
     @Override
     public void seekTo(int position) {
         if (mediaPlayer != null) {
-            mediaPlayer.seekTo(position * 1000);
+            mediaPlayer.seekTo(position);
         }
     }
 

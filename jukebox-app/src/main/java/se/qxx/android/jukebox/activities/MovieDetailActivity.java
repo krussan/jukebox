@@ -69,16 +69,24 @@ public class MovieDetailActivity extends AppCompatActivity {
             ListView listView = (ListView)v.findViewById(R.id.listViewFilename);
             listView.setAdapter(adapter);
 
-            ProgressBar progressWatched = findViewById(R.id.progressWatched);
-            int progress = 0;
-            if (duration > 0) {
-                progress = (int)(100f * (float)getCachedPosition(m.getMedia(0).getID()) / (float)(duration * 60));
-            }
-            progressWatched.setProgress(progress);
+            updateProgressBar(m);
 
             //detector = new SimpleGestureFilter(this, this);
         }
 
+    }
+
+    private void updateProgressBar(JukeboxDomain.Movie m) {
+        if (m!= null) {
+            ProgressBar progressWatched = findViewById(R.id.progressWatched);
+            int progress = 0;
+            int duration = m.getDuration();
+            if (duration > 0) {
+                int position = getCachedPosition(m.getMedia(0).getID());
+                progress = (int) (100f * (float) position / (float) (duration * 60));
+            }
+            progressWatched.setProgress(progress);
+        }
     }
 
     private JukeboxDomain.Movie getMovie() {
@@ -129,6 +137,12 @@ public class MovieDetailActivity extends AppCompatActivity {
 
     public int getCachedPosition(int mediaID) {
         return cacheData.getMediaState(mediaID);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateProgressBar(this.getMovie());
     }
 
 }

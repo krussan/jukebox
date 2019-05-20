@@ -309,6 +309,11 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
     @Override
     public void onPause() {
         super.onPause();
+
+        //save media state
+        if (this.getExitPosition() > 0)
+            cacheData.saveMediaState(this.getMedia().getID(), getExitPosition());
+
     }
 
     @Override
@@ -319,10 +324,6 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
     @Override
     public void onStop() {
         super.onStop();
-
-        //save media state
-        if (this.getExitPosition() > 0)
-            cacheData.saveMediaState(this.getMedia().getID(), getExitPosition());
 
     }
 
@@ -369,7 +370,7 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
             // get media state
             int position = getCachedPosition(this.getMedia().getID());
             if (position > 0)
-                seekTo(position);
+                seekTo(position * 1000);
         }
     }
 
