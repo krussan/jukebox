@@ -1,19 +1,24 @@
 package se.qxx.android.jukebox.activities.fragments;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.media.MediaFormat;
 import android.media.MediaPlayer;
 import android.media.TimedText;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -61,6 +66,7 @@ public class LocalPlayerFragment extends PlayerFragment
     CountDownLatch surfaceAquired = new CountDownLatch(1);
     TextView txtSubtitle = null;
 
+    private int layout = -1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,6 +76,9 @@ public class LocalPlayerFragment extends PlayerFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.nowplaying_local, container, false);
+
+        if (layout == -1)
+            layout = getResources().getConfiguration().orientation;
 
         initializeSurfaceHolder(v);
         initializeView(v);
@@ -189,10 +198,40 @@ public class LocalPlayerFragment extends PlayerFragment
     }
 
     @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        // Check if orientation was changed
+        if (layout != newConfig.orientation) {
+            // if it was then resize and set fullscreen
+            if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                hideSystemUI();
+                setViewLayoutRatio();
+            }
+            else {
+                showSystemUI();
+                setViewLayoutRatio();
+            }
+
+
+        }
+
+        // Checks the orientation of the screen
+        layout = newConfig.orientation;
+
+
+    }
+
+    private void setFullscreen() {
+        this.getActivity().getWindow().setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN );
+    }
+
+    @Override
     public void onStop() {
         try {
             setExitPosition(mediaPlayer.getCurrentPosition() / 1000);
-            //TODO: Save the media ID and position from media player
             pause();
         }
         catch (IllegalStateException stateEx) {
@@ -352,7 +391,10 @@ public class LocalPlayerFragment extends PlayerFragment
             final int videoHeight = mediaPlayer.getVideoHeight();
 
             //Get the width of the screen
-            final int screenWidth = GUITools.getDisplayMetrics(getActivity()).widthPixels;
+            DisplayMetrics metrics = new DisplayMetrics();
+            getActivity().getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
+
+            final int screenWidth =  metrics.widthPixels;
 
             getActivity().runOnUiThread(() -> {
                 //Get the SurfaceView layout parameters
@@ -489,5 +531,48 @@ public class LocalPlayerFragment extends PlayerFragment
     @Override
     public JukeboxDomain.SubtitleRequestType getSubtitleRequestType() {
         return JukeboxDomain.SubtitleRequestType.SubRip;
+    }
+
+    private void hideSystemUI() {
+        // Enables regular immersive mode.
+        // For "lean back" mode, remove SYSTEM_UI_FLAG_IMMERSIVE.
+        // Or for "sticky immersive," replace it with SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        View decorView = this.getActivity().getWindow().getDecorView();
+        decorView.setSystemUiVisibility(
+                    // Set the content to appear under the system bars so that the
+                    // content doesn't resize when the system bars hide and show.
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        // Hide the nav bar and status bar
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN);
+    }
+
+    // Shows the system bars by removing all the flags
+    // except for the ones that make the content appear under the system bars.
+    private void showSystemUI() {
+        View decorView = this.getActivity().getWindow().getDecorView();
+        decorView.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+    }
+
+    private int getNavigationBarHeight() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            DisplayMetrics metrics = new DisplayMetrics();
+            getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+            int usableHeight = metrics.heightPixels;
+            getActivity().getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
+
+            int realHeight = metrics.heightPixels;
+            if (realHeight > usableHeight)
+                return realHeight - usableHeight;
+            else
+                return 0;
+        }
+        return 0;
     }
 }

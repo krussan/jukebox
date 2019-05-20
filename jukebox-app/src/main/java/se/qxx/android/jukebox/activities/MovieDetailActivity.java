@@ -69,7 +69,7 @@ public class MovieDetailActivity extends AppCompatActivity {
             ListView listView = (ListView)v.findViewById(R.id.listViewFilename);
             listView.setAdapter(adapter);
 
-            updateProgressBar(m);
+            // updateProgressBar(m);
 
             //detector = new SimpleGestureFilter(this, this);
         }

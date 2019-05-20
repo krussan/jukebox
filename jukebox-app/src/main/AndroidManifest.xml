@@ -36,7 +36,8 @@
             android:theme="@style/Theme.AppCompat" />
         <activity
             android:name=".activities.NowPlayingActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:configChanges="orientation|screenSize" />
         <activity
             android:name=".activities.SeriesActivity"
             android:theme="@style/Theme.AppCompat" />
