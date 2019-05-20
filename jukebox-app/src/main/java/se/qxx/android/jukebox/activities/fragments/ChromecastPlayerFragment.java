@@ -154,7 +154,7 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
     public void seekTo(int position) {
         Activity a = getActivity();
         if (mRemoteMediaClient != null && a != null) {
-            a.runOnUiThread(() -> mRemoteMediaClient.seek(position * 1000));
+            a.runOnUiThread(() -> mRemoteMediaClient.seek(position));
 
         }
 

@@ -405,7 +405,7 @@ public class LocalPlayerFragment extends PlayerFragment
     @Override
     public void seekTo(int position) {
         if (mediaPlayer != null) {
-            mediaPlayer.seekTo(position);
+            mediaPlayer.seekTo(position * 1000);
         }
     }
 
