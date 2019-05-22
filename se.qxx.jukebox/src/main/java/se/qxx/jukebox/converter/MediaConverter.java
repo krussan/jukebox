@@ -95,6 +95,8 @@ public class MediaConverter extends JukeboxThread implements IMediaConverter {
 							
 							MediaConverterResult result = triggerConverter(md, probeResult, conversionCheckResult);
 							
+							this.getLog().Info(String.format("Conversion done on %s. Status :: %s !", md.getFilepath()));
+
 							if (result.getState() == MediaConverterResult.State.Completed) {
 								saveConvertedMedia(md, result.getConvertedFilename());
 							}
@@ -251,6 +253,7 @@ public class MediaConverter extends JukeboxThread implements IMediaConverter {
 
 		// execute conversion
 		job.run();
+		
 		return job;
 	}
 	
@@ -286,11 +289,21 @@ public class MediaConverter extends JukeboxThread implements IMediaConverter {
 	}
 
 	private void saveConvertedMedia(Media md, String newFilename) {
+		try {
 		this.getDatabase().saveConversion(md.getID(), newFilename, MediaConverterState.Completed_VALUE);
+		}
+		catch (Exception e) {
+			this.getLog().Error("Error when saving converted media!!", e);
+		}
 	}
 
 	private void saveConvertedMedia(Media md, MediaConverterState result) {
-		this.getDatabase().saveConversion(md.getID(), result.getNumber());
+		try {
+			this.getDatabase().saveConversion(md.getID(), result.getNumber());
+		}
+		catch (Exception e) {
+			this.getLog().Error("Error when saving converted media!!", e);
+		}
 	}
 
 	@Override
