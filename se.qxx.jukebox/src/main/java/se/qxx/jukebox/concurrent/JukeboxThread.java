@@ -105,6 +105,9 @@ public abstract class JukeboxThread implements Runnable {
 	public void end() {
 		this.getLog().Info(String.format("Stopping %s thread ...",  this.getName()));
 		this.setRunning(false);
+		
+		// in case we are in the wait loop we need to signal the thread to release the lock
+		signal();
 	}
 
 	public int getJukeboxPriority() {
