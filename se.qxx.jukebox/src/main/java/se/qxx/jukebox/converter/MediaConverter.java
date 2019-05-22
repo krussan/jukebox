@@ -133,15 +133,8 @@ public class MediaConverter extends JukeboxThread implements IMediaConverter {
 	}
 
 	private ConversionProbeResult checkConversion(Media md, FFmpegProbeResult probeResult) {
-		//TODO: Should be configurable
-		//TODO: Use ffprobe to check container
-		//for now all not mp4 extension
-		//list of accepted video codecs
-		
 		List<Codec> acceptedVideoCodecs = this.getSettings().getSettings().getConverter().getAcceptedVideoCodecs().getCodec();
 		List<Codec> acceptedAudioCodecs = this.getSettings().getSettings().getConverter().getAcceptedAudioCodecs().getCodec();
-		//List<String> acceptedVideoCodecs = Settings.get().getConverter().getAcceptedAudioCodecs().getCodec();
-		//List<String> acceptedAudioCodecs = Arrays.asList(new String[] {"aac", "mp3", "vorbis", "lcpm", "wav", "flac", "opus"});
 
 		String audioCodec = "aac";
 		String videoCodec = "h264";
@@ -290,7 +283,7 @@ public class MediaConverter extends JukeboxThread implements IMediaConverter {
 
 	private void saveConvertedMedia(Media md, String newFilename) {
 		try {
-		this.getDatabase().saveConversion(md.getID(), newFilename, MediaConverterState.Completed_VALUE);
+			this.getDatabase().saveConversion(md.getID(), newFilename, MediaConverterState.Completed_VALUE);
 		}
 		catch (Exception e) {
 			this.getLog().Error("Error when saving converted media!!", e);
