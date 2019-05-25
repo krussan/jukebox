@@ -138,10 +138,12 @@
 		android:layout_height="wrap_content"
 		>
 
-		<TextView
-			android:id="@+id/txtDetailsOne"
+		<de.codecrafters.tableview.TableView
+			xmlns:table="http://schemas.android.com/apk/res-auto"
+			android:id="@+id/tableView"
 			android:layout_width="match_parent"
-			android:layout_height="wrap_content" />
+			android:layout_height="match_parent"
+			table:tableView_columnCount="2" />
 
 	</LinearLayout>
 
