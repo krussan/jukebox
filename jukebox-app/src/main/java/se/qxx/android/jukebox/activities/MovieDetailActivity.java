@@ -70,7 +70,7 @@ public class MovieDetailActivity extends AppCompatActivity {
             GUITools.setTextOnTextview(R.id.textViewStory, m.getStory(), v);
             GUITools.setTextOnTextview(R.id.textViewGenre, String.format("Genre :: %s", StringUtils.join(m.getGenreList(), " / ")), v);
             GUITools.setTextOnTextview(R.id.textViewDirector, String.format("Director :: %s", m.getDirector()), v);
-            GUITools.setTextOnTextview(R.id.textViewDuration,  getDuration(m.getDuration()), v);
+            GUITools.setTextOnTextview(R.id.textViewDuration,  String.format("Duration :: %s", getDuration(m.getDuration())), v);
             GUITools.setTextOnTextview(R.id.textViewRating, String.format("Rating :: %s / 10", m.getRating()), v);
             //GUITools.setTextOnTextview(R.id.textViewFilename, String.format("Filename :: %s", m.getFilename()), v);
 
@@ -90,7 +90,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         int hours = duration / 60;
         int minutes = duration % 60;
 
-        return String.format("Duration :: %s h %s m", hours, minutes);
+        return String.format("%s h %s m", hours, minutes);
     }
 
     private void initializeDetails(JukeboxDomain.Movie m) {
@@ -108,7 +108,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     private String[][] getDetailsData(JukeboxDomain.Movie m) {
 
         List<String[]> data = new ArrayList<>();
-        data.add(new String[] {"Duration", Integer.toString(m.getDuration())});
+        data.add(new String[] {"Duration", getDuration(m.getDuration())});
         data.add(new String[] {"Format", m.getFormat()});
         data.add(new String[] {"Genre", StringUtils.join(m.getGenreList(), " / ")});
         data.add(new String[] {"Group", m.getGroupName()});
@@ -130,8 +130,7 @@ public class MovieDetailActivity extends AppCompatActivity {
             data.add(new String[]{"Converter_filename", m.getMedia(0).getConvertedFileName()});
             data.add(new String[]{"Framerate", m.getMedia(0).getMetaFramerate()});
             data.add(new String[]{"Download complete", Boolean.toString(m.getMedia(0).getDownloadComplete())});
-            data.add(new String[]{"Meta duration", Integer.toString(m.getMedia(0).getMetaDuration())});
-            data.add(new String[]{"Meta duration", getDuration(m.getMedia(0).getMetaDuration())});
+            data.add(new String[]{"Meta duration", getDuration(m.getMedia(0).getMetaDuration() / 60)});
             data.add(new String[]{"Subs_Count", Integer.toString(m.getMedia(0).getSubsCount())});
             if (!sortedSubtitles.isEmpty())
                 data.add(new String[]{"Subs_Rating", sortedSubtitles.get(0).getRating().name()});
