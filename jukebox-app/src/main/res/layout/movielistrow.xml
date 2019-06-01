@@ -102,6 +102,8 @@
             android:theme="@style/progressBarRed"
             android:layout_below="@id/imageView1"
             android:layout_alignParentBottom="true"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
             />
 
 </RelativeLayout>

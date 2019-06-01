@@ -2,6 +2,7 @@ package se.qxx.android.jukebox.activities;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -94,8 +95,14 @@ public class MovieDetailActivity extends AppCompatActivity {
 
     private void initializeDetails(JukeboxDomain.Movie m) {
         TableView<String[]> tableView = findViewById(R.id.tableView);
+        tableView.setHeaderVisible(false);
+
         String[][] data = getDetailsData(m);
-        tableView.setDataAdapter(new SimpleTableDataAdapter(this, data));
+        SimpleTableDataAdapter adapter = new SimpleTableDataAdapter(this, data);
+        adapter.setTextColor(Color.LTGRAY);
+        adapter.setTextSize(14);
+
+        tableView.setDataAdapter(adapter);
     }
 
     private String[][] getDetailsData(JukeboxDomain.Movie m) {
@@ -111,8 +118,8 @@ public class MovieDetailActivity extends AppCompatActivity {
         data.add(new String[] {"Blacklisted", Integer.toString(m.getBlacklistCount())});
         data.add(new String[] {"Identifier", m.getIdentifier().name()});
         data.add(new String[] {"Identifier", Integer.toString(m.getIdentifierRating())});
-        data.add(new String[] {"Sub_QueuedAt", formatDateTime(m.getSubtitleQueue().getSubtitleQueuedAt())});
-        data.add(new String[] {"Sub_RetreivedAt", formatDateTime(m.getSubtitleQueue().getSubtitleRetreivedAt())});
+        data.add(new String[] {"Sub_QueuedAt", formatDateTime(m.getSubtitleQueue().getSubtitleQueuedAt() * 1000)});
+        data.add(new String[] {"Sub_RetreivedAt", formatDateTime(m.getSubtitleQueue().getSubtitleRetreivedAt() * 1000)});
         data.add(new String[] {"Sub_Result", getSubtitleResult(m)});
         data.add(new String[] {"Sub_Result", Boolean.toString(m.getWatched())});
 
@@ -148,8 +155,10 @@ public class MovieDetailActivity extends AppCompatActivity {
 
     private String formatDateTime(long timestamp) {
         Date dd = new Date(timestamp);
-        DateFormat format = android.text.format.DateFormat.getDateFormat(getApplicationContext());
-        return format.format(dd);
+        DateFormat dateFormat = android.text.format.DateFormat.getLongDateFormat(getApplicationContext());
+        DateFormat timeFormat = android.text.format.DateFormat.getTimeFormat(getApplicationContext());
+
+        return String.format("%s %s", dateFormat.format(dd), timeFormat.format(dd));
     }
 
     private void updateProgressBar(JukeboxDomain.Movie m) {
