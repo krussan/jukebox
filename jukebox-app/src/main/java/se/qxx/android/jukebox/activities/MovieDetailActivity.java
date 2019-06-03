@@ -78,7 +78,7 @@ public class MovieDetailActivity extends AppCompatActivity {
             ListView listView = v.findViewById(R.id.listViewFilename);
             listView.setAdapter(adapter);
 
-            initializeDetails(m);
+            initializeDetails(m, v);
             // updateProgressBar(m);
 
             //detector = new SimpleGestureFilter(this, this);
@@ -93,50 +93,38 @@ public class MovieDetailActivity extends AppCompatActivity {
         return String.format("%s h %s m", hours, minutes);
     }
 
-    private void initializeDetails(JukeboxDomain.Movie m) {
+    private void initializeDetails(JukeboxDomain.Movie m, View v) {
         TableView<String[]> tableView = findViewById(R.id.tableView);
         tableView.setHeaderVisible(false);
-
-        String[][] data = getDetailsData(m);
-        SimpleTableDataAdapter adapter = new SimpleTableDataAdapter(this, data);
-        adapter.setTextColor(Color.LTGRAY);
-        adapter.setTextSize(14);
-
-        tableView.setDataAdapter(adapter);
-    }
-
-    private String[][] getDetailsData(JukeboxDomain.Movie m) {
-
-        List<String[]> data = new ArrayList<>();
-        data.add(new String[] {"Duration", getDuration(m.getDuration())});
-        data.add(new String[] {"Format", m.getFormat()});
-        data.add(new String[] {"Genre", StringUtils.join(m.getGenreList(), " / ")});
-        data.add(new String[] {"Group", m.getGroupName()});
-        data.add(new String[] {"Language", m.getLanguage()});
-        data.add(new String[] {"Sound", m.getSound()});
-        data.add(new String[] {"Type", m.getType()});
-        data.add(new String[] {"Blacklisted", Integer.toString(m.getBlacklistCount())});
-        data.add(new String[] {"Identifier", m.getIdentifier().name()});
-        data.add(new String[] {"Identifier", Integer.toString(m.getIdentifierRating())});
-        data.add(new String[] {"Sub_QueuedAt", formatDateTime(m.getSubtitleQueue().getSubtitleQueuedAt() * 1000)});
-        data.add(new String[] {"Sub_RetreivedAt", formatDateTime(m.getSubtitleQueue().getSubtitleRetreivedAt() * 1000)});
-        data.add(new String[] {"Sub_Result", getSubtitleResult(m)});
-        data.add(new String[] {"Sub_Result", Boolean.toString(m.getWatched())});
+        GUITools.setTextOnTextview(R.id.txtDetailDuration, getDuration(m.getDuration()), v);
+        GUITools.setTextOnTextview(R.id.txtDetailFormat, m.getFormat(), v);
+        GUITools.setTextOnTextview(R.id.txtDetailGenre, StringUtils.join(m.getGenreList(), " / "), v);
+        
+        GUITools.setTextOnTextview(R.id.txtDetailGroup, m.getGroupName(), v);
+        GUITools.setTextOnTextview(R.id.txtDetailLanguage, m.getLanguage(), v);
+        GUITools.setTextOnTextview(R.id.txtDetailSound, m.getSound(), v);
+        GUITools.setTextOnTextview(R.id.txtDetailType, m.getType(), v);
+        GUITools.setTextOnTextview(R.id.txtDetailBlacklisted, Integer.toString(m.getBlacklistCount()), v);
+        GUITools.setTextOnTextview(R.id.txtDetailIdentifier, m.getIdentifier().name(), v);
+        GUITools.setTextOnTextview(R.id.txtDetailIdentRating, Integer.toString(m.getIdentifierRating()), v);
+        GUITools.setTextOnTextview(R.id.txtDetailSubQueuedAt, formatDateTime(m.getSubtitleQueue().getSubtitleQueuedAt() * 1000), v);
+        GUITools.setTextOnTextview(R.id.txtDetailSubRetreivedAt, formatDateTime(m.getSubtitleQueue().getSubtitleRetreivedAt() * 1000), v);
+        GUITools.setTextOnTextview(R.id.txtDetailSubResult, getSubtitleResult(m), v);
+        GUITools.setTextOnTextview(R.id.txtDetailWatched, Boolean.toString(m.getWatched()), v);
 
         if (!m.getMediaList().isEmpty()) {
             List<JukeboxDomain.Subtitle> sortedSubtitles = Sorter.sortSubtitlesByRating(m.getMedia(0).getSubsList());
 
-            data.add(new String[]{"Converter_state", m.getMedia(0).getConverterState().name()});
-            data.add(new String[]{"Converter_filename", m.getMedia(0).getConvertedFileName()});
-            data.add(new String[]{"Framerate", m.getMedia(0).getMetaFramerate()});
-            data.add(new String[]{"Download complete", Boolean.toString(m.getMedia(0).getDownloadComplete())});
-            data.add(new String[]{"Meta duration", getDuration(m.getMedia(0).getMetaDuration() / 60)});
-            data.add(new String[]{"Subs_Count", Integer.toString(m.getMedia(0).getSubsCount())});
-            if (!sortedSubtitles.isEmpty())
-                data.add(new String[]{"Subs_Rating", sortedSubtitles.get(0).getRating().name()});
-        }
+            GUITools.setTextOnTextview(R.id.txtDetailConverterState, m.getMedia(0).getConverterState().name(), v);
+            GUITools.setTextOnTextview(R.id.txtDetailConvertedFilename, m.getMedia(0).getConvertedFileName(), v);
+            GUITools.setTextOnTextview(R.id.txtDetailFramerate, m.getMedia(0).getMetaFramerate(), v);
+            GUITools.setTextOnTextview(R.id.txtDetailDownloadComplete, Boolean.toString(m.getMedia(0).getDownloadComplete()), v);
+            GUITools.setTextOnTextview(R.id.txtDetailMetaDuration, getDuration(m.getMedia(0).getMetaDuration() / 60), v);
+            GUITools.setTextOnTextview(R.id.txtDetailSubsCount, Integer.toString(m.getMedia(0).getSubsCount()), v);
 
-        return data.toArray(new String[][] {{}});
+            if (!sortedSubtitles.isEmpty())
+                GUITools.setTextOnTextview(R.id.txtDetailSubsRating, sortedSubtitles.get(0).getRating().name(), v);
+        }
 
     }
 
