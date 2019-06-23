@@ -355,6 +355,11 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	private List<SubFile> getSubtitles(MovieOrSeries mos, List<Language> languages) {
 		// We only check if there exist subs for the first media file.
 		// If it does then it should exist from the others as well.
+		
+		//BUG; MOS object expects only 1 episode in the series object.
+		// it was designed for the watcher only. We need to find the correct media
+		// if we have an episode
+		// -- This should be taken care of by the decouple method in DB but it seems off
 		Media md = mos.getMedia();
 
 		List<SubFile> files = new ArrayList<SubFile>();
