@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ProgressBar;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -58,6 +59,10 @@ public class SeasonLayoutAdapter extends GenericListLayoutAdapter<Season> {
 				hideDownloadAndCompletedIcons(v);
 				setupThumbnail(v, ss.getThumbnail());
 				setupSubtitles(v, new ArrayList<>());
+
+				ProgressBar progressWatched = v.findViewById(R.id.progressWatched);
+				progressWatched.setVisibility(View.GONE);
+
 			}
 		}
 		catch (Exception e) {
