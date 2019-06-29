@@ -2,7 +2,6 @@ package se.qxx.jukebox.upgrade;
 
 import se.qxx.jukebox.core.Version;
 import se.qxx.jukebox.interfaces.IDatabase;
-import se.qxx.jukebox.interfaces.IUpgrader;
 
 public class Upgrade_0_12 extends UpgraderBase implements IIncrimentalUpgrade {
 

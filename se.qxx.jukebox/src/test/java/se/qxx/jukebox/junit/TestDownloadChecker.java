@@ -1,6 +1,6 @@
 package se.qxx.jukebox.junit;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.slf4j.ILoggerFactory;
 
 import se.qxx.jukebox.converter.FileChangedState;
 import se.qxx.jukebox.core.Log;
@@ -22,7 +21,6 @@ import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IDatabase;
-import se.qxx.jukebox.interfaces.IDownloadChecker;
 import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.IFilenameChecker;
 import se.qxx.jukebox.interfaces.IMediaMetadataHelper;

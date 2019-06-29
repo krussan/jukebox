@@ -2,7 +2,6 @@ package se.qxx.jukebox.domain;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;

@@ -11,7 +11,7 @@ import se.qxx.jukebox.core.Starter;
 public class TestBinder {
 
 	@Test
-	public void TestBinder() {
+	public void testBinder() {
 		Injector injector = Binder.setupBindings(new String[] {});
 		Starter starter = injector.getInstance(Starter.class);
 		Main main = injector.getInstance(Main.class);

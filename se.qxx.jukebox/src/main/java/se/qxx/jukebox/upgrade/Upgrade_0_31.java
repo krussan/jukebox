@@ -1,18 +1,13 @@
 package se.qxx.jukebox.upgrade;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.qxx.jukebox.core.DB;
 import se.qxx.jukebox.core.Version;
-import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.protodb.ProtoDB;
 import se.qxx.protodb.backend.DatabaseBackend;
 import se.qxx.protodb.exceptions.DatabaseNotSupportedException;
-import se.qxx.protodb.exceptions.FieldNotFoundException;
-import se.qxx.protodb.exceptions.IDFieldNotFoundException;
 
 public class Upgrade_0_31 extends UpgraderBase implements IIncrimentalUpgrade {
 

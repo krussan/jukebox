@@ -9,7 +9,6 @@ import java.util.Stack;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import se.qxx.jukebox.core.DB;
 import se.qxx.jukebox.core.Version;
 import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IUpgrader;

@@ -3,7 +3,6 @@ package se.qxx.jukebox.interfaces;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 
-import se.qxx.jukebox.upgrade.UpgradeFailedException;
 import se.qxx.protodb.exceptions.DatabaseNotSupportedException;
 
 public interface IUpgrader {

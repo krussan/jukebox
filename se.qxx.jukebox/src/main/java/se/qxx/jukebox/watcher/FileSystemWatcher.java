@@ -8,8 +8,6 @@ import java.util.TreeSet;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.google.inject.name.Named;
-
 import se.qxx.jukebox.concurrent.JukeboxThread;
 import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.factories.LoggerFactory;

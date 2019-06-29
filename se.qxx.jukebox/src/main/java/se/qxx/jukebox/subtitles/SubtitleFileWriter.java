@@ -10,8 +10,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BOMInputStream;
-import org.apache.commons.lang3.StringUtils;
-
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -93,7 +91,6 @@ public class SubtitleFileWriter implements ISubtitleFileWriter {
 	
 	private SubtitleParser getParser(String filename) {
 		String extension = FilenameUtils.getExtension(filename).toLowerCase();
-		SubtitleParser parser = null;
 		
 		switch (extension) {
 		case "vtt":
@@ -108,7 +105,6 @@ public class SubtitleFileWriter implements ISubtitleFileWriter {
 	
 	private SubtitleWriter getWriter(String filename) {
 		String extension = FilenameUtils.getExtension(filename).toLowerCase();
-		SubtitleParser parser = null;
 		
 		switch (extension) {
 		case "vtt":

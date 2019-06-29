@@ -4,8 +4,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -27,30 +25,15 @@ import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 import javax.swing.filechooser.FileSystemView;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.imgscalr.Scalr;
 
 import com.google.protobuf.ByteString;
 
-import fr.noop.subtitle.model.SubtitleObject;
-import fr.noop.subtitle.model.SubtitleParsingException;
-import fr.noop.subtitle.model.SubtitleWriter;
-import fr.noop.subtitle.srt.SrtParser;
-import fr.noop.subtitle.vtt.VttWriter;
-import se.qxx.jukebox.core.Log;
-import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
-import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
-import se.qxx.jukebox.interfaces.IJukeboxLogger;
-import se.qxx.jukebox.settings.JukeboxListenerSettings;
-import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.watcher.ExtensionFileFilter;
-import se.qxx.jukebox.watcher.FileRepresentation;
 
 public class Util {
 	/**

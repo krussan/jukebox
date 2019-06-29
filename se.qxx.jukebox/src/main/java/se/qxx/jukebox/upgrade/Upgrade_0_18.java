@@ -1,22 +1,7 @@
 package se.qxx.jukebox.upgrade;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.bind.JAXBException;
-
-import se.qxx.jukebox.core.DB;
 import se.qxx.jukebox.core.Version;
-import se.qxx.jukebox.domain.JukeboxDomain.Episode;
-import se.qxx.jukebox.domain.JukeboxDomain.Media;
-import se.qxx.jukebox.domain.JukeboxDomain.Movie;
-import se.qxx.jukebox.domain.JukeboxDomain.Season;
-import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.interfaces.IDatabase;
-import se.qxx.jukebox.settings.Settings;
-import se.qxx.jukebox.tools.MediaMetadata;
-import se.qxx.jukebox.tools.MediaMetadataHelper;
 
 public class Upgrade_0_18 extends UpgraderBase implements IIncrimentalUpgrade {
 	
@@ -24,11 +9,11 @@ public class Upgrade_0_18 extends UpgraderBase implements IIncrimentalUpgrade {
 		super(database);
 	}
 
-	private static String[] DbScripts = {
-			"UPDATE SubtitleQueue\r\n" + 
-			"SET subtitleretreivedat = 0\r\n" + 
-			" , subtitleretreiveresult = 0\r\n" + 
-			"WHERE ID IN (__IDS__) "};
+//	private static String[] DbScripts = {
+//			"UPDATE SubtitleQueue\r\n" + 
+//			"SET subtitleretreivedat = 0\r\n" + 
+//			" , subtitleretreiveresult = 0\r\n" + 
+//			"WHERE ID IN (__IDS__) "};
 	
 	@Override
 	public Version getThisVersion() {
@@ -45,7 +30,7 @@ public class Upgrade_0_18 extends UpgraderBase implements IIncrimentalUpgrade {
 		// get all media
 		// check with mediainfo if subs exist
 		// update those subtitlequeues
-		List<String> movieIds = new ArrayList<String>();
+		// List<String> movieIds = new ArrayList<String>();
 //		
 //		List<Movie> movies = this.getDatabase().searchMoviesByTitle("");
 //		for (Movie m : movies) {

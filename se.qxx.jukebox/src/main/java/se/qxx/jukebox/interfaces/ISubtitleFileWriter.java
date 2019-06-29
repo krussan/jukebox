@@ -6,7 +6,6 @@ import java.io.IOException;
 
 import fr.noop.subtitle.model.SubtitleParsingException;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
-import se.qxx.jukebox.domain.JukeboxDomain.SubtitleRequestType;
 
 public interface ISubtitleFileWriter {
 

@@ -12,12 +12,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
-
 import se.qxx.jukebox.builders.exceptions.SeriesNotSupportedException;
-import se.qxx.jukebox.core.Log.LogType;
-import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.INFOScanner;
 

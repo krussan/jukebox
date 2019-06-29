@@ -2,7 +2,6 @@ package se.qxx.jukebox.upgrade;
 
 import java.util.List;
 
-import se.qxx.jukebox.core.DB;
 import se.qxx.jukebox.core.Version;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;

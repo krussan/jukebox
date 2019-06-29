@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -24,8 +23,6 @@ import net.bramp.ffmpeg.probe.FFmpegStream.CodecType;
 import net.bramp.ffmpeg.progress.Progress;
 import net.bramp.ffmpeg.progress.ProgressListener;
 import se.qxx.jukebox.concurrent.JukeboxThread;
-import se.qxx.jukebox.core.DB;
-import se.qxx.jukebox.core.Log;
 import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.MediaConverterState;
@@ -35,7 +32,6 @@ import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.IMediaConverter;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.settings.CodecsType.Codec;
-import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.tools.Util;
 
 @Singleton

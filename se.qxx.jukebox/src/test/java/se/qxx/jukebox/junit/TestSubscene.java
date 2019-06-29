@@ -34,7 +34,6 @@ import se.qxx.jukebox.interfaces.IImdbSettings;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IParserSettings;
 import se.qxx.jukebox.interfaces.IRandomWaiter;
-import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.ISubFileDownloaderHelper;
 import se.qxx.jukebox.interfaces.ISubFileUtilHelper;
 import se.qxx.jukebox.interfaces.IWebRetriever;

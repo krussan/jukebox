@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+
 import javax.xml.bind.JAXBException;
 
 import com.google.inject.Inject;
@@ -12,7 +13,6 @@ import com.google.inject.Injector;
 import se.qxx.jukebox.core.Binder;
 import se.qxx.jukebox.interfaces.IWebRetriever;
 import se.qxx.jukebox.tools.WebResult;
-import se.qxx.jukebox.tools.WebRetriever;
 
 public class TestWebResult {
 

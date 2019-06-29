@@ -1,7 +1,6 @@
 package se.qxx.jukebox.junit;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
@@ -22,7 +21,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -39,13 +37,10 @@ import se.qxx.jukebox.interfaces.IImdbSettings;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IParserSettings;
 import se.qxx.jukebox.interfaces.ISettings;
-import se.qxx.jukebox.interfaces.ISubtitleFileWriter;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.imdb.ImdbSettings;
 import se.qxx.jukebox.settings.parser.ParserSettings;
 import se.qxx.jukebox.subtitles.SubtitleFileWriter;
-import se.qxx.jukebox.webserver.StreamingFile;
-import se.qxx.jukebox.webserver.StreamingWebServer;
 
 public class TestSubtitleFileWriter {
 

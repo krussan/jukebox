@@ -15,7 +15,6 @@ import com.google.inject.Singleton;
 import se.qxx.jukebox.interfaces.IImdbSettings;
 import se.qxx.jukebox.interfaces.IParserSettings;
 import se.qxx.jukebox.interfaces.ISettings;
-import se.qxx.jukebox.interfaces.IStreamingWebServer;
 import se.qxx.jukebox.settings.imdb.Imdb;
 import se.qxx.jukebox.settings.parser.Parser;
 

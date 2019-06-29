@@ -1,5 +1,6 @@
 package se.qxx.jukebox.junit;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
@@ -7,9 +8,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 import javax.xml.bind.JAXBException;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Rule;

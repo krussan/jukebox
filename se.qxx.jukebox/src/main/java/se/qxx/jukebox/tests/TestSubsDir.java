@@ -1,6 +1,7 @@
 package se.qxx.jukebox.tests;
 
 import java.io.IOException;
+
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.io.FilenameUtils;
@@ -11,8 +12,6 @@ import com.google.inject.Injector;
 import se.qxx.jukebox.core.Binder;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.interfaces.ISubtitleDownloader;
-import se.qxx.jukebox.settings.Settings;
-import se.qxx.jukebox.subtitles.SubtitleDownloader;
 
 public class TestSubsDir {
 

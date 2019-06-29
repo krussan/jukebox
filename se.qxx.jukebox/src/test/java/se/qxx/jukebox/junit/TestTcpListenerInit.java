@@ -1,19 +1,14 @@
 package se.qxx.jukebox.junit;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import com.googlecode.protobuf.socketrpc.RpcConnectionFactory;
-
-import se.qxx.jukebox.builders.MovieBuilderFactory;
-import se.qxx.jukebox.builders.ParserBuilder;
 import se.qxx.jukebox.concurrent.Executor;
 import se.qxx.jukebox.core.Log;
 import se.qxx.jukebox.core.Log.LogType;
@@ -21,7 +16,6 @@ import se.qxx.jukebox.factories.JukeboxRpcServerFactory;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IDistributor;
-import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IMovieIdentifier;
 import se.qxx.jukebox.interfaces.ISettings;
@@ -29,7 +23,6 @@ import se.qxx.jukebox.interfaces.IStreamingWebServer;
 import se.qxx.jukebox.interfaces.ISubtitleDownloader;
 import se.qxx.jukebox.servercomm.JukeboxRpcServerConnection;
 import se.qxx.jukebox.servercomm.TcpListener;
-import se.qxx.jukebox.settings.Settings;
 
 public class TestTcpListenerInit {
 
