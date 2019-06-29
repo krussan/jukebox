@@ -1188,7 +1188,7 @@ public class DB implements IDatabase {
 		return moss;
 	}
 
-	private List<MovieOrSeries> decoupleSeries(List<Series> series) {
+	public List<MovieOrSeries> decoupleSeries(List<Series> series) {
 		List<MovieOrSeries> moss = new ArrayList<MovieOrSeries>();
 		
 		for (Series s : series) {
