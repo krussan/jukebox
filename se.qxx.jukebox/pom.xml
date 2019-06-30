@@ -188,8 +188,8 @@
         </dependency>
         <dependency>
             <groupId>com.sun.activation</groupId>
-            <artifactId>javax.activation</artifactId>
-            <version>1.2.0</version>
+            <artifactId>jakarta.activation</artifactId>
+            <version>1.2.1</version>
             <scope>runtime</scope>
         </dependency>     		
 	</dependencies>
@@ -215,85 +215,75 @@
 		<plugins>
 
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jaxb2-maven-plugin</artifactId>
-				<version>2.4</version>
-
+				<groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-xjc-plugin</artifactId>
+                <version>3.3.0</version>
+                
 				<executions>
 					<execution>
 						<id>settings</id>
 						<goals>
-							<goal>xjc</goal>
+							<goal>xsdtojava</goal>
 						</goals>
 
 						<configuration>
-							<!-- The package of your generated sources -->
-							<packageName>se.qxx.jukebox.settings</packageName>
-
-							<sources>
-								<source>src/main/xsds/JukeboxSettings.xsd</source>
-							</sources>
-
-							<clearOutputDir>false</clearOutputDir>
-							<extension>true</extension>
+							<xsdOptions>
+								<xsdOption>
+									<xsd>${basedir}/src/main/xsds/JukeboxSettings.xsd</xsd>
+									<packagename>se.qxx.jukebox.settings</packagename>
+								</xsdOption>
+							</xsdOptions>
 						</configuration>
 					</execution>
 
 					<execution>
 						<id>imdb</id>
 						<goals>
-							<goal>xjc</goal>
+							<goal>xsdtojava</goal>
 						</goals>
 
 						<configuration>
-							<!-- The package of your generated sources -->
-							<packageName>se.qxx.jukebox.settings.imdb</packageName>
-
-							<sources>
-								<source>src/main/xsds/imdb.xsd</source>
-							</sources>
-
-							<clearOutputDir>false</clearOutputDir>
-							<extension>true</extension>
+							<xsdOptions>
+								<xsdOption>
+									<xsd>${basedir}/src/main/xsds/imdb.xsd</xsd>
+									<packagename>se.qxx.jukebox.settings.imdb</packagename>
+								</xsdOption>
+							</xsdOptions>
 						</configuration>
+
 					</execution>
 
 
 					<execution>
 						<id>parser</id>
 						<goals>
-							<goal>xjc</goal>
+							<goal>xsdtojava</goal>
 						</goals>
 
 						<configuration>
-							<!-- The package of your generated sources -->
-							<packageName>se.qxx.jukebox.settings.parser</packageName>
-
-							<sources>
-								<source>src/main/xsds/parser.xsd</source>
-							</sources>
-
-							<clearOutputDir>false</clearOutputDir>
-							<extension>true</extension>
+							<xsdOptions>
+								<xsdOption>
+									<xsd>${basedir}/src/main/xsds/parser.xsd</xsd>
+									<packagename>se.qxx.jukebox.settings.parser</packagename>
+								</xsdOption>
+							</xsdOptions>
 						</configuration>
+
 					</execution>
 
 					<execution>
 						<id>subtitles</id>
 						<goals>
-							<goal>xjc</goal>
+							<goal>xsdtojava</goal>
 						</goals>
 
 						<configuration>
-							<!-- The package of your generated sources -->
-							<packageName>se.qxx.jukebox.subtitles</packageName>
-
-							<sources>
-								<source>src/main/xsds/subs.xsd</source>
-							</sources>
-
-							<clearOutputDir>false</clearOutputDir>
-							<extension>true</extension>
+							<xsdOptions>
+								<xsdOption>
+									<xsd>${basedir}/src/main/xsds/subs.xsd</xsd>
+									<packagename>se.qxx.jukebox.subtitles</packagename>
+								</xsdOption>
+							</xsdOptions>
 						</configuration>
 					</execution>
 				</executions>
