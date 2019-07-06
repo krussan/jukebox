@@ -421,21 +421,6 @@
 
 			</TableLayout>
 
-			<de.codecrafters.tableview.TableView
-				xmlns:table="http://schemas.android.com/apk/res-auto"
-				android:id="@+id/tableView"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:paddingTop="4dp"
-				android:paddingLeft="4dp"
-				android:paddingRight="4dp"
-				android:paddingBottom="4dp"
-				android:clickable="false"
-				android:longClickable="false"
-				android:nestedScrollingEnabled="false"
-				table:tableView_columnCount="2"
-				/>
-
 		</LinearLayout>
 
 	</ScrollView>
