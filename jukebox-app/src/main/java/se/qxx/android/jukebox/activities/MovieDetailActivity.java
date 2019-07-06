@@ -24,8 +24,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import de.codecrafters.tableview.TableView;
-import de.codecrafters.tableview.toolkit.SimpleTableDataAdapter;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.adapters.support.MovieMediaLayoutAdapter;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
@@ -94,8 +92,6 @@ public class MovieDetailActivity extends AppCompatActivity {
     }
 
     private void initializeDetails(JukeboxDomain.Movie m, View v) {
-        TableView<String[]> tableView = findViewById(R.id.tableView);
-        tableView.setHeaderVisible(false);
         GUITools.setTextOnTextview(R.id.txtDetailDuration, getDuration(m.getDuration()), v);
         GUITools.setTextOnTextview(R.id.txtDetailFormat, m.getFormat(), v);
         GUITools.setTextOnTextview(R.id.txtDetailGenre, StringUtils.join(m.getGenreList(), " / "), v);
