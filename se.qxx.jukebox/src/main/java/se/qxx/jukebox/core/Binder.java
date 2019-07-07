@@ -11,7 +11,6 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
 
 import se.qxx.jukebox.builders.MovieBuilderFactory;
-import se.qxx.jukebox.builders.NFOScanner;
 import se.qxx.jukebox.concurrent.Executor;
 import se.qxx.jukebox.converter.MediaConverter;
 import se.qxx.jukebox.factories.FileSystemWatcherFactory;
@@ -45,7 +44,6 @@ import se.qxx.jukebox.interfaces.IMediaMetadataHelper;
 import se.qxx.jukebox.interfaces.IMkvSubtitleReader;
 import se.qxx.jukebox.interfaces.IMovieBuilderFactory;
 import se.qxx.jukebox.interfaces.IMovieIdentifier;
-import se.qxx.jukebox.interfaces.INFOScanner;
 import se.qxx.jukebox.interfaces.IParserSettings;
 import se.qxx.jukebox.interfaces.IRandomWaiter;
 import se.qxx.jukebox.interfaces.ISettings;

@@ -12,6 +12,7 @@
         android:src="@drawable/icon" 
         android:contentDescription="@string/descPosterImage"
         android:layout_margin="5dp"
+        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
     />
@@ -40,7 +41,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/toptext"
-            android:layout_toLeftOf="@id/btnPlayEpisode"
             android:layout_alignParentLeft="true"
             android:text="@string/loremipsum"
             android:textColor="#FFFFFF"
@@ -81,21 +81,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/txtDescription"
-            android:layout_toRightOf="@id/imgWatched"
+            android:layout_toRightOf="@id/imgDownloading"
             android:layout_alignParentBottom="true"
             android:contentDescription="@string/descConverted"
             android:src="@drawable/ic_converting" />
-
-        <ImageButton
-            android:id="@+id/btnPlayEpisode"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:src="@android:drawable/ic_media_play"
-            android:contentDescription="@string/descDownloading"
-            android:focusable="false"
-            />
 
     </RelativeLayout>
 

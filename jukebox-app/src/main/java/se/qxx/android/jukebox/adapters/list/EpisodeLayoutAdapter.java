@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -14,14 +15,16 @@ import java.util.List;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.NowPlayingActivity;
 import se.qxx.android.jukebox.activities.ViewMode;
+import se.qxx.android.jukebox.settings.CacheData;
 import se.qxx.android.tools.GUITools;
 import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 
-public class EpisodeLayoutAdapter extends GenericListLayoutAdapter<Episode> implements View.OnClickListener {
+public class EpisodeLayoutAdapter extends GenericListLayoutAdapter<Episode> {
 
     private List<Episode> episodes = new ArrayList<>();
     private int seasonNumber;
+
 
     public List<Episode> getEpisodes() {
 		return episodes;
@@ -66,14 +69,18 @@ public class EpisodeLayoutAdapter extends GenericListLayoutAdapter<Episode> impl
             setupThumbnail(v, ep.getThumbnail());
             setupSubtitles(v, ep.getMedia(0).getSubsList());
 
-            ImageButton btnPlayEpisode = v.findViewById(R.id.btnPlayEpisode);
-            btnPlayEpisode.setTag(ep.getID());
-            btnPlayEpisode.setOnClickListener(this);
+            //ImageButton btnPlayEpisode = v.findViewById(R.id.btnPlayEpisode);
+            //btnPlayEpisode.setTag(ep.getID());
+            //btnPlayEpisode.setOnClickListener(this);
+
+            int duration = ep.getDuration();
+            this.setupProgressBar(v, ep.getDuration(), ep.getMedia(0).getID());
 
         }
 
     }
 
+    /*
     @Override
 	public void onClick(View view) {
 
@@ -93,6 +100,7 @@ public class EpisodeLayoutAdapter extends GenericListLayoutAdapter<Episode> impl
             }
         }
 	}
+	*/
 
 
     @Override

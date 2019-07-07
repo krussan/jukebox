@@ -2,7 +2,6 @@ package se.qxx.jukebox.interfaces;
 
 import java.util.List;
 
-import se.qxx.jukebox.builders.exceptions.DeprecatedBuilderException;
 import se.qxx.jukebox.domain.MovieOrSeries;
 
 public interface IMovieBuilderFactory {

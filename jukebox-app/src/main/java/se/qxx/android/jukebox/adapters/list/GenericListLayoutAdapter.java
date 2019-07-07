@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ProgressBar;
 
 import com.google.protobuf.ByteString;
 
@@ -16,6 +17,7 @@ import java.util.List;
 
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.IncludeSubtitleRating;
+import se.qxx.android.jukebox.settings.CacheData;
 import se.qxx.android.tools.GUITools;
 import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
@@ -33,6 +35,7 @@ public abstract class GenericListLayoutAdapter<T> extends BaseAdapter {
     // which should be returned from the web request results
     protected int serverListSize = -1;
     protected boolean isLoading;
+    private CacheData cacheData;
 
 	protected Context getContext() { return context; }
     protected int getListItemId() {
@@ -54,6 +57,7 @@ public abstract class GenericListLayoutAdapter<T> extends BaseAdapter {
 		super();
 		this.context = context;
 		this.listItemId = listItemId;
+        this.setCacheData(new CacheData(context));
 	}
 
     @Override
@@ -73,7 +77,7 @@ public abstract class GenericListLayoutAdapter<T> extends BaseAdapter {
             return layoutProgress(vi);
         }
         else {
-            View v = vi.inflate(getListItemId(), null);
+            View v = vi.inflate(getListItemId(), parent, false);
             initializeView(v, this.getItem(position));
             return v;
         }
@@ -201,4 +205,27 @@ public abstract class GenericListLayoutAdapter<T> extends BaseAdapter {
 
     }
 
+    public CacheData getCacheData() {
+        return cacheData;
+    }
+
+    public void setCacheData(CacheData cacheData) {
+        this.cacheData = cacheData;
+    }
+
+    protected void setupProgressBar(View v, int duration, int mediaId) {
+        ProgressBar progressWatched = v.findViewById(R.id.progressWatched);
+        if (progressWatched != null) {
+            int progress = 0;
+            if (duration > 0) {
+                progress = (int) (100f * (float) this.getCacheData().getMediaState(mediaId) / (float) (duration * 60));
+            }
+
+            if (progress > 0)
+                progressWatched.setProgress(progress);
+            else
+                progressWatched.setVisibility(View.INVISIBLE);
+        }
+
+    }
 }

@@ -6,8 +6,8 @@ plugins {
 group = 'se.qxx.jukebox'
 version = '1.0-SNAPSHOT'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 9
+targetCompatibility = 9
 
 jar {
 }

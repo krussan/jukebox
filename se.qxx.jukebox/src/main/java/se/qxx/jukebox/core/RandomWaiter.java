@@ -2,8 +2,6 @@ package se.qxx.jukebox.core;
 
 import java.util.Random;
 
-import org.codehaus.plexus.component.annotations.Component;
-
 import com.google.inject.Inject;
 
 import se.qxx.jukebox.core.Log.LogType;

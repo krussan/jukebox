@@ -16,7 +16,6 @@ import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.DomainUtil;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
-import se.qxx.jukebox.domain.JukeboxDomain.MediaConverterState;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
@@ -31,7 +30,6 @@ import se.qxx.jukebox.interfaces.IMediaMetadataHelper;
 import se.qxx.jukebox.interfaces.IMovieBuilderFactory;
 import se.qxx.jukebox.interfaces.IMovieIdentifier;
 import se.qxx.jukebox.interfaces.ISubtitleDownloader;
-import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.watcher.FileRepresentation;
 
 @Singleton

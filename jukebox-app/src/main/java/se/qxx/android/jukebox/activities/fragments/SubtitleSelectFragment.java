@@ -1,6 +1,7 @@
 package se.qxx.android.jukebox.activities.fragments;
 
 
+import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.os.Bundle;
@@ -69,12 +70,15 @@ public class SubtitleSelectFragment extends DialogFragment implements SubtitleLa
         jh.listSubtitles(
                 mMedia,
                 (response) -> {
-                    getActivity().runOnUiThread(() -> {
-                        SubtitleLayoutAdapter adapter =
-                                new SubtitleLayoutAdapter(getContext(), mMedia.getID(), response.getSubtitleUrisList(), this);
-                        lv.setOnItemClickListener(adapter);
-                        lv.setAdapter(adapter);
-                    });
+                    Activity a = getActivity();
+                    if (a != null) {
+                        a.runOnUiThread(() -> {
+                            SubtitleLayoutAdapter adapter =
+                                    new SubtitleLayoutAdapter(getContext(), mMedia.getID(), response.getSubtitleUrisList(), this);
+                            lv.setOnItemClickListener(adapter);
+                            lv.setAdapter(adapter);
+                        });
+                    }
                 });
 
     }

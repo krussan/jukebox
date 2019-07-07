@@ -4,7 +4,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.qxx.jukebox.core.DB;
 import se.qxx.jukebox.core.Version;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.interfaces.IDatabase;

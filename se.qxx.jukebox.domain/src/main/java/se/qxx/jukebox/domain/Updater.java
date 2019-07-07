@@ -1,7 +1,5 @@
 package se.qxx.jukebox.domain;
 
-import com.google.protobuf.AbstractMessage.Builder;
-import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.Message;
 
 public class Updater<T extends Message> {

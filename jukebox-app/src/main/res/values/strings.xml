@@ -68,4 +68,26 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="lblDetailsHeader">Details</string>
+    <string name="txtDetailDuration">Duration</string>
+    <string name="txtDetailFormat">Format</string>
+    <string name="txtDetailGenre">Gemre</string>
+    <string name="txtDetailGroup">Group</string>
+    <string name="txtDetailLanguage">Language</string>
+    <string name="txtDetailSound">Sound</string>
+    <string name="txtDetailType">Type</string>
+    <string name="txtDetailBlacklisted">Blacklisted</string>
+    <string name="txtDetailIdentifier">Identifier</string>
+    <string name="txtDetailIdentRating">Identifier rating</string>
+    <string name="txtDetailSubQueuedAt">Sub queued at</string>
+    <string name="txtDetailSubRetreivedAt">Sub retreived at</string>
+    <string name="txtDetailSubResult">Sub result</string>
+    <string name="txtDetailWatched">Watched</string>
+    <string name="txtDetailConverterState">Converter state</string>
+    <string name="txtDetailConvertedFilename">Converted filename</string>
+    <string name="txtDetailFramerate">Framerate</string>
+    <string name="txtDetailDownloadComplete">Download complete</string>
+    <string name="txtDetailMetaDuration">Meta duration</string>
+    <string name="txtDetailSubsCount">Subs count</string>
+    <string name="txtDetailsSubsRating">Subs rating</string>
 </resources>

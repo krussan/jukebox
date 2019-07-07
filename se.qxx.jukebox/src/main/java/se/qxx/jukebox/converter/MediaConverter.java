@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -24,8 +23,6 @@ import net.bramp.ffmpeg.probe.FFmpegStream.CodecType;
 import net.bramp.ffmpeg.progress.Progress;
 import net.bramp.ffmpeg.progress.ProgressListener;
 import se.qxx.jukebox.concurrent.JukeboxThread;
-import se.qxx.jukebox.core.DB;
-import se.qxx.jukebox.core.Log;
 import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.MediaConverterState;
@@ -35,7 +32,6 @@ import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.IMediaConverter;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.settings.CodecsType.Codec;
-import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.tools.Util;
 
 @Singleton
@@ -92,8 +88,11 @@ public class MediaConverter extends JukeboxThread implements IMediaConverter {
 						
 						if (conversionCheckResult.getNeedsConversion()) {
 							saveConvertedMedia(md, MediaConverterState.Converting);
+							
 							MediaConverterResult result = triggerConverter(md, probeResult, conversionCheckResult);
 							
+							this.getLog().Info(String.format("Conversion done on %s. Status :: %s !", md.getFilepath()));
+
 							if (result.getState() == MediaConverterResult.State.Completed) {
 								saveConvertedMedia(md, result.getConvertedFilename());
 							}
@@ -130,15 +129,8 @@ public class MediaConverter extends JukeboxThread implements IMediaConverter {
 	}
 
 	private ConversionProbeResult checkConversion(Media md, FFmpegProbeResult probeResult) {
-		//TODO: Should be configurable
-		//TODO: Use ffprobe to check container
-		//for now all not mp4 extension
-		//list of accepted video codecs
-		
 		List<Codec> acceptedVideoCodecs = this.getSettings().getSettings().getConverter().getAcceptedVideoCodecs().getCodec();
 		List<Codec> acceptedAudioCodecs = this.getSettings().getSettings().getConverter().getAcceptedAudioCodecs().getCodec();
-		//List<String> acceptedVideoCodecs = Settings.get().getConverter().getAcceptedAudioCodecs().getCodec();
-		//List<String> acceptedAudioCodecs = Arrays.asList(new String[] {"aac", "mp3", "vorbis", "lcpm", "wav", "flac", "opus"});
 
 		String audioCodec = "aac";
 		String videoCodec = "h264";
@@ -193,7 +185,7 @@ public class MediaConverter extends JukeboxThread implements IMediaConverter {
 		String filePath = md.getFilepath();
 		String newFilepath = Util.getFullFilePath(filePath, newFilename);
 
-		if (checkFileExists(newFilepath)) {
+		if (checkFileExists(newFilepath) && md.getConverterState() != MediaConverterState.Forced && md.getConverterState() != MediaConverterState.Failed) {
 			this.getLog().Info(String.format("Conversion already exist on :: %s", filename));
 			return new MediaConverterResult(filePath, filename, newFilename, MediaConverterResult.State.Completed);
 		}
@@ -250,6 +242,7 @@ public class MediaConverter extends JukeboxThread implements IMediaConverter {
 
 		// execute conversion
 		job.run();
+		
 		return job;
 	}
 	
@@ -285,11 +278,21 @@ public class MediaConverter extends JukeboxThread implements IMediaConverter {
 	}
 
 	private void saveConvertedMedia(Media md, String newFilename) {
-		this.getDatabase().saveConversion(md.getID(), newFilename, MediaConverterState.Completed_VALUE);
+		try {
+			this.getDatabase().saveConversion(md.getID(), newFilename, MediaConverterState.Completed_VALUE);
+		}
+		catch (Exception e) {
+			this.getLog().Error("Error when saving converted media!!", e);
+		}
 	}
 
 	private void saveConvertedMedia(Media md, MediaConverterState result) {
-		this.getDatabase().saveConversion(md.getID(), result.getNumber());
+		try {
+			this.getDatabase().saveConversion(md.getID(), result.getNumber());
+		}
+		catch (Exception e) {
+			this.getLog().Error("Error when saving converted media!!", e);
+		}
 	}
 
 	@Override

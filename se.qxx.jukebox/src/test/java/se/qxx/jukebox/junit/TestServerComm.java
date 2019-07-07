@@ -1,5 +1,6 @@
 package se.qxx.jukebox.junit;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
@@ -7,9 +8,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 import javax.xml.bind.JAXBException;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -29,6 +27,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Rating;
 import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
+import se.qxx.jukebox.domain.JukeboxDomain.SubtitleRequestType;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IDistributor;
@@ -117,8 +116,8 @@ public class TestServerComm {
 		
 		when(dbMock.getMovie(1)).thenReturn(movie);
 		when(webServerMock.registerFile(any(Media.class))).thenReturn(new StreamingFile("http://127.0.0.1:8001/stream10.mp4", "media/mp4"));
-		when(webServerMock.registerSubtitle(sub1)).thenReturn(new StreamingFile("http://127.0.0.1:8001/sub100.vtt", "media/vtt"));
-		when(webServerMock.registerSubtitle(sub2)).thenReturn(new StreamingFile("http://127.0.0.1:8001/sub110.vtt", "media/vtt"));
+		when(webServerMock.registerSubtitle(sub1, SubtitleRequestType.WebVTT)).thenReturn(new StreamingFile("http://127.0.0.1:8001/sub100.vtt", "media/vtt"));
+		when(webServerMock.registerSubtitle(sub2, SubtitleRequestType.WebVTT)).thenReturn(new StreamingFile("http://127.0.0.1:8001/sub110.vtt", "media/vtt"));
 		
 		JukeboxRequestStartMovie request = JukeboxRequestStartMovie.newBuilder()
 				.setMovieOrEpisodeId(1)

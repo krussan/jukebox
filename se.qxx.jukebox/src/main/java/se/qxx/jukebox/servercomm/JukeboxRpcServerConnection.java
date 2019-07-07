@@ -40,6 +40,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
+import se.qxx.jukebox.domain.JukeboxDomain.SubtitleRequestType;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IDistributor;
@@ -242,19 +243,15 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 		try {
 			Media md = getMedia(request);
 
-			boolean success = false;
+			boolean success = true;
 
-			StreamingFile streamingFile = null;
-			List<String> subtitleUris = new ArrayList<String>();
+			// always serve the file and subtitles
+			List<String> subtitleUris = serveSubtitles(md, request.getSubtitleRequestType());
+			StreamingFile streamingFile = this.getWebServer().registerFile(md);
 			
-			if (StringUtils.equalsIgnoreCase("Chromecast", request.getPlayerName())) {
-				//this is a chromecast request. Serve the file using http and return the uri.
-				//also serve the subtitles and return them
-			
-				streamingFile = serveChromecast(md, subtitleUris);
-				success = true;
-			}
-			else {
+			// call the distributor if the player is not chromecast or local
+			if (!StringUtils.equalsIgnoreCase("Chromecast", request.getPlayerName()) &&
+					!StringUtils.equalsIgnoreCase("local", request.getPlayerName())) {
 				success = this.getDistributor().startMovie(request.getPlayerName(), md);
 			}
 			
@@ -293,21 +290,19 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 		
 		return null;
 	}
-
-	private StreamingFile serveChromecast(Media md, List<String> subtitleUris) {
-		// if media contains subtitles (i.e. mkv) then extract the file and put it into a file for serving
-		// https://github.com/matthewn4444/EBMLReader ??
-		StreamingFile streamingFile = this.getWebServer().registerFile(md);
+	
+	private List<String> serveSubtitles(Media md, SubtitleRequestType subtitleRequestType) {
+		List<String> subtitleUris = new ArrayList<>();
 		
 		this.getLog().Debug(String.format("Number of subtitles :: %s", md.getSubsCount()));
 		for (Subtitle s : md.getSubsList()) {
-			StreamingFile subFile = this.getWebServer().registerSubtitle(s);
+			StreamingFile subFile = this.getWebServer().registerSubtitle(s, subtitleRequestType);
 			
 			if (subFile != null)
 				subtitleUris.add(subFile.getUri());
 		}
 		
-		return streamingFile;
+		return subtitleUris;
 	}
 
 	@Override
@@ -488,7 +483,7 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 			JukeboxResponseListSubtitles.newBuilder()
 				.addAllSubtitleUris(
 					this.getWebServer()
-						.getSubtitleUris(media));
+						.getSubtitleUris(media, request.getSubtitleRequestType()));
 	
 		done.run(b.build());
 	}
@@ -678,8 +673,6 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 					Episode ep = this.getDatabase().getEpisode(request.getId());
 					this.getSubtitleDownloader().reenlistEpisode(ep);
 				}
-			
-				done.run(Empty.newBuilder().build());
 			}
 			catch (Exception e) {
 				Logger.log("Error occured in reenlistSubtitles", e);

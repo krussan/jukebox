@@ -45,6 +45,11 @@ enum RequestFilter {
     SubsTextdata = 4;
 }
 
+enum SubtitleRequestType {
+	WebVTT = 1;
+	SubRip = 2;
+}
+
 //---------------------------------------------------------------------------------------
 //----------------------------------------------------------------------- Objects
 //---------------------------------------------------------------------------------------
@@ -230,6 +235,7 @@ message JukeboxRequestStartMovie {
 	required int32 movieOrEpisodeId = 1;
 	optional string playerName = 2;
 	required RequestType requestType = 3;
+	optional SubtitleRequestType subtitleRequestType = 4;
 	
 }
 
@@ -240,6 +246,7 @@ message JukeboxRequestSeek {
 
 message JukeboxRequestListSubtitles {
 	required int32 mediaId = 1;
+	required SubtitleRequestType subtitleRequestType = 2;
 }
 
 message JukeboxRequestSetSubtitle {

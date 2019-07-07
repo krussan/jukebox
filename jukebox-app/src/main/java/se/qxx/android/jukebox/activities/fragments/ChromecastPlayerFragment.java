@@ -335,7 +335,7 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
         MediaMetadata md = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
         md.putString(MediaMetadata.KEY_TITLE, title);
         md.putInt("ID", this.getID());
-        //addMetadataImage(movieUrl, md);
+        addMetadataImage(movieUrl, md);
 
         return md;
     }
@@ -344,8 +344,6 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
         int id = getID();
 
         if (id > 0) {
-
-            String baseUrl = StringUtils.EMPTY;
 
             try {
                 URL movieUri = new URL(movieUrl);
@@ -392,5 +390,10 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
     @Override
     protected void seekToStartPosition() {
 
+    }
+
+    @Override
+    public JukeboxDomain.SubtitleRequestType getSubtitleRequestType() {
+        return JukeboxDomain.SubtitleRequestType.WebVTT;
     }
 }

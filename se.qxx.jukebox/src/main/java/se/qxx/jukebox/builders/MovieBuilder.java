@@ -3,7 +3,6 @@ package se.qxx.jukebox.builders;
 import se.qxx.jukebox.builders.exceptions.DeprecatedBuilderException;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.MovieOrSeries;
-import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.ISettings;
 

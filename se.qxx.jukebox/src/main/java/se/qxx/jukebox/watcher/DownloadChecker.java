@@ -20,7 +20,6 @@ import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.IFilenameChecker;
 import se.qxx.jukebox.interfaces.IMediaMetadataHelper;
 import se.qxx.jukebox.tools.MediaMetadata;
-import se.qxx.jukebox.tools.Util;
 
 @Singleton
 public class DownloadChecker extends JukeboxThread implements IDownloadChecker {

@@ -13,8 +13,8 @@ public interface ISubtitleFileWriter {
 	
 	File writeSubtitleToFile(Subtitle sub, File destinationFile)
 			throws IOException, SubtitleParsingException, FileNotFoundException;
-
-	File writeSubtitleToFileVTT(Subtitle sub, File destinationFile)
+	
+	File writeSubtitleToFileConvert(Subtitle sub, File destinationFile)
 			throws IOException, SubtitleParsingException, FileNotFoundException;
 	
 }

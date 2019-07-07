@@ -143,7 +143,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 		cleanupTempDirectory();
 		subsPath = this.getSettings().getSettings().getSubFinders().getSubsPath();
 		
-		this.getLog().Debug("Retrieving list to process");
+		this.getLog().Debug("Cleaning up subtitle queue");
 		this.getDatabase().cleanSubtitleQueue();
 		
 		setupSubFinders();
@@ -170,6 +170,8 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	@Override
 	protected void execute() {
 		int result = 0;
+		
+		this.getLog().Debug("Retrieving list to process");
 		List<MovieOrSeries> _listProcessing =  this.getDatabase().getSubtitleQueue();
 		
 		List<Language> languages = getPreferredLanguages();
@@ -205,7 +207,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 			if (!this.isRunning())
 				break;
 			
-		}			
+		}
 	}
 
 
@@ -353,18 +355,22 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	private List<SubFile> getSubtitles(MovieOrSeries mos, List<Language> languages) {
 		// We only check if there exist subs for the first media file.
 		// If it does then it should exist from the others as well.
+		
+		//BUG; MOS object expects only 1 episode in the series object.
+		// it was designed for the watcher only. We need to find the correct media
+		// if we have an episode
+		// -- This should be taken care of by the decouple method in DB but it seems off
 		Media md = mos.getMedia();
 
 		List<SubFile> files = new ArrayList<SubFile>();
 		
-		if (!checkMatroskaFile(md)) {			
-			files = checkMovieDirForSubs(md);
-			
-			if (files.size() == 0) {
-				// use reflection to get all subfinders
-				// get files
-				files = callSubtitleDownloaders(mos, languages);
-			}
+		boolean hasMatroskaSubtitles = checkMatroskaFile(md);
+		files = checkMovieDirForSubs(md);
+		
+		if (files.size() == 0 && !hasMatroskaSubtitles) {
+			// use reflection to get all subfinders
+			// get files
+			files = callSubtitleDownloaders(mos, languages);
 		}
 		
 		return files;

@@ -7,8 +7,6 @@ import java.net.InetAddress;
 
 import com.google.inject.Inject;
 
-import se.qxx.jukebox.core.Log;
-import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.interfaces.IWakeOnLan;
 
 public class WakeOnLan implements IWakeOnLan {

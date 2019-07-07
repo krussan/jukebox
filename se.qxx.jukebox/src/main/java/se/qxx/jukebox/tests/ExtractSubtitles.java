@@ -34,7 +34,7 @@ public class ExtractSubtitles {
  					if (md != null) { 
 						for (Subtitle sub : md.getSubsList()) {
 							fileWriter.writeSubtitleToFile(sub, fileWriter.getTempFile(sub, FilenameUtils.getExtension(sub.getFilename())));
-							fileWriter.writeSubtitleToFileVTT(sub, fileWriter.getTempFile(sub, "vtt"));
+							fileWriter.writeSubtitleToFileConvert(sub, fileWriter.getTempFile(sub, "vtt"));
 						}
  					}
 					else 

@@ -6,7 +6,6 @@ import java.io.IOException;
 
 import com.google.inject.Inject;
 
-import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.interfaces.IFileReader;
 
 public class FileReader implements IFileReader {

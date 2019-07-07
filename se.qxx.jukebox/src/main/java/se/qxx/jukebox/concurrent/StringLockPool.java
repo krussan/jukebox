@@ -1,8 +1,6 @@
 package se.qxx.jukebox.concurrent;
 
 import java.util.LinkedList;
-import java.util.concurrent.locks.Lock;
-
 import org.apache.commons.lang3.StringUtils;
 
 public class StringLockPool {

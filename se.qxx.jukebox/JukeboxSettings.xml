@@ -144,7 +144,8 @@
 		<extension value="mkv" mimeType="video/mp4" />
         <extension value="avi" mimeType="video/mp4" />
         <extension value="mp4" mimeType="video/mp4" />
-        <extension value="vtt" mimeType="text/vtt" />  		
+        <extension value="vtt" mimeType="text/vtt" />
+        <extension value="srt" mimeType="application/x-subrip" />  		
   	</mimeTypeMap>
   	<extensionOverrideMap>
   		<extension value="mkv" override="mp4" />

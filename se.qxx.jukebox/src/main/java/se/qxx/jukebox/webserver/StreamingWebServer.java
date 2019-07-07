@@ -33,6 +33,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.MediaConverterState;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
+import se.qxx.jukebox.domain.JukeboxDomain.SubtitleRequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.SubtitleUri;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IDatabase;
@@ -55,6 +56,8 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 	private Map<String, String> streamingMap = null;
 	private Map<String, String> mimeTypeMap = null;
 	private Map<String, String> extensionMap = null;
+	
+	private static Map<SubtitleRequestType, String> subtitleExtension = new ConcurrentHashMap<>();
 
 	/*
 	 * registerSubtitle(Subtitle)
@@ -129,6 +132,10 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 			settings.getSettings().getWebServer().getExtensionOverrideMap().getExtension()) {
 			extensionMap.put(e.getValue(), e.getOverride());
 		}
+		
+		subtitleExtension.put(SubtitleRequestType.WebVTT, "vtt");
+		subtitleExtension.put(SubtitleRequestType.SubRip, "srt");
+		
 	}
 	
 	/* (non-Javadoc)
@@ -196,25 +203,25 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 	 * @see se.qxx.jukebox.webserver.IStreamingWebServer#registerSubtitle(se.qxx.jukebox.domain.JukeboxDomain.Subtitle)
 	 */
 	@Override
-	public StreamingFile registerSubtitle(Subtitle sub) {
+	public StreamingFile registerSubtitle(Subtitle sub, SubtitleRequestType subtitleRequestType) {
 
 		try {
-			String streamingFile = getStreamingUri(sub);
+			String streamingFile = getStreamingUri(sub, subtitleRequestType);
 			String filename = StringUtils.EMPTY;
 			
 			if (fileIsRegistered(streamingFile)) {
 				filename = streamingMap.get(streamingFile);
 			}
 			else {
-				File tempFile = this.getSubWriter().getTempFile(sub, "vtt");
+				File tempFile = this.getSubWriter().getTempFile(sub, subtitleExtension.get(subtitleRequestType));
 				filename = tempFile.getAbsolutePath();
 				
 				if (!tempFile.exists())
-					this.getSubWriter().writeSubtitleToFileVTT(sub, tempFile);
+					this.getSubWriter().writeSubtitleToFileConvert(sub, tempFile);
 			}
 			
 			return registerFile(
-					getStreamingUri(sub), 
+					getStreamingUri(sub, subtitleRequestType), 
 					filename);
 			
 		} catch (Exception e) {
@@ -397,7 +404,7 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 		Movie m = this.getDatabase().getMovie(id);
 		
 		if (m != null && m.getThumbnail() != null) {
-			serveImage(m.getThumbnail());
+			return serveImage(m.getThumbnail());
 		}
 		
 		return emptyResponse(); 
@@ -638,13 +645,13 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 	}
 
 	@Override
-	public List<SubtitleUri> getSubtitleUris(Media md) {
+	public List<SubtitleUri> getSubtitleUris(Media md, SubtitleRequestType subtitleRequestType) {
 		List<SubtitleUri> result = new ArrayList<>();
 		
 		// loop through the subtitles
 		// check if file exist in the streaming map
 		for (Subtitle sub : md.getSubsList()) {
-			String streamingUri = getStreamingUri(sub);
+			String streamingUri = getStreamingUri(sub, subtitleRequestType);
 			
 			if (fileIsRegistered(streamingUri)) {
 				result.add(SubtitleUri.newBuilder()
@@ -661,8 +668,8 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 		return result;
 	}
 
-	private String getStreamingUri(Subtitle sub) {
-		return getStreamingUri("sub", sub.getID(), "vtt"); 
+	private String getStreamingUri(Subtitle sub, SubtitleRequestType subtitleRequestType) {
+		return getStreamingUri("sub", sub.getID(), subtitleExtension.get(subtitleRequestType)); 
 	}
 	
 	private String getStreamingUri(Media md) {

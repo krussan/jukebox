@@ -250,6 +250,7 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
                 getPlayerName(),
                 currentMovie,
                 currentEpisode,
+                getSubtitleRequestType(),
                     (response) -> {
                         onStartMovieComplete(response);
                         seekToStartPosition();
@@ -308,6 +309,11 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
     @Override
     public void onPause() {
         super.onPause();
+
+        //save media state
+        if (this.getExitPosition() > 0)
+            cacheData.saveMediaState(this.getMedia().getID(), getExitPosition());
+
     }
 
     @Override
@@ -319,10 +325,6 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
     public void onStop() {
         super.onStop();
 
-        //save media state
-        if (this.getExitPosition() > 0)
-            cacheData.saveMediaState(this.getMedia().getID(), getExitPosition());
-
     }
 
     public abstract void setVisibility(View v);
@@ -331,6 +333,7 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
     public abstract void onStartMovieComplete(JukeboxDomain.JukeboxResponseStartMovie response);
     public abstract void setSubtitle(JukeboxDomain.SubtitleUri subtitleUri);
     public abstract void seekTo(int position);
+    public abstract JukeboxDomain.SubtitleRequestType getSubtitleRequestType();
 
     protected void showSubtitleDialog() {
         FragmentManager fm = getFragmentManager();
@@ -367,7 +370,7 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
             // get media state
             int position = getCachedPosition(this.getMedia().getID());
             if (position > 0)
-                seekTo(position);
+                seekTo(position * 1000);
         }
     }
 

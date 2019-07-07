@@ -25,7 +25,20 @@
             android:id="@+id/surfaceview"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
+            android:layout_centerInParent="true"
+            />
+
+        <TextView
+            android:id="@+id/txtSubtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:gravity="center"
+            android:textSize="11dp"
+            android:textStyle="bold"
+            android:textColor="#f2f24f"
+
+            android:layout_alignBottom="@id/surfaceview"
             />
 
     </FrameLayout>

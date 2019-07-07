@@ -9,16 +9,12 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 
-import se.qxx.jukebox.builders.MovieBuilder;
 import se.qxx.jukebox.core.Binder;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.MovieOrSeries;
-import se.qxx.jukebox.imdb.IMDBFinder;
-import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IIMDBFinder;
 import se.qxx.jukebox.interfaces.IMovieBuilderFactory;
-import se.qxx.jukebox.settings.Settings;
 
 public class TestImdbFinder {
 	

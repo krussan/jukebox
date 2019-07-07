@@ -7,8 +7,8 @@ plugins {
 group = 'se.qxx.jukebox'
 version = '1.0-SNAPSHOT'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 9
+targetCompatibility = 9
 
 def appProtocExec = project.findProperty('protocExec') ?: '/usr/bin/protoc'
 
@@ -22,4 +22,12 @@ protobuf {
 dependencies {
    implementation 'com.google.protobuf:protobuf-java:2.4.1'
    testImplementation 'junit:junit:4.12'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir "${buildDir.absolutePath}/generated/source/proto/main/java"
+        }
+    }
 }

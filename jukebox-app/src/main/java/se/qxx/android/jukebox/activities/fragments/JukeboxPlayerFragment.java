@@ -212,4 +212,9 @@ public class JukeboxPlayerFragment extends RemotePlayerFragment {
     public void toggleFullScreen() {
 
     }
+
+    @Override
+    public JukeboxDomain.SubtitleRequestType getSubtitleRequestType() {
+        return JukeboxDomain.SubtitleRequestType.SubRip;
+    }
 }

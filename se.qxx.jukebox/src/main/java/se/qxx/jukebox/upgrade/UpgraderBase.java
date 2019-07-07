@@ -1,7 +1,6 @@
 package se.qxx.jukebox.upgrade;
 
 import se.qxx.jukebox.interfaces.IDatabase;
-import se.qxx.jukebox.interfaces.IUpgrader;
 
 public class UpgraderBase {
 

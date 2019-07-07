@@ -1,7 +1,5 @@
 package se.qxx.jukebox.junit;
 
-import static org.junit.Assert.*;
-
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.junit.Test;
@@ -25,7 +23,6 @@ public class TestFileRepresentation {
 	
 	@Test
 	public void TestEquals() {
-		ConcurrentLinkedQueue<FileRepresentation> queue = new ConcurrentLinkedQueue<>();
 		FileRepresentation f1 = new FileRepresentation("/aa/bb/cc", "dd", 123, 123);
 		FileRepresentation f2 = new FileRepresentation("/aa/bb/cc", "dd", 444, 555);
 		
