@@ -16,6 +16,7 @@ import se.qxx.jukebox.factories.JukeboxRpcServerFactory;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IDistributor;
+import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IMovieIdentifier;
 import se.qxx.jukebox.interfaces.ISettings;
@@ -36,6 +37,7 @@ public class TestTcpListenerInit {
 	@Mock ISubtitleDownloader subtitleDownloaderMock;
 	@Mock IMovieIdentifier movieIdentifierMock;
 	@Mock JukeboxRpcServerFactory rpcFactoryMock;
+	@Mock IExecutor executorMock;
 	
 	
 	@Test
@@ -51,7 +53,8 @@ public class TestTcpListenerInit {
 				distributorMock, 
 				subtitleDownloaderMock, 
 				movieIdentifierMock, 
-				loggerFactoryMock, 
+				loggerFactoryMock,
+				executorMock,
 				webServerMock);
 		
 		when(rpcFactoryMock.create(any(IStreamingWebServer.class))).thenReturn(conn);

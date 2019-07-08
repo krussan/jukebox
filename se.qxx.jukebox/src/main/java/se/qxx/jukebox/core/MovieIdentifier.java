@@ -243,13 +243,13 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 		
 		this.getLog().Debug("MovieIdentifier :: Movie not found -- adding new");
 		
-		Thread t = new Thread(() -> {
+		Runnable r = () -> {
 			Movie movie = getMovieInfo(mos.getMovie(), newMedia);
 			movie = this.getDatabase().save(movie);
 			if (this.getArguments().isSubtitleDownloaderEnabled())
 				this.getSubtitleDownloader().addMovie(movie);			
-		});
-		t.start();
+		};
+		this.getExecutor().start(r);
 	}
 
 	private void matchSeries(MovieOrSeries mos, Media newMedia) {
@@ -273,7 +273,7 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 	}
 
 	private void forkWaitForOtherSeriesObjects(Media newMedia, Series series, int season, int episode) {
-		Thread t = new Thread(() -> {
+		Runnable r = () -> {
 			
 			try {
 				// wait if there is a lock on the series title
@@ -293,8 +293,8 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 			finally {
 				this.getSeriesLocks().unlock(series.getTitle());
 			}
-		});
-		t.start();
+		};
+		this.getExecutor().start(r);
 	}
 
 	private void enlistToSubtitleDownloader(Series s, int season, int episode) {

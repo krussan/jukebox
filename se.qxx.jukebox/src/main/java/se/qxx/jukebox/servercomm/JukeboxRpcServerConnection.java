@@ -44,6 +44,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.SubtitleRequestType;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IDistributor;
+import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IJukeboxRpcServerConnection;
 import se.qxx.jukebox.interfaces.IMovieIdentifier;
@@ -65,6 +66,7 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 	private ISubtitleDownloader subtitleDownloader;
 	private IMovieIdentifier movieIdentifier;
 	private IJukeboxLogger log;
+	private IExecutor executor;
 	
 	@Inject
 	public JukeboxRpcServerConnection(
@@ -74,6 +76,7 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 			ISubtitleDownloader subtitleDownloader,
 			IMovieIdentifier movieIdentifier, 
 			LoggerFactory loggerFactory,
+			IExecutor executor,
 			@Assisted("webserver") IStreamingWebServer webServer) {
 		super();
 		this.setDatabase(database);
@@ -82,6 +85,7 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 		this.setWebServer(webServer);
 		this.setSubtitleDownloader(subtitleDownloader);
 		this.setMovieIdentifier(movieIdentifier);
+		this.setExecutor(executor);
 		this.setLog(loggerFactory.create(LogType.COMM));
 	}
 	
@@ -137,6 +141,15 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 	public void setDatabase(IDatabase database) {
 		this.database = database;
 	}
+	public IExecutor getExecutor() {
+		return executor;
+	}
+
+	public void setExecutor(IExecutor executor) {
+		this.executor = executor;
+	}
+	
+	
 	@Override 
 	public void listMovies(RpcController controller,
 			JukeboxRequestListMovies request,
@@ -614,7 +627,7 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 		setPriority();
 		this.getLog().Debug("Re-identify -- EMPTY");
 
-		Thread t = new Thread(() -> {
+		Runnable r = () -> {
 			try {
 				if (request.getRequestType() == RequestType.TypeMovie) {
 					Movie m = this.getDatabase().getMovie(request.getId());
@@ -645,8 +658,8 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 			catch (Exception e) {
 				this.getLog().Error("Error occured when deleting object from database");
 			}			
-		});
-		t.start();
+		};
+		this.getExecutor().start(r);
 		
 		done.run(Empty.newBuilder().build());
 	}
@@ -663,7 +676,7 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 
 		this.getLog().Debug(String.format("Re-enlist subtitle -- %s", request.getId()));
 
-		Thread t = new Thread(() -> {
+		Runnable r = () -> {
 			try {
 				if (request.getRequestType() == RequestType.TypeMovie) {
 					Movie m = this.getDatabase().getMovie(request.getId());
@@ -678,8 +691,8 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 				Logger.log("Error occured in reenlistSubtitles", e);
 				controller.setFailed("Error occured when enlisting to subtitle downloader");
 			}
-		});
-		t.start();
+		};
+		this.getExecutor().start(r);
 		
 		done.run(Empty.newBuilder().build());
 	}
@@ -763,7 +776,7 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 
 	@Override
 	public void reenlistMetadata(RpcController controller, JukeboxRequestID request, RpcCallback<Empty> done) {
-		Thread t = new Thread(() -> {
+		Runnable r = () -> {
 			try {
 				if (request.getRequestType() == RequestType.TypeMovie) {
 					Movie m = this.getDatabase().getMovie(request.getId());
@@ -790,8 +803,8 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 				Logger.log("Error occured in reenlistSubtitles", e);
 				controller.setFailed("Error occured when enlisting to subtitle downloader");
 			}
-		});
-		t.start();		
+		};
+		this.getExecutor().start(r);		
 	}
 
 	private void updateEpisodeInfo(Series s, Season sn, Episode ep) {
@@ -819,5 +832,4 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 		this.getDatabase().forceConversion(request.getId());
 		done.run(Empty.newBuilder().build());
 	}
-	
 }

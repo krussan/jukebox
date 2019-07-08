@@ -28,6 +28,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.SubtitleQueue;
 import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IDatabase;
+import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.protodb.DBType;
@@ -51,10 +52,12 @@ public class DB implements IDatabase {
 	private IJukeboxLogger upgradeLog;
 	private IJukeboxLogger findLog;
 	private IJukeboxLogger dbLog;
+	private IExecutor executor;
 	
 	@Inject
-	public DB(ISettings settings, LoggerFactory loggerFactory) {
+	public DB(ISettings settings, IExecutor executor, LoggerFactory loggerFactory) {
 		this.setSettings(settings);
+		this.setExecutor(executor);
 		this.setDbLog(loggerFactory.create(LogType.DB));
 		this.setMainLog(loggerFactory.create(LogType.MAIN));
 		this.setUpgradeLog(loggerFactory.create(LogType.UPGRADE));
@@ -713,7 +716,7 @@ public class DB implements IDatabase {
 	 */
 	@Override
 	public void saveAsync(Series series) {
-		Thread t = new Thread(() -> {
+		Runnable r = () -> {
 			try {
 
 				ProtoDB db = getProtoDBInstance();
@@ -732,8 +735,9 @@ public class DB implements IDatabase {
 				this.getMainLog().Error("Failed to store episode to DB", e);
 			}
 
-		});
-		t.start();
+		};
+		this.getExecutor().start(r);
+		
 	}	
 
 
@@ -1923,6 +1927,14 @@ public class DB implements IDatabase {
 			
 			return null;
 		}
+	}
+
+	public IExecutor getExecutor() {
+		return executor;
+	}
+
+	public void setExecutor(IExecutor executor) {
+		this.executor = executor;
 	}
 
 }

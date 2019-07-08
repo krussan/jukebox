@@ -139,19 +139,17 @@ public class FileSystemWatcher extends JukeboxThread implements IFileSystemWatch
 
 	public void notifyCreated(FileRepresentation f) {
 		for (IFileCreatedHandler client : this.getClients()) {
-			Thread t = new Thread(() -> {
+			this.getExecutor().start(() -> {
 				client.fileCreated(f);
 			});
-			t.start();
 		}
 	}
 
 	public void notifyModified(FileRepresentation f) {
 		for (IFileCreatedHandler client : clients) {
-			Thread t = new Thread(() -> {
+			this.getExecutor().start(() -> {
 				client.fileModified(f);
 			});
-			t.start();
 		}
 	}
 

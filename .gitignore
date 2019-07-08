@@ -35,3 +35,4 @@ local.properties
 scripts/dump
 scripts/local*.sh
 api.json
+deploy.sh

@@ -25,6 +25,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IDatabase;
+import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.IImdbSettings;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IParserSettings;
@@ -39,6 +40,8 @@ public class TestSubtitleDownloader {
 	@Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 	
 	@Mock private LoggerFactory loggerFactoryMock;
+	@Mock private IExecutor executor;
+	
 	private Settings settings;
 	private IJukeboxLogger log;
 	
@@ -57,7 +60,7 @@ public class TestSubtitleDownloader {
 	@Test
 	public void testDecoupleSeries() throws IOException {
 		// Arrange
-		IDatabase db = new DB(settings, loggerFactoryMock);
+		IDatabase db = new DB(settings, executor, loggerFactoryMock);
 		List<Series> series = new ArrayList<>();
 		
 		// add two episodes to same season/series

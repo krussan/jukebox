@@ -26,7 +26,8 @@ public class Executor implements IExecutor {
 	private List<Object> runnables = new ArrayList<Object>();
 	private ExecutorService executorService = null;
 	private IJukeboxLogger log;
-	private final int THREAD_POOL_SIZE = 15;
+
+	private final int THREAD_POOL_SIZE = 50;
 
 	@Inject
 	public Executor(LoggerFactory loggerFactory) {
@@ -38,7 +39,7 @@ public class Executor implements IExecutor {
 				0L, 
 				TimeUnit.MILLISECONDS, 
 				new LinkedBlockingQueue<>(), 
-				loggerFactory);
+				loggerFactory);		
 	}
 
 	public IJukeboxLogger getLog() {
@@ -72,10 +73,31 @@ public class Executor implements IExecutor {
 
 	@Override
 	public void stop(int timeoutSeconds) throws InterruptedException {
+		this.getExecutorService().shutdown();
+		
 		endJukeboxThreads();
 
-		this.getExecutorService().shutdownNow();
-		this.getExecutorService().awaitTermination(timeoutSeconds, TimeUnit.SECONDS);
+		shutdown(timeoutSeconds);
+	}
+	
+	private void shutdown(int timeoutSeconds) {
+		ExecutorService pool = this.getExecutorService();
+		try {
+		     // Wait a while for existing tasks to terminate
+		     if (!pool.awaitTermination(timeoutSeconds, TimeUnit.SECONDS)) {
+		       pool.shutdownNow(); // Cancel currently executing tasks
+		       
+		       // Wait a while for tasks to respond to being cancelled
+		       if (!pool.awaitTermination(timeoutSeconds, TimeUnit.SECONDS))
+		           System.err.println("Pool did not terminate");
+		     }
+	   } catch (InterruptedException ie) {
+	     // (Re-)Cancel if current thread also interrupted
+	     pool.shutdownNow();
+	     // Preserve interrupt status
+	     Thread.currentThread().interrupt();
+	   }
+
 	}
 
 	private void endJukeboxThreads() {
@@ -84,6 +106,8 @@ public class Executor implements IExecutor {
 				JukeboxThread t = (JukeboxThread) o;
 				this.getLog().Info(String.format("Exeutor is ending thread %s", t.getName()));
 				t.end();
+				
+				this.getLog().Info(String.format("Nr of threads left :: %s", Thread.activeCount()));
 			}
 		}
 	}
