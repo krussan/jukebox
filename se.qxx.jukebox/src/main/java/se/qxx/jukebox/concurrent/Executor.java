@@ -6,6 +6,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
@@ -23,15 +24,23 @@ import se.qxx.jukebox.watcher.FileSystemWatcher;
 public class Executor implements IExecutor {
 
 	private List<Object> runnables = new ArrayList<Object>();
-	private ExecutorService executorService = Executors.newCachedThreadPool();
+	private ExecutorService executorService = null;
 	private IJukeboxLogger log;
-	
-	
+	private final int THREAD_POOL_SIZE = 15;
+
 	@Inject
 	public Executor(LoggerFactory loggerFactory) {
 		this.setLog(loggerFactory.create(LogType.MAIN));
+
+		executorService = new JukeboxThreadPoolExecutor(
+				THREAD_POOL_SIZE, 
+				THREAD_POOL_SIZE, 
+				0L, 
+				TimeUnit.MILLISECONDS, 
+				new LinkedBlockingQueue<>(), 
+				loggerFactory);
 	}
-	
+
 	public IJukeboxLogger getLog() {
 		return log;
 	}
@@ -47,7 +56,7 @@ public class Executor implements IExecutor {
 	@Override
 	public void start(Runnable runnable) {
 		this.getRunnables().add(runnable);
-		this.getExecutorService().submit(runnable);		
+		this.getExecutorService().execute(runnable);
 	}
 
 	@Override
@@ -55,7 +64,7 @@ public class Executor implements IExecutor {
 		this.getRunnables().add(callable);
 		return this.getExecutorService().submit(callable);
 	}
-	
+
 	@Override
 	public ExecutorService getExecutorService() {
 		return executorService;
@@ -64,7 +73,7 @@ public class Executor implements IExecutor {
 	@Override
 	public void stop(int timeoutSeconds) throws InterruptedException {
 		endJukeboxThreads();
-		
+
 		this.getExecutorService().shutdownNow();
 		this.getExecutorService().awaitTermination(timeoutSeconds, TimeUnit.SECONDS);
 	}
@@ -72,7 +81,7 @@ public class Executor implements IExecutor {
 	private void endJukeboxThreads() {
 		for (Object o : this.getRunnables()) {
 			if (o instanceof JukeboxThread) {
-				JukeboxThread t = (JukeboxThread)o;
+				JukeboxThread t = (JukeboxThread) o;
 				this.getLog().Info(String.format("Exeutor is ending thread %s", t.getName()));
 				t.end();
 			}
@@ -84,11 +93,10 @@ public class Executor implements IExecutor {
 		for (Object o : this.getRunnables()) {
 			if (o instanceof FileSystemWatcher) {
 				// end all but the configuration watcher
-				if (!StringUtils.equalsIgnoreCase(((JukeboxThread)o).getName(), "ConfigurationWatcher"))
-					((JukeboxThread)o).end();
+				if (!StringUtils.equalsIgnoreCase(((JukeboxThread) o).getName(), "ConfigurationWatcher"))
+					((JukeboxThread) o).end();
 			}
 		}
 	}
-	
-	
+
 }
