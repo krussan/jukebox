@@ -73,15 +73,12 @@ public class Executor implements IExecutor {
 
 	@Override
 	public void stop(int timeoutSeconds) throws InterruptedException {
-		this.getExecutorService().shutdown();
-		
+		// kill jukebox threads orderly
 		endJukeboxThreads();
-
-		shutdown(timeoutSeconds);
-	}
-	
-	private void shutdown(int timeoutSeconds) {
+		
 		ExecutorService pool = this.getExecutorService();
+		pool.shutdown();
+		
 		try {
 		     // Wait a while for existing tasks to terminate
 		     if (!pool.awaitTermination(timeoutSeconds, TimeUnit.SECONDS)) {
@@ -97,7 +94,6 @@ public class Executor implements IExecutor {
 	     // Preserve interrupt status
 	     Thread.currentThread().interrupt();
 	   }
-
 	}
 
 	private void endJukeboxThreads() {

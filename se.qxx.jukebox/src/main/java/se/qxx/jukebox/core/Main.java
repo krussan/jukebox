@@ -340,7 +340,7 @@ public class Main implements IMain, IFileCreatedHandler
 		consoleLog(String.format("Number of threads :: %s", Thread.activeCount()));
 		
 		try {
-			this.getExecutor().stop(30);
+			this.getExecutor().stop(20);
 
 			// stop main thread
 			consoleLog("Stopping server ...");

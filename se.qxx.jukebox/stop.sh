@@ -19,8 +19,8 @@ killhard() {
 }
 
 waitforshutdown() {
-        for x in {1..20} ; do
-            d=`expr $x \* 5`
+        for x in {1..33} ; do
+            d=`expr $x \* 3`
             prog "$d" Shutting down
 
             if [ ! -f stopper.stp ]; then

@@ -530,17 +530,18 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 
 	private Series getImdbInformation(Series series, int season, int episode) {
 		// find imdb link
-		Series s = null;
 		try {
-			s = this.getImdbFinder().Get(series, season, episode);
+			Series s = this.getImdbFinder().Get(series, season, episode);
 
 			if (!StringUtils.isEmpty(s.getImdbUrl()))
 				this.getLog().Info(String.format("IMDB link found for :: %s", series.getTitle()));
+			
+			return s;
 		} catch (IOException | NumberFormatException | ParseException e) {
 			this.getLog().Error("Error occured when finding IMDB link", e);
 		}
 
-		return s;
+		return series;
 	}
 
 	private boolean hasSubtitles(Movie m) {
