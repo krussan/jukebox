@@ -91,7 +91,7 @@ public class MediaConverter extends JukeboxThread implements IMediaConverter {
 							
 							MediaConverterResult result = triggerConverter(md, probeResult, conversionCheckResult);
 							
-							this.getLog().Info(String.format("Conversion done on %s. Status :: %s !", md.getFilepath()));
+							this.getLog().Info(String.format("Conversion done on %s. Status :: %s !", md.getFilepath(), result.getState()));
 
 							if (result.getState() == MediaConverterResult.State.Completed) {
 								saveConvertedMedia(md, result.getConvertedFilename());
