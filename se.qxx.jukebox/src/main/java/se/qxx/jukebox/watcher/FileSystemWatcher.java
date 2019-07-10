@@ -206,5 +206,10 @@ public class FileSystemWatcher extends JukeboxThread implements IFileSystemWatch
 	public Runnable getRunnable() {
 		return this;
 	}
+	
+	@Override
+	public int getJukeboxPriority() {
+		return 10;
+	}
 
 }

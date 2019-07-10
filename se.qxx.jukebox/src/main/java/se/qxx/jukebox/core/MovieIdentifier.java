@@ -274,10 +274,11 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 
 	private void forkWaitForOtherSeriesObjects(Media newMedia, Series series, int season, int episode) {
 		Runnable r = () -> {
+			final String lockString = series.getTitle();
 			
 			try {
 				// wait if there is a lock on the series title
-				this.getSeriesLocks().lock(series.getTitle());
+				this.getSeriesLocks().lock(lockString);
 				
 				Series dbSeries = this.getDatabase().findSeries(series.getTitle());
 		
@@ -291,7 +292,7 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 				}				
 			}
 			finally {
-				this.getSeriesLocks().unlock(series.getTitle());
+				this.getSeriesLocks().unlock(lockString);
 			}
 		};
 		this.getExecutor().start(r);
@@ -313,7 +314,7 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 		// verify if dbSeries have the episode.
 		// if it does then exit
 		if (checkSeries(dbSeries, season, episode)) {
-			this.getLog().Debug("MovieIdentifier :: Episode already exist in this.getDatabase(). Exiting ... ");
+			this.getLog().Debug("MovieIdentifier :: Episode already exist in DB. Exiting ... ");
 		} else {
 			Series mergedSeries = mergeSeries(dbSeries, series, season, episode);
 

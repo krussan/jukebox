@@ -5,6 +5,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -48,7 +49,7 @@ public class JukeboxThreadPoolExecutor extends ThreadPoolExecutor {
                 Thread.currentThread().interrupt();
             }
         }
-        if (t != null) {
+        if (t != null && !(t instanceof RejectedExecutionException)) {
             // Exception occurred
         	this.getLog().Error("Uncaught exception is detected! " + t
                     + " st: " + Arrays.toString(t.getStackTrace()));

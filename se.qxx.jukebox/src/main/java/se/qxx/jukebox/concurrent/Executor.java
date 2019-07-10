@@ -1,12 +1,15 @@
 package se.qxx.jukebox.concurrent;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
@@ -18,6 +21,7 @@ import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
+import se.qxx.jukebox.interfaces.IStoppableRunnable;
 import se.qxx.jukebox.watcher.FileSystemWatcher;
 
 @Singleton
@@ -33,12 +37,29 @@ public class Executor implements IExecutor {
 	public Executor(LoggerFactory loggerFactory) {
 		this.setLog(loggerFactory.create(LogType.MAIN));
 
+		BlockingQueue<Runnable> queue =
+			new PriorityBlockingQueue<>(1, new Comparator<Runnable>() {
+
+				@Override
+				public int compare(Runnable r1, Runnable r2) {
+					if (r1 instanceof JukeboxThread && r2 instanceof JukeboxThread) {
+						return Integer.compare(
+								((JukeboxThread)r1).getJukeboxPriority(),
+								((JukeboxThread)r2).getJukeboxPriority());
+					}
+
+					// equal if ordinary runnables
+					return 0;
+				}
+				
+			});
+		
 		executorService = new JukeboxThreadPoolExecutor(
 				THREAD_POOL_SIZE, 
 				THREAD_POOL_SIZE, 
 				0L, 
-				TimeUnit.MILLISECONDS, 
-				new LinkedBlockingQueue<>(), 
+				TimeUnit.MILLISECONDS,
+				queue,
 				loggerFactory);		
 	}
 
@@ -77,6 +98,8 @@ public class Executor implements IExecutor {
 		endJukeboxThreads();
 		
 		ExecutorService pool = this.getExecutorService();
+		
+		this.getLog().Info("Main threads ended. Waiting for executor shutdown ...");
 		pool.shutdown();
 		
 		try {
@@ -86,7 +109,8 @@ public class Executor implements IExecutor {
 		       
 		       // Wait a while for tasks to respond to being cancelled
 		       if (!pool.awaitTermination(timeoutSeconds, TimeUnit.SECONDS))
-		           System.err.println("Pool did not terminate");
+		           this.getLog().Error("Pool did not terminate");
+		       
 		     }
 	   } catch (InterruptedException ie) {
 	     // (Re-)Cancel if current thread also interrupted
@@ -102,8 +126,9 @@ public class Executor implements IExecutor {
 				JukeboxThread t = (JukeboxThread) o;
 				this.getLog().Info(String.format("Exeutor is ending thread %s", t.getName()));
 				t.end();
-				
-				this.getLog().Info(String.format("Nr of threads left :: %s", Thread.activeCount()));
+			}
+			else if (o instanceof JukeboxRunnable) {
+				((JukeboxRunnable)o).stop();
 			}
 		}
 	}

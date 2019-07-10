@@ -48,12 +48,15 @@ public class ConvertedFile {
 		File f = new File(this.getFullFilepath());
 		return f.exists();
 	}
+	
+	public boolean isForcedOrFailed() {
+		return this.getMedia().getConverterState() == MediaConverterState.Forced
+				|| this.getMedia().getConverterState() == MediaConverterState.Failed;
+	}
 
-	public boolean convertedFileExistOrForced() {
+	public boolean convertedFileExists() {
 		File f = new File(this.getConvertedFullFilepath());
 		
-		return f.exists() && 
-				this.getMedia().getConverterState() != MediaConverterState.Forced && 
-				this.getMedia().getConverterState() != MediaConverterState.Failed;
+		return f.exists();
 	}
 }

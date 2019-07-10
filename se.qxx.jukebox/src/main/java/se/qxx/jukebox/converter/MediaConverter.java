@@ -79,7 +79,7 @@ public class MediaConverter extends JukeboxThread implements IMediaConverter {
 				if (md != null) {
 					ConvertedFile convertedFile = new ConvertedFile(md);
 					
-					if (convertedFile.convertedFileExistOrForced()) {
+					if (convertedFile.convertedFileExists() && !convertedFile.isForcedOrFailed()) {
 						this.getLog().Info(String.format("Conversion already exist on :: %s", convertedFile.getConvertedFilename()));
 					}
 					else if (convertedFile.sourceFileExist()) {

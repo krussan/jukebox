@@ -27,6 +27,7 @@ import com.google.protobuf.ByteString;
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.NanoHTTPD.Response.Status;
 import freemarker.template.TemplateException;
+import se.qxx.jukebox.concurrent.JukeboxRunnable;
 import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
@@ -39,13 +40,14 @@ import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.ISettings;
+import se.qxx.jukebox.interfaces.IStoppableRunnable;
 import se.qxx.jukebox.interfaces.IStreamingWebServer;
 import se.qxx.jukebox.interfaces.ISubtitleFileWriter;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.WebServer.MimeTypeMap.Extension;
 import se.qxx.jukebox.tools.Util;
 import se.qxx.protodb.model.CaseInsensitiveMap;
 
-public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer {
+public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer, IStoppableRunnable {
 
 	private IDatabase database;
 	private IJukeboxLogger log;
@@ -632,7 +634,7 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 
 	@Override
 	public Runnable getRunnable() {
-		return this.createServerRunnable(SOCKET_READ_TIMEOUT);
+		return new JukeboxRunnable(this.createServerRunnable(SOCKET_READ_TIMEOUT), this);
 	}
 
 	@Override
@@ -692,4 +694,10 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 	public String getRegisteredFile(String streamingFile) {
 		return streamingMap.get(streamingFile);
 	}
+
+	@Override
+	public void stop() {
+		super.stop();
+	}
+	
 }

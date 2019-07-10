@@ -3,6 +3,7 @@ package se.qxx.jukebox.core;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import com.google.inject.Inject;
 
@@ -227,17 +228,17 @@ public class Main implements IMain, IFileCreatedHandler
 			
 			this.getWebServer().initializeMappings(this.getSettings());
 			
+			setupConfigurationListener();
 			startupThreads();
 			
 			this.setIsRunning(true);;
-			setupConfigurationListener();
 			
 			// start by acquiring the semaphore
 			s.acquire();
 
 			while (this.getIsRunning()) {
 				if (this.getArguments().isWatcherEnabled()) {
-					consoleLog("Starting up watcher thred");
+					consoleLog("Starting up watcher thread");
 					setupCatalogs();
 				}
 
@@ -251,8 +252,23 @@ public class Main implements IMain, IFileCreatedHandler
 			this.getLog().Error("An error occured on main thread::", e);
 		}
 		
+		
+		logAllThreads();
 		this.getLog().Info("Shutdown completed!");
 		cleanupStopperFile();
+	}
+	
+	private void logAllThreads() {
+		this.getLog().Debug("-------------- Logging all threads on exit ----------------");
+		Set<Thread> threads = Thread.getAllStackTraces().keySet();
+		 
+		for (Thread t : threads) {
+		    String name = t.getName();
+		    Thread.State state = t.getState();
+		    int priority = t.getPriority();
+		    String type = t.isDaemon() ? "Daemon" : "Normal";
+		    this.getLog().Debug(String.format("%-20s \t %s \t %d \t %s\n", name, state, priority, type));
+		}
 	}
 
 	private void setupFactoryInstances() {
@@ -340,7 +356,8 @@ public class Main implements IMain, IFileCreatedHandler
 		consoleLog(String.format("Number of threads :: %s", Thread.activeCount()));
 		
 		try {
-			this.getExecutor().stop(20);
+			
+			this.getExecutor().stop(10);
 
 			// stop main thread
 			consoleLog("Stopping server ...");
