@@ -81,6 +81,7 @@ public class MediaConverter extends JukeboxThread implements IMediaConverter {
 					
 					if (convertedFile.convertedFileExists() && !convertedFile.isForcedOrFailed()) {
 						this.getLog().Info(String.format("Conversion already exist on :: %s", convertedFile.getConvertedFilename()));
+						saveConvertedMedia(md, MediaConverterState.Completed);
 					}
 					else if (convertedFile.sourceFileExist()) {
 						FFmpegProbeResult probeResult = getProbeResult(convertedFile.getFullFilepath());

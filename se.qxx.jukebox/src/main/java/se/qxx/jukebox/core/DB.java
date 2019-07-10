@@ -273,7 +273,7 @@ public class DB implements IDatabase {
 	public Movie findMovie(String identifiedTitle) {
 		String searchString = replaceSearchString(identifiedTitle);
 		
-		this.getFindLog().Debug(String.format("DB :: Series search string :: %s", searchString));
+		this.getFindLog().Debug(String.format("DB :: Movie search string :: %s", searchString));
 		 
 		try {
 			ProtoDB db = getProtoDBInstance();
@@ -314,7 +314,7 @@ public class DB implements IDatabase {
 	public Series findSeries(String identifiedTitle) {
 		String searchString = replaceSearchString(identifiedTitle) + "%";
 		
-		this.getMainLog().Debug(String.format("DB :: Series search string :: %s", searchString));
+		this.getFindLog().Debug(String.format("DB :: Series search string :: %s", searchString));
 		 
 		try {
 			ProtoDB db = getProtoDBInstance();

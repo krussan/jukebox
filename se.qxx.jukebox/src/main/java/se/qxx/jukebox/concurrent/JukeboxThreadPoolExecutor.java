@@ -54,10 +54,14 @@ public class JukeboxThreadPoolExecutor extends ThreadPoolExecutor {
         	this.getLog().Error("Uncaught exception is detected! " + t
                     + " st: " + Arrays.toString(t.getStackTrace()));
 
-        	this.getLog().Info("Restarting thread ....");
-        	
-            // Restart the runnable again
-            execute(r);
+        	// restart if this is a JukeboxThread
+        	if (r instanceof JukeboxThread) {
+        		this.getLog().Info(
+    				String.format("Restarting thread [%s]....", 
+    						((JukeboxThread)r).getName()));
+
+        		execute(r);
+        	}
         }
         // ... Perform cleanup actions
 }
