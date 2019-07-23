@@ -3,6 +3,7 @@ package se.qxx.jukebox.core;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import com.google.inject.Inject;
 
@@ -219,7 +220,7 @@ public class Main implements IMain, IFileCreatedHandler
 		try {
 			cleanupStopperFile();			
 			
-			System.out.println("Initializing settings");
+			consoleLog("Initializing settings");
 			this.getSettings().initialize();
 			
 			// Create instances of tcp listener and web server
@@ -227,17 +228,17 @@ public class Main implements IMain, IFileCreatedHandler
 			
 			this.getWebServer().initializeMappings(this.getSettings());
 			
+			setupConfigurationListener();
 			startupThreads();
 			
 			this.setIsRunning(true);;
-			setupConfigurationListener();
 			
 			// start by acquiring the semaphore
 			s.acquire();
 
 			while (this.getIsRunning()) {
 				if (this.getArguments().isWatcherEnabled()) {
-					System.out.println("Starting up watcher thred");
+					consoleLog("Starting up watcher thread");
 					setupCatalogs();
 				}
 
@@ -251,8 +252,23 @@ public class Main implements IMain, IFileCreatedHandler
 			this.getLog().Error("An error occured on main thread::", e);
 		}
 		
+		
+		logAllThreads();
 		this.getLog().Info("Shutdown completed!");
 		cleanupStopperFile();
+	}
+	
+	private void logAllThreads() {
+		this.getLog().Debug("-------------- Logging all threads on exit ----------------");
+		Set<Thread> threads = Thread.getAllStackTraces().keySet();
+		 
+		for (Thread t : threads) {
+		    String name = t.getName();
+		    Thread.State state = t.getState();
+		    int priority = t.getPriority();
+		    String type = t.isDaemon() ? "Daemon" : "Normal";
+		    this.getLog().Debug(String.format("%-20s \t %s \t %d \t %s\n", name, state, priority, type));
+		}
 	}
 
 	private void setupFactoryInstances() {
@@ -265,49 +281,55 @@ public class Main implements IMain, IFileCreatedHandler
 					this.getWebServer(),
 					this.getSettings().getSettings().getTcpListener().getPort().getValue()));
 	}
+	
+	private void consoleLog(String message) {
+		System.out.println(message);
+		this.getLog().Info(message);
+	}
 
 	private void startupThreads() {
-		System.out.println("Starting threads ...");
+		consoleLog("Starting threads ...");
 		if (this.getArguments().isTcpListenerEnabled()) {
-			System.out.println("Starting TCP listener");
+			consoleLog("Starting TCP listener");
+
 			this.getTcpListener().initialize();
 			this.getExecutor().start(this.getTcpListener().getRunnable());
 		}
 		
 		if (this.getArguments().isSubtitleDownloaderEnabled()) {
-			System.out.println("Starting subtitle downloader");
+			consoleLog("Starting subtitle downloader");
 			this.getExecutor().start(this.getSubtitleDownloader().getRunnable());
 		}
 		
 		if (this.getArguments().isWebServerEnabled()) {
-			System.out.println("Starting web server");
+			consoleLog("Starting web server");
 			this.getWebServer().initialize();
 			this.getExecutor().start(this.getWebServer().getRunnable());
 		}
 		
 		if (this.getArguments().isWatcherEnabled()) {
-			System.out.println("Starting watcher thread");
+			consoleLog("Starting watcher thread");
 			this.getExecutor().start(this.getMovieIdentifier().getRunnable());
 		}
 		
 		if (this.getArguments().isCleanerEnabled()) {
-			System.out.println("Starting cleaner thread");
+			consoleLog("Starting cleaner thread");
 			this.getExecutor().start(this.getCleaner().getRunnable());				
 		}
 		
 		if (this.getArguments().isDownloadCheckerEnabled()) {
-			System.out.println("Starting download checker");
+			consoleLog("Starting download checker");
 			this.getExecutor().start(this.getDownloadChecker().getRunnable());
 		}
 		
 		if (this.getArguments().isMediaConverterEnabled()) {
-			System.out.println("Starting media converter");
+			consoleLog("Starting media converter");
 			this.getExecutor().start(this.getMediaConverter().getRunnable());
 		}
 	}
 
 	private void setupConfigurationListener() {
-		System.out.println("Setting watcher on configuration file");
+		consoleLog("Setting watcher on configuration file");
 		
 		ExtensionFileFilter filter = new ExtensionFileFilter();
 		filter.addExtension("xml");
@@ -330,13 +352,15 @@ public class Main implements IMain, IFileCreatedHandler
 	}
 
 	public void stop() {
-		this.getLog().Info("Server is shutting down ...");
-
+		consoleLog("Server is shutting down ...");		
+		consoleLog(String.format("Number of threads :: %s", Thread.activeCount()));
+		
 		try {
-			this.getExecutor().stop(30);
+			
+			this.getExecutor().stop(10);
 
 			// stop main thread
-			System.out.println("Stopping server ...");
+			consoleLog("Stopping server ...");
 			this.setIsRunning(false);
 			s.release();
 

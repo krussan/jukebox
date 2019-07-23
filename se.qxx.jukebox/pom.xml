@@ -4,7 +4,7 @@
 
 	<groupId>se.qxx.jukebox</groupId>
 	<artifactId>jukebox</artifactId>
-	<version>0.40.2</version>
+	<version>0.41</version>
 	<packaging>jar</packaging>
 
 	<name>jukebox</name>
@@ -191,7 +191,14 @@
             <artifactId>jakarta.activation</artifactId>
             <version>1.2.1</version>
             <scope>runtime</scope>
-        </dependency>     		
+        </dependency>
+        
+        <!-- needed for compatibility issues with ffmpeg wrapper -->
+		<dependency>
+        	<groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>20.0</version>
+		</dependency>             		
 	</dependencies>
 
 	<build>

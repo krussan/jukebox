@@ -2,6 +2,8 @@ package se.qxx.jukebox.converter;
 
 import java.io.File;
 
+import org.apache.commons.io.IOUtils;
+
 import se.qxx.jukebox.tools.Util;
 
 public class MediaConverterResult {
@@ -11,30 +13,10 @@ public class MediaConverterResult {
 		Error,
 		Aborted
 	}
-	
-	private String filepath;
-	private String filename;
-	private String convertedFilename;
+
+	private ConvertedFile convertedFile;
 	private State state;
 
-	public String getFilepath() {
-		return filepath;
-	}
-	public void setFilepath(String filepath) {
-		this.filepath = filepath;
-	}
-	public String getFilename() {
-		return filename;
-	}
-	public void setFilename(String filename) {
-		this.filename = filename;
-	}
-	public String getConvertedFilename() {
-		return convertedFilename;
-	}
-	public void setConvertedFilename(String convertedFilename) {
-		this.convertedFilename = convertedFilename;
-	}
 	public State getState() {
 		return state;
 	}
@@ -42,17 +24,22 @@ public class MediaConverterResult {
 		this.state = state;
 	}
 	
-	public MediaConverterResult(String filePath, String filename, String convertedFilename, State resultState) {
-		this.setFilepath(filePath);
-		this.setFilename(filename);
-		this.setConvertedFilename(convertedFilename);
+	public ConvertedFile getConvertedFile() {
+		return convertedFile;
+	}
+	public void setConvertedFile(ConvertedFile convertedFile) {
+		this.convertedFile = convertedFile;
+	}
+	
+	public MediaConverterResult(ConvertedFile convertedFile, State resultState) {
+		this.setConvertedFile(convertedFile);
 		this.setState(resultState);
 	}
 	
 	public MediaConverterResult cleanupOnError() {
 		if (this.getState() == MediaConverterResult.State.Aborted || 
 				this.getState() == MediaConverterResult.State.Error) {
-			deleteFile(Util.getFullFilePath(this.getFilepath(), this.getFilename()));
+			deleteFile(this.getConvertedFile().getConvertedFullFilepath());
 		}
 		
 		return this;

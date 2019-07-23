@@ -243,13 +243,13 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 		
 		this.getLog().Debug("MovieIdentifier :: Movie not found -- adding new");
 		
-		Thread t = new Thread(() -> {
+		Runnable r = () -> {
 			Movie movie = getMovieInfo(mos.getMovie(), newMedia);
 			movie = this.getDatabase().save(movie);
 			if (this.getArguments().isSubtitleDownloaderEnabled())
 				this.getSubtitleDownloader().addMovie(movie);			
-		});
-		t.start();
+		};
+		this.getExecutor().start(r);
 	}
 
 	private void matchSeries(MovieOrSeries mos, Media newMedia) {
@@ -273,11 +273,12 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 	}
 
 	private void forkWaitForOtherSeriesObjects(Media newMedia, Series series, int season, int episode) {
-		Thread t = new Thread(() -> {
+		Runnable r = () -> {
+			final String lockString = series.getTitle();
 			
 			try {
 				// wait if there is a lock on the series title
-				this.getSeriesLocks().lock(series.getTitle());
+				this.getSeriesLocks().lock(lockString);
 				
 				Series dbSeries = this.getDatabase().findSeries(series.getTitle());
 		
@@ -291,10 +292,10 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 				}				
 			}
 			finally {
-				this.getSeriesLocks().unlock(series.getTitle());
+				this.getSeriesLocks().unlock(lockString);
 			}
-		});
-		t.start();
+		};
+		this.getExecutor().start(r);
 	}
 
 	private void enlistToSubtitleDownloader(Series s, int season, int episode) {
@@ -313,7 +314,7 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 		// verify if dbSeries have the episode.
 		// if it does then exit
 		if (checkSeries(dbSeries, season, episode)) {
-			this.getLog().Debug("MovieIdentifier :: Episode already exist in this.getDatabase(). Exiting ... ");
+			this.getLog().Debug("MovieIdentifier :: Episode already exist in DB. Exiting ... ");
 		} else {
 			Series mergedSeries = mergeSeries(dbSeries, series, season, episode);
 
@@ -530,17 +531,18 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 
 	private Series getImdbInformation(Series series, int season, int episode) {
 		// find imdb link
-		Series s = null;
 		try {
-			s = this.getImdbFinder().Get(series, season, episode);
+			Series s = this.getImdbFinder().Get(series, season, episode);
 
 			if (!StringUtils.isEmpty(s.getImdbUrl()))
 				this.getLog().Info(String.format("IMDB link found for :: %s", series.getTitle()));
+			
+			return s;
 		} catch (IOException | NumberFormatException | ParseException e) {
 			this.getLog().Error("Error occured when finding IMDB link", e);
 		}
 
-		return s;
+		return series;
 	}
 
 	private boolean hasSubtitles(Movie m) {

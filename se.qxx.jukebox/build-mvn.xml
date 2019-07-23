@@ -12,7 +12,7 @@ fi
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH]]>
 </echo>
 
-	    <echo file="${script.file}" message="java -Xmx1024m -${run.type} 
+	    <echo file="${script.file}" message="java -Xmx1024m -Djava.util.logging.config.file=logging.properties -${run.type} 
 ${jarFile} ${script.class} ${1+&quot;$@&quot;} &amp;${line.separator}" 
 	        append="true" />		
 
@@ -44,6 +44,7 @@ ${jarFile} ${script.class} ${1+&quot;$@&quot;} &amp;${line.separator}"
 		<fixcrlf srcdir="${build.dir}" includes="**/*.sh" eol="lf" eof="remove" />
 						
 		<copy file="${base.dir}/JukeboxSettings.xml" todir="${build.dir}" />
+		<copy file="${base.dir}/logging.properties" todir="${build.dir}" />
 		<copy file="${base.dir}/imdb.xml" todir="${build.dir}" />
 		<copy file="${base.dir}/parser.xml" todir="${build.dir}" />
 		<copy file="${base.dir}/stop.sh" todir="${build.dir}" />

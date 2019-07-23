@@ -6,16 +6,18 @@ import com.googlecode.protobuf.socketrpc.RpcServer;
 import com.googlecode.protobuf.socketrpc.ServerRpcConnectionFactory;
 import com.googlecode.protobuf.socketrpc.SocketRpcConnectionFactories;
 
+import se.qxx.jukebox.concurrent.JukeboxRunnable;
 import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxService;
 import se.qxx.jukebox.factories.JukeboxRpcServerFactory;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
+import se.qxx.jukebox.interfaces.IStoppableRunnable;
 import se.qxx.jukebox.interfaces.IStreamingWebServer;
 import se.qxx.jukebox.interfaces.ITcpListener;
 
-public class TcpListener implements ITcpListener {
+public class TcpListener implements ITcpListener, IStoppableRunnable {
 
 	private RpcServer server;
 	private JukeboxRpcServerConnection serverConnection;
@@ -113,6 +115,12 @@ public class TcpListener implements ITcpListener {
 	
 	@Override
 	public Runnable getRunnable() {
-		return this.getServer().getServerRunnable();
+		return new JukeboxRunnable(this.getServer().getServerRunnable(), this);
+	}
+
+	@Override
+	public void stop() {
+		if (this.getServer() != null)
+			this.getServer().shutDown();
 	}
 }
