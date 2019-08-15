@@ -142,7 +142,7 @@ public class DownloadChecker extends JukeboxThread implements IDownloadChecker {
 		this.getLog().Debug(String.format("-- STATE -- Setting download state to DONE on :: %s", filename));
 		fs.setState(FileChangedState.DONE);
 
-		Media md = this.getDatabase().getMediaByFilename(fs.getName());
+		Media md = this.getDatabase().getMediaByFilename(fs.getName(), false);
 
 		// should never be null, but anyway
 		if (md != null) {
@@ -156,8 +156,11 @@ public class DownloadChecker extends JukeboxThread implements IDownloadChecker {
 	public void setMediaComplete(Media md) {
 		MediaMetadata meta = this.getMetaDataHelper().getMediaMetadata(md);
 
-		Media newMedia = Media.newBuilder(md).setDownloadComplete(true).setConverterState(MediaConverterState.Queued)
-				.setMetaDuration(meta.getDurationSeconds()).setMetaFramerate(meta.getFramerate()).build();
+		Media newMedia = Media.newBuilder(md)
+				.setDownloadComplete(true)
+				.setConverterState(MediaConverterState.Queued)
+				.setMetaDuration(meta.getDurationSeconds())
+				.setMetaFramerate(meta.getFramerate()).build();
 
 		this.getDatabase().save(newMedia);
 	}
@@ -166,7 +169,7 @@ public class DownloadChecker extends JukeboxThread implements IDownloadChecker {
 		this.getLog().Debug(String.format("-- STATE -- %s -> CHANGED on :: %s", fs.getState(), filename));
 		fs.setState(FileChangedState.CHANGED);
 
-		Media md = this.getDatabase().getMediaByFilename(fs.getName());
+		Media md = this.getDatabase().getMediaByFilename(fs.getName(), true);
 
 		// should never be null, but anyway
 		if (md != null) {
@@ -273,7 +276,7 @@ public class DownloadChecker extends JukeboxThread implements IDownloadChecker {
 	private Media getSynchronizedMedia(FileRepresentationState fs) {
 		lock.lock();
 		try {
-			return this.getDatabase().getMediaByFilename(fs.getName());
+			return this.getDatabase().getMediaByFilename(fs.getName(), true);
 		} finally {
 			lock.unlock();
 		}

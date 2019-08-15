@@ -126,7 +126,7 @@ public interface IDatabase {
 
 	Movie getMovieByMediaID(int mediaID);
 
-	Media getMediaByFilename(String filename);
+	Media getMediaByFilename(String filename, boolean excludeSubs);
 	Media getMediaByStartOfFilename(String startOfFilename);
 
 	Media getMediaById(int mediaId);

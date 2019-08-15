@@ -1545,21 +1545,25 @@ public class DB implements IDatabase {
 	 * @see se.qxx.jukebox.IDatabase#getMediaByFilename(java.lang.String)
 	 */
 	@Override
-	public Media getMediaByFilename(String filename) {
+	public Media getMediaByFilename(String filename, boolean excludeSubs) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 
 			try {
 				if (db.getDBType() == DBType.Sqlite) lock.lock();
 
+				SearchOptions<Media> options =
+					SearchOptions.newBuilder(JukeboxDomain.Media.getDefaultInstance())
+						.addFieldName("filename")
+						.addSearchArgument(filename)
+						.addOperator(ProtoDBSearchOperator.Equals)
+						.setShallow(false);
+				
+				if (excludeSubs)
+					options.addExcludedObject("subs");
+						
 				List<Media> result =
-						db.search(
-							SearchOptions.newBuilder(JukeboxDomain.Media.getDefaultInstance())
-							.addFieldName("filename")
-							.addSearchArgument(filename)
-							.addOperator(ProtoDBSearchOperator.Equals)
-							.setShallow(false)
-							.addExcludedObject("subs"));
+						db.search(options);
 					
 				if (result.size() > 0)
 					return result.get(0);
