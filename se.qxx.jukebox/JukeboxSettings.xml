@@ -165,6 +165,7 @@
   		<codec tag="wav" />
   		<codec tag="flac" />
   		<codec tag="opus" />
+  		<codec tag="eac3" />
   	</acceptedAudioCodecs>
   </converter>
 </JukeboxListenerSettings>
