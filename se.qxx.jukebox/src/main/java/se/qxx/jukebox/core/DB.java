@@ -1552,18 +1552,17 @@ public class DB implements IDatabase {
 			try {
 				if (db.getDBType() == DBType.Sqlite) lock.lock();
 
-				SearchOptions<Media> options =
+				SearchOptions<Media> options = 
 					SearchOptions.newBuilder(JukeboxDomain.Media.getDefaultInstance())
 						.addFieldName("filename")
 						.addSearchArgument(filename)
 						.addOperator(ProtoDBSearchOperator.Equals)
 						.setShallow(false);
-				
+						
 				if (excludeSubs)
 					options.addExcludedObject("subs");
-						
-				List<Media> result =
-						db.search(options);
+				
+				List<Media> result = db.search(options);
 					
 				if (result.size() > 0)
 					return result.get(0);
