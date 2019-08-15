@@ -75,13 +75,15 @@ public class ChromeCastConfiguration {
 
     public static TextTrackStyle getTextStyle() {
         TextTrackStyle style = new TextTrackStyle();
-        style.setBackgroundColor(Color.parseColor("#00FFFFFF"));
+
+        style.setBackgroundColor(Color.parseColor("#00000000"));
         style.setFontGenericFamily(TextTrackStyle.FONT_FAMILY_SANS_SERIF);
         style.setFontScale(0.9f);
-        style.setForegroundColor(Color.parseColor("#FFFFF000"));
-        style.setEdgeType(TextTrackStyle.EDGE_TYPE_OUTLINE);
+        style.setForegroundColor(Color.parseColor("#FFEFEFEF"));
+        //style.setEdgeType(TextTrackStyle.EDGE_TYPE_OUTLINE);
         style.setEdgeColor(Color.rgb(0,0,0));
-        style.setFontStyle(TextTrackStyle.FONT_STYLE_ITALIC);
+        //style.setFontStyle(TextTrackStyle.FONT_STYLE_ITALIC);
+
 
         return style;
     }
