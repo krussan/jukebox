@@ -37,8 +37,8 @@ import se.qxx.jukebox.interfaces.ISubFileUtilHelper;
 import se.qxx.jukebox.interfaces.ISubFinder;
 import se.qxx.jukebox.interfaces.ISubtitleDownloader;
 import se.qxx.jukebox.interfaces.IUnpacker;
+import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder;
-import se.qxx.jukebox.tools.Util;
 
 @Singleton
 public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownloader {
@@ -52,6 +52,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	private IMkvSubtitleReader mkvSubtitleReader;
 	private IUnpacker unpacker;
 	private ISubFileUtilHelper fileUtilHelper;
+	private IUtils utils;
 	
 	@Inject
 	public SubtitleDownloader(IDatabase database, 
@@ -62,13 +63,14 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 			IMkvSubtitleReader mkvSubtitleReader,
 			LoggerFactory loggerFactory,
 			IUnpacker unpacker,
-			ISubFileUtilHelper fileUtilHelper) {
+			ISubFileUtilHelper fileUtilHelper,
+			IUtils utils) {
 		super(
 			"Subtitle", 
 			settings.getSettings().getSubFinders().getThreadWaitSeconds() * 1000,
 			loggerFactory.create(LogType.SUBS),
 			executor);
-		
+		this.setUtils(utils);
 		this.setFileUtilHelper(fileUtilHelper);
 		this.setUnpacker(unpacker);
 		this.setMkvSubtitleReader(mkvSubtitleReader);
@@ -76,6 +78,14 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 		this.setSettings(settings);
 		this.setMovieBuilderFactory(movieBuilderFactory);
 		this.setHelper(helper);
+	}
+
+	public IUtils getUtils() {
+		return utils;
+	}
+
+	public void setUtils(IUtils utils) {
+		this.utils = utils;
 	}
 
 	public ISubFileUtilHelper getFileUtilHelper() {
@@ -159,7 +169,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 				ISubFileDownloaderHelper[] args = new ISubFileDownloaderHelper[] { this.getHelper() };
 				
 				getSubFinders().add(
-					(ISubFinder)Util.getInstance(className, new Class[] {ISubFileDownloaderHelper.class}, args));
+					(ISubFinder)this.getUtils().getInstance(className, new Class[] {ISubFileDownloaderHelper.class}, args));
 				
 			} catch (Exception e) {
 				this.getLog().Error(String.format("Error when loading subfinder :: %s", className), e);
@@ -383,12 +393,12 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	 * @return
 	 */
 	private boolean checkMatroskaFile(Media md) {
-		if (Util.isMatroskaFile(md)) {
+		if (this.getUtils().isMatroskaFile(md)) {
 			if (md.getDownloadComplete()) {
 				this.getLog().Debug(String.format("Checking mkv container for media %s",  md.getFilename()));
 				
 				List<Subtitle> subs = 
-					this.getMkvSubtitleReader().extractSubs(Util.getFullFilePath(md));
+					this.getMkvSubtitleReader().extractSubs(this.getUtils().getFullFilePath(md));
 				
 				if (subs == null || subs.size() == 0)
 					return false;

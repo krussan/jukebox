@@ -43,8 +43,8 @@ import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.IStoppableRunnable;
 import se.qxx.jukebox.interfaces.IStreamingWebServer;
 import se.qxx.jukebox.interfaces.ISubtitleFileWriter;
+import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.WebServer.MimeTypeMap.Extension;
-import se.qxx.jukebox.tools.Util;
 import se.qxx.protodb.model.CaseInsensitiveMap;
 
 public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer, IStoppableRunnable {
@@ -71,15 +71,18 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 	 * 
 	 */
 	private String ipAddress;
-	private ISubtitleFileWriter subWriter; 
+	private ISubtitleFileWriter subWriter;
+	private IUtils utils; 
 	
 	@Inject
 	public StreamingWebServer(
 			IDatabase database, 
 			LoggerFactory loggerFactory,
 			ISubtitleFileWriter subWriter,
+			IUtils utils,
 			@Assisted("webserverport") Integer port) {
 		super(port);
+		this.setUtils(utils);
 		this.setSubWriter(subWriter);
 		this.setDatabase(database);
 		this.setLog(loggerFactory.create(LogType.WEBSERVER));
@@ -87,6 +90,14 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 		streamingMap = new ConcurrentHashMap<String, String>();
 		
 		setIpAddress();
+	}
+
+	public IUtils getUtils() {
+		return utils;
+	}
+
+	public void setUtils(IUtils utils) {
+		this.utils = utils;
 	}
 
 	public ISubtitleFileWriter getSubWriter() {
@@ -114,7 +125,7 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 	}
 
 	private void setIpAddress() {
-		this.setIpAddress(Util.findIpAddress());
+		this.setIpAddress(this.getUtils().findIpAddress());
 		this.getLog().Info(String.format("Setting Ip Address :: %s", this.getIpAddress()));
 	}
 	
@@ -173,10 +184,10 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 		String filename;
 		
 		if (md.getConverterState() == MediaConverterState.Completed && !StringUtils.isEmpty(md.getConvertedFileName())) {
-			filename = Util.getConvertedFullFilepath(md);
+			filename = this.getUtils().getConvertedFullFilepath(md);
 		}
 		else {
-			filename = Util.getFullFilePath(md);
+			filename = this.getUtils().getFullFilePath(md);
 		}
 		
 		return filename;

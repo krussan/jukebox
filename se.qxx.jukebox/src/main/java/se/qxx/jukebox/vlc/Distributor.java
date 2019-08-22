@@ -15,9 +15,11 @@ import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.domain.Sorter;
 import se.qxx.jukebox.factories.LoggerFactory;
+import se.qxx.jukebox.factories.VLCConnectionFactory;
 import se.qxx.jukebox.interfaces.IDistributor;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.ISettings;
+import se.qxx.jukebox.interfaces.IVLCConnection;
 import se.qxx.jukebox.interfaces.IWakeOnLan;
 import se.qxx.jukebox.servercomm.HibernatorClientConnection;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
@@ -28,20 +30,31 @@ import se.qxx.jukebox.settings.JukeboxListenerSettings.Players.Server;
 public class Distributor implements IDistributor {
 	private ReentrantLock lock = new ReentrantLock();
 	
-	private Hashtable<String, VLCConnection> connectors;
+	private Hashtable<String, IVLCConnection> connectors;
 
 	private ISettings settings;
 	private IJukeboxLogger log;
 	private IWakeOnLan wakeOnLan;
+
+	private VLCConnectionFactory vlcConnectionFactory;
 	
 	@Inject
-	public Distributor(ISettings settings, LoggerFactory loggerFactory, IWakeOnLan wakeOnLan) {
+	public Distributor(ISettings settings, LoggerFactory loggerFactory, IWakeOnLan wakeOnLan, VLCConnectionFactory vlcConnectionFactory) {
+		this.setVlcConnectionFactory(vlcConnectionFactory);
 		this.setWakeOnLan(wakeOnLan);
-		this.connectors = new Hashtable<String, VLCConnection>();
+		this.connectors = new Hashtable<String, IVLCConnection>();
 		this.setSettings(settings);
 		this.setLog(loggerFactory.create(LogType.COMM));
 	}
 	
+	public VLCConnectionFactory getVlcConnectionFactory() {
+		return vlcConnectionFactory;
+	}
+
+	public void setVlcConnectionFactory(VLCConnectionFactory vlcConnectionFactory) {
+		this.vlcConnectionFactory = vlcConnectionFactory;
+	}
+
 	public IWakeOnLan getWakeOnLan() {
 		return wakeOnLan;
 	}
@@ -94,7 +107,7 @@ public class Distributor implements IDistributor {
 		if (!assertLiveConnection(hostName))
 			return false;
 		
-		VLCConnection conn = findConnection(hostName);
+		IVLCConnection conn = findConnection(hostName);
 		Server vlcServer = findServerInSettings(hostName);
 		String vlcSubsPath = vlcServer.getSubsPath();
 		String serverSubsPath = this.getSettings().getSettings().getSubFinders().getSubsPath();
@@ -147,7 +160,7 @@ public class Distributor implements IDistributor {
 		if (!assertLiveConnection(hostName))
 			return false;
 		
-		VLCConnection conn = findConnection(hostName);
+		IVLCConnection conn = findConnection(hostName);
 		conn.stopPlayback();
 		
 		
@@ -163,7 +176,7 @@ public class Distributor implements IDistributor {
 		if (!assertLiveConnection(hostName))
 			return false;
 		
-		VLCConnection conn = findConnection(hostName);
+		IVLCConnection conn = findConnection(hostName);
 		conn.pausePlayback();
 		
 		return true; 
@@ -177,7 +190,7 @@ public class Distributor implements IDistributor {
 		if (!assertLiveConnection(hostName))
 			return false;
 		
-		VLCConnection conn = findConnection(hostName);
+		IVLCConnection conn = findConnection(hostName);
 		conn.toggleFullscreen();
 		
 		return true; 
@@ -191,7 +204,7 @@ public class Distributor implements IDistributor {
 		if (!assertLiveConnection(hostName))
 			return false;
 		
-		VLCConnection conn = findConnection(hostName);
+		IVLCConnection conn = findConnection(hostName);
 		conn.seek(seconds);
 		
 		return true; 
@@ -205,7 +218,7 @@ public class Distributor implements IDistributor {
 		if (!assertLiveConnection(hostName))
 			return false;
 		
-		VLCConnection conn = findConnection(hostName);
+		IVLCConnection conn = findConnection(hostName);
 		conn.toggleVRatio();
 		
 		return true; 
@@ -219,7 +232,7 @@ public class Distributor implements IDistributor {
 		if (!assertLiveConnection(hostName))
 			return false;
 		
-		VLCConnection conn = findConnection(hostName);
+		IVLCConnection conn = findConnection(hostName);
 		conn.setSubtitle(subtitleID);
 		
 		return true; 
@@ -264,7 +277,7 @@ public class Distributor implements IDistributor {
 		if (!assertLiveConnection(hostName))
 			return;
 		
-		VLCConnection conn = findConnection(hostName);
+		IVLCConnection conn = findConnection(hostName);
 		conn.clearPlaylist();
 		
 	}
@@ -277,7 +290,7 @@ public class Distributor implements IDistributor {
 		if (!assertLiveConnection(hostName))
 			return StringUtils.EMPTY;
 		
-		VLCConnection conn = findConnection(hostName);
+		IVLCConnection conn = findConnection(hostName);
 		
 		return conn.getTime(); 
 	}
@@ -290,7 +303,7 @@ public class Distributor implements IDistributor {
 		if (!assertLiveConnection(hostName))
 			return false;
 		
-		VLCConnection conn = findConnection(hostName);
+		IVLCConnection conn = findConnection(hostName);
 		return conn.isPlaying();
 	}
 
@@ -302,7 +315,7 @@ public class Distributor implements IDistributor {
 		if (!assertLiveConnection(hostName))
 			return StringUtils.EMPTY;
 		
-		VLCConnection conn = findConnection(hostName);
+		IVLCConnection conn = findConnection(hostName);
 		return conn.getTitle();
 	}
 	
@@ -389,7 +402,7 @@ public class Distributor implements IDistributor {
 	private boolean assertLiveConnection(String hostName) throws VLCConnectionNotFoundException {
 		lock.lock();
 		try {
-			VLCConnection conn = findConnection(hostName);
+			IVLCConnection conn = findConnection(hostName);
 			
 			if (!conn.isConnected() || !conn.testConnection())
 				conn = createNewConnection(hostName);
@@ -401,10 +414,10 @@ public class Distributor implements IDistributor {
 		}
 	}
 
-	private VLCConnection findConnection(String hostName) throws VLCConnectionNotFoundException {
+	private IVLCConnection findConnection(String hostName) throws VLCConnectionNotFoundException {
 		lock.lock();
 		try {
-			VLCConnection conn = this.connectors.get(hostName);
+			IVLCConnection conn = this.connectors.get(hostName);
 			
 			if (conn == null)
 				conn = createNewConnection(hostName);
@@ -417,7 +430,7 @@ public class Distributor implements IDistributor {
 
 	}
 	
-	private VLCConnection createNewConnection(String hostName) throws VLCConnectionNotFoundException {
+	private IVLCConnection createNewConnection(String hostName) throws VLCConnectionNotFoundException {
 		lock.lock();
 		try {
 			Server s = findServerInSettings(hostName);
@@ -425,7 +438,8 @@ public class Distributor implements IDistributor {
 			if (this.connectors.containsKey(hostName))
 				this.connectors.remove(hostName);
 			
-			VLCConnection conn = new VLCConnection(s.getHost(), s.getPort(), this.getLog());
+			IVLCConnection conn = this.getVlcConnectionFactory().create(s.getHost(), s.getPort());
+			
 			this.connectors.put(hostName, conn);
 			return conn;			
 		}

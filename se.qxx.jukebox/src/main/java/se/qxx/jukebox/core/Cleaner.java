@@ -19,6 +19,9 @@ import se.qxx.jukebox.interfaces.IArguments;
 import se.qxx.jukebox.interfaces.ICleaner;
 import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IExecutor;
+import se.qxx.jukebox.interfaces.ISettings;
+import se.qxx.jukebox.interfaces.IUtils;
+import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
 import se.qxx.jukebox.tools.Util;
 import se.qxx.protodb.exceptions.DatabaseNotSupportedException;
 
@@ -26,14 +29,34 @@ import se.qxx.protodb.exceptions.DatabaseNotSupportedException;
 public class Cleaner extends JukeboxThread implements ICleaner {
 	private IDatabase database;
 	private IArguments arguments;
+	private ISettings settings;
+	private IUtils utils;
 	
 	@Inject
-	public Cleaner(IDatabase database, IExecutor executor, IArguments arguments, LoggerFactory loggerFactory) {
+	public Cleaner(IDatabase database, IExecutor executor, IArguments arguments, LoggerFactory loggerFactory, ISettings settings, IUtils utils) {
 		super("Cleaner", 30*60*1000, loggerFactory.create(LogType.FIND), executor);
 		this.setDatabase(database);
 		this.setArguments(arguments);
+		this.setSettings(settings);
+		this.setUtils(utils);
 	}
 	
+	public IUtils getUtils() {
+		return utils;
+	}
+
+	public void setUtils(IUtils utils) {
+		this.utils = utils;
+	}
+
+	public ISettings getSettings() {
+		return settings;
+	}
+
+	public void setSettings(ISettings settings) {
+		this.settings = settings;
+	}
+
 	public IArguments getArguments() {
 		return arguments;
 	}
@@ -78,11 +101,12 @@ public class Cleaner extends JukeboxThread implements ICleaner {
 	
 	private void cleanMovies() {
 		List<Movie> movies = this.getDatabase().searchMoviesByTitle("", true, true);
+		List<Catalog> catalogs = this.getSettings().getSettings().getCatalogs().getCatalog();
 		
 		//TODO: check that the path is part of a listener
 		for (Movie m : movies) {
 			for (Media md : m.getMediaList()) {
-				if (!mediaExists(md)) {
+				if (!mediaExists(md) && listenerPathExist(md, catalogs)) {
 					this.getLog().Debug(String.format("#####!!!!!! Media %s was not found. Deleting .... ", md.getFilename()));
 					
 					try {
@@ -131,8 +155,18 @@ public class Cleaner extends JukeboxThread implements ICleaner {
 	}
 	
 	private boolean mediaExists(Media md) {
-		File f = new File(Util.getFullFilePath(md));
-		return f.exists();
+		this.getUtils().fileExist(
+				this.getUtils().getFullFilePath(md));
+		
+	}
+	
+	public boolean listenerPathExist(Media md, List<Catalog> listenerPaths) {
+		for (Catalog c : listenerPaths) {
+			if (md.getFilepath().startsWith(c.getPath()))
+				return true;
+		}
+		
+		return false;
 	}
 
 	/* (non-Javadoc)

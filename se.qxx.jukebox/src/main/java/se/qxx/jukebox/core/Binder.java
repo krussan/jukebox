@@ -18,6 +18,7 @@ import se.qxx.jukebox.factories.IMDBParserFactory;
 import se.qxx.jukebox.factories.JukeboxRpcServerFactory;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.factories.TcpListenerFactory;
+import se.qxx.jukebox.factories.VLCConnectionFactory;
 import se.qxx.jukebox.factories.WebServerFactory;
 import se.qxx.jukebox.imdb.IMDBFinder;
 import se.qxx.jukebox.imdb.IMDBParser;
@@ -56,6 +57,8 @@ import se.qxx.jukebox.interfaces.ISubtitleFileWriter;
 import se.qxx.jukebox.interfaces.ITcpListener;
 import se.qxx.jukebox.interfaces.IUnpacker;
 import se.qxx.jukebox.interfaces.IUpgrader;
+import se.qxx.jukebox.interfaces.IUtils;
+import se.qxx.jukebox.interfaces.IVLCConnection;
 import se.qxx.jukebox.interfaces.IWakeOnLan;
 import se.qxx.jukebox.interfaces.IWebRetriever;
 import se.qxx.jukebox.servercomm.JukeboxRpcServerConnection;
@@ -71,9 +74,11 @@ import se.qxx.jukebox.subtitles.SubtitleDownloader;
 import se.qxx.jukebox.subtitles.SubtitleFileWriter;
 import se.qxx.jukebox.tools.MediaMetadataHelper;
 import se.qxx.jukebox.tools.Unpacker;
+import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.tools.WebRetriever;
 import se.qxx.jukebox.upgrade.Upgrader;
 import se.qxx.jukebox.vlc.Distributor;
+import se.qxx.jukebox.vlc.VLCConnection;
 import se.qxx.jukebox.watcher.DownloadChecker;
 import se.qxx.jukebox.watcher.FileCreatedHandler;
 import se.qxx.jukebox.watcher.FileSystemWatcher;
@@ -104,6 +109,7 @@ public class Binder {
 				bind(IUpgrader.class).to(Upgrader.class);
 				bind(IStarter.class).to(Starter.class);
 				bind(IRandomWaiter.class).to(RandomWaiter.class);
+				bind(IUtils.class).to(Util.class);
 				
 				//Webserver
 				install(
@@ -171,6 +177,12 @@ public class Binder {
 						new FactoryModuleBuilder()
 							.implement(IJukeboxLogger.class, Log.class)
 							.build(LoggerFactory.class));
+				
+				//VLCConnection
+				install(
+					new FactoryModuleBuilder()
+						.implement(IVLCConnection.class, VLCConnection.class)
+						.build(VLCConnectionFactory.class));
 					
 			}
 		});

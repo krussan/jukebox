@@ -12,20 +12,30 @@ import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IMovieBuilderFactory;
 import se.qxx.jukebox.interfaces.ISettings;
+import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Builders.Builder;
-import se.qxx.jukebox.tools.Util;
 
 public class MovieBuilderFactory implements IMovieBuilderFactory {
 
 	private ISettings settings;
 	private IJukeboxLogger log;
+	private IUtils utils;
 	
 	@Inject
-	public MovieBuilderFactory(ISettings settings, LoggerFactory loggerFactory) {
+	public MovieBuilderFactory(ISettings settings, LoggerFactory loggerFactory, IUtils utils) {
 		this.setSettings(settings);
 		this.setLog(loggerFactory.create(LogType.FIND));
+		this.setUtils(utils);
 	}
 	
+	public IUtils getUtils() {
+		return utils;
+	}
+
+	public void setUtils(IUtils utils) {
+		this.utils = utils;
+	}
+
 	public IJukeboxLogger getLog() {
 		return log;
 	}
@@ -123,7 +133,7 @@ public class MovieBuilderFactory implements IMovieBuilderFactory {
 
 			try {
 				if (b.isEnabled()) {
-					Object o = Util.getInstance(className, parTypes, args);
+					Object o = this.getUtils().getInstance(className, parTypes, args);
 					if (o != null) {
 						MovieOrSeries proposal = ((MovieBuilder) o).extract(filepath, filename);
 						if (proposal != null && !proposal.isEmpty()) {

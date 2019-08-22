@@ -29,7 +29,7 @@ public class ConvertedFile {
 	}
 	
 	public String getFullFilepath() {
-		return Util.getFullFilePath(this.getMedia());
+		return new Util().getFullFilePath(this.getMedia());
 	}
 	
 	public String getConvertedFilename() {

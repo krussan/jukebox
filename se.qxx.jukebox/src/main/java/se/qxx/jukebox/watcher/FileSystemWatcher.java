@@ -14,7 +14,7 @@ import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.IFileCreatedHandler;
 import se.qxx.jukebox.interfaces.IFileSystemWatcher;
-import se.qxx.jukebox.tools.Util;
+import se.qxx.jukebox.interfaces.IUtils;
 
 public class FileSystemWatcher extends JukeboxThread implements IFileSystemWatcher {
 
@@ -77,9 +77,12 @@ public class FileSystemWatcher extends JukeboxThread implements IFileSystemWatch
 
 	private boolean recurse = false;
 
+	private IUtils utils;
+
 	@Inject
 	public FileSystemWatcher(LoggerFactory loggerFactory,
 			IExecutor executor,
+			IUtils utils,
 			@Assisted("Name") String name, 
 			@Assisted("Directory") String directoryName, 
 			@Assisted ExtensionFileFilter filter, 
@@ -88,6 +91,7 @@ public class FileSystemWatcher extends JukeboxThread implements IFileSystemWatch
 			@Assisted("Recurse") boolean recurse, 
 			@Assisted int waitTime) {
 		super(name, waitTime, loggerFactory.create(LogType.FIND), executor);
+		this.setUtils(utils);
 		
 		File directoryToWatch = new File(directoryName);
 
@@ -99,6 +103,14 @@ public class FileSystemWatcher extends JukeboxThread implements IFileSystemWatch
 		this.setWatchCreated(watchCreated);
 		this.setWatchModified(watchModified);
 		this.setRecurse(recurse);
+	}
+
+	public IUtils getUtils() {
+		return utils;
+	}
+
+	public void setUtils(IUtils utils) {
+		this.utils = utils;
 	}
 
 	public boolean isRecurse() {
@@ -120,7 +132,7 @@ public class FileSystemWatcher extends JukeboxThread implements IFileSystemWatch
 	public java.util.TreeSet<FileRepresentation> getCurrentRepresentation() {
 		TreeSet<FileRepresentation> rep = new TreeSet<FileRepresentation>(comparator);
 
-		List<File> list = Util.getFileListing(
+		List<File> list = this.getUtils().getFileListing(
 			this.getDirectory(), 
 			this.getFilter(), 
 			this.isRecurse());
