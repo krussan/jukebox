@@ -12,7 +12,9 @@ import com.google.inject.name.Names;
 
 import se.qxx.jukebox.builders.MovieBuilderFactory;
 import se.qxx.jukebox.concurrent.Executor;
+import se.qxx.jukebox.converter.ConvertedFile;
 import se.qxx.jukebox.converter.MediaConverter;
+import se.qxx.jukebox.factories.ConvertedFileFactory;
 import se.qxx.jukebox.factories.FileSystemWatcherFactory;
 import se.qxx.jukebox.factories.IMDBParserFactory;
 import se.qxx.jukebox.factories.JukeboxRpcServerFactory;
@@ -25,6 +27,7 @@ import se.qxx.jukebox.imdb.IMDBParser;
 import se.qxx.jukebox.imdb.IMDBUrlRewrite;
 import se.qxx.jukebox.interfaces.IArguments;
 import se.qxx.jukebox.interfaces.ICleaner;
+import se.qxx.jukebox.interfaces.IConvertedFile;
 import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IDistributor;
 import se.qxx.jukebox.interfaces.IDownloadChecker;
@@ -183,6 +186,12 @@ public class Binder {
 					new FactoryModuleBuilder()
 						.implement(IVLCConnection.class, VLCConnection.class)
 						.build(VLCConnectionFactory.class));
+
+				//ConvertedFile
+				install(
+					new FactoryModuleBuilder()
+						.implement(IConvertedFile.class, ConvertedFile.class)
+						.build(ConvertedFileFactory.class));
 					
 			}
 		});

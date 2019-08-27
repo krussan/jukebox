@@ -90,7 +90,7 @@ public class SubtitleFileWriter implements ISubtitleFileWriter {
 	}
 	
 	private SubtitleParser getParser(String filename) {
-		String extension = FilenameUtils.getExtension(filename).toLowerCase();
+		String extension = FilenameUtils.getExtension(filename).toLowerCase().trim();
 		
 		switch (extension) {
 		case "vtt":

@@ -6,6 +6,7 @@ import com.google.inject.Injector;
 import se.qxx.jukebox.core.Binder;
 import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.factories.LoggerFactory;
+import se.qxx.jukebox.factories.VLCConnectionFactory;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IVLCConnection;
 import se.qxx.jukebox.vlc.VLCConnection;
@@ -13,12 +14,22 @@ import se.qxx.jukebox.vlc.VLCConnection;
 public class TestVLCConnection {
 
 	private IJukeboxLogger log;
+	private VLCConnectionFactory vlcConnectionFactory;
 
 	@Inject
-	public TestVLCConnection(LoggerFactory factory) {
+	public TestVLCConnection(LoggerFactory factory, VLCConnectionFactory vlcConnectionFactory) {
+		this.setVlcConnectionFactory(vlcConnectionFactory);
 		this.log = factory.create(LogType.COMM);
 	}
 	
+	public VLCConnectionFactory getVlcConnectionFactory() {
+		return vlcConnectionFactory;
+	}
+
+	public void setVlcConnectionFactory(VLCConnectionFactory vlcConnectionFactory) {
+		this.vlcConnectionFactory = vlcConnectionFactory;
+	}
+
 	public static void main(String[] args) {
 		if (args.length < 2)
 			printHelp();
@@ -37,7 +48,7 @@ public class TestVLCConnection {
 	}
 	
 	public void execute(String host, int port) {
-		IVLCConnection conn = new VLCConnection(host, port, log);
+		IVLCConnection conn = this.getVlcConnectionFactory().create(host, port);
 		
 		String subfile = "file://Y:/Videos/Repo Men.srt";
 		conn.enqueue("file://Y:/Videos/Kick.Ass[2010]DVD.ENG.X264.mp4", subfile);

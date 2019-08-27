@@ -25,7 +25,9 @@ import se.qxx.jukebox.concurrent.JukeboxThread;
 import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.MediaConverterState;
+import se.qxx.jukebox.factories.ConvertedFileFactory;
 import se.qxx.jukebox.factories.LoggerFactory;
+import se.qxx.jukebox.interfaces.IConvertedFile;
 import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.IMediaConverter;
@@ -37,12 +39,22 @@ public class MediaConverter extends JukeboxThread implements IMediaConverter {
 
 	private IDatabase database;
 	private ISettings settings;
+	private ConvertedFileFactory convertedFileFactory;
 	
 	@Inject
-	private MediaConverter(IExecutor executor, IDatabase database, ISettings settings, LoggerFactory loggerFactory) {
+	private MediaConverter(IExecutor executor, IDatabase database, ISettings settings, LoggerFactory loggerFactory, ConvertedFileFactory convertedFileFactory) {
 		super("MediaConverter", 3000, loggerFactory.create(LogType.CONVERTER), executor);
+		this.setConvertedFileFactory(convertedFileFactory);
 		this.setDatabase(database);
 		this.setSettings(settings);
+	}
+
+	public ConvertedFileFactory getConvertedFileFactory() {
+		return convertedFileFactory;
+	}
+
+	public void setConvertedFileFactory(ConvertedFileFactory convertedFileFactory) {
+		this.convertedFileFactory = convertedFileFactory;
 	}
 
 	public ISettings getSettings() {
@@ -77,7 +89,7 @@ public class MediaConverter extends JukeboxThread implements IMediaConverter {
 		for (Media md : _listProcessing) {
 			try {
 				if (md != null) {
-					ConvertedFile convertedFile = new ConvertedFile(md);
+					IConvertedFile convertedFile = this.getConvertedFileFactory().create(md);
 					
 					if (convertedFile.convertedFileExists() && !convertedFile.isForcedOrFailed()) {
 						this.getLog().Info(String.format("Conversion already exist on :: %s", convertedFile.getConvertedFilename()));
@@ -178,7 +190,7 @@ public class MediaConverter extends JukeboxThread implements IMediaConverter {
 	}
 
 	private MediaConverterResult triggerConverter(
-			ConvertedFile convertedFile, 
+			IConvertedFile convertedFile, 
 			FFmpegProbeResult probeResult, 
 			ConversionProbeResult checkResult) throws IOException {
 				
@@ -246,7 +258,7 @@ public class MediaConverter extends JukeboxThread implements IMediaConverter {
 		return probeResult.getFormat().duration * TimeUnit.SECONDS.toNanos(1);
 	}
 
-	private MediaConverterResult checkConverterResult(ConvertedFile convertedFile, FFmpegJob job) {
+	private MediaConverterResult checkConverterResult(IConvertedFile convertedFile, FFmpegJob job) {
 		FFmpegJob.State state = job.getState();
 		
 		switch (state) {
