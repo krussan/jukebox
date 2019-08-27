@@ -30,6 +30,7 @@ import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.IFilenameChecker;
 import se.qxx.jukebox.interfaces.IMediaMetadataHelper;
 import se.qxx.jukebox.interfaces.ISettings;
+import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.settings.JukeboxListenerSettings;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
@@ -46,6 +47,7 @@ public class TestCleaner {
 	@Mock IMediaMetadataHelper mediaMetadataHelperMock;
 	@Mock IArguments argumentsMock;
 	@Mock ISettings settingsMock;
+	@Mock IUtils utilsMock;
 	
 	@Rule public MockitoRule mockitoRule = MockitoJUnit.rule(); 
 	
@@ -55,7 +57,7 @@ public class TestCleaner {
 	public void init() throws IOException, JAXBException {
 		when(loggerFactoryMock.create(any(Log.LogType.class))).thenReturn(new Log(null, LogType.NONE));
 		
-		cleaner = new Cleaner(databaseMock, executorMock, argumentsMock, loggerFactoryMock, settingsMock);
+		cleaner = new Cleaner(databaseMock, executorMock, argumentsMock, loggerFactoryMock, settingsMock, utilsMock);
 	}
 	
 	public Catalog getCatalog(String path) {
@@ -66,6 +68,8 @@ public class TestCleaner {
 	
 	@Test
 	public void Should_return_true_if_media_path_exist_in_settings_listeners_and_on_disk() {
+		when(utilsMock.fileExists("/media/test1")).thenReturn(true);
+		
 		List<Catalog> list = new ArrayList<>();
 		list.add(getCatalog("/media/test1"));
 		list.add(getCatalog("/media/fake2"));
@@ -82,5 +86,40 @@ public class TestCleaner {
 		assertEquals(true, actual);
 	}
 	
+	@Test
+	public void Should_return_false_if_media_path_dont_exist_in_listeners() {
+		List<Catalog> list = new ArrayList<>();
+		list.add(getCatalog("/media/fake2"));
+		
+		Media md = Media.newBuilder()
+				.setID(1)
+				.setFilename("Filename")
+				.setFilepath("/media/test1")
+				.setIndex(1)
+				.setDownloadComplete(true)
+				.build();
+		
+		boolean actual = cleaner.listenerPathExist(md, list);
+		assertEquals(false, actual);
+	}
 
+	@Test
+	public void Should_return_false_if_listener_path_dont_exist_on_disk() {
+		when(utilsMock.fileExists("/media/test1")).thenReturn(false);
+		
+		List<Catalog> list = new ArrayList<>();
+		list.add(getCatalog("/media/test1"));
+		list.add(getCatalog("/media/fake2"));
+		
+		Media md = Media.newBuilder()
+				.setID(1)
+				.setFilename("Filename")
+				.setFilepath("/media/test1")
+				.setIndex(1)
+				.setDownloadComplete(true)
+				.build();
+		
+		boolean actual = cleaner.listenerPathExist(md, list);
+		assertEquals(false, actual);
+	}
 }

@@ -105,5 +105,8 @@ public interface IUtils {
 	String getConvertedFullFilepath(Media md);
 
 	String findIpAddress();
+	
+	boolean fileExists(String filename);
+	boolean mediaFileExists(Media md);
 
 }

@@ -310,4 +310,15 @@ public class Util implements IUtils {
 		return "127.0.0.1";
 	}
 
+	@Override
+	public boolean fileExists(String fullFilePath) {
+		File f = new File(fullFilePath);
+		return f.exists();
+	}
+
+	@Override
+	public boolean mediaFileExists(Media md) {
+		return fileExists(this.getFullFilePath(md));
+	}
+
 }

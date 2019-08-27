@@ -106,7 +106,7 @@ public class Cleaner extends JukeboxThread implements ICleaner {
 		//TODO: check that the path is part of a listener
 		for (Movie m : movies) {
 			for (Media md : m.getMediaList()) {
-				if (!mediaExists(md) && listenerPathExist(md, catalogs)) {
+				if (!this.getUtils().mediaFileExists(md) && listenerPathExist(md, catalogs)) {
 					this.getLog().Debug(String.format("#####!!!!!! Media %s was not found. Deleting .... ", md.getFilename()));
 					
 					try {
@@ -132,7 +132,7 @@ public class Cleaner extends JukeboxThread implements ICleaner {
 			for (Season ss : s.getSeasonList()) {
 				for (Episode e : ss.getEpisodeList()) {
 					for (Media md : e.getMediaList()) {
-						if (!mediaExists(md)) {
+						if (!this.getUtils().mediaFileExists(md)) {
 							this.getLog().Debug(String.format("#####!!!!!! Media %s was not found. Deleting .... ", md.getFilename()));
 							
 							try {
@@ -154,16 +154,11 @@ public class Cleaner extends JukeboxThread implements ICleaner {
 	private void cleanEmptySeries() {
 	}
 	
-	private boolean mediaExists(Media md) {
-		this.getUtils().fileExist(
-				this.getUtils().getFullFilePath(md));
-		
-	}
-	
 	public boolean listenerPathExist(Media md, List<Catalog> listenerPaths) {
 		for (Catalog c : listenerPaths) {
 			if (md.getFilepath().startsWith(c.getPath()))
-				return true;
+				if (this.getUtils().fileExists(c.getPath()))
+					return true;
 		}
 		
 		return false;
