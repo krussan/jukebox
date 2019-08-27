@@ -93,7 +93,7 @@ public class ConvertedFile implements IConvertedFile {
 	 */
 	@Override
 	public boolean sourceFileExist() {
-		return this.getUtils().fileExists(this.getFullFilepath())
+		return this.getUtils().fileExists(this.getFullFilepath());
 	}
 	
 	/* (non-Javadoc)

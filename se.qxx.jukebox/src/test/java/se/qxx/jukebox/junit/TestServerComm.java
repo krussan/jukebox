@@ -37,6 +37,7 @@ import se.qxx.jukebox.interfaces.IMovieIdentifier;
 import se.qxx.jukebox.interfaces.IParserSettings;
 import se.qxx.jukebox.interfaces.IStreamingWebServer;
 import se.qxx.jukebox.interfaces.ISubtitleDownloader;
+import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.servercomm.JukeboxRpcServerConnection;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.imdb.ImdbSettings;
@@ -56,6 +57,7 @@ public class TestServerComm {
 	@Mock IStreamingWebServer webServerMock;
 	@Mock RpcController controller;
 	@Mock IExecutor executor;
+	@Mock IUtils utilsMock;
 	
 	@Before
 	public void initialize() throws IOException, JAXBException {
@@ -73,7 +75,7 @@ public class TestServerComm {
 	public void TestStartMovieChromecast() throws UnsupportedEncodingException {
 		JukeboxRpcServerConnection conn = 
 			new JukeboxRpcServerConnection(settings, dbMock, distributorMock, 
-					subtitleDownloaderMock, movieIdentifierMock, loggerFactoryMock, executor, webServerMock);
+					subtitleDownloaderMock, movieIdentifierMock, loggerFactoryMock, executor, utilsMock, webServerMock);
 
 		Subtitle sub1 = Subtitle.newBuilder()
 				.setID(100)
@@ -113,8 +115,8 @@ public class TestServerComm {
 				.build();
 		
 		
-		when(webServerMock.getIpAddress()).thenReturn("127.0.0.1");
-		when(webServerMock.getListeningPort()).thenReturn(8001);
+		//when(webServerMock.getIpAddress()).thenReturn("127.0.0.1");
+		//when(webServerMock.getListeningPort()).thenReturn(8001);
 		
 		when(dbMock.getMovie(1)).thenReturn(movie);
 		when(webServerMock.registerFile(any(Media.class))).thenReturn(new StreamingFile("http://127.0.0.1:8001/stream10.mp4", "media/mp4"));

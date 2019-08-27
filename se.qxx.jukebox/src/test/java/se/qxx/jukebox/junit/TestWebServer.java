@@ -33,6 +33,7 @@ import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IParserSettings;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.ISubtitleFileWriter;
+import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.imdb.ImdbSettings;
 import se.qxx.jukebox.settings.parser.ParserSettings;
@@ -49,6 +50,7 @@ public class TestWebServer {
 	@Mock ISubtitleFileWriter subWriterMock;
 	IJukeboxLogger log;
 	StreamingWebServer webServer;
+	@Mock IUtils utilsMock;
 	
 	@Before
 	public void initialize() throws IOException, JAXBException {
@@ -64,6 +66,7 @@ public class TestWebServer {
 				dbMock, 
 				loggerFactoryMock, 
 				subWriterMock,
+				utilsMock,
 				8001);
 		
 		webServer.setIpAddress("127.0.0.1");

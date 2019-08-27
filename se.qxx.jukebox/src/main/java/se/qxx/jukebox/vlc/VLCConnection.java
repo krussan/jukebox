@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
 import se.qxx.jukebox.core.Log.LogType;
@@ -32,6 +33,7 @@ public class VLCConnection extends TcpClient implements IVLCConnection {
 	 * @param host	The IP number of the host to connect to
 	 * @param port	The port number of the host to connect to
 	 */
+	@Inject
 	public VLCConnection(@Assisted String host, @Assisted int port, LoggerFactory loggerFactory, IUtils utils) {
 		super("VLC", host, port, COMMAND_TIMEOUT, loggerFactory.create(LogType.COMM));
 		this.setUtils(utils);

@@ -30,12 +30,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.imgscalr.Scalr;
 
+import com.google.inject.Singleton;
 import com.google.protobuf.ByteString;
 
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.watcher.ExtensionFileFilter;
 
+@Singleton
 public class Util implements IUtils {
 	/* (non-Javadoc)
 	 * @see se.qxx.jukebox.tools.IUtils#replaceIgnorePattern(java.lang.String, java.lang.String)
