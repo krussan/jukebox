@@ -36,6 +36,7 @@ import com.google.protobuf.ByteString;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.watcher.ExtensionFileFilter;
+import se.qxx.jukebox.watcher.FileRepresentation;
 
 @Singleton
 public class Util implements IUtils {
@@ -90,7 +91,7 @@ public class Util implements IUtils {
 	 * @see se.qxx.jukebox.tools.IUtils#getFileListing(java.io.File, se.qxx.jukebox.watcher.ExtensionFileFilter, boolean)
 	 */
 	@Override
-	public List<File> getFileListing(File directory, ExtensionFileFilter filter, boolean recurse)
+	public List<FileRepresentation> getFileListing(File directory, ExtensionFileFilter filter, boolean recurse)
 	{
 		return getFileListing(directory.listFiles(filter), filter, recurse);
 	}
@@ -101,8 +102,8 @@ public class Util implements IUtils {
 	 * @param filter The filter of extension to look for
 	 * @return
 	 */
-	private List<File> getFileListing(File[] filesAndDirs, ExtensionFileFilter filter, boolean recurse) {
-		List<File> result = new ArrayList<File>();
+	private List<FileRepresentation> getFileListing(File[] filesAndDirs, ExtensionFileFilter filter, boolean recurse) {
+		List<FileRepresentation> result = new ArrayList<File>();
 
 		for(File file : filesAndDirs) {
 			

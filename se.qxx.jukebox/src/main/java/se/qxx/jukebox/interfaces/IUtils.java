@@ -11,6 +11,7 @@ import com.google.protobuf.ByteString;
 
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.watcher.ExtensionFileFilter;
+import se.qxx.jukebox.watcher.FileRepresentation;
 
 public interface IUtils {
 
@@ -43,7 +44,7 @@ public interface IUtils {
 	 * @param filter The filter of extension to look for
 	 * @return
 	 */
-	List<File> getFileListing(File directory, ExtensionFileFilter filter, boolean recurse);
+	List<FileRepresentation> getFileListing(File directory, ExtensionFileFilter filter, boolean recurse);
 
 	/**
 	 * The function getFileListing does not work for UNC paths so this is the workaround
@@ -52,7 +53,7 @@ public interface IUtils {
 	 * @param filter The filter of extension to look for
 	 * @return
 	 */
-	List<File> getFileListingWorkAround(File directory, ExtensionFileFilter filter);
+	List<FileRepresentation> getFileListingWorkAround(File directory, ExtensionFileFilter filter);
 
 	/**
 	 * Tries to parse an integer to a string

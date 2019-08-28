@@ -3,6 +3,8 @@ package se.qxx.jukebox.watcher;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Dictionary;
+import java.util.HashSet;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -18,7 +20,7 @@ import se.qxx.jukebox.interfaces.IUtils;
 
 public class FileSystemWatcher extends JukeboxThread implements IFileSystemWatcher {
 
-	TreeSet<FileRepresentation> currentRepresentation ;
+	Dictionary<String, FileRepresentation> currentRepresentation ;
 	
 	private static Comparator<FileRepresentation> comparator = new Comparator<FileRepresentation>() {
 
@@ -44,13 +46,13 @@ public class FileSystemWatcher extends JukeboxThread implements IFileSystemWatch
 		return clients;
 	}
 
-	private TreeSet<FileRepresentation> files;
+	private List<FileRepresentation> files;
 
-	public TreeSet<FileRepresentation> getFiles() {
+	public List<FileRepresentation> getFiles() {
 		return files;
 	}
 
-	public void setFiles(TreeSet<FileRepresentation> files) {
+	public void setFiles(List<FileRepresentation> files) {
 		this.files = files;
 	}
 
@@ -129,24 +131,11 @@ public class FileSystemWatcher extends JukeboxThread implements IFileSystemWatch
 		clients.add(client);
 	}
 
-	public java.util.TreeSet<FileRepresentation> getCurrentRepresentation() {
-		TreeSet<FileRepresentation> rep = new TreeSet<FileRepresentation>(comparator);
-
-		List<File> list = this.getUtils().getFileListing(
+	public List<FileRepresentation> getCurrentRepresentation() {
+		return this.getUtils().getFileListing(
 			this.getDirectory(), 
 			this.getFilter(), 
 			this.isRecurse());
-
-		for (File f : list) {
-			rep.add(
-				new FileRepresentation(
-					f.getParent(),
-					f.getName(), 
-					f.lastModified(), 
-					f.length()));
-		}
-
-		return rep;
 	}
 
 	public void notifyCreated(FileRepresentation f) {
