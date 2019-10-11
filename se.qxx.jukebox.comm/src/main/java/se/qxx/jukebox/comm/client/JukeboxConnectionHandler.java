@@ -30,13 +30,19 @@ import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
 
 public class JukeboxConnectionHandler {
 	
 	private JukeboxResponseListener listener;
+	private service;
 	
 	public JukeboxConnectionHandler(String serverIPaddress, int port) {
-		JukeboxConnectionPool.setup(serverIPaddress, port);
+		ManagedChannel managedChannel = ManagedChannelBuilder
+				.forAddress(serverIPaddress, port).usePlaintext().build();
+
+		service = se.qxx.jukebox.domain.JukeboxServiceGrpc.newBlockingStub(managedChannel);
 	}
 	
 	public JukeboxConnectionHandler(String serverIPaddress, int port, JukeboxResponseListener listener) {
