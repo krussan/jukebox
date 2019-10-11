@@ -2,11 +2,12 @@ package se.qxx.jukebox.comm.client;
 
 import com.google.protobuf.RpcCallback;
 import com.google.protobuf.RpcController;
-import com.googlecode.protobuf.socketrpc.SocketRpcController;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import se.qxx.jukebox.comm.client.JukeboxConnectionPool;
+import se.qxx.jukebox.comm.client.JukeboxResponseListener;
 import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Empty;
 import se.qxx.jukebox.domain.JukeboxDomain.Episode;
