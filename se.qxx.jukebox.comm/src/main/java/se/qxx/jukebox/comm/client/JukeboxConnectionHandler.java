@@ -34,17 +34,25 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import se.qxx.jukebox.domain.JukeboxServiceGrpc;
 
-public class JukeboxConnectionHandler {
+public class JukeboxConnectionHandler  {
 	
 	private JukeboxResponseListener listener;
 	private JukeboxServiceGrpc.JukeboxServiceStub service;
-	
+
+	private JukeboxResponseListener getListener() {
+		return listener;
+	}
+
+	public void setListener(JukeboxResponseListener listener) {
+		this.listener = listener;
+	}
+
 	public JukeboxConnectionHandler(String serverIPaddress, int port) {
-		init(serverIPaddress, port)
+		init(serverIPaddress, port);
 	}
 	
 	public JukeboxConnectionHandler(String serverIPaddress, int port, JukeboxResponseListener listener) {
-		init(serverIPaddress, port)
+		init(serverIPaddress, port);
 		this.setListener(listener);
 	}
 
@@ -59,7 +67,7 @@ public class JukeboxConnectionHandler {
 	//--------------------------------------------------------------------------------------------------- RPC Calls
 	//----------------------------------------------------------------------------------------------------------------
 
-	public void getItem(final int id, final RequestType requestType, boolean excludeImages, boolean excludeTextData, final StreamObserver<JukeboxDomain.JukeboxResponseGetItem> callback) {
+	public void getItem(final int id, final RequestType requestType, boolean excludeImages, boolean excludeTextData) {
 		List<JukeboxDomain.RequestFilter> filter = getFilter(excludeImages, excludeTextData);
 
 		JukeboxDomain.JukeboxRequestGetItem request = JukeboxDomain.JukeboxRequestGetItem.newBuilder()
@@ -68,7 +76,7 @@ public class JukeboxConnectionHandler {
 				.addAllFilter(filter)
 				.build();
 
-		this.service.getItem(request, callback)
+		this.service.getItem(request, new RpcCallback<>(this.getListener()));
 
 	}
 
@@ -78,11 +86,7 @@ public class JukeboxConnectionHandler {
 				.setRequestType(requestType)
 				.build();
 
-		this.service.blacklist(request, new StreamObserver<Empty>() {
-
-		}
-
-
+		this.service.blacklist(request, new RpcCallback<>(this.getListener()));
 	}
 	
 	public void reIdentify(final int id, final RequestType requestType) {
@@ -111,7 +115,7 @@ public class JukeboxConnectionHandler {
 					.setSubtitleRequestType(subtitleRequestType)
 					.build();
 
-			this.service.startMovie(request, new RpcCallback<>(this.getListener());
+			this.service.startMovie(request, new RpcCallback<>(this.getListener()));
 		}
 
 	}
@@ -210,154 +214,92 @@ public class JukeboxConnectionHandler {
 				.setPlayerName(playerName)
 				.build();
 
-		service.getTime(controller, request, response -> {
-			onRequestComplete(controller);
-
-			if (callback != null)
-			callback.run(response);
-		});
+		this.service.getTime(request, new RpcCallback<>(this.getListener()));
 	}
 
 	public void getTitle(final String playerName, final RpcCallback<JukeboxResponseGetTitle> callback) {
-		JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
-
 		JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
 				.setPlayerName(playerName)
 				.build();
 
-		service.getTitle(controller, request, response -> {
-			onRequestComplete(controller);
-
-			if (callback != null)
-			callback.run(response);
-		});
+		this.service.getTitle(request, new RpcCallback<>(this.getListener()));
 	}
 
 	public void suspend(final String playerName) {
-		JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
-
 		JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
 				.setPlayerName(playerName)
 				.build();
 
-		service.suspend(controller, request, arg0 -> onRequestComplete(controller));
+		this.service.suspend(request, new RpcCallback<>(this.getListener()));
 	}
 	
 	public void listPlayers(final RpcCallback<JukeboxResponseListPlayers> callback) {
-		JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
-
-		service.listPlayers(controller, Empty.getDefaultInstance(), response -> {
-			onRequestComplete(controller);
-
-			if (callback != null)
-				callback.run(response);
-
-		});
+		this.service.listPlayers(Empty.getDefaultInstance(), new RpcCallback<>(this.getListener()));
 	}
 	
 	public void listSubtitles(final Media md, final RpcCallback<JukeboxResponseListSubtitles> callback) {
-		JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
-
 		JukeboxRequestListSubtitles request = JukeboxRequestListSubtitles.newBuilder()
 				.setMediaId(md.getID())
 				.setSubtitleRequestType(JukeboxDomain.SubtitleRequestType.WebVTT)
 				.build();
 
-		service.listSubtitles(controller, request, response -> {
-			onRequestComplete(controller);
-
-			if (callback != null)
-				callback.run(response);
-		});
+		this.service.listSubtitles(request, new RpcCallback<>(this.getListener()));
 	}
 	
 	public void seek(final String playerName,final int seconds) {
-		JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
-
 		JukeboxRequestSeek request = JukeboxRequestSeek.newBuilder()
 				.setPlayerName(playerName)
 				.setSeconds(seconds)
 				.build();
 
-		service.seek(controller, request, arg0 -> onRequestComplete(controller));
+		this.service.seek(request, new RpcCallback<>(this.getListener()));
 	}
 	
 	public void setSubtitle(final String playerName, final int mediaId, final Subtitle subtitle) {
-		JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
-
 		JukeboxRequestSetSubtitle request = JukeboxRequestSetSubtitle.newBuilder()
 				.setPlayerName(playerName)
 				.setMediaID(mediaId)
 				.setSubtitleDescription(subtitle.getDescription())
 				.build();
 
-		service.setSubtitle(controller, request, response -> onRequestComplete(controller));
+		this.service.setSubtitle(request, new RpcCallback<>(this.getListener()));
 	}
 
 	public void toggleWatched(final int id, final RequestType requestType) {
-		JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
-
 		JukeboxRequestID request = JukeboxRequestID.newBuilder()
 				.setId(id)
 				.setRequestType(requestType)
 				.build();
 
-		service.toggleWatched(controller, request, arg0 -> onRequestComplete(controller));
+		this.service.toggleWatched(request, new RpcCallback<>(this.getListener()));
 	}
 	
 	public void reenlistSub(final int id, final RequestType requestType) {
-		JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
-
 		JukeboxRequestID request = JukeboxRequestID.newBuilder()
 				.setId(id)
 				.setRequestType(requestType)
 				.build();
 
-		service.reenlistSubtitles(controller, request, arg0 -> onRequestComplete(controller));
+		this.service.reenlistSubtitles(request, new RpcCallback<>(this.getListener()));
 
 	}
 
 	public void reenlistMetadata(final int id, final RequestType requestType) {
-		JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
-
 		JukeboxRequestID request = JukeboxRequestID.newBuilder()
 				.setId(id)
 				.setRequestType(requestType)
 				.build();
 
-		service.reenlistMetadata(controller, request, arg0 -> onRequestComplete(controller));
+		this.service.reenlistMetadata(request, new RpcCallback<>(this.getListener()));
 	}
 
 	public void forceconversion(final int mediaId) {
-		JukeboxService service = JukeboxConnectionPool.get().getNonBlockingService();
-
 		JukeboxRequestID request = JukeboxRequestID.newBuilder()
 				.setId(mediaId)
 				.setRequestType(RequestType.TypeMovie)
 				.build();
 
-		service.forceConverter(controller, request, arg0 -> onRequestComplete(controller));
+		this.service.forceConverter(request, new RpcCallback<>(this.getListener()));
 	}
-
-
-	private JukeboxResponseListener getListener() {
-		return listener;
-	}
-
-	public void setListener(JukeboxResponseListener listener) {
-		this.listener = listener;
-	}	
-		
-	private JukeboxConnectionMessage checkResponse(RpcController controller) {
-		return new JukeboxConnectionMessage(!controller.failed(), controller.errorText());		
-	}
-	
-	private void onRequestComplete(StreamObserver callback) {
-		JukeboxConnectionMessage msg = checkResponse(controller);
-		
-		if (this.getListener() != null)
-			this.getListener().onRequestComplete(msg);
-	}
-
 
 }
