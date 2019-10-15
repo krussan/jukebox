@@ -9,13 +9,13 @@ def appVersionCode = Integer.valueOf(System.env.TRAVIS_BUILD_NUMBER ?: project.f
 def appJsonFile = project.findProperty('apiJsonFile') ?: '../ci/api.json'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     //buildToolsVersion '27.0.3'
 
     defaultConfig {
         applicationId "se.qxx.android.jukebox"
         minSdkVersion 23
-        targetSdkVersion 27
+        targetSdkVersion 28
 
         // Enabling multidex support.
         multiDexEnabled true
