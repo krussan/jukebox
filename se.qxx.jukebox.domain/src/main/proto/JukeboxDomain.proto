@@ -1,3 +1,4 @@
+syntax = "proto2";
 package se.qxx.jukebox.domain;
 
 option java_package = "se.qxx.jukebox.domain";

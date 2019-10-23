@@ -36,6 +36,7 @@ import se.qxx.jukebox.interfaces.IParserSettings;
 import se.qxx.jukebox.interfaces.IRandomWaiter;
 import se.qxx.jukebox.interfaces.ISubFileDownloaderHelper;
 import se.qxx.jukebox.interfaces.ISubFileUtilHelper;
+import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.interfaces.IWebRetriever;
 import se.qxx.jukebox.settings.Settings;
 import se.qxx.jukebox.settings.imdb.ImdbSettings;
@@ -44,6 +45,7 @@ import se.qxx.jukebox.subtitles.Language;
 import se.qxx.jukebox.subtitles.SubFile;
 import se.qxx.jukebox.subtitles.SubFileDownloaderHelper;
 import se.qxx.jukebox.subtitles.Subscene;
+import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.tools.WebResult;
 
 public class TestSubscene {
@@ -58,12 +60,13 @@ public class TestSubscene {
 	private Settings settings;
 	private IJukeboxLogger log;
 	private MovieBuilderFactory movieBuilderFactory;
+	private IUtils utils;
 	
 	@Mock private IWebRetriever webRetrieverMock;
 	@Mock private LoggerFactory loggerFactoryMock;
 	@Mock private IRandomWaiter waiterMock;
 	@Mock private ISubFileUtilHelper fileUtilHelperMock;
-
+	
 	
 	@Before
 	public void init() throws IOException, JAXBException {
@@ -75,8 +78,9 @@ public class TestSubscene {
 		
 		when(loggerFactoryMock.create(any(Log.LogType.class))).thenReturn(log);
 		
-		new ParserBuilder(settings, log);
-		movieBuilderFactory = new MovieBuilderFactory(settings, loggerFactoryMock);
+		//new ParserBuilder(settings, log);
+		utils = new Util();
+		movieBuilderFactory = new MovieBuilderFactory(settings, loggerFactoryMock, utils);
 
 		readResources();
 	}
@@ -132,7 +136,7 @@ public class TestSubscene {
 
 		WebResult resultList = new WebResult(new URL("https://subscene.com/subtitles/Mockito"), listResult, false);
 		Mockito.when(webRetrieverMock.getWebResult("https://subscene.com/subtitles/Mockito")).thenReturn(resultList);
-		Mockito.when(webRetrieverMock.getWebResult("https://subscene.com/subtitles/Mockito.2014")).thenReturn(resultList);
+		//Mockito.when(webRetrieverMock.getWebResult("https://subscene.com/subtitles/Mockito.2014")).thenReturn(resultList);
 
 		WebResult resultDownload1 = new WebResult(new URL("https://subscene.com/subtitles/Mockito/1023456"), download1Result, false);
 		Mockito.when(webRetrieverMock.getWebResult("https://subscene.com/subtitles/Mockito/1023456")).thenReturn(resultDownload1);

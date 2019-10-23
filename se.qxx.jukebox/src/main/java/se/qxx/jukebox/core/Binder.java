@@ -12,18 +12,22 @@ import com.google.inject.name.Names;
 
 import se.qxx.jukebox.builders.MovieBuilderFactory;
 import se.qxx.jukebox.concurrent.Executor;
+import se.qxx.jukebox.converter.ConvertedFile;
 import se.qxx.jukebox.converter.MediaConverter;
+import se.qxx.jukebox.factories.ConvertedFileFactory;
 import se.qxx.jukebox.factories.FileSystemWatcherFactory;
 import se.qxx.jukebox.factories.IMDBParserFactory;
 import se.qxx.jukebox.factories.JukeboxRpcServerFactory;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.factories.TcpListenerFactory;
+import se.qxx.jukebox.factories.VLCConnectionFactory;
 import se.qxx.jukebox.factories.WebServerFactory;
 import se.qxx.jukebox.imdb.IMDBFinder;
 import se.qxx.jukebox.imdb.IMDBParser;
 import se.qxx.jukebox.imdb.IMDBUrlRewrite;
 import se.qxx.jukebox.interfaces.IArguments;
 import se.qxx.jukebox.interfaces.ICleaner;
+import se.qxx.jukebox.interfaces.IConvertedFile;
 import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IDistributor;
 import se.qxx.jukebox.interfaces.IDownloadChecker;
@@ -56,6 +60,8 @@ import se.qxx.jukebox.interfaces.ISubtitleFileWriter;
 import se.qxx.jukebox.interfaces.ITcpListener;
 import se.qxx.jukebox.interfaces.IUnpacker;
 import se.qxx.jukebox.interfaces.IUpgrader;
+import se.qxx.jukebox.interfaces.IUtils;
+import se.qxx.jukebox.interfaces.IVLCConnection;
 import se.qxx.jukebox.interfaces.IWakeOnLan;
 import se.qxx.jukebox.interfaces.IWebRetriever;
 import se.qxx.jukebox.servercomm.JukeboxRpcServerConnection;
@@ -71,9 +77,11 @@ import se.qxx.jukebox.subtitles.SubtitleDownloader;
 import se.qxx.jukebox.subtitles.SubtitleFileWriter;
 import se.qxx.jukebox.tools.MediaMetadataHelper;
 import se.qxx.jukebox.tools.Unpacker;
+import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.tools.WebRetriever;
 import se.qxx.jukebox.upgrade.Upgrader;
 import se.qxx.jukebox.vlc.Distributor;
+import se.qxx.jukebox.vlc.VLCConnection;
 import se.qxx.jukebox.watcher.DownloadChecker;
 import se.qxx.jukebox.watcher.FileCreatedHandler;
 import se.qxx.jukebox.watcher.FileSystemWatcher;
@@ -104,6 +112,7 @@ public class Binder {
 				bind(IUpgrader.class).to(Upgrader.class);
 				bind(IStarter.class).to(Starter.class);
 				bind(IRandomWaiter.class).to(RandomWaiter.class);
+				bind(IUtils.class).to(Util.class);
 				
 				//Webserver
 				install(
@@ -171,6 +180,18 @@ public class Binder {
 						new FactoryModuleBuilder()
 							.implement(IJukeboxLogger.class, Log.class)
 							.build(LoggerFactory.class));
+				
+				//VLCConnection
+				install(
+					new FactoryModuleBuilder()
+						.implement(IVLCConnection.class, VLCConnection.class)
+						.build(VLCConnectionFactory.class));
+
+				//ConvertedFile
+				install(
+					new FactoryModuleBuilder()
+						.implement(IConvertedFile.class, ConvertedFile.class)
+						.build(ConvertedFileFactory.class));
 					
 			}
 		});

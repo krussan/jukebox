@@ -6,18 +6,25 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+
+import se.qxx.jukebox.core.Log.LogType;
+import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
+import se.qxx.jukebox.interfaces.IUtils;
+import se.qxx.jukebox.interfaces.IVLCConnection;
 import se.qxx.jukebox.servercomm.TcpClient;
-import se.qxx.jukebox.tools.Util;
 
 /**
  * Connection to a VLC player initialized with the RC interface
  * @author Chris
  *
  */
-public class VLCConnection extends TcpClient {
+public class VLCConnection extends TcpClient implements IVLCConnection {
 	private static String mutex = "MUTEX";
 	private final static int COMMAND_TIMEOUT = 3000;
+	private IUtils utils;
 
 	
 	/**
@@ -26,23 +33,34 @@ public class VLCConnection extends TcpClient {
 	 * @param host	The IP number of the host to connect to
 	 * @param port	The port number of the host to connect to
 	 */
-	public VLCConnection(String host, int port, IJukeboxLogger log) {
-		super("VLC", host, port, COMMAND_TIMEOUT, log);
+	@Inject
+	public VLCConnection(@Assisted String host, @Assisted int port, LoggerFactory loggerFactory, IUtils utils) {
+		super("VLC", host, port, COMMAND_TIMEOUT, loggerFactory.create(LogType.COMM));
+		this.setUtils(utils);
 	}
 		
-	/**
-	 * Enqueues a file on the playlist
-	 * @param filename	The MRL of the file to enqueue
+	public IUtils getUtils() {
+		return utils;
+	}
+
+	public void setUtils(IUtils utils) {
+		this.utils = utils;
+	}
+
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.vlc.IVLCConnection#enqueue(java.lang.String)
 	 */
+	@Override
 	public void enqueue(String filename) {
 		synchronized (mutex) {
 			enqueue(filename, StringUtils.EMPTY);
 		}
 	}
 	
-	/**
-	 * Toggles fullscreen
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.vlc.IVLCConnection#toggleFullscreen()
 	 */
+	@Override
 	public void toggleFullscreen() {
 		synchronized (mutex) {
 			try {
@@ -54,11 +72,10 @@ public class VLCConnection extends TcpClient {
 		}
 	}
 	
-	/**
-	 * Enqueues a file on the playlist
-	 * @param filename		The MRL of the file to enqueue
-	 * @param subFiles		A list of MLR's to subfiles to be used
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.vlc.IVLCConnection#enqueue(java.lang.String, java.lang.String)
 	 */
+	@Override
 	public void enqueue(String filename, String subFile) {
 		//add file://Y:/Videos/Kick.Ass[2010]DVD.ENG.X264.mp4 :sub-file=file://Y:/Videos/Repo Men.srt
 		synchronized (mutex) {
@@ -80,9 +97,10 @@ public class VLCConnection extends TcpClient {
 		}
 	}
 	
-	/**
-	 * Stops playback
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.vlc.IVLCConnection#stopPlayback()
 	 */
+	@Override
 	public void stopPlayback() {
 		synchronized (mutex) {
 			try {
@@ -94,9 +112,10 @@ public class VLCConnection extends TcpClient {
 		}
 	}
 	
-	/**
-	 * Pauses playback
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.vlc.IVLCConnection#pausePlayback()
 	 */
+	@Override
 	public void pausePlayback() {
 		synchronized (mutex) {
 			try {
@@ -111,6 +130,10 @@ public class VLCConnection extends TcpClient {
 	/*'
 	 * Clears the playlist
 	 */
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.vlc.IVLCConnection#clearPlaylist()
+	 */
+	@Override
 	public void clearPlaylist() {
 		synchronized (mutex) {
 			try {
@@ -122,10 +145,10 @@ public class VLCConnection extends TcpClient {
 		}
 	}
 
-	/**
-	 * Sets the movie playback to a specific point in the file
-	 * @param seconds	The number of seconds to move to
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.vlc.IVLCConnection#seek(int)
 	 */
+	@Override
 	public void seek(int seconds) {
 		synchronized (mutex) {
 			try {
@@ -138,9 +161,10 @@ public class VLCConnection extends TcpClient {
 	}
 	
 	
-	/**
-	 * Toggles VRatio output
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.vlc.IVLCConnection#toggleVRatio()
 	 */
+	@Override
 	public void toggleVRatio() {
 		synchronized (mutex) {
 			try {
@@ -152,10 +176,10 @@ public class VLCConnection extends TcpClient {
 		}
 	}
 	
-	/**
-	 * Sets the current subtitle track
-	 * @param subtitleID	The ID of the subtitle
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.vlc.IVLCConnection#setSubtitle(int)
 	 */
+	@Override
 	public void setSubtitle(int subtitleID) {
 		synchronized (mutex) {
 			try {
@@ -168,10 +192,10 @@ public class VLCConnection extends TcpClient {
 		}
 	}
 	
-	/**
-	 * Gets the current playback position
-	 * @return	The number of seconds since start of playback
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.vlc.IVLCConnection#getTime()
 	 */
+	@Override
 	public String getTime() {
 		synchronized (mutex) {
 			try {
@@ -187,10 +211,10 @@ public class VLCConnection extends TcpClient {
 		}
 	}
 
-	/**
-	 * Determines whether a movie is playing
-	 * @return	True if a movie is playing. False otherwise.
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.vlc.IVLCConnection#isPlaying()
 	 */
+	@Override
 	public boolean isPlaying() {
 		synchronized (mutex) {
 			try {
@@ -209,10 +233,10 @@ public class VLCConnection extends TcpClient {
 		}
 	}
 
-	/**
-	 * Gets the title (filename) of the current active movie
-	 * @return 		The filename of the current active movie
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.vlc.IVLCConnection#getTitle()
 	 */
+	@Override
 	public String getTitle() {
 		synchronized (mutex) {
 			try {
@@ -236,13 +260,13 @@ public class VLCConnection extends TcpClient {
 	 */
 	private boolean readLinesUntilFound(String pattern) throws IOException {
 		boolean found = false;
-		long startTime = Util.getCurrentTimestamp();
+		long startTime = this.getUtils().getCurrentTimestamp();
 		String line = StringUtils.EMPTY;
 
 		this.getLog().Debug(String.format("Waiting for response like :: %s", pattern));
 		Pattern p = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 		
-		while (!found && Util.getCurrentTimestamp() - startTime <= COMMAND_TIMEOUT) {
+		while (!found && this.getUtils().getCurrentTimestamp() - startTime <= COMMAND_TIMEOUT) {
 			line = this.readResponseLine();
 			Matcher m = p.matcher(line);
 
@@ -258,12 +282,12 @@ public class VLCConnection extends TcpClient {
 	 * @throws IOException
 	 */
 	private String readNextLineIgnoringStatusChanges() throws IOException {
-		long startTime = Util.getCurrentTimestamp();
+		long startTime = this.getUtils().getCurrentTimestamp();
 		String line = StringUtils.EMPTY;
 		
 		Pattern p = Pattern.compile("status\\schange:.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 		
-		while (Util.getCurrentTimestamp() - startTime <= COMMAND_TIMEOUT) {			
+		while (this.getUtils().getCurrentTimestamp() - startTime <= COMMAND_TIMEOUT) {			
 			line = this.readResponseLine();
 			Matcher m = p.matcher(line);
 
@@ -274,6 +298,10 @@ public class VLCConnection extends TcpClient {
 		return line;
 	}
 
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.vlc.IVLCConnection#testConnection()
+	 */
+	@Override
 	public boolean testConnection() {
 		// try something on the wire to assure live connection. Avoid broken pipe exception.
 		// this is ugly but I dont have a better way at the moment

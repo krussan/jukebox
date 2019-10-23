@@ -22,18 +22,29 @@ import com.google.inject.Singleton;
 import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
+import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.interfaces.IWebRetriever;
 
 @Singleton
 public class WebRetriever implements IWebRetriever {
 	
 	private IJukeboxLogger log;
+	private IUtils utils;
 	
 	@Inject
-	public WebRetriever(LoggerFactory loggerFactory) {
+	public WebRetriever(LoggerFactory loggerFactory, IUtils utils) {
+		this.setUtils(utils);
 		this.setLog(loggerFactory.create(LogType.MAIN));
 	}
 	
+	public IUtils getUtils() {
+		return utils;
+	}
+
+	public void setUtils(IUtils utils) {
+		this.utils = utils;
+	}
+
 	public IJukeboxLogger getLog() {
 		return log;
 	}
@@ -52,7 +63,7 @@ public class WebRetriever implements IWebRetriever {
 		httpcon.addRequestProperty("User-Agent", "Mozilla/4.76"); 
 		httpcon.addRequestProperty("Accept-Language", "en-US");
 		
-		String result = Util.readMessageFromStream(httpcon.getInputStream());
+		String result = this.getUtils().readMessageFromStream(httpcon.getInputStream());
 	
 		WebResult res = new WebResult(httpcon.getURL(), result, !url.toString().equals(httpcon.getURL().toString()));
 		

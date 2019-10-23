@@ -51,8 +51,8 @@ import se.qxx.jukebox.interfaces.IMovieIdentifier;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.IStreamingWebServer;
 import se.qxx.jukebox.interfaces.ISubtitleDownloader;
+import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Players.Server;
-import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.vlc.VLCConnectionNotFoundException;
 import se.qxx.jukebox.watcher.FileRepresentation;
 import se.qxx.jukebox.webserver.StreamingFile;
@@ -67,6 +67,7 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 	private IMovieIdentifier movieIdentifier;
 	private IJukeboxLogger log;
 	private IExecutor executor;
+	private IUtils utils;
 	
 	@Inject
 	public JukeboxRpcServerConnection(
@@ -77,6 +78,7 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 			IMovieIdentifier movieIdentifier, 
 			LoggerFactory loggerFactory,
 			IExecutor executor,
+			IUtils utils,
 			@Assisted("webserver") IStreamingWebServer webServer) {
 		super();
 		this.setDatabase(database);
@@ -87,8 +89,17 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 		this.setMovieIdentifier(movieIdentifier);
 		this.setExecutor(executor);
 		this.setLog(loggerFactory.create(LogType.COMM));
+		this.setUtils(utils);
 	}
 	
+	public IUtils getUtils() {
+		return utils;
+	}
+
+	public void setUtils(IUtils utils) {
+		this.utils = utils;
+	}
+
 	public IJukeboxLogger getLog() {
 		return log;
 	}
@@ -698,10 +709,10 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 	}
 	
 	private void reenlist(Media md) {
-		File file = new File(Util.getFullFilePath(md));
+		File file = new File(this.getUtils().getFullFilePath(md));
 		
 		// create a file representation based on the values of the media object
-		FileRepresentation f = new FileRepresentation(md.getFilepath(), md.getFilename(), Util.getCurrentTimestamp(), file.length());
+		FileRepresentation f = new FileRepresentation(md.getFilepath(), md.getFilename(), this.getUtils().getCurrentTimestamp(), file.length());
 		
 		// re-enlist the file into the movie identifier
 		this.getMovieIdentifier().addFile(f);

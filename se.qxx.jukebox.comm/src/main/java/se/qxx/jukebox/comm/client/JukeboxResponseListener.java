@@ -1,5 +1,6 @@
 package se.qxx.jukebox.comm.client;
 
-public interface JukeboxResponseListener {
-	public void onRequestComplete(JukeboxConnectionMessage message);
+public interface JukeboxResponseListener<T> {
+	void onRequestComplete(JukeboxConnectionMessage message);
+	void onDataReceived(T response)
 }

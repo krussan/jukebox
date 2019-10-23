@@ -3,6 +3,8 @@ package se.qxx.jukebox.watcher;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Dictionary;
+import java.util.HashSet;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -14,11 +16,11 @@ import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.IFileCreatedHandler;
 import se.qxx.jukebox.interfaces.IFileSystemWatcher;
-import se.qxx.jukebox.tools.Util;
+import se.qxx.jukebox.interfaces.IUtils;
 
 public class FileSystemWatcher extends JukeboxThread implements IFileSystemWatcher {
 
-	TreeSet<FileRepresentation> currentRepresentation ;
+	Dictionary<String, FileRepresentation> currentRepresentation ;
 	
 	private static Comparator<FileRepresentation> comparator = new Comparator<FileRepresentation>() {
 
@@ -44,13 +46,13 @@ public class FileSystemWatcher extends JukeboxThread implements IFileSystemWatch
 		return clients;
 	}
 
-	private TreeSet<FileRepresentation> files;
+	private List<FileRepresentation> files;
 
-	public TreeSet<FileRepresentation> getFiles() {
+	public List<FileRepresentation> getFiles() {
 		return files;
 	}
 
-	public void setFiles(TreeSet<FileRepresentation> files) {
+	public void setFiles(List<FileRepresentation> files) {
 		this.files = files;
 	}
 
@@ -77,9 +79,12 @@ public class FileSystemWatcher extends JukeboxThread implements IFileSystemWatch
 
 	private boolean recurse = false;
 
+	private IUtils utils;
+
 	@Inject
 	public FileSystemWatcher(LoggerFactory loggerFactory,
 			IExecutor executor,
+			IUtils utils,
 			@Assisted("Name") String name, 
 			@Assisted("Directory") String directoryName, 
 			@Assisted ExtensionFileFilter filter, 
@@ -88,6 +93,7 @@ public class FileSystemWatcher extends JukeboxThread implements IFileSystemWatch
 			@Assisted("Recurse") boolean recurse, 
 			@Assisted int waitTime) {
 		super(name, waitTime, loggerFactory.create(LogType.FIND), executor);
+		this.setUtils(utils);
 		
 		File directoryToWatch = new File(directoryName);
 
@@ -99,6 +105,14 @@ public class FileSystemWatcher extends JukeboxThread implements IFileSystemWatch
 		this.setWatchCreated(watchCreated);
 		this.setWatchModified(watchModified);
 		this.setRecurse(recurse);
+	}
+
+	public IUtils getUtils() {
+		return utils;
+	}
+
+	public void setUtils(IUtils utils) {
+		this.utils = utils;
 	}
 
 	public boolean isRecurse() {
@@ -117,24 +131,11 @@ public class FileSystemWatcher extends JukeboxThread implements IFileSystemWatch
 		clients.add(client);
 	}
 
-	public java.util.TreeSet<FileRepresentation> getCurrentRepresentation() {
-		TreeSet<FileRepresentation> rep = new TreeSet<FileRepresentation>(comparator);
-
-		List<File> list = Util.getFileListing(
+	public List<FileRepresentation> getCurrentRepresentation() {
+		return this.getUtils().getFileListing(
 			this.getDirectory(), 
 			this.getFilter(), 
 			this.isRecurse());
-
-		for (File f : list) {
-			rep.add(
-				new FileRepresentation(
-					f.getParent(),
-					f.getName(), 
-					f.lastModified(), 
-					f.length()));
-		}
-
-		return rep;
 	}
 
 	public void notifyCreated(FileRepresentation f) {

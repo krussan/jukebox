@@ -86,6 +86,13 @@
             android:contentDescription="@string/descConverted"
             android:src="@drawable/ic_converting" />
 
+        <ImageView android:id="@+id/imgSub"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_star_exact"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/txtDescription"
+            />
     </RelativeLayout>
 
 

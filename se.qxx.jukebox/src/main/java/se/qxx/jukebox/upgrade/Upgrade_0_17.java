@@ -12,9 +12,12 @@ import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.interfaces.IDatabase;
+import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.tools.Util;
 
 public class Upgrade_0_17 extends UpgraderBase implements IIncrimentalUpgrade {
+	
+	private IUtils utils = new Util();
 	
 	public Upgrade_0_17(IDatabase database) {
 		super(database);
@@ -39,7 +42,7 @@ public class Upgrade_0_17 extends UpgraderBase implements IIncrimentalUpgrade {
 			for (Movie m: movies) {
 				if (!m.getImage().isEmpty() && m.getThumbnail().isEmpty()){
 					System.out.println(String.format("Creating thumbnail for %s", m.getTitle()));
-					Movie m_new = Movie.newBuilder(m).setThumbnail(Util.getScaledImage(m.getImage())).build();
+					Movie m_new = Movie.newBuilder(m).setThumbnail(utils.getScaledImage(m.getImage())).build();
 					this.getDatabase().save(m_new);
 				}
 			}
@@ -50,7 +53,7 @@ public class Upgrade_0_17 extends UpgraderBase implements IIncrimentalUpgrade {
 					for (Episode e : sn.getEpisodeList()) {
 						if (!e.getImage().isEmpty() && e.getThumbnail().isEmpty()) {
 							System.out.println(String.format("Creating thumbnail for %s S%sE%s", s.getTitle(), sn.getSeasonNumber(), e.getEpisodeNumber()));
-							Episode e_new = Episode.newBuilder(e).setThumbnail(Util.getScaledImage(e.getImage())).build();
+							Episode e_new = Episode.newBuilder(e).setThumbnail(utils.getScaledImage(e.getImage())).build();
 							DomainUtil.updateEpisode(sn, e_new);
 						}
 					}
@@ -58,7 +61,7 @@ public class Upgrade_0_17 extends UpgraderBase implements IIncrimentalUpgrade {
 					Season sn_new = sn;
 					if (!sn.getImage().isEmpty() && sn.getThumbnail().isEmpty()) {
 						System.out.println(String.format("Creating thumbnail for %s season %s", s.getTitle(), sn.getSeasonNumber()));
-						sn_new = Season.newBuilder(sn).setThumbnail(Util.getScaledImage(sn.getImage())).build();
+						sn_new = Season.newBuilder(sn).setThumbnail(utils.getScaledImage(sn.getImage())).build();
 					}
 					
 					DomainUtil.updateSeason(s, sn_new);
@@ -68,7 +71,7 @@ public class Upgrade_0_17 extends UpgraderBase implements IIncrimentalUpgrade {
 				if (!s.getImage().isEmpty() && s.getThumbnail().isEmpty()) {
 					System.out.println(String.format("Creating master thumbnail for %s", s.getTitle()));
 					
-					s_new = Series.newBuilder(s).setThumbnail(Util.getScaledImage(s.getImage())).build();
+					s_new = Series.newBuilder(s).setThumbnail(utils.getScaledImage(s.getImage())).build();
 				}
 				
 				this.getDatabase().save(s_new);
