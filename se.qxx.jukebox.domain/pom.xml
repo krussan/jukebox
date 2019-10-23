@@ -39,15 +39,9 @@
     <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
-      <version>3.6.0</version>
+      <version>3.9.0</version>
     </dependency>
 
-	<dependency>
-	  <groupId>io.grpc</groupId>
-	  <artifactId>grpc-netty-shaded</artifactId>
-	  <version>1.24.0</version>
-	</dependency>
-	
 	<dependency>
 	  <groupId>io.grpc</groupId>
 	  <artifactId>grpc-protobuf</artifactId>

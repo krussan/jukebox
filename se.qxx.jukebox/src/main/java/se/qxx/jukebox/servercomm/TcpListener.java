@@ -2,9 +2,6 @@ package se.qxx.jukebox.servercomm;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.googlecode.protobuf.socketrpc.RpcServer;
-import com.googlecode.protobuf.socketrpc.ServerRpcConnectionFactory;
-import com.googlecode.protobuf.socketrpc.SocketRpcConnectionFactories;
 
 import se.qxx.jukebox.concurrent.JukeboxRunnable;
 import se.qxx.jukebox.core.Log.LogType;

@@ -4,7 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 
+import io.grpc.stub.StreamObserver;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.inject.Inject;
@@ -41,6 +43,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.domain.JukeboxDomain.SubtitleRequestType;
+import se.qxx.jukebox.domain.JukeboxServiceGrpc;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IDistributor;
@@ -58,7 +61,7 @@ import se.qxx.jukebox.watcher.FileRepresentation;
 import se.qxx.jukebox.webserver.StreamingFile;
 import se.qxx.protodb.Logger;
 
-public class JukeboxRpcServerConnection extends JukeboxService implements IJukeboxRpcServerConnection {
+public class JukeboxRpcServerConnection extends JukeboxServiceGrpc.JukeboxServiceImplBase implements IJukeboxRpcServerConnection {
 	private IDatabase database;
 	private ISettings settings;
 	private IDistributor distributor;
@@ -159,57 +162,53 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 	public void setExecutor(IExecutor executor) {
 		this.executor = executor;
 	}
-	
-	
-	@Override 
-	public void listMovies(RpcController controller,
-			JukeboxRequestListMovies request,
-			RpcCallback<JukeboxResponseListMovies> done) {
 
+	@Override
+	public void listMovies(JukeboxRequestListMovies request, StreamObserver<JukeboxResponseListMovies> responseObserver) {
 		setPriority();
 		this.getLog().Debug(String.format("ListMovies :: %s", request.getRequestType()));
-		
+
 		String searchString = request.getSearchString();
-		
+
 		JukeboxResponseListMovies.Builder b = JukeboxResponseListMovies.newBuilder();
 		boolean excludeImages = request.getFilterList().stream().anyMatch(r -> r == RequestFilter.Images);
 		boolean excludeTextData = request.getFilterList().stream().anyMatch(r -> r == RequestFilter.SubsTextdata);
-		
+
 		switch (request.getRequestType()) {
-		case TypeMovie:
-			b.addAllMovies(
-				this.getDatabase().searchMoviesByTitle(
-						searchString, 
-						request.getNrOfItems(), 
-						request.getStartIndex(),
-						excludeImages,
-						excludeTextData));
-			
-			b.setTotalMovies(
-				this.getDatabase().getTotalNrOfMovies());
-			
-			break;
-		case TypeSeries:
-			b.addAllSeries(
-				this.getDatabase().searchSeriesByTitle(
-						searchString, 
-						request.getNrOfItems(), 
-						request.getStartIndex(),
-						excludeImages));
-			
-			b.setTotalSeries(
-				this.getDatabase().getTotalNrOfSeries());
-			
-			break;
-		default:
-			break;
+			case TypeMovie:
+				b.addAllMovies(
+						this.getDatabase().searchMoviesByTitle(
+								searchString,
+								request.getNrOfItems(),
+								request.getStartIndex(),
+								excludeImages,
+								excludeTextData));
+
+				b.setTotalMovies(
+						this.getDatabase().getTotalNrOfMovies());
+
+				break;
+			case TypeSeries:
+				b.addAllSeries(
+						this.getDatabase().searchSeriesByTitle(
+								searchString,
+								request.getNrOfItems(),
+								request.getStartIndex(),
+								excludeImages));
+
+				b.setTotalSeries(
+						this.getDatabase().getTotalNrOfSeries());
+
+				break;
+			default:
+				break;
 		}
-		
+
 		JukeboxResponseListMovies response = b.build();
 		logResponse(response);
-		
-		done.run(
-			b.build());
+
+		responseObserver.onNext(b.build());
+		responseObserver.onCompleted();
 	}
 
 	private void logResponse(JukeboxResponseListMovies response) {
@@ -239,8 +238,8 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 	}
 
 	@Override
-	public void listPlayers(RpcController controller, Empty request,
-			RpcCallback<JukeboxResponseListPlayers> done) {
+	public void listPlayers(Empty request,
+			StreamObserver<JukeboxResponseListPlayers> responseObserver) {
 
 		setPriority();
 		this.getLog().Debug("ListPlayers");
@@ -252,13 +251,12 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 		
 		JukeboxResponseListPlayers lp = JukeboxResponseListPlayers.newBuilder().addAllHostname(hostnames).build();
 
-		done.run(lp);
+		responseObserver.onNext(lp);
+		responseObserver.onCompleted();
 	}
 
 	@Override
-	public void startMovie(RpcController controller,
-			JukeboxRequestStartMovie request,
-			RpcCallback<JukeboxResponseStartMovie> done) {
+	public void startMovie(JukeboxRequestStartMovie request,  StreamObserver<JukeboxResponseStartMovie> responseObserver) {
 
 		setPriority();
 		this.getLog().Debug("StartMovie");
@@ -290,17 +288,21 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 					b.setUri(streamingFile.getUri())
 						.setMimeType(streamingFile.getMimeType());
 				}
-									
-				done.run(
-					b.build());
+
+				responseObserver.onNext(b.build());
+				responseObserver.onCompleted();
 				
 			}
-			else
-				controller.setFailed("Error occured when connecting to target media player"); 
+			else {
+				responseObserver.onError(new Exception("Error occured when connecting to target media player"));
+				responseObserver.onCompleted();
+			}
+
 		} catch (VLCConnectionNotFoundException e) {
 			this.getLog().Error("Error occured when starting movie", e);
-			controller.setFailed("Error occured when connecting to target media player"); 
-		}		
+			responseObserver.onError(e);
+			responseObserver.onCompleted();
+		}
 		
 	}
 
@@ -330,83 +332,97 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 	}
 
 	@Override
-	public void stopMovie(RpcController controller,
-			JukeboxRequestGeneral request, RpcCallback<Empty> done) {
+	public void stopMovie(JukeboxRequestGeneral request, StreamObserver<Empty> responseObserver) {
 
 		setPriority();
 		this.getLog().Debug("StopMovie");
 		this.getLog().Debug(String.format("Stopping movie on player %s", request.getPlayerName()));
 		
 		try {
-			if (this.getDistributor().stopMovie(request.getPlayerName()))
-				done.run(Empty.newBuilder().build());
-			else
-				controller.setFailed("Error occured when connecting to target media player"); 
+			if (this.getDistributor().stopMovie(request.getPlayerName())) {
+				responseObserver.onNext(Empty.newBuilder().build());
+				responseObserver.onCompleted();
+			}
+			else {
+				responseObserver.onError(new Exception("Error occured when connecting to target media player"))
+				responseObserver.onCompleted();
+			}
 		} catch (VLCConnectionNotFoundException e) {
-			controller.setFailed("Error occured when connecting to target media player"); 
-			
+			responseObserver.onError(new Exception("Error occured when connecting to target media player"))
+			responseObserver.onCompleted();
 		}		
 
 	}
 
 	@Override
-	public void pauseMovie(RpcController controller,
-			JukeboxRequestGeneral request, RpcCallback<Empty> done) {
+	public void pauseMovie(JukeboxRequestGeneral request, StreamObserver<Empty> responseObserver) {
 
 		setPriority();
 		this.getLog().Debug("PauseMovie");
 		this.getLog().Debug(String.format("Pausing movie on player %s", request.getPlayerName()));
 		
 		try {
-			if (this.getDistributor().pauseMovie(request.getPlayerName()))
-				done.run(Empty.newBuilder().build());
-			else
-				controller.setFailed("Error occured when connecting to target media player"); 
+			if (this.getDistributor().pauseMovie(request.getPlayerName())) {
+				responseObserver.onNext(Empty.newBuilder().build());
+				responseObserver.onCompleted();
+			}
+			else {
+				responseObserver.onError(new Exception("Error occured when connecting to target media player"))
+				responseObserver.onCompleted();
+			}
 		} catch (VLCConnectionNotFoundException e) {
-			controller.setFailed("Error occured when connecting to target media player"); 
+			responseObserver.onError(new Exception("Error occured when connecting to target media player"))
+			responseObserver.onCompleted();
 		}		
 		
 	}
 
 	@Override
-	public void seek(RpcController controller, JukeboxRequestSeek request,
-			RpcCallback<Empty> done) {
+	public void seek(JukeboxRequestSeek request, StreamObserver<Empty> responseObserver) {
 
 		setPriority();
 		this.getLog().Debug(String.format("Seeking on player %s to %s seconds", request.getPlayerName(), request.getSeconds()));
 		
 		try {
-			if (this.getDistributor().seek(request.getPlayerName(), request.getSeconds()))
-				done.run(Empty.newBuilder().build());
-			else
-				controller.setFailed("Error occured when connecting to target media player"); 
+			if (this.getDistributor().seek(request.getPlayerName(), request.getSeconds())) {
+				responseObserver.onNext(Empty.newBuilder().build());
+				responseObserver.onCompleted();
+			}
+			else {
+				responseObserver.onError(new Exception("Error occured when connecting to target media player"))
+				responseObserver.onCompleted();
+			}
 		} catch (VLCConnectionNotFoundException e) {
-			controller.setFailed("Error occured when connecting to target media player"); 
+			responseObserver.onError(new Exception("Error occured when connecting to target media player"))
+			responseObserver.onCompleted();
 		}		
 	}
 
 	@Override
-	public void switchVRatio(RpcController controller,
-			JukeboxRequestGeneral request, RpcCallback<Empty> done) {
+	public void switchVRatio(JukeboxRequestGeneral request, StreamObserver<Empty> responseObserver) {
 
 		setPriority();
 		this.getLog().Debug("SwitchVRatio");
 		this.getLog().Debug(String.format("Toggling vratio on %s...", request.getPlayerName()));
 		
 		try {
-			if (this.getDistributor().toggleVRatio(request.getPlayerName()))
-				done.run(Empty.newBuilder().build());
-			else
-				controller.setFailed("Error occured when connecting to target media player"); 
+			if (this.getDistributor().toggleVRatio(request.getPlayerName())){
+				responseObserver.onNext(Empty.newBuilder().build());
+				responseObserver.onCompleted();
+			}
+			else {
+				responseObserver.onError(new Exception("Error occured when connecting to target media player"))
+				responseObserver.onCompleted();
+			}
 		} catch (VLCConnectionNotFoundException e) {
-			controller.setFailed("Error occured when connecting to target media player"); 
+			responseObserver.onError(new Exception("Error occured when connecting to target media player"))
+			responseObserver.onCompleted();
 		}		
 
 	}
 
 	@Override
-	public void getTime(RpcController controller,
-			JukeboxRequestGeneral request, RpcCallback<JukeboxResponseTime> done) {
+	public void getTime(JukeboxRequestGeneral request, StreamObserver<JukeboxResponseTime> responseObserver) {
 
 		setPriority();
 		this.getLog().Debug("GetTime");
@@ -414,8 +430,10 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 		
 		try {
 			String response = this.getDistributor().getTime(request.getPlayerName());
-			if (response.equals(StringUtils.EMPTY))
-				controller.setFailed("Error occured when connecting to target media player"); 
+			if (response.equals(StringUtils.EMPTY)){
+				responseObserver.onError(new Exception("Error occured when connecting to target media player"));
+				responseObserver.onCompleted();
+			}
 			else {
 				int seconds = Integer.parseInt(response);
 				String titleFilename = getTitleFilename(request.getPlayerName());
@@ -425,20 +443,19 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 						.setFilename(titleFilename)
 						.build();
 
-				done.run(time);
+				responseObserver.onNext(time);
+				responseObserver.onCompleted();
 			}
 				
 		} catch (VLCConnectionNotFoundException e) {
-			controller.setFailed("Error occured when connecting to target media player"); 
-			
+			responseObserver.onError(new Exception("Error occured when connecting to target media player"));
+			responseObserver.onCompleted();
 		}		
 		
 	}
 
 	@Override
-	public void isPlaying(RpcController controller,
-			JukeboxRequestGeneral request,
-			RpcCallback<JukeboxResponseIsPlaying> done) {
+	public void isPlaying(JukeboxRequestGeneral request, StreamObserver<JukeboxResponseIsPlaying> responseObserver) {
 
 		setPriority();
 		this.getLog().Debug("IsPlaying");
@@ -448,25 +465,24 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 			boolean isPlaying = this.getDistributor().isPlaying(request.getPlayerName());
 
 			JukeboxResponseIsPlaying r = JukeboxResponseIsPlaying.newBuilder().setIsPlaying(isPlaying).build();	
-			done.run(r);				
+
+			responseObserver.onNext(r);
+			responseObserver.onCompleted();
+
 		} catch (VLCConnectionNotFoundException e) {
-			controller.setFailed("Error occured when connecting to target media player"); 
+			responseObserver.onError(new Exception("Error occured when connecting to target media player"));
+			responseObserver.onCompleted();
 		}				
 	}
 
 	@Override
-	public void getTitle(RpcController controller,
-			JukeboxRequestGeneral request,
-			RpcCallback<JukeboxResponseGetTitle> done) {
-		// TODO Auto-generated method stub
-		
+	public void getTitle(JukeboxRequestGeneral request, StreamObserver<JukeboxResponseGetTitle> responseObserver) {
 		setPriority();
 		this.getLog().Debug("GetTitle -- EMPTY");
 	}
 
 	@Override
-	public void blacklist(RpcController controller,
-			JukeboxRequestID request, RpcCallback<Empty> done) {
+	public void blacklist(JukeboxRequestID request, StreamObserver<Empty> responseObserver) {
 		
 		setPriority();
 		this.getLog().Debug("Blacklist -- EMPTY");
@@ -480,13 +496,13 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 		if (request.getRequestType() == RequestType.TypeEpisode) {
 			this.getLog().Debug("Not Implemented yet -- Blacklist of episodes");
 		}
-		
-		done.run(Empty.newBuilder().build());
+
+		responseObserver.onNext(Empty.newBuilder().build());
+		responseObserver.onCompleted();
 	}
 
 	@Override
-	public void toggleWatched(RpcController controller,
-			JukeboxRequestID request, RpcCallback<Empty> done) {
+	public void toggleWatched(JukeboxRequestID request, StreamObserver<Empty> responseObserver) {
 		// TODO Auto-generated method stub
 		
 		setPriority();
@@ -494,9 +510,8 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 	}
 
 	@Override
-	public void listSubtitles(RpcController controller,
-			JukeboxRequestListSubtitles request,
-			RpcCallback<JukeboxResponseListSubtitles> done) {
+	public void listSubtitles(JukeboxRequestListSubtitles request,
+							  StreamObserver<JukeboxResponseListSubtitles> responseObserver) {
 
 		setPriority();
 		this.getLog().Debug(String.format("Getting list of subtitles for media ID :: %s", request.getMediaId()));
@@ -508,13 +523,13 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 				.addAllSubtitleUris(
 					this.getWebServer()
 						.getSubtitleUris(media, request.getSubtitleRequestType()));
-	
-		done.run(b.build());
+
+		responseObserver.onNext(b.build());
+		responseObserver.onCompleted();
 	}
 
 	@Override
-	public void setSubtitle(RpcController controller,
-			JukeboxRequestSetSubtitle request, RpcCallback<Empty> done) {
+	public void setSubtitle(JukeboxRequestSetSubtitle request, StreamObserver<Empty> responseObserver) {
 		
 		setPriority();
 		this.getLog().Debug(String.format("Setting subtitle on %s...", request.getPlayerName()));
@@ -543,15 +558,21 @@ public class JukeboxRpcServerConnection extends JukeboxService implements IJukeb
 						md, 
 						subTrack.getFilename(), 
 						true))
-					done.run(Empty.newBuilder().build());
-				else
-					controller.setFailed("Error occured when connecting to target media player"); 
+					responseObserver.onNext(Empty.newBuilder().build());
+					responseObserver.onCompleted();
+				else {
+					responseObserver.onError(new Exception("Error occured when connecting to target media player"));
+					responseObserver.onCompleted();
+				}
 			}
 			else {
-				controller.setFailed("Subtitle track with that description was not found");
+				responseObserver.onError(new Exception("Subtitle track with that description was not found"));
+				responseObserver.onCompleted();
+
 			}
 		} catch (VLCConnectionNotFoundException e) {
-			controller.setFailed("Error occured when connecting to target media player"); 
+			responseObserver.onError(new Exception("Error occured when connecting to target media player"));
+			responseObserver.onCompleted();
 		}		
 		
 	}
