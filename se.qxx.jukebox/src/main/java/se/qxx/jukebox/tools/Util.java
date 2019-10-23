@@ -12,13 +12,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -91,7 +85,7 @@ public class Util implements IUtils {
 	 * @see se.qxx.jukebox.tools.IUtils#getFileListing(java.io.File, se.qxx.jukebox.watcher.ExtensionFileFilter, boolean)
 	 */
 	@Override
-	public List<FileRepresentation> getFileListing(File directory, ExtensionFileFilter filter, boolean recurse)
+	public Map<String, FileRepresentation> getFileListing(File directory, ExtensionFileFilter filter, boolean recurse)
 	{
 		return getFileListing(directory.listFiles(filter), filter, recurse);
 	}
@@ -102,15 +96,15 @@ public class Util implements IUtils {
 	 * @param filter The filter of extension to look for
 	 * @return
 	 */
-	private List<FileRepresentation> getFileListing(File[] filesAndDirs, ExtensionFileFilter filter, boolean recurse) {
-		List<FileRepresentation> result = new ArrayList<File>();
+	private Map<String, FileRepresentation> getFileListing(File[] filesAndDirs, ExtensionFileFilter filter, boolean recurse) {
+		Map<String, FileRepresentation> result = new HashMap<>();
 
 		for(File file : filesAndDirs) {
 			
 			if (file.isFile() ) {
-				result.add(file);
+				result.put(file.getName().toLowerCase(), new FileRepresentation(file));
 			} else if (recurse) {
-				result.addAll(
+				result.putAll(
 					getFileListing(
 						file.listFiles(filter), filter, recurse));
 			}
@@ -123,7 +117,7 @@ public class Util implements IUtils {
 	 * @see se.qxx.jukebox.tools.IUtils#getFileListingWorkAround(java.io.File, se.qxx.jukebox.watcher.ExtensionFileFilter)
 	 */
 	@Override
-	public List<File> getFileListingWorkAround(File directory, ExtensionFileFilter filter) {
+	public Map<String, FileRepresentation> getFileListingWorkAround(File directory, ExtensionFileFilter filter) {
 		// Workaround
 		FileSystemView fsv = FileSystemView.getFileSystemView();
 		File dirF = fsv.getParentDirectory(new File(directory.getName(), "C$"));

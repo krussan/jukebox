@@ -1,43 +1,22 @@
 package se.qxx.jukebox.comm.client;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import io.grpc.stub.StreamObserver;
-import se.qxx.jukebox.comm.EmptyRpcCallback;
-import se.qxx.jukebox.comm.RpcCallback;
-import se.qxx.jukebox.comm.client.JukeboxConnectionPool;
-import se.qxx.jukebox.comm.client.JukeboxResponseListener;
-import se.qxx.jukebox.domain.JukeboxDomain;
-import se.qxx.jukebox.domain.JukeboxDomain.Empty;
-import se.qxx.jukebox.domain.JukeboxDomain.Episode;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestGeneral;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListMovies;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestListSubtitles;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestID;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSeek;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestSetSubtitle;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStartMovie;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseGetTitle;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseIsPlaying;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListMovies;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListPlayers;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseListSubtitles;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseStartMovie;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxResponseTime;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxService;
-import se.qxx.jukebox.domain.JukeboxDomain.Media;
-import se.qxx.jukebox.domain.JukeboxDomain.Movie;
-import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
-import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import se.qxx.jukebox.comm.RpcCallback;
+import se.qxx.jukebox.domain.JukeboxDomain;
+import se.qxx.jukebox.domain.JukeboxDomain.*;
 import se.qxx.jukebox.domain.JukeboxServiceGrpc;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class JukeboxConnectionHandler  {
 	
 	private JukeboxResponseListener listener;
-	private JukeboxServiceGrpc.JukeboxServiceStub service;
+	private JukeboxServiceGrpc.JukeboxServiceFutureStub service;
 
 	private JukeboxResponseListener getListener() {
 		return listener;
@@ -58,9 +37,11 @@ public class JukeboxConnectionHandler  {
 
 	private void init(String serverIPaddress, int port) {
 		ManagedChannel managedChannel = ManagedChannelBuilder
-				.forAddress(serverIPaddress, port).usePlaintext().build();
+				.forAddress(serverIPaddress, port)
+				.usePlaintext()
+				.build();
 
-		service = se.qxx.jukebox.domain.JukeboxServiceGrpc.newStub(managedChannel);
+		service = JukeboxServiceGrpc.newFutureStub(managedChannel);
 	}
 	
 	//----------------------------------------------------------------------------------------------------------------
@@ -76,7 +57,8 @@ public class JukeboxConnectionHandler  {
 				.addAllFilter(filter)
 				.build();
 
-		this.service.getItem(request, new RpcCallback<>(this.getListener()));
+		ListenableFuture future = this.service.getItem(request);
+		Futures.addCallback(future, new RpcCallback<>(this.getListener()), MoreExecutors.directExecutor());
 
 	}
 
@@ -86,7 +68,9 @@ public class JukeboxConnectionHandler  {
 				.setRequestType(requestType)
 				.build();
 
-		this.service.blacklist(request, new RpcCallback<>(this.getListener()));
+		ListenableFuture future = this.service.blacklist(request);
+		Futures.addCallback(future, new RpcCallback<>(this.getListener()), MoreExecutors.directExecutor());
+
 	}
 	
 	public void reIdentify(final int id, final RequestType requestType) {
@@ -95,15 +79,16 @@ public class JukeboxConnectionHandler  {
 				.setRequestType(requestType)
 				.build();
 
-		this.service.reIdentify(request, new RpcCallback<>(this.getListener()));
+		ListenableFuture future = this.service.reIdentify(request);
+		Futures.addCallback(future, new RpcCallback<>(this.getListener()), MoreExecutors.directExecutor());
 	}
 	
 	public void startMovie(
 			final String playerName, 
 			final Movie m,
 			final Episode ep,
-			final JukeboxDomain.SubtitleRequestType subtitleRequestType,
-			final RpcCallback<JukeboxResponseStartMovie> callback) {
+			final JukeboxDomain.SubtitleRequestType subtitleRequestType) {
+
 		if (m != null || ep != null) {
 			int id = m == null ? ep.getID() : m.getID();
 			RequestType requestType = m == null ? RequestType.TypeEpisode : RequestType.TypeMovie;
@@ -115,17 +100,21 @@ public class JukeboxConnectionHandler  {
 					.setSubtitleRequestType(subtitleRequestType)
 					.build();
 
-			this.service.startMovie(request, new RpcCallback<>(this.getListener()));
+			ListenableFuture future = this.service.startMovie(request);
+			Futures.addCallback(future, new RpcCallback<>(this.getListener()), MoreExecutors.directExecutor());
+
 		}
 
 	}
 	
-	public void stopMovie(final String playerName, final RpcCallback<Empty> callback) {
+	public void stopMovie(final String playerName) {
 		JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
 				.setPlayerName(playerName)
 				.build();
 
-		this.service.stopMovie(request, new RpcCallback<>(this.getListener()));
+		ListenableFuture future = this.service.stopMovie(request);
+		Futures.addCallback(future, new RpcCallback<>(this.getListener()), MoreExecutors.directExecutor());
+
 	}
 	
 	public void pauseMovie(final String playerName) {
@@ -133,7 +122,9 @@ public class JukeboxConnectionHandler  {
 				.setPlayerName(playerName)
 				.build();
 
-		this.service.pauseMovie(request, new RpcCallback<>(this.getListener()));
+		ListenableFuture future = this.service.pauseMovie(request);
+		Futures.addCallback(future, new RpcCallback<>(this.getListener()), MoreExecutors.directExecutor());
+
 	}
 	
 	public void listMovies(String searchString, int nrOfItems, int offset, boolean excludeImages, boolean excludeTextdata, final RpcCallback<JukeboxResponseListMovies> callback) {
@@ -161,7 +152,8 @@ public class JukeboxConnectionHandler  {
 				.addAllFilter(requestFilters)
 				.build();
 
-		this.service.listMovies(request, new RpcCallback<>(this.getListener()));
+		ListenableFuture future = this.service.listMovies(request);
+		Futures.addCallback(future, new RpcCallback<>(this.getListener()), MoreExecutors.directExecutor());
 
 	}
 
@@ -190,7 +182,9 @@ public class JukeboxConnectionHandler  {
 				.setPlayerName(playerName)
 				.build();
 
-		this.service.wakeup(request, new RpcCallback<>(this.getListener()));
+		ListenableFuture future = this.service.wakeup(request);
+		Futures.addCallback(future, new RpcCallback<>(this.getListener()), MoreExecutors.directExecutor());
+
 	}
 
 	public void toggleFullscreen(final String playerName) {
@@ -198,23 +192,27 @@ public class JukeboxConnectionHandler  {
 				.setPlayerName(playerName)
 				.build();
 
-		this.service.toggleFullscreen(request, new RpcCallback<>(this.getListener()));
+		ListenableFuture future = this.service.toggleFullscreen(request);
+		Futures.addCallback(future, new RpcCallback<>(this.getListener()), MoreExecutors.directExecutor());
 	}
 
-	public void isPlaying(final String playerName, final RpcCallback<JukeboxResponseIsPlaying> callback) {
+	public void isPlaying(final String playerName) {
 		JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
 				.setPlayerName(playerName)
 				.build();
 
-		this.service.isPlaying(request, new RpcCallback<>(this.getListener()));
+		ListenableFuture future = this.service.isPlaying(request);
+		Futures.addCallback(future, new RpcCallback<>(this.getListener()), MoreExecutors.directExecutor());
+
 	}
 
-	public void getTime(final String playerName, final RpcCallback<JukeboxResponseTime> callback) {
+	public void getTime(final String playerName) {
 		JukeboxRequestGeneral request = JukeboxRequestGeneral.newBuilder()
 				.setPlayerName(playerName)
 				.build();
 
-		this.service.getTime(request, new RpcCallback<>(this.getListener()));
+		ListenableFuture future = this.service.getTime(request);
+		Futures.addCallback(future, new RpcCallback<>(this.getListener()), MoreExecutors.directExecutor());
 	}
 
 	public void getTitle(final String playerName, final RpcCallback<JukeboxResponseGetTitle> callback) {
@@ -222,7 +220,9 @@ public class JukeboxConnectionHandler  {
 				.setPlayerName(playerName)
 				.build();
 
-		this.service.getTitle(request, new RpcCallback<>(this.getListener()));
+		ListenableFuture future = this.service.getTitle(request);
+		Futures.addCallback(future, new RpcCallback<>(this.getListener()), MoreExecutors.directExecutor());
+
 	}
 
 	public void suspend(final String playerName) {
@@ -230,11 +230,15 @@ public class JukeboxConnectionHandler  {
 				.setPlayerName(playerName)
 				.build();
 
-		this.service.suspend(request, new RpcCallback<>(this.getListener()));
+		ListenableFuture future = this.service.suspend(request);
+		Futures.addCallback(future, new RpcCallback<>(this.getListener()), MoreExecutors.directExecutor());
+
 	}
 	
 	public void listPlayers(final RpcCallback<JukeboxResponseListPlayers> callback) {
-		this.service.listPlayers(Empty.getDefaultInstance(), new RpcCallback<>(this.getListener()));
+		ListenableFuture future = this.service.listPlayers(Empty.getDefaultInstance());
+		Futures.addCallback(future, new RpcCallback<>(this.getListener()), MoreExecutors.directExecutor());
+
 	}
 	
 	public void listSubtitles(final Media md, final RpcCallback<JukeboxResponseListSubtitles> callback) {
@@ -243,7 +247,9 @@ public class JukeboxConnectionHandler  {
 				.setSubtitleRequestType(JukeboxDomain.SubtitleRequestType.WebVTT)
 				.build();
 
-		this.service.listSubtitles(request, new RpcCallback<>(this.getListener()));
+		ListenableFuture future = this.service.listSubtitles(request);
+		Futures.addCallback(future, new RpcCallback<>(this.getListener()), MoreExecutors.directExecutor());
+
 	}
 	
 	public void seek(final String playerName,final int seconds) {
@@ -252,7 +258,8 @@ public class JukeboxConnectionHandler  {
 				.setSeconds(seconds)
 				.build();
 
-		this.service.seek(request, new RpcCallback<>(this.getListener()));
+		ListenableFuture future = this.service.seek(request);
+		Futures.addCallback(future, new RpcCallback<>(this.getListener()), MoreExecutors.directExecutor());
 	}
 	
 	public void setSubtitle(final String playerName, final int mediaId, final Subtitle subtitle) {
@@ -262,7 +269,8 @@ public class JukeboxConnectionHandler  {
 				.setSubtitleDescription(subtitle.getDescription())
 				.build();
 
-		this.service.setSubtitle(request, new RpcCallback<>(this.getListener()));
+		ListenableFuture future = this.service.setSubtitle(request);
+		Futures.addCallback(future, new RpcCallback<>(this.getListener()), MoreExecutors.directExecutor());
 	}
 
 	public void toggleWatched(final int id, final RequestType requestType) {
@@ -271,7 +279,9 @@ public class JukeboxConnectionHandler  {
 				.setRequestType(requestType)
 				.build();
 
-		this.service.toggleWatched(request, new RpcCallback<>(this.getListener()));
+		ListenableFuture future = this.service.toggleWatched(request);
+		Futures.addCallback(future, new RpcCallback<>(this.getListener()), MoreExecutors.directExecutor());
+
 	}
 	
 	public void reenlistSub(final int id, final RequestType requestType) {
@@ -280,7 +290,8 @@ public class JukeboxConnectionHandler  {
 				.setRequestType(requestType)
 				.build();
 
-		this.service.reenlistSubtitles(request, new RpcCallback<>(this.getListener()));
+		ListenableFuture future = this.service.reenlistSubtitles(request);
+		Futures.addCallback(future, new RpcCallback<>(this.getListener()), MoreExecutors.directExecutor());
 
 	}
 
@@ -290,7 +301,9 @@ public class JukeboxConnectionHandler  {
 				.setRequestType(requestType)
 				.build();
 
-		this.service.reenlistMetadata(request, new RpcCallback<>(this.getListener()));
+		ListenableFuture future = this.service.reenlistMetadata(request);
+		Futures.addCallback(future, new RpcCallback<>(this.getListener()), MoreExecutors.directExecutor());
+
 	}
 
 	public void forceconversion(final int mediaId) {
@@ -299,7 +312,7 @@ public class JukeboxConnectionHandler  {
 				.setRequestType(RequestType.TypeMovie)
 				.build();
 
-		this.service.forceConverter(request, new RpcCallback<>(this.getListener()));
+		ListenableFuture future = this.service.forceConverter(request);
+		Futures.addCallback(future, new RpcCallback<>(this.getListener()), MoreExecutors.directExecutor());
 	}
-
 }

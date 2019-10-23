@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Map;
 
 import com.google.protobuf.ByteString;
 
@@ -44,7 +45,7 @@ public interface IUtils {
 	 * @param filter The filter of extension to look for
 	 * @return
 	 */
-	List<FileRepresentation> getFileListing(File directory, ExtensionFileFilter filter, boolean recurse);
+	Map<String, FileRepresentation> getFileListing(File directory, ExtensionFileFilter filter, boolean recurse);
 
 	/**
 	 * The function getFileListing does not work for UNC paths so this is the workaround
@@ -53,7 +54,7 @@ public interface IUtils {
 	 * @param filter The filter of extension to look for
 	 * @return
 	 */
-	List<FileRepresentation> getFileListingWorkAround(File directory, ExtensionFileFilter filter);
+	Map<String, FileRepresentation> getFileListingWorkAround(File directory, ExtensionFileFilter filter);
 
 	/**
 	 * Tries to parse an integer to a string
