@@ -31,7 +31,7 @@ public class TcpListener implements ITcpListener, IStoppableRunnable {
 	@Inject
 	public TcpListener(
 			IExecutor executor,
-			ExecutorService executorService,
+			@Assisted("executorservice") ExecutorService executorService,
 			LoggerFactory loggerFactory,
 			JukeboxRpcServerFactory rpcFactory,
 			@Assisted("webserver") IStreamingWebServer webServer,

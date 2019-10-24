@@ -154,12 +154,6 @@ public class Binder {
 						.implement(IJukeboxRpcServerConnection.class, JukeboxRpcServerConnection.class)
 						.build(JukeboxRpcServerFactory.class));
 
-				//ExecutorService
-				install(
-					new FactoryModuleBuilder()
-						.implement(ExecutorService.class, JukeboxThreadPoolExecutor.class)
-						.build(ExecutorServiceFactory.class));
-
 				//Converter
 				bind(IMediaConverter.class).to(MediaConverter.class);
 				

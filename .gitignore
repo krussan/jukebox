@@ -1,4 +1,4 @@
-*.class
+.class
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
@@ -36,3 +36,5 @@ scripts/dump
 scripts/local*.sh
 api.json
 deploy.sh
+
+schema/

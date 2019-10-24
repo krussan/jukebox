@@ -1,7 +1,8 @@
 package se.qxx.jukebox.junit;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -9,6 +10,7 @@ import java.io.UnsupportedEncodingException;
 
 import javax.xml.bind.JAXBException;
 
+import io.grpc.stub.StreamObserver;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -21,6 +23,7 @@ import com.google.protobuf.RpcController;
 
 import se.qxx.jukebox.core.Log;
 import se.qxx.jukebox.core.Log.LogType;
+import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.JukeboxRequestStartMovie;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
@@ -128,9 +131,22 @@ public class TestServerComm {
 				.setPlayerName("Chromecast")
 				.setRequestType(RequestType.TypeMovie)
 				.build();
-		
-		conn.startMovie(controller, request, (response) -> {
-			assertEquals(2, response.getSubtitleList().size());
+
+		conn.startMovie(request, new StreamObserver<JukeboxDomain.JukeboxResponseStartMovie>() {
+			@Override
+			public void onNext(JukeboxDomain.JukeboxResponseStartMovie response) {
+				assertEquals(2, response.getSubtitleList().size());
+			}
+
+			@Override
+			public void onError(Throwable throwable) {
+				fail(throwable.getMessage());
+			}
+
+			@Override
+			public void onCompleted() {
+
+			}
 		});
 	}
 }

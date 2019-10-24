@@ -1,6 +1,6 @@
 package se.qxx.jukebox.junit;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import org.junit.Rule;
@@ -10,6 +10,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import se.qxx.jukebox.concurrent.Executor;
+import se.qxx.jukebox.concurrent.JukeboxThreadPoolExecutor;
 import se.qxx.jukebox.core.Log;
 import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.factories.JukeboxRpcServerFactory;
@@ -25,6 +26,8 @@ import se.qxx.jukebox.interfaces.ISubtitleDownloader;
 import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.servercomm.JukeboxRpcServerConnection;
 import se.qxx.jukebox.servercomm.TcpListener;
+
+import java.io.IOException;
 
 public class TestTcpListenerInit {
 
@@ -43,11 +46,12 @@ public class TestTcpListenerInit {
 	
 	
 	@Test
-	public void TestInitializeTcpListener() {
+	public void TestInitializeTcpListener() throws IOException {
 		IJukeboxLogger log = new Log(settingsMock, LogType.NONE);
+		JukeboxThreadPoolExecutor executorService = new JukeboxThreadPoolExecutor(loggerFactoryMock);
 		when(loggerFactoryMock.create(any(LogType.class))).thenReturn(log);
 		
-		Executor executor = new Executor(loggerFactoryMock);
+		Executor executor = new Executor(executorService, loggerFactoryMock);
 		
 		JukeboxRpcServerConnection conn = new JukeboxRpcServerConnection(
 				settingsMock, 
@@ -63,14 +67,15 @@ public class TestTcpListenerInit {
 		when(rpcFactoryMock.create(any(IStreamingWebServer.class))).thenReturn(conn);
 		
 		TcpListener listener = new TcpListener(
-				executor,  
+				executor,
+				executorService,
 				loggerFactoryMock, 
 				rpcFactoryMock,
 				webServerMock,
 				2152);
 		
 		listener.initialize();
-		executor.start(listener.getRunnable());
+		//executor.start(listener.getRunnable());
 		
 		try {
 			executor.stop(1);

@@ -1,3 +1,4 @@
 include ':jukebox-app'
+include ':se.qxx.jukebox'
 include ':se.qxx.jukebox.comm'
 include ':se.qxx.jukebox.domain'

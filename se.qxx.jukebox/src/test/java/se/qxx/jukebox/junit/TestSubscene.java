@@ -1,7 +1,7 @@
 package se.qxx.jukebox.junit;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.io.BufferedReader;
@@ -126,7 +126,7 @@ public class TestSubscene {
 						.build())
 				.build();
 
-		Mockito.when(fileUtilHelperMock.createTempSubsPath(Mockito.anyObject())).thenReturn(".");
+		Mockito.when(fileUtilHelperMock.createTempSubsPath(Mockito.any())).thenReturn(".");
 
 		WebResult resultSearch = new WebResult(new URL("https://subscene.com/subtitles/title?q=Mockito"), searchResult, false);
 		Mockito.when(webRetrieverMock.getWebResult("https://subscene.com/subtitles/title?q=Mockito")).thenReturn(resultSearch);

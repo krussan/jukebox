@@ -31,21 +31,10 @@ public class Executor implements IExecutor {
 	private ExecutorService executorService;
 	private IJukeboxLogger log;
 
-	private final int THREAD_POOL_SIZE = 50;
 
 	@Inject
 	public Executor(ExecutorService executorService, LoggerFactory loggerFactory) {
 		this.setLog(loggerFactory.create(LogType.MAIN));
-
-		BlockingQueue<Runnable> queue = new JukeboxPriorityQueue();
-
-		executorService = new JukeboxThreadPoolExecutor(
-				THREAD_POOL_SIZE,
-				THREAD_POOL_SIZE,
-				0L,
-				TimeUnit.MILLISECONDS,
-				queue,
-				loggerFactory);
 
 		this.setExecutorService(executorService);
 	}

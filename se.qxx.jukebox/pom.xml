@@ -28,7 +28,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.11</version>
+			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -78,17 +78,7 @@
 			<version>3.10.1</version>
 		</dependency>
 
-		<dependency>
-			<groupId>se.qxx.jukebox</groupId>
-			<artifactId>jukebox-domain</artifactId>
-			<version>1.0-SNAPSHOT</version>
-		</dependency>
 
-		<dependency>
-			<groupId>se.qxx.jukebox</groupId>
-			<artifactId>jukebox-comm</artifactId>
-			<version>1.0-SNAPSHOT</version>
-		</dependency>
 
 		<dependency>
 			<groupId>org.imgscalr</groupId>
@@ -191,13 +181,19 @@
 		<dependency>
         	<groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>20.0</version>
+            <version>28.1-jre</version>
 		</dependency>
 
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-netty-shaded</artifactId>
 			<version>1.24.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-text</artifactId>
+			<version>1.1</version>
 		</dependency>
 	</dependencies>
 
@@ -294,11 +290,6 @@
 	                    <artifactId>commons-lang3</artifactId>
 	                    <version>3.7</version>
 	                </dependency>
-					<dependency>
-						<groupId>org.apache.commons</groupId>
-						<artifactId>commons-text</artifactId>
-						<version>1.1</version>
-					</dependency>
 	                <dependency>
 	                    <groupId>org.apache.cxf</groupId>
 	                    <artifactId>cxf-rt-wsdl</artifactId>

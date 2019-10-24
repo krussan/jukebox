@@ -1,6 +1,7 @@
 package se.qxx.jukebox.core;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -54,7 +55,6 @@ public class Main implements IMain, IFileCreatedHandler
 	private WebServerFactory webServerFactory;
 
 	private TcpListenerFactory tcpListenerFactory;
-	private ExecutorServiceFactory executorServiceFactory;
 
 	@Inject
 	public Main(IArguments arguments,
@@ -70,7 +70,7 @@ public class Main implements IMain, IFileCreatedHandler
 				LoggerFactory loggerFactory,
 				IFileCreatedHandler fileCreatedHandler,
 				FileSystemWatcherFactory fileSystemWatcherFactory,
-				ExecutorServiceFactory executorServiceFactory) {
+				ExecutorService executorService) {
 
 		this.setTcpListenerFactory(tcpListenerFactory);
 		this.setWebServerFactory(webServerFactory);
@@ -86,7 +86,7 @@ public class Main implements IMain, IFileCreatedHandler
 		this.setMovieIdentifier(movieIdentifier);
 		this.setDownloadChecker(downloadChecker);
 		this.setMediaConverter(mediaConverter);
-		this.setExecutorServiceFactory(executorServiceFactory);
+		this.setExecutorService(executorService);
 
 		this.setLog(loggerFactory.create(LogType.MAIN));
 	}	
@@ -217,7 +217,15 @@ public class Main implements IMain, IFileCreatedHandler
 	public void setIsRunning(Boolean isRunning) {
 		this.isRunning = isRunning;
 	}
-	
+
+	public ExecutorService getExecutorService() {
+		return executorService;
+	}
+
+	public void setExecutorService(ExecutorService executorService) {
+		this.executorService = executorService;
+	}
+
 	java.util.concurrent.Semaphore s = new java.util.concurrent.Semaphore(1);	
 	
 	public void run() {
@@ -284,10 +292,8 @@ public class Main implements IMain, IFileCreatedHandler
 		if (this.getTcpListener() == null)
 			this.setTcpListener(this.getTcpListenerFactory().create(
 					this.getWebServer(),
+					this.getExecutorService(),
 					this.getSettings().getSettings().getTcpListener().getPort().getValue()));
-
-		if (this.getExecutorService() != null)
-			this.setExecutorService(this.getExecutorServiceFactory().create(50, new JukeboxPriorityQueue()));
 
 	}
 	
@@ -301,9 +307,13 @@ public class Main implements IMain, IFileCreatedHandler
 		if (this.getArguments().isTcpListenerEnabled()) {
 			consoleLog("Starting TCP listener");
 
-			this.getExecutor().getExecutorService().
-			this.getTcpListener().initialize();
-			this.getExecutor().start(this.getTcpListener().getRunnable());
+			try {
+				this.getTcpListener().initialize();
+				this.getExecutor().start(this.getTcpListener().getRunnable());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
 		}
 		
 		if (this.getArguments().isSubtitleDownloaderEnabled()) {
@@ -435,19 +445,4 @@ public class Main implements IMain, IFileCreatedHandler
 		return list;
 	}
 
-	public ExecutorServiceFactory getExecutorServiceFactory() {
-		return executorServiceFactory;
-	}
-
-	public void setExecutorServiceFactory(ExecutorServiceFactory executorServiceFactory) {
-		this.executorServiceFactory = executorServiceFactory;
-	}
-
-	public ExecutorService getExecutorService() {
-		return executorService;
-	}
-
-	public void setExecutorService(ExecutorService executorService) {
-		this.executorService = executorService;
-	}
 }

@@ -28,13 +28,11 @@ public class JukeboxThreadPoolExecutor extends ThreadPoolExecutor {
 		this.log = log;
 	}
 
-	@Inject
-	public JukeboxThreadPoolExecutor(
-	        @Assisted("ThreadPoolSize") int corePoolSize,
-            @Assisted("ThreadPoolSize") int maximumPoolSize,
-            @Assisted("Queue") BlockingQueue<Runnable> workQueue,
-            LoggerFactory loggerFactory) {
-        super(corePoolSize, maximumPoolSize, 0L, TimeUnit.MILLISECONDS, workQueue);
+    private static final int THREAD_POOL_SIZE = 50;
+
+    @Inject
+	public JukeboxThreadPoolExecutor(LoggerFactory loggerFactory) {
+        super(THREAD_POOL_SIZE, THREAD_POOL_SIZE, 0L, TimeUnit.MILLISECONDS, new JukeboxPriorityQueue());
         this.setLog(loggerFactory.create(LogType.MAIN));
 	}
 	
