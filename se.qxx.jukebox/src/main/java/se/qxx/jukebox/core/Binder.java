@@ -2,6 +2,7 @@ package se.qxx.jukebox.core;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
@@ -12,16 +13,11 @@ import com.google.inject.name.Names;
 
 import se.qxx.jukebox.builders.MovieBuilderFactory;
 import se.qxx.jukebox.concurrent.Executor;
+import se.qxx.jukebox.concurrent.JukeboxPriorityQueue;
+import se.qxx.jukebox.concurrent.JukeboxThreadPoolExecutor;
 import se.qxx.jukebox.converter.ConvertedFile;
 import se.qxx.jukebox.converter.MediaConverter;
-import se.qxx.jukebox.factories.ConvertedFileFactory;
-import se.qxx.jukebox.factories.FileSystemWatcherFactory;
-import se.qxx.jukebox.factories.IMDBParserFactory;
-import se.qxx.jukebox.factories.JukeboxRpcServerFactory;
-import se.qxx.jukebox.factories.LoggerFactory;
-import se.qxx.jukebox.factories.TcpListenerFactory;
-import se.qxx.jukebox.factories.VLCConnectionFactory;
-import se.qxx.jukebox.factories.WebServerFactory;
+import se.qxx.jukebox.factories.*;
 import se.qxx.jukebox.imdb.IMDBFinder;
 import se.qxx.jukebox.imdb.IMDBParser;
 import se.qxx.jukebox.imdb.IMDBUrlRewrite;
@@ -113,6 +109,8 @@ public class Binder {
 				bind(IStarter.class).to(Starter.class);
 				bind(IRandomWaiter.class).to(RandomWaiter.class);
 				bind(IUtils.class).to(Util.class);
+				bind(ExecutorService.class).to(JukeboxThreadPoolExecutor.class);
+				bind(JukeboxPriorityQueue.class);
 				
 				//Webserver
 				install(
@@ -155,7 +153,12 @@ public class Binder {
 					new FactoryModuleBuilder()
 						.implement(IJukeboxRpcServerConnection.class, JukeboxRpcServerConnection.class)
 						.build(JukeboxRpcServerFactory.class));
-				
+
+				//ExecutorService
+				install(
+					new FactoryModuleBuilder()
+						.implement(ExecutorService.class, JukeboxThreadPoolExecutor.class)
+						.build(ExecutorServiceFactory.class));
 
 				//Converter
 				bind(IMediaConverter.class).to(MediaConverter.class);

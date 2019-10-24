@@ -28,39 +28,26 @@ import se.qxx.jukebox.watcher.FileSystemWatcher;
 public class Executor implements IExecutor {
 
 	private List<Object> runnables = new ArrayList<Object>();
-	private ExecutorService executorService = null;
+	private ExecutorService executorService;
 	private IJukeboxLogger log;
 
 	private final int THREAD_POOL_SIZE = 50;
 
 	@Inject
-	public Executor(LoggerFactory loggerFactory) {
+	public Executor(ExecutorService executorService, LoggerFactory loggerFactory) {
 		this.setLog(loggerFactory.create(LogType.MAIN));
 
-		BlockingQueue<Runnable> queue =
-			new PriorityBlockingQueue<>(1, new Comparator<Runnable>() {
+		BlockingQueue<Runnable> queue = new JukeboxPriorityQueue();
 
-				@Override
-				public int compare(Runnable r1, Runnable r2) {
-					if (r1 instanceof JukeboxThread && r2 instanceof JukeboxThread) {
-						return Integer.compare(
-								((JukeboxThread)r1).getJukeboxPriority(),
-								((JukeboxThread)r2).getJukeboxPriority());
-					}
-
-					// equal if ordinary runnables
-					return 0;
-				}
-				
-			});
-		
 		executorService = new JukeboxThreadPoolExecutor(
-				THREAD_POOL_SIZE, 
-				THREAD_POOL_SIZE, 
-				0L, 
+				THREAD_POOL_SIZE,
+				THREAD_POOL_SIZE,
+				0L,
 				TimeUnit.MILLISECONDS,
 				queue,
-				loggerFactory);		
+				loggerFactory);
+
+		this.setExecutorService(executorService);
 	}
 
 	public IJukeboxLogger getLog() {
@@ -144,4 +131,7 @@ public class Executor implements IExecutor {
 		}
 	}
 
+	public void setExecutorService(ExecutorService executorService) {
+		this.executorService = executorService;
+	}
 }

@@ -3,9 +3,10 @@ package se.qxx.jukebox.servercomm;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
-import se.qxx.jukebox.concurrent.JukeboxRunnable;
+import io.grpc.Server;
+import io.grpc.ServerBuilder;
 import se.qxx.jukebox.core.Log.LogType;
-import se.qxx.jukebox.domain.JukeboxDomain.JukeboxService;
+import se.qxx.jukebox.domain.JukeboxServiceGrpc;
 import se.qxx.jukebox.factories.JukeboxRpcServerFactory;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IExecutor;
@@ -14,23 +15,29 @@ import se.qxx.jukebox.interfaces.IStoppableRunnable;
 import se.qxx.jukebox.interfaces.IStreamingWebServer;
 import se.qxx.jukebox.interfaces.ITcpListener;
 
+import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+
 public class TcpListener implements ITcpListener, IStoppableRunnable {
 
-	private RpcServer server;
+	private Server server;
 	private JukeboxRpcServerConnection serverConnection;
 	private IJukeboxLogger log;
 	private IExecutor executor;
 	private JukeboxRpcServerFactory rpcFactory;
 	private int port;
-	
+	private ExecutorService executorService;
+
 	@Inject
 	public TcpListener(
-			IExecutor executor, 
+			IExecutor executor,
+			ExecutorService executorService,
 			LoggerFactory loggerFactory,
 			JukeboxRpcServerFactory rpcFactory,
 			@Assisted("webserver") IStreamingWebServer webServer,
 			@Assisted("port") int port) {
-		
+
+		this.setExecutorService(executorService);
 		this.setPort(port);
 		this.setServerConnection((JukeboxRpcServerConnection)rpcFactory.create(webServer));
 		this.setRpcFactory(rpcFactory);
@@ -79,45 +86,54 @@ public class TcpListener implements ITcpListener, IStoppableRunnable {
 		this.serverConnection = serverConnection;
 	}
 
-	public JukeboxService getService() {
+	public JukeboxServiceGrpc.JukeboxServiceImplBase getService() {
 		return this.getServerConnection();
 	}
 
 	@Override
-	public RpcServer getServer() {
+	public Server getServer() {
 		return server;
 	}
 
-	public void setServer(RpcServer server) {
+	public void setServer(Server server) {
 		this.server = server;
 	}
 
 	@Override
-	public void initialize() {
-		
-  
+	public void initialize() throws IOException {
 		this.getLog().Info(String.format("Starting up RPC server. Listening on port %s",  this.getPort()));
-		
-		ServerRpcConnectionFactory rpcConnectionFactory = 
-				SocketRpcConnectionFactories
-				.createServerRpcConnectionFactory(getPort());
-		
-		RpcServer server = new RpcServer(rpcConnectionFactory
-				, this.getExecutor().getExecutorService()
-				, true);
-		
-		server.registerService(this.getService());
+
+		Server server = ServerBuilder.forPort(this.getPort())
+				.executor(this.getExecutorService())
+				.addService(this.getServerConnection())
+				.build();
+
 		this.setServer(server);
+		server.start();
 	}
 	
 	@Override
 	public Runnable getRunnable() {
-		return new JukeboxRunnable(this.getServer().getServerRunnable(), this);
+		return null;
 	}
 
 	@Override
 	public void stop() {
-		if (this.getServer() != null)
-			this.getServer().shutDown();
+		try {
+			if (this.getServer() != null) {
+					this.getServer().shutdown();
+					this.getServer().awaitTermination();
+			}
+		} catch (InterruptedException e) {
+			this.getLog().Error("Error when shutting down", e);
+		}
+	}
+
+	public ExecutorService getExecutorService() {
+		return executorService;
+	}
+
+	public void setExecutorService(ExecutorService executorService) {
+		this.executorService = executorService;
 	}
 }

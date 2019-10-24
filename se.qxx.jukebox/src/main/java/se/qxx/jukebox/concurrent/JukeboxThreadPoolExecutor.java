@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.google.inject.Inject;
 
+import com.google.inject.assistedinject.Assisted;
 import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
@@ -27,9 +28,13 @@ public class JukeboxThreadPoolExecutor extends ThreadPoolExecutor {
 		this.log = log;
 	}
 
-	public JukeboxThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime,
-            TimeUnit unit, BlockingQueue<Runnable> workQueue, LoggerFactory loggerFactory) {
-        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
+	@Inject
+	public JukeboxThreadPoolExecutor(
+	        @Assisted("ThreadPoolSize") int corePoolSize,
+            @Assisted("ThreadPoolSize") int maximumPoolSize,
+            @Assisted("Queue") BlockingQueue<Runnable> workQueue,
+            LoggerFactory loggerFactory) {
+        super(corePoolSize, maximumPoolSize, 0L, TimeUnit.MILLISECONDS, workQueue);
         this.setLog(loggerFactory.create(LogType.MAIN));
 	}
 	
