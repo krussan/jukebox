@@ -1,22 +1,18 @@
 package se.qxx.jukebox.settings;
 
-import java.io.File;
-import java.io.IOException;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import se.qxx.jukebox.interfaces.IImdbSettings;
+import se.qxx.jukebox.interfaces.IParserSettings;
+import se.qxx.jukebox.interfaces.ISettings;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
-
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-
-import se.qxx.jukebox.interfaces.IImdbSettings;
-import se.qxx.jukebox.interfaces.IParserSettings;
-import se.qxx.jukebox.interfaces.ISettings;
-import se.qxx.jukebox.settings.imdb.Imdb;
-import se.qxx.jukebox.settings.parser.Parser;
+import java.io.File;
+import java.io.IOException;
 
 @Singleton
 public class Settings implements ISettings {

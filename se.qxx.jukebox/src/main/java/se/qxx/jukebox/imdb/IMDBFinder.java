@@ -37,7 +37,7 @@ import se.qxx.jukebox.interfaces.IRandomWaiter;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.interfaces.IWebRetriever;
-import se.qxx.jukebox.settings.imdb.Imdb;
+import se.qxx.jukebox.settings.Imdb;
 import se.qxx.jukebox.tools.WebResult;
 
 @Singleton

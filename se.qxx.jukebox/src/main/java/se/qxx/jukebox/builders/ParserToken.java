@@ -1,6 +1,6 @@
 package se.qxx.jukebox.builders;
 
-import se.qxx.jukebox.settings.parser.ParserType;
+import se.qxx.jukebox.settings.ParserType;
 
 public class ParserToken {
 	ParserType type;

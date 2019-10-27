@@ -13,10 +13,10 @@ import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.ISettings;
-import se.qxx.jukebox.settings.parser.Parser;
-import se.qxx.jukebox.settings.parser.Parser.Keywords;
-import se.qxx.jukebox.settings.parser.ParserType;
-import se.qxx.jukebox.settings.parser.WordType;
+import se.qxx.jukebox.settings.Parser;
+import se.qxx.jukebox.settings.Parser.Keywords;
+import se.qxx.jukebox.settings.WordType;
+import se.qxx.jukebox.settings.ParserType;
 
 public class ParserBuilder extends MovieBuilder {
 

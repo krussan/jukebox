@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import javax.xml.bind.JAXBException;
 
-import se.qxx.jukebox.settings.parser.Parser;
+import se.qxx.jukebox.settings.Parser;
 
 public interface IParserSettings {
 

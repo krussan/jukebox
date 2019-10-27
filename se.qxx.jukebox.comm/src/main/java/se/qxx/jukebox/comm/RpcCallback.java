@@ -1,24 +1,24 @@
 package se.qxx.jukebox.comm;
 
 import com.google.common.util.concurrent.FutureCallback;
-import io.grpc.stub.StreamObserver;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 import se.qxx.jukebox.comm.client.JukeboxConnectionMessage;
 import se.qxx.jukebox.comm.client.JukeboxResponseListener;
-import se.qxx.jukebox.domain.JukeboxDomain;
 
 public class RpcCallback<T> implements FutureCallback<T> {
-    JukeboxResponseListener<T> listener;
+    JukeboxResponseListener listener;
+    private HandlerCallback<T> callback;
 
-    public RpcCallback(JukeboxResponseListener<T> listener) {
+    public RpcCallback(JukeboxResponseListener listener, HandlerCallback<T> callback) {
+        this.setCallback(callback);
         this.setListener(listener);
     }
 
-    private JukeboxResponseListener<T> getListener() {
+    private JukeboxResponseListener getListener() {
         return listener;
     }
 
-    public void setListener(JukeboxResponseListener<T> listener) {
+    public void setListener(JukeboxResponseListener listener) {
         this.listener = listener;
     }
 
@@ -26,7 +26,9 @@ public class RpcCallback<T> implements FutureCallback<T> {
     public void onSuccess(@NullableDecl T t) {
         if (getListener() != null) {
             JukeboxConnectionMessage msg = new JukeboxConnectionMessage(true, "");
-            getListener().onDataReceived(t);
+            if (this.getCallback() != null) {
+                getCallback().run(t);
+            }
             getListener().onRequestComplete(msg);
         }
     }
@@ -37,5 +39,13 @@ public class RpcCallback<T> implements FutureCallback<T> {
             JukeboxConnectionMessage msg = new JukeboxConnectionMessage(false, throwable.getMessage());
             getListener().onRequestComplete(msg);
         }
+    }
+
+    public HandlerCallback<T> getCallback() {
+        return callback;
+    }
+
+    public void setCallback(HandlerCallback<T> callback) {
+        this.callback = callback;
     }
 }

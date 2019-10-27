@@ -2,21 +2,19 @@ package se.qxx.jukebox.interfaces;
 
 import java.io.IOException;
 
-import javax.xml.bind.JAXBException;
-
 import se.qxx.jukebox.settings.JukeboxListenerSettings;
-import se.qxx.jukebox.settings.imdb.Imdb;
-import se.qxx.jukebox.settings.parser.Parser;
+import se.qxx.jukebox.settings.Imdb;
+import se.qxx.jukebox.settings.Parser;
 
-public interface ISettings {
+interface ISettings {
 
-	public void initialize() throws IOException, JAXBException;
+	void initialize() throws IOException;
 	
-	public void readSettings() throws IOException, JAXBException;
+	void readSettings() throws IOException;
 	
-	public Imdb getImdb();
-	public Parser getParser();
-	public JukeboxListenerSettings getSettings();
+	Imdb getImdb();
+	Parser getParser();
+	JukeboxListenerSettings getSettings();
 	
 
 }

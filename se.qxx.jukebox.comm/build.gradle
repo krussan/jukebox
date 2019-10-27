@@ -14,6 +14,8 @@ jar {
 
 dependencies {
    implementation project(':se.qxx.jukebox.domain')
-   implementation 'com.google.protobuf:protobuf-java:2.4.1'
-   implementation 'com.googlecode:protobuf-socket-rpc:2.0'
+   implementation 'com.google.protobuf:protobuf-java:3.9.0'
+   implementation "io.grpc:grpc-protobuf:${grpcVersion}"
+   implementation "io.grpc:grpc-stub:${grpcVersion}"
+
 }
