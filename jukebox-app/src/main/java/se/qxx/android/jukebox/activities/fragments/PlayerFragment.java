@@ -251,7 +251,7 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
                 currentMovie,
                 currentEpisode,
                 getSubtitleRequestType(),
-                    (response) -> {
+                    response -> {
                         onStartMovieComplete(response);
                         seekToStartPosition();
                     });

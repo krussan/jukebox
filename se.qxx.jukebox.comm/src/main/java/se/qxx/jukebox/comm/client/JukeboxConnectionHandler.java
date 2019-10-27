@@ -28,6 +28,10 @@ public class JukeboxConnectionHandler<T>  {
 		this.listener = listener;
 	}
 
+	public JukeboxConnectionHandler(String serverIPaddress, int port) {
+		init(serverIPaddress, port);
+	}
+
 	public JukeboxConnectionHandler(String serverIPaddress, int port, JukeboxResponseListener listener) {
 		init(serverIPaddress, port);
 		this.setListener(listener);
@@ -85,11 +89,11 @@ public class JukeboxConnectionHandler<T>  {
 	}
 	
 	public void startMovie(
-			String playerName,
-			Movie m,
-			Episode ep,
-			JukeboxDomain.SubtitleRequestType subtitleRequestType,
-			HandlerCallback<JukeboxResponseStartMovie> callback) {
+			final String playerName,
+			final Movie m,
+			final Episode ep,
+			final JukeboxDomain.SubtitleRequestType subtitleRequestType,
+			final HandlerCallback<JukeboxResponseStartMovie> callback) {
 
 		if (m != null || ep != null) {
 			int id = m == null ? ep.getID() : m.getID();

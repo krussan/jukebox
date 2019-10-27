@@ -8,8 +8,10 @@ plugins {
 group = 'se.qxx.jukebox'
 version = '1.0-SNAPSHOT'
 
-sourceCompatibility = 11
-targetCompatibility = 11
+compileJava {
+   sourceCompatibility = 11
+   targetCompatibility = 11
+}
 
 sourceSets {
    main {
