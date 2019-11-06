@@ -26,6 +26,7 @@ import se.qxx.android.jukebox.settings.CacheData;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
+import se.qxx.jukebox.comm.HandlerCallback;
 import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.jukebox.comm.client.JukeboxConnectionMessage;
 import se.qxx.jukebox.comm.client.JukeboxResponseListener;
@@ -247,14 +248,14 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
 
         this.getConnectionHandler()
             .startMovie(
-                getPlayerName(),
-                currentMovie,
-                currentEpisode,
-                getSubtitleRequestType(),
+                    getPlayerName(),
+                    currentMovie,
+                    currentEpisode,
+                    getSubtitleRequestType(),
                     response -> {
                         onStartMovieComplete(response);
                         seekToStartPosition();
-                    });
+                    };
     }
 
     protected String getPlayerName() {
