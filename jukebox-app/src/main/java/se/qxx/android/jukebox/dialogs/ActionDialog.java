@@ -47,19 +47,19 @@ public class ActionDialog implements OnClickListener{
 		// Removed threads as the connectionHandler is threader itself
 		switch (choice) {
 		case 0:
-			jh.blacklist((int) this.id, this.reqType);
+			jh.blacklist((int) this.id, this.reqType, response -> {});
 			break;
 		case 1:
-			jh.toggleWatched((int) this.id, this.reqType);
+			jh.toggleWatched((int) this.id, this.reqType, response -> {});
 			break;
 		case 2:
-			jh.reIdentify((int) this.id, this.reqType);
+			jh.reIdentify((int) this.id, this.reqType, response -> {});
 			break;
 		case 3:
-			jh.reenlistSub((int) this.id, this.reqType);
+			jh.reenlistSub((int) this.id, this.reqType, response -> {});
 			break;
 		case 4:
-			jh.forceconversion(this.mediaId);
+			jh.forceconversion(this.mediaId, response -> {});
 			break;
 		}
 		

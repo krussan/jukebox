@@ -1,6 +1,5 @@
 package se.qxx.android.jukebox.activities;
 
-
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;

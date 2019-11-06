@@ -2,11 +2,9 @@ package se.qxx.android.jukebox.activities;
 
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
-
+import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.cast.framework.CastContext;
-
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 

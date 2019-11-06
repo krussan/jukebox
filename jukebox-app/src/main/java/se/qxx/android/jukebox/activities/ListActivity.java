@@ -2,12 +2,12 @@ package se.qxx.android.jukebox.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.cast.framework.CastContext;
 
 import java.util.List;

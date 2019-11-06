@@ -4,9 +4,8 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
-
+import androidx.appcompat.app.AppCompatActivity;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.fragments.PlayerFragment;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
