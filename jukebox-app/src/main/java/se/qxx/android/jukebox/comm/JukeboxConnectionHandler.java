@@ -1,19 +1,16 @@
-package se.qxx.jukebox.comm.client;
+package se.qxx.android.jukebox.comm;
 
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import se.qxx.jukebox.comm.HandlerCallback;
-import se.qxx.jukebox.comm.RpcCallback;
 import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.*;
 import se.qxx.jukebox.domain.JukeboxServiceGrpc;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Handler;
 
 public class JukeboxConnectionHandler<T>  {
 	

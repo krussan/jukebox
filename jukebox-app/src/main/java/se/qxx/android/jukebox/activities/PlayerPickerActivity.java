@@ -19,7 +19,7 @@ import se.qxx.android.jukebox.adapters.support.PlayerLayoutAdapter;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
 import se.qxx.android.jukebox.dialogs.JukeboxConnectionProgressDialog;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
-import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
+import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
 
 public class PlayerPickerActivity extends AppCompatActivity implements OnItemClickListener {
 

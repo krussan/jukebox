@@ -1,11 +1,11 @@
 package se.qxx.android.jukebox.activities;
 
+
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.View;
-
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
 import com.google.android.gms.cast.framework.CastContext;
 
 import org.apache.commons.lang3.StringUtils;

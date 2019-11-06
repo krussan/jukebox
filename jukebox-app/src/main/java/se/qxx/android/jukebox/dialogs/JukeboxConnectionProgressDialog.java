@@ -1,7 +1,7 @@
 package se.qxx.android.jukebox.dialogs;
 
-import se.qxx.jukebox.comm.client.JukeboxConnectionMessage;
-import se.qxx.jukebox.comm.client.JukeboxResponseListener;
+import se.qxx.android.jukebox.comm.JukeboxConnectionMessage;
+import se.qxx.android.jukebox.comm.JukeboxResponseListener;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;

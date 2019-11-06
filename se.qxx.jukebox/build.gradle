@@ -11,6 +11,10 @@ version = '1.0-SNAPSHOT'
 compileJava {
    sourceCompatibility = 11
    targetCompatibility = 11
+
+   dependsOn {
+      'xjc'
+   }
 }
 
 sourceSets {
@@ -73,8 +77,8 @@ dependencies {
    // jaxb
    jaxb 'com.sun.xml.bind:jaxb-xjc:2.2.7-b41'
    jaxb 'com.sun.xml.bind:jaxb-impl:2.2.7-b41'
-   jaxb 'javax.xml.bind:jaxb-api:2.2.7'
-   jaxb  'org.glassfish.jaxb:jaxb-runtime:2.3.2'
+   implementation 'javax.xml.bind:jaxb-api:2.3.0'
+   jaxb 'org.glassfish.jaxb:jaxb-runtime:2.3.2'
    jaxb 'javax.activation:javax.activation-api:1.2.0'
 
    // test

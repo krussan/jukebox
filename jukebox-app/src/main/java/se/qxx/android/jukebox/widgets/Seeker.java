@@ -3,7 +3,7 @@ package se.qxx.android.jukebox.widgets;
 import java.util.Date;
 
 import se.qxx.android.jukebox.settings.JukeboxSettings;
-import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
+import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
 
 public class Seeker implements Runnable {
 

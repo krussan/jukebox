@@ -26,10 +26,9 @@ import se.qxx.android.jukebox.settings.CacheData;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
-import se.qxx.jukebox.comm.HandlerCallback;
-import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
-import se.qxx.jukebox.comm.client.JukeboxConnectionMessage;
-import se.qxx.jukebox.comm.client.JukeboxResponseListener;
+import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
+import se.qxx.android.jukebox.comm.JukeboxConnectionMessage;
+import se.qxx.android.jukebox.comm.JukeboxResponseListener;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
 public abstract class PlayerFragment extends Fragment implements JukeboxResponseListener, SubtitleSelectDialogListener {
@@ -255,7 +254,7 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
                     response -> {
                         onStartMovieComplete(response);
                         seekToStartPosition();
-                    };
+                    });
     }
 
     protected String getPlayerName() {

@@ -1,9 +1,7 @@
-package se.qxx.jukebox.comm;
+package se.qxx.android.jukebox.comm;
 
 import com.google.common.util.concurrent.FutureCallback;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
-import se.qxx.jukebox.comm.client.JukeboxConnectionMessage;
-import se.qxx.jukebox.comm.client.JukeboxResponseListener;
 
 public class RpcCallback<T> implements FutureCallback<T> {
     JukeboxResponseListener listener;

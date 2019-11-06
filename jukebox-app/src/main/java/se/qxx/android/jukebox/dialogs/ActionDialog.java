@@ -8,7 +8,7 @@ import android.content.res.Resources;
 
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
-import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
+import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
 import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
 
 public class ActionDialog implements OnClickListener{

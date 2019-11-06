@@ -14,7 +14,7 @@ import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.adapters.support.SubtitleLayoutAdapter;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.tools.GUITools;
-import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
+import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
 /**

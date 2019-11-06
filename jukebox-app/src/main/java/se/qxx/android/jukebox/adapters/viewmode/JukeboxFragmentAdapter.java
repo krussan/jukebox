@@ -1,18 +1,13 @@
 package se.qxx.android.jukebox.adapters.viewmode;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewPager;
-
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 import org.apache.commons.lang3.StringUtils;
-
 import se.qxx.android.jukebox.R;
-import se.qxx.android.jukebox.activities.ViewMode;
 
 public class JukeboxFragmentAdapter extends FragmentStatePagerAdapter {
 
