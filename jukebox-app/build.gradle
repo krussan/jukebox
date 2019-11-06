@@ -104,6 +104,7 @@ dependencies {
     implementation "androidx.core:core:$appCompatVersion"
     implementation "androidx.appcompat:appcompat:$appCompatVersion"
     implementation "androidx.mediarouter:mediarouter:$appCompatVersion"
+    implementation "androidx.preference:preference:$appCompatVersion"
 
     implementation "io.grpc:grpc-okhttp:${grpcVersion}"
     implementation "io.grpc:grpc-protobuf:${grpcVersion}"
