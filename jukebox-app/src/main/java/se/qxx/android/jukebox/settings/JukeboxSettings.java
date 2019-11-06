@@ -2,7 +2,7 @@ package se.qxx.android.jukebox.settings;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 
 public class JukeboxSettings extends SettingsBase {
 	private SharedPreferences preferences;

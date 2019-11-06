@@ -20,7 +20,6 @@ public class FlipperListActivity extends AppCompatActivity {
     private ViewMode mode = ViewMode.Movie;
     private JukeboxSettings settings;
 
-
     protected View getRootView() {
 		return findViewById(R.id.rootJukeboxViewPager);
 	}
