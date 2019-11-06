@@ -256,7 +256,7 @@ public abstract class RemotePlayerFragment extends PlayerFragment
         }
         else {
             seeker.toggle();
-            this.getConnectionHandler().pauseMovie(player);
+            this.getConnectionHandler().pauseMovie(player, response -> {});
         }
     }
 
@@ -264,7 +264,7 @@ public abstract class RemotePlayerFragment extends PlayerFragment
 
         String player = getSettings().getCurrentMediaPlayer();
         if (!ChromeCastConfiguration.isChromeCastActive(getSettings().getCurrentMediaPlayer())) {
-            this.getConnectionHandler().toggleFullscreen(player);
+            this.getConnectionHandler().toggleFullscreen(player, response -> {});
         }
 
     }

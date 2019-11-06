@@ -148,9 +148,9 @@ public class Connector {
 	
 		Thread t = new Thread(() -> {
             if (isOnline)
-                jh.suspend(currentMediaPlayer);
+                jh.suspend(currentMediaPlayer, response -> {});
             else
-                jh.wakeup(currentMediaPlayer);
+                jh.wakeup(currentMediaPlayer, response -> {});
         });
 		t.start();
 	

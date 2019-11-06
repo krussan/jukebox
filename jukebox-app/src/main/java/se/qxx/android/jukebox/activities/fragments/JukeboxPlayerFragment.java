@@ -8,6 +8,7 @@ import com.google.protobuf.RpcCallback;
 
 import org.apache.commons.lang3.StringUtils;
 
+import se.qxx.android.jukebox.comm.HandlerCallback;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
@@ -52,7 +53,7 @@ public class JukeboxPlayerFragment extends RemotePlayerFragment {
      * If something is playing then make call to server to get whats playing
      * otherwise start the new movie
      */
-    private class OnStatusComplete implements RpcCallback<JukeboxDomain.JukeboxResponseIsPlaying> {
+    private class OnStatusComplete implements HandlerCallback<JukeboxDomain.JukeboxResponseIsPlaying> {
         @Override
         public void run(JukeboxDomain.JukeboxResponseIsPlaying response) {
             Logger.Log().d("Response --- IsPlaying");
@@ -73,7 +74,7 @@ public class JukeboxPlayerFragment extends RemotePlayerFragment {
      * If the title is the same as the one selected then continue playing
      * Otherwise stop movie and start the new one in the callback
      */
-    private class OnGetTitleComplete implements RpcCallback<JukeboxDomain.JukeboxResponseGetTitle> {
+    private class OnGetTitleComplete implements HandlerCallback<JukeboxDomain.JukeboxResponseGetTitle> {
         @Override
         public void run(JukeboxDomain.JukeboxResponseGetTitle response) {
             Logger.Log().d("Response --- GetTitle");
@@ -121,7 +122,7 @@ public class JukeboxPlayerFragment extends RemotePlayerFragment {
      * Callback to stop media
      * start the new media
      */
-    private class OnStopMovieComplete implements RpcCallback<JukeboxDomain.Empty> {
+    private class OnStopMovieComplete implements HandlerCallback<JukeboxDomain.Empty> {
         @Override
         public void run(JukeboxDomain.Empty arg0) {
             Logger.Log().d("Response --- StopMovie");
