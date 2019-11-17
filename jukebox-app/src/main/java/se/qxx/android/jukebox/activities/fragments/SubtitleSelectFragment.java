@@ -74,7 +74,7 @@ public class SubtitleSelectFragment extends DialogFragment implements SubtitleLa
                     if (a != null) {
                         a.runOnUiThread(() -> {
                             SubtitleLayoutAdapter adapter =
-                                    new SubtitleLayoutAdapter(getContext(), mMedia.getID(), response.getSubtitleUrisList(), this);
+                                    new SubtitleLayoutAdapter(getContext(), mMedia.getID(), ((JukeboxDomain.JukeboxResponseListSubtitles)response).getSubtitleUrisList(), this);
                             lv.setOnItemClickListener(adapter);
                             lv.setAdapter(adapter);
                         });

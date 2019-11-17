@@ -176,7 +176,8 @@ public class JukeboxPlayerFragment extends RemotePlayerFragment {
     public void seekTo(int pos) {
         this.getConnectionHandler().seek(
                 getSettings().getCurrentMediaPlayer(),
-                pos);
+                pos,
+                response -> {});
     }
 
     @Override

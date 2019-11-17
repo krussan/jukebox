@@ -85,7 +85,8 @@ public class Connector {
 						response -> {
                             //TODO: if repsonse is null probably the server is down..
                             if (response != null) {
-                                this.getCallback().handleMoviesUpdated(response.getMoviesList(), response.getTotalMovies());
+								JukeboxDomain.JukeboxResponseListMovies resp = (JukeboxDomain.JukeboxResponseListMovies)response;
+                                this.getCallback().handleMoviesUpdated(resp.getMoviesList(), resp.getTotalMovies());
                             }
                         });
 			}
@@ -98,7 +99,8 @@ public class Connector {
 						response -> {
                             //TODO: if repsonse is null probably the server is down..
                             if (response != null) {
-                                this.getCallback().handleSeriesUpdated(response.getSeriesList(), response.getTotalSeries());
+								JukeboxDomain.JukeboxResponseListMovies resp = (JukeboxDomain.JukeboxResponseListMovies)response;
+                                this.getCallback().handleSeriesUpdated(resp.getSeriesList(), resp.getTotalSeries());
                             }
                         });
 			}
@@ -107,9 +109,10 @@ public class Connector {
                         response -> {
                             //TODO: if repsonse is null probably the server is down..
                             if (response != null) {
+								JukeboxDomain.JukeboxResponseGetItem resp = (JukeboxDomain.JukeboxResponseGetItem)response;
 								this.getCallback().handleSeasonsUpdated(
-										((JukeboxDomain.JukeboxResponseGetItem)response).getSerie().getSeasonList(),
-										((JukeboxDomain.JukeboxResponseGetItem)response).getSerie().getSeasonCount());
+										resp.getSerie().getSeasonList(),
+										resp.getSerie().getSeasonCount());
 
                             }
                         });
