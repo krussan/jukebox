@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'se.qxx.jukebox'
-version = '1.0-SNAPSHOT'
+version = "${jukeboxVersion}"
 
 task myCopyTask(type: Copy) {
    from (projectDir) {
@@ -113,6 +113,8 @@ dependencies {
    jaxb 'com.sun.xml.bind:jaxb-xjc:2.2.7-b41'
    implementation 'com.sun.xml.bind:jaxb-impl:2.2.7-b41'
    implementation 'javax.xml.bind:jaxb-api:2.3.0'
+   jaxb 'com.sun.xml.bind:jaxb-impl:2.2.7-b41'
+   jaxb 'javax.xml.bind:jaxb-api:2.3.0'
    jaxb 'org.glassfish.jaxb:jaxb-runtime:2.3.2'
    jaxb 'javax.activation:javax.activation-api:1.2.0'
 

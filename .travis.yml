@@ -15,17 +15,17 @@ android:
     - android.sdk-license-.+
 
 before_install:
- - export JUKEBOX_VERSION=`cd ${TRAVIS_BUILD_DIR}/se.qxx.jukebox && mvn -B help:evaluate -Dexpression=project.version | grep -e '^[^\[]'`
+ - chmod +x gradlew
+ - chmod +x ci/*.sh
+ - ./gradlew printversion -q > /dev/null 2> /dev/null
+ - export JUKEBOX_VERSION=`./gradlew printversion -q` 
  - export JUKEBOX_TAG=v$JUKEBOX_VERSION-app
- - chmod +x ./gradlew
  - export LD_LIBRARY_PATH=$TRAVIS_BUILD_DIR/ci:$LD_LIBRARY_PATH
- - unzip ci/protoc.zip -d ci
- - chmod 775 ci/*.sh
  - ci/decrypt_files.sh
 
 install: true
 
-script: ${TRAVIS_BUILD_DIR}/ci/build-app.sh
+script: ${TRAVIS_BUILD_DIR}/ci/build.sh
 
 before_cache:
 - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
