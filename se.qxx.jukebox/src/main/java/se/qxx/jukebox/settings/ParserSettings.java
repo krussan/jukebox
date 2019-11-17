@@ -33,16 +33,14 @@ public class ParserSettings implements IParserSettings {
 	}
 		
 
-	private void readSettingFile() throws IOException, JAXBException {
+	private void readSettingFile() throws JAXBException {
 		JAXBContext c = JAXBContext.newInstance(Parser.class);
 		Unmarshaller u = c.createUnmarshaller();
 		u.setEventHandler(
-			    new ValidationEventHandler() {
-			        public boolean handleEvent(ValidationEvent event ) {
-			            throw new RuntimeException(event.getMessage(),
-			                                       event.getLinkedException());
-			        }
-			});
+				event -> {
+					throw new RuntimeException(event.getMessage(),
+											   event.getLinkedException());
+				});
 		
 		JAXBElement<Parser> root = u.unmarshal(new StreamSource(new File("parser.xml")), Parser.class);
 		this.setSettings(root.getValue());

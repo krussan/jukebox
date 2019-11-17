@@ -8,19 +8,22 @@ plugins {
 group = 'se.qxx.jukebox'
 version = '1.0-SNAPSHOT'
 
-task copyTask(type: Copy) {
-   from './JukeboxSettings.xml'
-   into 'build'
+task myCopyTask(type: Copy) {
+   from (projectDir) {
+      include 'JukeboxSettings.xml'
+      include 'imdb.xml'
+      include 'parser.xml'
+      include 'subs.xml'
+   }
+   into buildDir
 }
 
 compileJava {
    sourceCompatibility = 11
    targetCompatibility = 11
 
-   dependsOn {
-      copyTask
-      xjc
-   }
+   dependsOn xjc
+   dependsOn myCopyTask
 }
 
 sourceSets {
@@ -108,7 +111,7 @@ dependencies {
 
    // jaxb
    jaxb 'com.sun.xml.bind:jaxb-xjc:2.2.7-b41'
-   jaxb 'com.sun.xml.bind:jaxb-impl:2.2.7-b41'
+   implementation 'com.sun.xml.bind:jaxb-impl:2.2.7-b41'
    implementation 'javax.xml.bind:jaxb-api:2.3.0'
    jaxb 'org.glassfish.jaxb:jaxb-runtime:2.3.2'
    jaxb 'javax.activation:javax.activation-api:1.2.0'

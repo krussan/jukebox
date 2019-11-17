@@ -31,20 +31,18 @@ public class ImdbSettings implements IImdbSettings {
 	 * @see se.qxx.jukebox.settings.imdb.IImdbSettings#readSettings()
 	 */
 	@Override
-	public void readSettings() throws IOException, JAXBException {
+	public void readSettings() throws JAXBException {
 		readSettingFile();
 	}
 	
-	private void readSettingFile() throws IOException, JAXBException {
+	private void readSettingFile() throws JAXBException {
 		JAXBContext c = JAXBContext.newInstance(Imdb.class);
 		Unmarshaller u = c.createUnmarshaller();
 		u.setEventHandler(
-			    new ValidationEventHandler() {
-			        public boolean handleEvent(ValidationEvent event ) {
-			            throw new RuntimeException(event.getMessage(),
-			                                       event.getLinkedException());
-			        }
-			});
+				event -> {
+					throw new RuntimeException(event.getMessage(),
+											   event.getLinkedException());
+				});
 		
 		JAXBElement<Imdb> root = u.unmarshal(new StreamSource(new File("imdb.xml")), Imdb.class);
 		this.setImdb(root.getValue());

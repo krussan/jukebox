@@ -87,11 +87,11 @@ public class Settings implements ISettings {
 	 * @see se.qxx.jukebox.settings.ISettings#readSettings()
 	 */
 	@Override
-	public void readSettings() throws IOException, JAXBException {
+	public void readSettings() throws JAXBException {
 		readSettingFile();
 	}
 	
-	private void readSettingFile() throws IOException, JAXBException {
+	private void readSettingFile() throws JAXBException {
 		JAXBContext c = JAXBContext.newInstance(JukeboxListenerSettings.class);
 		Unmarshaller u = c.createUnmarshaller();
 		
