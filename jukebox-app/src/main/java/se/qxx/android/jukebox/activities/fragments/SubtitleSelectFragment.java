@@ -69,7 +69,7 @@ public class SubtitleSelectFragment extends DialogFragment implements SubtitleLa
 
         jh.listSubtitles(
                 mMedia,
-                (response) -> {
+                response -> {
                     Activity a = getActivity();
                     if (a != null) {
                         a.runOnUiThread(() -> {

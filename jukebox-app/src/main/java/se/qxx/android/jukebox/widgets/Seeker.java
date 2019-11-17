@@ -27,8 +27,8 @@ public class Seeker implements Runnable {
                 settings.getServerPort());
        	
        	h.getTime(settings.getCurrentMediaPlayer(), response -> {
-               // The time command also returns the name of the currently playing file.
-               // If it differs from the model then set the current media
+            // The time command also returns the name of the currently playing file.
+            // If it differs from the model then set the current media
 			if (response != null && listener != null)
                    listener.updateSeeker(response.getSeconds(), 0);
            });

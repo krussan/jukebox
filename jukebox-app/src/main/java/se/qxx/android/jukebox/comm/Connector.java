@@ -108,8 +108,8 @@ public class Connector {
                             //TODO: if repsonse is null probably the server is down..
                             if (response != null) {
 								this.getCallback().handleSeasonsUpdated(
-										response.getSerie().getSeasonList(),
-										response.getSerie().getSeasonCount());
+										((JukeboxDomain.JukeboxResponseGetItem)response).getSerie().getSeasonList(),
+										((JukeboxDomain.JukeboxResponseGetItem)response).getSerie().getSeasonCount());
 
                             }
                         });
@@ -118,7 +118,8 @@ public class Connector {
 			    jh.getItem(seasonID, JukeboxDomain.RequestType.TypeSeason, excludeImages, excludeTextdata,
                         response -> {
 			                if (response != null) {
-                                this.getCallback().handleEpisodesUpdated(response.getSeason().getEpisodeList(), response.getSeason().getEpisodeCount());
+                                this.getCallback().handleEpisodesUpdated(((JukeboxDomain.JukeboxResponseGetItem)response).getSeason().getEpisodeList(),
+										((JukeboxDomain.JukeboxResponseGetItem)response).getSeason().getEpisodeCount());
                             }
                         });
 			}
