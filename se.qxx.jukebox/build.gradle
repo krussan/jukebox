@@ -8,12 +8,18 @@ plugins {
 group = 'se.qxx.jukebox'
 version = '1.0-SNAPSHOT'
 
+task copyTask(type: Copy) {
+   from './JukeboxSettings.xml'
+   into 'build'
+}
+
 compileJava {
    sourceCompatibility = 11
    targetCompatibility = 11
 
    dependsOn {
-      'xjc'
+      copyTask
+      xjc
    }
 }
 
@@ -26,9 +32,35 @@ sourceSets {
          srcDirs = ['src/main/resources', 'src/main/native']
       }
    }
+   test {
+      java {
+         srcDirs = ['src/test/java', 'build/generated/sources']
+      }
+      resources {
+         srcDirs = ['src/test/resources']
+      }
+   }
 }
 
 jar {
+   manifest {
+      attributes(
+         'Main-Class': 'se.qxx.jukebox.Jukebox'
+      )
+   }
+}
+
+task fatJar(type: Jar) {
+   manifest.from jar.manifest
+   classifier = 'all'
+   from {
+      configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+   } {
+      exclude "META-INF/*.SF"
+      exclude "META-INF/*.DSA"
+      exclude "META-INF/*.RSA"
+   }
+   with jar
 }
 
 jaxb {
@@ -86,3 +118,6 @@ dependencies {
    testImplementation 'org.mockito:mockito-core:2.20.0'
 }
 
+artifacts {
+   archives fatJar
+}

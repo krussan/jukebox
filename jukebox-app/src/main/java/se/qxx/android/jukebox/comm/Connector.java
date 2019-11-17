@@ -132,7 +132,6 @@ public class Connector {
 		}
 	}
 
-	
 	public void showMessage(Activity a, final String message) {
 		final Context c = (Context)a;
 		a.runOnUiThread(() -> Toast.makeText(c, message, Toast.LENGTH_SHORT).show());
