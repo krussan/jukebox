@@ -8,14 +8,22 @@ plugins {
 group = 'se.qxx.jukebox'
 version = "${jukeboxVersion}"
 
+ext {
+   outputDir = new File("${buildDir}/outputs")
+}
+
 task myCopyTask(type: Copy) {
+   if(!outputDir.exists())
+      outputDir.mkdirs()
+
    from (projectDir) {
       include 'JukeboxSettings.xml'
       include 'imdb.xml'
       include 'parser.xml'
       include 'subs.xml'
+      include 'logging.properties'
    }
-   into buildDir
+   into outputDir
 }
 
 compileJava {
@@ -55,6 +63,7 @@ jar {
 
 task fatJar(type: Jar) {
    manifest.from jar.manifest
+   destinationDirectory = outputDir
    classifier = 'all'
    from {
       configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
@@ -125,4 +134,31 @@ dependencies {
 
 artifacts {
    archives fatJar
+}
+
+task createScripts()  {
+   doLast {
+      new File(outputDir, "run.sh").text = """#!/bin/sh
+if [ -n "\$LD_LIBRARY_PATH" ]
+then
+   LD_LIBRARY_PATH=\$PWD:\${LD_LIBRARY_PATH}
+else
+   LD_LIBRARY_PATH=+\$PWD
+fi
+export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH
+java -Xmx1024m -Djava.util.logging.config.file=logging.properties -jar ${jar.archiveName} \${1+"\$@"}
+"""
+   }
+}
+
+task archiveZip(type: Zip) {
+   dependsOn fatJar, createScripts
+
+   from outputDir
+   include '*.jar'
+   include '*.xml'
+   include 'logging.properties'
+   include '*.sh'
+   archiveFileName = "se.qxx.jukebox-${jukeboxVersion}.zip"
+   destinationDirectory = outputDir
 }
