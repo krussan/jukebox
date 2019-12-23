@@ -7,7 +7,6 @@ import java.io.IOException;
 public interface ITcpListener {
 
 	Server getServer();
-	Runnable getRunnable();
 	void initialize() throws IOException;
 
 }

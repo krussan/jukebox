@@ -309,7 +309,7 @@ public class Main implements IMain, IFileCreatedHandler
 
 			try {
 				this.getTcpListener().initialize();
-				this.getExecutor().start(this.getTcpListener().getRunnable());
+				// this.getExecutor().start(this.getTcpListener().getRunnable());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

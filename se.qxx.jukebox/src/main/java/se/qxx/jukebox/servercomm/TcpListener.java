@@ -5,20 +5,20 @@ import com.google.inject.assistedinject.Assisted;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import se.qxx.jukebox.concurrent.JukeboxThread;
 import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxServiceGrpc;
 import se.qxx.jukebox.factories.JukeboxRpcServerFactory;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
-import se.qxx.jukebox.interfaces.IStoppableRunnable;
 import se.qxx.jukebox.interfaces.IStreamingWebServer;
 import se.qxx.jukebox.interfaces.ITcpListener;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 
-public class TcpListener implements ITcpListener, IStoppableRunnable {
+public class TcpListener extends JukeboxThread implements ITcpListener {
 
 	private Server server;
 	private JukeboxRpcServerConnection serverConnection;
@@ -36,6 +36,8 @@ public class TcpListener implements ITcpListener, IStoppableRunnable {
 			JukeboxRpcServerFactory rpcFactory,
 			@Assisted("webserver") IStreamingWebServer webServer,
 			@Assisted("port") int port) {
+
+		super("TcpListener", 0, loggerFactory.create(LogType.FIND), executor);
 
 		this.setExecutorService(executorService);
 		this.setPort(port);
@@ -100,7 +102,7 @@ public class TcpListener implements ITcpListener, IStoppableRunnable {
 	}
 
 	@Override
-	public void initialize() throws IOException {
+	public void initialize() {
 		this.getLog().Info(String.format("Starting up RPC server. Listening on port %s",  this.getPort()));
 
 		Server server = ServerBuilder.forPort(this.getPort())
@@ -109,12 +111,22 @@ public class TcpListener implements ITcpListener, IStoppableRunnable {
 				.build();
 
 		this.setServer(server);
-		server.start();
+
+		try {
+			server.start();
+		}
+		catch (IOException ex) {
+			this.getLog().Error("Error when setting up tcp listener", ex);
+		}
 	}
-	
+
 	@Override
-	public Runnable getRunnable() {
-		return null;
+	protected void execute() throws InterruptedException {
+		try {
+			Thread.currentThread().sleep(1000);
+		}
+		catch (InterruptedException ex) {
+		}
 	}
 
 	@Override
