@@ -7,13 +7,13 @@
     android:id="@+id/rootJukeboxMainWrapper">
 
     
-	<android.support.v4.view.ViewPager
+	<androidx.viewpager.widget.ViewPager
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent" 
 	    android:layout_alignParentTop="true"
 	    android:id="@+id/rootJukeboxViewPager">
 
-		<android.support.v4.view.PagerTitleStrip
+		<androidx.viewpager.widget.PagerTitleStrip
 			android:id="@+id/pager_title_strip"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
@@ -23,7 +23,7 @@
 			android:paddingTop="5dp"
 			android:paddingBottom="5dp" />
 
-	</android.support.v4.view.ViewPager>
+	</androidx.viewpager.widget.ViewPager>
 
 
 	<fragment

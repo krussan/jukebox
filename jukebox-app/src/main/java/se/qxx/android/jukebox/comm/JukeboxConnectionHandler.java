@@ -159,6 +159,7 @@ public class JukeboxConnectionHandler<T>  {
 		ListenableFuture future = this.service.listMovies(request);
 		Futures.addCallback(future, new RpcCallback<>(this.getListener(), callback), MoreExecutors.directExecutor());
 
+
 	}
 
 	public List<JukeboxDomain.RequestFilter> getDefaultFilter() {

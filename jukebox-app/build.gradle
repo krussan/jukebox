@@ -110,4 +110,9 @@ dependencies {
     implementation "io.grpc:grpc-okhttp:${grpcVersion}"
     implementation "io.grpc:grpc-protobuf:${grpcVersion}"
     implementation "io.grpc:grpc-stub:${grpcVersion}"
+
+    // test
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-core:2.20.0'
+
 }

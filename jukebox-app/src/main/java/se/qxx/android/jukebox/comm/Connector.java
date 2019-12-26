@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.ViewMode;
 import se.qxx.android.jukebox.dialogs.JukeboxConnectionProgressDialog;
@@ -70,11 +71,11 @@ public class Connector {
 */
 
 	public void connect(final int offset, final int nrOfItems, ViewMode modelType, final int seriesID, int seasonID, boolean excludeImages, boolean excludeTextdata) {
-		final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
-				settings.getServerIpAddress(),
-				settings.getServerPort());
-
 		try {
+			final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
+					settings.getServerIpAddress(),
+					settings.getServerPort());
+
 			if (modelType == ViewMode.Movie) {
 				Logger.Log().d("Listing movies");
 				jh.listMovies("",
@@ -128,7 +129,7 @@ public class Connector {
 			}
 
 		} catch (Exception e) {
-
+			Logger.Log().e("Error when connecting to server", e);
 		}
 	}
 

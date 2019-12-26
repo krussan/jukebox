@@ -22,11 +22,12 @@ public class RpcCallback<T> implements FutureCallback<T> {
 
     @Override
     public void onSuccess(@NullableDecl T t) {
+        if (this.getCallback() != null) {
+            getCallback().run(t);
+        }
+
         if (getListener() != null) {
             JukeboxConnectionMessage msg = new JukeboxConnectionMessage(true, "");
-            if (this.getCallback() != null) {
-                getCallback().run(t);
-            }
             getListener().onRequestComplete(msg);
         }
     }
