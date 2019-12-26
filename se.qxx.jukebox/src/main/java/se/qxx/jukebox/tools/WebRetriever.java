@@ -74,6 +74,27 @@ public class WebRetriever implements IWebRetriever {
 	}
 
 	@Override
+	public WebResult getPostWebResult(String urlString) throws IOException {
+		URL url = new URL(urlString);
+
+		HttpURLConnection httpcon = (HttpURLConnection) url.openConnection();
+		httpcon.setRequestMethod("POST");
+		httpcon.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+		httpcon.setDoOutput(true);
+		httpcon.addRequestProperty("User-Agent", "Mozilla/4.76");
+		httpcon.addRequestProperty("Accept-Language", "en-US");
+
+		String result = this.getUtils().readMessageFromStream(httpcon.getInputStream());
+
+		WebResult res = new WebResult(httpcon.getURL(), result, !url.toString().equals(httpcon.getURL().toString()));
+
+		httpcon.disconnect();
+		httpcon = null;
+
+		return res;
+	}
+
+	@Override
 	public File getWebFile(String urlString, String savePath) throws IOException {
 		URL url = new URL(urlString);
 		HttpURLConnection httpcon = setupHttpConnection(url);

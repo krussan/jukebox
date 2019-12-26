@@ -320,7 +320,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	}
 
 	private List<Media> clearSubsFromMediaList(List<Media> medialist) {
-		List<Media> mlist = new ArrayList<Media>();
+		List<Media> mlist = new ArrayList<>();
 		for (Media md : medialist) {
 			mlist.add(
 					Media.newBuilder(md)
@@ -372,7 +372,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 		// -- This should be taken care of by the decouple method in DB but it seems off
 		Media md = mos.getMedia();
 
-		List<SubFile> files = new ArrayList<SubFile>();
+		List<SubFile> files;
 		
 		boolean hasMatroskaSubtitles = checkMatroskaFile(md);
 		files = checkMovieDirForSubs(md);

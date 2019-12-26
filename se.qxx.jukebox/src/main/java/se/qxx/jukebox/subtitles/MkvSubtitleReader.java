@@ -76,15 +76,14 @@ public class MkvSubtitleReader implements IMkvSubtitleReader {
 		// You must follow the order of function calls to read the subtitles and
 		// attachments successfully
 		EBMLReader reader = null;
-		List<Subtitle> result = new ArrayList<Subtitle>();
-		
+
 		try {
 		    reader = new EBMLReader(filename);
 
 		    // Check to see if this is a valid MKV file
 		    // The header contains information for where all the segments are located
 		    if (!reader.readHeader())
-	    		return result;
+				return new ArrayList<>();
 
 		    // Read the tracks. This contains the details of video, audio and subtitles
 		    // in this file
@@ -95,7 +94,7 @@ public class MkvSubtitleReader implements IMkvSubtitleReader {
 		    // Check if there are any subtitles in this file
 		    int numSubtitles = reader.getSubtitles().size();
 		    if (numSubtitles == 0)
-		    	return result;
+		    	return new ArrayList<>();
 
 		    // You need this to find the clusters scattered across the file to find
 		    // video, audio and subtitle data
@@ -105,7 +104,7 @@ public class MkvSubtitleReader implements IMkvSubtitleReader {
 		    List<String> languages = readHeaders(reader);
 
 		    readCueFrames(reader);
-		    readSubs(reader, languages, result);
+		    return readSubs(reader, languages);
 		    
 		} catch (IOException e) {
 			this.getLog().Error("Error when getting subs from mkv", e);
@@ -115,11 +114,13 @@ public class MkvSubtitleReader implements IMkvSubtitleReader {
 		        reader.close();
 		    } catch (Exception e) {}
 		}
-		
-		return result;
+
+		return new ArrayList<>();
 	}
 
-	private void readSubs(EBMLReader reader, List<String> languages, List<Subtitle> result) throws IOException {
+	private List<Subtitle> readSubs(EBMLReader reader, List<String> languages) throws IOException {
+		List<Subtitle> result = new ArrayList<>();
+
 		// OPTIONAL: we get the subtitle data that was just read
 		for (int i = 0; i < reader.getSubtitles().size(); i++) {
 		    List<Caption> subtitles = reader.getSubtitles().get(i).readUnreadSubtitles();
@@ -140,6 +141,8 @@ public class MkvSubtitleReader implements IMkvSubtitleReader {
 			result.add(getSubtitle(srt, i, language));
 			
 		}
+
+		return result;
 	}
 
 	private void readCueFrames(EBMLReader reader) throws IOException {

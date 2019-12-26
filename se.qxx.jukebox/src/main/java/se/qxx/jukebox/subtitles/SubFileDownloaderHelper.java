@@ -2,12 +2,7 @@ package se.qxx.jukebox.subtitles;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -223,6 +218,25 @@ public class SubFileDownloaderHelper implements ISubFileDownloaderHelper {
 		}
 		
 		return result;	
+	}
+
+	@Override
+	public String postSearcch(String url, Dictionary<String, String> form) {
+		String result = StringUtils.EMPTY;
+		try {
+			WebResult webResult = this.getWebRetriever().getWebResult(url);
+
+			result = webResult.getResult();
+
+			// replace newline
+			result = result.replace("\r", "");
+			result = result.replace("\n", "");
+		}
+		catch (IOException e) {
+			this.getLog().Error("Error while making web call", e);
+		}
+
+		return result;
 	}
 
 	/***
