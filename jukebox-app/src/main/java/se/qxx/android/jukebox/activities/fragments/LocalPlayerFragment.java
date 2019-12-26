@@ -322,7 +322,7 @@ public class LocalPlayerFragment extends PlayerFragment
 
 
                 } catch (IOException e) {
-                    Logger.Log().e(String.format("Error when preparing movie URI :: %s", response.getUri()));
+                    Logger.Log().e(String.format("Error when preparing movie URI :: %s", response.getUri()), e);
                 }
             }
         } catch (InterruptedException e) {

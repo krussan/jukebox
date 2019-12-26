@@ -64,8 +64,9 @@ public class CacheData {
     }
 
     private String getJsonFile() throws IOException {
-        try {
-            FileInputStream fs = new FileInputStream(getCacheFile());
+        File cacheFile = getCacheFile();
+        if (cacheFile != null && cacheFile.exists()) {
+            FileInputStream fs = new FileInputStream(cacheFile);
             StringBuilder sb = new StringBuilder();
 
             try (BufferedReader br = new BufferedReader(new InputStreamReader(fs))) {
@@ -75,9 +76,6 @@ public class CacheData {
                 }
             }
             return sb.toString();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         }
 
         return "{}";
