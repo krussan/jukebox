@@ -2,7 +2,7 @@ package se.qxx.android.jukebox.activities.fragments;
 
 
 import android.app.Activity;
-import android.app.Fragment;
+import androidx.fragment.app.Fragment;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;

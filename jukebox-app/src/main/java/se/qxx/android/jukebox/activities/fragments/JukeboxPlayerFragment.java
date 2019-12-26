@@ -1,7 +1,7 @@
 package se.qxx.android.jukebox.activities.fragments;
 
 
-import android.app.Fragment;
+import androidx.fragment.app.Fragment;
 import android.os.Bundle;
 
 import com.google.protobuf.RpcCallback;
