@@ -221,10 +221,10 @@ public class SubFileDownloaderHelper implements ISubFileDownloaderHelper {
 	}
 
 	@Override
-	public String postSearcch(String url, Dictionary<String, String> form) {
+	public String postSearch(String url, String query) {
 		String result = StringUtils.EMPTY;
 		try {
-			WebResult webResult = this.getWebRetriever().getWebResult(url);
+			WebResult webResult = this.getWebRetriever().postWebResult(url, query);
 
 			result = webResult.getResult();
 
@@ -376,7 +376,7 @@ public class SubFileDownloaderHelper implements ISubFileDownloaderHelper {
 	 * Rates a sub file (or a string) depending on the all categories in the Movie
 	 * class
 	 * 
-	 * @param m 				 - The movie to compare against
+	 * @param mos 				 - The movie to compare against
 	 * @param subFileDescription - The description of the subtitle file. Could be the same as the filename but without extension.
 	 * @return Rating			 - A rating based on the Rating enumeration				
 	 */
@@ -411,28 +411,8 @@ public class SubFileDownloaderHelper implements ISubFileDownloaderHelper {
 	}
 
 	@Override
-	public String getSetting(String className, String setting) {
-		return this.getSubSettingsForClass(className).get(setting);
-	}
-	
-	private Map<String, String> getSubSettingsForClass(String className) {
-		if (!this.getSubSettings().containsKey(className))
-			return initSubSettings(className);
-		
-		return this.getSubSettings().get(className);
-	}
-	
-	private Map<String, String> initSubSettings(String className) {
-		Optional<SubFinder> subFinderSettings = this.getSettings().getSettings().getSubFinders().getSubFinder().stream().filter(x -> StringUtils.equalsIgnoreCase(x.getClazz(), className)).findFirst();
-
-		Map<String, String> result = new HashMap<String, String>();
-		if (subFinderSettings.isPresent()) {
-			subFinderSettings.get().getSubFinderSettings().getSetting().forEach(x -> result.put(x.getKey(), x.getValue()));
-		}
-		
-		this.getSubSettings().put(className, result);
-		
-		return result;
+	public String getSetting(SubFinder finder, String setting) {
+		return finder.getSubFinderSettings().getSetting().stream().filter(x -> StringUtils.equalsIgnoreCase(x.getKey(), setting)).findFirst().get().getValue();
 	}
 
 }

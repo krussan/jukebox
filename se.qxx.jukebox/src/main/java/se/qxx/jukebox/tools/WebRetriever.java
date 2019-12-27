@@ -1,15 +1,11 @@
 package se.qxx.jukebox.tools;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -68,14 +64,13 @@ public class WebRetriever implements IWebRetriever {
 		WebResult res = new WebResult(httpcon.getURL(), result, !url.toString().equals(httpcon.getURL().toString()));
 		
 		httpcon.disconnect();
-		httpcon = null;
-				
+
 		return res;
 	}
 
 	@Override
-	public WebResult getPostWebResult(String urlString) throws IOException {
-		URL url = new URL(urlString);
+	public WebResult postWebResult(String baseUrl, String query) throws IOException {
+		URL url = new URL(baseUrl);
 
 		HttpURLConnection httpcon = (HttpURLConnection) url.openConnection();
 		httpcon.setRequestMethod("POST");
@@ -84,12 +79,16 @@ public class WebRetriever implements IWebRetriever {
 		httpcon.addRequestProperty("User-Agent", "Mozilla/4.76");
 		httpcon.addRequestProperty("Accept-Language", "en-US");
 
+		byte[] postData = query.getBytes(StandardCharsets.ISO_8859_1);
+		try (var wr = new DataOutputStream(httpcon.getOutputStream())) {
+			wr.write(postData);
+		}
+
 		String result = this.getUtils().readMessageFromStream(httpcon.getInputStream());
 
 		WebResult res = new WebResult(httpcon.getURL(), result, !url.toString().equals(httpcon.getURL().toString()));
 
 		httpcon.disconnect();
-		httpcon = null;
 
 		return res;
 	}

@@ -1,5 +1,12 @@
 package se.qxx.jukebox.subtitles;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
+import se.qxx.jukebox.domain.MovieOrSeries;
+import se.qxx.jukebox.interfaces.ISubFileDownloaderHelper;
+import se.qxx.jukebox.interfaces.ISubFinder;
+import se.qxx.jukebox.settings.JukeboxListenerSettings;
+
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -8,15 +15,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import se.qxx.jukebox.domain.MovieOrSeries;
-import se.qxx.jukebox.interfaces.ISubFileDownloaderHelper;
-import se.qxx.jukebox.interfaces.ISubFinder;
-import se.qxx.jukebox.settings.JukeboxListenerSettings;
-
-public class Subscene implements ISubFinder  {
+public class SubscenePost implements ISubFinder  {
 
 	private final String SETTING_URL = "url";
 	private final String SETTING_SEARCHRESULT_REGEX = "searchResultRegex";
@@ -24,7 +23,7 @@ public class Subscene implements ISubFinder  {
 	private final String SETTING_LISTRESULT_REGEX = "listResultRegex";
 	private final String SETTING_LISTRESULT_URLGROUP = "searchResultUrlGroup";
 	private final String SETTING_LISTRESULT_NAMEGROUP = "listResultNameGroup";
-	
+
 	private final String SETTING_LISTRESULT_LANGUAGEGROUP = "listResultLanguageGroup";
 	private final String SETTING_DOWNLOAD_REGEX = "downloadUrlRegex";
 	private final String SETTING_DOWNLOAD_URLGROUP = "downloadUrlGroup";
@@ -32,8 +31,7 @@ public class Subscene implements ISubFinder  {
 	private ISubFileDownloaderHelper helper;
 	private final JukeboxListenerSettings.SubFinders.SubFinder settings;
 
-
-	public Subscene(ISubFileDownloaderHelper helper, JukeboxListenerSettings.SubFinders.SubFinder settings) {
+	public SubscenePost(ISubFileDownloaderHelper helper, JukeboxListenerSettings.SubFinders.SubFinder settings) {
 		this.settings = settings;
 		this.setHelper(helper);
 	}
@@ -49,6 +47,7 @@ public class Subscene implements ISubFinder  {
 	public JukeboxListenerSettings.SubFinders.SubFinder getSettings() {
 		return settings;
 	}
+
 
 	@Override
 	public List<SubFile> findSubtitles(
@@ -82,9 +81,10 @@ public class Subscene implements ISubFinder  {
 		if (!StringUtils.isEmpty(searchString)) {
 			String url = this.getSetting(SETTING_URL).replaceAll("__searchString__", searchString);
 			String baseUrl = getBaseUrl(url);
+			String query = url.substring(url.indexOf("?") + 1);
 
 			this.getHelper().getLog().Debug(String.format("%s :: searchUrl :: %s", this.getClassName(), url));
-			String webResult = getHelper().performSearch(url);
+			String webResult = getHelper().postSearch(url, query);
 			
 			//Get the first result 
 			url = getMatchingResult(webResult);
@@ -204,7 +204,7 @@ public class Subscene implements ISubFinder  {
 		return "SubScene";
 	}
 
-
+	
 	private String getSetting(String setting) {
 		return this.getHelper().getSetting(this.getSettings(), setting);
 	}
