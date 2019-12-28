@@ -324,7 +324,7 @@ public class SubFileDownloaderHelper implements ISubFileDownloaderHelper {
 		Pattern pp = Pattern.compile("(S[0-9]*)(?!E[0-9]*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.UNICODE_CASE | Pattern.UNIX_LINES);
 		Matcher m = pp.matcher(description);
 
-		boolean containsSeasonString = StringUtils.containsIgnoreCase("season", description);
+		boolean containsSeasonString = StringUtils.containsIgnoreCase(description, "season");
 		
 		return m.matches() || containsSeasonString;
 		
