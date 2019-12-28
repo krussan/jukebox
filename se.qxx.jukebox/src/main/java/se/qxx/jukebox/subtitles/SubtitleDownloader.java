@@ -162,16 +162,18 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	private void setupSubFinders() {
 
 		for (SubFinder f : this.getSettings().getSettings().getSubFinders().getSubFinder()) {
-			String className = f.getClazz();
+			if (f.isEnabled()) {
+				String className = f.getClazz();
 
-			try {
-				Object[] args = new Object[] { this.getHelper(), f };
-				
-				getSubFinders().add(
-					(ISubFinder)this.getUtils().getInstance(className, new Class[] {ISubFileDownloaderHelper.class, SubFinder.class}, args));
-				
-			} catch (Exception e) {
-				this.getLog().Error(String.format("Error when loading subfinder :: %s", className), e);
+				try {
+					Object[] args = new Object[]{this.getHelper(), f};
+
+					this.getSubFinders().add(
+							(ISubFinder) this.getUtils().getInstance(className, new Class[]{ISubFileDownloaderHelper.class, SubFinder.class}, args));
+
+				} catch (Exception e) {
+					this.getLog().Error(String.format("Error when loading subfinder :: %s", className), e);
+				}
 			}
 		}
 	}

@@ -61,7 +61,7 @@ public class SubscenePost implements ISubFinder  {
 		
 		// if no match found - try searching on title
 		if (!this.getHelper().containsMatch(listOnTitle)) {
-			searchString = getSearchString(FilenameUtils.getBaseName(mos.getMedia().getFilename()));
+			searchString = getSearchString(mos.getTitle());
 			List<SubFile> listOnFilename = parseSubtitleList(searchString, mos, languages);
 			
 			return performDownload(mos, listOnFilename);
