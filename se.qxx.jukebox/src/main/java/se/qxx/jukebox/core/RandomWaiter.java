@@ -27,7 +27,7 @@ public class RandomWaiter implements IRandomWaiter {
 	}
 
 	@Override
-	public void sleep(int maxWaitSeconds, int minWaitSeconds) {
+	public void sleep(int minWaitSeconds, int maxWaitSeconds) {
 		try {
 			Random r = new Random();
 			int n = r.nextInt((maxWaitSeconds - minWaitSeconds) * 1000 + 1) + minWaitSeconds * 1000;

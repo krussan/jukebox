@@ -28,6 +28,10 @@ public class SubscenePost implements ISubFinder  {
 	private final String SETTING_DOWNLOAD_REGEX = "downloadUrlRegex";
 	private final String SETTING_DOWNLOAD_URLGROUP = "downloadUrlGroup";
 
+	private final int MIN_WAIT_SECONDS = 5;
+	private final int MAX_WAIT_SECONDS = 10;
+
+
 	private ISubFileDownloaderHelper helper;
 	private final JukeboxListenerSettings.SubFinders.SubFinder settings;
 
@@ -94,6 +98,7 @@ public class SubscenePost implements ISubFinder  {
 				url = getFullUrl(url, baseUrl);
 				
 				// Get the subfiles from the underlying web result
+				sleep();
 				webResult = getHelper().performSearch(url);
 			}
 			else {
@@ -151,11 +156,12 @@ public class SubscenePost implements ISubFinder  {
 	 */
 	private List<SubFile> replaceDownloadLinks(List<SubFile> listSubs, String baseUrl) {
 		for (SubFile sf : listSubs) {
-			
+			sleep();
+
 			String url = getFullUrl(sf.getUrl(), baseUrl);
 			
 			String webResult = this.getHelper().performSearch(url);
-			
+
 			Pattern p = Pattern.compile(this.getSetting(SETTING_DOWNLOAD_REGEX), Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.UNICODE_CASE | Pattern.UNIX_LINES);
 			Matcher matcher = p.matcher(webResult);
 			
@@ -209,4 +215,7 @@ public class SubscenePost implements ISubFinder  {
 		return this.getHelper().getSetting(this.getSettings(), setting);
 	}
 
+	private void sleep() {
+		this.getHelper().getWaiter().sleep(MIN_WAIT_SECONDS, MAX_WAIT_SECONDS);
+	}
 }

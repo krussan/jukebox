@@ -68,6 +68,7 @@ public class SubFileDownloaderHelper implements ISubFileDownloaderHelper {
 		this.fileUtilHelper = fileUtilHelper;
 	}
 
+	@Override
 	public IRandomWaiter getWaiter() {
 		return waiter;
 	}
@@ -153,7 +154,7 @@ public class SubFileDownloaderHelper implements ISubFileDownloaderHelper {
 			}
 			
 			if (listSubs.size() > 1) {
-				this.getWaiter().sleep(MAX_WAIT_SECONDS, MIN_WAIT_SECONDS);
+				this.getWaiter().sleep(MIN_WAIT_SECONDS, MAX_WAIT_SECONDS);
 			}
 
 			if (!this.isRunning())

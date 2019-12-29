@@ -20,4 +20,5 @@ public interface ISubFileDownloaderHelper {
 			int languageGroup);
 	Rating rateSub(MovieOrSeries mos, String subFileDescription);
 	IJukeboxLogger getLog();
+	IRandomWaiter getWaiter();
 }
