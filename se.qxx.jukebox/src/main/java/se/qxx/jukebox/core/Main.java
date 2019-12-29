@@ -306,14 +306,7 @@ public class Main implements IMain, IFileCreatedHandler
 		consoleLog("Starting threads ...");
 		if (this.getArguments().isTcpListenerEnabled()) {
 			consoleLog("Starting TCP listener");
-
-			try {
-				this.getTcpListener().initialize();
-				// this.getExecutor().start(this.getTcpListener().getRunnable());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
+			this.getExecutor().start(this.getTcpListener().getRunnable());
 		}
 		
 		if (this.getArguments().isSubtitleDownloaderEnabled()) {

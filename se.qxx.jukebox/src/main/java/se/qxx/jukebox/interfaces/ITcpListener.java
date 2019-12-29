@@ -8,5 +8,6 @@ public interface ITcpListener {
 
 	Server getServer();
 	void initialize() throws IOException;
+	Runnable getRunnable();
 
 }

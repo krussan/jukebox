@@ -121,6 +121,11 @@ public class TcpListener extends JukeboxThread implements ITcpListener {
 	}
 
 	@Override
+	public Runnable getRunnable() {
+		return this;
+	}
+
+	@Override
 	protected void execute() throws InterruptedException {
 		try {
 			Thread.currentThread().sleep(1000);
