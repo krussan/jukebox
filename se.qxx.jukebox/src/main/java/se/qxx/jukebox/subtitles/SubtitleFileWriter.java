@@ -52,8 +52,9 @@ public class SubtitleFileWriter implements ISubtitleFileWriter {
 	public File getTempFile(Subtitle sub, String extension) {
 		File tempDir = FileUtils.getTempDirectory();
 		
-		return new File(String.format("%s/%s.%s", 
-				tempDir.getAbsolutePath(), 
+		return new File(String.format("%s/sub%s.%s.%s",
+				tempDir.getAbsolutePath(),
+				sub.getID(),
 				FilenameUtils.removeExtension(sub.getFilename()),
 				extension));
 	}

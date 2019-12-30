@@ -220,7 +220,7 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 
 		try {
 			String streamingFile = getStreamingUri(sub, subtitleRequestType);
-			String filename = StringUtils.EMPTY;
+			String filename;
 			
 			if (fileIsRegistered(streamingFile)) {
 				filename = streamingMap.get(streamingFile);

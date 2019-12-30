@@ -272,11 +272,11 @@ public class SubFileDownloaderHelper implements ISubFileDownloaderHelper {
 			int urlGroup, 
 			int nameGroup, 
 			int languageGroup) {
-		//String pattern = this.getSetting(SETTING_PATTERN);
+
 		Pattern p = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.UNICODE_CASE | Pattern.UNIX_LINES);
 		Matcher matcher = p.matcher(webResult);
 		
-		List<SubFile> listSubs = new ArrayList<SubFile>();
+		List<SubFile> listSubs = new ArrayList<>();
 		
 		this.getLog().Debug(String.format("%s :: Finding subtitles for %s", className, mos.getMedia().getFilename()));
 		
@@ -285,7 +285,6 @@ public class SubFileDownloaderHelper implements ISubFileDownloaderHelper {
 			String description = matcher.group(nameGroup).trim();
 			String matchLanguage = matcher.group(languageGroup).trim();
 
-			
 			Optional<Language> lang = getLanguageMatch(matchLanguage, languages);
 			if (languageGroup == 0 || lang.isPresent()) {
 				// remove duplicate links and descriptions matching whole season
