@@ -159,5 +159,5 @@ public interface IDatabase {
 
 	void forceConversion(int mediaID);
 
-	List<MovieOrSeries> decoupleSeries(List<Series> series);
+	List<MovieOrSeries> decoupleSeries(List<Series> series, boolean filterOnSubtitleQueue);
 }

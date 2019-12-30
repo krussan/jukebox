@@ -1,5 +1,6 @@
 package se.qxx.jukebox.interfaces;
 
+import java.io.File;
 import java.util.List;
 
 import se.qxx.jukebox.domain.JukeboxDomain.Rating;
@@ -21,4 +22,5 @@ public interface ISubFileDownloaderHelper {
 	Rating rateSub(MovieOrSeries mos, String subFileDescription);
 	IJukeboxLogger getLog();
 	IRandomWaiter getWaiter();
+
 }

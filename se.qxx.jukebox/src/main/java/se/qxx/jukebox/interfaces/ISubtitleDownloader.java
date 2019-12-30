@@ -9,11 +9,13 @@ import se.qxx.jukebox.subtitles.Language;
 import se.qxx.jukebox.subtitles.SubFile;
 
 public interface ISubtitleDownloader {
-	public void addMovie(Movie m);
-	public void reenlistMovie(Movie m);
-	public void reenlistEpisode(Episode ep);
-	public void addEpisode(Episode episode);
-	public Runnable getRunnable();
-	public List<SubFile> checkMovieDirForSubs(Media md);
+	void addMovie(Movie m);
+	void reenlistMovie(Movie m);
+	void reenlistEpisode(Episode ep);
+	void addEpisode(Episode episode);
+	Runnable getRunnable();
+	List<SubFile> checkMovieDirForSubs(Media md);
 	List<Language> getPreferredLanguages();
+	Movie clearSubs(Movie m);
+	Episode clearSubs(Episode ep);
 }

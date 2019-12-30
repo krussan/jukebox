@@ -311,7 +311,8 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 		addEpisode(ep);
 	}
 
-	private Movie clearSubs(Movie m) {
+	@Override
+	public Movie clearSubs(Movie m) {
 		Movie.Builder mb = Movie.newBuilder(m);
 		
 		List<Media> newMedia = clearSubsFromMediaList(m.getMediaList());
@@ -332,7 +333,8 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 		return mlist;
 	}
 
-	private Episode clearSubs(Episode ep) {
+	@Override
+	public Episode clearSubs(Episode ep) {
 		Episode.Builder epb = Episode.newBuilder(ep);
 		
 		List<Media> newMedia = clearSubsFromMediaList(ep.getMediaList());
@@ -350,7 +352,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	public void addEpisode(Episode episode) {
 		lock.lock();
 		try {
-			episode = this.getDatabase().addEpisodeToSubtitleQueue(episode);
+			this.getDatabase().addEpisodeToSubtitleQueue(episode);
 			this.signal();
 		}  
 		finally {
@@ -445,13 +447,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 		if (dir != null && dir.exists()) {
 			list = checkDirForSubs(FilenameUtils.getBaseName(mediaFilename), dir);
 		
-			String[] dirs = dir.list(new FilenameFilter() {
-				
-				@Override
-				public boolean accept(File dir, String name) {
-					return name.equals("Subs") || name.equals("SubFiles");
-				}
-			});
+			String[] dirs = dir.list((dir1, name) -> name.equals("Subs") || name.equals("SubFiles"));
 			
 			if (dirs != null) {
 				for (String newDir : dirs) {
@@ -475,31 +471,21 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	 * @param dir
 	 * @return A list of subfiles. An empty list if none found.
 	 */
-	private List<SubFile> checkDirForSubs(String movieFilenameWithoutExt, File dir) {
-		List<SubFile> list = new ArrayList<SubFile>();
-		if (dir != null && dir.exists()) {
-			String[] subs = dir.list(new FilenameFilter() {
-				
-				@Override
-				public boolean accept(File f, String name) {
-					return name.endsWith("srt") || name.endsWith("idx") || name.endsWith("sub"); 
-				}
-			});
-		
-			if (subs != null) {
-				for (String subFile : subs) {
-					if (StringUtils.startsWithIgnoreCase(subFile, movieFilenameWithoutExt)) {
-						SubFile sf = new SubFile(new File(String.format("%s/%s", dir.getAbsolutePath(), subFile)));
-						sf.setRating(Rating.SubsExist);
-						sf.setDescription(movieFilenameWithoutExt);
-						sf.setLanguage(Language.Unknown);
-						
-						list.add(sf);
-					}
-				}
+	public List<SubFile> checkDirForSubs(String movieFilenameWithoutExt, File dir) {
+		List<SubFile> list = new ArrayList<>();
+		List<String> subs = this.getFileUtilHelper().findSubsInDirectory(dir);
+
+		for (String subFile : subs) {
+			if (StringUtils.startsWithIgnoreCase(subFile, movieFilenameWithoutExt)) {
+				SubFile sf = new SubFile(new File(String.format("%s/%s", dir.getAbsolutePath(), subFile)));
+				sf.setRating(Rating.SubsExist);
+				sf.setDescription(movieFilenameWithoutExt);
+				sf.setLanguage(Language.Unknown);
+
+				list.add(sf);
 			}
 		}
-		
+
 		return list;
 	}
 
@@ -514,7 +500,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 		String tempFilepath = this.getFileUtilHelper().createTempSubsPath(mos);
 		this.getLog().Debug(String.format("Unpack path :: %s", unpackPath));
 		
-		List<Subtitle> subtitleList = new ArrayList<Subtitle>();
+		List<Subtitle> subtitleList = new ArrayList<>();
 		
 		for (SubFile subfile : files) {
 			try {

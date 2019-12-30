@@ -1,6 +1,8 @@
 package se.qxx.jukebox.subtitles;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -45,4 +47,13 @@ public class SubFileUtilHelper implements ISubFileUtilHelper {
 		
 		return tempPath;
 	}
+
+	@Override
+	public List<String> findSubsInDirectory(File dir) {
+		if (dir != null && dir.exists())
+			return List.of(dir.list((f, name) -> name.endsWith("srt") || name.endsWith("idx") || name.endsWith("sub")));
+		else
+			return new ArrayList<>();
+	}
+
 }
