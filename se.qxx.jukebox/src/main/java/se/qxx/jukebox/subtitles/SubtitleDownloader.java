@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -578,12 +580,16 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 		BufferedReader br = null;
 		String result = StringUtils.EMPTY;
 		try {
+			Pattern p = Pattern.compile("\\<.*?\\>(.*?)\\<.*?\\>");
 			br = new BufferedReader(new FileReader(unpackedFile));
 
 			StringBuilder sb = new StringBuilder();
 		    String line = br.readLine();
 
 		    while (line != null) {
+				Matcher m = p.matcher(line);
+				line = m.replaceAll("$1");
+
 		        sb.append(line);
 		        sb.append(System.lineSeparator());
 		        line = br.readLine();
