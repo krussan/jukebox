@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Html;
 import androidx.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -310,7 +311,8 @@ public class LocalPlayerFragment extends PlayerFragment
                     mediaPlayer.setOnTimedTextListener((mediaPlayer, timedText) -> {
                         if (timedText != null && txtSubtitle != null) {
                             //Log.d("test", "subtitle: " + timedText.getText());
-                            txtSubtitle.setText(timedText.getText());
+
+                            txtSubtitle.setText(Html.fromHtml(timedText.getText(), Html.FROM_HTML_MODE_COMPACT));
                         }
                     });
 
