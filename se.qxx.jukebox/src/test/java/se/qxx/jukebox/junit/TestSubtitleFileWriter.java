@@ -83,7 +83,7 @@ public class TestSubtitleFileWriter {
 
 		File file = writer.getTempFile(sub1, "vtt");
 		
-		assertEquals("ACB1.vtt", file.getName());
+		assertEquals("sub100.ACB1.vtt", file.getName());
 	}
 	
 	
