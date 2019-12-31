@@ -1,12 +1,11 @@
 package se.qxx.android.jukebox.activities;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import androidx.fragment.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
-
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.fragments.PlayerFragment;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
@@ -39,7 +38,7 @@ public class NowPlayingActivity extends AppCompatActivity {
     }
 
     public void initializeView() {
-        FragmentManager fm = getFragmentManager();
+        FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.add(R.id.fragmentContainer,
                 PlayerFragment.newInstance(

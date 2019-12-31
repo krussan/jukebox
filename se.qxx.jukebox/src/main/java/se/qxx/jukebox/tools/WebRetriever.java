@@ -1,15 +1,11 @@
 package se.qxx.jukebox.tools;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,18 +18,29 @@ import com.google.inject.Singleton;
 import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
+import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.interfaces.IWebRetriever;
 
 @Singleton
 public class WebRetriever implements IWebRetriever {
 	
 	private IJukeboxLogger log;
+	private IUtils utils;
 	
 	@Inject
-	public WebRetriever(LoggerFactory loggerFactory) {
+	public WebRetriever(LoggerFactory loggerFactory, IUtils utils) {
+		this.setUtils(utils);
 		this.setLog(loggerFactory.create(LogType.MAIN));
 	}
 	
+	public IUtils getUtils() {
+		return utils;
+	}
+
+	public void setUtils(IUtils utils) {
+		this.utils = utils;
+	}
+
 	public IJukeboxLogger getLog() {
 		return log;
 	}
@@ -52,13 +59,37 @@ public class WebRetriever implements IWebRetriever {
 		httpcon.addRequestProperty("User-Agent", "Mozilla/4.76"); 
 		httpcon.addRequestProperty("Accept-Language", "en-US");
 		
-		String result = Util.readMessageFromStream(httpcon.getInputStream());
+		String result = this.getUtils().readMessageFromStream(httpcon.getInputStream());
 	
 		WebResult res = new WebResult(httpcon.getURL(), result, !url.toString().equals(httpcon.getURL().toString()));
 		
 		httpcon.disconnect();
-		httpcon = null;
-				
+
+		return res;
+	}
+
+	@Override
+	public WebResult postWebResult(String baseUrl, String query) throws IOException {
+		URL url = new URL(baseUrl);
+
+		HttpURLConnection httpcon = (HttpURLConnection) url.openConnection();
+		httpcon.setRequestMethod("POST");
+		httpcon.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+		httpcon.setDoOutput(true);
+		httpcon.addRequestProperty("User-Agent", "Mozilla/4.76");
+		httpcon.addRequestProperty("Accept-Language", "en-US");
+
+		byte[] postData = query.getBytes(StandardCharsets.ISO_8859_1);
+		try (var wr = new DataOutputStream(httpcon.getOutputStream())) {
+			wr.write(postData);
+		}
+
+		String result = this.getUtils().readMessageFromStream(httpcon.getInputStream());
+
+		WebResult res = new WebResult(httpcon.getURL(), result, !url.toString().equals(httpcon.getURL().toString()));
+
+		httpcon.disconnect();
+
 		return res;
 	}
 

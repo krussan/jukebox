@@ -2,12 +2,7 @@ package se.qxx.jukebox.subtitles;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -73,6 +68,7 @@ public class SubFileDownloaderHelper implements ISubFileDownloaderHelper {
 		this.fileUtilHelper = fileUtilHelper;
 	}
 
+	@Override
 	public IRandomWaiter getWaiter() {
 		return waiter;
 	}
@@ -158,7 +154,7 @@ public class SubFileDownloaderHelper implements ISubFileDownloaderHelper {
 			}
 			
 			if (listSubs.size() > 1) {
-				this.getWaiter().sleep(MAX_WAIT_SECONDS, MIN_WAIT_SECONDS);
+				this.getWaiter().sleep(MIN_WAIT_SECONDS, MAX_WAIT_SECONDS);
 			}
 
 			if (!this.isRunning())
@@ -225,6 +221,25 @@ public class SubFileDownloaderHelper implements ISubFileDownloaderHelper {
 		return result;	
 	}
 
+	@Override
+	public String postSearch(String url, String query) {
+		String result = StringUtils.EMPTY;
+		try {
+			WebResult webResult = this.getWebRetriever().postWebResult(url, query);
+
+			result = webResult.getResult();
+
+			// replace newline
+			result = result.replace("\r", "");
+			result = result.replace("\n", "");
+		}
+		catch (IOException e) {
+			this.getLog().Error("Error while making web call", e);
+		}
+
+		return result;
+	}
+
 	/***
 	 * Collects download links from a webresult.
 	 * Also rates the name of the sub in accordance with the name of the media file
@@ -257,11 +272,11 @@ public class SubFileDownloaderHelper implements ISubFileDownloaderHelper {
 			int urlGroup, 
 			int nameGroup, 
 			int languageGroup) {
-		//String pattern = this.getSetting(SETTING_PATTERN);
+
 		Pattern p = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.UNICODE_CASE | Pattern.UNIX_LINES);
 		Matcher matcher = p.matcher(webResult);
 		
-		List<SubFile> listSubs = new ArrayList<SubFile>();
+		List<SubFile> listSubs = new ArrayList<>();
 		
 		this.getLog().Debug(String.format("%s :: Finding subtitles for %s", className, mos.getMedia().getFilename()));
 		
@@ -270,7 +285,6 @@ public class SubFileDownloaderHelper implements ISubFileDownloaderHelper {
 			String description = matcher.group(nameGroup).trim();
 			String matchLanguage = matcher.group(languageGroup).trim();
 
-			
 			Optional<Language> lang = getLanguageMatch(matchLanguage, languages);
 			if (languageGroup == 0 || lang.isPresent()) {
 				// remove duplicate links and descriptions matching whole season
@@ -310,7 +324,7 @@ public class SubFileDownloaderHelper implements ISubFileDownloaderHelper {
 		Pattern pp = Pattern.compile("(S[0-9]*)(?!E[0-9]*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.UNICODE_CASE | Pattern.UNIX_LINES);
 		Matcher m = pp.matcher(description);
 
-		boolean containsSeasonString = StringUtils.containsIgnoreCase("season", description);
+		boolean containsSeasonString = StringUtils.containsIgnoreCase(description, "season");
 		
 		return m.matches() || containsSeasonString;
 		
@@ -362,7 +376,7 @@ public class SubFileDownloaderHelper implements ISubFileDownloaderHelper {
 	 * Rates a sub file (or a string) depending on the all categories in the Movie
 	 * class
 	 * 
-	 * @param m 				 - The movie to compare against
+	 * @param mos 				 - The movie to compare against
 	 * @param subFileDescription - The description of the subtitle file. Could be the same as the filename but without extension.
 	 * @return Rating			 - A rating based on the Rating enumeration				
 	 */
@@ -397,28 +411,8 @@ public class SubFileDownloaderHelper implements ISubFileDownloaderHelper {
 	}
 
 	@Override
-	public String getSetting(String className, String setting) {
-		return this.getSubSettingsForClass(className).get(setting);
-	}
-	
-	private Map<String, String> getSubSettingsForClass(String className) {
-		if (!this.getSubSettings().containsKey(className))
-			return initSubSettings(className);
-		
-		return this.getSubSettings().get(className);
-	}
-	
-	private Map<String, String> initSubSettings(String className) {
-		Optional<SubFinder> subFinderSettings = this.getSettings().getSettings().getSubFinders().getSubFinder().stream().filter(x -> StringUtils.equalsIgnoreCase(x.getClazz(), className)).findFirst();
-
-		Map<String, String> result = new HashMap<String, String>();
-		if (subFinderSettings.isPresent()) {
-			subFinderSettings.get().getSubFinderSettings().getSetting().forEach(x -> result.put(x.getKey(), x.getValue()));
-		}
-		
-		this.getSubSettings().put(className, result);
-		
-		return result;
+	public String getSetting(SubFinder finder, String setting) {
+		return finder.getSubFinderSettings().getSetting().stream().filter(x -> StringUtils.equalsIgnoreCase(x.getKey(), setting)).findFirst().get().getValue();
 	}
 
 }

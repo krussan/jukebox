@@ -35,9 +35,9 @@ import se.qxx.jukebox.interfaces.IIMDBUrlRewrite;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IRandomWaiter;
 import se.qxx.jukebox.interfaces.ISettings;
+import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.interfaces.IWebRetriever;
-import se.qxx.jukebox.settings.imdb.Imdb;
-import se.qxx.jukebox.tools.Util;
+import se.qxx.jukebox.settings.Imdb;
 import se.qxx.jukebox.tools.WebResult;
 
 @Singleton
@@ -50,6 +50,7 @@ public class IMDBFinder implements IIMDBFinder {
 	private IMDBParserFactory parserFactory;
 	private IJukeboxLogger log;
 	private IRandomWaiter waiter;
+	private IUtils utils;
 	
 	@Inject
 	public IMDBFinder(ISettings settings, 
@@ -57,7 +58,8 @@ public class IMDBFinder implements IIMDBFinder {
 			IIMDBUrlRewrite urlRewrite, 
 			IMDBParserFactory parserFactory,
 			LoggerFactory loggerFactory, 
-			IRandomWaiter waiter) {
+			IRandomWaiter waiter,
+			IUtils utils) {
 		
 		this.setWaiter(waiter);
 		this.setSettings(settings);
@@ -65,8 +67,18 @@ public class IMDBFinder implements IIMDBFinder {
 		this.setUrlRewrite(urlRewrite);
 		this.setParserFactory(parserFactory);
 		this.setLog(loggerFactory.create(LogType.IMDB));
+		this.setUtils(utils);
+		
 	}
 	
+	public IUtils getUtils() {
+		return utils;
+	}
+
+	public void setUtils(IUtils utils) {
+		this.utils = utils;
+	}
+
 	public IRandomWaiter getWaiter() {
 		return waiter;
 	}
@@ -332,7 +344,7 @@ public class IMDBFinder implements IIMDBFinder {
 			int minSeconds = this.getSettings().getImdb().getSettings().getSleepSecondsMin();
 			int maxSeconds = this.getSettings().getImdb().getSettings().getSleepSecondsMax();
 
-			this.getWaiter().sleep(maxSeconds, minSeconds);
+			this.getWaiter().sleep(minSeconds, maxSeconds);
 
 			WebResult webResult = getSearchResult(searchString, searchUrl);
 			
@@ -400,7 +412,7 @@ public class IMDBFinder implements IIMDBFinder {
 				ByteString image = ByteString.copyFrom(rec.getImage());
 				b.setImage(image);
 				try {
-					b.setThumbnail(Util.getScaledImage(image));
+					b.setThumbnail(this.getUtils().getScaledImage(image));
 				} catch (IOException e) {
 					this.getLog().Error("Error when creating thumbnail");
 				}
@@ -445,7 +457,7 @@ public class IMDBFinder implements IIMDBFinder {
 				ByteString image = ByteString.copyFrom(rec.getImage());
 				b.setImage(image);
 				try {
-					b.setThumbnail(Util.getScaledImage(image));
+					b.setThumbnail(this.getUtils().getScaledImage(image));
 				} catch (IOException e) {
 					this.getLog().Error("Error when creating thumbnail");
 				}
@@ -478,7 +490,7 @@ public class IMDBFinder implements IIMDBFinder {
 				ByteString image = ByteString.copyFrom(rec.getImage());
 				b.setImage(image);
 				try {
-					b.setThumbnail(Util.getScaledImage(image));
+					b.setThumbnail(this.getUtils().getScaledImage(image));
 				} catch (IOException e) {
 					this.getLog().Error("Error when creating thumbnail");
 				}

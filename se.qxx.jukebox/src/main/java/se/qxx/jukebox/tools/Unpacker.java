@@ -23,15 +23,27 @@ import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IUnpacker;
+import se.qxx.jukebox.interfaces.IUtils;
 
 public class Unpacker implements IUnpacker {
 	
 	private IJukeboxLogger log;
+	private IUtils utils;
 	
 	@Inject
-	public Unpacker(LoggerFactory loggerFactory) {
+	public Unpacker(LoggerFactory loggerFactory, IUtils utils) {
+		this.setUtils(utils);
 		this.setLog(loggerFactory.create(LogType.SUBS));
 	}
+	
+	public IUtils getUtils() {
+		return utils;
+	}
+
+	public void setUtils(IUtils utils) {
+		this.utils = utils;
+	}
+
 	public IJukeboxLogger getLog() {
 		return log;
 	}
@@ -150,14 +162,14 @@ public class Unpacker implements IUnpacker {
 
 			this.getLog().Debug(String.format("EXEC :: Reading from command stream"));
 
-			output = Util.readMessageFromStream(stdout);
+			output = this.getUtils().readMessageFromStream(stdout);
 			
 			this.getLog().Debug(String.format("EXEC :: Read %s characters from command stream", output.length()));
 			p.waitFor();
 			
 			this.getLog().Debug(String.format("EXEC :: Process exit value :: %s", p.exitValue()));
 
-			String errorMessage = Util.readMessageFromStream(stderr);
+			String errorMessage = this.getUtils().readMessageFromStream(stderr);
 			
 			if (p.exitValue() != 0) {
 				this.getLog().Debug("EXEC :: Error when unpacking archive:");

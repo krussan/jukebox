@@ -164,13 +164,6 @@ public class MediaInfo
         Handle = null;
     }
 
-    @Override
-    protected void finalize() throws Throwable
-    {
-        if (Handle != null)
-            dispose();
-    }
-
     //File
     /**
      * Open a file and collect information about it (technical information and tags).

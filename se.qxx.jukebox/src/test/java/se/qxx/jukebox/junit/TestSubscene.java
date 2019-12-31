@@ -1,7 +1,7 @@
 package se.qxx.jukebox.junit;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.io.BufferedReader;
@@ -23,7 +23,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import se.qxx.jukebox.builders.MovieBuilderFactory;
-import se.qxx.jukebox.builders.ParserBuilder;
 import se.qxx.jukebox.core.Log;
 import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
@@ -36,14 +35,17 @@ import se.qxx.jukebox.interfaces.IParserSettings;
 import se.qxx.jukebox.interfaces.IRandomWaiter;
 import se.qxx.jukebox.interfaces.ISubFileDownloaderHelper;
 import se.qxx.jukebox.interfaces.ISubFileUtilHelper;
+import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.interfaces.IWebRetriever;
+import se.qxx.jukebox.settings.JukeboxListenerSettings;
 import se.qxx.jukebox.settings.Settings;
-import se.qxx.jukebox.settings.imdb.ImdbSettings;
-import se.qxx.jukebox.settings.parser.ParserSettings;
+import se.qxx.jukebox.settings.ImdbSettings;
+import se.qxx.jukebox.settings.ParserSettings;
 import se.qxx.jukebox.subtitles.Language;
 import se.qxx.jukebox.subtitles.SubFile;
 import se.qxx.jukebox.subtitles.SubFileDownloaderHelper;
 import se.qxx.jukebox.subtitles.Subscene;
+import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.tools.WebResult;
 
 public class TestSubscene {
@@ -58,12 +60,13 @@ public class TestSubscene {
 	private Settings settings;
 	private IJukeboxLogger log;
 	private MovieBuilderFactory movieBuilderFactory;
+	private IUtils utils;
 	
 	@Mock private IWebRetriever webRetrieverMock;
 	@Mock private LoggerFactory loggerFactoryMock;
 	@Mock private IRandomWaiter waiterMock;
 	@Mock private ISubFileUtilHelper fileUtilHelperMock;
-
+	
 	
 	@Before
 	public void init() throws IOException, JAXBException {
@@ -75,8 +78,9 @@ public class TestSubscene {
 		
 		when(loggerFactoryMock.create(any(Log.LogType.class))).thenReturn(log);
 		
-		new ParserBuilder(settings, log);
-		movieBuilderFactory = new MovieBuilderFactory(settings, loggerFactoryMock);
+		//new ParserBuilder(settings, log);
+		utils = new Util();
+		movieBuilderFactory = new MovieBuilderFactory(settings, loggerFactoryMock, utils);
 
 		readResources();
 	}
@@ -107,7 +111,12 @@ public class TestSubscene {
 	@Test
 	public void test() throws IOException {
 		ISubFileDownloaderHelper helper = createHelper();
-		Subscene ss = new Subscene(helper);
+		JukeboxListenerSettings.SubFinders.SubFinder f =
+			this.settings.getSettings().getSubFinders().getSubFinder()
+				.stream().filter(x -> x.getClazz().equalsIgnoreCase("se.qxx.jukebox.subtitles.Subscene"))
+				.findFirst().get();
+
+		Subscene ss = new Subscene(helper, f);
 
 		Movie m = Movie.newBuilder()
 				.setID(1)
@@ -122,7 +131,7 @@ public class TestSubscene {
 						.build())
 				.build();
 
-		Mockito.when(fileUtilHelperMock.createTempSubsPath(Mockito.anyObject())).thenReturn(".");
+		Mockito.when(fileUtilHelperMock.createTempSubsPath(Mockito.any())).thenReturn(".");
 
 		WebResult resultSearch = new WebResult(new URL("https://subscene.com/subtitles/title?q=Mockito"), searchResult, false);
 		Mockito.when(webRetrieverMock.getWebResult("https://subscene.com/subtitles/title?q=Mockito")).thenReturn(resultSearch);
@@ -132,7 +141,7 @@ public class TestSubscene {
 
 		WebResult resultList = new WebResult(new URL("https://subscene.com/subtitles/Mockito"), listResult, false);
 		Mockito.when(webRetrieverMock.getWebResult("https://subscene.com/subtitles/Mockito")).thenReturn(resultList);
-		Mockito.when(webRetrieverMock.getWebResult("https://subscene.com/subtitles/Mockito.2014")).thenReturn(resultList);
+		//Mockito.when(webRetrieverMock.getWebResult("https://subscene.com/subtitles/Mockito.2014")).thenReturn(resultList);
 
 		WebResult resultDownload1 = new WebResult(new URL("https://subscene.com/subtitles/Mockito/1023456"), download1Result, false);
 		Mockito.when(webRetrieverMock.getWebResult("https://subscene.com/subtitles/Mockito/1023456")).thenReturn(resultDownload1);

@@ -1,11 +1,11 @@
 package se.qxx.android.jukebox.activities.fragments;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.View;
 import android.widget.Toast;
 
@@ -22,13 +22,14 @@ import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.ViewMode;
 import se.qxx.android.jukebox.activities.fragments.SubtitleSelectFragment.SubtitleSelectDialogListener;
 import se.qxx.android.jukebox.cast.JukeboxCastType;
+import se.qxx.android.jukebox.comm.HandlerCallback;
 import se.qxx.android.jukebox.settings.CacheData;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
-import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
-import se.qxx.jukebox.comm.client.JukeboxConnectionMessage;
-import se.qxx.jukebox.comm.client.JukeboxResponseListener;
+import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
+import se.qxx.android.jukebox.comm.JukeboxConnectionMessage;
+import se.qxx.android.jukebox.comm.JukeboxResponseListener;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
 public abstract class PlayerFragment extends Fragment implements JukeboxResponseListener, SubtitleSelectDialogListener {
@@ -247,12 +248,12 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
 
         this.getConnectionHandler()
             .startMovie(
-                getPlayerName(),
-                currentMovie,
-                currentEpisode,
-                getSubtitleRequestType(),
-                    (response) -> {
-                        onStartMovieComplete(response);
+                    getPlayerName(),
+                    currentMovie,
+                    currentEpisode,
+                    getSubtitleRequestType(),
+                    response -> {
+                        onStartMovieComplete((JukeboxDomain.JukeboxResponseStartMovie) response);
                         seekToStartPosition();
                     });
     }
@@ -294,7 +295,7 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
             true,
             response -> {
                 if (response != null) {
-                    initializeView(getView(), this.getRequestType(), response);
+                    initializeView(getView(), this.getRequestType(), (JukeboxDomain.JukeboxResponseGetItem) response);
 
                     signalGetInfoCopmlete();
                     onGetItemCompleted();

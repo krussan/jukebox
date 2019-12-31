@@ -52,8 +52,9 @@ public class SubtitleFileWriter implements ISubtitleFileWriter {
 	public File getTempFile(Subtitle sub, String extension) {
 		File tempDir = FileUtils.getTempDirectory();
 		
-		return new File(String.format("%s/%s.%s", 
-				tempDir.getAbsolutePath(), 
+		return new File(String.format("%s/sub%s.%s.%s",
+				tempDir.getAbsolutePath(),
+				sub.getID(),
 				FilenameUtils.removeExtension(sub.getFilename()),
 				extension));
 	}
@@ -90,7 +91,7 @@ public class SubtitleFileWriter implements ISubtitleFileWriter {
 	}
 	
 	private SubtitleParser getParser(String filename) {
-		String extension = FilenameUtils.getExtension(filename).toLowerCase();
+		String extension = FilenameUtils.getExtension(filename).toLowerCase().trim();
 		
 		switch (extension) {
 		case "vtt":

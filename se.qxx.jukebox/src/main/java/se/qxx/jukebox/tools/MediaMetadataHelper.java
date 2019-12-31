@@ -13,15 +13,26 @@ import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IMediaMetadataHelper;
+import se.qxx.jukebox.interfaces.IUtils;
 
 @Singleton
 public class MediaMetadataHelper implements IMediaMetadataHelper  {
 
 	private IJukeboxLogger log;
+	private IUtils utils;
 	
 	@Inject
-	public MediaMetadataHelper(LoggerFactory loggerFactory) {
+	public MediaMetadataHelper(LoggerFactory loggerFactory, IUtils utils) {
+		this.setUtils(utils);
 		this.setLog(loggerFactory.create(LogType.FIND));
+	}
+
+	public IUtils getUtils() {
+		return utils;
+	}
+
+	public void setUtils(IUtils utils) {
+		this.utils = utils;
 	}
 
 	public IJukeboxLogger getLog() {
@@ -34,7 +45,7 @@ public class MediaMetadataHelper implements IMediaMetadataHelper  {
 
 	@Override
 	public MediaMetadata getMediaMetadata(Media md) {
-		String fullFilePath = Util.getFullFilePath(md);
+		String fullFilePath = this.getUtils().getFullFilePath(md);
 		this.getLog().Debug(String.format("Finding media meta data for file %s", md.getFilename()));
 
 		try {

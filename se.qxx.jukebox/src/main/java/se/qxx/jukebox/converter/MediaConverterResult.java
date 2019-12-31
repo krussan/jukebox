@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.apache.commons.io.IOUtils;
 
+import se.qxx.jukebox.interfaces.IConvertedFile;
 import se.qxx.jukebox.tools.Util;
 
 public class MediaConverterResult {
@@ -14,7 +15,7 @@ public class MediaConverterResult {
 		Aborted
 	}
 
-	private ConvertedFile convertedFile;
+	private IConvertedFile convertedFile;
 	private State state;
 
 	public State getState() {
@@ -24,14 +25,14 @@ public class MediaConverterResult {
 		this.state = state;
 	}
 	
-	public ConvertedFile getConvertedFile() {
+	public IConvertedFile getConvertedFile() {
 		return convertedFile;
 	}
-	public void setConvertedFile(ConvertedFile convertedFile) {
+	public void setConvertedFile(IConvertedFile convertedFile) {
 		this.convertedFile = convertedFile;
 	}
 	
-	public MediaConverterResult(ConvertedFile convertedFile, State resultState) {
+	public MediaConverterResult(IConvertedFile convertedFile, State resultState) {
 		this.setConvertedFile(convertedFile);
 		this.setState(resultState);
 	}

@@ -37,8 +37,8 @@ import se.qxx.jukebox.interfaces.ISubFileUtilHelper;
 import se.qxx.jukebox.interfaces.ISubFinder;
 import se.qxx.jukebox.interfaces.ISubtitleDownloader;
 import se.qxx.jukebox.interfaces.IUnpacker;
+import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder;
-import se.qxx.jukebox.tools.Util;
 
 @Singleton
 public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownloader {
@@ -52,6 +52,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	private IMkvSubtitleReader mkvSubtitleReader;
 	private IUnpacker unpacker;
 	private ISubFileUtilHelper fileUtilHelper;
+	private IUtils utils;
 	
 	@Inject
 	public SubtitleDownloader(IDatabase database, 
@@ -62,13 +63,14 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 			IMkvSubtitleReader mkvSubtitleReader,
 			LoggerFactory loggerFactory,
 			IUnpacker unpacker,
-			ISubFileUtilHelper fileUtilHelper) {
+			ISubFileUtilHelper fileUtilHelper,
+			IUtils utils) {
 		super(
 			"Subtitle", 
 			settings.getSettings().getSubFinders().getThreadWaitSeconds() * 1000,
 			loggerFactory.create(LogType.SUBS),
 			executor);
-		
+		this.setUtils(utils);
 		this.setFileUtilHelper(fileUtilHelper);
 		this.setUnpacker(unpacker);
 		this.setMkvSubtitleReader(mkvSubtitleReader);
@@ -76,6 +78,14 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 		this.setSettings(settings);
 		this.setMovieBuilderFactory(movieBuilderFactory);
 		this.setHelper(helper);
+	}
+
+	public IUtils getUtils() {
+		return utils;
+	}
+
+	public void setUtils(IUtils utils) {
+		this.utils = utils;
 	}
 
 	public ISubFileUtilHelper getFileUtilHelper() {
@@ -152,17 +162,18 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	private void setupSubFinders() {
 
 		for (SubFinder f : this.getSettings().getSettings().getSubFinders().getSubFinder()) {
-			String className = f.getClazz();
+			if (f.isEnabled()) {
+				String className = f.getClazz();
 
-			
-			try {
-				ISubFileDownloaderHelper[] args = new ISubFileDownloaderHelper[] { this.getHelper() };
-				
-				getSubFinders().add(
-					(ISubFinder)Util.getInstance(className, new Class[] {ISubFileDownloaderHelper.class}, args));
-				
-			} catch (Exception e) {
-				this.getLog().Error(String.format("Error when loading subfinder :: %s", className), e);
+				try {
+					Object[] args = new Object[]{this.getHelper(), f};
+
+					this.getSubFinders().add(
+							(ISubFinder) this.getUtils().getInstance(className, new Class[]{ISubFileDownloaderHelper.class, SubFinder.class}, args));
+
+				} catch (Exception e) {
+					this.getLog().Error(String.format("Error when loading subfinder :: %s", className), e);
+				}
 			}
 		}
 	}
@@ -300,7 +311,8 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 		addEpisode(ep);
 	}
 
-	private Movie clearSubs(Movie m) {
+	@Override
+	public Movie clearSubs(Movie m) {
 		Movie.Builder mb = Movie.newBuilder(m);
 		
 		List<Media> newMedia = clearSubsFromMediaList(m.getMediaList());
@@ -310,7 +322,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	}
 
 	private List<Media> clearSubsFromMediaList(List<Media> medialist) {
-		List<Media> mlist = new ArrayList<Media>();
+		List<Media> mlist = new ArrayList<>();
 		for (Media md : medialist) {
 			mlist.add(
 					Media.newBuilder(md)
@@ -321,7 +333,8 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 		return mlist;
 	}
 
-	private Episode clearSubs(Episode ep) {
+	@Override
+	public Episode clearSubs(Episode ep) {
 		Episode.Builder epb = Episode.newBuilder(ep);
 		
 		List<Media> newMedia = clearSubsFromMediaList(ep.getMediaList());
@@ -339,7 +352,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	public void addEpisode(Episode episode) {
 		lock.lock();
 		try {
-			episode = this.getDatabase().addEpisodeToSubtitleQueue(episode);
+			this.getDatabase().addEpisodeToSubtitleQueue(episode);
 			this.signal();
 		}  
 		finally {
@@ -350,7 +363,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	
 	/**
 	 * Wrapper function for getting subs for a specific movie
-	 * @param m
+	 * @param mos
 	 */
 	private List<SubFile> getSubtitles(MovieOrSeries mos, List<Language> languages) {
 		// We only check if there exist subs for the first media file.
@@ -362,7 +375,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 		// -- This should be taken care of by the decouple method in DB but it seems off
 		Media md = mos.getMedia();
 
-		List<SubFile> files = new ArrayList<SubFile>();
+		List<SubFile> files;
 		
 		boolean hasMatroskaSubtitles = checkMatroskaFile(md);
 		files = checkMovieDirForSubs(md);
@@ -383,12 +396,12 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	 * @return
 	 */
 	private boolean checkMatroskaFile(Media md) {
-		if (Util.isMatroskaFile(md)) {
+		if (this.getUtils().isMatroskaFile(md)) {
 			if (md.getDownloadComplete()) {
 				this.getLog().Debug(String.format("Checking mkv container for media %s",  md.getFilename()));
 				
 				List<Subtitle> subs = 
-					this.getMkvSubtitleReader().extractSubs(Util.getFullFilePath(md));
+					this.getMkvSubtitleReader().extractSubs(this.getUtils().getFullFilePath(md));
 				
 				if (subs == null || subs.size() == 0)
 					return false;
@@ -412,7 +425,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 
 	/**
 	 * Checks movie path for subtitles for a specific movie
-	 * @param m
+	 * @param md
 	 * @return A list of subfiles for the movie
 	 */
 	public List<SubFile> checkMovieDirForSubs(Media md) {
@@ -434,13 +447,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 		if (dir != null && dir.exists()) {
 			list = checkDirForSubs(FilenameUtils.getBaseName(mediaFilename), dir);
 		
-			String[] dirs = dir.list(new FilenameFilter() {
-				
-				@Override
-				public boolean accept(File dir, String name) {
-					return name.equals("Subs") || name.equals("SubFiles");
-				}
-			});
+			String[] dirs = dir.list((dir1, name) -> name.equals("Subs") || name.equals("SubFiles"));
 			
 			if (dirs != null) {
 				for (String newDir : dirs) {
@@ -464,38 +471,28 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	 * @param dir
 	 * @return A list of subfiles. An empty list if none found.
 	 */
-	private List<SubFile> checkDirForSubs(String movieFilenameWithoutExt, File dir) {
-		List<SubFile> list = new ArrayList<SubFile>();
-		if (dir != null && dir.exists()) {
-			String[] subs = dir.list(new FilenameFilter() {
-				
-				@Override
-				public boolean accept(File f, String name) {
-					return name.endsWith("srt") || name.endsWith("idx") || name.endsWith("sub"); 
-				}
-			});
-		
-			if (subs != null) {
-				for (String subFile : subs) {
-					if (StringUtils.startsWithIgnoreCase(subFile, movieFilenameWithoutExt)) {
-						SubFile sf = new SubFile(new File(String.format("%s/%s", dir.getAbsolutePath(), subFile)));
-						sf.setRating(Rating.SubsExist);
-						sf.setDescription(movieFilenameWithoutExt);
-						sf.setLanguage(Language.Unknown);
-						
-						list.add(sf);
-					}
-				}
+	public List<SubFile> checkDirForSubs(String movieFilenameWithoutExt, File dir) {
+		List<SubFile> list = new ArrayList<>();
+		List<String> subs = this.getFileUtilHelper().findSubsInDirectory(dir);
+
+		for (String subFile : subs) {
+			if (StringUtils.startsWithIgnoreCase(subFile, movieFilenameWithoutExt)) {
+				SubFile sf = new SubFile(new File(String.format("%s/%s", dir.getAbsolutePath(), subFile)));
+				sf.setRating(Rating.SubsExist);
+				sf.setDescription(movieFilenameWithoutExt);
+				sf.setLanguage(Language.Unknown);
+
+				list.add(sf);
 			}
 		}
-		
+
 		return list;
 	}
 
 	/**
 	 * If the downloaded file is a zip- or rar-file then this method extracts the sub and moves it to the subs directory.
 	 * If it is not then it justs moves it to the subs directory.
-	 * @param m The movie for these sub files
+	 * @param mos The movie for these sub files
 	 * @param files The files downloaded
 	 */
 	private List<Subtitle> extractSubs(MovieOrSeries mos, List<SubFile> files) {
@@ -503,7 +500,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 		String tempFilepath = this.getFileUtilHelper().createTempSubsPath(mos);
 		this.getLog().Debug(String.format("Unpack path :: %s", unpackPath));
 		
-		List<Subtitle> subtitleList = new ArrayList<Subtitle>();
+		List<Subtitle> subtitleList = new ArrayList<>();
 		
 		for (SubFile subfile : files) {
 			try {
@@ -608,7 +605,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	}
 	/**
 	 * Matches the filename of an unpacked sub file against the media in the movie
-	 * @param m
+	 * @param mos
 	 * @param unpackedFile
 	 * @return The media matching the sub filename
 	 */
@@ -629,7 +626,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 
 	/**
 	 * If the path exist then clear all files and directories from it. If it does not then create it.
-	 * @param unpackPath
+	 * @param path
 	 * @throws IOException
 	 */
 	private void clearPath(String path)
@@ -644,7 +641,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 
 	/**
 	 * Gets a temporary directory in the subs folder for storing temporary unpacked subs.
-	 * @param m The movie for which the subs are destined for
+	 * @param mos The movie for which the subs are destined for
 	 * @return The path
 	 */
 	private String getUnpackedPath(MovieOrSeries mos) {
@@ -656,7 +653,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	 * Iterates through all sub finders declared in the settings file.
 	 * Each sub finder is called in sequence and asked to download files corresponding to a movie.
 	 * Returns a list of sub files downloaded from each sub finder
-	 * @param m The movie to download subs for
+	 * @param mos The movie to download subs for
 	 * @return A list of sub files downloaded. These files could be in raw format as delivered by the sub finder. I.e. they
 	 * 		   may have to be decompressed.
 	 */

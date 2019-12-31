@@ -20,9 +20,9 @@ fi
 
 if [[ "$TRAVIS_PULL_REQUEST" == "false" ]] && [[ "$TRAVIS_BRANCH" == "master" ]];then
    echo Packaging new release ...
-   mvn -B clean package -Dprotoc.exec=${TRAVIS_BUILD_DIR}/ci/protoc
+   ./gradlew build check connectedCheck assemble packageRelease archiveZip publishRelease
 else 
    echo Running test ...
-   mvn -B test -Dprotoc.exec=${TRAVIS_BUILD_DIR}/ci/protoc
+   ./gradlew build check connectedCheck
 fi
 

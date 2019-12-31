@@ -182,7 +182,7 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 		// Added ignore on all filename that contains the string sample
 		if (!this.getFilenameChecker().isExcludedFile(f)) {
 			// check if the same media already exist in db
-			Media dbMedia = this.getDatabase().getMediaByFilename(filename);
+			Media dbMedia = this.getDatabase().getMediaByFilename(filename, true);
 			if (dbMedia != null && StringUtils.equalsIgnoreCase(dbMedia.getFilepath(), path)) {
 				this.getLog().Info("Media already exist in DB. Continuing...");
 				return;

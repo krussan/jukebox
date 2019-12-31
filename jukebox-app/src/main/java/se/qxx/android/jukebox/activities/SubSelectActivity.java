@@ -2,11 +2,9 @@ package se.qxx.android.jukebox.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
-
+import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.cast.framework.CastContext;
-
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.adapters.support.SubtitleLayoutAdapter;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
@@ -14,7 +12,7 @@ import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
 
-public class SubSelectActivity extends AppCompatActivity  implements SubtitleLayoutAdapter.SubtitleSelectedListener{
+public class SubSelectActivity extends AppCompatActivity implements SubtitleLayoutAdapter.SubtitleSelectedListener{
     private CastContext mCastContext;
     private JukeboxSettings settings;
 

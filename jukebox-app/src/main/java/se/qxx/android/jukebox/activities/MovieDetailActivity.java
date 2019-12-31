@@ -2,37 +2,27 @@ package se.qxx.android.jukebox.activities;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
+import androidx.appcompat.app.AppCompatActivity;
 import org.apache.commons.lang3.StringUtils;
-
-import java.text.DateFormat;
-import java.text.Format;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.adapters.support.MovieMediaLayoutAdapter;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
 import se.qxx.android.jukebox.settings.CacheData;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.tools.GUITools;
-import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.Sorter;
+
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.List;
 
 public class MovieDetailActivity extends AppCompatActivity {
 

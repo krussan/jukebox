@@ -1,6 +1,9 @@
 package se.qxx.jukebox.watcher;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import java.io.File;
 
 public class FileRepresentation {
 
@@ -28,11 +31,18 @@ public class FileRepresentation {
 	public long getLastModified() {
 		return this._lastModified;
 	}
-	
-	public FileRepresentation(String path, String name, long l, long fileSize) {	
+
+	public FileRepresentation(File f) {
+		this._path = FilenameUtils.getFullPath(f.getAbsolutePath());
+		this._name = f.getName();
+		this._lastModified = f.lastModified();
+		this._fileSize = f.length();
+	}
+
+	public FileRepresentation(String path, String name, long lastModified, long fileSize) {
 		this._path = path;
 		this._name = name;
-		this._lastModified = l;
+		this._lastModified = lastModified;
 		this._fileSize = fileSize;
 	}
 

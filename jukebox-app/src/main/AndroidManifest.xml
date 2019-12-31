@@ -14,7 +14,8 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Theme.AppCompat"
-        tools:replace="android:allowBackup,android:theme">
+        tools:replace="android:allowBackup,android:theme"
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".activities.FlipperListActivity"
             android:label="@string/app_name"

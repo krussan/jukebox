@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import javax.xml.bind.JAXBException;
 
-import se.qxx.jukebox.settings.imdb.Imdb;
+import se.qxx.jukebox.settings.Imdb;
 
 public interface IImdbSettings {
 

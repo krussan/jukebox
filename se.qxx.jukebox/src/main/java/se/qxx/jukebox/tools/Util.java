@@ -12,13 +12,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,19 +24,21 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.imgscalr.Scalr;
 
+import com.google.inject.Singleton;
 import com.google.protobuf.ByteString;
 
 import se.qxx.jukebox.domain.JukeboxDomain.Media;
+import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.watcher.ExtensionFileFilter;
+import se.qxx.jukebox.watcher.FileRepresentation;
 
-public class Util {
-	/**
-	 * Replaces a pattern with empty space. Typically used to ignore certain patterns in filenames
-	 * @param fileNameToMatch
-	 * @param strIgnorePattern
-	 * @return
+@Singleton
+public class Util implements IUtils {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.tools.IUtils#replaceIgnorePattern(java.lang.String, java.lang.String)
 	 */
-	public static String replaceIgnorePattern(String fileNameToMatch, String strIgnorePattern) {
+	@Override
+	public String replaceIgnorePattern(String fileNameToMatch, String strIgnorePattern) {
 		if (strIgnorePattern.trim().length() > 0) {
 			Pattern ignorePattern = Pattern.compile(strIgnorePattern, Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ | Pattern.DOTALL);
 			Matcher ignoreMatcher = ignorePattern.matcher(fileNameToMatch);
@@ -52,22 +48,19 @@ public class Util {
 		return fileNameToMatch;
 	}
 	
-	/****
-	 * Replaces all occurences of dot, underline and hyphen with space
-	 * @param The string on which replaces should take place
-	 * @return 
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.tools.IUtils#parseAwaySpace(java.lang.String)
 	 */
-	public static String parseAwaySpace(String inputString) {
+	@Override
+	public String parseAwaySpace(String inputString) {
 		return inputString.replace(".", " ").replace("_", " ").replace("-", " ");
 	}
 	
-	/**
-	 * Copies the content of a stream to a string
-	 * @param is The stream to read from
-	 * @returns
-	 * @throws IOException
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.tools.IUtils#readMessageFromStream(java.io.InputStream)
 	 */
-	public static String readMessageFromStream(InputStream is) throws IOException {
+	@Override
+	public String readMessageFromStream(InputStream is) throws IOException {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		
         int len;
@@ -88,13 +81,11 @@ public class Util {
 
 	}
 	
-	/**
-	 * Function that recursively searches a directory tree for files with specific extensions
-	 * @param directory The top node in the directory to search for files
-	 * @param filter The filter of extension to look for
-	 * @return
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.tools.IUtils#getFileListing(java.io.File, se.qxx.jukebox.watcher.ExtensionFileFilter, boolean)
 	 */
-	public static List<File> getFileListing(File directory, ExtensionFileFilter filter, boolean recurse)
+	@Override
+	public Map<String, FileRepresentation> getFileListing(File directory, ExtensionFileFilter filter, boolean recurse)
 	{
 		return getFileListing(directory.listFiles(filter), filter, recurse);
 	}
@@ -105,15 +96,15 @@ public class Util {
 	 * @param filter The filter of extension to look for
 	 * @return
 	 */
-	private static List<File> getFileListing(File[] filesAndDirs, ExtensionFileFilter filter, boolean recurse) {
-		List<File> result = new ArrayList<File>();
+	private Map<String, FileRepresentation> getFileListing(File[] filesAndDirs, ExtensionFileFilter filter, boolean recurse) {
+		Map<String, FileRepresentation> result = new HashMap<>();
 
 		for(File file : filesAndDirs) {
 			
 			if (file.isFile() ) {
-				result.add(file);
+				result.put(file.getName().toLowerCase(), new FileRepresentation(file));
 			} else if (recurse) {
-				result.addAll(
+				result.putAll(
 					getFileListing(
 						file.listFiles(filter), filter, recurse));
 			}
@@ -122,14 +113,11 @@ public class Util {
 		return result;
 	}	
 	
-	/**
-	 * The function getFileListing does not work for UNC paths so this is the workaround
-	 * using FileSystemView instead
-	 * @param directory The top node in the directory to search for files
-	 * @param filter The filter of extension to look for
-	 * @return
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.tools.IUtils#getFileListingWorkAround(java.io.File, se.qxx.jukebox.watcher.ExtensionFileFilter)
 	 */
-	public static List<File> getFileListingWorkAround(File directory, ExtensionFileFilter filter) {
+	@Override
+	public Map<String, FileRepresentation> getFileListingWorkAround(File directory, ExtensionFileFilter filter) {
 		// Workaround
 		FileSystemView fsv = FileSystemView.getFileSystemView();
 		File dirF = fsv.getParentDirectory(new File(directory.getName(), "C$"));
@@ -137,12 +125,11 @@ public class Util {
 		return getFileListing(dirF.listFiles(), filter, true);
 	}
 
-	/**
-	 * Tries to parse an integer to a string
-	 * @param string The string to be parsed
-	 * @return
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.tools.IUtils#tryParseInt(java.lang.String)
 	 */
-	public static boolean tryParseInt(String string) {
+	@Override
+	public boolean tryParseInt(String string) {
 		try {
 			Integer.parseInt(string);
 			return true;
@@ -152,36 +139,28 @@ public class Util {
 		}
 	}
 		
-	/**
-	 * Returns the system temporary directory
-	 * @return
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.tools.IUtils#getTempDirectory()
 	 */
-	public static String getTempDirectory() {
+	@Override
+	public String getTempDirectory() {
         return SystemUtils.getJavaIoTmpDir().getAbsolutePath();
 	}
 	
-	/**
-	 * Returns the current system timestamp
-	 * @return
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.tools.IUtils#getCurrentTimestamp()
 	 */
-	public static long getCurrentTimestamp() {
+	@Override
+	public long getCurrentTimestamp() {
 		java.util.Date date = new java.util.Date();
 		return date.getTime();
 	}
 	
-	/**
-	 * Gets a new instance for the specified class. The class has to have a public constructor with no arguments.
-	 * @param className
-	 * @return
-	 * @throws ClassNotFoundException 
-	 * @throws NoSuchMethodException 
-	 * @throws SecurityException 
-	 * @throws InvocationTargetException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
-	 * @throws IllegalArgumentException 
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.tools.IUtils#getInstance(java.lang.String)
 	 */
-	public static Object getInstance(String className) throws ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
+	@Override
+	public Object getInstance(String className) throws ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
 		Class<?> c = Class.forName(className);
 		
 		Class<?>[] parTypes = new Class<?>[] {};
@@ -190,7 +169,11 @@ public class Util {
 		return con.newInstance(args);		
 	}
 	
-	public static Object getInstance(String className, Class<?>[] constructorDefinition, Object[] args) throws ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.tools.IUtils#getInstance(java.lang.String, java.lang.Class, java.lang.Object[])
+	 */
+	@Override
+	public Object getInstance(String className, Class<?>[] constructorDefinition, Object[] args) throws ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
 		Class<?> c = Class.forName(className);
 				
 		Constructor<?> con = c.getConstructor(constructorDefinition);
@@ -199,49 +182,77 @@ public class Util {
 
 
 	
-	public static ByteString getScaledImage(ByteString imagedata) throws IOException {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.tools.IUtils#getScaledImage(com.google.protobuf.ByteString)
+	 */
+	@Override
+	public ByteString getScaledImage(ByteString imagedata) throws IOException {
 		BufferedImage img = ImageIO.read(new ByteArrayInputStream(imagedata.toByteArray()));
 		BufferedImage scaled = Scalr.resize(img, 150);
 		return getByteStringFromImage(scaled);
 	}
 	
-	public static ByteString getByteStringFromImage(BufferedImage img) throws IOException {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.tools.IUtils#getByteStringFromImage(java.awt.image.BufferedImage)
+	 */
+	@Override
+	public ByteString getByteStringFromImage(BufferedImage img) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ImageIO.write(img, "jpg", baos);
 		return ByteString.copyFrom(baos.toByteArray());
 		
 	}
 
-	public static boolean isMatroskaFile(Media md) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.tools.IUtils#isMatroskaFile(se.qxx.jukebox.domain.JukeboxDomain.Media)
+	 */
+	@Override
+	public boolean isMatroskaFile(Media md) {
 		return StringUtils.endsWithIgnoreCase(md.getFilename(), "mkv");
 	}
 	
-	public static String getFullFilePath(Media md) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.tools.IUtils#getFullFilePath(se.qxx.jukebox.domain.JukeboxDomain.Media)
+	 */
+	@Override
+	public String getFullFilePath(Media md) {
 		return getFilePath(
 			FilenameUtils.normalizeNoEndSeparator(md.getFilepath()), 
 			md.getFilename());
 	}
 	
-	public static String getFullFilePath(String filePath, String fileName) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.tools.IUtils#getFullFilePath(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public String getFullFilePath(String filePath, String fileName) {
 		return getFilePath(
 			FilenameUtils.normalizeNoEndSeparator(filePath), 
 			fileName);
 	}
 	
 	
-	public static String getConvertedFullFilepath(Media md) {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.tools.IUtils#getConvertedFullFilepath(se.qxx.jukebox.domain.JukeboxDomain.Media)
+	 */
+	@Override
+	public String getConvertedFullFilepath(Media md) {
 		return getFilePath(
 				FilenameUtils.normalizeNoEndSeparator(md.getFilepath()), 
 				md.getConvertedFileName());
 	}
 	
-	private static String getFilePath(String filepath, String filename) {
+	private String getFilePath(String filepath, String filename) {
 		return String.format("%s/%s", filepath, filename);
 	}
 
 	
 
-	public static String findIpAddress() {
+	/* (non-Javadoc)
+	 * @see se.qxx.jukebox.tools.IUtils#findIpAddress()
+	 */
+	@Override
+	public String findIpAddress() {
 
 		try {
 			List<NetworkInterface> nets = Collections.list(NetworkInterface.getNetworkInterfaces());
@@ -294,6 +305,17 @@ public class Util {
 			
 		}
 		return "127.0.0.1";
+	}
+
+	@Override
+	public boolean fileExists(String fullFilePath) {
+		File f = new File(fullFilePath);
+		return f.exists();
+	}
+
+	@Override
+	public boolean mediaFileExists(Media md) {
+		return fileExists(this.getFullFilePath(md));
 	}
 
 }

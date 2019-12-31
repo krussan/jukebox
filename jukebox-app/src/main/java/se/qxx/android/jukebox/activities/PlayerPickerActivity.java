@@ -1,25 +1,23 @@
 package se.qxx.android.jukebox.activities;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-
+import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.cast.framework.CastContext;
-
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.List;
-
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.adapters.support.PlayerLayoutAdapter;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
+import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
 import se.qxx.android.jukebox.dialogs.JukeboxConnectionProgressDialog;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
-import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
+import se.qxx.jukebox.domain.JukeboxDomain;
+
+import java.util.List;
 
 public class PlayerPickerActivity extends AppCompatActivity implements OnItemClickListener {
 
@@ -47,7 +45,7 @@ public class PlayerPickerActivity extends AppCompatActivity implements OnItemCli
 
         Thread t = new Thread(() -> jh.listPlayers(response -> {
         	if (response != null)
-            	updateList(response.getHostnameList());
+            	updateList(((JukeboxDomain.JukeboxResponseListPlayers)response).getHostnameList());
         }));
 		t.start();
 

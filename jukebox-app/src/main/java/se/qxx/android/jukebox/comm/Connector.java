@@ -7,13 +7,13 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.ViewMode;
 import se.qxx.android.jukebox.dialogs.JukeboxConnectionProgressDialog;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
-import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
 public class Connector {
@@ -71,11 +71,11 @@ public class Connector {
 */
 
 	public void connect(final int offset, final int nrOfItems, ViewMode modelType, final int seriesID, int seasonID, boolean excludeImages, boolean excludeTextdata) {
-		final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
-				settings.getServerIpAddress(),
-				settings.getServerPort());
-
 		try {
+			final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
+					settings.getServerIpAddress(),
+					settings.getServerPort());
+
 			if (modelType == ViewMode.Movie) {
 				Logger.Log().d("Listing movies");
 				jh.listMovies("",
@@ -86,7 +86,8 @@ public class Connector {
 						response -> {
                             //TODO: if repsonse is null probably the server is down..
                             if (response != null) {
-                                this.getCallback().handleMoviesUpdated(response.getMoviesList(), response.getTotalMovies());
+								JukeboxDomain.JukeboxResponseListMovies resp = (JukeboxDomain.JukeboxResponseListMovies)response;
+                                this.getCallback().handleMoviesUpdated(resp.getMoviesList(), resp.getTotalMovies());
                             }
                         });
 			}
@@ -99,7 +100,8 @@ public class Connector {
 						response -> {
                             //TODO: if repsonse is null probably the server is down..
                             if (response != null) {
-                                this.getCallback().handleSeriesUpdated(response.getSeriesList(), response.getTotalSeries());
+								JukeboxDomain.JukeboxResponseListMovies resp = (JukeboxDomain.JukeboxResponseListMovies)response;
+                                this.getCallback().handleSeriesUpdated(resp.getSeriesList(), resp.getTotalSeries());
                             }
                         });
 			}
@@ -108,9 +110,10 @@ public class Connector {
                         response -> {
                             //TODO: if repsonse is null probably the server is down..
                             if (response != null) {
+								JukeboxDomain.JukeboxResponseGetItem resp = (JukeboxDomain.JukeboxResponseGetItem)response;
 								this.getCallback().handleSeasonsUpdated(
-										response.getSerie().getSeasonList(),
-										response.getSerie().getSeasonCount());
+										resp.getSerie().getSeasonList(),
+										resp.getSerie().getSeasonCount());
 
                             }
                         });
@@ -119,17 +122,17 @@ public class Connector {
 			    jh.getItem(seasonID, JukeboxDomain.RequestType.TypeSeason, excludeImages, excludeTextdata,
                         response -> {
 			                if (response != null) {
-                                this.getCallback().handleEpisodesUpdated(response.getSeason().getEpisodeList(), response.getSeason().getEpisodeCount());
+                                this.getCallback().handleEpisodesUpdated(((JukeboxDomain.JukeboxResponseGetItem)response).getSeason().getEpisodeList(),
+										((JukeboxDomain.JukeboxResponseGetItem)response).getSeason().getEpisodeCount());
                             }
                         });
 			}
 
 		} catch (Exception e) {
-
+			Logger.Log().e("Error when connecting to server", e);
 		}
 	}
 
-	
 	public void showMessage(Activity a, final String message) {
 		final Context c = (Context)a;
 		a.runOnUiThread(() -> Toast.makeText(c, message, Toast.LENGTH_SHORT).show());
@@ -149,9 +152,9 @@ public class Connector {
 	
 		Thread t = new Thread(() -> {
             if (isOnline)
-                jh.suspend(currentMediaPlayer);
+                jh.suspend(currentMediaPlayer, response -> {});
             else
-                jh.wakeup(currentMediaPlayer);
+                jh.wakeup(currentMediaPlayer, response -> {});
         });
 		t.start();
 	

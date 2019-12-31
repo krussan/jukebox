@@ -17,6 +17,7 @@ import se.qxx.jukebox.interfaces.ISubFileDownloaderHelper;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder;
 import se.qxx.jukebox.subtitles.Language;
 import se.qxx.jukebox.subtitles.Subscene;
+import se.qxx.jukebox.subtitles.SubscenePost;
 
 public class TestSubscene {
 	
@@ -52,24 +53,19 @@ public class TestSubscene {
 		
 		try {
 			for (SubFinder f : settings.getSettings().getSubFinders().getSubFinder()) {
-				if (f.getClazz().endsWith("Subscene")) {
+				if (f.getClazz().endsWith("SubscenePost")) {
 					
-					Subscene s = new Subscene(subFileDownloader);
+					SubscenePost s = new SubscenePost(subFileDownloader, f);
 					
 					File ff = new File(filename);
-					
-					if (ff.exists()) {
-						
-						
-						MovieOrSeries mos = movieBuilderFactory.identify(ff.getAbsolutePath(), ff.getName());
-						ArrayList<Language> languages = new ArrayList<Language>();
-						languages.add(Language.English);
-						languages.add(Language.Swedish);
-						
-						s.findSubtitles(mos, languages);
-						
-					}
-					
+
+					MovieOrSeries mos = movieBuilderFactory.identify(ff.getAbsolutePath(), ff.getName());
+					ArrayList<Language> languages = new ArrayList<Language>();
+					languages.add(Language.English);
+					languages.add(Language.Swedish);
+
+					s.findSubtitles(mos, languages);
+
 				}
 			}
 			

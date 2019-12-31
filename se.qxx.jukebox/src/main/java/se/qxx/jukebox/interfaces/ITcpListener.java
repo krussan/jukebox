@@ -1,11 +1,13 @@
 package se.qxx.jukebox.interfaces;
 
-import com.googlecode.protobuf.socketrpc.RpcServer;
+import io.grpc.Server;
+
+import java.io.IOException;
 
 public interface ITcpListener {
 
-	public RpcServer getServer();
-	public Runnable getRunnable();
-	public void initialize();
+	Server getServer();
+	void initialize() throws IOException;
+	Runnable getRunnable();
 
 }

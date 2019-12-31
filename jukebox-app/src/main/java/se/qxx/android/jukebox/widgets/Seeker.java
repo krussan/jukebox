@@ -3,7 +3,8 @@ package se.qxx.android.jukebox.widgets;
 import java.util.Date;
 
 import se.qxx.android.jukebox.settings.JukeboxSettings;
-import se.qxx.jukebox.comm.client.JukeboxConnectionHandler;
+import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
+import se.qxx.jukebox.domain.JukeboxDomain;
 
 public class Seeker implements Runnable {
 
@@ -27,10 +28,10 @@ public class Seeker implements Runnable {
                 settings.getServerPort());
        	
        	h.getTime(settings.getCurrentMediaPlayer(), response -> {
-               // The time command also returns the name of the currently playing file.
-               // If it differs from the model then set the current media
+            // The time command also returns the name of the currently playing file.
+            // If it differs from the model then set the current media
 			if (response != null && listener != null)
-                   listener.updateSeeker(response.getSeconds(), 0);
+                   listener.updateSeeker(((JukeboxDomain.JukeboxResponseTime)response).getSeconds(), 0);
            });
 	}
 

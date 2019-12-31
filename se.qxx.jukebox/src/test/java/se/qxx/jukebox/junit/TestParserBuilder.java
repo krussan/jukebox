@@ -2,7 +2,7 @@ package se.qxx.jukebox.junit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -31,9 +31,10 @@ import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IImdbSettings;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IParserSettings;
+import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.settings.Settings;
-import se.qxx.jukebox.settings.imdb.ImdbSettings;
-import se.qxx.jukebox.settings.parser.ParserSettings;
+import se.qxx.jukebox.settings.ImdbSettings;
+import se.qxx.jukebox.settings.ParserSettings;
 
 public class TestParserBuilder {
 
@@ -44,8 +45,8 @@ public class TestParserBuilder {
 	private IJukeboxLogger log;
 	private MovieBuilderFactory movieBuilderFactory;
 	
-	@Mock
-	LoggerFactory loggerFactoryMock;
+	@Mock LoggerFactory loggerFactoryMock;
+	@Mock IUtils utilsMock;
 	
 	@Before
 	public void init() throws IOException, JAXBException {
@@ -58,7 +59,7 @@ public class TestParserBuilder {
 		when(loggerFactoryMock.create(any(Log.LogType.class))).thenReturn(log);
 		
 		parserBuilder = new ParserBuilder(settings, log);
-		movieBuilderFactory = new MovieBuilderFactory(settings, loggerFactoryMock);
+		movieBuilderFactory = new MovieBuilderFactory(settings, loggerFactoryMock, utilsMock);
 	}
 	
 	@Test

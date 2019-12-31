@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.interfaces.ISubFileDownloaderHelper;
 import se.qxx.jukebox.interfaces.ISubFinder;
+import se.qxx.jukebox.settings.JukeboxListenerSettings;
 
 public class Subscene implements ISubFinder  {
 
@@ -29,9 +30,11 @@ public class Subscene implements ISubFinder  {
 	private final String SETTING_DOWNLOAD_URLGROUP = "downloadUrlGroup";
 
 	private ISubFileDownloaderHelper helper;
+	private final JukeboxListenerSettings.SubFinders.SubFinder settings;
 
-	
-	public Subscene(ISubFileDownloaderHelper helper) {
+
+	public Subscene(ISubFileDownloaderHelper helper, JukeboxListenerSettings.SubFinders.SubFinder settings) {
+		this.settings = settings;
 		this.setHelper(helper);
 	}
 
@@ -41,6 +44,10 @@ public class Subscene implements ISubFinder  {
 
 	public void setHelper(ISubFileDownloaderHelper helper) {
 		this.helper = helper;
+	}
+
+	public JukeboxListenerSettings.SubFinders.SubFinder getSettings() {
+		return settings;
 	}
 
 	@Override
@@ -197,9 +204,9 @@ public class Subscene implements ISubFinder  {
 		return "SubScene";
 	}
 
-	
+
 	private String getSetting(String setting) {
-		return this.getHelper().getSetting("se.qxx.jukebox.subtitles.Subscene", setting);
+		return this.getHelper().getSetting(this.getSettings(), setting);
 	}
-	
+
 }

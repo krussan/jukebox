@@ -3,7 +3,7 @@ package se.qxx.jukebox.junit;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.io.BufferedReader;
@@ -39,16 +39,18 @@ import se.qxx.jukebox.interfaces.IIMDBUrlRewrite;
 import se.qxx.jukebox.interfaces.IImdbSettings;
 import se.qxx.jukebox.interfaces.IParserSettings;
 import se.qxx.jukebox.interfaces.IRandomWaiter;
+import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.interfaces.IWebRetriever;
 import se.qxx.jukebox.settings.Settings;
-import se.qxx.jukebox.settings.imdb.ImdbSettings;
-import se.qxx.jukebox.settings.parser.ParserSettings;
+import se.qxx.jukebox.settings.ImdbSettings;
+import se.qxx.jukebox.settings.ParserSettings;
 
 public class TestImdbParser {
 	@Mock LoggerFactory loggerFactoryMock;
 	@Mock IWebRetriever webRetrieverMock;
 	@Mock IMDBParserFactory parserFactoryMock;
 	@Mock IRandomWaiter waiterMock;
+	@Mock IUtils utilsMock;
 	
 	@Rule public MockitoRule mockitoRule = MockitoJUnit.rule(); 
 	
@@ -182,7 +184,7 @@ public class TestImdbParser {
 		Settings settings = new Settings(imdbSettings, parserSettings);
 		IIMDBUrlRewrite urlRewrite = new IMDBUrlRewrite();
 
-		return new IMDBFinder(settings, webRetrieverMock, urlRewrite, parserFactoryMock, loggerFactoryMock, waiterMock);
+		return new IMDBFinder(settings, webRetrieverMock, urlRewrite, parserFactoryMock, loggerFactoryMock, waiterMock, utilsMock);
 	}
 
 }

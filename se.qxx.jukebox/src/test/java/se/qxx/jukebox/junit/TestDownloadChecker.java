@@ -1,7 +1,7 @@
 package se.qxx.jukebox.junit;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -113,7 +113,7 @@ public class TestDownloadChecker {
 	@Test
 	public void Should_change_state_to_init_when_file_registers_in_db() {
 		// mock two consecutive calls
-		when(databaseMock.getMediaByFilename(any(String.class)))
+		when(databaseMock.getMediaByFilename(any(String.class), any(Boolean.class)))
 		.thenReturn(null)
 		.thenReturn(
 				Media.newBuilder()
@@ -158,7 +158,7 @@ public class TestDownloadChecker {
 	}
 	
 	private void registerDatabaseMock(boolean downloadComplete) {
-		when(databaseMock.getMediaByFilename(any(String.class))).thenReturn(
+		when(databaseMock.getMediaByFilename(any(String.class), any(Boolean.class))).thenReturn(
 				Media.newBuilder()
 				.setID(1)
 				.setFilename("testfile")

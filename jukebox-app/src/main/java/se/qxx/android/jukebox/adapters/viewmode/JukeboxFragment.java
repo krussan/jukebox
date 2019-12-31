@@ -2,7 +2,6 @@ package se.qxx.android.jukebox.adapters.viewmode;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -15,6 +14,7 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.fragment.app.ListFragment;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.JukeboxPreferenceActivity;
 import se.qxx.android.jukebox.activities.ListActivity;

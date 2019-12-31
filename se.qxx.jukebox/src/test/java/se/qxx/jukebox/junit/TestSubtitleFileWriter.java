@@ -2,7 +2,7 @@ package se.qxx.jukebox.junit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.io.BufferedReader;
@@ -38,8 +38,8 @@ import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IParserSettings;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.settings.Settings;
-import se.qxx.jukebox.settings.imdb.ImdbSettings;
-import se.qxx.jukebox.settings.parser.ParserSettings;
+import se.qxx.jukebox.settings.ImdbSettings;
+import se.qxx.jukebox.settings.ParserSettings;
 import se.qxx.jukebox.subtitles.SubtitleFileWriter;
 
 public class TestSubtitleFileWriter {
@@ -83,7 +83,7 @@ public class TestSubtitleFileWriter {
 
 		File file = writer.getTempFile(sub1, "vtt");
 		
-		assertEquals("ACB1.vtt", file.getName());
+		assertEquals("sub100.ACB1.vtt", file.getName());
 	}
 	
 	

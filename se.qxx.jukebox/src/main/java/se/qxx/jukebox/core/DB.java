@@ -1178,37 +1178,40 @@ public class DB implements IDatabase {
 	}
 
 	private List<MovieOrSeries> constructSubtitleQueue(List<Movie> movies, List<Series> series) {
-		List<MovieOrSeries> moss = new ArrayList<MovieOrSeries>();
-		
+		List<MovieOrSeries> moss = new ArrayList<>();
+
 		for (Movie m : movies) {
-			MovieOrSeries mos = new MovieOrSeries(m);
-			moss.add(mos);
+			moss.add(new MovieOrSeries(m));
 		}
-		
+
 		// we need to create a single Series object for every episode
 		// since the MovieOrSeries object is mainly used for identifying
-		moss.addAll(decoupleSeries(series));
+		// the DB returns all episode within a series and season.
+		// if it does then we need to filter again
+		moss.addAll(decoupleSeries(series, true));
 		
 		return moss;
 	}
 
-	public List<MovieOrSeries> decoupleSeries(List<Series> series) {
-		List<MovieOrSeries> moss = new ArrayList<MovieOrSeries>();
+	public List<MovieOrSeries> decoupleSeries(List<Series> series, boolean filterOnSubtitleQueue) {
+		List<MovieOrSeries> moss = new ArrayList<>();
 		
 		for (Series s : series) {
 			for (Season ss : s.getSeasonList()) {
 				for (Episode e : ss.getEpisodeList()) {
-					Series s2 = Series.newBuilder(s)
-							.clearSeason()
-							
-							.addSeason(Season.newBuilder(ss)
-								.clearEpisode()
-								.addEpisode(e)
-								.build())
-					
-							.build();
-					
-					moss.add(new MovieOrSeries(s2));
+					if (!filterOnSubtitleQueue || e.getSubtitleQueue().getSubtitleRetreiveResult() == 0) {
+						Series s2 = Series.newBuilder(s)
+								.clearSeason()
+
+								.addSeason(Season.newBuilder(ss)
+										.clearEpisode()
+										.addEpisode(e)
+										.build())
+
+								.build();
+
+						moss.add(new MovieOrSeries(s2));
+					}
 				}
 			}
 		}
@@ -1545,21 +1548,24 @@ public class DB implements IDatabase {
 	 * @see se.qxx.jukebox.IDatabase#getMediaByFilename(java.lang.String)
 	 */
 	@Override
-	public Media getMediaByFilename(String filename) {
+	public Media getMediaByFilename(String filename, boolean excludeSubs) {
 		try {
 			ProtoDB db = getProtoDBInstance();
 
 			try {
 				if (db.getDBType() == DBType.Sqlite) lock.lock();
 
-				List<Media> result =
-						db.search(
-							SearchOptions.newBuilder(JukeboxDomain.Media.getDefaultInstance())
-							.addFieldName("filename")
-							.addSearchArgument(filename)
-							.addOperator(ProtoDBSearchOperator.Equals)
-							.setShallow(false)
-							.addExcludedObject("subs"));
+				SearchOptions<Media> options = 
+					SearchOptions.newBuilder(JukeboxDomain.Media.getDefaultInstance())
+						.addFieldName("filename")
+						.addSearchArgument(filename)
+						.addOperator(ProtoDBSearchOperator.Equals)
+						.setShallow(false);
+						
+				if (excludeSubs)
+					options.addExcludedObject("subs");
+				
+				List<Media> result = db.search(options);
 					
 				if (result.size() > 0)
 					return result.get(0);

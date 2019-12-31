@@ -1,17 +1,19 @@
 package se.qxx.jukebox.core;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import com.google.inject.Inject;
 
+import se.qxx.jukebox.concurrent.JukeboxPriorityQueue;
+import se.qxx.jukebox.concurrent.JukeboxThreadPoolExecutor;
 import se.qxx.jukebox.core.Log.LogType;
-import se.qxx.jukebox.factories.FileSystemWatcherFactory;
-import se.qxx.jukebox.factories.LoggerFactory;
-import se.qxx.jukebox.factories.TcpListenerFactory;
-import se.qxx.jukebox.factories.WebServerFactory;
+import se.qxx.jukebox.factories.*;
 import se.qxx.jukebox.interfaces.IArguments;
 import se.qxx.jukebox.interfaces.ICleaner;
 import se.qxx.jukebox.interfaces.IDownloadChecker;
@@ -48,26 +50,28 @@ public class Main implements IMain, IFileCreatedHandler
 	private IJukeboxLogger log;
 	private IFileCreatedHandler fileCreatedHandler;
 	private FileSystemWatcherFactory fileSystemWatcherFactory;
+	private ExecutorService executorService;
 
 	private WebServerFactory webServerFactory;
 
 	private TcpListenerFactory tcpListenerFactory;
-	
+
 	@Inject
-	public Main(IArguments arguments, 
-			IExecutor executor, 
-			ISubtitleDownloader subtitleDownloader, 
-			ICleaner cleaner, 
-			WebServerFactory webServerFactory,
-			ISettings settings,
-			TcpListenerFactory tcpListenerFactory,
-			IMovieIdentifier movieIdentifier,
-			IDownloadChecker downloadChecker,
-			IMediaConverter mediaConverter,
-			LoggerFactory loggerFactory,
-			IFileCreatedHandler fileCreatedHandler,
-			FileSystemWatcherFactory fileSystemWatcherFactory) {
-		
+	public Main(IArguments arguments,
+				IExecutor executor,
+				ISubtitleDownloader subtitleDownloader,
+				ICleaner cleaner,
+				WebServerFactory webServerFactory,
+				ISettings settings,
+				TcpListenerFactory tcpListenerFactory,
+				IMovieIdentifier movieIdentifier,
+				IDownloadChecker downloadChecker,
+				IMediaConverter mediaConverter,
+				LoggerFactory loggerFactory,
+				IFileCreatedHandler fileCreatedHandler,
+				FileSystemWatcherFactory fileSystemWatcherFactory,
+				ExecutorService executorService) {
+
 		this.setTcpListenerFactory(tcpListenerFactory);
 		this.setWebServerFactory(webServerFactory);
 		this.setFileSystemWatcherFactory(fileSystemWatcherFactory);
@@ -76,13 +80,14 @@ public class Main implements IMain, IFileCreatedHandler
 		this.setExecutor(executor);
 		this.setSubtitleDownloader(subtitleDownloader);
 		this.setCleaner(cleaner);
-		this.setWebServer(webServer);
+		//this.setWebServer(webServer);
 		this.setSettings(settings);
-		this.setTcpListener(tcpListener);
+		//this.setTcpListener(tcpListener);
 		this.setMovieIdentifier(movieIdentifier);
 		this.setDownloadChecker(downloadChecker);
 		this.setMediaConverter(mediaConverter);
-		
+		this.setExecutorService(executorService);
+
 		this.setLog(loggerFactory.create(LogType.MAIN));
 	}	
 	
@@ -212,7 +217,15 @@ public class Main implements IMain, IFileCreatedHandler
 	public void setIsRunning(Boolean isRunning) {
 		this.isRunning = isRunning;
 	}
-	
+
+	public ExecutorService getExecutorService() {
+		return executorService;
+	}
+
+	public void setExecutorService(ExecutorService executorService) {
+		this.executorService = executorService;
+	}
+
 	java.util.concurrent.Semaphore s = new java.util.concurrent.Semaphore(1);	
 	
 	public void run() {
@@ -225,7 +238,7 @@ public class Main implements IMain, IFileCreatedHandler
 			
 			// Create instances of tcp listener and web server
 			setupFactoryInstances();
-			
+
 			this.getWebServer().initializeMappings(this.getSettings());
 			
 			setupConfigurationListener();
@@ -279,7 +292,9 @@ public class Main implements IMain, IFileCreatedHandler
 		if (this.getTcpListener() == null)
 			this.setTcpListener(this.getTcpListenerFactory().create(
 					this.getWebServer(),
+					this.getExecutorService(),
 					this.getSettings().getSettings().getTcpListener().getPort().getValue()));
+
 	}
 	
 	private void consoleLog(String message) {
@@ -291,8 +306,6 @@ public class Main implements IMain, IFileCreatedHandler
 		consoleLog("Starting threads ...");
 		if (this.getArguments().isTcpListenerEnabled()) {
 			consoleLog("Starting TCP listener");
-
-			this.getTcpListener().initialize();
 			this.getExecutor().start(this.getTcpListener().getRunnable());
 		}
 		
@@ -424,4 +437,5 @@ public class Main implements IMain, IFileCreatedHandler
 		
 		return list;
 	}
+
 }

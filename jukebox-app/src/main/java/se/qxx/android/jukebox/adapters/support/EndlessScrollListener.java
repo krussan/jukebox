@@ -1,7 +1,5 @@
 package se.qxx.android.jukebox.adapters.support;
 
-import android.support.v4.app.ListFragment;
-import android.view.View;
 import android.widget.AbsListView;
 
 /**
