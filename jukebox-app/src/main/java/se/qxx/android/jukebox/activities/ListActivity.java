@@ -245,7 +245,7 @@ public class ListActivity extends AppCompatActivity implements
                     this,
                     ss.getID(),
                     0,
-                    JukeboxDomain.RequestType.TypeMovie);
+                    JukeboxDomain.RequestType.TypeSeason);
         }
         else if (this.getMode() == ViewMode.Episode) {
             JukeboxDomain.Episode e = _episodeLayoutAdapter.getItem(position);
