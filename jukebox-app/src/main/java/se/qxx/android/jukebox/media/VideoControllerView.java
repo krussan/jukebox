@@ -38,6 +38,7 @@ import java.lang.ref.WeakReference;
 import java.util.Formatter;
 import java.util.Locale;
 
+import com.google.android.gms.cast.framework.CastButtonFactory;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.tools.Logger;
 
@@ -178,6 +179,8 @@ public class VideoControllerView extends FrameLayout {
     }
 
     private void initControllerView(View v) {
+        CastButtonFactory.setUpMediaRouteButton(this.getContext(), v.findViewById(R.id.npv_media_route_button));
+
         mPauseButton = v.findViewById(R.id.pause);
         if (mPauseButton != null) {
             mPauseButton.requestFocus();

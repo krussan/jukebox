@@ -26,6 +26,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.google.android.gms.cast.framework.CastButtonFactory;
+import com.google.android.gms.cast.framework.CastContext;
+import com.google.android.gms.cast.framework.CastState;
 import com.google.android.gms.common.util.IOUtils;
 
 import java.io.DataInputStream;
@@ -84,8 +87,18 @@ public class LocalPlayerFragment extends PlayerFragment
         initializeSurfaceHolder(v);
         initializeView(v);
         initializeMediaPlayer();
+        initializeCastListener();
 
         return v;
+    }
+
+    private void initializeCastListener() {
+        CastContext.getSharedInstance().addCastStateListener(state -> {
+            if (state == CastState.CONNECTING) {
+                // User pushed the cast button
+                
+            }
+        )
     }
 
     private void initializeMediaPlayer() {
