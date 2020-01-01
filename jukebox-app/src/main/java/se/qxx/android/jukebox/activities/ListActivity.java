@@ -239,9 +239,11 @@ public class ListActivity extends AppCompatActivity implements
         ActionDialog d = null;
 
         if (this.getMode() == ViewMode.Season) {
+            JukeboxDomain.Season ss = _seasonLayoutAdapter.getItem(position);
+
             d = new ActionDialog(
                     this,
-                    this.getSeries().getSeason(position).getID(),
+                    ss.getID(),
                     0,
                     JukeboxDomain.RequestType.TypeMovie);
         }

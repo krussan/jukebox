@@ -137,7 +137,8 @@ public abstract class GenericListLayoutAdapter<T> extends BaseAdapter {
     protected void setupThumbnail(View v, ByteString image) {
         if (image.isEmpty()) {
             Drawable drawable = ResourcesCompat.getDrawable(v.getResources(), R.drawable.movie2, null);
-            scaleBitmap(v, ((BitmapDrawable) drawable).getBitmap());
+            //scaleBitmap(v, ((BitmapDrawable) drawable).getBitmap());
+            GUITools.setImageOnImageView(R.id.imageView1, ((BitmapDrawable) drawable).getBitmap(), v);
         }
         else {
             Bitmap bitmap = GUITools.getBitmapFromByteArray(image.toByteArray());
