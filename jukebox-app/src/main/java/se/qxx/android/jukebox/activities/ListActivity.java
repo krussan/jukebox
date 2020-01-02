@@ -106,8 +106,8 @@ public class ListActivity extends AppCompatActivity implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setupConnectionHandler();
         settings = new JukeboxSettings(this);
+        setupConnectionHandler();
 
 		setContentView(R.layout.main);
 

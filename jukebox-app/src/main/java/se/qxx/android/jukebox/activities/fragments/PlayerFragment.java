@@ -1,36 +1,32 @@
 package se.qxx.android.jukebox.activities.fragments;
 
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
 import android.view.View;
 import android.widget.Toast;
-
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import com.google.protobuf.ByteString;
-
 import org.apache.commons.lang3.StringUtils;
+import se.qxx.android.jukebox.R;
+import se.qxx.android.jukebox.activities.ViewMode;
+import se.qxx.android.jukebox.activities.fragments.SubtitleSelectFragment.SubtitleSelectDialogListener;
+import se.qxx.android.jukebox.cast.JukeboxCastType;
+import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
+import se.qxx.android.jukebox.comm.JukeboxConnectionMessage;
+import se.qxx.android.jukebox.comm.JukeboxResponseListener;
+import se.qxx.android.jukebox.settings.CacheData;
+import se.qxx.android.jukebox.settings.JukeboxSettings;
+import se.qxx.android.tools.GUITools;
+import se.qxx.android.tools.Logger;
+import se.qxx.jukebox.domain.JukeboxDomain;
 
 import java.util.List;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import se.qxx.android.jukebox.R;
-import se.qxx.android.jukebox.activities.ViewMode;
-import se.qxx.android.jukebox.activities.fragments.SubtitleSelectFragment.SubtitleSelectDialogListener;
-import se.qxx.android.jukebox.cast.JukeboxCastType;
-import se.qxx.android.jukebox.comm.HandlerCallback;
-import se.qxx.android.jukebox.settings.CacheData;
-import se.qxx.android.jukebox.settings.JukeboxSettings;
-import se.qxx.android.tools.GUITools;
-import se.qxx.android.tools.Logger;
-import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
-import se.qxx.android.jukebox.comm.JukeboxConnectionMessage;
-import se.qxx.android.jukebox.comm.JukeboxResponseListener;
-import se.qxx.jukebox.domain.JukeboxDomain;
 
 public abstract class PlayerFragment extends Fragment implements JukeboxResponseListener, SubtitleSelectDialogListener {
 

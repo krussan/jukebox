@@ -1,18 +1,12 @@
 package se.qxx.android.jukebox.comm;
 
-import android.app.Activity;
 import android.util.Log;
-import android.view.View;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.ViewMode;
-import se.qxx.android.jukebox.dialogs.JukeboxConnectionProgressDialog;
-import se.qxx.android.jukebox.settings.JukeboxSettings;
-import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.*;
@@ -26,7 +20,6 @@ public class JukeboxConnectionHandler<T>  {
 	private static final String TAG = "JukeboxConnectionHandler";
 
     private ConnectorCallbackEventListener callback;
-
     private JukeboxResponseListener listener;
 	private JukeboxServiceGrpc.JukeboxServiceFutureStub service;
 	private ManagedChannel channel;
