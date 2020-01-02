@@ -18,14 +18,16 @@ public class ActionDialog implements OnClickListener{
     Resources res;
     private int mediaId;
     private JukeboxSettings settings;
+	private JukeboxConnectionHandler connectionHandler;
 
-    public ActionDialog(Activity activity, long id, int mediaId, RequestType requestType) {
+    public ActionDialog(Activity activity, long id, int mediaId, RequestType requestType, JukeboxConnectionHandler connectionHandler) {
 		this.reqType = requestType;
 		this.id = id;
 		this.activity = activity;
         this.res = activity.getResources();
         this.mediaId = mediaId;
         this.settings = new JukeboxSettings(activity);
+        this.connectionHandler = connectionHandler;
     }
 	
 	public void show() {
@@ -39,29 +41,23 @@ public class ActionDialog implements OnClickListener{
 	public void onClick(DialogInterface dialog, int choice) {
         Resources res = this.activity.getResources();
 
-		JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
-				this.settings.getServerIpAddress(),
-				this.settings.getServerPort(),
-				JukeboxConnectionProgressDialog.build(this.activity, res.getStringArray(R.array.actionDialogStrings)[choice]));
-
 		// Removed threads as the connectionHandler is threader itself
 		switch (choice) {
 		case 0:
-			jh.blacklist((int) this.id, this.reqType, response -> {});
+			this.connectionHandler.blacklist((int) this.id, this.reqType, response -> {});
 			break;
 		case 1:
-			jh.toggleWatched((int) this.id, this.reqType, response -> {});
+			this.connectionHandler.toggleWatched((int) this.id, this.reqType, response -> {});
 			break;
 		case 2:
-			jh.reIdentify((int) this.id, this.reqType, response -> {});
+			this.connectionHandler.reIdentify((int) this.id, this.reqType, response -> {});
 			break;
 		case 3:
-			jh.reenlistSub((int) this.id, this.reqType, response -> {});
+			this.connectionHandler.reenlistSub((int) this.id, this.reqType, response -> {});
 			break;
 		case 4:
-			jh.forceconversion(this.mediaId, response -> {});
+			this.connectionHandler.forceconversion(this.mediaId, response -> {});
 			break;
 		}
-		
 	}
 }

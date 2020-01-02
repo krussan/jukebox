@@ -18,7 +18,6 @@ import se.qxx.android.jukebox.adapters.list.SeasonLayoutAdapter;
 import se.qxx.android.jukebox.adapters.support.EndlessScrollListener;
 import se.qxx.android.jukebox.adapters.support.IOffsetHandler;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
-import se.qxx.android.jukebox.comm.Connector;
 import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
 import se.qxx.android.jukebox.dialogs.ActionDialog;
 import se.qxx.android.jukebox.model.Constants;
@@ -30,7 +29,7 @@ import se.qxx.jukebox.domain.JukeboxDomain;
 import static se.qxx.android.jukebox.model.Constants.NR_OF_ITEMS;
 
 public class ListActivity extends AppCompatActivity implements
-    AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, View.OnClickListener, Connector.ConnectorCallbackEventListener, IOffsetHandler {
+    AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, View.OnClickListener, JukeboxConnectionHandler.ConnectorCallbackEventListener, IOffsetHandler {
 
 	private CastContext mCastContext;
 	private SeasonLayoutAdapter _seasonLayoutAdapter;
@@ -38,7 +37,6 @@ public class ListActivity extends AppCompatActivity implements
 	private int offset;
 	private boolean firstIsLast = false;
 	private int totalItems = 0;
-	private Connector connector;
 	private boolean isLoading;
 	private JukeboxSettings settings;
 	private JukeboxConnectionHandler connectionHandler;
@@ -114,8 +112,7 @@ public class ListActivity extends AppCompatActivity implements
 		setContentView(R.layout.main);
 
         mCastContext = CastContext.getSharedInstance(this);
-        connector = new Connector(this, settings);
-        
+
         initializeView();
 
         loadMoreData(0, getSeriesID(), getSeasonID());
@@ -125,6 +122,7 @@ public class ListActivity extends AppCompatActivity implements
         connectionHandler = new JukeboxConnectionHandler(
                 settings.getServerIpAddress(),
                 settings.getServerPort());
+        connectionHandler.setCallback(this);
     }
 
     @Override
@@ -156,8 +154,8 @@ public class ListActivity extends AppCompatActivity implements
 		findViewById(R.id.btnSelectMediaPlayer).setOnClickListener(this);
 	    findViewById(R.id.btnCurrentMovie).setOnClickListener(this);
 		findViewById(R.id.btnPreferences).setOnClickListener(this);
-		findViewById(R.id.btnOn).setOnClickListener(this);
-		findViewById(R.id.btnOff).setOnClickListener(this);
+		findViewById(R.id.btnOn).setVisibility(View.GONE);
+		findViewById(R.id.btnOff).setVisibility(View.GONE);
 
         EndlessScrollListener scrollListener = new EndlessScrollListener(this) {
             @Override
@@ -202,18 +200,16 @@ public class ListActivity extends AppCompatActivity implements
             lv.setAdapter(_episodeLayoutAdapter);
             GUITools.setTextOnTextview(R.id.txtListTitle, String.format("%s - Season %s", this.getSeries().getTitle(), this.getSeason().getSeasonNumber()), getRootView());
         }
-
-        connector.setupOnOffButton(this.getRootView());
 	}
 
     private void loadMoreData(int offset, int seriesID) {
         setIsLoading(true);
-        connector.connect(offset, Constants.NR_OF_ITEMS, this.getMode(), seriesID, -1, true, true, connectionHandler);
+        this.connectionHandler.connect(offset, Constants.NR_OF_ITEMS, this.getMode(), seriesID, -1, true, true);
     }
 
     private void loadMoreData(int offset, int seriesID, int seasonID) {
         setIsLoading(true);
-        connector.connect(offset, Constants.NR_OF_ITEMS, this.getMode(), seriesID, seasonID, true, true, connectionHandler);
+        this.connectionHandler.connect(offset, Constants.NR_OF_ITEMS, this.getMode(), seriesID, seasonID, true, true);
     }
 
     @Override
@@ -254,7 +250,8 @@ public class ListActivity extends AppCompatActivity implements
                     this,
                     ss.getID(),
                     0,
-                    JukeboxDomain.RequestType.TypeSeason);
+                    JukeboxDomain.RequestType.TypeSeason,
+                    this.connectionHandler);
         }
         else if (this.getMode() == ViewMode.Episode) {
             JukeboxDomain.Episode e = _episodeLayoutAdapter.getItem(position);
@@ -263,7 +260,8 @@ public class ListActivity extends AppCompatActivity implements
                     this,
                     e.getID(),
                     e.getMedia(0).getID(),
-                    JukeboxDomain.RequestType.TypeEpisode);
+                    JukeboxDomain.RequestType.TypeEpisode,
+                    this.connectionHandler);
         }
 
         if (d != null) {
@@ -292,11 +290,6 @@ public class ListActivity extends AppCompatActivity implements
 
                 Intent i = new Intent(this, PlayerPickerActivity.class);
                 startActivity(i);
-                break;
-            case R.id.btnOn:
-            case R.id.btnOff:
-                connector.onoff(this);
-                connector.setupOnOffButton(getRootView());
                 break;
             case R.id.btnPreferences:
                 Intent intentPreferences = new Intent(this, JukeboxPreferenceActivity.class);

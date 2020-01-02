@@ -46,6 +46,8 @@ public class PlayerPickerActivity extends AppCompatActivity implements OnItemCli
         Thread t = new Thread(() -> jh.listPlayers(response -> {
         	if (response != null)
             	updateList(((JukeboxDomain.JukeboxResponseListPlayers)response).getHostnameList());
+
+        	jh.stop();
         }));
 		t.start();
 

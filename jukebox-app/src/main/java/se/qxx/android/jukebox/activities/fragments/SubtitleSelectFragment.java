@@ -65,7 +65,7 @@ public class SubtitleSelectFragment extends DialogFragment implements SubtitleLa
                 settings.getServerIpAddress(),
                 settings.getServerPort());
 
-        final ListView lv = (ListView)v.findViewById(R.id.listSubtitlePicker);
+        final ListView lv = v.findViewById(R.id.listSubtitlePicker);
 
         jh.listSubtitles(
                 mMedia,
@@ -79,8 +79,9 @@ public class SubtitleSelectFragment extends DialogFragment implements SubtitleLa
                             lv.setAdapter(adapter);
                         });
                     }
-                });
 
+                    jh.stop();
+                });
     }
 
     public static SubtitleSelectFragment newInstance(JukeboxDomain.Media media, SubtitleSelectDialogListener listener) {

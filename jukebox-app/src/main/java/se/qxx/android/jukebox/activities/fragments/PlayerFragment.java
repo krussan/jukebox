@@ -127,14 +127,18 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
         cacheData = new CacheData(getContext());
         settings = new JukeboxSettings(getContext());
 
-        this.setConnectionHandler(
-            new JukeboxConnectionHandler(
-                settings.getServerIpAddress(),
-                settings.getServerPort()));
+        setupConnectionHandler();
+    }
 
-        this.getConnectionHandler()
-            .setListener(this);
+    protected void setupConnectionHandler() {
+        JukeboxConnectionHandler jh =
+                new JukeboxConnectionHandler(
+                        settings.getServerIpAddress(),
+                        settings.getServerPort());
 
+        jh.setListener(this);
+
+        this.setConnectionHandler(jh);
     }
 
     protected void initializeView(View v, final ByteString image) {
@@ -315,11 +319,14 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
         if (this.getExitPosition() > 0)
             cacheData.saveMediaState(this.getMedia().getID(), getExitPosition());
 
+        this.getConnectionHandler().stop();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+
+        setupConnectionHandler();
     }
 
     @Override

@@ -25,7 +25,7 @@ import se.qxx.android.jukebox.adapters.list.MovieLayoutAdapter;
 import se.qxx.android.jukebox.adapters.list.SeriesLayoutAdapter;
 import se.qxx.android.jukebox.adapters.support.EndlessScrollListener;
 import se.qxx.android.jukebox.adapters.support.IOffsetHandler;
-import se.qxx.android.jukebox.comm.Connector;
+import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
 import se.qxx.android.jukebox.dialogs.ActionDialog;
 import se.qxx.android.jukebox.model.Constants;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
@@ -34,7 +34,7 @@ import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
 
 public class JukeboxFragment extends ListFragment implements
-	OnItemClickListener, OnItemLongClickListener, OnClickListener, Connector.ConnectorCallbackEventListener, IOffsetHandler {
+	OnItemClickListener, OnItemLongClickListener, OnClickListener, JukeboxConnectionHandler.ConnectorCallbackEventListener, IOffsetHandler {
 
     private ViewMode mode;
 
@@ -43,9 +43,9 @@ public class JukeboxFragment extends ListFragment implements
     private EndlessScrollListener scrollListener;
     private int offset;
     private int totalItems;
-    private Connector connector;
     private boolean isLoading;
     private JukeboxSettings settings;
+    private JukeboxConnectionHandler connectionHandler;
 
     public int getTotalItems() {
         return totalItems;
@@ -114,12 +114,19 @@ public class JukeboxFragment extends ListFragment implements
         }
 
         settings = new JukeboxSettings(this.getContext());
-        connector = new Connector(this, settings);
-
+        setupConnectionHandler();
 
         clearData();
         Logger.Log().d("Initializing - loading data");
         loadMoreData(0);
+    }
+
+    private void setupConnectionHandler() {
+        connectionHandler = new JukeboxConnectionHandler(
+                settings.getServerIpAddress(),
+                settings.getServerPort());
+
+        connectionHandler.setCallback(this);
     }
 
     @Override
@@ -137,6 +144,7 @@ public class JukeboxFragment extends ListFragment implements
     @Override
     public void onResume() {
         super.onResume();
+        setupConnectionHandler();
 
     }
 
@@ -156,8 +164,8 @@ public class JukeboxFragment extends ListFragment implements
 		v.findViewById(R.id.btnSelectMediaPlayer).setOnClickListener(this);
 		v.findViewById(R.id.btnCurrentMovie).setOnClickListener(this);
 		v.findViewById(R.id.btnPreferences).setOnClickListener(this);
-		v.findViewById(R.id.btnOn).setOnClickListener(this);
-		v.findViewById(R.id.btnOff).setOnClickListener(this);
+		v.findViewById(R.id.btnOn).setVisibility(View.GONE);
+		v.findViewById(R.id.btnOff).setVisibility(View.GONE);
 
 		v.findViewById(R.id.txtListTitle).setVisibility(View.GONE);
 
@@ -190,15 +198,12 @@ public class JukeboxFragment extends ListFragment implements
 
         }
 
-        connector.setupOnOffButton(v);
-
-	    
 	    //detector = new SimpleGestureFilter(this, this);
 	}
 
 	private void loadMoreData(int offset) {
         setLoading(true);
-        connector.connect(
+        this.connectionHandler.connect(
                 offset,
                 Constants.NR_OF_ITEMS,
                 this.getMode(),
@@ -240,14 +245,16 @@ public class JukeboxFragment extends ListFragment implements
                     this.getActivity(),
                     _jukeboxMovieLayoutAdapter.getItemId(pos),
                     _jukeboxMovieLayoutAdapter.getMediaId(pos),
-                    RequestType.TypeMovie);
+                    RequestType.TypeMovie,
+                    this.connectionHandler);
         }
         else if (this.getMode() == ViewMode.Series) {
             d = new ActionDialog(
                     this.getActivity(),
                     _seriesLayoutAdapter.getItemId(pos),
                     0,
-                    RequestType.TypeSeries);
+                    RequestType.TypeSeries,
+                    this.connectionHandler);
         }
 
 		if (d != null)
@@ -275,11 +282,6 @@ public class JukeboxFragment extends ListFragment implements
 
 			Intent i = new Intent(this.getActivity(), PlayerPickerActivity.class);
 			startActivity(i);
-			break;
-		case R.id.btnOn:
-		case R.id.btnOff:
-			connector.onoff(this.getActivity());
-			connector.setupOnOffButton(this.getView());
 			break;
 		case R.id.btnPreferences:
 			Intent intentPreferences = new Intent(this.getActivity(), JukeboxPreferenceActivity.class);
@@ -357,4 +359,11 @@ public class JukeboxFragment extends ListFragment implements
         if (_seriesLayoutAdapter != null)
             _seriesLayoutAdapter.setLoading(isLoading);
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        this.connectionHandler.stop();
+    }
+
 }

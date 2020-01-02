@@ -185,7 +185,7 @@ public abstract class RemotePlayerFragment extends PlayerFragment
 
     @Override
     public void initializeSeeker() {
-        seeker = new Seeker(this, getSettings());
+        seeker = new Seeker(this, getSettings(), this.getConnectionHandler());
     }
 
     @Override

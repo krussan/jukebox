@@ -1,11 +1,19 @@
 package se.qxx.android.jukebox.comm;
 
+import android.app.Activity;
 import android.util.Log;
+import android.view.View;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import se.qxx.android.jukebox.R;
+import se.qxx.android.jukebox.activities.ViewMode;
+import se.qxx.android.jukebox.dialogs.JukeboxConnectionProgressDialog;
+import se.qxx.android.jukebox.settings.JukeboxSettings;
+import se.qxx.android.tools.GUITools;
+import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.*;
 import se.qxx.jukebox.domain.JukeboxServiceGrpc;
@@ -17,7 +25,9 @@ import java.util.concurrent.TimeUnit;
 public class JukeboxConnectionHandler<T>  {
 	private static final String TAG = "JukeboxConnectionHandler";
 
-	private JukeboxResponseListener listener;
+    private ConnectorCallbackEventListener callback;
+
+    private JukeboxResponseListener listener;
 	private JukeboxServiceGrpc.JukeboxServiceFutureStub service;
 	private ManagedChannel channel;
 
@@ -25,11 +35,26 @@ public class JukeboxConnectionHandler<T>  {
 		return listener;
 	}
 
-	public void setListener(JukeboxResponseListener listener) {
+    public interface ConnectorCallbackEventListener {
+        void handleMoviesUpdated(List<JukeboxDomain.Movie> movies, int totalMovies);
+        void handleSeriesUpdated(List<JukeboxDomain.Series> series, int totalSeries);
+        void handleSeasonsUpdated(List<JukeboxDomain.Season> seasons, int totalSeasons);
+        void handleEpisodesUpdated(List<JukeboxDomain.Episode> episodes, int totalEpisodes);
+    }
+
+    public void setListener(JukeboxResponseListener listener) {
 		this.listener = listener;
 	}
 
-	public JukeboxConnectionHandler(String serverIPaddress, int port) {
+    public ConnectorCallbackEventListener getCallback() {
+        return callback;
+    }
+
+    public void setCallback(ConnectorCallbackEventListener callback) {
+        this.callback = callback;
+    }
+
+    public JukeboxConnectionHandler(String serverIPaddress, int port) {
 		init(serverIPaddress, port);
 	}
 
@@ -47,7 +72,68 @@ public class JukeboxConnectionHandler<T>  {
 		service = JukeboxServiceGrpc.newFutureStub(channel);
 	}
 
-	public void stop() {
+    public void connect(final int offset, final int nrOfItems, ViewMode modelType, final int seriesID, int seasonID, boolean excludeImages, boolean excludeTextdata) {
+        try {
+
+            if (modelType == ViewMode.Movie) {
+                Logger.Log().d("Listing movies");
+                this.listMovies("",
+                        nrOfItems,
+                        offset,
+                        excludeImages,
+                        excludeTextdata,
+                        response -> {
+                            //TODO: if repsonse is null probably the server is down..
+                            if (response != null) {
+                                JukeboxDomain.JukeboxResponseListMovies resp = (JukeboxDomain.JukeboxResponseListMovies)response;
+                                this.getCallback().handleMoviesUpdated(resp.getMoviesList(), resp.getTotalMovies());
+                            }
+                        });
+            }
+            else if (modelType == ViewMode.Series) {
+                this.listSeries("",
+                        nrOfItems,
+                        offset,
+                        excludeImages,
+                        excludeTextdata,
+                        response -> {
+                            //TODO: if repsonse is null probably the server is down..
+                            if (response != null) {
+                                JukeboxDomain.JukeboxResponseListMovies resp = (JukeboxDomain.JukeboxResponseListMovies)response;
+                                this.getCallback().handleSeriesUpdated(resp.getSeriesList(), resp.getTotalSeries());
+                            }
+                        });
+            }
+            else if (modelType == ViewMode.Season) {
+                this.getItem(seriesID, JukeboxDomain.RequestType.TypeSeries, excludeImages, excludeTextdata,
+                        response -> {
+                            //TODO: if repsonse is null probably the server is down..
+                            if (response != null) {
+                                JukeboxDomain.JukeboxResponseGetItem resp = (JukeboxDomain.JukeboxResponseGetItem)response;
+                                this.getCallback().handleSeasonsUpdated(
+                                        resp.getSerie().getSeasonList(),
+                                        resp.getSerie().getSeasonCount());
+
+                            }
+                        });
+            }
+            else if (modelType == ViewMode.Episode) {
+                this.getItem(seasonID, JukeboxDomain.RequestType.TypeSeason, excludeImages, excludeTextdata,
+                        response -> {
+                            if (response != null) {
+                                this.getCallback().handleEpisodesUpdated(((JukeboxDomain.JukeboxResponseGetItem)response).getSeason().getEpisodeList(),
+                                        ((JukeboxDomain.JukeboxResponseGetItem)response).getSeason().getEpisodeCount());
+                            }
+                        });
+            }
+
+        } catch (Exception e) {
+            Logger.Log().e("Error when connecting to server", e);
+        }
+    }
+
+
+    public void stop() {
 
 		try {
 			channel.shutdown();
@@ -56,8 +142,8 @@ public class JukeboxConnectionHandler<T>  {
 			Log.e(TAG,"Error when terminating channel", e);
 		}
 	}
-	
-	//----------------------------------------------------------------------------------------------------------------
+
+    //----------------------------------------------------------------------------------------------------------------
 	//--------------------------------------------------------------------------------------------------- RPC Calls
 	//----------------------------------------------------------------------------------------------------------------
 
