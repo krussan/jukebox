@@ -70,11 +70,8 @@ public class Connector {
     }
 */
 
-	public void connect(final int offset, final int nrOfItems, ViewMode modelType, final int seriesID, int seasonID, boolean excludeImages, boolean excludeTextdata) {
+	public void connect(final int offset, final int nrOfItems, ViewMode modelType, final int seriesID, int seasonID, boolean excludeImages, boolean excludeTextdata, JukeboxConnectionHandler jh) {
 		try {
-			final JukeboxConnectionHandler jh = new JukeboxConnectionHandler(
-					settings.getServerIpAddress(),
-					settings.getServerPort());
 
 			if (modelType == ViewMode.Movie) {
 				Logger.Log().d("Listing movies");

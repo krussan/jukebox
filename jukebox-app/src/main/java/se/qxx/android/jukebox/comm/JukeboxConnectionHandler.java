@@ -1,5 +1,6 @@
 package se.qxx.android.jukebox.comm;
 
+import android.util.Log;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -11,11 +12,14 @@ import se.qxx.jukebox.domain.JukeboxServiceGrpc;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class JukeboxConnectionHandler<T>  {
-	
+	private static final String TAG = "JukeboxConnectionHandler";
+
 	private JukeboxResponseListener listener;
 	private JukeboxServiceGrpc.JukeboxServiceFutureStub service;
+	private ManagedChannel channel;
 
 	private JukeboxResponseListener getListener() {
 		return listener;
@@ -35,12 +39,22 @@ public class JukeboxConnectionHandler<T>  {
 	}
 
 	private void init(String serverIPaddress, int port) {
-		ManagedChannel managedChannel = ManagedChannelBuilder
+		channel = ManagedChannelBuilder
 				.forAddress(serverIPaddress, port)
 				.usePlaintext()
 				.build();
 
-		service = JukeboxServiceGrpc.newFutureStub(managedChannel);
+		service = JukeboxServiceGrpc.newFutureStub(channel);
+	}
+
+	public void stop() {
+
+		try {
+			channel.shutdown();
+			channel.awaitTermination(250, TimeUnit.MILLISECONDS);
+		} catch (InterruptedException e) {
+			Log.e(TAG,"Error when terminating channel", e);
+		}
 	}
 	
 	//----------------------------------------------------------------------------------------------------------------

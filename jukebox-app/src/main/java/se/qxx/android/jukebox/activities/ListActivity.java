@@ -19,6 +19,7 @@ import se.qxx.android.jukebox.adapters.support.EndlessScrollListener;
 import se.qxx.android.jukebox.adapters.support.IOffsetHandler;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
 import se.qxx.android.jukebox.comm.Connector;
+import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
 import se.qxx.android.jukebox.dialogs.ActionDialog;
 import se.qxx.android.jukebox.model.Constants;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
@@ -40,6 +41,7 @@ public class ListActivity extends AppCompatActivity implements
 	private Connector connector;
 	private boolean isLoading;
 	private JukeboxSettings settings;
+	private JukeboxConnectionHandler connectionHandler;
 
     protected View getRootView() {
 		return findViewById(R.id.rootMain);
@@ -106,6 +108,7 @@ public class ListActivity extends AppCompatActivity implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setupConnectionHandler();
         settings = new JukeboxSettings(this);
 
 		setContentView(R.layout.main);
@@ -118,11 +121,17 @@ public class ListActivity extends AppCompatActivity implements
         loadMoreData(0, getSeriesID(), getSeasonID());
     }
 
+    private void setupConnectionHandler() {
+        connectionHandler = new JukeboxConnectionHandler(
+                settings.getServerIpAddress(),
+                settings.getServerPort());
+    }
+
     @Override
     public void onResume() {
         super.onResume();
 
-
+        setupConnectionHandler();
     }
 
 	@Override
@@ -199,12 +208,12 @@ public class ListActivity extends AppCompatActivity implements
 
     private void loadMoreData(int offset, int seriesID) {
         setIsLoading(true);
-        connector.connect(offset, Constants.NR_OF_ITEMS, this.getMode(), seriesID, -1, true, true);
+        connector.connect(offset, Constants.NR_OF_ITEMS, this.getMode(), seriesID, -1, true, true, connectionHandler);
     }
 
     private void loadMoreData(int offset, int seriesID, int seasonID) {
         setIsLoading(true);
-        connector.connect(offset, Constants.NR_OF_ITEMS, this.getMode(), seriesID, seasonID, true, true);
+        connector.connect(offset, Constants.NR_OF_ITEMS, this.getMode(), seriesID, seasonID, true, true, connectionHandler);
     }
 
     @Override
@@ -381,6 +390,14 @@ public class ListActivity extends AppCompatActivity implements
     public void setFirstIsLast(boolean firstIsLast) {
         this.firstIsLast = firstIsLast;
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        connectionHandler.stop();
+    }
+
+
 }
 
 
