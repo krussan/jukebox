@@ -10,15 +10,18 @@ import com.google.android.gms.cast.framework.CastContext;
 import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.android.jukebox.R;
+import se.qxx.android.jukebox.adapters.viewmode.JukeboxFragment;
 import se.qxx.android.jukebox.adapters.viewmode.JukeboxFragmentAdapter;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
+import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 
-public class FlipperListActivity extends AppCompatActivity {
+public class FlipperListActivity extends AppCompatActivity implements JukeboxFragment.JukeboxFragmentHandler {
 	ViewPager pager;
 	private CastContext mCastContext;
     private ViewMode mode = ViewMode.Movie;
     private JukeboxSettings settings;
+    private JukeboxConnectionHandler connectionHandler;
 
     protected View getRootView() {
 		return findViewById(R.id.rootJukeboxViewPager);
@@ -47,6 +50,7 @@ public class FlipperListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         settings = new JukeboxSettings(this);
+        setupConnectionHandler();
 
         if (StringUtils.equalsIgnoreCase(settings.getCurrentMediaPlayer(), "Chromecast"))
             ChromeCastConfiguration.checkGooglePlayServices(this);
@@ -66,7 +70,14 @@ public class FlipperListActivity extends AppCompatActivity {
 
     }
 
-	@Override
+    private void setupConnectionHandler() {
+        connectionHandler = new JukeboxConnectionHandler(
+                settings.getServerIpAddress(),
+                settings.getServerPort());
+    }
+
+
+    @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 
@@ -75,6 +86,20 @@ public class FlipperListActivity extends AppCompatActivity {
 		return true;
 	}
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        this.connectionHandler.stop();
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setupConnectionHandler();
+    }
 
+    @Override
+    public JukeboxConnectionHandler getConnectionHandler() {
+        return this.connectionHandler;
+    }
 }

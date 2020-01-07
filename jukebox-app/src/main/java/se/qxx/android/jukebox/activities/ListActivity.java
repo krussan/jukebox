@@ -122,7 +122,7 @@ public class ListActivity extends AppCompatActivity implements
         connectionHandler = new JukeboxConnectionHandler(
                 settings.getServerIpAddress(),
                 settings.getServerPort());
-        connectionHandler.setCallback(this);
+        connectionHandler.addCallback(this);
     }
 
     @Override

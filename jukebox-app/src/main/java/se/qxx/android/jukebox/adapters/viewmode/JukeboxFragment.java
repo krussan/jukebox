@@ -1,5 +1,6 @@
 package se.qxx.android.jukebox.adapters.viewmode;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -21,6 +22,7 @@ import se.qxx.android.jukebox.activities.ListActivity;
 import se.qxx.android.jukebox.activities.MovieDetailActivity;
 import se.qxx.android.jukebox.activities.PlayerPickerActivity;
 import se.qxx.android.jukebox.activities.ViewMode;
+import se.qxx.android.jukebox.activities.fragments.MovieDetailFragment;
 import se.qxx.android.jukebox.adapters.list.MovieLayoutAdapter;
 import se.qxx.android.jukebox.adapters.list.SeriesLayoutAdapter;
 import se.qxx.android.jukebox.adapters.support.EndlessScrollListener;
@@ -45,7 +47,7 @@ public class JukeboxFragment extends ListFragment implements
     private int totalItems;
     private boolean isLoading;
     private JukeboxSettings settings;
-    private JukeboxConnectionHandler connectionHandler;
+    private JukeboxFragmentHandler handler;
 
     public int getTotalItems() {
         return totalItems;
@@ -114,19 +116,10 @@ public class JukeboxFragment extends ListFragment implements
         }
 
         settings = new JukeboxSettings(this.getContext());
-        setupConnectionHandler();
 
         clearData();
         Logger.Log().d("Initializing - loading data");
         loadMoreData(0);
-    }
-
-    private void setupConnectionHandler() {
-        connectionHandler = new JukeboxConnectionHandler(
-                settings.getServerIpAddress(),
-                settings.getServerPort());
-
-        connectionHandler.setCallback(this);
     }
 
     @Override
@@ -144,8 +137,6 @@ public class JukeboxFragment extends ListFragment implements
     @Override
     public void onResume() {
         super.onResume();
-        setupConnectionHandler();
-
     }
 
 	@Override
@@ -203,7 +194,7 @@ public class JukeboxFragment extends ListFragment implements
 
 	private void loadMoreData(int offset) {
         setLoading(true);
-        this.connectionHandler.connect(
+        this.handler.getConnectionHandler().connect(
                 offset,
                 Constants.NR_OF_ITEMS,
                 this.getMode(),
@@ -246,7 +237,7 @@ public class JukeboxFragment extends ListFragment implements
                     _jukeboxMovieLayoutAdapter.getItemId(pos),
                     _jukeboxMovieLayoutAdapter.getMediaId(pos),
                     RequestType.TypeMovie,
-                    this.connectionHandler);
+                    this.handler.getConnectionHandler());
         }
         else if (this.getMode() == ViewMode.Series) {
             d = new ActionDialog(
@@ -254,7 +245,7 @@ public class JukeboxFragment extends ListFragment implements
                     _seriesLayoutAdapter.getItemId(pos),
                     0,
                     RequestType.TypeSeries,
-                    this.connectionHandler);
+                    this.handler.getConnectionHandler());
         }
 
 		if (d != null)
@@ -360,10 +351,20 @@ public class JukeboxFragment extends ListFragment implements
             _seriesLayoutAdapter.setLoading(isLoading);
     }
 
+    public interface JukeboxFragmentHandler {
+        JukeboxConnectionHandler getConnectionHandler();
+    }
+
     @Override
-    public void onPause() {
-        super.onPause();
-        this.connectionHandler.stop();
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof JukeboxFragmentHandler) {
+            handler = (JukeboxFragmentHandler) context;
+            handler.getConnectionHandler().addCallback(this);
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement JukeboxFragmentHandler");
+        }
     }
 
 }

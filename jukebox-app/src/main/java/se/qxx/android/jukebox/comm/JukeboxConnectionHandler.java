@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 public class JukeboxConnectionHandler<T>  {
 	private static final String TAG = "JukeboxConnectionHandler";
 
-    private ConnectorCallbackEventListener callback;
+    private List<ConnectorCallbackEventListener> callbacks = new ArrayList<>();
     private JukeboxResponseListener listener;
 	private JukeboxServiceGrpc.JukeboxServiceFutureStub service;
 	private ManagedChannel channel;
@@ -39,12 +39,12 @@ public class JukeboxConnectionHandler<T>  {
 		this.listener = listener;
 	}
 
-    public ConnectorCallbackEventListener getCallback() {
-        return callback;
+    public List<ConnectorCallbackEventListener> getCallbacks() {
+        return this.callbacks;
     }
 
-    public void setCallback(ConnectorCallbackEventListener callback) {
-        this.callback = callback;
+    public void addCallback(ConnectorCallbackEventListener callback) {
+        this.callbacks.add(callback);
     }
 
     public JukeboxConnectionHandler(String serverIPaddress, int port) {
@@ -78,8 +78,7 @@ public class JukeboxConnectionHandler<T>  {
                         response -> {
                             //TODO: if repsonse is null probably the server is down..
                             if (response != null) {
-                                JukeboxDomain.JukeboxResponseListMovies resp = (JukeboxDomain.JukeboxResponseListMovies)response;
-                                this.getCallback().handleMoviesUpdated(resp.getMoviesList(), resp.getTotalMovies());
+                                triggerMoviesUpdated(response.getMoviesList(), response.getTotalMovies());
                             }
                         });
             }
@@ -92,8 +91,7 @@ public class JukeboxConnectionHandler<T>  {
                         response -> {
                             //TODO: if repsonse is null probably the server is down..
                             if (response != null) {
-                                JukeboxDomain.JukeboxResponseListMovies resp = (JukeboxDomain.JukeboxResponseListMovies)response;
-                                this.getCallback().handleSeriesUpdated(resp.getSeriesList(), resp.getTotalSeries());
+                                triggerSeriesUpdated(response.getSeriesList(), response.getTotalSeries());
                             }
                         });
             }
@@ -102,10 +100,9 @@ public class JukeboxConnectionHandler<T>  {
                         response -> {
                             //TODO: if repsonse is null probably the server is down..
                             if (response != null) {
-                                JukeboxDomain.JukeboxResponseGetItem resp = (JukeboxDomain.JukeboxResponseGetItem)response;
-                                this.getCallback().handleSeasonsUpdated(
-                                        resp.getSerie().getSeasonList(),
-                                        resp.getSerie().getSeasonCount());
+                                triggerSeasonsUpdated(
+										response.getSerie().getSeasonList(),
+										response.getSerie().getSeasonCount());
 
                             }
                         });
@@ -114,8 +111,9 @@ public class JukeboxConnectionHandler<T>  {
                 this.getItem(seasonID, JukeboxDomain.RequestType.TypeSeason, excludeImages, excludeTextdata,
                         response -> {
                             if (response != null) {
-                                this.getCallback().handleEpisodesUpdated(((JukeboxDomain.JukeboxResponseGetItem)response).getSeason().getEpisodeList(),
-                                        ((JukeboxDomain.JukeboxResponseGetItem)response).getSeason().getEpisodeCount());
+                            	triggerEpisodesUpdated(
+                            			response.getSeason().getEpisodeList(),
+										response.getSeason().getEpisodeCount());
                             }
                         });
             }
@@ -125,8 +123,28 @@ public class JukeboxConnectionHandler<T>  {
         }
     }
 
+	private void triggerEpisodesUpdated(List<Episode> episodeList, int totalEpisodeCount) {
+		for (ConnectorCallbackEventListener listener : this.getCallbacks())
+			listener.handleEpisodesUpdated(episodeList, totalEpisodeCount);
+	}
 
-    public void stop() {
+	private void triggerSeasonsUpdated(List<Season> seasonList, int seasonCount) {
+		for (ConnectorCallbackEventListener listener : this.getCallbacks())
+			listener.handleSeasonsUpdated(seasonList, seasonCount);
+	}
+
+	private void triggerSeriesUpdated(List<Series> seriesList, int totalSeries) {
+		for (ConnectorCallbackEventListener listener : this.getCallbacks())
+			listener.handleSeriesUpdated(seriesList, totalSeries);
+	}
+
+	private void triggerMoviesUpdated(List<Movie> moviesList, int nrOfMovies) {
+		for (ConnectorCallbackEventListener listener : this.getCallbacks())
+			listener.handleMoviesUpdated(moviesList, nrOfMovies);
+	}
+
+
+	public void stop() {
 
 		try {
 			channel.shutdown();
