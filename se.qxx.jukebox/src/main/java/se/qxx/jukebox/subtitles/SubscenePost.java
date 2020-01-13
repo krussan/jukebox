@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.interfaces.ISubFileDownloaderHelper;
 import se.qxx.jukebox.interfaces.ISubFinder;
+import se.qxx.jukebox.settings.FindersTest;
 import se.qxx.jukebox.settings.JukeboxListenerSettings;
 
 import java.io.UnsupportedEncodingException;
@@ -33,9 +34,9 @@ public class SubscenePost implements ISubFinder  {
 
 
 	private ISubFileDownloaderHelper helper;
-	private final JukeboxListenerSettings.SubFinders.SubFinder settings;
+	private final FindersTest settings;
 
-	public SubscenePost(ISubFileDownloaderHelper helper, JukeboxListenerSettings.SubFinders.SubFinder settings) {
+	public SubscenePost(ISubFileDownloaderHelper helper, FindersTest settings) {
 		this.settings = settings;
 		this.setHelper(helper);
 	}
@@ -48,7 +49,7 @@ public class SubscenePost implements ISubFinder  {
 		this.helper = helper;
 	}
 
-	public JukeboxListenerSettings.SubFinders.SubFinder getSettings() {
+	public FindersTest getSettings() {
 		return settings;
 	}
 

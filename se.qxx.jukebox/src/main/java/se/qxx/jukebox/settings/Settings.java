@@ -1,7 +1,11 @@
 package se.qxx.jukebox.settings;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import se.qxx.jukebox.interfaces.IImdbSettings;
 import se.qxx.jukebox.interfaces.IParserSettings;
 import se.qxx.jukebox.interfaces.ISettings;
@@ -16,7 +20,7 @@ import java.io.IOException;
 
 @Singleton
 public class Settings implements ISettings {
-	private JukeboxListenerSettings settings;
+	private SettingsTest settings;
 	private IImdbSettings imdbSettings;
 	private IParserSettings parserSettings;
 	public int serverPort = 45444;	
@@ -29,11 +33,11 @@ public class Settings implements ISettings {
 		initialize();
 	}
 	
-	public JukeboxListenerSettings getSettings() {
+	public SettingsTest getSettings() {
 		return settings;
 	}
 
-	public void setSettings(JukeboxListenerSettings settings) {
+	public void setSettings(SettingsTest settings) {
 		this.settings = settings;
 	}
 
@@ -57,14 +61,16 @@ public class Settings implements ISettings {
 	 * @see se.qxx.jukebox.settings.ISettings#initialize()
 	 */
 	@Override
-	public void initialize() throws IOException, JAXBException {
+	public void initialize() throws IOException {
 		readSettings();
-		
+		/*
 		if (this.getImdbSettings() != null)
 			this.getImdbSettings().readSettings();
 		
 		if (this.getParserSettings() != null)
 			this.getParserSettings().readSettings();
+
+		 */
 	}
 	
 	/* (non-Javadoc)
@@ -87,16 +93,12 @@ public class Settings implements ISettings {
 	 * @see se.qxx.jukebox.settings.ISettings#readSettings()
 	 */
 	@Override
-	public void readSettings() throws JAXBException {
+	public void readSettings() throws IOException {
 		readSettingFile();
 	}
 	
-	private void readSettingFile() throws JAXBException {
-		JAXBContext c = JAXBContext.newInstance(JukeboxListenerSettings.class);
-		Unmarshaller u = c.createUnmarshaller();
-		
-		JAXBElement<JukeboxListenerSettings> root = u.unmarshal(new StreamSource(new File("JukeboxSettings.xml")), JukeboxListenerSettings.class);
-		this.setSettings(root.getValue());
-		
+	private void readSettingFile() throws IOException {
+		ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+		this.setSettings(mapper.readValue(new File("settings.yaml"), SettingsTest.class));
 	}
 }

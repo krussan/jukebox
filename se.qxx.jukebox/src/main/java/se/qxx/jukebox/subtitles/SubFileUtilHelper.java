@@ -38,7 +38,7 @@ public class SubFileUtilHelper implements ISubFileUtilHelper {
 		String tempPath = 
 			FilenameUtils.normalize(
 				String.format("%s/temp/%s"
-					, this.getSettings().getSettings().getSubFinders().getSubsPath()
+					, this.getSettings().getSettings().getSubfinders().getPath()
 					, mos.getID()));
 
 		File path = new File(tempPath);

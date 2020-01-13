@@ -37,10 +37,7 @@ import se.qxx.jukebox.interfaces.ISubFileDownloaderHelper;
 import se.qxx.jukebox.interfaces.ISubFileUtilHelper;
 import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.interfaces.IWebRetriever;
-import se.qxx.jukebox.settings.JukeboxListenerSettings;
-import se.qxx.jukebox.settings.Settings;
-import se.qxx.jukebox.settings.ImdbSettings;
-import se.qxx.jukebox.settings.ParserSettings;
+import se.qxx.jukebox.settings.*;
 import se.qxx.jukebox.subtitles.Language;
 import se.qxx.jukebox.subtitles.SubFile;
 import se.qxx.jukebox.subtitles.SubFileDownloaderHelper;
@@ -111,9 +108,9 @@ public class TestSubscene {
 	@Test
 	public void test() throws IOException {
 		ISubFileDownloaderHelper helper = createHelper();
-		JukeboxListenerSettings.SubFinders.SubFinder f =
-			this.settings.getSettings().getSubFinders().getSubFinder()
-				.stream().filter(x -> x.getClazz().equalsIgnoreCase("se.qxx.jukebox.subtitles.Subscene"))
+		FindersTest f =
+			this.settings.getSettings().getSubfinders().getFinders()
+				.stream().filter(x -> x.getExecutor().equalsIgnoreCase("se.qxx.jukebox.subtitles.Subscene"))
 				.findFirst().get();
 
 		Subscene ss = new Subscene(helper, f);

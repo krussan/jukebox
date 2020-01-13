@@ -10,6 +10,7 @@ import com.google.inject.assistedinject.Assisted;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.settings.JukeboxListenerSettings;
+import se.qxx.jukebox.settings.LogsTest;
 
 public class Log implements IJukeboxLogger {
 	final int DEBUG = 4;
@@ -100,7 +101,7 @@ public class Log implements IJukeboxLogger {
 				return;
 			}
 			
-			JukeboxListenerSettings.Logs.Log l = getLogger();
+			LogsTest l = getLogger();
 			
 			if (l != null) {
 				int logLevel = getLevel(l);
@@ -118,7 +119,8 @@ public class Log implements IJukeboxLogger {
 	}
 	
 	private void logToAll(String msg, String level) {
-		for(JukeboxListenerSettings.Logs.Log l : this.getSettings().getSettings().getLogs().getLog()) {
+
+		for(LogsTest l : this.getSettings().getSettings().getLogs()) {
 			LogType logType = LogType.valueOf(l.getLogs());
 			
 			if (logType != LogType.ALL)
@@ -127,8 +129,8 @@ public class Log implements IJukeboxLogger {
 	}
 
 	@Override
-	public JukeboxListenerSettings.Logs.Log getLogger() {
-		for(JukeboxListenerSettings.Logs.Log l : this.getSettings().getSettings().getLogs().getLog()) {
+	public LogsTest getLogger() {
+		for(LogsTest l : this.getSettings().getSettings().getLogs()) {
 			LogType logType = LogType.valueOf(l.getLogs());
 			
 			if (logType == this.getLogType())
@@ -140,7 +142,7 @@ public class Log implements IJukeboxLogger {
 	
 	@Override
 	public String getLoggerFilename() {
-		JukeboxListenerSettings.Logs.Log l = getLogger();
+		LogsTest l = getLogger();
 		if (l != null)
 			return l.getFilename();
 		
@@ -180,7 +182,7 @@ public class Log implements IJukeboxLogger {
 		System.out.println(e.toString());
 	}
 	
-	private int getLevel(JukeboxListenerSettings.Logs.Log l) {
+	private int getLevel(LogsTest l) {
 		return getLevel(l.getLevel());
 	}
 	

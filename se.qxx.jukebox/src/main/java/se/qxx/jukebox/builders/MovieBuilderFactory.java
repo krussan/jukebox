@@ -13,6 +13,7 @@ import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IMovieBuilderFactory;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.IUtils;
+import se.qxx.jukebox.settings.BuildersTest;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Builders.Builder;
 
 public class MovieBuilderFactory implements IMovieBuilderFactory {
@@ -125,11 +126,9 @@ public class MovieBuilderFactory implements IMovieBuilderFactory {
 		Class<?>[] parTypes = new Class<?>[] {ISettings.class, IJukeboxLogger.class};
 		Object[] args = new Object[] {this.getSettings(), this.getLog()};
 		
-		for (Builder b : this.getSettings().getSettings().getBuilders().getBuilder()) {
-			String className = b.getClazz();
-			int weight = 1;
-			if (b.getWeight() != null)
-				weight = b.getWeight();
+		for (BuildersTest b : this.getSettings().getSettings().getBuilders()) {
+			String className = b.getExecutor();
+			int weight = b.getWeightInt();
 
 			try {
 				if (b.isEnabled()) {

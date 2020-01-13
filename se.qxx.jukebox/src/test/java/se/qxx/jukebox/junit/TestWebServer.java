@@ -67,6 +67,7 @@ public class TestWebServer {
 				loggerFactoryMock, 
 				subWriterMock,
 				utilsMock,
+				settings,
 				8001);
 		
 		webServer.setIpAddress("127.0.0.1");

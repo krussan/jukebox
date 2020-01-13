@@ -33,7 +33,6 @@ import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.domain.JukeboxDomain.SubtitleRequestType;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IDatabase;
-import se.qxx.jukebox.interfaces.IDistributor;
 import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.IImdbSettings;
 import se.qxx.jukebox.interfaces.IMovieIdentifier;
@@ -54,7 +53,6 @@ public class TestServerComm {
 	
 	@Mock LoggerFactory loggerFactoryMock;
 	@Mock IDatabase dbMock;
-	@Mock IDistributor distributorMock;
 	@Mock ISubtitleDownloader subtitleDownloaderMock;
 	@Mock IMovieIdentifier movieIdentifierMock;
 	@Mock IStreamingWebServer webServerMock;
@@ -77,7 +75,7 @@ public class TestServerComm {
 	@Test
 	public void TestStartMovieChromecast() throws UnsupportedEncodingException {
 		JukeboxRpcServerConnection conn = 
-			new JukeboxRpcServerConnection(settings, dbMock, distributorMock, 
+			new JukeboxRpcServerConnection(settings, dbMock,
 					subtitleDownloaderMock, movieIdentifierMock, loggerFactoryMock, executor, utilsMock, webServerMock);
 
 		Subtitle sub1 = Subtitle.newBuilder()

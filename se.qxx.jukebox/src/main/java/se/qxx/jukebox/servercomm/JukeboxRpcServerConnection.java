@@ -2,7 +2,6 @@ package se.qxx.jukebox.servercomm;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import io.grpc.stub.StreamObserver;
@@ -42,7 +41,6 @@ import se.qxx.jukebox.domain.JukeboxDomain.SubtitleRequestType;
 import se.qxx.jukebox.domain.JukeboxServiceGrpc;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IDatabase;
-import se.qxx.jukebox.interfaces.IDistributor;
 import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IJukeboxRpcServerConnection;
@@ -51,8 +49,6 @@ import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.IStreamingWebServer;
 import se.qxx.jukebox.interfaces.ISubtitleDownloader;
 import se.qxx.jukebox.interfaces.IUtils;
-import se.qxx.jukebox.settings.JukeboxListenerSettings.Players.Server;
-import se.qxx.jukebox.vlc.VLCConnectionNotFoundException;
 import se.qxx.jukebox.watcher.FileRepresentation;
 import se.qxx.jukebox.webserver.StreamingFile;
 import se.qxx.protodb.Logger;
@@ -60,7 +56,6 @@ import se.qxx.protodb.Logger;
 public class JukeboxRpcServerConnection extends JukeboxServiceGrpc.JukeboxServiceImplBase implements IJukeboxRpcServerConnection {
 	private IDatabase database;
 	private ISettings settings;
-	private IDistributor distributor;
 	private IStreamingWebServer webServer;
 	private ISubtitleDownloader subtitleDownloader;
 	private IMovieIdentifier movieIdentifier;
@@ -71,8 +66,7 @@ public class JukeboxRpcServerConnection extends JukeboxServiceGrpc.JukeboxServic
 	@Inject
 	public JukeboxRpcServerConnection(
 			ISettings settings, 
-			IDatabase database, 
-			IDistributor distributor,
+			IDatabase database,
 			ISubtitleDownloader subtitleDownloader,
 			IMovieIdentifier movieIdentifier, 
 			LoggerFactory loggerFactory,
@@ -82,7 +76,6 @@ public class JukeboxRpcServerConnection extends JukeboxServiceGrpc.JukeboxServic
 		super();
 		this.setDatabase(database);
 		this.setSettings(settings);
-		this.setDistributor(distributor);
 		this.setWebServer(webServer);
 		this.setSubtitleDownloader(subtitleDownloader);
 		this.setMovieIdentifier(movieIdentifier);
@@ -129,14 +122,6 @@ public class JukeboxRpcServerConnection extends JukeboxServiceGrpc.JukeboxServic
 
 	public void setWebServer(IStreamingWebServer webServer) {
 		this.webServer = webServer;
-	}
-
-	public IDistributor getDistributor() {
-		return distributor;
-	}
-
-	public void setDistributor(IDistributor distributor) {
-		this.distributor = distributor;
 	}
 
 	public ISettings getSettings() {
@@ -240,12 +225,8 @@ public class JukeboxRpcServerConnection extends JukeboxServiceGrpc.JukeboxServic
 		setPriority();
 		this.getLog().Debug("ListPlayers");
 
-		Collection<String> hostnames = new ArrayList<String>();
-		for (Server s : this.getSettings().getSettings().getPlayers().getServer()) {
-			hostnames.add(s.getName());
-		}
-		
-		JukeboxResponseListPlayers lp = JukeboxResponseListPlayers.newBuilder().addAllHostname(hostnames).build();
+		// players have been deprecated
+		JukeboxResponseListPlayers lp = JukeboxResponseListPlayers.newBuilder().build();
 
 		responseObserver.onNext(lp);
 		responseObserver.onCompleted();
@@ -258,48 +239,29 @@ public class JukeboxRpcServerConnection extends JukeboxServiceGrpc.JukeboxServic
 		this.getLog().Debug("StartMovie");
 		this.getLog().Debug(String.format("Starting %s with ID: %s on player %s", request.getRequestType(), request.getMovieOrEpisodeId(), request.getPlayerName()));
 		
-		try {
-			Media md = getMedia(request);
+		Media md = getMedia(request);
 
-			boolean success = true;
 
-			// always serve the file and subtitles
-			List<String> subtitleUris = serveSubtitles(md, request.getSubtitleRequestType());
-			StreamingFile streamingFile = this.getWebServer().registerFile(md);
-			
-			// call the distributor if the player is not chromecast or local
-			if (!StringUtils.equalsIgnoreCase("Chromecast", request.getPlayerName()) &&
-					!StringUtils.equalsIgnoreCase("local", request.getPlayerName())) {
-				success = this.getDistributor().startMovie(request.getPlayerName(), md);
-			}
-			
-			if (success) {
-				List<Subtitle> subs = md.getSubsList();
-				
-				JukeboxResponseStartMovie.Builder b = JukeboxResponseStartMovie.newBuilder()
-						.addAllSubtitle(subs)
-						.addAllSubtitleUris(subtitleUris);
-				
-				if (streamingFile != null) {
-					b.setUri(streamingFile.getUri())
-						.setMimeType(streamingFile.getMimeType());
-				}
+		// always serve the file and subtitles
+		List<String> subtitleUris = serveSubtitles(md, request.getSubtitleRequestType());
+		StreamingFile streamingFile = this.getWebServer().registerFile(md);
 
-				responseObserver.onNext(b.build());
-				responseObserver.onCompleted();
-				
-			}
-			else {
-				responseObserver.onError(new Exception("Error occured when connecting to target media player"));
-				responseObserver.onCompleted();
-			}
+		// call the distributor if the player is not chromecast or local
 
-		} catch (VLCConnectionNotFoundException e) {
-			this.getLog().Error("Error occured when starting movie", e);
-			responseObserver.onError(e);
-			responseObserver.onCompleted();
+		List<Subtitle> subs = md.getSubsList();
+
+		JukeboxResponseStartMovie.Builder b = JukeboxResponseStartMovie.newBuilder()
+				.addAllSubtitle(subs)
+				.addAllSubtitleUris(subtitleUris);
+
+		if (streamingFile != null) {
+			b.setUri(streamingFile.getUri())
+				.setMimeType(streamingFile.getMimeType());
 		}
-		
+
+		responseObserver.onNext(b.build());
+		responseObserver.onCompleted();
+
 	}
 
 	private Media getMedia(JukeboxRequestStartMovie request) {
@@ -333,20 +295,6 @@ public class JukeboxRpcServerConnection extends JukeboxServiceGrpc.JukeboxServic
 		setPriority();
 		this.getLog().Debug("StopMovie");
 		this.getLog().Debug(String.format("Stopping movie on player %s", request.getPlayerName()));
-		
-		try {
-			if (this.getDistributor().stopMovie(request.getPlayerName())) {
-				responseObserver.onNext(Empty.newBuilder().build());
-				responseObserver.onCompleted();
-			}
-			else {
-				responseObserver.onError(new Exception("Error occured when connecting to target media player"));
-				responseObserver.onCompleted();
-			}
-		} catch (VLCConnectionNotFoundException e) {
-			responseObserver.onError(new Exception("Error occured when connecting to target media player"));
-			responseObserver.onCompleted();
-		}		
 
 	}
 
@@ -356,20 +304,7 @@ public class JukeboxRpcServerConnection extends JukeboxServiceGrpc.JukeboxServic
 		setPriority();
 		this.getLog().Debug("PauseMovie");
 		this.getLog().Debug(String.format("Pausing movie on player %s", request.getPlayerName()));
-		
-		try {
-			if (this.getDistributor().pauseMovie(request.getPlayerName())) {
-				responseObserver.onNext(Empty.newBuilder().build());
-				responseObserver.onCompleted();
-			}
-			else {
-				responseObserver.onError(new Exception("Error occured when connecting to target media player"));
-				responseObserver.onCompleted();
-			}
-		} catch (VLCConnectionNotFoundException e) {
-			responseObserver.onError(new Exception("Error occured when connecting to target media player"));
-			responseObserver.onCompleted();
-		}		
+
 		
 	}
 
@@ -379,19 +314,7 @@ public class JukeboxRpcServerConnection extends JukeboxServiceGrpc.JukeboxServic
 		setPriority();
 		this.getLog().Debug(String.format("Seeking on player %s to %s seconds", request.getPlayerName(), request.getSeconds()));
 		
-		try {
-			if (this.getDistributor().seek(request.getPlayerName(), request.getSeconds())) {
-				responseObserver.onNext(Empty.newBuilder().build());
-				responseObserver.onCompleted();
-			}
-			else {
-				responseObserver.onError(new Exception("Error occured when connecting to target media player"));
-				responseObserver.onCompleted();
-			}
-		} catch (VLCConnectionNotFoundException e) {
-			responseObserver.onError(new Exception("Error occured when connecting to target media player"));
-			responseObserver.onCompleted();
-		}		
+
 	}
 
 	@Override
@@ -401,19 +324,6 @@ public class JukeboxRpcServerConnection extends JukeboxServiceGrpc.JukeboxServic
 		this.getLog().Debug("SwitchVRatio");
 		this.getLog().Debug(String.format("Toggling vratio on %s...", request.getPlayerName()));
 		
-		try {
-			if (this.getDistributor().toggleVRatio(request.getPlayerName())){
-				responseObserver.onNext(Empty.newBuilder().build());
-				responseObserver.onCompleted();
-			}
-			else {
-				responseObserver.onError(new Exception("Error occured when connecting to target media player"));
-				responseObserver.onCompleted();
-			}
-		} catch (VLCConnectionNotFoundException e) {
-			responseObserver.onError(new Exception("Error occured when connecting to target media player"));
-			responseObserver.onCompleted();
-		}		
 
 	}
 
@@ -424,30 +334,7 @@ public class JukeboxRpcServerConnection extends JukeboxServiceGrpc.JukeboxServic
 		this.getLog().Debug("GetTime");
 		this.getLog().Debug(String.format("Getting time on %s...", request.getPlayerName()));
 		
-		try {
-			String response = this.getDistributor().getTime(request.getPlayerName());
-			if (response.equals(StringUtils.EMPTY)){
-				responseObserver.onError(new Exception("Error occured when connecting to target media player"));
-				responseObserver.onCompleted();
-			}
-			else {
-				int seconds = Integer.parseInt(response);
-				String titleFilename = getTitleFilename(request.getPlayerName());
-				
-				JukeboxResponseTime time = JukeboxResponseTime.newBuilder()
-						.setSeconds(seconds)
-						.setFilename(titleFilename)
-						.build();
 
-				responseObserver.onNext(time);
-				responseObserver.onCompleted();
-			}
-				
-		} catch (VLCConnectionNotFoundException e) {
-			responseObserver.onError(new Exception("Error occured when connecting to target media player"));
-			responseObserver.onCompleted();
-		}		
-		
 	}
 
 	@Override
@@ -457,18 +344,7 @@ public class JukeboxRpcServerConnection extends JukeboxServiceGrpc.JukeboxServic
 		this.getLog().Debug("IsPlaying");
 		this.getLog().Debug(String.format("Getting is playing status on %s...", request.getPlayerName()));
 		
-		try {
-			boolean isPlaying = this.getDistributor().isPlaying(request.getPlayerName());
 
-			JukeboxResponseIsPlaying r = JukeboxResponseIsPlaying.newBuilder().setIsPlaying(isPlaying).build();	
-
-			responseObserver.onNext(r);
-			responseObserver.onCompleted();
-
-		} catch (VLCConnectionNotFoundException e) {
-			responseObserver.onError(new Exception("Error occured when connecting to target media player"));
-			responseObserver.onCompleted();
-		}				
 	}
 
 	@Override
@@ -540,38 +416,6 @@ public class JukeboxRpcServerConnection extends JukeboxServiceGrpc.JukeboxServic
 				break;
 		}		
 		
-		// It appears that VLC RC interface only reads the first sub-file option specified
-		// in the command sent. Thus we need to clear playlist and restart video each time we
-		// change the subtitle track.
-		Subtitle subTrack = getSubtitleTrack(request.getSubtitleDescription(), md.getSubsList());
-		
-		//VLCDistributor.restart()
-		
-		try {
-			if (subTrack != null) {
-				if (this.getDistributor().restartWithSubtitle(
-						request.getPlayerName(), 
-						md, 
-						subTrack.getFilename(), 
-						true)) {
-					responseObserver.onNext(Empty.newBuilder().build());
-					responseObserver.onCompleted();
-				}
-				else {
-					responseObserver.onError(new Exception("Error occured when connecting to target media player"));
-					responseObserver.onCompleted();
-				}
-			}
-			else {
-				responseObserver.onError(new Exception("Subtitle track with that description was not found"));
-				responseObserver.onCompleted();
-
-			}
-		} catch (VLCConnectionNotFoundException e) {
-			responseObserver.onError(new Exception("Error occured when connecting to target media player"));
-			responseObserver.onCompleted();
-		}		
-		
 	}
 
 	@Override
@@ -580,20 +424,7 @@ public class JukeboxRpcServerConnection extends JukeboxServiceGrpc.JukeboxServic
 		setPriority();
 		this.getLog().Debug(String.format("Waking up player %s", request.getPlayerName()));
 		
-		try {
-			if (this.getDistributor().wakeup(request.getPlayerName())) {
-				responseObserver.onNext(Empty.newBuilder().build());
-				responseObserver.onCompleted();
-			}
-			else {
-				responseObserver.onError(new Exception("Error occured when connecting to target media player"));
-				responseObserver.onCompleted();
-			}
-		} catch (VLCConnectionNotFoundException e) {
-			responseObserver.onError(new Exception("Error occured when connecting to target media player"));
-			responseObserver.onCompleted();
-		}
-				
+
 		
 	}
 
@@ -602,20 +433,7 @@ public class JukeboxRpcServerConnection extends JukeboxServiceGrpc.JukeboxServic
 		setPriority();
 		this.getLog().Debug(String.format("Suspending computer with player %s...", request.getPlayerName()));
 		
-		try {
-			if (this.getDistributor().suspend(request.getPlayerName())) {
-				responseObserver.onError(new Exception("Error occured when connecting to target media player"));
-				responseObserver.onCompleted();
-			}
-			else {
-				responseObserver.onError(new Exception("Error occured when connecting to target media player"));
-				responseObserver.onCompleted();
-			}
-		} catch (VLCConnectionNotFoundException e) {
-			responseObserver.onError(new Exception("Error occured when connecting to target media player"));
-			responseObserver.onCompleted();
-		}				
-		
+
 	}
 
 	@Override
@@ -624,20 +442,7 @@ public class JukeboxRpcServerConnection extends JukeboxServiceGrpc.JukeboxServic
 		setPriority();
 		this.getLog().Debug(String.format("Toggling fullscreen...", request.getPlayerName()));
 		
-		try {
-			if (this.getDistributor().toggleFullscreen(request.getPlayerName())) {
-				responseObserver.onNext(Empty.newBuilder().build());
-				responseObserver.onCompleted();
-			}
-			else {
-				responseObserver.onError(new Exception("Error occured when connecting to target media player"));
-				responseObserver.onCompleted();
-			}
-		} catch (VLCConnectionNotFoundException e) {
-			responseObserver.onError(new Exception("Error occured when connecting to target media player"));
-			responseObserver.onCompleted();
-		}		
-		
+
 	}
 
 	
@@ -652,11 +457,7 @@ public class JukeboxRpcServerConnection extends JukeboxServiceGrpc.JukeboxServic
 	}	
 	 
 	private String getTitleFilename(String playerName) {
-		try {
-			return StringUtils.trim(this.getDistributor().getTitle(playerName));
-		} catch (VLCConnectionNotFoundException e) {
-			return StringUtils.EMPTY; 			
-		}		
+		return StringUtils.EMPTY;
 	}
 
 	@Override

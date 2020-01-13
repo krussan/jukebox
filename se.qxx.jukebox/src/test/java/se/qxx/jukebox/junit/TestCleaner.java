@@ -31,6 +31,7 @@ import se.qxx.jukebox.interfaces.IFilenameChecker;
 import se.qxx.jukebox.interfaces.IMediaMetadataHelper;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.IUtils;
+import se.qxx.jukebox.settings.CatalogsTest;
 import se.qxx.jukebox.settings.JukeboxListenerSettings;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
@@ -60,8 +61,8 @@ public class TestCleaner {
 		cleaner = new Cleaner(databaseMock, executorMock, argumentsMock, loggerFactoryMock, settingsMock, utilsMock);
 	}
 	
-	public Catalog getCatalog(String path) {
-		Catalog c = new Catalog();
+	public CatalogsTest getCatalog(String path) {
+		CatalogsTest c = new CatalogsTest();
 		c.setPath(path);
 		return c;
 	}
@@ -70,7 +71,7 @@ public class TestCleaner {
 	public void Should_return_true_if_media_path_exist_in_settings_listeners_and_on_disk() {
 		when(utilsMock.fileExists("/media/test1")).thenReturn(true);
 		
-		List<Catalog> list = new ArrayList<>();
+		List<CatalogsTest> list = new ArrayList<>();
 		list.add(getCatalog("/media/test1"));
 		list.add(getCatalog("/media/fake2"));
 		
@@ -88,7 +89,7 @@ public class TestCleaner {
 	
 	@Test
 	public void Should_return_false_if_media_path_dont_exist_in_listeners() {
-		List<Catalog> list = new ArrayList<>();
+		List<CatalogsTest> list = new ArrayList<>();
 		list.add(getCatalog("/media/fake2"));
 		
 		Media md = Media.newBuilder()
@@ -107,7 +108,7 @@ public class TestCleaner {
 	public void Should_return_false_if_listener_path_dont_exist_on_disk() {
 		when(utilsMock.fileExists("/media/test1")).thenReturn(false);
 		
-		List<Catalog> list = new ArrayList<>();
+		List<CatalogsTest> list = new ArrayList<>();
 		list.add(getCatalog("/media/test1"));
 		list.add(getCatalog("/media/fake2"));
 		

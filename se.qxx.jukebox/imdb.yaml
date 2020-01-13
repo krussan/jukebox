@@ -1,0 +1,17 @@
+settings:
+  sleepSecondsMin: 20
+  sleepSecondsMax: 30
+  debug: false
+
+title:
+  preferredLanguage: default
+  useOriginalIfExists: true
+
+searchUrl: "https://www.imdb.com/find?s=tt&q=%%TITLE%%"
+
+datePatterns:
+  - "dd MMM yyyy"
+  - "dd MMM. yyyy"
+  - "dd MMMM yyyy"
+  - "MMM. dd, yyyy"
+  - "yyyy-MM-dd"

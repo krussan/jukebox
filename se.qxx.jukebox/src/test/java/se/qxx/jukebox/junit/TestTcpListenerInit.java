@@ -16,7 +16,6 @@ import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.factories.JukeboxRpcServerFactory;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IDatabase;
-import se.qxx.jukebox.interfaces.IDistributor;
 import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IMovieIdentifier;
@@ -36,7 +35,6 @@ public class TestTcpListenerInit {
 	@Mock LoggerFactory loggerFactoryMock;
 	@Mock ISettings settingsMock;
 	@Mock IDatabase dbMock;
-	@Mock IDistributor distributorMock;
 	@Mock IStreamingWebServer webServerMock;
 	@Mock ISubtitleDownloader subtitleDownloaderMock;
 	@Mock IMovieIdentifier movieIdentifierMock;
@@ -56,8 +54,7 @@ public class TestTcpListenerInit {
 		JukeboxRpcServerConnection conn = new JukeboxRpcServerConnection(
 				settingsMock, 
 				dbMock, 
-				distributorMock, 
-				subtitleDownloaderMock, 
+				subtitleDownloaderMock,
 				movieIdentifierMock, 
 				loggerFactoryMock,
 				executorMock,

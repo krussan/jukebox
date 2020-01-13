@@ -11,6 +11,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.ISettings;
+import se.qxx.jukebox.settings.CatalogsTest;
 import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
 
 public class ParentDirectoryBuilder extends ParserBuilder {
@@ -56,7 +57,7 @@ public class ParentDirectoryBuilder extends ParserBuilder {
 		if (path.length() >= 2 && (path.endsWith("/") || path.endsWith("\\")))
 			path = path.substring(0, path.length() - 2);
 		
-		for (Catalog c : this.getSettings().getSettings().getCatalogs().getCatalog()) {
+		for (CatalogsTest c : this.getSettings().getSettings().getCatalogs()) {
 			if (path.toLowerCase().equals(c.getPath().toLowerCase()))
 				return true;
 		}
