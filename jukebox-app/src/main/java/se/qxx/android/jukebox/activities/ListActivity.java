@@ -249,7 +249,7 @@ public class ListActivity extends AppCompatActivity implements
             d = new ActionDialog(
                     this,
                     ss.getID(),
-                    0,
+                    null,
                     JukeboxDomain.RequestType.TypeSeason,
                     this.connectionHandler);
         }
@@ -259,7 +259,7 @@ public class ListActivity extends AppCompatActivity implements
             d = new ActionDialog(
                     this,
                     e.getID(),
-                    e.getMedia(0).getID(),
+                    e.getMediaCount() > 0 ? e.getMedia(0) : null,
                     JukeboxDomain.RequestType.TypeEpisode,
                     this.connectionHandler);
         }

@@ -235,7 +235,7 @@ public class JukeboxFragment extends ListFragment implements
             d = new ActionDialog(
                     this.getActivity(),
                     _jukeboxMovieLayoutAdapter.getItemId(pos),
-                    _jukeboxMovieLayoutAdapter.getMediaId(pos),
+                    _jukeboxMovieLayoutAdapter.getMedia(pos),
                     RequestType.TypeMovie,
                     this.handler.getConnectionHandler());
         }
@@ -243,7 +243,7 @@ public class JukeboxFragment extends ListFragment implements
             d = new ActionDialog(
                     this.getActivity(),
                     _seriesLayoutAdapter.getItemId(pos),
-                    0,
+                    null,
                     RequestType.TypeSeries,
                     this.handler.getConnectionHandler());
         }

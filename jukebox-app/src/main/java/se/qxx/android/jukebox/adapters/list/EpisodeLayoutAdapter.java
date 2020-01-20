@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import se.qxx.android.jukebox.R;
@@ -67,41 +68,16 @@ public class EpisodeLayoutAdapter extends GenericListLayoutAdapter<Episode> {
 
             setupDownloadedAndCompletedIcons(v, ep.getMediaList());
             setupThumbnail(v, ep.getThumbnail());
-            setupSubtitles(v, ep.getMedia(0).getSubsList());
 
-            //ImageButton btnPlayEpisode = v.findViewById(R.id.btnPlayEpisode);
-            //btnPlayEpisode.setTag(ep.getID());
-            //btnPlayEpisode.setOnClickListener(this);
+            if (ep.getMediaCount() > 0) {
+                setupSubtitles(v, ep.getMedia(0).getSubsList());
+                this.setupProgressBar(v, ep.getDuration(), ep.getMedia(0).getID());
+            }
 
-            int duration = ep.getDuration();
-            this.setupProgressBar(v, ep.getDuration(), ep.getMedia(0).getID());
 
         }
 
     }
-
-    /*
-    @Override
-	public void onClick(View view) {
-
-        int episodeId = (int) view.getTag();
-        Episode e = getItemById(episodeId);
-
-        if (e != null) {
-            switch (view.getId()) {
-                case R.id.btnPlayEpisode:
-                    Intent iPlay = new Intent(this.getContext(), NowPlayingActivity.class);
-                    iPlay.putExtra("mode", ViewMode.Episode);
-                    iPlay.putExtra("ID", e.getID());
-                    iPlay.putExtra("seasonNumber", getSeasonNumber());
-
-                    this.getContext().startActivity(iPlay);
-                    break;
-            }
-        }
-	}
-	*/
-
 
     @Override
     public int getItemCount() {
@@ -129,16 +105,9 @@ public class EpisodeLayoutAdapter extends GenericListLayoutAdapter<Episode> {
     private List<JukeboxDomain.Episode> sortEpisodes(List<JukeboxDomain.Episode> episodes) {
         List<JukeboxDomain.Episode> newList = new ArrayList<>(episodes);
 
-        Collections.sort(newList, (x, y) -> Integer.compare(x.getEpisodeNumber(), y.getEpisodeNumber()));
+        Collections.sort(newList, Comparator.comparingInt(Episode::getEpisodeNumber));
 
         return newList;
-    }
-
-    public int getMediaId(int position) {
-        if (this.getItem(position).getMediaCount() > 0)
-            return this.getItem(position).getMedia(0).getID();
-        else
-            return 0;
     }
 
 }

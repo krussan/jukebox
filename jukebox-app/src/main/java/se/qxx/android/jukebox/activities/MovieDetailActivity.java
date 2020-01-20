@@ -140,7 +140,7 @@ public class MovieDetailActivity extends AppCompatActivity {
             int progress = 0;
             int duration = m.getDuration();
             if (duration > 0) {
-                int position = getCachedPosition(m.getMedia(0).getID());
+                int position = getCachedPosition(m);
                 progress = (int) (100f * (float) position / (float) (duration * 60));
             }
             progressWatched.setProgress(progress);
@@ -193,8 +193,11 @@ public class MovieDetailActivity extends AppCompatActivity {
     }
 
 
-    public int getCachedPosition(int mediaID) {
-        return cacheData.getMediaState(mediaID);
+    public int getCachedPosition(JukeboxDomain.Movie m) {
+        if (m.getMediaCount() > 0)
+            return cacheData.getMediaState(m.getMedia(0).getID());
+        else
+            return 0;
     }
 
     @Override

@@ -46,10 +46,10 @@ public class MovieLayoutAdapter extends GenericListLayoutAdapter<Movie> {
 
             setupDownloadedAndCompletedIcons(v, m.getMediaList());
             setupThumbnail(v, m.getThumbnail());
-            setupSubtitles(v, m.getMedia(0).getSubsList());
-
-            this.setupProgressBar(v, m.getDuration(), m.getMedia(0).getID());
-
+            if (m.getMediaCount() > 0) {
+                setupSubtitles(v, m.getMedia(0).getSubsList());
+                this.setupProgressBar(v, m.getDuration(), m.getMedia(0).getID());
+            }
         }
 	}
 
@@ -74,7 +74,7 @@ public class MovieLayoutAdapter extends GenericListLayoutAdapter<Movie> {
 
     @Override
     public long getObjectId(int position) {
-        return ((Movie)getDataObject(position)).getID();
+        return getDataObject(position).getID();
     }
 
     public int getMediaId(int position) {
@@ -82,6 +82,13 @@ public class MovieLayoutAdapter extends GenericListLayoutAdapter<Movie> {
             return this.getItem(position).getMedia(0).getID();
         else
             return 0;
+    }
+
+    public JukeboxDomain.Media getMedia(int position) {
+        if (this.getItem(position).getMediaCount() > 0)
+            return this.getItem(position).getMedia(0);
+        else
+            return null;
     }
 
 }

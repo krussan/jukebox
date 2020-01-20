@@ -241,7 +241,7 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
                         .setAutoplay(true)
                         .setActiveTrackIds(activeTrackIds);
 
-                long position = (long)getCachedPosition(this.getMedia().getID());
+                long position = getCachedPosition(this.getMedia());
                 if (position > 0)
                     mlo.setPlayPosition(position * 1000);
 

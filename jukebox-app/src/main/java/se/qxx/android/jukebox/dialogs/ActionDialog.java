@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
+import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
 
 public class ActionDialog implements OnClickListener{
@@ -16,16 +17,16 @@ public class ActionDialog implements OnClickListener{
 	RequestType reqType;
 	Activity activity;
     Resources res;
-    private int mediaId;
+    private JukeboxDomain.Media media;
     private JukeboxSettings settings;
 	private JukeboxConnectionHandler connectionHandler;
 
-    public ActionDialog(Activity activity, long id, int mediaId, RequestType requestType, JukeboxConnectionHandler connectionHandler) {
+    public ActionDialog(Activity activity, long id, JukeboxDomain.Media md, RequestType requestType, JukeboxConnectionHandler connectionHandler) {
 		this.reqType = requestType;
 		this.id = id;
 		this.activity = activity;
         this.res = activity.getResources();
-        this.mediaId = mediaId;
+        this.media = md;
         this.settings = new JukeboxSettings(activity);
         this.connectionHandler = connectionHandler;
     }
@@ -56,7 +57,8 @@ public class ActionDialog implements OnClickListener{
 			this.connectionHandler.reenlistSub((int) this.id, this.reqType, response -> {});
 			break;
 		case 4:
-			this.connectionHandler.forceconversion(this.mediaId, response -> {});
+			if (this.media != null)
+				this.connectionHandler.forceconversion(this.media.getID(), response -> {});
 			break;
 		}
 	}

@@ -361,8 +361,11 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
         this.exitPosition = exitPosition;
     }
 
-    public int getCachedPosition(int mediaID) {
-        return cacheData.getMediaState(mediaID);
+    public int getCachedPosition(JukeboxDomain.Media md) {
+        if (md != null)
+            return cacheData.getMediaState(md.getID());
+        else
+            return 0;
     }
 
     /***
@@ -372,7 +375,7 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
     protected void seekToStartPosition() {
         if (this.getMedia() != null) {
             // get media state
-            int position = getCachedPosition(this.getMedia().getID());
+            int position = getCachedPosition(this.getMedia());
             if (position > 0)
                 seekTo(position * 1000);
         }

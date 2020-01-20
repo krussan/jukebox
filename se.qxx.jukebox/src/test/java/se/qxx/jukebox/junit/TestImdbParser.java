@@ -163,8 +163,7 @@ public class TestImdbParser {
 
 		IMDBParser parser = new IMDBParser(fileReader, 
 				settings, 
-				urlRewrite, 
-				webRetrieverMock, 
+				urlRewrite,
 				loggerFactoryMock, 
 				doc);
 		return parser;
