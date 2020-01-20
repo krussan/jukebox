@@ -1,5 +1,5 @@
 catalogs:
-  - path: /media/ultra/BitTorrent
+  - path: /media/usb/BitTorrent
     includeSubDirectories: true
     extensions:
       - avi
@@ -7,7 +7,7 @@ catalogs:
       - mp4
 
 subfinders:
-  path: /media/ultra/Subs
+  path: /media/usb/Subs
   threadWaitSeconds: 25
 
   finders:
