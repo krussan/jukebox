@@ -25,7 +25,7 @@ public class FindersTest {
         this.enabled = enabled;
     }
 
-    public Map<String, String> getSettings() {
+    public CaseInsensitiveMap getSettings() {
         return settings;
     }
 

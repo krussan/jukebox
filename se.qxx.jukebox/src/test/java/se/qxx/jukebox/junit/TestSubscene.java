@@ -12,8 +12,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,19 +27,14 @@ import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
 import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.factories.LoggerFactory;
-import se.qxx.jukebox.interfaces.IImdbSettings;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
-import se.qxx.jukebox.interfaces.IParserSettings;
 import se.qxx.jukebox.interfaces.IRandomWaiter;
 import se.qxx.jukebox.interfaces.ISubFileDownloaderHelper;
 import se.qxx.jukebox.interfaces.ISubFileUtilHelper;
 import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.interfaces.IWebRetriever;
 import se.qxx.jukebox.settings.*;
-import se.qxx.jukebox.subtitles.Language;
-import se.qxx.jukebox.subtitles.SubFile;
-import se.qxx.jukebox.subtitles.SubFileDownloaderHelper;
-import se.qxx.jukebox.subtitles.Subscene;
+import se.qxx.jukebox.subtitles.*;
 import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.tools.WebResult;
 
@@ -66,11 +59,8 @@ public class TestSubscene {
 	
 	
 	@Before
-	public void init() throws IOException, JAXBException {
-		IParserSettings parserSettings = new ParserSettings();
-		IImdbSettings imdbSettings = new ImdbSettings();
-		
-		settings = new Settings(imdbSettings, parserSettings);
+	public void init() throws IOException {
+		settings = new Settings();
 		log = new Log(settings, LogType.NONE);
 		
 		when(loggerFactoryMock.create(any(Log.LogType.class))).thenReturn(log);
@@ -110,10 +100,10 @@ public class TestSubscene {
 		ISubFileDownloaderHelper helper = createHelper();
 		FindersTest f =
 			this.settings.getSettings().getSubfinders().getFinders()
-				.stream().filter(x -> x.getExecutor().equalsIgnoreCase("se.qxx.jukebox.subtitles.Subscene"))
+				.stream().filter(x -> x.getExecutor().equalsIgnoreCase("se.qxx.jukebox.subtitles.SubscenePost"))
 				.findFirst().get();
 
-		Subscene ss = new Subscene(helper, f);
+		SubscenePost ss = new SubscenePost(helper, f);
 
 		Movie m = Movie.newBuilder()
 				.setID(1)
@@ -131,7 +121,7 @@ public class TestSubscene {
 		Mockito.when(fileUtilHelperMock.createTempSubsPath(Mockito.any())).thenReturn(".");
 
 		WebResult resultSearch = new WebResult(new URL("https://subscene.com/subtitles/title?q=Mockito"), searchResult, false);
-		Mockito.when(webRetrieverMock.getWebResult("https://subscene.com/subtitles/title?q=Mockito")).thenReturn(resultSearch);
+		Mockito.when(webRetrieverMock.postWebResult("https://subscene.com/subtitles/searchbytitle?query=Mockito", "query=Mockito")).thenReturn(resultSearch);
 
 		//WebResult resultSearchFilename = new WebResult(new URL("https://subscene.com/subtitles/title?q=Mockito.2014"), searchResult, false);
 		Mockito.when(webRetrieverMock.getWebResult("https://subscene.com/subtitles/title?q=Mockito.2014")).thenReturn(resultSearch);

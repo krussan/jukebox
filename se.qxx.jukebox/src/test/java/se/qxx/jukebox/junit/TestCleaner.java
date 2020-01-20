@@ -7,8 +7,6 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.xml.bind.JAXBException;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,12 +30,6 @@ import se.qxx.jukebox.interfaces.IMediaMetadataHelper;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.settings.CatalogsTest;
-import se.qxx.jukebox.settings.JukeboxListenerSettings;
-import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs;
-import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
-import se.qxx.jukebox.tools.MediaMetadata;
-import se.qxx.jukebox.watcher.DownloadChecker;
-import se.qxx.jukebox.watcher.FileRepresentation;
 
 public class TestCleaner {
 
@@ -55,7 +47,7 @@ public class TestCleaner {
 	private Cleaner cleaner;
 		
 	@Before
-	public void init() throws IOException, JAXBException {
+	public void init() {
 		when(loggerFactoryMock.create(any(Log.LogType.class))).thenReturn(new Log(null, LogType.NONE));
 		
 		cleaner = new Cleaner(databaseMock, executorMock, argumentsMock, loggerFactoryMock, settingsMock, utilsMock);

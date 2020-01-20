@@ -37,7 +37,7 @@ import se.qxx.jukebox.interfaces.IRandomWaiter;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.interfaces.IWebRetriever;
-import se.qxx.jukebox.settings.Imdb;
+import se.qxx.jukebox.settings.ImdbTitleTest;
 import se.qxx.jukebox.tools.WebResult;
 
 @Singleton
@@ -341,8 +341,8 @@ public class IMDBFinder implements IIMDBFinder {
 		
 		lock.lock();
 		try {
-			int minSeconds = this.getSettings().getImdb().getSettings().getSleepSecondsMin();
-			int maxSeconds = this.getSettings().getImdb().getSettings().getSleepSecondsMax();
+			int minSeconds = this.getSettings().getImdb().getSettings().getSleepSecondsMinInt();
+			int maxSeconds = this.getSettings().getImdb().getSettings().getSleepSecondsMaxInt();
 
 			this.getWaiter().sleep(minSeconds, maxSeconds);
 
@@ -605,7 +605,7 @@ public class IMDBFinder implements IIMDBFinder {
 
 	public String findPreferredTitle(String text, String country) {
 		this.getLog().Info(String.format("Finding preferred title for %s", country));
-		Imdb.Title t = this.getSettings().getImdb().getTitle();
+		ImdbTitleTest t = this.getSettings().getImdb().getTitle();
 
 		if (!t.isUseOriginalIfExists()) {
 			Document doc = Jsoup.parse(text);

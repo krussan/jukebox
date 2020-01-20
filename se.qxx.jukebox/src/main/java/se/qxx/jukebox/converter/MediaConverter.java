@@ -33,7 +33,6 @@ import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.IMediaConverter;
 import se.qxx.jukebox.interfaces.ISettings;
-import se.qxx.jukebox.settings.CodecsType.Codec;
 
 @Singleton
 public class MediaConverter extends JukeboxThread implements IMediaConverter {

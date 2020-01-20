@@ -13,8 +13,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
-import javax.xml.bind.JAXBException;
-
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -36,14 +34,10 @@ import se.qxx.jukebox.imdb.IMDBRecord;
 import se.qxx.jukebox.imdb.IMDBUrlRewrite;
 import se.qxx.jukebox.interfaces.IFileReader;
 import se.qxx.jukebox.interfaces.IIMDBUrlRewrite;
-import se.qxx.jukebox.interfaces.IImdbSettings;
-import se.qxx.jukebox.interfaces.IParserSettings;
 import se.qxx.jukebox.interfaces.IRandomWaiter;
 import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.interfaces.IWebRetriever;
 import se.qxx.jukebox.settings.Settings;
-import se.qxx.jukebox.settings.ImdbSettings;
-import se.qxx.jukebox.settings.ParserSettings;
 
 public class TestImdbParser {
 	@Mock LoggerFactory loggerFactoryMock;
@@ -55,12 +49,12 @@ public class TestImdbParser {
 	@Rule public MockitoRule mockitoRule = MockitoJUnit.rule(); 
 	
 	@Before
-	public void init() throws IOException, JAXBException {
+	public void init() {
 		when(loggerFactoryMock.create(any(Log.LogType.class))).thenReturn(new Log(null, LogType.NONE));
 	}
 	
 	@Test
-	public void TestImdbMovie() throws IOException, JAXBException {
+	public void TestImdbMovie() throws IOException {
 		String movieHtml = readResource("TestImdb1.html");
 
 		IMDBParser parser = createParser(movieHtml);
@@ -93,7 +87,7 @@ public class TestImdbParser {
 	}
 
 	@Test
-	public void Test_Movie2() throws IOException, NumberFormatException, ParseException, JAXBException {
+	public void Test_Movie2() throws IOException, NumberFormatException {
 		String movieHtml = readResource("TestImdb2.html");
 		IMDBParser parser = createParser(movieHtml);
 		IMDBRecord rec = parser.parse(StringUtils.EMPTY);		
@@ -111,7 +105,7 @@ public class TestImdbParser {
 	}
 	
 	@Test
-	public void Test_Series1() throws IOException, JAXBException {
+	public void Test_Series1() throws IOException {
 		String movieHtml = readResource("TestSeries1.html");
 		IMDBParser parser = createParser(movieHtml);
 		IMDBRecord rec = parser.parse(StringUtils.EMPTY);		
@@ -127,7 +121,7 @@ public class TestImdbParser {
 	}
 	
 	@Test
-	public void Test_ReleaseInfo_No_specific_for_country() throws IOException, JAXBException {
+	public void Test_ReleaseInfo_No_specific_for_country() throws IOException {
 		String searchResults = readResource("TestReleaseInfo.html");
 		IMDBFinder finder = createFinder();
 		String title = finder.findPreferredTitle(searchResults, "Sweden");
@@ -136,7 +130,7 @@ public class TestImdbParser {
 	}
 	
 	@Test
-	public void Test_Movie_SearchResults() throws IOException, JAXBException {
+	public void Test_Movie_SearchResults() throws IOException {
 		String searchResults = readResource("TestImdbSearchResult.html");
 		IMDBFinder finder = createFinder();
 		String url = finder.findUrl(new ArrayList<String>(), searchResults, 2014, false);
@@ -145,7 +139,7 @@ public class TestImdbParser {
 	}
 	
 	@Test
-	public void Test_Episode1() throws IOException, JAXBException {
+	public void Test_Episode1() throws IOException {
 		String episodeHtml = readResource("TestEpisode1-S1E1.html");
 		IMDBParser parser = createParser(episodeHtml);
 		IMDBRecord rec = parser.parse(StringUtils.EMPTY);
@@ -160,12 +154,10 @@ public class TestImdbParser {
 		
 	}
 
-	private IMDBParser createParser(String content) throws IOException, JAXBException {
+	private IMDBParser createParser(String content) throws IOException {
 		Document doc = Jsoup.parse(content);
 		
-		IParserSettings parserSettings = new ParserSettings();
-		IImdbSettings imdbSettings = new ImdbSettings();
-		Settings settings = new Settings(imdbSettings, parserSettings);
+		Settings settings = new Settings();
 		IFileReader fileReader = new FileReader();
 		IIMDBUrlRewrite urlRewrite = new IMDBUrlRewrite();
 
@@ -178,10 +170,8 @@ public class TestImdbParser {
 		return parser;
 	}
 
-	private IMDBFinder createFinder() throws IOException, JAXBException {
-		IParserSettings parserSettings = new ParserSettings();
-		IImdbSettings imdbSettings = new ImdbSettings();
-		Settings settings = new Settings(imdbSettings, parserSettings);
+	private IMDBFinder createFinder() throws IOException {
+		Settings settings = new Settings();
 		IIMDBUrlRewrite urlRewrite = new IMDBUrlRewrite();
 
 		return new IMDBFinder(settings, webRetrieverMock, urlRewrite, parserFactoryMock, loggerFactoryMock, waiterMock, utilsMock);

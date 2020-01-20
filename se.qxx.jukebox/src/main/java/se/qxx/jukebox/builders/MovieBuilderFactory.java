@@ -14,7 +14,6 @@ import se.qxx.jukebox.interfaces.IMovieBuilderFactory;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.settings.BuildersTest;
-import se.qxx.jukebox.settings.JukeboxListenerSettings.Builders.Builder;
 
 public class MovieBuilderFactory implements IMovieBuilderFactory {
 

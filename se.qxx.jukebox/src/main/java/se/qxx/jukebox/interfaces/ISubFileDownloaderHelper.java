@@ -6,7 +6,6 @@ import java.util.List;
 import se.qxx.jukebox.domain.JukeboxDomain.Rating;
 import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.settings.FindersTest;
-import se.qxx.jukebox.settings.JukeboxListenerSettings;
 import se.qxx.jukebox.subtitles.Language;
 import se.qxx.jukebox.subtitles.SubFile;
 

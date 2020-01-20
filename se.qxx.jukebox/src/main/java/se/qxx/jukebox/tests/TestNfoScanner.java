@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
-
 import org.apache.commons.io.FilenameUtils;
 
 import com.google.inject.Inject;
@@ -35,7 +33,7 @@ public class TestNfoScanner {
 		this.log = loggerFactory.create(LogType.FIND);
 	}
 	
-	public static void main(String[] args) throws IOException, JAXBException, SeriesNotSupportedException {
+	public static void main(String[] args) throws SeriesNotSupportedException {
 		Injector injector = Binder.setupBindings(args);
 		TestNfoScanner prog = injector.getInstance(TestNfoScanner.class);
 	    

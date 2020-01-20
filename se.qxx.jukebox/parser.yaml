@@ -1,0 +1,159 @@
+type:
+  - 480p
+  - 720p
+  - 1080p
+  - PPVRIP
+  - BRRip
+  - DVDRip
+  - VODRip
+  - HDRip
+  - WEBRip
+  - DVDSCREENER
+  - DVDSCR
+  - TS
+  - PPV
+  - Bluray
+  - BDRip
+  - HDTV
+  - 18p
+  - 108p
+
+year:
+  - regex: '(19|20)\d{2}'
+    group: 0
+
+parts:
+  - regex: '(Part|CD)[.|_|\s|-]*(\d+)'
+    group: 2
+    lookahead: 1
+
+season:
+  - regex: '(\d{1,2})(\d{2})'
+    group: 1
+    recursiveCount: 2
+    firstToken: true
+
+  - regex: 's(\d{1,2})'
+    group: 1
+
+  - regex: 'Complete\s*Season\s*(\d{1,2})'
+    group: 1
+    lookahead: 2
+
+  - regex: 'Season\s*(\d{1,2})'
+    group: 1
+    lookahead: 1
+
+  - regex: '(\d{1,2})sezon'
+    group: 1
+
+  - regex: 's(\d{1,2})e(\d{1,2})'
+    group: 1
+    recursiveCount: 2
+
+  - regex: 's(\d{1,2})e(\d{1,2})e(\d{1,2})'
+    group: 1
+    recursiveCount: 3
+
+  - regex: '(\d{1,2})x(\d{1,2})'
+    group: 1
+    recursiveCount: 2
+
+  - regex: '(\d{1,2})sezon(\d{1,2})[.|_|\s|-]*seriya'
+    group: 1
+    recursiveCount: 2
+
+  - regex: 'Season(\d{1,2})Episode(\d{1,2})'
+    group: 1
+    recursiveCount: 2
+
+episode:
+  - regex: '(\d{1,2})(\d{2})'
+    group: 2
+    recursiveCount: 2
+    firstToken: true
+
+  - regex: 'e(\d{1,2}).*'
+    group: 1
+
+  - regex: '(\d{1,2})seriya'
+    group: 1
+
+  - regex: 'Episode\s*(\d{1,2})'
+    group: 1
+    lookahead: 1
+
+  - regex: 's(\d{1,2})e(\d{1,2})'
+    group: 2
+
+  - regex: 's(\d{1,2})e(\d{1,2})e(\d{1,2})'
+    group: 2
+
+  - regex: '(\d{1,2})x(\d{1,2})'
+    group: 2
+
+  - regex: '(\d{1,2})sezon(\d{1,2})seriya'
+    group: 2
+
+  - regex: 'Season(\d{1,2})Episode(\d{1,2})'
+    group: 2
+
+format:
+  - XviD
+  - IFLIX
+  - x264
+  - h264
+
+sound:
+  - AC3
+  - aac
+  - ac3pt
+  - dd51
+  - AAC2
+
+language:
+  - Eng
+  - English
+  - SWEDISH
+  - SWE
+  - SWESUB
+  - German
+  - GER
+  - en
+  - de
+
+groups:
+  - tvp
+  - KILLERS
+  - LOL
+  - DIAMOND
+  - JYK
+  - MILLENIUM
+  - ASAP
+  - YIFY
+  - ETRG
+  - PLAYNOW
+  - SPARKS
+  - CM8
+  - tvs
+
+other:
+  - REPACK
+  - V2
+  - M777
+  - READNFO
+  - HQ
+  - LIMITED
+  - MD
+  - i2p
+  - EXTENDED
+  - DC
+  - dl
+  - ded
+  - PROPER
+  - DUB
+  - WEB
+  - rerip
+  - UNRATED
+
+    

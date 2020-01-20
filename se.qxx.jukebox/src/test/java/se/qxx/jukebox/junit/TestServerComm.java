@@ -8,8 +8,6 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-import javax.xml.bind.JAXBException;
-
 import io.grpc.stub.StreamObserver;
 import org.junit.Before;
 import org.junit.Rule;
@@ -34,16 +32,12 @@ import se.qxx.jukebox.domain.JukeboxDomain.SubtitleRequestType;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IExecutor;
-import se.qxx.jukebox.interfaces.IImdbSettings;
 import se.qxx.jukebox.interfaces.IMovieIdentifier;
-import se.qxx.jukebox.interfaces.IParserSettings;
 import se.qxx.jukebox.interfaces.IStreamingWebServer;
 import se.qxx.jukebox.interfaces.ISubtitleDownloader;
 import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.servercomm.JukeboxRpcServerConnection;
 import se.qxx.jukebox.settings.Settings;
-import se.qxx.jukebox.settings.ImdbSettings;
-import se.qxx.jukebox.settings.ParserSettings;
 import se.qxx.jukebox.webserver.StreamingFile;
 
 public class TestServerComm {
@@ -61,11 +55,8 @@ public class TestServerComm {
 	@Mock IUtils utilsMock;
 	
 	@Before
-	public void initialize() throws IOException, JAXBException {
-		IParserSettings parserSettings = new ParserSettings();
-		IImdbSettings imdbSettings = new ImdbSettings();
-		
-		settings = new Settings(imdbSettings, parserSettings);
+	public void initialize() throws IOException {
+		settings = new Settings();
 		
 		log = new Log(settings, LogType.NONE);
 		when(loggerFactoryMock.create(any(LogType.class))).thenReturn(log);

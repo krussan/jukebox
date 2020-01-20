@@ -39,8 +39,6 @@ import se.qxx.jukebox.interfaces.ISubtitleDownloader;
 import se.qxx.jukebox.interfaces.IUnpacker;
 import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.settings.FindersTest;
-import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder;
-import se.qxx.jukebox.settings.SubFindersTest;
 
 @Singleton
 public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownloader {
@@ -171,7 +169,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 					Object[] args = new Object[]{this.getHelper(), f};
 
 					this.getSubFinders().add(
-							(ISubFinder) this.getUtils().getInstance(className, new Class[]{ISubFileDownloaderHelper.class, SubFinder.class}, args));
+							(ISubFinder) this.getUtils().getInstance(className, new Class[]{ISubFileDownloaderHelper.class, FindersTest.class}, args));
 
 				} catch (Exception e) {
 					this.getLog().Error(String.format("Error when loading subfinder :: %s", className), e);

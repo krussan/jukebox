@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 
-import javax.xml.bind.JAXBException;
-
 import com.google.inject.Inject;
 
 import se.qxx.jukebox.interfaces.IArguments;

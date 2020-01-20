@@ -44,8 +44,6 @@ import se.qxx.jukebox.interfaces.IStoppableRunnable;
 import se.qxx.jukebox.interfaces.IStreamingWebServer;
 import se.qxx.jukebox.interfaces.ISubtitleFileWriter;
 import se.qxx.jukebox.interfaces.IUtils;
-import se.qxx.jukebox.settings.JukeboxListenerSettings.WebServer.MimeTypeMap.Extension;
-import se.qxx.protodb.model.CaseInsensitiveMap;
 
 public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer, IStoppableRunnable {
 

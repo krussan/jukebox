@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.xml.bind.JAXBException;
-
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 
@@ -15,9 +13,7 @@ import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.ISubFileDownloaderHelper;
 import se.qxx.jukebox.settings.FindersTest;
-import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder;
 import se.qxx.jukebox.subtitles.Language;
-import se.qxx.jukebox.subtitles.Subscene;
 import se.qxx.jukebox.subtitles.SubscenePost;
 
 public class TestSubscene {
@@ -37,7 +33,7 @@ public class TestSubscene {
 		
 	}
 
-	public static void main(String[] args) throws IOException, JAXBException {
+	public static void main(String[] args) {
 		if (args.length > 1) {
 			Injector injector = Binder.setupBindings(args);
 			TestSubscene prog = injector.getInstance(TestSubscene.class);

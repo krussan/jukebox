@@ -22,8 +22,6 @@ import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.settings.CatalogsTest;
-import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
-import se.qxx.jukebox.tools.Util;
 import se.qxx.protodb.exceptions.DatabaseNotSupportedException;
 
 @Singleton

@@ -12,7 +12,6 @@ import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.settings.CatalogsTest;
-import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
 
 public class ParentDirectoryBuilder extends ParserBuilder {
 

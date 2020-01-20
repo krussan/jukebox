@@ -173,7 +173,7 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 		}
 	}
 
-	private void identify(FileRepresentation f) {
+	public void identify(FileRepresentation f) {
 		this.getLog().Debug(String.format("Identifying :: %s", f.getName()));
 
 		String filename = f.getName();

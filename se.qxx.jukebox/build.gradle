@@ -1,7 +1,6 @@
 plugins {
    id 'java'
    id 'idea'
-   id 'com.github.jacobono.jaxb'
    id 'com.github.ksoichiro.build.info'
 }
 
@@ -30,7 +29,6 @@ compileJava {
    sourceCompatibility = 11
    targetCompatibility = 11
 
-   dependsOn xjc
    dependsOn myCopyTask
 }
 
@@ -77,15 +75,6 @@ task fatJar(type: Jar) {
    with jar
 }
 
-jaxb {
-   xsdDir 'se.qxx.jukebox/src/main/xsds'
-
-   xjc {
-      destinationDir 'build/generated/sources'
-      generatePackage 'se.qxx.jukebox.settings'
-   }
-}
-
 dependencies {
    implementation project(':se.qxx.jukebox.domain')
    implementation 'com.google.protobuf:protobuf-java:3.9.0'
@@ -124,15 +113,6 @@ dependencies {
    implementation "io.grpc:grpc-netty-shaded:${grpcVersion}"
    implementation "io.grpc:grpc-protobuf:${grpcVersion}"
    implementation "io.grpc:grpc-stub:${grpcVersion}"
-
-   // jaxb
-   jaxb 'com.sun.xml.bind:jaxb-xjc:2.2.7-b41'
-   implementation 'com.sun.xml.bind:jaxb-impl:2.2.7-b41'
-   implementation 'javax.xml.bind:jaxb-api:2.3.0'
-   jaxb 'com.sun.xml.bind:jaxb-impl:2.2.7-b41'
-   jaxb 'javax.xml.bind:jaxb-api:2.3.0'
-   jaxb 'org.glassfish.jaxb:jaxb-runtime:2.3.2'
-   jaxb 'javax.activation:javax.activation-api:1.2.0'
 
    // test
    testImplementation 'junit:junit:4.12'

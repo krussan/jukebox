@@ -34,7 +34,6 @@ import se.qxx.jukebox.interfaces.IFilenameChecker;
 import se.qxx.jukebox.interfaces.IIMDBFinder;
 import se.qxx.jukebox.interfaces.IIMDBParser;
 import se.qxx.jukebox.interfaces.IIMDBUrlRewrite;
-import se.qxx.jukebox.interfaces.IImdbSettings;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IJukeboxRpcServerConnection;
 import se.qxx.jukebox.interfaces.IMain;
@@ -43,7 +42,6 @@ import se.qxx.jukebox.interfaces.IMediaMetadataHelper;
 import se.qxx.jukebox.interfaces.IMkvSubtitleReader;
 import se.qxx.jukebox.interfaces.IMovieBuilderFactory;
 import se.qxx.jukebox.interfaces.IMovieIdentifier;
-import se.qxx.jukebox.interfaces.IParserSettings;
 import se.qxx.jukebox.interfaces.IRandomWaiter;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.IStarter;
@@ -62,8 +60,6 @@ import se.qxx.jukebox.servercomm.JukeboxRpcServerConnection;
 import se.qxx.jukebox.servercomm.TcpListener;
 import se.qxx.jukebox.servercomm.WakeOnLan;
 import se.qxx.jukebox.settings.Settings;
-import se.qxx.jukebox.settings.ImdbSettings;
-import se.qxx.jukebox.settings.ParserSettings;
 import se.qxx.jukebox.subtitles.MkvSubtitleReader;
 import se.qxx.jukebox.subtitles.SubFileDownloaderHelper;
 import se.qxx.jukebox.subtitles.SubFileUtilHelper;
@@ -93,9 +89,7 @@ public class Binder {
 				
 				//Settings
 				bind(ISettings.class).to(Settings.class);
-				bind(IImdbSettings.class).to(ImdbSettings.class);
-				bind(IParserSettings.class).to(ParserSettings.class);
-				
+
 				//Core
 				bind(IArguments.class).to(Arguments.class).asEagerSingleton();
 				bind(IExecutor.class).to(Executor.class);

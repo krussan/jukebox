@@ -9,7 +9,6 @@ import com.google.inject.assistedinject.Assisted;
 
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.ISettings;
-import se.qxx.jukebox.settings.JukeboxListenerSettings;
 import se.qxx.jukebox.settings.LogsTest;
 
 public class Log implements IJukeboxLogger {

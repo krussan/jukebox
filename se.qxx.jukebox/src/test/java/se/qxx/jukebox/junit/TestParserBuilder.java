@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,13 +26,9 @@ import se.qxx.jukebox.domain.JukeboxDomain.Season;
 import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.factories.LoggerFactory;
-import se.qxx.jukebox.interfaces.IImdbSettings;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
-import se.qxx.jukebox.interfaces.IParserSettings;
 import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.settings.Settings;
-import se.qxx.jukebox.settings.ImdbSettings;
-import se.qxx.jukebox.settings.ParserSettings;
 
 public class TestParserBuilder {
 
@@ -49,11 +43,8 @@ public class TestParserBuilder {
 	@Mock IUtils utilsMock;
 	
 	@Before
-	public void init() throws IOException, JAXBException {
-		IParserSettings parserSettings = new ParserSettings();
-		IImdbSettings imdbSettings = new ImdbSettings();
-		
-		settings = new Settings(imdbSettings, parserSettings);
+	public void init() throws IOException {
+		settings = new Settings();
 		log = new Log(settings, LogType.NONE);
 		
 		when(loggerFactoryMock.create(any(Log.LogType.class))).thenReturn(log);

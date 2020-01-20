@@ -2,8 +2,6 @@ package se.qxx.jukebox.tests;
 
 import java.io.IOException;
 
-import javax.xml.bind.JAXBException;
-
 import com.google.inject.Injector;
 
 import se.qxx.jukebox.core.Binder;
@@ -11,7 +9,7 @@ import se.qxx.jukebox.interfaces.IMkvSubtitleReader;
 
 public class TestExtractMkv {
 
-	public static void main(String[] args) throws IOException, JAXBException {
+	public static void main(String[] args) {
 		if (args.length > 1) {
 			
 			try {

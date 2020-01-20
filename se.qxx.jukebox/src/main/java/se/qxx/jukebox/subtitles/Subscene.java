@@ -15,8 +15,6 @@ import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.interfaces.ISubFileDownloaderHelper;
 import se.qxx.jukebox.interfaces.ISubFinder;
 import se.qxx.jukebox.settings.FindersTest;
-import se.qxx.jukebox.settings.JukeboxListenerSettings;
-import se.qxx.jukebox.settings.SubFindersTest;
 
 public class Subscene implements ISubFinder  {
 

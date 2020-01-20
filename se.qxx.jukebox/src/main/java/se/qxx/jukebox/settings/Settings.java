@@ -4,32 +4,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-import se.qxx.jukebox.interfaces.IImdbSettings;
-import se.qxx.jukebox.interfaces.IParserSettings;
 import se.qxx.jukebox.interfaces.ISettings;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
 import java.io.File;
 import java.io.IOException;
 
 @Singleton
 public class Settings implements ISettings {
 	private SettingsTest settings;
-	private IImdbSettings imdbSettings;
-	private IParserSettings parserSettings;
-	public int serverPort = 45444;	
-	
+	private ImdbTest imdbSettings;
+	private ParserTest parserSettings;
+
 	@Inject
-	public Settings(IImdbSettings imdbSettings, IParserSettings parserSettings) throws IOException, JAXBException {
-		this.setImdbSettings(imdbSettings);
-		this.setParserSettings(parserSettings);
-		
+	public Settings() throws IOException {
 		initialize();
 	}
 	
@@ -41,19 +28,19 @@ public class Settings implements ISettings {
 		this.settings = settings;
 	}
 
-	public IParserSettings getParserSettings() {
+	public ParserTest getParserSettings() {
 		return parserSettings;
 	}
 
-	public void setParserSettings(IParserSettings parserSettings) {
+	public void setParserSettings(ParserTest parserSettings) {
 		this.parserSettings = parserSettings;
 	}
 
-	public IImdbSettings getImdbSettings() {
+	public ImdbTest getImdb() {
 		return imdbSettings;
 	}
 
-	public void setImdbSettings(IImdbSettings imdbSettings) {
+	public void setImdb(ImdbTest imdbSettings) {
 		this.imdbSettings = imdbSettings;
 	}
 
@@ -72,21 +59,13 @@ public class Settings implements ISettings {
 
 		 */
 	}
-	
-	/* (non-Javadoc)
-	 * @see se.qxx.jukebox.settings.ISettings#imdb()
-	 */
-	@Override
-	public Imdb getImdb() {
-		return this.getImdbSettings().getImdb();
-	}
-	
+
 	/* (non-Javadoc)
 	 * @see se.qxx.jukebox.settings.ISettings#parser()
 	 */
 	@Override
-	public Parser getParser() {
-		return this.getParserSettings().getSettings();
+	public ParserTest getParser() {
+		return this.getParserSettings();
 	}
 	
 	/* (non-Javadoc)
@@ -100,5 +79,7 @@ public class Settings implements ISettings {
 	private void readSettingFile() throws IOException {
 		ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 		this.setSettings(mapper.readValue(new File("settings.yaml"), SettingsTest.class));
+		this.setImdb(mapper.readValue(new File("imdb.yaml"), ImdbTest.class));
+		this.setParserSettings(mapper.readValue(new File("parser.yaml"), ParserTest.class));
 	}
 }

@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
-
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 
@@ -32,7 +30,7 @@ public class TestSubsConverter {
 		this.subFileWriter = subFileWriter;
 		
 	}
-	public static void main(String[] args) throws IOException, JAXBException, DatabaseNotSupportedException, ClassNotFoundException, SQLException, SearchFieldNotFoundException, SubtitleParsingException {
+	public static void main(String[] args) throws IOException, DatabaseNotSupportedException, ClassNotFoundException, SQLException, SearchFieldNotFoundException, SubtitleParsingException {
 		Injector injector = Binder.setupBindings(args);
 		TestSubsConverter prog = injector.getInstance(TestSubsConverter.class);
 		

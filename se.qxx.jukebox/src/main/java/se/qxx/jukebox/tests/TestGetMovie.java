@@ -2,8 +2,6 @@ package se.qxx.jukebox.tests;
 
 import java.io.IOException;
 
-import javax.xml.bind.JAXBException;
-
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 
@@ -21,7 +19,7 @@ public class TestGetMovie {
 		
 	}
 
-	public static void main(String[] args) throws IOException, JAXBException {
+	public static void main(String[] args) {
 		Injector injector = Binder.setupBindings(args);
 		TestGetMovie prog = injector.getInstance(TestGetMovie.class);
 		
