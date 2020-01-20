@@ -16,10 +16,9 @@ task myCopyTask(type: Copy) {
       outputDir.mkdirs()
 
    from (projectDir) {
-      include 'JukeboxSettings.xml'
-      include 'imdb.xml'
-      include 'parser.xml'
-      include 'subs.xml'
+      include 'settings.yaml'
+      include 'imdb.yaml'
+      include 'parser.yaml'
       include 'logging.properties'
    }
    into outputDir
