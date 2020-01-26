@@ -8,6 +8,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import com.google.android.gms.cast.framework.CastContext;
 
 import java.util.List;
@@ -29,7 +30,7 @@ import se.qxx.jukebox.domain.JukeboxDomain;
 import static se.qxx.android.jukebox.model.Constants.NR_OF_ITEMS;
 
 public class ListActivity extends AppCompatActivity implements
-    AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, View.OnClickListener, JukeboxConnectionHandler.ConnectorCallbackEventListener, IOffsetHandler {
+        AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, JukeboxConnectionHandler.ConnectorCallbackEventListener, IOffsetHandler, SearchView.OnQueryTextListener {
 
 	private CastContext mCastContext;
 	private SeasonLayoutAdapter _seasonLayoutAdapter;
@@ -140,7 +141,7 @@ public class ListActivity extends AppCompatActivity implements
 		ChromeCastConfiguration.createMenu(this,
                 getMenuInflater(),
                 menu,
-                settings.getCurrentMediaPlayer());
+                this);
 
 		return true;
 	}
@@ -150,12 +151,12 @@ public class ListActivity extends AppCompatActivity implements
 		lv.setOnItemClickListener(this);
 		lv.setOnItemLongClickListener(this);
 
-		findViewById(R.id.btnRefresh).setOnClickListener(this);
-		findViewById(R.id.btnSelectMediaPlayer).setOnClickListener(this);
-	    findViewById(R.id.btnCurrentMovie).setOnClickListener(this);
-		findViewById(R.id.btnPreferences).setOnClickListener(this);
-		findViewById(R.id.btnOn).setVisibility(View.GONE);
-		findViewById(R.id.btnOff).setVisibility(View.GONE);
+//		findViewById(R.id.btnRefresh).setOnClickListener(this);
+//		findViewById(R.id.btnSelectMediaPlayer).setOnClickListener(this);
+//	    findViewById(R.id.btnCurrentMovie).setOnClickListener(this);
+//		findViewById(R.id.btnPreferences).setOnClickListener(this);
+//		findViewById(R.id.btnOn).setVisibility(View.GONE);
+//		findViewById(R.id.btnOff).setVisibility(View.GONE);
 
         EndlessScrollListener scrollListener = new EndlessScrollListener(this) {
             @Override
@@ -272,34 +273,34 @@ public class ListActivity extends AppCompatActivity implements
         return false;
     }
 
-    @Override
-    public void onClick(View v) {
-        int id = v.getId();
-
-        switch (id) {
-            case R.id.btnRefresh:
-                Logger.Log().i("onConnectClicked");
-
-
-                clearData();
-                loadMoreData(0, getSeriesID(), getSeasonID());
-
-                break;
-            case R.id.btnSelectMediaPlayer:
-                Logger.Log().i("selectMediaPlayerClicked");
-
-                Intent i = new Intent(this, PlayerPickerActivity.class);
-                startActivity(i);
-                break;
-            case R.id.btnPreferences:
-                Intent intentPreferences = new Intent(this, JukeboxPreferenceActivity.class);
-                startActivity(intentPreferences);
-                break;
-            default:
-                break;
-
-        }
-    }
+//    @Override
+//    public void onClick(View v) {
+//        int id = v.getId();
+//
+//        switch (id) {
+//            case R.id.btnRefresh:
+//                Logger.Log().i("onConnectClicked");
+//
+//
+//                clearData();
+//                loadMoreData(0, getSeriesID(), getSeasonID());
+//
+//                break;
+//            case R.id.btnSelectMediaPlayer:
+//                Logger.Log().i("selectMediaPlayerClicked");
+//
+//                Intent i = new Intent(this, PlayerPickerActivity.class);
+//                startActivity(i);
+//                break;
+//            case R.id.btnPreferences:
+//                Intent intentPreferences = new Intent(this, JukeboxPreferenceActivity.class);
+//                startActivity(intentPreferences);
+//                break;
+//            default:
+//                break;
+//
+//        }
+//    }
 
     private void clearData() {
         this.setOffset(0);
@@ -391,6 +392,15 @@ public class ListActivity extends AppCompatActivity implements
     }
 
 
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        return false;
+    }
 }
 
 

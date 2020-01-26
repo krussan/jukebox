@@ -10,6 +10,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import org.apache.commons.lang3.StringUtils;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.adapters.support.MovieMediaLayoutAdapter;
@@ -24,7 +25,7 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class MovieDetailActivity extends AppCompatActivity {
+public class MovieDetailActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     private JukeboxSettings settings;
     private CacheData cacheData;
@@ -187,7 +188,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
 
-        ChromeCastConfiguration.createMenu(this, getMenuInflater(), menu, settings.getCurrentMediaPlayer());
+        ChromeCastConfiguration.createMenu(this, getMenuInflater(), menu, this);
 
         return true;
     }
@@ -206,4 +207,13 @@ public class MovieDetailActivity extends AppCompatActivity {
         updateProgressBar(this.getMovie());
     }
 
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        return false;
+    }
 }

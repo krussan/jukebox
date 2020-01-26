@@ -4,26 +4,22 @@ import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
+import android.provider.Settings;
 import android.text.InputType;
 
+import androidx.appcompat.app.AppCompatActivity;
 import se.qxx.android.jukebox.R;
+import se.qxx.android.jukebox.activities.fragments.SettingsFragment;
 
-public class JukeboxPreferenceActivity extends PreferenceActivity {
+public class JukeboxPreferenceActivity extends AppCompatActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		
 		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_settings);
 
-		getFragmentManager().beginTransaction().replace(android.R.id.content, new MyPreferenceFragment()).commit();
-	}
-
-	public static class MyPreferenceFragment extends PreferenceFragment
-	{
-		@Override
-		public void onCreate(final Bundle savedInstanceState)
-		{
-			super.onCreate(savedInstanceState);
-			addPreferencesFromResource(R.xml.preferences);
-		}
+		getSupportFragmentManager()
+				.beginTransaction()
+				.replace(R.id.settings_container, new SettingsFragment())
+				.commit();
 	}
 }

@@ -1,9 +1,15 @@
 package se.qxx.android.jukebox.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager.widget.ViewPager;
 import com.google.android.gms.cast.framework.CastContext;
 
@@ -16,7 +22,7 @@ import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
 import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 
-public class FlipperListActivity extends AppCompatActivity implements JukeboxFragment.JukeboxFragmentHandler {
+public class FlipperListActivity extends AppCompatActivity implements JukeboxFragment.JukeboxFragmentHandler, SearchView.OnQueryTextListener {
 	ViewPager pager;
 	private CastContext mCastContext;
     private ViewMode mode = ViewMode.Movie;
@@ -50,10 +56,9 @@ public class FlipperListActivity extends AppCompatActivity implements JukeboxFra
         super.onCreate(savedInstanceState);
 
         settings = new JukeboxSettings(this);
-        setupConnectionHandler();
+        setupConnectionHandler(false);
 
-        if (StringUtils.equalsIgnoreCase(settings.getCurrentMediaPlayer(), "Chromecast"))
-            ChromeCastConfiguration.checkGooglePlayServices(this);
+        ChromeCastConfiguration.checkGooglePlayServices(this);
 
         if (getIntent() != null && getIntent().getExtras() != null) {
             Bundle b = getIntent().getExtras();
@@ -70,10 +75,19 @@ public class FlipperListActivity extends AppCompatActivity implements JukeboxFra
 
     }
 
-    private void setupConnectionHandler() {
-        connectionHandler = new JukeboxConnectionHandler(
-                settings.getServerIpAddress(),
-                settings.getServerPort());
+    private void setupConnectionHandler(boolean reAttachCallbacks) {
+        if (this.connectionHandler == null) {
+            connectionHandler = new JukeboxConnectionHandler(
+                    settings.getServerIpAddress(),
+                    settings.getServerPort());
+
+            if (reAttachCallbacks) {
+                for (Fragment f : getSupportFragmentManager().getFragments()) {
+                    if (f instanceof JukeboxConnectionHandler.ConnectorCallbackEventListener)
+                        connectionHandler.addCallback((JukeboxConnectionHandler.ConnectorCallbackEventListener) f);
+                }
+            }
+        }
     }
 
 
@@ -81,25 +95,50 @@ public class FlipperListActivity extends AppCompatActivity implements JukeboxFra
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 
-		ChromeCastConfiguration.createMenu(this, getMenuInflater(), menu, settings.getCurrentMediaPlayer());
+		ChromeCastConfiguration.createMenu(this, getMenuInflater(), menu, this);
+
 
 		return true;
 	}
 
     @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.prefs_menu_item:
+                Intent intentPreferences = new Intent(this, JukeboxPreferenceActivity.class);
+                startActivity(intentPreferences);
+                break;
+
+        }
+        return true;
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         this.connectionHandler.stop();
+        this.connectionHandler = null;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        setupConnectionHandler();
+        setupConnectionHandler(true);
     }
 
     @Override
     public JukeboxConnectionHandler getConnectionHandler() {
         return this.connectionHandler;
+    }
+
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        return false;
     }
 }

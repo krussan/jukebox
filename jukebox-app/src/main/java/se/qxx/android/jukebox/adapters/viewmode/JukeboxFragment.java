@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -16,13 +15,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.fragment.app.ListFragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import se.qxx.android.jukebox.R;
-import se.qxx.android.jukebox.activities.JukeboxPreferenceActivity;
 import se.qxx.android.jukebox.activities.ListActivity;
 import se.qxx.android.jukebox.activities.MovieDetailActivity;
-import se.qxx.android.jukebox.activities.PlayerPickerActivity;
 import se.qxx.android.jukebox.activities.ViewMode;
-import se.qxx.android.jukebox.activities.fragments.MovieDetailFragment;
 import se.qxx.android.jukebox.adapters.list.MovieLayoutAdapter;
 import se.qxx.android.jukebox.adapters.list.SeriesLayoutAdapter;
 import se.qxx.android.jukebox.adapters.support.EndlessScrollListener;
@@ -36,7 +33,7 @@ import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
 
 public class JukeboxFragment extends ListFragment implements
-	OnItemClickListener, OnItemLongClickListener, OnClickListener, JukeboxConnectionHandler.ConnectorCallbackEventListener, IOffsetHandler {
+	OnItemClickListener, OnItemLongClickListener, JukeboxConnectionHandler.ConnectorCallbackEventListener, IOffsetHandler, SwipeRefreshLayout.OnRefreshListener {
 
     private ViewMode mode;
 
@@ -48,6 +45,7 @@ public class JukeboxFragment extends ListFragment implements
     private boolean isLoading;
     private JukeboxSettings settings;
     private JukeboxFragmentHandler handler;
+    private SwipeRefreshLayout swipeLayout;
 
     public int getTotalItems() {
         return totalItems;
@@ -151,12 +149,15 @@ public class JukeboxFragment extends ListFragment implements
 		lv.setOnItemClickListener(this);
 		lv.setOnItemLongClickListener(this);
 
-		v.findViewById(R.id.btnRefresh).setOnClickListener(this);
-		v.findViewById(R.id.btnSelectMediaPlayer).setOnClickListener(this);
-		v.findViewById(R.id.btnCurrentMovie).setOnClickListener(this);
-		v.findViewById(R.id.btnPreferences).setOnClickListener(this);
-		v.findViewById(R.id.btnOn).setVisibility(View.GONE);
-		v.findViewById(R.id.btnOff).setVisibility(View.GONE);
+        swipeLayout = v.findViewById(R.id.swipe_container);
+        swipeLayout.setOnRefreshListener(this);
+
+//		v.findViewById(R.id.btnRefresh).setOnClickListener(this);
+//		v.findViewById(R.id.btnSelectMediaPlayer).setOnClickListener(this);
+//		v.findViewById(R.id.btnCurrentMovie).setOnClickListener(this);
+//		v.findViewById(R.id.btnPreferences).setOnClickListener(this);
+//		v.findViewById(R.id.btnOn).setVisibility(View.GONE);
+//		v.findViewById(R.id.btnOff).setVisibility(View.GONE);
 
 		v.findViewById(R.id.txtListTitle).setVisibility(View.GONE);
 
@@ -254,42 +255,44 @@ public class JukeboxFragment extends ListFragment implements
 		return false;
 	}
 
-	@Override
-	public void onClick(View v) {
-		int id = v.getId();
-
-		switch (id) {
-		case R.id.btnRefresh:
-			Logger.Log().i("onConnectClicked");
-
-
-			Logger.Log().d("Button clicked - Loading data");
-			clearData();
-			loadMoreData(0);
-
-			break;
-		case R.id.btnSelectMediaPlayer:
-			Logger.Log().i("selectMediaPlayerClicked");
-
-			Intent i = new Intent(this.getActivity(), PlayerPickerActivity.class);
-			startActivity(i);
-			break;
-		case R.id.btnPreferences:
-			Intent intentPreferences = new Intent(this.getActivity(), JukeboxPreferenceActivity.class);
-			startActivity(intentPreferences);
-			break;
-		default:
-			break;
-
-		}	
-	}
+//	@Override
+//	public void onClick(View v) {
+//		int id = v.getId();
+//
+//		switch (id) {
+//		case R.id.btnRefresh:
+//			Logger.Log().i("onConnectClicked");
+//
+//
+//			Logger.Log().d("Button clicked - Loading data");
+//			clearData();
+//			loadMoreData(0);
+//
+//			break;
+//		case R.id.btnSelectMediaPlayer:
+//			Logger.Log().i("selectMediaPlayerClicked");
+//
+//			Intent i = new Intent(this.getActivity(), PlayerPickerActivity.class);
+//			startActivity(i);
+//			break;
+//		case R.id.btnPreferences:
+//			Intent intentPreferences = new Intent(this.getActivity(), JukeboxPreferenceActivity.class);
+//			startActivity(intentPreferences);
+//			break;
+//		default:
+//			break;
+//
+//		}
+//	}
 
 
     @Override
     public void handleMoviesUpdated(List<JukeboxDomain.Movie> movies, int totalMovies) {
-        setLoading(false);
-        this.setTotalItems(totalMovies);
+        swipeLayout.setRefreshing(false);
 	    if (_jukeboxMovieLayoutAdapter != null) {
+            setLoading(false);
+            this.setTotalItems(totalMovies);
+
             _jukeboxMovieLayoutAdapter.addMovies(movies);
             _jukeboxMovieLayoutAdapter.setServerListSize(totalMovies);
             notifyMovieList();
@@ -310,9 +313,10 @@ public class JukeboxFragment extends ListFragment implements
 
     @Override
     public void handleSeriesUpdated(List<JukeboxDomain.Series> series, int totalSeries) {
-        this.setTotalItems(totalSeries);
-        setLoading(false);
+        swipeLayout.setRefreshing(false);
         if (_seriesLayoutAdapter != null) {
+            setLoading(false);
+            this.setTotalItems(totalSeries);
             _seriesLayoutAdapter.addSeries(series);
             _seriesLayoutAdapter.setServerListSize(totalSeries);
             notifySeriesList();
@@ -349,6 +353,13 @@ public class JukeboxFragment extends ListFragment implements
 
         if (_seriesLayoutAdapter != null)
             _seriesLayoutAdapter.setLoading(isLoading);
+    }
+
+    @Override
+    public void onRefresh() {
+        swipeLayout.setRefreshing(true);
+        clearData();
+        loadMoreData(0);
     }
 
     public interface JukeboxFragmentHandler {

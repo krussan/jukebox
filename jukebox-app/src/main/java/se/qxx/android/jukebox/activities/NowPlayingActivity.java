@@ -42,20 +42,10 @@ public class NowPlayingActivity extends AppCompatActivity {
         FragmentTransaction ft = fm.beginTransaction();
         ft.add(R.id.fragmentContainer,
                 PlayerFragment.newInstance(
-                        ChromeCastConfiguration.getCastType(settings.getCurrentMediaPlayer()),
+                        ChromeCastConfiguration.getCastType(),
                         screenChange));
         ft.commit();
 
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-
-        ChromeCastConfiguration.createMenu(this, getMenuInflater(), menu, settings.getCurrentMediaPlayer());
-
-        return true;
     }
 
     @Override

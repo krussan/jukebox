@@ -259,11 +259,7 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
     }
 
     protected String getPlayerName() {
-        String player = getSettings().getCurrentMediaPlayer();
-        if (StringUtils.equalsIgnoreCase(player, "local"))
-            player = "ChromeCast";
-
-        return player;
+        return "ChromeCast";
     }
 
     public static Fragment newInstance(JukeboxCastType type, boolean screenChanged) {
@@ -275,7 +271,7 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
         else if (type == JukeboxCastType.ChromeCast) {
             fm = new ChromecastPlayerFragment();
         } else
-            fm = new JukeboxPlayerFragment();
+            throw new Exception("JukeboxPlayer has been deprecated");
 
         b.putBoolean("screenChanged", screenChanged);
 

@@ -25,7 +25,7 @@ public class Seeker implements Runnable {
 	}
 		
 	private void getTime() {
-       	this.connectionHandler.getTime(this.settings.getCurrentMediaPlayer(), response -> {
+       	this.connectionHandler.getTime("Dummy", response -> {
             // The time command also returns the name of the currently playing file.
             // If it differs from the model then set the current media
 			if (response != null && listener != null)

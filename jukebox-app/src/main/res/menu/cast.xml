@@ -8,4 +8,17 @@
         app:showAsAction="always"
         />
 
+    <item android:id="@+id/search_menu_item"
+          android:title="Search"
+          android:icon="@android:drawable/ic_menu_search"
+          app:actionViewClass="androidx.appcompat.widget.SearchView"
+          app:showAsAction="always"
+    />
+
+    <item android:id="@+id/prefs_menu_item"
+          android:title="Settings"
+          android:icon="@drawable/ic_menu_configuration"
+          app:showAsAction="always"
+      />
+
 </menu>

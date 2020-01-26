@@ -208,8 +208,8 @@ public class JukeboxConnectionHandler<T>  {
 			RequestType requestType = m == null ? RequestType.TypeEpisode : RequestType.TypeMovie;
 
 			JukeboxRequestStartMovie request = JukeboxRequestStartMovie.newBuilder()
-					.setPlayerName(playerName)  // JukeboxSettings.get().getCurrentMediaPlayer()
-					.setMovieOrEpisodeId(id) // Model.get().getCurrentMovie().getID()
+					.setPlayerName(playerName)
+					.setMovieOrEpisodeId(id)
 					.setRequestType(requestType)
 					.setSubtitleRequestType(subtitleRequestType)
 					.build();

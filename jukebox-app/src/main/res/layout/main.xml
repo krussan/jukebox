@@ -3,110 +3,39 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:gravity="center|clip_vertical|fill_horizontal"
-    android:orientation="vertical" 
+    android:orientation="vertical"
     android:id="@+id/rootMain">
-    
-    <ListView 
-        android:id="@android:id/list"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:visibility="invisible" />
-        
-    <RelativeLayout 
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
 
-        <ImageButton
-            android:id="@+id/btnRefresh"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@null"
-            android:layout_gravity="start"
-			android:src="@drawable/btnrefresh"
-			android:scaleType="centerInside"
-			android:gravity="center"
-            android:contentDescription="TODO" />
+	<TextView
+			android:id="@+id/txtListTitle"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/lblSeriesTitle"
+			android:padding="6dp"
+			android:textColor="#FFFFFF"
+			android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
 
-		<ImageButton
-		    android:id="@+id/btnSelectMediaPlayer" 
-		    android:layout_width="wrap_content" 
-		    android:layout_height="wrap_content"
-			android:onClick="onButtonClicked" 
-			android:layout_toRightOf="@id/btnRefresh"
-			android:src="@drawable/btnplayer"
-			android:scaleType="centerInside"
-			android:gravity="center"
-			android:background="@null"
-            android:contentDescription="@string/descSelectMediaPlayer" />
-        
-		<ImageButton
-		    android:id="@+id/btnCurrentMovie" 
-		    android:layout_width="wrap_content" 
-		    android:layout_height="wrap_content"
-			android:onClick="onButtonClicked" 
-			android:layout_toRightOf="@id/btnSelectMediaPlayer"
-			android:src="@drawable/btncurrent"
-			android:scaleType="centerInside"
-			android:gravity="center"
-			android:background="@null"
-		/>
-		
-		<ImageButton
-		    android:id="@+id/btnPreferences" 
-		    android:layout_width="wrap_content" 
-		    android:layout_height="wrap_content"
-			android:onClick="onButtonClicked" 
-			android:layout_toRightOf="@id/btnCurrentMovie"
-			android:src="@drawable/btnsubtitles"
-			android:scaleType="centerInside"
-			android:gravity="center"
-			android:background="@null"
-		/>
-				
-        
-		<ImageButton
-		    android:id="@+id/btnOn"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-			android:onClick="onButtonClicked"
-			android:src="@drawable/btnonoff"
-			android:layout_alignParentRight="true"
-			android:scaleType="centerInside"
-			android:gravity="center"
-			android:background="@null"
-		/>
+	<!-- This is needed for the continouse update to work -->
+	<ListView
+			android:id="@android:id/list"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"
+			android:visibility="invisible" />
 
-		<ImageButton
-		    android:id="@+id/btnOff"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-			android:onClick="onButtonClicked"
-			android:src="@drawable/btnonoffred"
-			android:layout_alignParentRight="true"
-			android:scaleType="centerInside"
-			android:gravity="center"
-			android:background="@null"
-		/>
-
-        <TextView
-            android:id="@+id/txtListTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/btnRefresh"
-            android:text="@string/lblSeriesTitle"
-            android:padding="6dp"
-            android:textColor="#FFFFFF"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+	<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+			xmlns:android="http://schemas.android.com/apk/res/android"
+			android:id="@+id/swipe_container"
+			android:layout_below="@id/txtListTitle"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent">
 
 		<ListView
-		    android:id="@+id/listItems"
-		    android:layout_width="match_parent"
-		    android:layout_height="wrap_content"
-		    android:layout_below="@id/txtListTitle"
+			android:id="@+id/listItems"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
 			android:focusable="true"
 			/>
-    </RelativeLayout>
-
+	</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 	<fragment
 		android:id="@+id/castMiniController"
