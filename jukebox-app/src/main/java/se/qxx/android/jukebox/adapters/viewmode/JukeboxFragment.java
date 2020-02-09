@@ -14,6 +14,7 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.ListFragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import se.qxx.android.jukebox.R;
@@ -46,6 +47,7 @@ public class JukeboxFragment extends ListFragment implements
     private JukeboxSettings settings;
     private JukeboxFragmentHandler handler;
     private SwipeRefreshLayout swipeLayout;
+    private String searchString = "";
 
     public int getTotalItems() {
         return totalItems;
@@ -91,7 +93,17 @@ public class JukeboxFragment extends ListFragment implements
             return ViewMode.Series;
     }
 
-	public static JukeboxFragment newInstance(int position) {
+    public String getSearchString() {
+        return searchString;
+    }
+
+    public void setSearchString(String searchString) {
+        this.searchString = searchString;
+    }
+
+
+
+    public static JukeboxFragment newInstance(int position) {
 		Bundle b = new Bundle();
 		JukeboxFragment mf = new JukeboxFragment();
         b.putSerializable("mode", getViewMode(position));
@@ -195,14 +207,16 @@ public class JukeboxFragment extends ListFragment implements
 
 	private void loadMoreData(int offset) {
         setLoading(true);
-        this.handler.getConnectionHandler().connect(
-                offset,
-                Constants.NR_OF_ITEMS,
-                this.getMode(),
-                -1,
-                -1,
-                true,
-                true);
+        if (this.handler != null)
+            this.handler.getConnectionHandler().connect(
+                    this.getSearchString(),
+                    offset,
+                    Constants.NR_OF_ITEMS,
+                    this.getMode(),
+                    -1,
+                    -1,
+                    true,
+                    true);
     }
 
 
@@ -376,6 +390,14 @@ public class JukeboxFragment extends ListFragment implements
             throw new RuntimeException(context.toString()
                     + " must implement JukeboxFragmentHandler");
         }
+    }
+
+    public boolean onSearch(String searchString) {
+        this.clearData();
+        this.setSearchString(searchString);
+
+        loadMoreData(0);
+        return true;
     }
 
 }

@@ -65,12 +65,12 @@ public class JukeboxConnectionHandler<T>  {
 		service = JukeboxServiceGrpc.newFutureStub(channel);
 	}
 
-    public void connect(final int offset, final int nrOfItems, ViewMode modelType, final int seriesID, int seasonID, boolean excludeImages, boolean excludeTextdata) {
+    public void connect(String searchString, final int offset, final int nrOfItems, ViewMode modelType, final int seriesID, int seasonID, boolean excludeImages, boolean excludeTextdata) {
         try {
 
             if (modelType == ViewMode.Movie) {
                 Logger.Log().d("Listing movies");
-                this.listMovies("",
+                this.listMovies(searchString,
                         nrOfItems,
                         offset,
                         excludeImages,
@@ -83,7 +83,7 @@ public class JukeboxConnectionHandler<T>  {
                         });
             }
             else if (modelType == ViewMode.Series) {
-                this.listSeries("",
+                this.listSeries(searchString,
                         nrOfItems,
                         offset,
                         excludeImages,

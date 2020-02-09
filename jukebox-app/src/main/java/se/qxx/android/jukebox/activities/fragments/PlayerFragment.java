@@ -17,6 +17,7 @@ import se.qxx.android.jukebox.cast.JukeboxCastType;
 import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
 import se.qxx.android.jukebox.comm.JukeboxConnectionMessage;
 import se.qxx.android.jukebox.comm.JukeboxResponseListener;
+import se.qxx.android.jukebox.exceptions.JukeboxDeprecatedException;
 import se.qxx.android.jukebox.settings.CacheData;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.tools.GUITools;
@@ -266,12 +267,11 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
         Bundle b = new Bundle();
         Fragment fm;
 
-        if (type == JukeboxCastType.Local)
-            fm = new LocalPlayerFragment();
-        else if (type == JukeboxCastType.ChromeCast) {
+        if (type == JukeboxCastType.ChromeCast) {
             fm = new ChromecastPlayerFragment();
-        } else
-            throw new Exception("JukeboxPlayer has been deprecated");
+        } else {
+            fm = new LocalPlayerFragment();
+        }
 
         b.putBoolean("screenChanged", screenChanged);
 

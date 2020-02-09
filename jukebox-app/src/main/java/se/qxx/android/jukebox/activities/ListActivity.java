@@ -41,6 +41,7 @@ public class ListActivity extends AppCompatActivity implements
 	private boolean isLoading;
 	private JukeboxSettings settings;
 	private JukeboxConnectionHandler connectionHandler;
+	private String serachString = "";
 
     protected View getRootView() {
 		return findViewById(R.id.rootMain);
@@ -101,6 +102,15 @@ public class ListActivity extends AppCompatActivity implements
 
     public void setTotalItems(int totalItems) {
         this.totalItems = totalItems;
+    }
+
+
+    public String getSerachString() {
+        return serachString;
+    }
+
+    public void setSerachString(String serachString) {
+        this.serachString = serachString;
     }
 
     @Override
@@ -205,12 +215,12 @@ public class ListActivity extends AppCompatActivity implements
 
     private void loadMoreData(int offset, int seriesID) {
         setIsLoading(true);
-        this.connectionHandler.connect(offset, Constants.NR_OF_ITEMS, this.getMode(), seriesID, -1, true, true);
+        this.connectionHandler.connect(this.getSerachString(), offset, Constants.NR_OF_ITEMS, this.getMode(), seriesID, -1, true, true);
     }
 
     private void loadMoreData(int offset, int seriesID, int seasonID) {
         setIsLoading(true);
-        this.connectionHandler.connect(offset, Constants.NR_OF_ITEMS, this.getMode(), seriesID, seasonID, true, true);
+        this.connectionHandler.connect(this.getSerachString(), offset, Constants.NR_OF_ITEMS, this.getMode(), seriesID, seasonID, true, true);
     }
 
     @Override
@@ -392,14 +402,27 @@ public class ListActivity extends AppCompatActivity implements
     }
 
 
+    //TODO: Should overlay the current fragment with a new search fragment
+    // that shows bot series and movies that matches the query
+    // This need to be duplicated in the JukeboxFragment as well
     @Override
     public boolean onQueryTextSubmit(String query) {
-        return false;
+        return search(query);
     }
 
     @Override
     public boolean onQueryTextChange(String newText) {
+        if (newText.length() > 3) {
+            return search(newText);
+        }
         return false;
+    }
+
+    private boolean search(String query) {
+        this.clearData();
+        this.setSerachString(query);
+        loadMoreData(0, getSeriesID(), getSeasonID());
+        return true;
     }
 }
 

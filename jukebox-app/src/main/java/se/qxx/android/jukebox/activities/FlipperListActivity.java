@@ -2,6 +2,7 @@ package se.qxx.android.jukebox.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -9,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager.widget.ViewPager;
 import com.google.android.gms.cast.framework.CastContext;
@@ -28,6 +30,9 @@ public class FlipperListActivity extends AppCompatActivity implements JukeboxFra
     private ViewMode mode = ViewMode.Movie;
     private JukeboxSettings settings;
     private JukeboxConnectionHandler connectionHandler;
+    private JukeboxFragmentAdapter adapter;
+    private int waitingTime = 200;
+    private CountDownTimer cntr;
 
     protected View getRootView() {
 		return findViewById(R.id.rootJukeboxViewPager);
@@ -68,8 +73,8 @@ public class FlipperListActivity extends AppCompatActivity implements JukeboxFra
 		setContentView(R.layout.jukebox_main_wrapper);
         pager = (ViewPager)this.getRootView();
 
-        JukeboxFragmentAdapter mfa = new JukeboxFragmentAdapter(getSupportFragmentManager(), this);
-        pager.setAdapter(mfa);
+        adapter = new JukeboxFragmentAdapter(getSupportFragmentManager(), this);
+        pager.setAdapter(adapter);
 
 		mCastContext = CastContext.getSharedInstance(this);
 
@@ -132,13 +137,44 @@ public class FlipperListActivity extends AppCompatActivity implements JukeboxFra
     }
 
 
+    //TODO: Should overlay the current fragment with a new search fragment
+    // that shows bot series and movies that matches the query
+    // This need to be duplicated in the JukeboxFragment as well
     @Override
     public boolean onQueryTextSubmit(String query) {
-        return false;
+        return search(query);
     }
 
     @Override
-    public boolean onQueryTextChange(String newText) {
+    public boolean onQueryTextChange(final String newText) {
+        if(cntr != null){
+            cntr.cancel();
+        }
+        cntr = new CountDownTimer(waitingTime, 500) {
+
+            public void onTick(long millisUntilFinished) {
+            }
+
+            public void onFinish() {
+                int length = newText.length();
+
+                if (length > 2) {
+                    search(newText);
+                }
+                else if (length == 0) {
+                    search(StringUtils.EMPTY);
+                }
+            }
+        };
+        cntr.start();
         return false;
     }
+
+    private boolean search(String query) {
+        int position = pager.getCurrentItem();
+        JukeboxFragment fragment = (JukeboxFragment)adapter.getRegisteredFragment(position);
+
+        return fragment.onSearch(query);
+    }
+
 }
