@@ -51,11 +51,6 @@ public class JukeboxConnectionHandler<T>  {
 		init(serverIPaddress, port);
 	}
 
-	public JukeboxConnectionHandler(String serverIPaddress, int port, JukeboxResponseListener listener) {
-		init(serverIPaddress, port);
-		this.setListener(listener);
-	}
-
 	private void init(String serverIPaddress, int port) {
 		channel = ManagedChannelBuilder
 				.forAddress(serverIPaddress, port)
@@ -76,7 +71,6 @@ public class JukeboxConnectionHandler<T>  {
                         excludeImages,
                         excludeTextdata,
                         response -> {
-                            //TODO: if repsonse is null probably the server is down..
                             if (response != null) {
                                 triggerMoviesUpdated(response.getMoviesList(), response.getTotalMovies());
                             }
@@ -89,7 +83,6 @@ public class JukeboxConnectionHandler<T>  {
                         excludeImages,
                         excludeTextdata,
                         response -> {
-                            //TODO: if repsonse is null probably the server is down..
                             if (response != null) {
                                 triggerSeriesUpdated(response.getSeriesList(), response.getTotalSeries());
                             }
@@ -98,7 +91,6 @@ public class JukeboxConnectionHandler<T>  {
             else if (modelType == ViewMode.Season) {
                 this.getItem(seriesID, JukeboxDomain.RequestType.TypeSeries, excludeImages, excludeTextdata,
                         response -> {
-                            //TODO: if repsonse is null probably the server is down..
                             if (response != null) {
                                 triggerSeasonsUpdated(
 										response.getSerie().getSeasonList(),
