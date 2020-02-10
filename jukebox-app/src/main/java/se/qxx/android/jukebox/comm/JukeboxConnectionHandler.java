@@ -47,6 +47,10 @@ public class JukeboxConnectionHandler<T>  {
         this.callbacks.add(callback);
     }
 
+    public void removeCallback(ConnectorCallbackEventListener callback) {
+		this.callbacks.remove(callback);
+	}
+
     public JukeboxConnectionHandler(String serverIPaddress, int port) {
 		init(serverIPaddress, port);
 	}

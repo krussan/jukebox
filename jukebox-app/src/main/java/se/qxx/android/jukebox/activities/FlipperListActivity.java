@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager.widget.ViewPager;
 import com.google.android.gms.cast.framework.CastContext;
@@ -23,6 +24,7 @@ import se.qxx.android.jukebox.adapters.viewmode.JukeboxFragmentAdapter;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
 import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
+import se.qxx.jukebox.domain.JukeboxDomain;
 
 public class FlipperListActivity extends AppCompatActivity implements JukeboxFragment.JukeboxFragmentHandler, SearchView.OnQueryTextListener {
 	ViewPager pager;
@@ -170,11 +172,25 @@ public class FlipperListActivity extends AppCompatActivity implements JukeboxFra
         return false;
     }
 
-    private boolean search(String query) {
+    private JukeboxFragment getCurrentFragment() {
         int position = pager.getCurrentItem();
-        JukeboxFragment fragment = (JukeboxFragment)adapter.getRegisteredFragment(position);
-
-        return fragment.onSearch(query);
+        return (JukeboxFragment)adapter.getRegisteredFragment(position);
+    }
+    private boolean search(String query) {
+        return this.getCurrentFragment().onSearch(query);
     }
 
+    public void switchFragment(ViewMode newMode, JukeboxDomain.Series series, JukeboxDomain.Season season) {
+        try {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left);
+            JukeboxFragment newFragment = JukeboxFragment.newInstance(newMode, series, season);
+
+            ft.replace(R.id.rootJukeboxViewPager, newFragment);
+            ft.addToBackStack(null);
+            ft.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

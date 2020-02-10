@@ -136,14 +136,28 @@ public class JukeboxFragment extends ListFragment implements
         this.firstIsLast = firstIsLast;
     }
 
+    private static JukeboxFragment createFragment(Bundle b) {
+        JukeboxFragment mf = new JukeboxFragment();
+        mf.setArguments(b);
+
+        return mf;
+    }
+
     public static JukeboxFragment newInstance(ViewMode mode) {
+        return newInstance(mode, null, null);
+    }
+
+    public static JukeboxFragment newInstance(ViewMode mode, JukeboxDomain.Series series, JukeboxDomain.Season season) {
 		Bundle b = new Bundle();
-		JukeboxFragment mf = new JukeboxFragment();
         b.putSerializable("mode", mode);
+		if  (mode == ViewMode.Season) {
+            b.putSerializable("series", series);
+        } else if (mode == ViewMode.Episode)  {
+            b.putSerializable("series", series);
+            b.putSerializable("season", season);
+        }
 
-		mf.setArguments(b);
-
-		return mf;
+        return createFragment(b);
 	}
 
 
@@ -156,7 +170,6 @@ public class JukeboxFragment extends ListFragment implements
 
         clearData();
         Logger.Log().d("Initializing - loading data");
-        loadMoreData(0);
     }
 
     @Override
@@ -217,25 +230,25 @@ public class JukeboxFragment extends ListFragment implements
 		lv.setOnScrollListener(scrollListener);
 
 		lv.setAdapter(getLayoutAdapter(v));
-
-	    //detector = new SimpleGestureFilter(this, this);
+        loadMoreData(0);
 	}
 
-	private ListAdapter getLayoutAdapter(View v) {
-        if (this.getMode() == ViewMode.Movie) {
+    private ListAdapter getLayoutAdapter(View v) {
+        ViewMode mode = this.getMode();
+        if (mode == ViewMode.Movie) {
             _jukeboxMovieLayoutAdapter = new MovieLayoutAdapter(v.getContext(), new ArrayList<>());
             return _jukeboxMovieLayoutAdapter;
         }
-        else if (this.getMode() == ViewMode.Series) {
+        else if (mode == ViewMode.Series) {
             _seriesLayoutAdapter = new SeriesLayoutAdapter(v.getContext(), new ArrayList<>());
             return _seriesLayoutAdapter;
         }
-        else if (this.getMode() == ViewMode.Season) {
+        else if (mode == ViewMode.Season) {
             _seasonLayoutAdapter = new SeasonLayoutAdapter(v.getContext(), this.getSeries().getSeasonList());
             GUITools.setTextOnTextview(R.id.txtListTitle, this.getSeries().getTitle(), v);
             return _seasonLayoutAdapter;
         }
-        else if (this.getMode() == ViewMode.Episode) {
+        else if (mode == ViewMode.Episode) {
             _episodeLayoutAdapter = new EpisodeLayoutAdapter(v.getContext(),
                             this.getSeason().getSeasonNumber(),
                             this.getSeason().getEpisodeList());
@@ -271,28 +284,21 @@ public class JukeboxFragment extends ListFragment implements
             Intent i = new Intent(arg1.getContext(), MovieDetailActivity.class);
             i.putExtra("mode", ViewMode.Movie);
             i.putExtra("movie", _jukeboxMovieLayoutAdapter.getItem(pos));
-            //i.putExtra("movies", (ArrayList<JukeboxDomain.Movie>)_jukeboxMovieLayoutAdapter.getMovies());
 
             startActivity(i);
         }
         else if (this.getMode() == ViewMode.Series) {
-            Intent intentSeries = new Intent(this.getActivity(), ListActivity.class);
-            intentSeries.putExtra("mode", ViewMode.Season);
-            intentSeries.putExtra("series", _seriesLayoutAdapter.getItem(pos));
-
-            startActivity(intentSeries);
+            this.handler.switchFragment(ViewMode.Season,
+                    _seriesLayoutAdapter.getItem(pos),
+                    null);
         }
         else if (this.getMode() == ViewMode.Season) {
-
-            Intent intentSeries = new Intent(this.getActivity(), ListActivity.class);
-            intentSeries.putExtra("mode", ViewMode.Episode);
-            intentSeries.putExtra("series", this.getSeries());
-            intentSeries.putExtra("season", (JukeboxDomain.Season)_seasonLayoutAdapter.getItem(pos));
-
-            startActivity(intentSeries);
+            this.handler.switchFragment(ViewMode.Episode,
+                    this.getSeries(),
+                    _seasonLayoutAdapter.getItem(pos));
         }
         else if (this.getMode() == ViewMode.Episode) {
-            JukeboxDomain.Episode e = (JukeboxDomain.Episode) _episodeLayoutAdapter.getItem(pos);
+            JukeboxDomain.Episode e = _episodeLayoutAdapter.getItem(pos);
 
             if (e != null) {
                 Intent iPlay = new Intent(this.getActivity(), NowPlayingActivity.class);
@@ -371,19 +377,18 @@ public class JukeboxFragment extends ListFragment implements
     private void notifyMovieList() {
         if (_jukeboxMovieLayoutAdapter != null && this.getActivity() != null)
             this.getActivity().runOnUiThread(() -> _jukeboxMovieLayoutAdapter.notifyDataSetChanged());
-
     }
 
     private void notifySeriesList() {
         if (_seriesLayoutAdapter != null && this.getActivity() != null)
             this.getActivity().runOnUiThread(() -> _seriesLayoutAdapter.notifyDataSetChanged());
-
     }
 
     private void notifySeasons() {
         if (_seasonLayoutAdapter != null && this.getActivity() != null)
             this.getActivity().runOnUiThread(() -> _seasonLayoutAdapter.notifyDataSetChanged());
     }
+
     private void notifyEpisodes() {
         if (_episodeLayoutAdapter != null && this.getActivity() != null)
             this.getActivity().runOnUiThread(() -> _episodeLayoutAdapter.notifyDataSetChanged());
@@ -475,6 +480,7 @@ public class JukeboxFragment extends ListFragment implements
 
     public interface JukeboxFragmentHandler {
         JukeboxConnectionHandler getConnectionHandler();
+        void switchFragment(ViewMode newMode, JukeboxDomain.Series series, JukeboxDomain.Season season);
     }
 
     @Override
@@ -487,6 +493,12 @@ public class JukeboxFragment extends ListFragment implements
             throw new RuntimeException(context.toString()
                     + " must implement JukeboxFragmentHandler");
         }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        handler.getConnectionHandler().removeCallback(this);
     }
 
     public boolean onSearch(String searchString) {

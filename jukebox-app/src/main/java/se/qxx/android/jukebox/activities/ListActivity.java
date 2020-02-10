@@ -9,6 +9,7 @@ import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.FragmentTransaction;
 import com.google.android.gms.cast.framework.CastContext;
 
 import java.util.List;
@@ -216,14 +217,14 @@ public class ListActivity extends AppCompatActivity implements
         this.connectionHandler.connect(this.getSerachString(), offset, Constants.NR_OF_ITEMS, this.getMode(), seriesID, seasonID, true, true);
     }
 
+
+
     @Override
     public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
         if (this.getMode() == ViewMode.Season) {
 
             Intent intentSeries = new Intent(this, ListActivity.class);
             intentSeries.putExtra("mode", ViewMode.Episode);
-            intentSeries.putExtra("series", this.getSeries());
-            intentSeries.putExtra("season", (JukeboxDomain.Season)_seasonLayoutAdapter.getItem(pos));
 
             startActivity(intentSeries);
         }
