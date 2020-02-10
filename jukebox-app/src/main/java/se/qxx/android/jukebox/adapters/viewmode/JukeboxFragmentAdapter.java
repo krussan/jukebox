@@ -10,6 +10,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import org.apache.commons.lang3.StringUtils;
 import se.qxx.android.jukebox.R;
+import se.qxx.android.jukebox.activities.ViewMode;
 
 public class JukeboxFragmentAdapter extends FragmentStatePagerAdapter {
 
@@ -29,14 +30,24 @@ public class JukeboxFragmentAdapter extends FragmentStatePagerAdapter {
 		this.setContext(context);
 	}
 
-	@Override
+    private static ViewMode getViewMode(int position) {
+        // position 0 in horizontal scroll is movie
+        // position 0 is series OR season
+
+        if (position == 0)
+            return ViewMode.Movie;
+        else
+            return ViewMode.Series;
+    }
+
+    @Override
 	public int getCount() {
         return 2;
 	}
 
 	@Override
 	public Fragment getItem(int position) {
-		return JukeboxFragment.newInstance(position);
+		return JukeboxFragment.newInstance(getViewMode(position));
 	}
 
     @Override

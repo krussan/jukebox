@@ -161,13 +161,6 @@ public class ListActivity extends AppCompatActivity implements
 		lv.setOnItemClickListener(this);
 		lv.setOnItemLongClickListener(this);
 
-//		findViewById(R.id.btnRefresh).setOnClickListener(this);
-//		findViewById(R.id.btnSelectMediaPlayer).setOnClickListener(this);
-//	    findViewById(R.id.btnCurrentMovie).setOnClickListener(this);
-//		findViewById(R.id.btnPreferences).setOnClickListener(this);
-//		findViewById(R.id.btnOn).setVisibility(View.GONE);
-//		findViewById(R.id.btnOff).setVisibility(View.GONE);
-
         EndlessScrollListener scrollListener = new EndlessScrollListener(this) {
             @Override
             public boolean onLoadMore(int page, int totalItemsCount) {
@@ -342,7 +335,6 @@ public class ListActivity extends AppCompatActivity implements
             this.setTotalItems(totalSeasons);
             if (_seasonLayoutAdapter != null) {
                 _seasonLayoutAdapter.addSeasons(seasons);
-
 
                 if (this.getOffset() == 0 && seasons.size() <= NR_OF_ITEMS)
                     this.setFirstIsLast(true);
