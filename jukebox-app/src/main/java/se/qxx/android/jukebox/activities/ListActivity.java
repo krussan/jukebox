@@ -30,10 +30,10 @@ import se.qxx.jukebox.domain.JukeboxDomain;
 
 import static se.qxx.android.jukebox.model.Constants.NR_OF_ITEMS;
 
-public class ListActivity extends AppCompatActivity implements
-        AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, JukeboxConnectionHandler.ConnectorCallbackEventListener, IOffsetHandler, SearchView.OnQueryTextListener {
+@Deprecated
+public class ListActivity extends BaseActivity implements
+        AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, JukeboxConnectionHandler.ConnectorCallbackEventListener, IOffsetHandler {
 
-	private CastContext mCastContext;
 	private SeasonLayoutAdapter _seasonLayoutAdapter;
 	private EpisodeLayoutAdapter _episodeLayoutAdapter;
 	private int offset;
@@ -123,8 +123,6 @@ public class ListActivity extends AppCompatActivity implements
 
 		setContentView(R.layout.main);
 
-        mCastContext = CastContext.getSharedInstance(this);
-
         initializeView();
 
         loadMoreData(0, getSeriesID(), getSeasonID());
@@ -152,7 +150,7 @@ public class ListActivity extends AppCompatActivity implements
 		ChromeCastConfiguration.createMenu(this,
                 getMenuInflater(),
                 menu,
-                this);
+                this, null);
 
 		return true;
 	}

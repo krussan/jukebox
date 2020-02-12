@@ -4,7 +4,8 @@ public enum ViewMode {
     Movie,
     Series,
     Season,
-    Episode;
+    Episode,
+    Search
 }
 
 

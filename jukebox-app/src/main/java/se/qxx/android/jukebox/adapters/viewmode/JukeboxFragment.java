@@ -15,7 +15,9 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.IdRes;
 import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.ListFragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import se.qxx.android.jukebox.R;
@@ -23,10 +25,7 @@ import se.qxx.android.jukebox.activities.ListActivity;
 import se.qxx.android.jukebox.activities.MovieDetailActivity;
 import se.qxx.android.jukebox.activities.NowPlayingActivity;
 import se.qxx.android.jukebox.activities.ViewMode;
-import se.qxx.android.jukebox.adapters.list.EpisodeLayoutAdapter;
-import se.qxx.android.jukebox.adapters.list.MovieLayoutAdapter;
-import se.qxx.android.jukebox.adapters.list.SeasonLayoutAdapter;
-import se.qxx.android.jukebox.adapters.list.SeriesLayoutAdapter;
+import se.qxx.android.jukebox.adapters.list.*;
 import se.qxx.android.jukebox.adapters.support.EndlessScrollListener;
 import se.qxx.android.jukebox.adapters.support.IOffsetHandler;
 import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
@@ -47,6 +46,7 @@ public class JukeboxFragment extends ListFragment implements
 	private SeriesLayoutAdapter _seriesLayoutAdapter;
     private SeasonLayoutAdapter _seasonLayoutAdapter;
     private EpisodeLayoutAdapter _episodeLayoutAdapter;
+    private MosLayoutAdapter _mosLayoutAdapter;
 
     private EndlessScrollListener scrollListener;
     private int offset;
@@ -136,11 +136,27 @@ public class JukeboxFragment extends ListFragment implements
         this.firstIsLast = firstIsLast;
     }
 
+    public JukeboxFragmentHandler getHandler() {
+        return handler;
+    }
+
+    private void setHandler(JukeboxFragmentHandler handler) {
+        this.handler = handler;
+    }
+
     private static JukeboxFragment createFragment(Bundle b) {
         JukeboxFragment mf = new JukeboxFragment();
         mf.setArguments(b);
 
         return mf;
+    }
+
+    public MosLayoutAdapter getMosLayoutAdapter() {
+        return _mosLayoutAdapter;
+    }
+
+    public void setMosLayoutAdapter(MosLayoutAdapter _mosLayoutAdapter) {
+        this._mosLayoutAdapter = _mosLayoutAdapter;
     }
 
     public static JukeboxFragment newInstance(ViewMode mode) {
@@ -244,14 +260,14 @@ public class JukeboxFragment extends ListFragment implements
             return _seriesLayoutAdapter;
         }
         else if (mode == ViewMode.Season) {
-            _seasonLayoutAdapter = new SeasonLayoutAdapter(v.getContext(), this.getSeries().getSeasonList());
+            _seasonLayoutAdapter = new SeasonLayoutAdapter(v.getContext(), new ArrayList<>());
             GUITools.setTextOnTextview(R.id.txtListTitle, this.getSeries().getTitle(), v);
             return _seasonLayoutAdapter;
         }
         else if (mode == ViewMode.Episode) {
             _episodeLayoutAdapter = new EpisodeLayoutAdapter(v.getContext(),
                             this.getSeason().getSeasonNumber(),
-                            this.getSeason().getEpisodeList());
+                            new ArrayList<>());
 
             GUITools.setTextOnTextview(R.id.txtListTitle,
                     String.format("%s - Season %s",
@@ -259,14 +275,17 @@ public class JukeboxFragment extends ListFragment implements
                             this.getSeason().getSeasonNumber()), v);
             return _episodeLayoutAdapter;
         }
+        else if (mode == ViewMode.Search) {
+            _mosLayoutAdapter = new MosLayoutAdapter(v.getContext(), new ArrayList<>());
+        }
 
         return null;
     }
 
-	private void loadMoreData(int offset) {
+	protected void loadMoreData(int offset) {
         setLoading(true);
-        if (this.handler != null)
-            this.handler.getConnectionHandler().connect(
+        if (this.getHandler() != null)
+            this.getHandler().getConnectionHandler().connect(
                     this.getSearchString(),
                     offset,
                     Constants.NR_OF_ITEMS,
@@ -288,12 +307,12 @@ public class JukeboxFragment extends ListFragment implements
             startActivity(i);
         }
         else if (this.getMode() == ViewMode.Series) {
-            this.handler.switchFragment(ViewMode.Season,
+            this.getHandler().switchFragment(ViewMode.Season,
                     _seriesLayoutAdapter.getItem(pos),
                     null);
         }
         else if (this.getMode() == ViewMode.Season) {
-            this.handler.switchFragment(ViewMode.Episode,
+            this.getHandler().switchFragment(ViewMode.Episode,
                     this.getSeries(),
                     _seasonLayoutAdapter.getItem(pos));
         }
@@ -324,7 +343,7 @@ public class JukeboxFragment extends ListFragment implements
                     _jukeboxMovieLayoutAdapter.getItemId(pos),
                     _jukeboxMovieLayoutAdapter.getMedia(pos),
                     RequestType.TypeMovie,
-                    this.handler.getConnectionHandler());
+                    this.getHandler().getConnectionHandler());
         }
         else if (this.getMode() == ViewMode.Series) {
             d = new ActionDialog(
@@ -332,7 +351,7 @@ public class JukeboxFragment extends ListFragment implements
                     _seriesLayoutAdapter.getItemId(pos),
                     null,
                     RequestType.TypeSeries,
-                    this.handler.getConnectionHandler());
+                    this.getHandler().getConnectionHandler());
         }
         else if (this.getMode() == ViewMode.Season) {
             JukeboxDomain.Season ss = _seasonLayoutAdapter.getItem(pos);
@@ -342,7 +361,7 @@ public class JukeboxFragment extends ListFragment implements
                     ss.getID(),
                     null,
                     JukeboxDomain.RequestType.TypeSeason,
-                    this.handler.getConnectionHandler());
+                    this.getHandler().getConnectionHandler());
         }
         else if (this.getMode() == ViewMode.Episode) {
             JukeboxDomain.Episode e = _episodeLayoutAdapter.getItem(pos);
@@ -352,7 +371,7 @@ public class JukeboxFragment extends ListFragment implements
                     e.getID(),
                     e.getMediaCount() > 0 ? e.getMedia(0) : null,
                     JukeboxDomain.RequestType.TypeEpisode,
-                    this.handler.getConnectionHandler());
+                    this.getHandler().getConnectionHandler());
         }
 
 		if (d != null)
@@ -363,47 +382,30 @@ public class JukeboxFragment extends ListFragment implements
 
     @Override
     public void handleMoviesUpdated(List<JukeboxDomain.Movie> movies, int totalMovies) {
-        swipeLayout.setRefreshing(false);
+        this.setRefreshing(false);
 	    if (_jukeboxMovieLayoutAdapter != null) {
             setLoading(false);
             this.setTotalItems(totalMovies);
 
-            _jukeboxMovieLayoutAdapter.addMovies(movies);
-            _jukeboxMovieLayoutAdapter.setServerListSize(totalMovies);
-            notifyMovieList();
+            this.getActivity().runOnUiThread(() -> {
+                _jukeboxMovieLayoutAdapter.addMovies(movies);
+                _jukeboxMovieLayoutAdapter.setServerListSize(totalMovies);
+                _jukeboxMovieLayoutAdapter.notifyDataSetChanged();
+            });
         }
     }
 
-    private void notifyMovieList() {
-        if (_jukeboxMovieLayoutAdapter != null && this.getActivity() != null)
-            this.getActivity().runOnUiThread(() -> _jukeboxMovieLayoutAdapter.notifyDataSetChanged());
-    }
-
-    private void notifySeriesList() {
-        if (_seriesLayoutAdapter != null && this.getActivity() != null)
-            this.getActivity().runOnUiThread(() -> _seriesLayoutAdapter.notifyDataSetChanged());
-    }
-
-    private void notifySeasons() {
-        if (_seasonLayoutAdapter != null && this.getActivity() != null)
-            this.getActivity().runOnUiThread(() -> _seasonLayoutAdapter.notifyDataSetChanged());
-    }
-
-    private void notifyEpisodes() {
-        if (_episodeLayoutAdapter != null && this.getActivity() != null)
-            this.getActivity().runOnUiThread(() -> _episodeLayoutAdapter.notifyDataSetChanged());
-    }
-
-
     @Override
     public void handleSeriesUpdated(List<JukeboxDomain.Series> series, int totalSeries) {
-        swipeLayout.setRefreshing(false);
+        this.setRefreshing(false);
         if (_seriesLayoutAdapter != null) {
             setLoading(false);
             this.setTotalItems(totalSeries);
-            _seriesLayoutAdapter.addSeries(series);
-            _seriesLayoutAdapter.setServerListSize(totalSeries);
-            notifySeriesList();
+            this.getActivity().runOnUiThread(() -> {
+                _seriesLayoutAdapter.addSeries(series);
+                _seriesLayoutAdapter.setServerListSize(totalSeries);
+                _seriesLayoutAdapter.notifyDataSetChanged();
+            });
         }
     }
 
@@ -413,12 +415,13 @@ public class JukeboxFragment extends ListFragment implements
         if (this.getMode() == ViewMode.Season) {
             this.setTotalItems(totalSeasons);
             if (_seasonLayoutAdapter != null) {
-                _seasonLayoutAdapter.addSeasons(seasons);
+                this.getActivity().runOnUiThread(() -> {
+                    _seasonLayoutAdapter.addSeasons(seasons);
+                    _seasonLayoutAdapter.notifyDataSetChanged();
+                });
 
                 if (this.getOffset() == 0 && seasons.size() <= NR_OF_ITEMS)
                     this.setFirstIsLast(true);
-
-                notifySeasons();
             }
         }
 
@@ -430,12 +433,13 @@ public class JukeboxFragment extends ListFragment implements
         if (this.getMode() == ViewMode.Episode) {
             this.setTotalItems(totalEpisodes);
             if (_episodeLayoutAdapter != null) {
-                _episodeLayoutAdapter.addEpisodes(episodes);
+                this.getActivity().runOnUiThread(() -> {
+                    _episodeLayoutAdapter.addEpisodes(episodes);
+                    _episodeLayoutAdapter.notifyDataSetChanged();
+                });
 
                 if (this.getOffset() == 0 && episodes.size() <= NR_OF_ITEMS)
                     this.setFirstIsLast(true);
-
-                notifyEpisodes();
             }
         }
     }
@@ -445,24 +449,32 @@ public class JukeboxFragment extends ListFragment implements
         this.setOffset(0);
         ViewMode mode = this.getMode();
 	    if (mode == ViewMode.Movie && _jukeboxMovieLayoutAdapter != null) {
-            _jukeboxMovieLayoutAdapter.clearMovies();
-            notifyMovieList();
+            this.getActivity().runOnUiThread(() -> {
+                _jukeboxMovieLayoutAdapter.clearMovies();
+                _jukeboxMovieLayoutAdapter.notifyDataSetChanged();
+            });
         }
         else if (mode == ViewMode.Series && _seriesLayoutAdapter != null) {
-	        _seriesLayoutAdapter.clearSeries();
-	        notifySeriesList();
+            this.getActivity().runOnUiThread(() -> {
+                _seriesLayoutAdapter.clearSeries();
+                _seriesLayoutAdapter.notifyDataSetChanged();
+            });
         }
         else if (mode == ViewMode.Season && _seasonLayoutAdapter != null) {
-            _seasonLayoutAdapter.clearSeasons();
-            notifySeasons();
+            this.getActivity().runOnUiThread(() -> {
+                _seasonLayoutAdapter.clearSeasons();
+                _seasonLayoutAdapter.notifyDataSetChanged();
+            });
         }
         else if (mode == ViewMode.Episode && _episodeLayoutAdapter != null) {
-            _episodeLayoutAdapter.clearEpisodes();
-            notifyEpisodes();
+            this.getActivity().runOnUiThread(() -> {
+                _episodeLayoutAdapter.clearEpisodes();
+                _episodeLayoutAdapter.notifyDataSetChanged();
+            });
         }
     }
 
-    private void setLoading(boolean isLoading) {
+    protected void setLoading(boolean isLoading) {
         this.isLoading = isLoading;
         if (_jukeboxMovieLayoutAdapter != null)
             _jukeboxMovieLayoutAdapter.setLoading(isLoading);
@@ -473,13 +485,14 @@ public class JukeboxFragment extends ListFragment implements
 
     @Override
     public void onRefresh() {
-        swipeLayout.setRefreshing(true);
+        this.setRefreshing(true);
         clearData();
         loadMoreData(0);
     }
 
     public interface JukeboxFragmentHandler {
         JukeboxConnectionHandler getConnectionHandler();
+        void switchFragment(Fragment fragment);
         void switchFragment(ViewMode newMode, JukeboxDomain.Series series, JukeboxDomain.Season season);
     }
 
@@ -487,8 +500,8 @@ public class JukeboxFragment extends ListFragment implements
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof JukeboxFragmentHandler) {
-            handler = (JukeboxFragmentHandler) context;
-            handler.getConnectionHandler().addCallback(this);
+            this.setHandler((JukeboxFragmentHandler) context);
+            this.getHandler().getConnectionHandler().addCallback(this);
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement JukeboxFragmentHandler");
@@ -498,7 +511,7 @@ public class JukeboxFragment extends ListFragment implements
     @Override
     public void onDetach() {
         super.onDetach();
-        handler.getConnectionHandler().removeCallback(this);
+        this.getHandler().getConnectionHandler().removeCallback(this);
     }
 
     public boolean onSearch(String searchString) {
@@ -509,5 +522,7 @@ public class JukeboxFragment extends ListFragment implements
         return true;
     }
 
-
+    protected void setRefreshing(boolean isRefreshing) {
+        swipeLayout.setRefreshing(isRefreshing);
+    }
 }

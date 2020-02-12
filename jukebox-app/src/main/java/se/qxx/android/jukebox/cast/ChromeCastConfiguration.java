@@ -56,20 +56,25 @@ public class ChromeCastConfiguration {
             return JukeboxCastType.Local;
     }
 
-    public static void createMenu(Context context, MenuInflater inflater, Menu menu, SearchView.OnQueryTextListener queryTextListener) {
+    public static void createMenu(Context context,
+                                  MenuInflater inflater,
+                                  Menu menu,
+                                  SearchView.OnQueryTextListener queryTextListener,
+                                  SearchView.OnCloseListener closeListener) {
         inflater.inflate(R.menu.cast, menu);
         CastButtonFactory.setUpMediaRouteButton(context.getApplicationContext(),
                 menu,
                 R.id.media_route_menu_item);
 
-        if (queryTextListener != null) {
-            MenuItem searchItem = menu.findItem(R.id.search_menu_item);
-            if (searchItem != null) {
-                SearchView searchView = (SearchView) searchItem.getActionView();
+        MenuItem searchItem = menu.findItem(R.id.search_menu_item);
+        if (searchItem != null) {
+            SearchView searchView = (SearchView) searchItem.getActionView();
+            if (queryTextListener != null)
                 searchView.setOnQueryTextListener(queryTextListener);
-            }
-        }
 
+            if (closeListener != null)
+                searchView.setOnCloseListener(closeListener);
+        }
     }
 
     public static TextTrackStyle getTextStyle() {

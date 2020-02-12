@@ -11,7 +11,7 @@ import se.qxx.android.jukebox.activities.fragments.PlayerFragment;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 
-public class NowPlayingActivity extends AppCompatActivity {
+public class NowPlayingActivity extends BaseActivity {
     private static boolean screenChange = false;
     private JukeboxSettings settings;
 

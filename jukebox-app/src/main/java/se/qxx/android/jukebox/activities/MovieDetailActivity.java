@@ -25,7 +25,7 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class MovieDetailActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
+public class MovieDetailActivity extends BaseActivity {
 
     private JukeboxSettings settings;
     private CacheData cacheData;
@@ -188,7 +188,7 @@ public class MovieDetailActivity extends AppCompatActivity implements SearchView
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
 
-        ChromeCastConfiguration.createMenu(this, getMenuInflater(), menu, this);
+        ChromeCastConfiguration.createMenu(this, getMenuInflater(), menu, this, this);
 
         return true;
     }
