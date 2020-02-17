@@ -9,16 +9,20 @@ import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager.widget.ViewPager;
 import com.google.android.gms.cast.framework.CastContext;
 
 import java.util.List;
 
 import se.qxx.android.jukebox.R;
+import se.qxx.android.jukebox.activities.fragments.JukeboxFragment;
 import se.qxx.android.jukebox.adapters.list.EpisodeLayoutAdapter;
 import se.qxx.android.jukebox.adapters.list.SeasonLayoutAdapter;
 import se.qxx.android.jukebox.adapters.support.EndlessScrollListener;
 import se.qxx.android.jukebox.adapters.support.IOffsetHandler;
+import se.qxx.android.jukebox.adapters.viewmode.JukeboxFragmentAdapter;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
 import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
 import se.qxx.android.jukebox.dialogs.ActionDialog;
@@ -30,88 +34,43 @@ import se.qxx.jukebox.domain.JukeboxDomain;
 
 import static se.qxx.android.jukebox.model.Constants.NR_OF_ITEMS;
 
-@Deprecated
-public class ListActivity extends BaseActivity implements
-        AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, JukeboxConnectionHandler.ConnectorCallbackEventListener, IOffsetHandler {
+public class ListActivity
+        extends BaseActivity
+        implements JukeboxFragment.JukeboxFragmentHandler {
 
-	private SeasonLayoutAdapter _seasonLayoutAdapter;
-	private EpisodeLayoutAdapter _episodeLayoutAdapter;
-	private int offset;
-	private boolean firstIsLast = false;
-	private int totalItems = 0;
-	private boolean isLoading;
-	private JukeboxSettings settings;
-	private JukeboxConnectionHandler connectionHandler;
-	private String serachString = "";
+    private JukeboxSettings settings;
+    private JukeboxConnectionHandler connectionHandler;
 
-    protected View getRootView() {
-		return findViewById(R.id.rootMain);
-	}
-
-	public ViewMode getMode() {
-		Bundle b = getIntent().getExtras();
-		if (b != null) {
-		    ViewMode mode = (ViewMode) b.getSerializable("mode");
-		    if (mode != null)
-		        return mode;
+    public ViewMode getMode() {
+        Bundle b = getIntent().getExtras();
+        if (b != null) {
+            ViewMode mode = (ViewMode) b.getSerializable("mode");
+            if (mode != null)
+                return mode;
         }
 
         return ViewMode.Season;
-	}
-
-    public int getOffset() {
-        return offset;
-    }
-
-    public void setOffset(int offset) {
-        this.offset = offset;
     }
 
     public JukeboxDomain.Series getSeries() {
         Bundle b = getIntent().getExtras();
-        if (b != null)
-            return (JukeboxDomain.Series) b.getSerializable("series");
+        if (b != null) {
+            Object o = b.getSerializable("series");
+            if (o != null)
+                return (JukeboxDomain.Series)o;
+        }
 
         return null;
     }
     public JukeboxDomain.Season getSeason() {
-
         Bundle b = getIntent().getExtras();
-        if (b != null)
-            return (JukeboxDomain.Season) b.getSerializable("season");
+        if (b != null) {
+            Object o = b.getSerializable("season");
+            if (o != null)
+                return (JukeboxDomain.Season)o;
+        }
 
         return null;
-    }
-
-    public int getSeriesID() {
-        if (this.getSeries() != null)
-            return this.getSeries().getID();
-        else
-            return -1;
-    }
-
-    public int getSeasonID() {
-        if (this.getSeason() != null)
-            return this.getSeason().getID();
-        else
-            return -1;
-    }
-
-    public int getTotalItems() {
-        return totalItems;
-    }
-
-    public void setTotalItems(int totalItems) {
-        this.totalItems = totalItems;
-    }
-
-
-    public String getSerachString() {
-        return serachString;
-    }
-
-    public void setSerachString(String serachString) {
-        this.serachString = serachString;
     }
 
     @Override
@@ -119,302 +78,53 @@ public class ListActivity extends BaseActivity implements
         super.onCreate(savedInstanceState);
 
         settings = new JukeboxSettings(this);
-        setupConnectionHandler();
+        setupConnectionHandler(false);
 
-		setContentView(R.layout.main);
+        setContentView(R.layout.jukebox_list_wrapper);
 
         initializeView();
-
-        loadMoreData(0, getSeriesID(), getSeasonID());
     }
 
-    private void setupConnectionHandler() {
-        connectionHandler = new JukeboxConnectionHandler(
-                settings.getServerIpAddress(),
-                settings.getServerPort());
-        connectionHandler.addCallback(this);
+    private void initializeView() {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        JukeboxFragment fragment = JukeboxFragment.newInstance(this.getMode(), this.getSeries(), this.getSeason());
+        ft.add(R.id.rootJukeboxListWrapper, fragment);
+        ft.commit();
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
+    private void setupConnectionHandler(boolean reAttachCallbacks) {
+        if (this.connectionHandler == null) {
+            connectionHandler = new JukeboxConnectionHandler(
+                    settings.getServerIpAddress(),
+                    settings.getServerPort());
 
-        setupConnectionHandler();
-    }
-
-	@Override
-	public boolean onCreateOptionsMenu(
-	        Menu menu) {
-		super.onCreateOptionsMenu(menu);
-
-		ChromeCastConfiguration.createMenu(this,
-                getMenuInflater(),
-                menu,
-                this, null);
-
-		return true;
-	}
-
-	private void initializeView() {
-		ListView lv = findViewById(R.id.listItems);
-		lv.setOnItemClickListener(this);
-		lv.setOnItemLongClickListener(this);
-
-        EndlessScrollListener scrollListener = new EndlessScrollListener(this) {
-            @Override
-            public boolean onLoadMore(int page, int totalItemsCount) {
-                if (totalItemsCount >= getTotalItems())
-                    return false;
-
-                if (!isLoading && !isFirstIsLast()) {
-                    int offset = page * NR_OF_ITEMS;
-
-                    this.getHandler().setOffset(offset);
-
-                    if (this.getHandler().getMode() == ViewMode.Season)
-                        loadMoreData(
-                                offset,
-                                this.getHandler().getSeries().getID());
-                    else if (this.getHandler().getMode() == ViewMode.Episode)
-                        return false;
+            if (reAttachCallbacks) {
+                for (Fragment f : getSupportFragmentManager().getFragments()) {
+                    if (f instanceof JukeboxConnectionHandler.ConnectorCallbackEventListener)
+                        connectionHandler.addCallback((JukeboxConnectionHandler.ConnectorCallbackEventListener) f);
                 }
-
-                return true;
-            }
-        };
-
-		lv.setOnScrollListener(scrollListener);
-
-        if (this.getMode() == ViewMode.Season) {
-            _seasonLayoutAdapter = new SeasonLayoutAdapter(
-                    this.getApplicationContext(),
-                    this.getSeries().getSeasonList());
-
-            lv.setAdapter(_seasonLayoutAdapter);
-            GUITools.setTextOnTextview(R.id.txtListTitle, this.getSeries().getTitle(), getRootView());
-        }
-        else if (this.getMode() == ViewMode.Episode) {
-            _episodeLayoutAdapter =
-                new EpisodeLayoutAdapter(
-                        this.getApplicationContext(),
-                        this.getSeason().getSeasonNumber(),
-                        this.getSeason().getEpisodeList());
-
-            lv.setAdapter(_episodeLayoutAdapter);
-            GUITools.setTextOnTextview(R.id.txtListTitle, String.format("%s - Season %s", this.getSeries().getTitle(), this.getSeason().getSeasonNumber()), getRootView());
-        }
-	}
-
-    private void loadMoreData(int offset, int seriesID) {
-        setIsLoading(true);
-        this.connectionHandler.connect(this.getSerachString(), offset, Constants.NR_OF_ITEMS, this.getMode(), seriesID, -1, true, true);
-    }
-
-    private void loadMoreData(int offset, int seriesID, int seasonID) {
-        setIsLoading(true);
-        this.connectionHandler.connect(this.getSerachString(), offset, Constants.NR_OF_ITEMS, this.getMode(), seriesID, seasonID, true, true);
-    }
-
-
-
-    @Override
-    public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
-        if (this.getMode() == ViewMode.Season) {
-
-            Intent intentSeries = new Intent(this, ListActivity.class);
-            intentSeries.putExtra("mode", ViewMode.Episode);
-
-            startActivity(intentSeries);
-        }
-        else if (this.getMode() == ViewMode.Episode) {
-            JukeboxDomain.Episode e = (JukeboxDomain.Episode) _episodeLayoutAdapter.getItem(pos);
-
-            if (e != null) {
-                Intent iPlay = new Intent(this, NowPlayingActivity.class);
-                iPlay.putExtra("mode", ViewMode.Episode);
-                iPlay.putExtra("ID", e.getID());
-                iPlay.putExtra("seasonNumber", this.getSeason().getSeasonNumber());
-
-                startActivity(iPlay);
             }
         }
-    }
-
-    @Override
-    public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int position,
-                                   long arg3) {
-
-        ActionDialog d = null;
-
-        if (this.getMode() == ViewMode.Season) {
-            JukeboxDomain.Season ss = _seasonLayoutAdapter.getItem(position);
-
-            d = new ActionDialog(
-                    this,
-                    ss.getID(),
-                    null,
-                    JukeboxDomain.RequestType.TypeSeason,
-                    this.connectionHandler);
-        }
-        else if (this.getMode() == ViewMode.Episode) {
-            JukeboxDomain.Episode e = _episodeLayoutAdapter.getItem(position);
-
-            d = new ActionDialog(
-                    this,
-                    e.getID(),
-                    e.getMediaCount() > 0 ? e.getMedia(0) : null,
-                    JukeboxDomain.RequestType.TypeEpisode,
-                    this.connectionHandler);
-        }
-
-        if (d != null) {
-            d.show();
-            return true;
-        }
-
-        return false;
-    }
-
-//    @Override
-//    public void onClick(View v) {
-//        int id = v.getId();
-//
-//        switch (id) {
-//            case R.id.btnRefresh:
-//                Logger.Log().i("onConnectClicked");
-//
-//
-//                clearData();
-//                loadMoreData(0, getSeriesID(), getSeasonID());
-//
-//                break;
-//            case R.id.btnSelectMediaPlayer:
-//                Logger.Log().i("selectMediaPlayerClicked");
-//
-//                Intent i = new Intent(this, PlayerPickerActivity.class);
-//                startActivity(i);
-//                break;
-//            case R.id.btnPreferences:
-//                Intent intentPreferences = new Intent(this, JukeboxPreferenceActivity.class);
-//                startActivity(intentPreferences);
-//                break;
-//            default:
-//                break;
-//
-//        }
-//    }
-
-    private void clearData() {
-        this.setOffset(0);
-        ViewMode mode = this.getMode();
-        if (mode == ViewMode.Season && _seasonLayoutAdapter != null) {
-            _seasonLayoutAdapter.clearSeasons();
-            notifySeasons();
-        }
-        else if (mode == ViewMode.Episode && _episodeLayoutAdapter != null) {
-            _episodeLayoutAdapter.clearEpisodes();
-            notifyEpisodes();
-        }
-    }
-
-    @Override
-    public void handleMoviesUpdated(List<JukeboxDomain.Movie> movies, int totalMovies) {
-        //should not happen in this activity
-    }
-
-    @Override
-    public void handleSeriesUpdated(List<JukeboxDomain.Series> series, int totalSeries) {
-        //should not happen in this activity
-    }
-
-    @Override
-    public void handleSeasonsUpdated(final List<JukeboxDomain.Season> seasons, int totalSeasons) {
-        setIsLoading(false);
-        if (this.getMode() == ViewMode.Season) {
-            this.setTotalItems(totalSeasons);
-            if (_seasonLayoutAdapter != null) {
-                _seasonLayoutAdapter.addSeasons(seasons);
-
-                if (this.getOffset() == 0 && seasons.size() <= NR_OF_ITEMS)
-                    this.setFirstIsLast(true);
-
-                notifySeasons();
-            }
-        }
-    }
-
-    private void setIsLoading(boolean isLoading) {
-        this.isLoading = isLoading;
-
-        if (_episodeLayoutAdapter != null)
-            _episodeLayoutAdapter.setLoading(isLoading);
-
-        if (_seasonLayoutAdapter != null)
-            _seasonLayoutAdapter.setLoading(isLoading);
-    }
-
-    @Override
-    public void handleEpisodesUpdated(List<JukeboxDomain.Episode> episodes, int totalEpisodes) {
-        setIsLoading(false);
-        if (this.getMode() == ViewMode.Episode) {
-            this.setTotalItems(totalEpisodes);
-            if (_episodeLayoutAdapter != null) {
-                _episodeLayoutAdapter.addEpisodes(episodes);
-
-                if (this.getOffset() == 0 && episodes.size() <= NR_OF_ITEMS)
-                    this.setFirstIsLast(true);
-
-                notifyEpisodes();
-            }
-        }
-    }
-
-    private void notifySeasons() {
-        if (_seasonLayoutAdapter != null)
-            runOnUiThread(() -> _seasonLayoutAdapter.notifyDataSetChanged());
-    }
-    private void notifyEpisodes() {
-        if (_episodeLayoutAdapter != null)
-            runOnUiThread(() -> _episodeLayoutAdapter.notifyDataSetChanged());
-    }
-
-    public boolean isFirstIsLast() {
-        return firstIsLast;
-    }
-
-    public void setFirstIsLast(boolean firstIsLast) {
-        this.firstIsLast = firstIsLast;
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        connectionHandler.stop();
-    }
-
-
-    //TODO: Should overlay the current fragment with a new search fragment
-    // that shows bot series and movies that matches the query
-    // This need to be duplicated in the JukeboxFragment as well
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        return search(query);
+        this.connectionHandler.stop();
+        this.connectionHandler = null;
     }
 
     @Override
-    public boolean onQueryTextChange(String newText) {
-        if (newText.length() > 3) {
-            return search(newText);
-        }
-        return false;
+    protected void onResume() {
+        super.onResume();
+        setupConnectionHandler(true);
     }
 
-    private boolean search(String query) {
-        this.clearData();
-        this.setSerachString(query);
-        loadMoreData(0, getSeriesID(), getSeasonID());
-        return true;
+    @Override
+    public JukeboxConnectionHandler getConnectionHandler() {
+        return this.connectionHandler;
     }
+
 }
 
 

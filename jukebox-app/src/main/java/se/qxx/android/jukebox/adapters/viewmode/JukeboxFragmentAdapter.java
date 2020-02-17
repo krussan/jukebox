@@ -11,6 +11,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import org.apache.commons.lang3.StringUtils;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.ViewMode;
+import se.qxx.android.jukebox.activities.fragments.JukeboxFragment;
 
 public class JukeboxFragmentAdapter extends FragmentStatePagerAdapter {
 

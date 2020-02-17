@@ -6,7 +6,6 @@ import android.os.CountDownTimer;
 import android.view.Menu;
 import android.view.MenuItem;
 import androidx.annotation.IdRes;
-import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,7 +16,7 @@ import com.google.android.gms.cast.framework.CastContext;
 import org.apache.commons.lang3.StringUtils;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.fragments.SearchFragment;
-import se.qxx.android.jukebox.adapters.viewmode.JukeboxFragment;
+import se.qxx.android.jukebox.activities.fragments.JukeboxFragment;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
@@ -121,7 +120,7 @@ public class BaseActivity extends AppCompatActivity implements SearchView.OnQuer
                 searchFragment = SearchFragment.newInstance();
                 ft.replace(R.id.rootJukeboxMainWrapper, searchFragment);
                 ft.addToBackStack(null);
-                ft.commit();
+                ft.commitNow();
                 this.setSearchVisible(true);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -132,16 +131,12 @@ public class BaseActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     public void switchFragment(@IdRes int container, Fragment fragment) {
-        try {
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left);
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left);
 
-            ft.replace(container, fragment);
-            ft.addToBackStack(null);
-            ft.commit();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        ft.replace(container, fragment);
+        ft.addToBackStack(null);
+        ft.commitNow();
 
     }
 

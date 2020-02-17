@@ -6,11 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.ListFragment;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.ViewMode;
 import se.qxx.android.jukebox.adapters.list.MosLayoutAdapter;
-import se.qxx.android.jukebox.adapters.viewmode.JukeboxFragment;
 import se.qxx.android.jukebox.model.Constants;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
