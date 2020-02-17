@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.ViewMode;
-import se.qxx.android.jukebox.adapters.list.MosLayoutAdapter;
+import se.qxx.android.jukebox.adapters.MosLayoutAdapter;
 import se.qxx.android.jukebox.model.Constants;
 import se.qxx.jukebox.domain.JukeboxDomain;
 

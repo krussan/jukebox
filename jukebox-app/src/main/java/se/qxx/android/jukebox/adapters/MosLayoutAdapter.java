@@ -1,4 +1,4 @@
-package se.qxx.android.jukebox.adapters.list;
+package se.qxx.android.jukebox.adapters;
 
 import android.content.Context;
 import android.view.View;

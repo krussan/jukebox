@@ -1,4 +1,4 @@
-package se.qxx.android.jukebox.adapters.support;
+package se.qxx.android.jukebox.support;
 
 import se.qxx.android.jukebox.activities.ViewMode;
 import se.qxx.jukebox.domain.JukeboxDomain;

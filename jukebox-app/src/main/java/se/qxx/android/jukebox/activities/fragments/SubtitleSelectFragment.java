@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import se.qxx.android.jukebox.R;
-import se.qxx.android.jukebox.adapters.support.SubtitleLayoutAdapter;
+import se.qxx.android.jukebox.adapters.SubtitleLayoutAdapter;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;

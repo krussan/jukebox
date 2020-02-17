@@ -1,4 +1,4 @@
-package se.qxx.android.jukebox.adapters.support;
+package se.qxx.android.jukebox.support;
 
 import android.widget.AbsListView;
 

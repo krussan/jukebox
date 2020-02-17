@@ -6,10 +6,9 @@ import androidx.viewpager.widget.ViewPager;
 
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.fragments.JukeboxFragment;
-import se.qxx.android.jukebox.adapters.viewmode.JukeboxFragmentAdapter;
+import se.qxx.android.jukebox.adapters.JukeboxFragmentAdapter;
 import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
-import se.qxx.jukebox.domain.JukeboxDomain;
 
 public class FlipperListActivity
     extends BaseActivity
