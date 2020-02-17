@@ -13,7 +13,8 @@
 			android:text="@string/lblSeriesTitle"
 			android:padding="6dp"
 			android:textColor="#FFFFFF"
-			android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+			android:background="#33b5e5"
+			/>
 
 	<!-- This is needed for the continouse update to work -->
 	<ListView

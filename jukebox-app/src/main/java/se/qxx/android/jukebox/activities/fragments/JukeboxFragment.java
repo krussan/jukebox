@@ -435,6 +435,7 @@ public class JukeboxFragment extends ListFragment implements
     @Override
     public void handleSeasonsUpdated(List<JukeboxDomain.Season> seasons, int totalSeasons) {
         setLoading(false);
+        this.setRefreshing(false);
         if (this.getMode() == Season) {
             this.setTotalItems(totalSeasons);
             if (_seasonLayoutAdapter != null) {
@@ -447,12 +448,12 @@ public class JukeboxFragment extends ListFragment implements
                     this.setFirstIsLast(true);
             }
         }
-
     }
 
     @Override
     public void handleEpisodesUpdated(List<JukeboxDomain.Episode> episodes, int totalEpisodes) {
         setLoading(false);
+        this.setRefreshing(false);
         if (this.getMode() == ViewMode.Episode) {
             this.setTotalItems(totalEpisodes);
             if (_episodeLayoutAdapter != null) {
@@ -536,7 +537,12 @@ public class JukeboxFragment extends ListFragment implements
     @Override
     public void onDetach() {
         super.onDetach();
-        this.getHandler().getConnectionHandler().removeCallback(this);
+        JukeboxFragmentHandler handler = this.getHandler();
+        if (handler != null) {
+            JukeboxConnectionHandler connectionHandler = handler.getConnectionHandler();
+            if (connectionHandler != null)
+                connectionHandler.removeCallback(this);
+        }
     }
 
     public boolean onSearch(String searchString) {
