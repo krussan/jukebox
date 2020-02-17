@@ -18,6 +18,11 @@ public class ListActivity
     private JukeboxSettings settings;
     private JukeboxConnectionHandler connectionHandler;
 
+    @Override
+    protected int getSearchContainer() {
+        return R.id.rootJukeboxListWrapper;
+    }
+
     public ViewMode getMode() {
         Bundle b = getIntent().getExtras();
         if (b != null) {

@@ -20,6 +20,11 @@ public class FlipperListActivity
     private JukeboxConnectionHandler connectionHandler;
 
     @Override
+    protected int getSearchContainer() {
+        return R.id.rootJukeboxViewPager;
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 

@@ -20,7 +20,7 @@ import se.qxx.android.jukebox.activities.fragments.JukeboxFragment;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
-public class BaseActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SearchView.OnCloseListener  {
+public abstract class BaseActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SearchView.OnCloseListener  {
 
     private SearchFragment searchFragment;
     private boolean searchVisible = false;
@@ -28,6 +28,9 @@ public class BaseActivity extends AppCompatActivity implements SearchView.OnQuer
     private static final int WAITING_TIME = 200;
     private static final int COUNTDOWN_TIMER = 500;
     private CastContext mCastContext;
+
+    @IdRes
+    protected abstract int getSearchContainer();
 
     public boolean isSearchVisible() {
         return searchVisible;
@@ -108,41 +111,20 @@ public class BaseActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     private boolean search(String query) {
-        //TODO: Load search fragment as overlay?
-        if (this.isSearchVisible() && searchFragment != null) {
-            searchFragment.search(query);
-        }
-        else {
-            try {
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
+        if (!this.isSearchVisible() || searchFragment == null) {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
 
-                searchFragment = SearchFragment.newInstance();
-                ft.replace(R.id.rootJukeboxMainWrapper, searchFragment);
-                ft.addToBackStack(null);
-                ft.commitNow();
-                this.setSearchVisible(true);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            searchFragment = SearchFragment.newInstance();
+            ft.replace(this.getSearchContainer(), searchFragment);
+            ft.addToBackStack(null);
+            ft.commit();
+
+            this.setSearchVisible(true);
         }
+
+        searchFragment.search(query);
 
         return true;
     }
-
-    public void switchFragment(@IdRes int container, Fragment fragment) {
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left);
-
-        ft.replace(container, fragment);
-        ft.addToBackStack(null);
-        ft.commitNow();
-
-    }
-
-    public void switchFragment(@IdRes int container, ViewMode newMode, JukeboxDomain.Series series, JukeboxDomain.Season season) {
-        JukeboxFragment newFragment = JukeboxFragment.newInstance(newMode, series, season);
-        switchFragment(container, newFragment);
-    }
-
 }

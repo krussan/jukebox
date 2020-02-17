@@ -15,6 +15,12 @@ public class NowPlayingActivity extends BaseActivity {
     private static boolean screenChange = false;
     private JukeboxSettings settings;
 
+
+    @Override
+    protected int getSearchContainer() {
+        return R.id.fragmentContainer;
+    }
+
     private ViewMode getMode() {
         Intent i = getIntent();
         if (i != null) {

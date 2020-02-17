@@ -29,6 +29,11 @@ public class MovieDetailActivity extends BaseActivity {
     private CacheData cacheData;
 
     @Override
+    protected int getSearchContainer() {
+        return R.id.content;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
