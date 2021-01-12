@@ -38,9 +38,11 @@ public class ParserBuilder extends MovieBuilder {
 		
 		this.getLog().Info(String.format("Running ParserBuilder on %s", fileNameToMatch));
 				
-		String stringToProcess = removeParenthesis(
-				removeInitialParenthesis(fileNameToMatch));
-		
+		String stringToProcess =
+			removeIgnored(
+				removeParenthesis(
+					removeInitialParenthesis(fileNameToMatch)));
+
 		String[] tokens = StringUtils.split(stringToProcess, " _.-");
 		
 		// assume movie name always comes first. The next token after that identifies the end of filename.
@@ -72,8 +74,8 @@ public class ParserBuilder extends MovieBuilder {
 						pm, 
 						titleMode, 
 						result, 
-						result.getRecursiveCount(), 
-						new ArrayList<ParserType>(),
+						result.getRecursiveCount(),
+						new ArrayList<>(),
 						tail);
 			}
 		}
@@ -88,6 +90,18 @@ public class ParserBuilder extends MovieBuilder {
 			pm.setGroupName(pm.getTitles().get(pm.getTitles().size() - 1));
 		
 		return pm;
+	}
+
+	private String removeIgnored(String str) {
+		for (ParserRegexTest pt : getWordList(ParserType.IGNORED)) {
+			Pattern p = Pattern.compile(pt.getRegex(), Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+			Matcher m = p.matcher(str);
+
+			str = m.replaceAll("");
+
+		}
+
+		return str;
 	}
 
 	private boolean parseToken(
@@ -105,12 +119,12 @@ public class ParserBuilder extends MovieBuilder {
 		// I.e. season/episode??.. that is look-ahead.. right?
 		// recursive call on the same token, ignoring the first ParserType??
 		
-		// if we get to an unknown token we switch to titlemode
+		// if we get to an unknown token we switch to title mode
 		if (pt.equals(ParserType.UNKNOWN) && !titleMode)
 			titleMode = true;
 		
-		// if we are in titlemode and we get to non unknown token
-		// we push the title. All other unkown tokens will be ignored 
+		// if we are in title mode and we get to non unknown token
+		// we push the title. All other unknown tokens will be ignored
 		if (!pt.equals(ParserType.UNKNOWN) && titleMode)
 			pm.pushTitle();
 		
@@ -135,11 +149,13 @@ public class ParserBuilder extends MovieBuilder {
 			pm.setPart(Integer.parseInt(resultingToken));
 			break;
 		case EPISODE:
-			pm.setEpisode(Integer.parseInt(resultingToken));;
-			break;
+			if (pm.getEpisode() == 0)
+				pm.setEpisode(Integer.parseInt(resultingToken));
+				break;
 		case SEASON:
-			pm.setSeason(Integer.parseInt(resultingToken));
-			break;
+			if (pm.getSeason() == 0)
+				pm.setSeason(Integer.parseInt(resultingToken));
+				break;
 		case YEAR:
 			pm.setYear(Integer.parseInt(resultingToken));
 			break;
@@ -172,7 +188,7 @@ public class ParserBuilder extends MovieBuilder {
 	}
 
 	private ParserToken checkToken(String token, boolean isFirst, boolean isLast, String[] tail) {
-		return checkToken(token, isFirst, isLast, new ArrayList<ParserType>(), tail);
+		return checkToken(token, isFirst, isLast, new ArrayList<>(), tail);
 	}
 	
 	private ParserToken checkToken(
@@ -197,7 +213,7 @@ public class ParserBuilder extends MovieBuilder {
 					}
 					else {
 						if (wt.getLookaheadInt() > 0 && tail.length > 0 && tail.length >= wt.getLookaheadInt()) {
-							// get sub-array of the tail of the number of lookahed elements we need
+							// get sub-array of the tail of the number of lookahead elements we need
 							// concatenate them into a new token and parse that
 							String newToken = token + " " + 
 									StringUtils.join(ArrayUtils.subarray(tail, 0, wt.getLookaheadInt()), " ");
@@ -241,7 +257,7 @@ public class ParserBuilder extends MovieBuilder {
 				(wt.isLastToken() && isLast) ||
 				(!wt.isFirstToken() && !wt.isLastToken());
 	}
- 
+
 	private String checkRegex(String token, String regex, int group) {
 		Pattern p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 		Matcher m = p.matcher(token);
@@ -249,13 +265,15 @@ public class ParserBuilder extends MovieBuilder {
 			if (group <= m.groupCount())
 				return m.group(group);
 		}
-		
+
 		return StringUtils.EMPTY;
-		
+
 	}
 
 	private List<ParserRegexTest> getWordList(ParserType pt) {
 		switch (pt) {
+		case IGNORED:
+			return this.getParser().getIgnored();
 		case EPISODE:
 			return this.getParser().getEpisode();
 		case FORMAT:

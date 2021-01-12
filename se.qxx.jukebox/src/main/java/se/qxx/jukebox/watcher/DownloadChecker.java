@@ -156,13 +156,15 @@ public class DownloadChecker extends JukeboxThread implements IDownloadChecker {
 	public void setMediaComplete(Media md) {
 		MediaMetadata meta = this.getMetaDataHelper().getMediaMetadata(md);
 
-		Media newMedia = Media.newBuilder(md)
-				.setDownloadComplete(true)
-				.setConverterState(MediaConverterState.Queued)
-				.setMetaDuration(meta.getDurationSeconds())
-				.setMetaFramerate(meta.getFramerate()).build();
+		if (meta != null) {
+			Media newMedia = Media.newBuilder(md)
+					.setDownloadComplete(true)
+					.setConverterState(MediaConverterState.Queued)
+					.setMetaDuration(meta.getDurationSeconds())
+					.setMetaFramerate(meta.getFramerate()).build();
 
-		this.getDatabase().save(newMedia);
+			this.getDatabase().save(newMedia);
+		}
 	}
 
 	public void markInProgress(FileRepresentationState fs, String filename) {

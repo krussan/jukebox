@@ -92,7 +92,7 @@ dependencies {
    implementation 'com.matthewn4444:embl-java:1.0.0'
    implementation 'net.bramp.ffmpeg:ffmpeg:0.6.2'
    implementation 'net.java.dev.jna:jna:4.2.2'
-   implementation 'com.google.inject:guice:4.2.2'
+   implementation 'com.google.inject:guice:4.2.2:no_aop'
    implementation 'com.google.inject.extensions:guice-assistedinject:4.1.0'
    implementation 'com.google.guava:guava:24.1-jre'
    implementation 'org.apache.commons:commons-text:1.1'

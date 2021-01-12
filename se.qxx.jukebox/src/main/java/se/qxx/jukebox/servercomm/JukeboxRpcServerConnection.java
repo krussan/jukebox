@@ -619,7 +619,7 @@ public class JukeboxRpcServerConnection extends JukeboxServiceGrpc.JukeboxServic
 			try {
 				if (request.getRequestType() == RequestType.TypeMovie) {
 					Movie m = this.getDatabase().getMovie(request.getId());
-					this.getMovieIdentifier().getMovieInfo(m, m.getMedia(0));
+					this.getMovieIdentifier().getMovieInfo(m);
 					this.getDatabase().save(m);	
 				}
 				else if (request.getRequestType() == RequestType.TypeEpisode) {

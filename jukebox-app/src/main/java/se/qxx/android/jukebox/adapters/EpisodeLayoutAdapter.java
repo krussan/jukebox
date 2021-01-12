@@ -60,6 +60,11 @@ public class EpisodeLayoutAdapter extends GenericListLayoutAdapter<Episode> {
             GUITools.setTextOnTextview(R.id.toptext, label, v);
             GUITools.setTextOnTextview(R.id.txtDescription, ep.getStory(), v);
 
+            if (ep.getMediaCount() > 0)
+                GUITools.setTextOnTextview(R.id.txtEpisodeFilename, ep.getMedia(0).getFilename(), v);
+            else
+                v.findViewById(R.id.txtEpisodeFilename).setVisibility(View.INVISIBLE);
+
             setupDownloadedAndCompletedIcons(v, ep.getMediaList());
             setupThumbnail(v, ep.getThumbnail());
 

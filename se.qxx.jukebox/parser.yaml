@@ -27,6 +27,9 @@ parts:
     group: 2
     lookahead: 1
 
+ignored:
+  - regex: 's(\d{1,2})\s+(Joy)'
+
 season:
   - regex: '(\d{1,2})(\d{2})'
     group: 1
@@ -103,6 +106,8 @@ format:
   - IFLIX
   - x264
   - h264
+  - x265
+  - hevc
 
 sound:
   - AC3

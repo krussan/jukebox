@@ -7,7 +7,7 @@ import se.qxx.jukebox.watcher.FileRepresentation;
 
 public interface IMovieIdentifier {
 
-	public void addFile(FileRepresentation f);
+	void addFile(FileRepresentation f);
 
 	/**
 	 * Gets IMDB and metadata information from media and adds it to the database.
@@ -15,7 +15,7 @@ public interface IMovieIdentifier {
 	 * @param m
 	 * @param newMedia
 	 */
-	public Movie getMovieInfo(Movie movie, Media media);
+	Movie getMovieInfo(Movie movie);
 
 	/**
 	 * Gets IMDB and metadata information from media and adds it to the database.
@@ -23,8 +23,8 @@ public interface IMovieIdentifier {
 	 * @param m
 	 * @param newMedia
 	 */
-	public Series getSeriesInfo(Series series, int season, int episode, Media media);
+	Series getSeriesInfo(Series series, int season, int episode, Media media);
 
-	public Runnable getRunnable();
-	
+	Runnable getRunnable();
+
 }

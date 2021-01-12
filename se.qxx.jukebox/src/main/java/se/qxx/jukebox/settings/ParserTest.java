@@ -7,6 +7,7 @@ public class ParserTest {
     private List<String> type;
     private List<ParserRegexTest> year;
     private List<ParserRegexTest> parts;
+    private List<ParserRegexTest> ignored;
     private List<ParserRegexTest> season;
     private List<ParserRegexTest> episode;
     private List<String> format;
@@ -51,6 +52,14 @@ public class ParserTest {
         this.season = season;
     }
 
+    public List<ParserRegexTest> getIgnored() {
+        return ignored;
+    }
+
+    public void setIgnored(List<ParserRegexTest> ignored) {
+        this.ignored = ignored;
+    }
+
     public List<ParserRegexTest> getEpisode() {
         return episode;
     }
@@ -91,7 +100,6 @@ public class ParserTest {
     public void setLanguage(List<String> language) {
         this.language = language;
     }
-
 
     public List<ParserRegexTest> getLanguageAsParserRegex() {
         return this.getAsParserRegex(this.getLanguage());
