@@ -4,6 +4,6 @@ import se.qxx.jukebox.watcher.FileRepresentation;
 
 public interface IDownloadChecker {
 
-	public void checkFile(FileRepresentation f);
-	public Runnable getRunnable();
+	void checkFile(FileRepresentation f);
+	Runnable getRunnable();
 }

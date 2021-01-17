@@ -716,28 +716,26 @@ public class DB implements IDatabase {
 	 */
 	@Override
 	public void saveAsync(Series series) {
-		Runnable r = () -> {
+		this.getExecutor().start(() -> {
 			try {
 
 				ProtoDB db = getProtoDBInstance();
-				
+
 				try {
 					if (db.getDBType() == DBType.Sqlite) lock.lock();
-					
+
 					db.save(series);
 				}
 				finally {
 					if (db.getDBType() == DBType.Sqlite) lock.unlock();
-					
+
 				}
 			}
 			catch (Exception e) {
 				this.getMainLog().Error("Failed to store episode to DB", e);
 			}
 
-		};
-		this.getExecutor().start(r);
-		
+		});
 	}	
 
 

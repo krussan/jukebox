@@ -8,8 +8,7 @@ import se.qxx.jukebox.interfaces.ITcpListener;
 import java.util.concurrent.ExecutorService;
 
 public interface TcpListenerFactory {
-	public ITcpListener create(
-			@Assisted("webserver") IStreamingWebServer webServer,
-			@Assisted("executorservice") ExecutorService executorService,
-			@Assisted("port") int port);
+	ITcpListener create(
+		@Assisted("webserver") IStreamingWebServer webServer,
+		@Assisted("port") int port);
 }

@@ -25,15 +25,14 @@ import se.qxx.jukebox.interfaces.IStoppableRunnable;
 import se.qxx.jukebox.watcher.FileSystemWatcher;
 
 @Singleton
-public class Executor implements IExecutor {
+public class JukeboxExecutor implements IExecutor {
 
-	private List<Object> runnables = new ArrayList<Object>();
+	private List<Object> runnables = new ArrayList<>();
 	private ExecutorService executorService;
 	private IJukeboxLogger log;
 
-
 	@Inject
-	public Executor(ExecutorService executorService, LoggerFactory loggerFactory) {
+	public JukeboxExecutor(ExecutorService executorService, LoggerFactory loggerFactory) {
 		this.setLog(loggerFactory.create(LogType.MAIN));
 
 		this.setExecutorService(executorService);

@@ -5,7 +5,6 @@ import java.text.ParseException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.inject.Inject;
@@ -283,7 +282,7 @@ public class MovieIdentifier extends JukeboxThread implements IMovieIdentifier {
 	public void createOrSaveSeries(MovieOrSeries mos) {
 		String title = mos.getSeries().getIdentifiedTitle();
 
-		this.getLog().Debug(String.format("MovieIndentifier :: Finding series :: %s", title);
+		this.getLog().Debug(String.format("MovieIndentifier :: Finding series :: %s", title));
 		Series dbSeries = this.getDatabase().findSeries(title);
 
 		// if no series found in this.getDatabase(). create new from the created series

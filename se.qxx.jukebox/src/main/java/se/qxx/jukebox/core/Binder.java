@@ -12,7 +12,7 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
 
 import se.qxx.jukebox.builders.MovieBuilderFactory;
-import se.qxx.jukebox.concurrent.Executor;
+import se.qxx.jukebox.concurrent.JukeboxExecutor;
 import se.qxx.jukebox.concurrent.JukeboxPriorityQueue;
 import se.qxx.jukebox.concurrent.JukeboxThreadPoolExecutor;
 import se.qxx.jukebox.converter.ConvertedFile;
@@ -92,7 +92,7 @@ public class Binder {
 
 				//Core
 				bind(IArguments.class).to(Arguments.class).asEagerSingleton();
-				bind(IExecutor.class).to(Executor.class);
+				bind(IExecutor.class).to(JukeboxExecutor.class);
 				bind(IMain.class).to(Main.class);
 				bind(IDatabase.class).to(DB.class);
 				bind(IUpgrader.class).to(Upgrader.class);

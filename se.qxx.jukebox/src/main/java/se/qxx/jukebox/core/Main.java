@@ -292,7 +292,6 @@ public class Main implements IMain, IFileCreatedHandler
 		if (this.getTcpListener() == null)
 			this.setTcpListener(this.getTcpListenerFactory().create(
 					this.getWebServer(),
-					this.getExecutorService(),
 					this.getSettings().getSettings().getPortInt()));
 
 	}
@@ -327,7 +326,7 @@ public class Main implements IMain, IFileCreatedHandler
 		
 		if (this.getArguments().isCleanerEnabled()) {
 			consoleLog("Starting cleaner thread");
-			this.getExecutor().start(this.getCleaner().getRunnable());				
+			this.getExecutor().start(this.getCleaner().getRunnable());
 		}
 		
 		if (this.getArguments().isDownloadCheckerEnabled()) {

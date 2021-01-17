@@ -9,7 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import se.qxx.jukebox.concurrent.Executor;
+import se.qxx.jukebox.concurrent.JukeboxExecutor;
 import se.qxx.jukebox.concurrent.JukeboxThreadPoolExecutor;
 import se.qxx.jukebox.core.Log;
 import se.qxx.jukebox.core.Log.LogType;
@@ -49,7 +49,7 @@ public class TestTcpListenerInit {
 		JukeboxThreadPoolExecutor executorService = new JukeboxThreadPoolExecutor(loggerFactoryMock);
 		when(loggerFactoryMock.create(any(LogType.class))).thenReturn(log);
 		
-		Executor executor = new Executor(executorService, loggerFactoryMock);
+		JukeboxExecutor jukeboxExecutor = new JukeboxExecutor(executorService, loggerFactoryMock);
 		
 		JukeboxRpcServerConnection conn = new JukeboxRpcServerConnection(
 				settingsMock, 
@@ -64,7 +64,7 @@ public class TestTcpListenerInit {
 		when(rpcFactoryMock.create(any(IStreamingWebServer.class))).thenReturn(conn);
 		
 		TcpListener listener = new TcpListener(
-				executor,
+				jukeboxExecutor,
 				executorService,
 				loggerFactoryMock, 
 				rpcFactoryMock,
@@ -75,7 +75,7 @@ public class TestTcpListenerInit {
 		//executor.start(listener.getRunnable());
 		
 		try {
-			executor.stop(1);
+			jukeboxExecutor.stop(1);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -19,6 +19,7 @@ import org.mockito.junit.MockitoRule;
 
 import com.google.protobuf.ByteString;
 
+import se.qxx.jukebox.concurrent.JukeboxThreadPoolExecutor;
 import se.qxx.jukebox.core.Log;
 import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Rating;
@@ -52,13 +53,16 @@ public class TestWebServer {
 		
 		log = new Log(settings, LogType.NONE);
 		when(loggerFactoryMock.create(any(LogType.class))).thenReturn(log);
-		
+
+		JukeboxThreadPoolExecutor executorService = new JukeboxThreadPoolExecutor(loggerFactoryMock);
+
 		webServer = new StreamingWebServer(
 				dbMock, 
 				loggerFactoryMock, 
 				subWriterMock,
 				utilsMock,
 				settings,
+				executorService,
 				8001);
 		
 		webServer.setIpAddress("127.0.0.1");

@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -71,7 +72,8 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 	private ISubtitleFileWriter subWriter;
 	private IUtils utils;
 	private ISettings settings;
-	
+	private ExecutorService executorService;
+
 	@Inject
 	public StreamingWebServer(
 			IDatabase database, 
@@ -79,15 +81,19 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 			ISubtitleFileWriter subWriter,
 			IUtils utils,
 			ISettings settings,
+			ExecutorService executorService,
 			@Assisted("webserverport") Integer port) {
+
 		super(port);
 		this.setUtils(utils);
 		this.setSubWriter(subWriter);
 		this.setDatabase(database);
 		this.setLog(loggerFactory.create(LogType.WEBSERVER));
 		this.setSettings(settings);
-		
-		streamingMap = new ConcurrentHashMap<String, String>();
+		this.setExecutorService(executorService);
+		this.setAsyncRunner(new WebServerAsyncRunner(executorService));
+
+		streamingMap = new ConcurrentHashMap<>();
 		
 		setIpAddress();
 	}
@@ -137,6 +143,14 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 		this.settings = settings;
 	}
 
+
+	public ExecutorService getExecutorService() {
+		return executorService;
+	}
+
+	public void setExecutorService(ExecutorService executorService) {
+		this.executorService = executorService;
+	}
 
 	/* (non-Javadoc)
 	 * @see se.qxx.jukebox.webserver.IStreamingWebServer#initializeMappings()

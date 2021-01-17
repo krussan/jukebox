@@ -466,7 +466,7 @@ public class JukeboxRpcServerConnection extends JukeboxServiceGrpc.JukeboxServic
 		setPriority();
 		this.getLog().Debug("Re-identify -- EMPTY");
 
-		Runnable r = () -> {
+		this.getExecutor().start(() -> {
 			try {
 				if (request.getRequestType() == RequestType.TypeMovie) {
 					Movie m = this.getDatabase().getMovie(request.getId());
@@ -497,8 +497,7 @@ public class JukeboxRpcServerConnection extends JukeboxServiceGrpc.JukeboxServic
 			catch (Exception e) {
 				this.getLog().Error("Error occured when deleting object from database");
 			}			
-		};
-		this.getExecutor().start(r);
+		});
 
 		responsObserver.onNext(Empty.newBuilder().build());
 		responsObserver.onCompleted();
@@ -515,7 +514,7 @@ public class JukeboxRpcServerConnection extends JukeboxServiceGrpc.JukeboxServic
 
 		this.getLog().Debug(String.format("Re-enlist subtitle -- %s", request.getId()));
 
-		Runnable r = () -> {
+		this.getExecutor().start(() -> {
 			try {
 				if (request.getRequestType() == RequestType.TypeMovie) {
 					Movie m = this.getDatabase().getMovie(request.getId());
@@ -529,8 +528,7 @@ public class JukeboxRpcServerConnection extends JukeboxServiceGrpc.JukeboxServic
 			catch (Exception e) {
 				Logger.log("Error occured in reenlistSubtitles", e);
 			}
-		};
-		this.getExecutor().start(r);
+		});
 
 		responseObserver.onNext(Empty.newBuilder().build());
 		responseObserver.onCompleted();
@@ -615,7 +613,7 @@ public class JukeboxRpcServerConnection extends JukeboxServiceGrpc.JukeboxServic
 
 	@Override
 	public void reenlistMetadata(JukeboxRequestID request, StreamObserver<Empty> responseObserver) {
-		Runnable r = () -> {
+		this.getExecutor().start(() -> {
 			try {
 				if (request.getRequestType() == RequestType.TypeMovie) {
 					Movie m = this.getDatabase().getMovie(request.getId());
@@ -639,8 +637,7 @@ public class JukeboxRpcServerConnection extends JukeboxServiceGrpc.JukeboxServic
 			catch (Exception e) {
 				Logger.log("Error occured in reenlistSubtitles", e);
 			}
-		};
-		this.getExecutor().start(r);
+		});
 
 		responseObserver.onNext(Empty.newBuilder().build());
 		responseObserver.onCompleted();

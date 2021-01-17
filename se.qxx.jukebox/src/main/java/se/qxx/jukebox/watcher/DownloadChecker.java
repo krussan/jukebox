@@ -303,3 +303,4 @@ public class DownloadChecker extends JukeboxThread implements IDownloadChecker {
 		return this;
 	}
 }
+ 
