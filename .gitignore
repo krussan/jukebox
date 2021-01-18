@@ -39,3 +39,4 @@ deploy.sh
 
 schema/
 output.txt
+/my*.sh

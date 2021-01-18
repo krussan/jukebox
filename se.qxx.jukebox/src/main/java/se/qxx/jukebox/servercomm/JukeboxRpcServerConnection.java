@@ -238,30 +238,35 @@ public class JukeboxRpcServerConnection extends JukeboxServiceGrpc.JukeboxServic
 		setPriority();
 		this.getLog().Debug("StartMovie");
 		this.getLog().Debug(String.format("Starting %s with ID: %s on player %s", request.getRequestType(), request.getMovieOrEpisodeId(), request.getPlayerName()));
-		
-		Media md = getMedia(request);
 
+		try {
+			Media md = getMedia(request);
 
-		// always serve the file and subtitles
-		List<String> subtitleUris = serveSubtitles(md, request.getSubtitleRequestType());
-		StreamingFile streamingFile = this.getWebServer().registerFile(md);
+			// always serve the file and subtitles
+			List<String> subtitleUris = serveSubtitles(md, request.getSubtitleRequestType());
+			StreamingFile streamingFile = this.getWebServer().registerFile(md);
 
-		// call the distributor if the player is not chromecast or local
+			// call the distributor if the player is not chromecast or local
 
-		List<Subtitle> subs = md.getSubsList();
+			List<Subtitle> subs = md.getSubsList();
 
-		JukeboxResponseStartMovie.Builder b = JukeboxResponseStartMovie.newBuilder()
-				.addAllSubtitle(subs)
-				.addAllSubtitleUris(subtitleUris);
+			JukeboxResponseStartMovie.Builder b = JukeboxResponseStartMovie.newBuilder()
+					.addAllSubtitle(subs)
+					.addAllSubtitleUris(subtitleUris);
 
-		if (streamingFile != null) {
-			b.setUri(streamingFile.getUri())
-				.setMimeType(streamingFile.getMimeType());
+			if (streamingFile != null) {
+				b.setUri(streamingFile.getUri())
+						.setMimeType(streamingFile.getMimeType());
+			}
+
+			responseObserver.onNext(b.build());
+			responseObserver.onCompleted();
 		}
-
-		responseObserver.onNext(b.build());
-		responseObserver.onCompleted();
-
+		catch (Exception e){
+			this.getLog().Error("Error starting movie", e);
+			responseObserver.onError(e);
+			responseObserver.onCompleted();
+		}
 	}
 
 	private Media getMedia(JukeboxRequestStartMovie request) {
