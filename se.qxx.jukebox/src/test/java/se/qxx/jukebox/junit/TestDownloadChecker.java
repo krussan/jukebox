@@ -6,8 +6,6 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
-import javax.xml.bind.JAXBException;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -41,7 +39,7 @@ public class TestDownloadChecker {
 	private DownloadChecker downloadChecker;
 	
 	@Before
-	public void init() throws IOException, JAXBException {
+	public void init() {
 		when(loggerFactoryMock.create(any(Log.LogType.class))).thenReturn(new Log(null, LogType.NONE));
 		
 		downloadChecker = new DownloadChecker(executorMock, databaseMock, loggerFactoryMock, filenameCheckerMock, mediaMetadataHelperMock);

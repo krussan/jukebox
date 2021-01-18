@@ -9,8 +9,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-import javax.xml.bind.JAXBException;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -21,6 +19,7 @@ import org.mockito.junit.MockitoRule;
 
 import com.google.protobuf.ByteString;
 
+import se.qxx.jukebox.concurrent.JukeboxThreadPoolExecutor;
 import se.qxx.jukebox.core.Log;
 import se.qxx.jukebox.core.Log.LogType;
 import se.qxx.jukebox.domain.JukeboxDomain.Rating;
@@ -28,15 +27,11 @@ import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.domain.JukeboxDomain.SubtitleRequestType;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IDatabase;
-import se.qxx.jukebox.interfaces.IImdbSettings;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
-import se.qxx.jukebox.interfaces.IParserSettings;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.ISubtitleFileWriter;
 import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.settings.Settings;
-import se.qxx.jukebox.settings.ImdbSettings;
-import se.qxx.jukebox.settings.ParserSettings;
 import se.qxx.jukebox.webserver.StreamingFile;
 import se.qxx.jukebox.webserver.StreamingWebServer;
 
@@ -53,20 +48,21 @@ public class TestWebServer {
 	@Mock IUtils utilsMock;
 	
 	@Before
-	public void initialize() throws IOException, JAXBException {
-		IParserSettings parserSettings = new ParserSettings();
-		IImdbSettings imdbSettings = new ImdbSettings();
-		
-		settings = new Settings(imdbSettings, parserSettings);
+	public void initialize() throws IOException {
+		settings = new Settings();
 		
 		log = new Log(settings, LogType.NONE);
 		when(loggerFactoryMock.create(any(LogType.class))).thenReturn(log);
-		
+
+		JukeboxThreadPoolExecutor executorService = new JukeboxThreadPoolExecutor(loggerFactoryMock);
+
 		webServer = new StreamingWebServer(
 				dbMock, 
 				loggerFactoryMock, 
 				subWriterMock,
 				utilsMock,
+				settings,
+				executorService,
 				8001);
 		
 		webServer.setIpAddress("127.0.0.1");

@@ -5,8 +5,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
-import javax.xml.bind.JAXBException;
-
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 
@@ -22,7 +20,7 @@ public class TestWebResult {
 	public TestWebResult(IWebRetriever webRetriever) {
 		this.webRetriever = webRetriever;
 	}
-	public static void main(String[] args) throws IOException, JAXBException {
+	public static void main(String[] args) throws IOException {
 		if (args.length > 0) {
 			Injector injector = Binder.setupBindings(args);
 			TestWebResult prog = injector.getInstance(TestWebResult.class);

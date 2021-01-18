@@ -75,9 +75,14 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mRemoteMediaClient = ChromeCastConfiguration.getRemoteMediaClient(this.getContext());
+        setupMediaClient();
 
         return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    private void setupMediaClient() {
+        if (mRemoteMediaClient == null)
+            mRemoteMediaClient = ChromeCastConfiguration.getRemoteMediaClient(this.getContext());
     }
 
     @Override
@@ -86,6 +91,12 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
 
         if (!this.isPlaying())
             startMedia();
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setupMediaClient();
     }
 
     @Override
@@ -230,7 +241,7 @@ public class ChromecastPlayerFragment extends RemotePlayerFragment
                         .setAutoplay(true)
                         .setActiveTrackIds(activeTrackIds);
 
-                long position = (long)getCachedPosition(this.getMedia().getID());
+                long position = getCachedPosition(this.getMedia());
                 if (position > 0)
                     mlo.setPlayPosition(position * 1000);
 

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -28,8 +29,7 @@ import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.IStreamingWebServer;
 import se.qxx.jukebox.interfaces.ISubtitleDownloader;
 import se.qxx.jukebox.interfaces.ITcpListener;
-import se.qxx.jukebox.settings.JukeboxListenerSettings;
-import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
+import se.qxx.jukebox.settings.CatalogsTest;
 import se.qxx.jukebox.watcher.ExtensionFileFilter;
 import se.qxx.jukebox.watcher.FileRepresentation;
 
@@ -292,8 +292,7 @@ public class Main implements IMain, IFileCreatedHandler
 		if (this.getTcpListener() == null)
 			this.setTcpListener(this.getTcpListenerFactory().create(
 					this.getWebServer(),
-					this.getExecutorService(),
-					this.getSettings().getSettings().getTcpListener().getPort().getValue()));
+					this.getSettings().getSettings().getPortInt()));
 
 	}
 	
@@ -327,7 +326,7 @@ public class Main implements IMain, IFileCreatedHandler
 		
 		if (this.getArguments().isCleanerEnabled()) {
 			consoleLog("Starting cleaner thread");
-			this.getExecutor().start(this.getCleaner().getRunnable());				
+			this.getExecutor().start(this.getCleaner().getRunnable());
 		}
 		
 		if (this.getArguments().isDownloadCheckerEnabled()) {
@@ -403,7 +402,7 @@ public class Main implements IMain, IFileCreatedHandler
 		ff.addExtensions(getExtensions());
 		
 		int cc = 0;
-		for (Catalog c : this.getSettings().getSettings().getCatalogs().getCatalog()) {
+		for (CatalogsTest c : this.getSettings().getSettings().getCatalogs()) {
 			cc++;
 			File path = new File(c.getPath());
 			
@@ -426,16 +425,11 @@ public class Main implements IMain, IFileCreatedHandler
 
 
 	private List<String> getExtensions() {
-		List<String> list = new ArrayList<String>();
-		
-		for (JukeboxListenerSettings.Catalogs.Catalog c : this.getSettings().getSettings().getCatalogs().getCatalog()) {
-			for (JukeboxListenerSettings.Catalogs.Catalog.Extensions.Extension e : c.getExtensions().getExtension()) {
-				if (!list.contains(e.getValue()))
-					list.add(e.getValue());
-			}
-		}
-		
-		return list;
+		return
+			this.getSettings().getSettings().getCatalogs().stream()
+				.flatMap(x -> x.getExtensions().stream())
+				.distinct()
+				.collect(Collectors.toList());
 	}
 
 }

@@ -7,15 +7,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
-
 import com.google.protobuf.ByteString;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -31,8 +27,6 @@ import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.*;
 import se.qxx.jukebox.settings.Settings;
-import se.qxx.jukebox.settings.ImdbSettings;
-import se.qxx.jukebox.settings.ParserSettings;
 import se.qxx.jukebox.subtitles.SubFile;
 import se.qxx.jukebox.subtitles.SubtitleDownloader;
 
@@ -59,11 +53,8 @@ public class TestSubtitleDownloader {
 	private IJukeboxLogger log;
 
 	@Before
-	public void init() throws IOException, JAXBException {
-		IParserSettings parserSettings = new ParserSettings();
-		IImdbSettings imdbSettings = new ImdbSettings();
-		
-		settings = new Settings(imdbSettings, parserSettings);
+	public void init() throws IOException {
+		settings = new Settings();
 		log = new Log(settings, LogType.NONE);
 		downloader = new SubtitleDownloader(db, executor, settings, movieBuilderFactory, helper, mkvSubtitleReader,
 				loggerFactoryMock, unpacker, fileUtilHelper, utils);
@@ -73,7 +64,7 @@ public class TestSubtitleDownloader {
 	}
 	
 	@Test
-	public void testDecoupleSeries() throws IOException {
+	public void testDecoupleSeries() {
 		// Arrange
 		IDatabase db = new DB(settings, executor, loggerFactoryMock);
 		List<Series> series = new ArrayList<>();

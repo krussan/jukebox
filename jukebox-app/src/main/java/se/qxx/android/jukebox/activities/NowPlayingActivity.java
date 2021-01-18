@@ -11,9 +11,15 @@ import se.qxx.android.jukebox.activities.fragments.PlayerFragment;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 
-public class NowPlayingActivity extends AppCompatActivity {
+public class NowPlayingActivity extends BaseActivity {
     private static boolean screenChange = false;
     private JukeboxSettings settings;
+
+
+    @Override
+    protected int getSearchContainer() {
+        return R.id.fragmentContainer;
+    }
 
     private ViewMode getMode() {
         Intent i = getIntent();
@@ -42,20 +48,10 @@ public class NowPlayingActivity extends AppCompatActivity {
         FragmentTransaction ft = fm.beginTransaction();
         ft.add(R.id.fragmentContainer,
                 PlayerFragment.newInstance(
-                        ChromeCastConfiguration.getCastType(settings.getCurrentMediaPlayer()),
+                        ChromeCastConfiguration.getCastType(),
                         screenChange));
         ft.commit();
 
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-
-        ChromeCastConfiguration.createMenu(this, getMenuInflater(), menu, settings.getCurrentMediaPlayer());
-
-        return true;
     }
 
     @Override

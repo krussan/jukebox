@@ -21,28 +21,12 @@ public class JukeboxSettings extends SettingsBase {
 		this.putString(preferences, SERVER_IP_ADDRESS, _serverIpAddress);
 	}
 
-	public boolean isCurrentMediaPlayerOn() {
-		return storage.getBoolean(MEDIA_PLAYER_IS_ON, false);
-	}
-
-	public void setIsCurrentMediaPlayerOn(boolean value) {
-		this.putBoolean(storage, MEDIA_PLAYER_IS_ON, value);
-	}
-
 	public int getServerPort() {
 		return Integer.parseInt(preferences.getString(SERVER_PORT, "2150"));
 	}
 
 	public void setServerPort(int _serverPort) {
 		this.putInt(preferences, SERVER_PORT, _serverPort);
-	}
-	
-	public String getCurrentMediaPlayer() {
-		return storage.getString(CURRENT_MEDIA_PLAYER, "vlc_main");
-	}
-	
-	public void setCurrentMediaPlayer(String mediaPlayerName) {
-		this.putString(storage, CURRENT_MEDIA_PLAYER, mediaPlayerName);
 	}
 
 	public JukeboxSettings(Context c) {

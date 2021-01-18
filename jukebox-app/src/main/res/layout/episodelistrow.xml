@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="140dip"
+    android:layout_height="150dip"
     android:orientation="horizontal" 
     android:padding="6dip">
 
@@ -37,21 +37,32 @@
 
 
         <TextView
-            android:id="@+id/txtDescription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/toptext"
-            android:layout_alignParentLeft="true"
-            android:text="@string/loremipsum"
-            android:textColor="#FFFFFF"
-            android:ellipsize="end"
+                android:id="@+id/txtDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/toptext"
+                android:layout_alignParentLeft="true"
+                android:text="@string/loremipsum"
+                android:textColor="#FFFFFF"
+                android:ellipsize="end"
+        />
+
+        <TextView
+                android:id="@+id/txtEpisodeFilename"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/txtDescription"
+                android:layout_alignParentLeft="true"
+                android:text="@string/lblFilename"
+                android:textColor="#ababab"
+                android:textAppearance="?android:attr/textAppearanceSmall"
         />
 
         <ImageView
             android:id="@+id/imgConverted"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/txtDescription"
+            android:layout_below="@id/txtEpisodeFilename"
             android:layout_alignParentBottom="true"
             android:contentDescription="@string/descConverted"
             android:src="@drawable/ic_conversion_completed" />
@@ -60,7 +71,7 @@
             android:id="@+id/imgWatched"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/txtDescription"
+            android:layout_below="@id/txtEpisodeFilename"
             android:layout_toRightOf="@id/imgConverted"
             android:layout_alignParentBottom="true"
             android:src="@drawable/ic_watched"
@@ -70,7 +81,7 @@
             android:id="@+id/imgDownloading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/txtDescription"
+            android:layout_below="@id/txtEpisodeFilename"
             android:layout_toRightOf="@id/imgWatched"
             android:layout_alignParentBottom="true"
             android:contentDescription="@string/descDownloading"
@@ -80,7 +91,7 @@
             android:id="@+id/imgConverting"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/txtDescription"
+            android:layout_below="@id/txtEpisodeFilename"
             android:layout_toRightOf="@id/imgDownloading"
             android:layout_alignParentBottom="true"
             android:contentDescription="@string/descConverted"
@@ -91,7 +102,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_star_exact"
             android:layout_alignParentRight="true"
-            android:layout_below="@id/txtDescription"
+            android:layout_below="@id/txtEpisodeFilename"
             />
     </RelativeLayout>
 

@@ -33,7 +33,7 @@ public class FileRepresentation {
 	}
 
 	public FileRepresentation(File f) {
-		this._path = FilenameUtils.getFullPath(f.getAbsolutePath());
+		this._path = FilenameUtils.getFullPathNoEndSeparator(f.getAbsolutePath());
 		this._name = f.getName();
 		this._lastModified = f.lastModified();
 		this._fileSize = f.length();

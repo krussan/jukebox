@@ -1,55 +1,46 @@
 package se.qxx.jukebox.settings;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import se.qxx.jukebox.interfaces.IImdbSettings;
-import se.qxx.jukebox.interfaces.IParserSettings;
 import se.qxx.jukebox.interfaces.ISettings;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
 import java.io.File;
 import java.io.IOException;
 
 @Singleton
 public class Settings implements ISettings {
-	private JukeboxListenerSettings settings;
-	private IImdbSettings imdbSettings;
-	private IParserSettings parserSettings;
-	public int serverPort = 45444;	
-	
+	private SettingsTest settings;
+	private ImdbTest imdbSettings;
+	private ParserTest parserSettings;
+
 	@Inject
-	public Settings(IImdbSettings imdbSettings, IParserSettings parserSettings) throws IOException, JAXBException {
-		this.setImdbSettings(imdbSettings);
-		this.setParserSettings(parserSettings);
-		
+	public Settings() throws IOException {
 		initialize();
 	}
 	
-	public JukeboxListenerSettings getSettings() {
+	public SettingsTest getSettings() {
 		return settings;
 	}
 
-	public void setSettings(JukeboxListenerSettings settings) {
+	public void setSettings(SettingsTest settings) {
 		this.settings = settings;
 	}
 
-	public IParserSettings getParserSettings() {
+	public ParserTest getParserSettings() {
 		return parserSettings;
 	}
 
-	public void setParserSettings(IParserSettings parserSettings) {
+	public void setParserSettings(ParserTest parserSettings) {
 		this.parserSettings = parserSettings;
 	}
 
-	public IImdbSettings getImdbSettings() {
+	public ImdbTest getImdb() {
 		return imdbSettings;
 	}
 
-	public void setImdbSettings(IImdbSettings imdbSettings) {
+	public void setImdb(ImdbTest imdbSettings) {
 		this.imdbSettings = imdbSettings;
 	}
 
@@ -57,46 +48,38 @@ public class Settings implements ISettings {
 	 * @see se.qxx.jukebox.settings.ISettings#initialize()
 	 */
 	@Override
-	public void initialize() throws IOException, JAXBException {
+	public void initialize() throws IOException {
 		readSettings();
-		
+		/*
 		if (this.getImdbSettings() != null)
 			this.getImdbSettings().readSettings();
 		
 		if (this.getParserSettings() != null)
 			this.getParserSettings().readSettings();
+
+		 */
 	}
-	
-	/* (non-Javadoc)
-	 * @see se.qxx.jukebox.settings.ISettings#imdb()
-	 */
-	@Override
-	public Imdb getImdb() {
-		return this.getImdbSettings().getImdb();
-	}
-	
+
 	/* (non-Javadoc)
 	 * @see se.qxx.jukebox.settings.ISettings#parser()
 	 */
 	@Override
-	public Parser getParser() {
-		return this.getParserSettings().getSettings();
+	public ParserTest getParser() {
+		return this.getParserSettings();
 	}
 	
 	/* (non-Javadoc)
 	 * @see se.qxx.jukebox.settings.ISettings#readSettings()
 	 */
 	@Override
-	public void readSettings() throws JAXBException {
+	public void readSettings() throws IOException {
 		readSettingFile();
 	}
 	
-	private void readSettingFile() throws JAXBException {
-		JAXBContext c = JAXBContext.newInstance(JukeboxListenerSettings.class);
-		Unmarshaller u = c.createUnmarshaller();
-		
-		JAXBElement<JukeboxListenerSettings> root = u.unmarshal(new StreamSource(new File("JukeboxSettings.xml")), JukeboxListenerSettings.class);
-		this.setSettings(root.getValue());
-		
+	private void readSettingFile() throws IOException {
+		ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+		this.setSettings(mapper.readValue(new File("settings.yaml"), SettingsTest.class));
+		this.setImdb(mapper.readValue(new File("imdb.yaml"), ImdbTest.class));
+		this.setParserSettings(mapper.readValue(new File("parser.yaml"), ParserTest.class));
 	}
 }

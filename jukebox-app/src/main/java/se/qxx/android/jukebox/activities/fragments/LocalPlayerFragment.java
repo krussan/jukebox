@@ -26,6 +26,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import com.google.android.gms.cast.framework.CastButtonFactory;
+import com.google.android.gms.cast.framework.CastContext;
+import com.google.android.gms.cast.framework.CastState;
 import com.google.android.gms.common.util.IOUtils;
 
 import java.io.DataInputStream;
@@ -42,6 +49,8 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import se.qxx.android.jukebox.R;
+import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
+import se.qxx.android.jukebox.cast.JukeboxCastType;
 import se.qxx.android.jukebox.media.VideoControllerView;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.tools.Logger;
@@ -84,8 +93,23 @@ public class LocalPlayerFragment extends PlayerFragment
         initializeSurfaceHolder(v);
         initializeView(v);
         initializeMediaPlayer();
+        initializeCastListener();
 
         return v;
+    }
+
+    private void initializeCastListener() {
+        CastContext.getSharedInstance().addCastStateListener(state -> {
+            if (state == CastState.CONNECTED) {
+                // Replace fragment with chromecast fragment
+                AppCompatActivity activity = (AppCompatActivity) this.getActivity();
+                FragmentManager fm = activity.getSupportFragmentManager();
+                FragmentTransaction ft = fm.beginTransaction();
+                Fragment f = PlayerFragment.newInstance(JukeboxCastType.ChromeCast,true);
+                ft.replace(R.id.fragmentContainer, f);
+                ft.commit();
+            }
+        });
     }
 
     private void initializeMediaPlayer() {

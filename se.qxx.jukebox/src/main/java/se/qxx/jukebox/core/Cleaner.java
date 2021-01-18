@@ -21,8 +21,7 @@ import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.IUtils;
-import se.qxx.jukebox.settings.JukeboxListenerSettings.Catalogs.Catalog;
-import se.qxx.jukebox.tools.Util;
+import se.qxx.jukebox.settings.CatalogsTest;
 import se.qxx.protodb.exceptions.DatabaseNotSupportedException;
 
 @Singleton
@@ -101,7 +100,7 @@ public class Cleaner extends JukeboxThread implements ICleaner {
 	
 	private void cleanMovies() {
 		List<Movie> movies = this.getDatabase().searchMoviesByTitle("", true, true);
-		List<Catalog> catalogs = this.getSettings().getSettings().getCatalogs().getCatalog();
+		List<CatalogsTest> catalogs = this.getSettings().getSettings().getCatalogs();
 		
 		//TODO: check that the path is part of a listener
 		for (Movie m : movies) {
@@ -154,14 +153,10 @@ public class Cleaner extends JukeboxThread implements ICleaner {
 	private void cleanEmptySeries() {
 	}
 	
-	public boolean listenerPathExist(Media md, List<Catalog> listenerPaths) {
-		for (Catalog c : listenerPaths) {
-			if (md.getFilepath().startsWith(c.getPath()))
-				if (this.getUtils().fileExists(c.getPath()))
-					return true;
-		}
-		
-		return false;
+	public boolean listenerPathExist(Media md, List<CatalogsTest> listenerPaths) {
+		return listenerPaths.stream().anyMatch(c ->
+					md.getFilepath().startsWith(c.getPath()) &&
+						this.getUtils().fileExists(c.getPath()));
 	}
 
 	/* (non-Javadoc)

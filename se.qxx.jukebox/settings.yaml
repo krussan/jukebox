@@ -1,0 +1,121 @@
+catalogs:
+  - path: /media/usb/BitTorrent
+    includeSubDirectories: true
+    extensions:
+      - avi
+      - mkv
+      - mp4
+
+subfinders:
+  path: /media/usb/Subs
+  threadWaitSeconds: 25
+
+  finders:
+    - executor: se.qxx.jukebox.subtitles.SubscenePost
+      enabled: false
+      settings:
+        searchResultRegex: '<a\s*href=\"(/subtitles/[^\"]*)\">[^<]*</a>'
+        searchResultUrlGroup: 1
+        listResultRegex: '<td[^>]*>\s*<a\s*href="(\/subtitles[^"]*)">\s*<span[^>]*>([^<]*)</span>\s*<span[^>]*>([^<]*)</span>\s*<\/a>'
+        listResultUrlGroup: 1
+        listResultLanguageGroup: 2
+        listResultNameGroup: 3
+        downloadUrlRegex: '<a\s*href="([^"]*)"[^>]*>\s*Download\s*[a-z]*\ssubtitle\s*.*?<\/a>'
+        downloadUrlGroup: 1
+        url: 'https://subscene.com/subtitles/searchbytitle?query=__searchString__'
+
+builders:
+  - executor: se.qxx.jukebox.builders.FilenameBuilder
+    enabled: false
+    weight: 1
+
+  - executor: se.qxx.jukebox.builders.ParentDirectoryBuilder
+    enabled: true
+    weight: 1
+
+  - executor: se.qxx.jukebox.builders.NfoBuilder
+    enabled: true
+    weight: 1
+
+  - executor: se.qxx.jukebox.builders.ParserBuilder
+    enabled: true
+    weight: 1
+
+port: 2152
+
+logs:
+  - logs: MAIN
+    type:  file
+    filename: "jukebox.log"
+    level: DEBUG
+
+  - logs: SUBS
+    type: file
+    filename: "subtitle.log"
+    level: DEBUG
+
+  - logs: FIND
+    type: file
+    filename: "watcher.log"
+    level: DEBUG
+    logs: FIND
+
+  - logs: COMM
+    type: file
+    filename: "comm.log"
+    level: DEBUG
+
+  - logs: UPGRADE
+    type: file
+    filename: "upgrade.log"
+    level: DEBUG
+
+  - logs: IMDB
+    type: file
+    filename: "imdb.log"
+    level: DEBUG
+
+  - logs: WEBSERVER
+    type: file
+    filename: "webserver.log"
+    level: DEBUG
+
+  - logs: CONVERTER
+    type: file
+    filename: "converter.log"
+    level: DEBUG
+
+  - logs: CHECKER
+    type: file
+    filename: "checker.log"
+    level: DEBUG
+
+database:
+  driver: "com.mysql.jdbc.Driver"
+  connectionString: "jdbc:mysql://192.168.1.120/jukebox?user=jukebox&password=jukebox"
+
+webserver:
+  mimeTypeMap:
+    mkv: "video/mp4"
+    avi: "video/mp4"
+    mp4: "video/mp4"
+    vtt: "text/vtt"
+    srt: "application/x-subrip"
+
+  extensionOverrideMap:
+    mkv: mp4
+
+converter:
+  acceptedVideoCodecs:
+    - h264
+    - h265
+
+  acceptedAudioCodecs:
+    - aac
+    - mp3
+    - vorbis
+    - lcpm
+    - wav
+    - flac
+    - opus
+    - eac3

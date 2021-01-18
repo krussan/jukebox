@@ -57,13 +57,6 @@ public interface IUtils {
 	Map<String, FileRepresentation> getFileListingWorkAround(File directory, ExtensionFileFilter filter);
 
 	/**
-	 * Tries to parse an integer to a string
-	 * @param string The string to be parsed
-	 * @return
-	 */
-	boolean tryParseInt(String string);
-
-	/**
 	 * Returns the system temporary directory
 	 * @return
 	 */

@@ -31,7 +31,7 @@ public class TcpListener extends JukeboxThread implements ITcpListener {
 	@Inject
 	public TcpListener(
 			IExecutor executor,
-			@Assisted("executorservice") ExecutorService executorService,
+			ExecutorService executorService,
 			LoggerFactory loggerFactory,
 			JukeboxRpcServerFactory rpcFactory,
 			@Assisted("webserver") IStreamingWebServer webServer,
@@ -106,8 +106,8 @@ public class TcpListener extends JukeboxThread implements ITcpListener {
 		this.getLog().Info(String.format("Starting up RPC server. Listening on port %s",  this.getPort()));
 
 		Server server = ServerBuilder.forPort(this.getPort())
-				.executor(this.getExecutorService())
 				.addService(this.getServerConnection())
+				.executor(this.getExecutorService())
 				.build();
 
 		this.setServer(server);
@@ -138,8 +138,8 @@ public class TcpListener extends JukeboxThread implements ITcpListener {
 	public void stop() {
 		try {
 			if (this.getServer() != null) {
-					this.getServer().shutdown();
-					this.getServer().awaitTermination();
+				this.getServer().shutdown();
+				this.getServer().awaitTermination();
 			}
 		} catch (InterruptedException e) {
 			this.getLog().Error("Error when shutting down", e);

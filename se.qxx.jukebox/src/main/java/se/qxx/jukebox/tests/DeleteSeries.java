@@ -1,7 +1,6 @@
 package se.qxx.jukebox.tests;
 
 import java.io.IOException;
-import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -13,7 +12,7 @@ import se.qxx.jukebox.interfaces.IDatabase;
 
 public class DeleteSeries {
 
-	public static void main(String[] args) throws IOException, JAXBException {
+	public static void main(String[] args) {
 		if (args.length > 0) {
 			
 			try {

@@ -11,23 +11,21 @@ public class Seeker implements Runnable {
 	private Thread internalThread;
 	private boolean isRunning = false;
 	private SeekerListener listener;
-    private JukeboxSettings settings;
+	private JukeboxSettings settings;
+    private JukeboxConnectionHandler connectionHandler;
 
-    public Seeker(SeekerListener listener, JukeboxSettings settings) {
+    public Seeker(SeekerListener listener, JukeboxSettings settings, JukeboxConnectionHandler connectionHandler) {
 		this.listener = listener;
-        this.settings = settings;
-    }
+		this.settings = settings;
+        this.connectionHandler = connectionHandler;
+	}
 	
 	public void stop() {
 		this.isRunning = false;
 	}
 		
 	private void getTime() {
-       	JukeboxConnectionHandler h = new JukeboxConnectionHandler(
-       			settings.getServerIpAddress(),
-                settings.getServerPort());
-       	
-       	h.getTime(settings.getCurrentMediaPlayer(), response -> {
+       	this.connectionHandler.getTime("Dummy", response -> {
             // The time command also returns the name of the currently playing file.
             // If it differs from the model then set the current media
 			if (response != null && listener != null)
@@ -71,7 +69,7 @@ public class Seeker implements Runnable {
 	}
 	
 	public void start() {
-		this.start(false);
+    	this.start(false);
 	}
 
 	private void startNewThread() {

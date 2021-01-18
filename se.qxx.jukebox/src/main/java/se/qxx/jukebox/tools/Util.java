@@ -126,20 +126,6 @@ public class Util implements IUtils {
 	}
 
 	/* (non-Javadoc)
-	 * @see se.qxx.jukebox.tools.IUtils#tryParseInt(java.lang.String)
-	 */
-	@Override
-	public boolean tryParseInt(String string) {
-		try {
-			Integer.parseInt(string);
-			return true;
-		}
-		catch (Exception e) {
-			return false;
-		}
-	}
-		
-	/* (non-Javadoc)
 	 * @see se.qxx.jukebox.tools.IUtils#getTempDirectory()
 	 */
 	@Override

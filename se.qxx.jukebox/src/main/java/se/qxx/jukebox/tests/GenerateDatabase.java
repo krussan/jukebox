@@ -1,9 +1,6 @@
 package se.qxx.jukebox.tests;
 
-import java.io.IOException;
 import java.sql.SQLException;
-
-import javax.xml.bind.JAXBException;
 
 import se.qxx.jukebox.core.Version;
 import se.qxx.jukebox.domain.JukeboxDomain.Movie;
@@ -14,7 +11,7 @@ import se.qxx.protodb.exceptions.DatabaseNotSupportedException;
 import se.qxx.protodb.exceptions.IDFieldNotFoundException;
 
 public class GenerateDatabase {
-	public static void main(String[] args) throws IOException, JAXBException, DatabaseNotSupportedException {
+	public static void main(String[] args) throws DatabaseNotSupportedException {
 		Version v = new Version();
 		
 		//String filename = String.format("jukebox_clean_%s_%s.db", v.getMajor(), v.getMinor());

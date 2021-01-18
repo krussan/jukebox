@@ -1,6 +1,8 @@
 package se.qxx.jukebox.settings;
 
+
 public enum ParserType {
+	IGNORED,
 	TYPE,
 	FORMAT,
 	SOUND,

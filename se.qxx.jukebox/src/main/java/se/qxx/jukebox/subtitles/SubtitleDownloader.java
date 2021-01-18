@@ -38,7 +38,7 @@ import se.qxx.jukebox.interfaces.ISubFinder;
 import se.qxx.jukebox.interfaces.ISubtitleDownloader;
 import se.qxx.jukebox.interfaces.IUnpacker;
 import se.qxx.jukebox.interfaces.IUtils;
-import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder;
+import se.qxx.jukebox.settings.FindersTest;
 
 @Singleton
 public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownloader {
@@ -67,7 +67,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 			IUtils utils) {
 		super(
 			"Subtitle", 
-			settings.getSettings().getSubFinders().getThreadWaitSeconds() * 1000,
+			settings.getSettings().getSubfinders().getThreadWaitSecondsInt() * 1000,
 			loggerFactory.create(LogType.SUBS),
 			executor);
 		this.setUtils(utils);
@@ -151,7 +151,7 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 	@Override
 	protected void initialize() {
 		cleanupTempDirectory();
-		subsPath = this.getSettings().getSettings().getSubFinders().getSubsPath();
+		subsPath = this.getSettings().getSettings().getSubfinders().getPath();
 		
 		this.getLog().Debug("Cleaning up subtitle queue");
 		this.getDatabase().cleanSubtitleQueue();
@@ -161,15 +161,15 @@ public class SubtitleDownloader extends JukeboxThread implements ISubtitleDownlo
 
 	private void setupSubFinders() {
 
-		for (SubFinder f : this.getSettings().getSettings().getSubFinders().getSubFinder()) {
+		for (FindersTest f : this.getSettings().getSettings().getSubfinders().getFinders()) {
 			if (f.isEnabled()) {
-				String className = f.getClazz();
+				String className = f.getExecutor();
 
 				try {
 					Object[] args = new Object[]{this.getHelper(), f};
 
 					this.getSubFinders().add(
-							(ISubFinder) this.getUtils().getInstance(className, new Class[]{ISubFileDownloaderHelper.class, SubFinder.class}, args));
+							(ISubFinder) this.getUtils().getInstance(className, new Class[]{ISubFileDownloaderHelper.class, FindersTest.class}, args));
 
 				} catch (Exception e) {
 					this.getLog().Error(String.format("Error when loading subfinder :: %s", className), e);

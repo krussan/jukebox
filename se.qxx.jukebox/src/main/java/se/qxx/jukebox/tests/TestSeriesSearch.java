@@ -3,8 +3,6 @@ package se.qxx.jukebox.tests;
 import java.io.IOException;
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.inject.Inject;
@@ -32,7 +30,7 @@ public class TestSeriesSearch {
 		factory.create(LogType.FIND);
 	}
 	
-	public static void main(String[] args) throws IOException, JAXBException {
+	public static void main(String[] args) {
 		Injector injector = Binder.setupBindings(args);
 		TestSeriesSearch prog = injector.getInstance(TestSeriesSearch.class);
 		prog.execute(args[0]);

@@ -1,6 +1,6 @@
 package se.qxx.jukebox.interfaces;
 
-import se.qxx.jukebox.settings.JukeboxListenerSettings.Logs.Log;
+import se.qxx.jukebox.settings.LogsTest;
 
 public interface IJukeboxLogger {
 
@@ -16,7 +16,7 @@ public interface IJukeboxLogger {
 
 	void Info(String msg);
 
-	Log getLogger();
+	LogsTest getLogger();
 
 	String getLoggerFilename();
 

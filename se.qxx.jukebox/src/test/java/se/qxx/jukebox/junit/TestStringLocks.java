@@ -6,6 +6,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.junit.Test;
 
@@ -46,5 +47,23 @@ public class TestStringLocks {
 		assertEquals(false, tryLock);
 		
 	}
-	
+
+	@Test
+	public void TestDoubleLock() {
+		ReentrantLock lock = new ReentrantLock();
+		lock.lock();
+		try {
+
+			try {
+				boolean success = lock.tryLock();
+
+				assertEquals(true, success);
+			} finally {
+				lock.unlock();
+			}
+
+		} finally {
+			lock.unlock();
+		}
+	}
 }

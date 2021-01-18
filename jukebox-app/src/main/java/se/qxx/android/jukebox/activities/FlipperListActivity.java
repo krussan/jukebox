@@ -1,45 +1,27 @@
 package se.qxx.android.jukebox.activities;
 
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.View;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
-import com.google.android.gms.cast.framework.CastContext;
-
-import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.android.jukebox.R;
-import se.qxx.android.jukebox.adapters.viewmode.JukeboxFragmentAdapter;
-import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
+import se.qxx.android.jukebox.activities.fragments.JukeboxFragment;
+import se.qxx.android.jukebox.adapters.JukeboxFragmentAdapter;
+import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 
-public class FlipperListActivity extends AppCompatActivity {
-	ViewPager pager;
-	private CastContext mCastContext;
-    private ViewMode mode = ViewMode.Movie;
+public class FlipperListActivity
+    extends BaseActivity
+    implements JukeboxFragment.JukeboxFragmentHandler {
+
+    ViewPager pager;
+    private JukeboxFragmentAdapter adapter;
     private JukeboxSettings settings;
+    private JukeboxConnectionHandler connectionHandler;
 
-    protected View getRootView() {
-		return findViewById(R.id.rootJukeboxViewPager);
-	}
-
-	public final int VIEWMODE_MOVIE = 0;
-	public final int VIEWMODE_SERIES = 1;
-
-    public ViewMode getMode() {
-        return mode;
-    }
-
-    public void setMode(ViewMode mode) {
-        this.mode = mode;
-    }
-
-    private ViewMode getViewMode(int position) {
-	    if (position == VIEWMODE_MOVIE)
-	        return ViewMode.Movie;
-	    else
-	        return this.getMode();
+    @Override
+    protected int getSearchContainer() {
+        return R.id.rootJukeboxViewPager;
     }
 
     @Override
@@ -47,34 +29,51 @@ public class FlipperListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         settings = new JukeboxSettings(this);
-
-        if (StringUtils.equalsIgnoreCase(settings.getCurrentMediaPlayer(), "Chromecast"))
-            ChromeCastConfiguration.checkGooglePlayServices(this);
-
-        if (getIntent() != null && getIntent().getExtras() != null) {
-            Bundle b = getIntent().getExtras();
-			this.setMode((ViewMode) b.getSerializable("mode"));
-		}
+        setupConnectionHandler(false);
 
 		setContentView(R.layout.jukebox_main_wrapper);
-        pager = (ViewPager)this.getRootView();
-
-        JukeboxFragmentAdapter mfa = new JukeboxFragmentAdapter(getSupportFragmentManager(), this);
-        pager.setAdapter(mfa);
-
-		mCastContext = CastContext.getSharedInstance(this);
-
+		//TOOD: Load main fragment
+        initializeView();
     }
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu);
-
-		ChromeCastConfiguration.createMenu(this, getMenuInflater(), menu, settings.getCurrentMediaPlayer());
-
-		return true;
-	}
+    private void initializeView() {
+        pager = findViewById(R.id.rootJukeboxViewPager);
+        adapter = new JukeboxFragmentAdapter(this.getSupportFragmentManager(), this);
+        pager.setAdapter(adapter);
+    }
 
 
+    private void setupConnectionHandler(boolean reAttachCallbacks) {
+        if (this.connectionHandler == null) {
+            connectionHandler = new JukeboxConnectionHandler(
+                    settings.getServerIpAddress(),
+                    settings.getServerPort());
+
+            if (reAttachCallbacks) {
+                for (Fragment f : getSupportFragmentManager().getFragments()) {
+                    if (f instanceof JukeboxConnectionHandler.ConnectorCallbackEventListener)
+                        connectionHandler.addCallback((JukeboxConnectionHandler.ConnectorCallbackEventListener) f);
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        this.connectionHandler.stop();
+        this.connectionHandler = null;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setupConnectionHandler(true);
+    }
+
+    @Override
+    public JukeboxConnectionHandler getConnectionHandler() {
+        return this.connectionHandler;
+    }
 
 }

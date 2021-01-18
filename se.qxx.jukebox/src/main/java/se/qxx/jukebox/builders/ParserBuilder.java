@@ -13,10 +13,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.ISettings;
-import se.qxx.jukebox.settings.Parser;
-import se.qxx.jukebox.settings.Parser.Keywords;
-import se.qxx.jukebox.settings.WordType;
-import se.qxx.jukebox.settings.ParserType;
+import se.qxx.jukebox.settings.*;
 
 public class ParserBuilder extends MovieBuilder {
 
@@ -29,7 +26,7 @@ public class ParserBuilder extends MovieBuilder {
 		return extractMovieParser(filepath, filename).build();
 	}
 	
-	private Parser getParser() {
+	private ParserTest getParser() {
 		return this.getSettings().getParser();
 	}
 	
@@ -41,9 +38,11 @@ public class ParserBuilder extends MovieBuilder {
 		
 		this.getLog().Info(String.format("Running ParserBuilder on %s", fileNameToMatch));
 				
-		String stringToProcess = removeParenthesis(
-				removeInitialParenthesis(fileNameToMatch));
-		
+		String stringToProcess =
+			removeIgnored(
+				removeParenthesis(
+					removeInitialParenthesis(fileNameToMatch)));
+
 		String[] tokens = StringUtils.split(stringToProcess, " _.-");
 		
 		// assume movie name always comes first. The next token after that identifies the end of filename.
@@ -75,8 +74,8 @@ public class ParserBuilder extends MovieBuilder {
 						pm, 
 						titleMode, 
 						result, 
-						result.getRecursiveCount(), 
-						new ArrayList<ParserType>(),
+						result.getRecursiveCount(),
+						new ArrayList<>(),
 						tail);
 			}
 		}
@@ -91,6 +90,18 @@ public class ParserBuilder extends MovieBuilder {
 			pm.setGroupName(pm.getTitles().get(pm.getTitles().size() - 1));
 		
 		return pm;
+	}
+
+	private String removeIgnored(String str) {
+		for (ParserRegexTest pt : getWordList(ParserType.IGNORED)) {
+			Pattern p = Pattern.compile(pt.getRegex(), Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+			Matcher m = p.matcher(str);
+
+			str = m.replaceAll("");
+
+		}
+
+		return str;
 	}
 
 	private boolean parseToken(
@@ -108,12 +119,12 @@ public class ParserBuilder extends MovieBuilder {
 		// I.e. season/episode??.. that is look-ahead.. right?
 		// recursive call on the same token, ignoring the first ParserType??
 		
-		// if we get to an unknown token we switch to titlemode
+		// if we get to an unknown token we switch to title mode
 		if (pt.equals(ParserType.UNKNOWN) && !titleMode)
 			titleMode = true;
 		
-		// if we are in titlemode and we get to non unknown token
-		// we push the title. All other unkown tokens will be ignored 
+		// if we are in title mode and we get to non unknown token
+		// we push the title. All other unknown tokens will be ignored
 		if (!pt.equals(ParserType.UNKNOWN) && titleMode)
 			pm.pushTitle();
 		
@@ -138,11 +149,13 @@ public class ParserBuilder extends MovieBuilder {
 			pm.setPart(Integer.parseInt(resultingToken));
 			break;
 		case EPISODE:
-			pm.setEpisode(Integer.parseInt(resultingToken));;
-			break;
+			if (pm.getEpisode() == 0)
+				pm.setEpisode(Integer.parseInt(resultingToken));
+				break;
 		case SEASON:
-			pm.setSeason(Integer.parseInt(resultingToken));
-			break;
+			if (pm.getSeason() == 0)
+				pm.setSeason(Integer.parseInt(resultingToken));
+				break;
 		case YEAR:
 			pm.setYear(Integer.parseInt(resultingToken));
 			break;
@@ -175,7 +188,7 @@ public class ParserBuilder extends MovieBuilder {
 	}
 
 	private ParserToken checkToken(String token, boolean isFirst, boolean isLast, String[] tail) {
-		return checkToken(token, isFirst, isLast, new ArrayList<ParserType>(), tail);
+		return checkToken(token, isFirst, isLast, new ArrayList<>(), tail);
 	}
 	
 	private ParserToken checkToken(
@@ -187,23 +200,23 @@ public class ParserBuilder extends MovieBuilder {
 		
 		for (ParserType pt : ParserType.values()) {
 			if (!ignoreTypes.contains(pt)) {
-				for (WordType wt : getWordList(pt)) {
+				for (ParserRegexTest wt : getWordList(pt)) {
 					String result = checkWordType(wt, token, isFirst, isLast);
 					if (!StringUtils.isEmpty(result)) {
 						return new ParserToken(
 								pt, 
 								token, 
 								result, 
-								wt.getRecursiveCount(), 
+								wt.getRecursiveCountInt(),
 								isFirst, 
 								isLast);
 					}
 					else {
-						if (wt.getLookahead() > 0 && tail.length > 0 && tail.length >= wt.getLookahead()) {
-							// get sub-array of the tail of the number of lookahed elements we need
+						if (wt.getLookaheadInt() > 0 && tail.length > 0 && tail.length >= wt.getLookaheadInt()) {
+							// get sub-array of the tail of the number of lookahead elements we need
 							// concatenate them into a new token and parse that
 							String newToken = token + " " + 
-									StringUtils.join(ArrayUtils.subarray(tail, 0, wt.getLookahead()), " ");
+									StringUtils.join(ArrayUtils.subarray(tail, 0, wt.getLookaheadInt()), " ");
 							
 							String newTokenResult = checkWordType(wt, newToken, isFirst, isLast);
 							if (!StringUtils.isEmpty(newTokenResult)) {
@@ -211,7 +224,7 @@ public class ParserBuilder extends MovieBuilder {
 										pt, 
 										newToken, 
 										newTokenResult, 
-										wt.getRecursiveCount(), 
+										wt.getRecursiveCountInt(),
 										isFirst, 
 										isLast);
 							}
@@ -224,14 +237,14 @@ public class ParserBuilder extends MovieBuilder {
 		return new ParserToken(ParserType.UNKNOWN, token, token, 1, isFirst, isLast);
 	} 
 	
-	private String checkWordType(WordType wt, String token, boolean isFirst, boolean isLast) {
+	private String checkWordType(ParserRegexTest wt, String token, boolean isFirst, boolean isLast) {
 		if (wt != null) {
 			if (isTokenConsidered(wt, isFirst, isLast)) {
 				if (wt.isRegex()) {
-					return checkRegex(token, wt.getKey(), wt.getGroup());
+					return checkRegex(token, wt.getRegex(), wt.getGroupInt());
 				}
 				else {
-					return StringUtils.equalsIgnoreCase(wt.getKey(), token) ? token : StringUtils.EMPTY;
+					return StringUtils.equalsIgnoreCase(wt.getRegex(), token) ? token : StringUtils.EMPTY;
 				}
 			}
 		}
@@ -239,12 +252,12 @@ public class ParserBuilder extends MovieBuilder {
 		return StringUtils.EMPTY;
 	}
 	
-	private boolean isTokenConsidered(WordType wt, boolean isFirst, boolean isLast) {
+	private boolean isTokenConsidered(ParserRegexTest wt, boolean isFirst, boolean isLast) {
 		return (wt.isFirstToken() && isFirst) || 
 				(wt.isLastToken() && isLast) ||
 				(!wt.isFirstToken() && !wt.isLastToken());
 	}
- 
+
 	private String checkRegex(String token, String regex, int group) {
 		Pattern p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 		Matcher m = p.matcher(token);
@@ -252,36 +265,37 @@ public class ParserBuilder extends MovieBuilder {
 			if (group <= m.groupCount())
 				return m.group(group);
 		}
-		
+
 		return StringUtils.EMPTY;
-		
+
 	}
 
-	private List<WordType> getWordList(ParserType pt) {
-		Keywords keyWords = this.getParser().getKeywords();
+	private List<ParserRegexTest> getWordList(ParserType pt) {
 		switch (pt) {
+		case IGNORED:
+			return this.getParser().getIgnored();
 		case EPISODE:
-			return keyWords.getEpisode().getWord();	
+			return this.getParser().getEpisode();
 		case FORMAT:
-			return keyWords.getFormat().getWord();
+			return this.getParser().getFormatAsParserRegex();
 		case LANGUAGE:
-			return keyWords.getLanguage().getWord();
+			return this.getParser().getLanguageAsParserRegex();
 		case OTHER:
-			return keyWords.getOther().getWord();
+			return this.getParser().getOtherAsParserRegex();
 		case PART:
-			return keyWords.getParts().getWord();
+			return this.getParser().getParts();
 		case SEASON:
-			return keyWords.getSeason().getWord();
+			return this.getParser().getSeason();
 		case SOUND:
-			return keyWords.getSound().getWord();
+			return this.getParser().getSoundAsParserRegex();
 		case TYPE:
-			return keyWords.getType().getWord();
+			return this.getParser().getTypeAsParserRegex();
 		case YEAR:
-			return keyWords.getYear().getWord();
+			return this.getParser().getYear();
 		case GROUP:
-			return keyWords.getGroups().getWord();		
+			return this.getParser().getGroupsAsParserRegex();
 		default:
-			return new ArrayList<WordType>();
+			return new ArrayList<>();
 		}
 	}
 

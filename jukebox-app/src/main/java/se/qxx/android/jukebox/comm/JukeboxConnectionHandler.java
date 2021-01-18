@@ -1,49 +1,156 @@
 package se.qxx.android.jukebox.comm;
 
+import android.util.Log;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import se.qxx.android.jukebox.activities.ViewMode;
+import se.qxx.android.tools.Logger;
 import se.qxx.jukebox.domain.JukeboxDomain;
 import se.qxx.jukebox.domain.JukeboxDomain.*;
 import se.qxx.jukebox.domain.JukeboxServiceGrpc;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class JukeboxConnectionHandler<T>  {
-	
-	private JukeboxResponseListener listener;
+	private static final String TAG = "JukeboxConnectionHandler";
+
+    private List<ConnectorCallbackEventListener> callbacks = new ArrayList<>();
+    private JukeboxResponseListener listener;
 	private JukeboxServiceGrpc.JukeboxServiceFutureStub service;
+	private ManagedChannel channel;
 
 	private JukeboxResponseListener getListener() {
 		return listener;
 	}
 
-	public void setListener(JukeboxResponseListener listener) {
+    public interface ConnectorCallbackEventListener {
+        void handleMoviesUpdated(List<JukeboxDomain.Movie> movies, int totalMovies);
+        void handleSeriesUpdated(List<JukeboxDomain.Series> series, int totalSeries);
+        void handleSeasonsUpdated(List<JukeboxDomain.Season> seasons, int totalSeasons);
+        void handleEpisodesUpdated(List<JukeboxDomain.Episode> episodes, int totalEpisodes);
+    }
+
+    public void setListener(JukeboxResponseListener listener) {
 		this.listener = listener;
 	}
 
-	public JukeboxConnectionHandler(String serverIPaddress, int port) {
-		init(serverIPaddress, port);
+    public List<ConnectorCallbackEventListener> getCallbacks() {
+        return this.callbacks;
+    }
+
+    public void addCallback(ConnectorCallbackEventListener callback) {
+        this.callbacks.add(callback);
+    }
+
+    public void removeCallback(ConnectorCallbackEventListener callback) {
+		this.callbacks.remove(callback);
 	}
 
-	public JukeboxConnectionHandler(String serverIPaddress, int port, JukeboxResponseListener listener) {
+    public JukeboxConnectionHandler(String serverIPaddress, int port) {
 		init(serverIPaddress, port);
-		this.setListener(listener);
 	}
 
 	private void init(String serverIPaddress, int port) {
-		ManagedChannel managedChannel = ManagedChannelBuilder
+		channel = ManagedChannelBuilder
 				.forAddress(serverIPaddress, port)
 				.usePlaintext()
 				.build();
 
-		service = JukeboxServiceGrpc.newFutureStub(managedChannel);
+		service = JukeboxServiceGrpc.newFutureStub(channel);
 	}
-	
-	//----------------------------------------------------------------------------------------------------------------
+
+    public void connect(String searchString, final int offset, final int nrOfItems, ViewMode modelType, final int seriesID, int seasonID, boolean excludeImages, boolean excludeTextdata) {
+        try {
+
+            if (modelType == ViewMode.Movie) {
+                Logger.Log().d("Listing movies");
+                this.listMovies(searchString,
+                        nrOfItems,
+                        offset,
+                        excludeImages,
+                        excludeTextdata,
+                        response -> {
+                            if (response != null) {
+                                triggerMoviesUpdated(response.getMoviesList(), response.getTotalMovies());
+                            }
+                        });
+            }
+            else if (modelType == ViewMode.Series) {
+                this.listSeries(searchString,
+                        nrOfItems,
+                        offset,
+                        excludeImages,
+                        excludeTextdata,
+                        response -> {
+                            if (response != null) {
+                                triggerSeriesUpdated(response.getSeriesList(), response.getTotalSeries());
+                            }
+                        });
+            }
+            else if (modelType == ViewMode.Season) {
+                this.getItem(seriesID, JukeboxDomain.RequestType.TypeSeries, excludeImages, excludeTextdata,
+                        response -> {
+                            if (response != null) {
+                                triggerSeasonsUpdated(
+										response.getSerie().getSeasonList(),
+										response.getSerie().getSeasonCount());
+
+                            }
+                        });
+            }
+            else if (modelType == ViewMode.Episode) {
+                this.getItem(seasonID, JukeboxDomain.RequestType.TypeSeason, excludeImages, excludeTextdata,
+                        response -> {
+                            if (response != null) {
+                            	triggerEpisodesUpdated(
+                            			response.getSeason().getEpisodeList(),
+										response.getSeason().getEpisodeCount());
+                            }
+                        });
+            }
+
+        } catch (Exception e) {
+            Logger.Log().e("Error when connecting to server", e);
+        }
+    }
+
+	private void triggerEpisodesUpdated(List<Episode> episodeList, int totalEpisodeCount) {
+		for (ConnectorCallbackEventListener listener : this.getCallbacks())
+			listener.handleEpisodesUpdated(episodeList, totalEpisodeCount);
+	}
+
+	private void triggerSeasonsUpdated(List<Season> seasonList, int seasonCount) {
+		for (ConnectorCallbackEventListener listener : this.getCallbacks())
+			listener.handleSeasonsUpdated(seasonList, seasonCount);
+	}
+
+	private void triggerSeriesUpdated(List<Series> seriesList, int totalSeries) {
+		for (ConnectorCallbackEventListener listener : this.getCallbacks())
+			listener.handleSeriesUpdated(seriesList, totalSeries);
+	}
+
+	private void triggerMoviesUpdated(List<Movie> moviesList, int nrOfMovies) {
+		for (ConnectorCallbackEventListener listener : this.getCallbacks())
+			listener.handleMoviesUpdated(moviesList, nrOfMovies);
+	}
+
+
+	public void stop() {
+
+		try {
+			channel.shutdown();
+			channel.awaitTermination(250, TimeUnit.MILLISECONDS);
+		} catch (InterruptedException e) {
+			Log.e(TAG,"Error when terminating channel", e);
+		}
+	}
+
+    //----------------------------------------------------------------------------------------------------------------
 	//--------------------------------------------------------------------------------------------------- RPC Calls
 	//----------------------------------------------------------------------------------------------------------------
 
@@ -97,8 +204,8 @@ public class JukeboxConnectionHandler<T>  {
 			RequestType requestType = m == null ? RequestType.TypeEpisode : RequestType.TypeMovie;
 
 			JukeboxRequestStartMovie request = JukeboxRequestStartMovie.newBuilder()
-					.setPlayerName(playerName)  // JukeboxSettings.get().getCurrentMediaPlayer()
-					.setMovieOrEpisodeId(id) // Model.get().getCurrentMovie().getID()
+					.setPlayerName(playerName)
+					.setMovieOrEpisodeId(id)
 					.setRequestType(requestType)
 					.setSubtitleRequestType(subtitleRequestType)
 					.build();

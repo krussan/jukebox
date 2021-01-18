@@ -12,7 +12,7 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
 
 import se.qxx.jukebox.builders.MovieBuilderFactory;
-import se.qxx.jukebox.concurrent.Executor;
+import se.qxx.jukebox.concurrent.JukeboxExecutor;
 import se.qxx.jukebox.concurrent.JukeboxPriorityQueue;
 import se.qxx.jukebox.concurrent.JukeboxThreadPoolExecutor;
 import se.qxx.jukebox.converter.ConvertedFile;
@@ -25,7 +25,6 @@ import se.qxx.jukebox.interfaces.IArguments;
 import se.qxx.jukebox.interfaces.ICleaner;
 import se.qxx.jukebox.interfaces.IConvertedFile;
 import se.qxx.jukebox.interfaces.IDatabase;
-import se.qxx.jukebox.interfaces.IDistributor;
 import se.qxx.jukebox.interfaces.IDownloadChecker;
 import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.IFileCreatedHandler;
@@ -35,7 +34,6 @@ import se.qxx.jukebox.interfaces.IFilenameChecker;
 import se.qxx.jukebox.interfaces.IIMDBFinder;
 import se.qxx.jukebox.interfaces.IIMDBParser;
 import se.qxx.jukebox.interfaces.IIMDBUrlRewrite;
-import se.qxx.jukebox.interfaces.IImdbSettings;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.IJukeboxRpcServerConnection;
 import se.qxx.jukebox.interfaces.IMain;
@@ -44,7 +42,6 @@ import se.qxx.jukebox.interfaces.IMediaMetadataHelper;
 import se.qxx.jukebox.interfaces.IMkvSubtitleReader;
 import se.qxx.jukebox.interfaces.IMovieBuilderFactory;
 import se.qxx.jukebox.interfaces.IMovieIdentifier;
-import se.qxx.jukebox.interfaces.IParserSettings;
 import se.qxx.jukebox.interfaces.IRandomWaiter;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.IStarter;
@@ -57,15 +54,12 @@ import se.qxx.jukebox.interfaces.ITcpListener;
 import se.qxx.jukebox.interfaces.IUnpacker;
 import se.qxx.jukebox.interfaces.IUpgrader;
 import se.qxx.jukebox.interfaces.IUtils;
-import se.qxx.jukebox.interfaces.IVLCConnection;
 import se.qxx.jukebox.interfaces.IWakeOnLan;
 import se.qxx.jukebox.interfaces.IWebRetriever;
 import se.qxx.jukebox.servercomm.JukeboxRpcServerConnection;
 import se.qxx.jukebox.servercomm.TcpListener;
 import se.qxx.jukebox.servercomm.WakeOnLan;
 import se.qxx.jukebox.settings.Settings;
-import se.qxx.jukebox.settings.ImdbSettings;
-import se.qxx.jukebox.settings.ParserSettings;
 import se.qxx.jukebox.subtitles.MkvSubtitleReader;
 import se.qxx.jukebox.subtitles.SubFileDownloaderHelper;
 import se.qxx.jukebox.subtitles.SubFileUtilHelper;
@@ -76,8 +70,6 @@ import se.qxx.jukebox.tools.Unpacker;
 import se.qxx.jukebox.tools.Util;
 import se.qxx.jukebox.tools.WebRetriever;
 import se.qxx.jukebox.upgrade.Upgrader;
-import se.qxx.jukebox.vlc.Distributor;
-import se.qxx.jukebox.vlc.VLCConnection;
 import se.qxx.jukebox.watcher.DownloadChecker;
 import se.qxx.jukebox.watcher.FileCreatedHandler;
 import se.qxx.jukebox.watcher.FileSystemWatcher;
@@ -97,12 +89,10 @@ public class Binder {
 				
 				//Settings
 				bind(ISettings.class).to(Settings.class);
-				bind(IImdbSettings.class).to(ImdbSettings.class);
-				bind(IParserSettings.class).to(ParserSettings.class);
-				
+
 				//Core
 				bind(IArguments.class).to(Arguments.class).asEagerSingleton();
-				bind(IExecutor.class).to(Executor.class);
+				bind(IExecutor.class).to(JukeboxExecutor.class);
 				bind(IMain.class).to(Main.class);
 				bind(IDatabase.class).to(DB.class);
 				bind(IUpgrader.class).to(Upgrader.class);
@@ -158,7 +148,6 @@ public class Binder {
 				bind(IMediaConverter.class).to(MediaConverter.class);
 				
 				//Comm
-				bind(IDistributor.class).to(Distributor.class);
 				bind(IWebRetriever.class).to(WebRetriever.class);
 				bind(IWakeOnLan.class).to(WakeOnLan.class);
 				
@@ -178,12 +167,6 @@ public class Binder {
 							.implement(IJukeboxLogger.class, Log.class)
 							.build(LoggerFactory.class));
 				
-				//VLCConnection
-				install(
-					new FactoryModuleBuilder()
-						.implement(IVLCConnection.class, VLCConnection.class)
-						.build(VLCConnectionFactory.class));
-
 				//ConvertedFile
 				install(
 					new FactoryModuleBuilder()

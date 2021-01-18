@@ -13,8 +13,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 
-import javax.xml.bind.JAXBException;
-
 import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -33,13 +31,9 @@ import se.qxx.jukebox.domain.JukeboxDomain.Rating;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IDatabase;
-import se.qxx.jukebox.interfaces.IImdbSettings;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
-import se.qxx.jukebox.interfaces.IParserSettings;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.settings.Settings;
-import se.qxx.jukebox.settings.ImdbSettings;
-import se.qxx.jukebox.settings.ParserSettings;
 import se.qxx.jukebox.subtitles.SubtitleFileWriter;
 
 public class TestSubtitleFileWriter {
@@ -52,11 +46,8 @@ public class TestSubtitleFileWriter {
 	IJukeboxLogger log;
 	
 	@Before
-	public void initialize() throws IOException, JAXBException {
-		IParserSettings parserSettings = new ParserSettings();
-		IImdbSettings imdbSettings = new ImdbSettings();
-		
-		settings = new Settings(imdbSettings, parserSettings);
+	public void initialize() throws IOException {
+		settings = new Settings();
 		
 		log = new Log(settings, LogType.NONE);
 		when(loggerFactoryMock.create(any(LogType.class))).thenReturn(log);

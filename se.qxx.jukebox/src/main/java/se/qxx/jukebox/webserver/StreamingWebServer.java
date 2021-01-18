@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -44,8 +45,6 @@ import se.qxx.jukebox.interfaces.IStoppableRunnable;
 import se.qxx.jukebox.interfaces.IStreamingWebServer;
 import se.qxx.jukebox.interfaces.ISubtitleFileWriter;
 import se.qxx.jukebox.interfaces.IUtils;
-import se.qxx.jukebox.settings.JukeboxListenerSettings.WebServer.MimeTypeMap.Extension;
-import se.qxx.protodb.model.CaseInsensitiveMap;
 
 public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer, IStoppableRunnable {
 
@@ -56,9 +55,8 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 	
 	// maps stream name to actual file name
 	private Map<String, String> streamingMap = null;
-	private Map<String, String> mimeTypeMap = null;
-	private Map<String, String> extensionMap = null;
-	
+
+
 	private static Map<SubtitleRequestType, String> subtitleExtension = new ConcurrentHashMap<>();
 
 	/*
@@ -72,22 +70,30 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 	 */
 	private String ipAddress;
 	private ISubtitleFileWriter subWriter;
-	private IUtils utils; 
-	
+	private IUtils utils;
+	private ISettings settings;
+	private ExecutorService executorService;
+
 	@Inject
 	public StreamingWebServer(
 			IDatabase database, 
 			LoggerFactory loggerFactory,
 			ISubtitleFileWriter subWriter,
 			IUtils utils,
+			ISettings settings,
+			ExecutorService executorService,
 			@Assisted("webserverport") Integer port) {
+
 		super(port);
 		this.setUtils(utils);
 		this.setSubWriter(subWriter);
 		this.setDatabase(database);
 		this.setLog(loggerFactory.create(LogType.WEBSERVER));
-		
-		streamingMap = new ConcurrentHashMap<String, String>();
+		this.setSettings(settings);
+		this.setExecutorService(executorService);
+		this.setAsyncRunner(new WebServerAsyncRunner(executorService));
+
+		streamingMap = new ConcurrentHashMap<>();
 		
 		setIpAddress();
 	}
@@ -128,24 +134,30 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 		this.setIpAddress(this.getUtils().findIpAddress());
 		this.getLog().Info(String.format("Setting Ip Address :: %s", this.getIpAddress()));
 	}
-	
+
+	public ISettings getSettings() {
+		return settings;
+	}
+
+	public void setSettings(ISettings settings) {
+		this.settings = settings;
+	}
+
+
+	public ExecutorService getExecutorService() {
+		return executorService;
+	}
+
+	public void setExecutorService(ExecutorService executorService) {
+		this.executorService = executorService;
+	}
+
 	/* (non-Javadoc)
 	 * @see se.qxx.jukebox.webserver.IStreamingWebServer#initializeMappings()
 	 */
 	@Override
 	public void initializeMappings(ISettings settings) {
-		mimeTypeMap = new CaseInsensitiveMap();
-		extensionMap = new CaseInsensitiveMap();
-		
-		for (Extension e : settings.getSettings().getWebServer().getMimeTypeMap().getExtension() ) {
-			mimeTypeMap.put(e.getValue(), e.getMimeType());
-		}
-	
-		for (se.qxx.jukebox.settings.JukeboxListenerSettings.WebServer.ExtensionOverrideMap.Extension e :
-			settings.getSettings().getWebServer().getExtensionOverrideMap().getExtension()) {
-			extensionMap.put(e.getValue(), e.getOverride());
-		}
-		
+
 		subtitleExtension.put(SubtitleRequestType.WebVTT, "vtt");
 		subtitleExtension.put(SubtitleRequestType.SubRip, "srt");
 		
@@ -195,7 +207,9 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 
 	private String getOverrideExtension(String file) {
 		String extension = FilenameUtils.getExtension(file).toLowerCase();
-		
+
+		Map<String, String> extensionMap = this.getSettings().getSettings().getWebserver().getExtensionOverrideMap();
+
 		if (extensionMap.containsKey(extension)) {
 			this.getLog().Debug(String.format("Overriding extension %s -> %s", extension, extensionMap.get(extension)));
 			return extensionMap.get(extension);
@@ -363,6 +377,8 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
         // and that does not fit well with some video players
 
 		String extension = FilenameUtils.getExtension(filename);
+		Map<String, String> mimeTypeMap = this.getSettings().getSettings().getWebserver().getMimeTypeMap();
+
 		if (mimeTypeMap.containsKey(extension)) {
 			this.getLog().Debug(String.format("Overriding mimeType %s -> %s", extension, mimeTypeMap.get(extension)));
 			return mimeTypeMap.get(extension);
@@ -710,5 +726,4 @@ public class StreamingWebServer extends NanoHTTPD implements IStreamingWebServer
 	public void stop() {
 		super.stop();
 	}
-	
 }

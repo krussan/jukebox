@@ -2,8 +2,6 @@ package se.qxx.jukebox.tests;
 
 import java.io.IOException;
 
-import javax.xml.bind.JAXBException;
-
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 
@@ -27,7 +25,7 @@ public class TestParserBuilder {
 		
 	}
 	
-	public static void main(String[] args) throws IOException, JAXBException {
+	public static void main(String[] args) {
 		if (args.length > 0) {
 			Injector injector = Binder.setupBindings(args);
 			TestParserBuilder prog = injector.getInstance(TestParserBuilder.class);

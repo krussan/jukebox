@@ -23,7 +23,7 @@ import se.qxx.jukebox.interfaces.IRandomWaiter;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.ISubFileDownloaderHelper;
 import se.qxx.jukebox.interfaces.IWebRetriever;
-import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder;
+import se.qxx.jukebox.settings.FindersTest;
 import se.qxx.jukebox.tools.WebResult;
 
 @Singleton
@@ -411,8 +411,8 @@ public class SubFileDownloaderHelper implements ISubFileDownloaderHelper {
 	}
 
 	@Override
-	public String getSetting(SubFinder finder, String setting) {
-		return finder.getSubFinderSettings().getSetting().stream().filter(x -> StringUtils.equalsIgnoreCase(x.getKey(), setting)).findFirst().get().getValue();
+	public String getSetting(FindersTest finder, String setting) {
+		return finder.getSettings().get(setting);
 	}
 
 }

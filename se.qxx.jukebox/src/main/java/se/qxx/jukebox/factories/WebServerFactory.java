@@ -4,6 +4,9 @@ import com.google.inject.assistedinject.Assisted;
 
 import se.qxx.jukebox.interfaces.IStreamingWebServer;
 
+import java.util.concurrent.ExecutorService;
+
 public interface WebServerFactory {
-	public IStreamingWebServer create(@Assisted("webserverport") int port);
+	IStreamingWebServer create(
+			@Assisted("webserverport") int port);
 }

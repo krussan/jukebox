@@ -1,36 +1,33 @@
 package se.qxx.android.jukebox.activities.fragments;
 
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
 import android.view.View;
 import android.widget.Toast;
-
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import com.google.protobuf.ByteString;
-
 import org.apache.commons.lang3.StringUtils;
+import se.qxx.android.jukebox.R;
+import se.qxx.android.jukebox.activities.ViewMode;
+import se.qxx.android.jukebox.activities.fragments.SubtitleSelectFragment.SubtitleSelectDialogListener;
+import se.qxx.android.jukebox.cast.JukeboxCastType;
+import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
+import se.qxx.android.jukebox.comm.JukeboxConnectionMessage;
+import se.qxx.android.jukebox.comm.JukeboxResponseListener;
+import se.qxx.android.jukebox.exceptions.JukeboxDeprecatedException;
+import se.qxx.android.jukebox.settings.CacheData;
+import se.qxx.android.jukebox.settings.JukeboxSettings;
+import se.qxx.android.tools.GUITools;
+import se.qxx.android.tools.Logger;
+import se.qxx.jukebox.domain.JukeboxDomain;
 
 import java.util.List;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import se.qxx.android.jukebox.R;
-import se.qxx.android.jukebox.activities.ViewMode;
-import se.qxx.android.jukebox.activities.fragments.SubtitleSelectFragment.SubtitleSelectDialogListener;
-import se.qxx.android.jukebox.cast.JukeboxCastType;
-import se.qxx.android.jukebox.comm.HandlerCallback;
-import se.qxx.android.jukebox.settings.CacheData;
-import se.qxx.android.jukebox.settings.JukeboxSettings;
-import se.qxx.android.tools.GUITools;
-import se.qxx.android.tools.Logger;
-import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
-import se.qxx.android.jukebox.comm.JukeboxConnectionMessage;
-import se.qxx.android.jukebox.comm.JukeboxResponseListener;
-import se.qxx.jukebox.domain.JukeboxDomain;
 
 public abstract class PlayerFragment extends Fragment implements JukeboxResponseListener, SubtitleSelectDialogListener {
 
@@ -127,14 +124,18 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
         cacheData = new CacheData(getContext());
         settings = new JukeboxSettings(getContext());
 
-        this.setConnectionHandler(
-            new JukeboxConnectionHandler(
-                settings.getServerIpAddress(),
-                settings.getServerPort()));
+        setupConnectionHandler();
+    }
 
-        this.getConnectionHandler()
-            .setListener(this);
+    protected void setupConnectionHandler() {
+        JukeboxConnectionHandler jh =
+                new JukeboxConnectionHandler(
+                        settings.getServerIpAddress(),
+                        settings.getServerPort());
 
+        jh.setListener(this);
+
+        this.setConnectionHandler(jh);
     }
 
     protected void initializeView(View v, final ByteString image) {
@@ -259,23 +260,18 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
     }
 
     protected String getPlayerName() {
-        String player = getSettings().getCurrentMediaPlayer();
-        if (StringUtils.equalsIgnoreCase(player, "local"))
-            player = "ChromeCast";
-
-        return player;
+        return "ChromeCast";
     }
 
     public static Fragment newInstance(JukeboxCastType type, boolean screenChanged) {
         Bundle b = new Bundle();
         Fragment fm;
 
-        if (type == JukeboxCastType.Local)
-            fm = new LocalPlayerFragment();
-        else if (type == JukeboxCastType.ChromeCast) {
+        if (type == JukeboxCastType.ChromeCast) {
             fm = new ChromecastPlayerFragment();
-        } else
-            fm = new JukeboxPlayerFragment();
+        } else {
+            fm = new LocalPlayerFragment();
+        }
 
         b.putBoolean("screenChanged", screenChanged);
 
@@ -315,11 +311,14 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
         if (this.getExitPosition() > 0)
             cacheData.saveMediaState(this.getMedia().getID(), getExitPosition());
 
+        this.getConnectionHandler().stop();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+
+        setupConnectionHandler();
     }
 
     @Override
@@ -358,8 +357,11 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
         this.exitPosition = exitPosition;
     }
 
-    public int getCachedPosition(int mediaID) {
-        return cacheData.getMediaState(mediaID);
+    public int getCachedPosition(JukeboxDomain.Media md) {
+        if (md != null)
+            return cacheData.getMediaState(md.getID());
+        else
+            return 0;
     }
 
     /***
@@ -369,7 +371,7 @@ public abstract class PlayerFragment extends Fragment implements JukeboxResponse
     protected void seekToStartPosition() {
         if (this.getMedia() != null) {
             // get media state
-            int position = getCachedPosition(this.getMedia().getID());
+            int position = getCachedPosition(this.getMedia());
             if (position > 0)
                 seekTo(position * 1000);
         }

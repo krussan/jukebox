@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -29,7 +30,6 @@ import se.qxx.jukebox.interfaces.IIMDBParser;
 import se.qxx.jukebox.interfaces.IIMDBUrlRewrite;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
 import se.qxx.jukebox.interfaces.ISettings;
-import se.qxx.jukebox.interfaces.IWebRetriever;
 
 public class IMDBParser implements IIMDBParser {
 	private IFileReader fileReader;
@@ -45,14 +45,13 @@ public class IMDBParser implements IIMDBParser {
 	public IMDBParser(IFileReader fileReader, 
 			ISettings settings, 
 			IIMDBUrlRewrite urlRewrite, 
-			IWebRetriever webRetriever,
 			LoggerFactory loggerFactory,
 			@Assisted Document document) {
-		
+
 		this.setFileReader(fileReader);
 		this.setSettings(settings);
 		this.setDocument(document);
-		this.setUrlRewrite(urlRewrite);	
+		this.setUrlRewrite(urlRewrite);
 		
 		if (loggerFactory != null)
 			this.setLog(loggerFactory.create(LogType.IMDB));
@@ -308,7 +307,7 @@ public class IMDBParser implements IIMDBParser {
 		try {
 			this.getLog().Debug(String.format("IMDB :: parsing date :: %s", date));
 			Date parsedDate = DateUtils.parseDate(date,
-					getSettings().getImdb().getDatePatterns().getPattern().toArray(new String[] {}));
+					getSettings().getImdb().getDatePatterns().toArray(new String[] {}));
 			this.getLog().Debug(String.format("IMDB :: parsed date :: %s", parsedDate));
 			
 			return parsedDate;
@@ -332,7 +331,10 @@ public class IMDBParser implements IIMDBParser {
 	public Pair<Integer, String> parseSeasonUrl(String url) {		
 		Matcher m = seasonPattern.matcher(url);
 		if (m.find()) {
-			int season = Integer.parseInt(m.group(1));
+			int season = 1;
+			if (NumberUtils.isParsable(m.group(1)))
+				season = Integer.parseInt(m.group(1));
+
 			return Pair.of(season, url);
 		}
 		

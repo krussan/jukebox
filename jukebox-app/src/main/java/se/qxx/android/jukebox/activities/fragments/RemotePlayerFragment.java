@@ -185,7 +185,7 @@ public abstract class RemotePlayerFragment extends PlayerFragment
 
     @Override
     public void initializeSeeker() {
-        seeker = new Seeker(this, getSettings());
+        seeker = new Seeker(this, getSettings(), this.getConnectionHandler());
     }
 
     @Override
@@ -246,26 +246,14 @@ public abstract class RemotePlayerFragment extends PlayerFragment
     }
 
     private void pauseMovie() {
-        String player = getSettings().getCurrentMediaPlayer();
-        if (ChromeCastConfiguration.isChromeCastActive(getSettings().getCurrentMediaPlayer())) {
-            RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(this.getContext());
+        RemoteMediaClient client = ChromeCastConfiguration.getRemoteMediaClient(this.getContext());
 
-            if (client != null) {
-                client.togglePlayback();
-            }
-        }
-        else {
-            seeker.toggle();
-            this.getConnectionHandler().pauseMovie(player, response -> {});
+        if (client != null) {
+            client.togglePlayback();
         }
     }
 
     private void setupFullscreen() {
-
-        String player = getSettings().getCurrentMediaPlayer();
-        if (!ChromeCastConfiguration.isChromeCastActive(getSettings().getCurrentMediaPlayer())) {
-            this.getConnectionHandler().toggleFullscreen(player, response -> {});
-        }
 
     }
 

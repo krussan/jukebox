@@ -9,10 +9,9 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
 import org.apache.commons.lang3.StringUtils;
 import se.qxx.android.jukebox.R;
-import se.qxx.android.jukebox.adapters.support.MovieMediaLayoutAdapter;
+import se.qxx.android.jukebox.adapters.MovieMediaLayoutAdapter;
 import se.qxx.android.jukebox.cast.ChromeCastConfiguration;
 import se.qxx.android.jukebox.settings.CacheData;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
@@ -24,10 +23,15 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class MovieDetailActivity extends AppCompatActivity {
+public class MovieDetailActivity extends BaseActivity {
 
     private JukeboxSettings settings;
     private CacheData cacheData;
+
+    @Override
+    protected int getSearchContainer() {
+        return R.id.content;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,7 +144,7 @@ public class MovieDetailActivity extends AppCompatActivity {
             int progress = 0;
             int duration = m.getDuration();
             if (duration > 0) {
-                int position = getCachedPosition(m.getMedia(0).getID());
+                int position = getCachedPosition(m);
                 progress = (int) (100f * (float) position / (float) (duration * 60));
             }
             progressWatched.setProgress(progress);
@@ -187,14 +191,17 @@ public class MovieDetailActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
 
-        ChromeCastConfiguration.createMenu(this, getMenuInflater(), menu, settings.getCurrentMediaPlayer());
+        ChromeCastConfiguration.createMenu(this, getMenuInflater(), menu, this, this);
 
         return true;
     }
 
 
-    public int getCachedPosition(int mediaID) {
-        return cacheData.getMediaState(mediaID);
+    public int getCachedPosition(JukeboxDomain.Movie m) {
+        if (m.getMediaCount() > 0)
+            return cacheData.getMediaState(m.getMedia(0).getID());
+        else
+            return 0;
     }
 
     @Override
@@ -203,4 +210,13 @@ public class MovieDetailActivity extends AppCompatActivity {
         updateProgressBar(this.getMovie());
     }
 
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        return false;
+    }
 }

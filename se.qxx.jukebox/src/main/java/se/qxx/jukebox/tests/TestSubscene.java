@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.xml.bind.JAXBException;
-
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 
@@ -14,9 +12,8 @@ import se.qxx.jukebox.core.Binder;
 import se.qxx.jukebox.domain.MovieOrSeries;
 import se.qxx.jukebox.interfaces.ISettings;
 import se.qxx.jukebox.interfaces.ISubFileDownloaderHelper;
-import se.qxx.jukebox.settings.JukeboxListenerSettings.SubFinders.SubFinder;
+import se.qxx.jukebox.settings.FindersTest;
 import se.qxx.jukebox.subtitles.Language;
-import se.qxx.jukebox.subtitles.Subscene;
 import se.qxx.jukebox.subtitles.SubscenePost;
 
 public class TestSubscene {
@@ -36,7 +33,7 @@ public class TestSubscene {
 		
 	}
 
-	public static void main(String[] args) throws IOException, JAXBException {
+	public static void main(String[] args) {
 		if (args.length > 1) {
 			Injector injector = Binder.setupBindings(args);
 			TestSubscene prog = injector.getInstance(TestSubscene.class);
@@ -49,11 +46,11 @@ public class TestSubscene {
 	}
 
 	public void execute(String filename, String subsPath) {
-		settings.getSettings().getSubFinders().setSubsPath(subsPath);
+		settings.getSettings().getSubfinders().setPath(subsPath);
 		
 		try {
-			for (SubFinder f : settings.getSettings().getSubFinders().getSubFinder()) {
-				if (f.getClazz().endsWith("SubscenePost")) {
+			for (FindersTest f : settings.getSettings().getSubfinders().getFinders()) {
+				if (f.getExecutor().endsWith("SubscenePost")) {
 					
 					SubscenePost s = new SubscenePost(subFileDownloader, f);
 					

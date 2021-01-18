@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import se.qxx.android.jukebox.R;
-import se.qxx.android.jukebox.adapters.support.SubtitleLayoutAdapter;
+import se.qxx.android.jukebox.adapters.SubtitleLayoutAdapter;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 import se.qxx.android.tools.GUITools;
 import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
@@ -65,7 +65,7 @@ public class SubtitleSelectFragment extends DialogFragment implements SubtitleLa
                 settings.getServerIpAddress(),
                 settings.getServerPort());
 
-        final ListView lv = (ListView)v.findViewById(R.id.listSubtitlePicker);
+        final ListView lv = v.findViewById(R.id.listSubtitlePicker);
 
         jh.listSubtitles(
                 mMedia,
@@ -79,8 +79,9 @@ public class SubtitleSelectFragment extends DialogFragment implements SubtitleLa
                             lv.setAdapter(adapter);
                         });
                     }
-                });
 
+                    jh.stop();
+                });
     }
 
     public static SubtitleSelectFragment newInstance(JukeboxDomain.Media media, SubtitleSelectDialogListener listener) {

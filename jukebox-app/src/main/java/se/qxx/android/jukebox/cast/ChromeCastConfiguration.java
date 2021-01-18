@@ -7,6 +7,8 @@ import android.graphics.Color;
 import android.view.Menu;
 import android.view.MenuInflater;
 
+import android.view.MenuItem;
+import androidx.appcompat.widget.SearchView;
 import com.google.android.gms.cast.TextTrackStyle;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
@@ -47,29 +49,31 @@ public class ChromeCastConfiguration {
         return false;
     }
 
-    public static boolean isChromeCastActive(String currentMediaPlayer) {
-        return getCastType(currentMediaPlayer) == JukeboxCastType.ChromeCast;
-    }
-
-    public static JukeboxCastType getCastType(String currentMediaPlayer) {
-        if (StringUtils.equalsIgnoreCase("Chromecast", currentMediaPlayer))
-            if (isChromecastConnected())
-                return JukeboxCastType.ChromeCast;
-            else
-                return JukeboxCastType.Local;
-
-        if (StringUtils.equalsIgnoreCase("LOCAL", currentMediaPlayer))
+    public static JukeboxCastType getCastType() {
+        if (isChromecastConnected())
+            return JukeboxCastType.ChromeCast;
+        else
             return JukeboxCastType.Local;
-
-        return JukeboxCastType.JukeboxCast;
     }
 
-    public static void createMenu(Context context, MenuInflater inflater, Menu menu, String currentMediaPlayer) {
-        if (StringUtils.equalsIgnoreCase(currentMediaPlayer, "Chromecast")) {
-            inflater.inflate(R.menu.cast, menu);
-            CastButtonFactory.setUpMediaRouteButton(context.getApplicationContext(),
-                    menu,
-                    R.id.media_route_menu_item);
+    public static void createMenu(Context context,
+                                  MenuInflater inflater,
+                                  Menu menu,
+                                  SearchView.OnQueryTextListener queryTextListener,
+                                  SearchView.OnCloseListener closeListener) {
+        inflater.inflate(R.menu.cast, menu);
+        CastButtonFactory.setUpMediaRouteButton(context.getApplicationContext(),
+                menu,
+                R.id.media_route_menu_item);
+
+        MenuItem searchItem = menu.findItem(R.id.search_menu_item);
+        if (searchItem != null) {
+            SearchView searchView = (SearchView) searchItem.getActionView();
+            if (queryTextListener != null)
+                searchView.setOnQueryTextListener(queryTextListener);
+
+            if (closeListener != null)
+                searchView.setOnCloseListener(closeListener);
         }
     }
 
@@ -107,17 +111,4 @@ public class ChromeCastConfiguration {
         return castSession != null;
     }
 
-    public static boolean isLocalPlayer(String currentMediaPlayer) {
-        switch (ChromeCastConfiguration.getCastType(currentMediaPlayer)) {
-            case ChromeCast:
-                if (ChromeCastConfiguration.isChromecastConnected())
-                    return false;
-                else
-                    return true;
-            case JukeboxCast:
-                return false;
-            default:
-                return true;
-        }
-    }
 }

@@ -2,6 +2,7 @@ package se.qxx.jukebox.converter;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FilenameUtils;
@@ -32,7 +33,6 @@ import se.qxx.jukebox.interfaces.IDatabase;
 import se.qxx.jukebox.interfaces.IExecutor;
 import se.qxx.jukebox.interfaces.IMediaConverter;
 import se.qxx.jukebox.interfaces.ISettings;
-import se.qxx.jukebox.settings.CodecsType.Codec;
 
 @Singleton
 public class MediaConverter extends JukeboxThread implements IMediaConverter {
@@ -93,7 +93,7 @@ public class MediaConverter extends JukeboxThread implements IMediaConverter {
 					
 					if (convertedFile.convertedFileExists() && !convertedFile.isForcedOrFailed()) {
 						this.getLog().Info(String.format("Conversion already exist on :: %s", convertedFile.getConvertedFilename()));
-						saveConvertedMedia(md, MediaConverterState.Completed);
+						saveConvertedMedia(md, convertedFile.getConvertedFilename());
 					}
 					else if (convertedFile.sourceFileExist()) {
 						FFmpegProbeResult probeResult = getProbeResult(convertedFile.getFullFilepath());
@@ -142,8 +142,8 @@ public class MediaConverter extends JukeboxThread implements IMediaConverter {
 	}
 
 	private ConversionProbeResult checkConversion(Media md, FFmpegProbeResult probeResult) {
-		List<Codec> acceptedVideoCodecs = this.getSettings().getSettings().getConverter().getAcceptedVideoCodecs().getCodec();
-		List<Codec> acceptedAudioCodecs = this.getSettings().getSettings().getConverter().getAcceptedAudioCodecs().getCodec();
+		List<String> acceptedVideoCodecs = this.getSettings().getSettings().getConverter().getAcceptedVideoCodecs();
+		List<String> acceptedAudioCodecs = this.getSettings().getSettings().getConverter().getAcceptedAudioCodecs();
 
 		String audioCodec = "aac";
 		String videoCodec = "h264";
@@ -180,13 +180,8 @@ public class MediaConverter extends JukeboxThread implements IMediaConverter {
 		this.getLog().Info(String.format("%s codec tag string :: %s", stream.codec_type, stream.codec_tag_string));
 	}
 
-	private boolean findCodec(List<Codec> listCodecs, String codec_name) {
-		for (Codec c : listCodecs) {
-			if (StringUtils.equalsIgnoreCase(c.getTag(), codec_name))
-				return true;
-		}
-		
-		return false;
+	private boolean findCodec(List<String> listCodecs, String codec_name) {
+		return listCodecs.stream().anyMatch(x -> x.equalsIgnoreCase(codec_name));
 	}
 
 	private MediaConverterResult triggerConverter(
@@ -226,25 +221,21 @@ public class MediaConverter extends JukeboxThread implements IMediaConverter {
 
 
 	private FFmpegJob runConversion(FFmpeg ffmpeg, FFprobe ffprobe, FFmpegBuilder builder, final double duration_ns) {
-		FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);			
-		FFmpegJob job = executor.createJob(builder, new ProgressListener() {
-			@Override
-			public void progress(Progress progress) {
-				double percentage = progress.out_time_ns / duration_ns;
-				
-				String logMessage =
-					String.format(
-						"[%.0f%%] status:%s frame:%d time:%s ms fps:%.0f speed:%.2fx",
-						percentage * 100,
-						progress.status,
-						progress.frame,
-						FFmpegUtils.toTimecode(progress.out_time_ns, TimeUnit.NANOSECONDS),
-						progress.fps.doubleValue(),
-						progress.speed);
-				
-				getLog().Debug(logMessage);
-			}
-			
+		FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
+		FFmpegJob job = executor.createJob(builder, progress -> {
+			double percentage = progress.out_time_ns / duration_ns;
+
+			String logMessage =
+				String.format(
+					"[%.0f%%] status:%s frame:%d time:%s ms fps:%.0f speed:%.2fx",
+					percentage * 100,
+					progress.status,
+					progress.frame,
+					FFmpegUtils.toTimecode(progress.out_time_ns, TimeUnit.NANOSECONDS),
+					progress.fps.doubleValue(),
+					progress.speed);
+
+			getLog().Debug(logMessage);
 		});
 
 		// execute conversion
