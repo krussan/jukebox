@@ -17,6 +17,9 @@ android:
     - 'google-gdk-license-.+'
 
 before_install:
+ - touch $HOME/.android/repositories.cfg
+ - yes | sdkmanager "platforms;android-32"
+ - yes | sdkmanager "build-tools;32.0.0"
  - chmod +x gradlew
  - chmod +x ci/*.sh
  - ./gradlew printversion -q > /dev/null 2> /dev/null
