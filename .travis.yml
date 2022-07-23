@@ -1,5 +1,5 @@
 language: android
-sudo: false
+dist: trusty
 jdk: openjdk11
 
 android:
@@ -16,8 +16,10 @@ android:
 
 before_install:
  - touch $HOME/.android/repositories.cfg
- - yes | sdkmanager "platforms;android-32"
- - yes | sdkmanager "build-tools;32.0.0"
+ - wget "https://dl.google.com/android/repository/commandlinetools-linux-7302050_latest.zip" -O commandlinetools.zip
+ - unzip commandlinetools.zip -d $ANDROID_HOME/
+ - yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager "platforms;android-32"
+ - yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager "build-tools;32.0.0"
  - chmod +x gradlew
  - chmod +x ci/*.sh
  - ./gradlew printversion -q > /dev/null 2> /dev/null
