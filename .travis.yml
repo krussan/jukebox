@@ -5,10 +5,8 @@ jdk: openjdk11
 android:
   components:
     - tools
-    - tools
     - platform-tools
-    - build-tools-33.0.0
-    - android-33
+    - tools
     - addon_google_apis-google-24
     - extra-android-m2repository
   licenses:
