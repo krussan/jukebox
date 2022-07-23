@@ -1,22 +1,23 @@
 language: android
-sudo: false
+dist: trusty
 jdk: openjdk11
 
 android:
   components:
     - tools
-    - tools
     - platform-tools
-    - build-tools-29.0.2
-    - android-29
-    - addon_google_apis-google-29
+    - tools
+    - addon_google_apis-google-24
     - extra-android-m2repository
   licenses:
-    - android.sdk-license-.+
+    - 'android-sdk-preview-license-.+'
+    - 'android-sdk-license-.+'
+    - 'google-gdk-license-.+'
 
 before_install:
  - chmod +x gradlew
  - chmod +x ci/*.sh
+ - ci/android.sh
  - ./gradlew printversion -q > /dev/null 2> /dev/null
  - export JUKEBOX_VERSION=`./gradlew printversion -q` 
  - export JUKEBOX_TAG=v$JUKEBOX_VERSION-app
@@ -60,6 +61,10 @@ cache:
 
 env:
   global:
+  - ANDROID_HOME=~/android-sdk
+  - TARGET_VERSION=33
+  - BUILD_TOOLS_VERSION=33.0.0
+  - JAVA_TOOL_OPTIONS=-Dhttps.protocols=TLSv1.2
   - RELEASE_STORE_FILE=${TRAVIS_BUILD_DIR}/ci/keystore
   - RELEASE_KEY_ALIAS=android-signing      
   - secure: meX6bjHhNkTd0F0k13IHB9RkMC29bMqx0YJdapJe2hDXNgA1LIC964zHl6xkYmFHmuenuBSPfsWy2gJr3NsehJs6eMxzFNRHorx2w7lsMoBt6NSQZA5MX68zMCEyff3Z4ja2jXFI0hLYIVlGS7C/TQffTc5bWey9+ydEi9F+ixGTgfxEBVmiJXErAEjECMUOFZE0m/uR178HvHm+S4CJPC46jVd68Ix38eHS17jw+2/WEG9NOrFtqfuYfIxyuF1ju9zGLCWd+MsDt/rT5QMBHkcLNY1Wu8GkGIYv4aCvMIh2jRxrBDjDTQpyQWtkv0IKQRN8ne4CGyvi91Mezwr7wv7BSOXjh+pz+O22udX4wfDbvCFhq+GM7cbEfQ8zGtcwYvo+UX+tQf/zUBok0caE9KnuGeDN9ggvQ//JWJ0QTu+sbAVStEzW0eAY/3cxvQp1wtKkeUNMouYgTG1YB3YRDLLZ9dx3lSEmo6Ozaw5sqsNPy4I+VCEMXYfhceNArx1tFvxGlcuhmk3DKycxSOt56tL1KeIvcrUF8cY5X8M/qjnom0KgPhzFZVnMfW/NUQH8ciRykp7zkPHSxecWwTIzRMi7BkZb9KIrrymG77TbkskiGBhAvqJWBsTG1CF5bB2qaO55BKf2JV8Jua00jNRf+yIEG6oBatBBxBoDumzGemA=
