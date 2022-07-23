@@ -15,13 +15,9 @@ android:
     - 'google-gdk-license-.+'
 
 before_install:
- - touch $HOME/.android/repositories.cfg
- - wget "https://dl.google.com/android/repository/commandlinetools-linux-7302050_latest.zip" -O commandlinetools.zip
- - unzip commandlinetools.zip -d $ANDROID_HOME/
- - yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager "platforms;android-${TARGET_VERSION}"
- - yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager "build-tools;${BUILD_TOOLS_VERSION}"
  - chmod +x gradlew
  - chmod +x ci/*.sh
+ - ci/android.sh
  - ./gradlew printversion -q > /dev/null 2> /dev/null
  - export JUKEBOX_VERSION=`./gradlew printversion -q` 
  - export JUKEBOX_TAG=v$JUKEBOX_VERSION-app
