@@ -7,9 +7,9 @@ android:
     - tools
     - tools
     - platform-tools
-    - build-tools-29.0.2
-    - android-29
-    - addon_google_apis-google-29
+    - build-tools-33.0.0
+    - android-33
+    - addon_google_apis-google-24
     - extra-android-m2repository
   licenses:
     - android.sdk-license-.+
