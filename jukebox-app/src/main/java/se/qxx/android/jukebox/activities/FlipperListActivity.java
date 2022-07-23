@@ -1,8 +1,11 @@
 package se.qxx.android.jukebox.activities;
 
 import android.os.Bundle;
+
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
+
+import org.apache.commons.lang3.StringUtils;
 
 import se.qxx.android.jukebox.R;
 import se.qxx.android.jukebox.activities.fragments.JukeboxFragment;
@@ -11,8 +14,8 @@ import se.qxx.android.jukebox.comm.JukeboxConnectionHandler;
 import se.qxx.android.jukebox.settings.JukeboxSettings;
 
 public class FlipperListActivity
-    extends BaseActivity
-    implements JukeboxFragment.JukeboxFragmentHandler {
+        extends BaseActivity
+        implements JukeboxFragment.JukeboxFragmentHandler {
 
     ViewPager pager;
     private JukeboxFragmentAdapter adapter;
@@ -31,8 +34,8 @@ public class FlipperListActivity
         settings = new JukeboxSettings(this);
         setupConnectionHandler(false);
 
-		setContentView(R.layout.jukebox_main_wrapper);
-		//TOOD: Load main fragment
+        setContentView(R.layout.jukebox_main_wrapper);
+        //TOOD: Load main fragment
         initializeView();
     }
 
@@ -45,14 +48,17 @@ public class FlipperListActivity
 
     private void setupConnectionHandler(boolean reAttachCallbacks) {
         if (this.connectionHandler == null) {
-            connectionHandler = new JukeboxConnectionHandler(
-                    settings.getServerIpAddress(),
-                    settings.getServerPort());
+            String ipAddress = settings.getServerIpAddress();
+            int port = settings.getServerPort();
 
-            if (reAttachCallbacks) {
-                for (Fragment f : getSupportFragmentManager().getFragments()) {
-                    if (f instanceof JukeboxConnectionHandler.ConnectorCallbackEventListener)
-                        connectionHandler.addCallback((JukeboxConnectionHandler.ConnectorCallbackEventListener) f);
+            if (!StringUtils.isEmpty(ipAddress)) {
+                connectionHandler = new JukeboxConnectionHandler(ipAddress, port);
+
+                if (reAttachCallbacks) {
+                    for (Fragment f : getSupportFragmentManager().getFragments()) {
+                        if (f instanceof JukeboxConnectionHandler.ConnectorCallbackEventListener)
+                            connectionHandler.addCallback((JukeboxConnectionHandler.ConnectorCallbackEventListener) f);
+                    }
                 }
             }
         }
@@ -61,7 +67,10 @@ public class FlipperListActivity
     @Override
     protected void onPause() {
         super.onPause();
-        this.connectionHandler.stop();
+
+        if (this.getConnectionHandler() != null)
+            this.getConnectionHandler().stop();
+
         this.connectionHandler = null;
     }
 

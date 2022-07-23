@@ -14,6 +14,7 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import android.widget.TextView;
 import androidx.fragment.app.ListFragment;
@@ -37,6 +38,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.RequestType;
 
 import static se.qxx.android.jukebox.activities.ViewMode.Season;
 import static se.qxx.android.jukebox.model.Constants.NR_OF_ITEMS;
+import static se.qxx.android.jukebox.tools.Util.nullSafeGetter;
 
 public class JukeboxFragment extends ListFragment implements
 	OnItemClickListener, OnItemLongClickListener, JukeboxConnectionHandler.ConnectorCallbackEventListener, IOffsetHandler, SwipeRefreshLayout.OnRefreshListener {
@@ -302,8 +304,11 @@ public class JukeboxFragment extends ListFragment implements
 
 	protected void loadMoreData(int offset) {
         setLoading(true);
-        if (this.getHandler() != null)
-            this.getHandler().getConnectionHandler().connect(
+
+        JukeboxConnectionHandler connectionHandler = this.getConnectionHandler();
+
+        if (connectionHandler != null)
+            connectionHandler.connect(
                     this.getSearchString(),
                     offset,
                     Constants.NR_OF_ITEMS,
@@ -537,13 +542,12 @@ public class JukeboxFragment extends ListFragment implements
     @Override
     public void onDetach() {
         super.onDetach();
-        JukeboxFragmentHandler handler = this.getHandler();
-        if (handler != null) {
-            JukeboxConnectionHandler connectionHandler = handler.getConnectionHandler();
-            if (connectionHandler != null)
-                connectionHandler.removeCallback(this);
-        }
+
+        JukeboxConnectionHandler connectionHandler = this.getConnectionHandler();
+        if (connectionHandler != null)
+            connectionHandler.removeCallback(this);
     }
+
 
     public boolean onSearch(String searchString) {
         this.clearData();
@@ -551,6 +555,10 @@ public class JukeboxFragment extends ListFragment implements
 
         loadMoreData(0);
         return true;
+    }
+
+    private JukeboxConnectionHandler getConnectionHandler() {
+        return nullSafeGetter(() -> this.getHandler().getConnectionHandler());
     }
 
     protected void setRefreshing(boolean isRefreshing) {

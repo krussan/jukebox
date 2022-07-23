@@ -7,15 +7,14 @@ plugins {
 def appVersionName = "${jukeboxVersion}"
 def appVersionCode = Integer.valueOf(System.env.TRAVIS_BUILD_NUMBER ?: project.findProperty('versionCode') as String ?: 1 as String)
 def appJsonFile = project.findProperty('apiJsonFile') ?: '../ci/api.json'
-def appCompatVersion = '1.1.0'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 33
 
     defaultConfig {
         applicationId "se.qxx.android.jukebox"
         minSdkVersion 26
-        targetSdkVersion 29
+        targetSdkVersion 33
 
         // Enabling multidex support.
         multiDexEnabled true
@@ -92,18 +91,18 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.9'
     implementation 'com.google.protobuf:protobuf-java:3.12.0'
     implementation 'se.qxx.android.tools:android-tools:1.0.2'
-    implementation 'com.google.android.gms:play-services-cast-framework:19.0.0'
+    implementation 'com.google.android.gms:play-services-cast-framework:21.0.1'
 
     implementation 'org.apache.commons:commons-collections4:4.1'
 
-    implementation "androidx.core:core:$appCompatVersion"
-    implementation "androidx.annotation:annotation:$appCompatVersion"
-    implementation "androidx.appcompat:appcompat:$appCompatVersion"
-    implementation "androidx.mediarouter:mediarouter:$appCompatVersion"
-    implementation "androidx.preference:preference:$appCompatVersion"
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:$appCompatVersion"
+    implementation "androidx.core:core:1.8.0"
+    implementation "androidx.annotation:annotation:1.4.0"
+    implementation "androidx.appcompat:appcompat:1.4.2"
+    implementation "androidx.mediarouter:mediarouter:1.3.0"
+    implementation "androidx.preference:preference:1.2.0"
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 
-    implementation 'com.google.android.material:material:1.2.1'
+    implementation 'com.google.android.material:material:1.6.1'
 
     implementation "io.grpc:grpc-okhttp:${grpcVersion}"
     implementation "io.grpc:grpc-protobuf:${grpcVersion}"
