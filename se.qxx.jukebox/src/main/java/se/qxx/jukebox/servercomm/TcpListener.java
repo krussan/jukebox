@@ -128,9 +128,9 @@ public class TcpListener extends JukeboxThread implements ITcpListener {
 	@Override
 	protected void execute() throws InterruptedException {
 		try {
-			Thread.currentThread().sleep(1000);
+			Thread.sleep(1000);
 		}
-		catch (InterruptedException ex) {
+		catch (InterruptedException ignored) {
 		}
 	}
 
@@ -152,5 +152,10 @@ public class TcpListener extends JukeboxThread implements ITcpListener {
 
 	public void setExecutorService(ExecutorService executorService) {
 		this.executorService = executorService;
+	}
+
+	@Override
+	public int getJukeboxPriority() {
+		return Thread.MAX_PRIORITY;
 	}
 }
