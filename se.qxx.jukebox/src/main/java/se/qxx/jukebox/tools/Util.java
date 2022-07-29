@@ -12,6 +12,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,6 +32,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.watcher.ExtensionFileFilter;
 import se.qxx.jukebox.watcher.FileRepresentation;
+import java.util.function.Supplier;
 
 @Singleton
 public class Util implements IUtils {
@@ -77,7 +79,7 @@ public class Util implements IUtils {
         bos.flush();
         bos.close();
         
-		return new String(bos.toByteArray(), "ISO-8859-1");
+		return new String(bos.toByteArray(), StandardCharsets.ISO_8859_1);
 
 	}
 	
@@ -304,4 +306,12 @@ public class Util implements IUtils {
 		return fileExists(this.getFullFilePath(md));
 	}
 
+	@Override
+	public <T> T nullSafeGetter(Supplier<T> supplier) {
+		try {
+			return supplier.get();
+		} catch (NullPointerException n) {
+			return null;
+		}
+	}
 }

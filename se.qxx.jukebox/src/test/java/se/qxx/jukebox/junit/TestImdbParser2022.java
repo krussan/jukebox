@@ -6,15 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -25,6 +16,13 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+
 import se.qxx.jukebox.core.FileReader;
 import se.qxx.jukebox.core.Log;
 import se.qxx.jukebox.core.Log.LogType;
@@ -33,20 +31,19 @@ import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.imdb.IMDBFinder;
 import se.qxx.jukebox.imdb.IMDBGalleryHelper;
 import se.qxx.jukebox.imdb.IMDBParser;
+import se.qxx.jukebox.imdb.IMDBParser2022;
 import se.qxx.jukebox.imdb.IMDBRecord;
 import se.qxx.jukebox.imdb.IMDBUrlRewrite;
 import se.qxx.jukebox.interfaces.IFileReader;
 import se.qxx.jukebox.interfaces.IIMDBGalleryHelper;
+import se.qxx.jukebox.interfaces.IIMDBParser;
 import se.qxx.jukebox.interfaces.IIMDBUrlRewrite;
 import se.qxx.jukebox.interfaces.IRandomWaiter;
 import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.interfaces.IWebRetriever;
 import se.qxx.jukebox.settings.Settings;
-import se.qxx.jukebox.tools.Util;
-import se.qxx.jukebox.tools.WebResult;
-import se.qxx.jukebox.tools.WebRetriever;
 
-public class TestImdbParser extends ImdbParserTestBase {
+public class TestImdbParser2022 extends ImdbParserTestBase {
 	@Mock LoggerFactory loggerFactoryMock;
 	@Mock IWebRetriever webRetrieverMock;
 	@Mock IMDBParserFactory parserFactoryMock;
@@ -57,14 +54,14 @@ public class TestImdbParser extends ImdbParserTestBase {
 
 	@Before
 	public void init() {
-		when(loggerFactoryMock.create(any(Log.LogType.class))).thenReturn(new Log(null, LogType.NONE));
+		when(loggerFactoryMock.create(any(LogType.class))).thenReturn(new Log(null, LogType.NONE));
 	}
 	
 	@Test
-	public void TestImdbMovie() throws IOException {
-		String movieHtml = readResource("TestImdb1.html");
+	public void TestImdbMovie2022() throws IOException {
+		String movieHtml = readResource("TestImdb2022.html");
 
-		IMDBParser parser = createParser(movieHtml);
+		IIMDBParser parser = createParser(movieHtml);
 		
 		IMDBRecord rec = parser.parse(StringUtils.EMPTY, true);
 		
@@ -82,9 +79,29 @@ public class TestImdbParser extends ImdbParserTestBase {
 	}
 
 	@Test
+	public void TestImdbMovie2022WithJson() throws IOException {
+		String movieHtml = readResource("TestImdb2022.html");
+
+		IIMDBParser parser = createParser(movieHtml);
+
+		IMDBRecord rec = parser.parse(StringUtils.EMPTY, false);
+
+		assertEquals("The Amazing Spider-Man 2", rec.getTitle());
+		assertEquals(3, rec.getAllGenres().size());
+		assertArrayEquals(List.of("Action", "Adventure", "Sci-Fi").toArray(), rec.getAllGenres().toArray());
+		assertEquals("Marc Webb", rec.getDirector());
+		assertEquals(142, rec.getDurationMinutes());
+
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		assertEquals("2014-05-02", format.format(rec.getFirstAirDate()));
+
+	}
+
+
+	@Test
 	public void Test_Movie2() throws IOException, NumberFormatException {
 		String movieHtml = readResource("TestImdb2.html");
-		IMDBParser parser = createParser(movieHtml);
+		IIMDBParser parser = createParser(movieHtml);
 		IMDBRecord rec = parser.parse(StringUtils.EMPTY, true);
 		
 		assertEquals("A Most Wanted Man", rec.getTitle());
@@ -102,7 +119,7 @@ public class TestImdbParser extends ImdbParserTestBase {
 	@Test
 	public void Test_Series1() throws IOException {
 		String movieHtml = readResource("TestSeries1.html");
-		IMDBParser parser = createParser(movieHtml);
+		IIMDBParser parser = createParser(movieHtml);
 		IMDBRecord rec = parser.parse(StringUtils.EMPTY, true);
 		
 		assertEquals("The Walking Dead", rec.getTitle());
@@ -114,7 +131,23 @@ public class TestImdbParser extends ImdbParserTestBase {
 		assertEquals("Sheriff Deputy Rick Grimes wakes up from a coma to learn the world is in ruins, and must lead a group of survivors to stay alive.", rec.getStory());
 		assertEquals(9, rec.getAllSeasonUrls().size());
 	}
-	
+
+	@Test
+	public void Test_Series1_2022WithJson() throws IOException {
+		String movieHtml = readResource("TestSeries1_2022.html");
+		IIMDBParser parser = createParser(movieHtml);
+		IMDBRecord rec = parser.parse(StringUtils.EMPTY, false);
+
+		assertEquals("The Walking Dead", rec.getTitle());
+		assertArrayEquals(List.of("Drama", "Horror", "Sci-Fi").toArray(), rec.getAllGenres().toArray());
+		assertEquals("", rec.getDirector());
+		assertEquals(44, rec.getDurationMinutes());
+		assertNotNull(rec.getImageUrl());
+		assertEquals("8.4", rec.getRating());
+		assertEquals("Sheriff Deputy Rick Grimes wakes up from a coma to learn the world is in ruins, and must lead a group of survivors to stay alive.", rec.getStory());
+		assertEquals(9, rec.getAllSeasonUrls().size());
+	}
+
 	@Test
 	public void Test_ReleaseInfo_No_specific_for_country() throws IOException {
 		String searchResults = readResource("TestReleaseInfo.html");
@@ -136,7 +169,7 @@ public class TestImdbParser extends ImdbParserTestBase {
 	@Test
 	public void Test_Episode1() throws IOException {
 		String episodeHtml = readResource("TestEpisode1-S1E1.html");
-		IMDBParser parser = createParser(episodeHtml);
+		IIMDBParser parser = createParser(episodeHtml);
 		IMDBRecord rec = parser.parse(StringUtils.EMPTY, true);
 		
 		assertEquals("Days Gone Bye", rec.getTitle());
@@ -149,14 +182,26 @@ public class TestImdbParser extends ImdbParserTestBase {
 		
 	}
 
-	private IMDBParser createParser(String content) throws IOException {
+	@Test
+	public void Test_2022_series_parser() throws IOException {
+		String episodeHtml = readResource("TestSeries2.html");
+		IIMDBParser parser = createParser(episodeHtml);
+		IMDBRecord rec = parser.parse(StringUtils.EMPTY, false);
+
+		assertEquals("Foundation", rec.getTitle());
+		assertEquals(2021, rec.getYear());
+		assertEquals("/title/tt0804484/mediaviewer/rm726399745/?ref_=tt_ov_i", rec.getImageUrl());
+		assertArrayEquals(rec.getAllGenres().toArray(), List.of("Drama", "Sci-Fi").toArray());
+	}
+
+	private IIMDBParser createParser(String content) throws IOException {
 		Document doc = Jsoup.parse(content);
 
 		Settings settings = new Settings();
 		IFileReader fileReader = new FileReader();
 		IIMDBUrlRewrite urlRewrite = new IMDBUrlRewrite();
 
-		IMDBParser parser = new IMDBParser(fileReader,
+		IMDBParser2022 parser = new IMDBParser2022(fileReader,
 				settings,
 				urlRewrite,
 				loggerFactoryMock,

@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import com.google.protobuf.ByteString;
 
@@ -104,4 +105,5 @@ public interface IUtils {
 	boolean fileExists(String filename);
 	boolean mediaFileExists(Media md);
 
+	<T> T nullSafeGetter(Supplier<T> supplier);
 }

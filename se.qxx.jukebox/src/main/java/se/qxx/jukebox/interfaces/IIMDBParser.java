@@ -20,6 +20,5 @@ public interface IIMDBParser {
 	Date parseFirstAirDate();
 	String parseImageUrl();
 	
-	IMDBRecord parse(String url);
-	
+    IMDBRecord parse(String url, boolean ignoreJson);
 }

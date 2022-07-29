@@ -30,6 +30,7 @@ import se.qxx.jukebox.domain.JukeboxDomain.Series;
 import se.qxx.jukebox.factories.IMDBParserFactory;
 import se.qxx.jukebox.factories.LoggerFactory;
 import se.qxx.jukebox.interfaces.IIMDBFinder;
+import se.qxx.jukebox.interfaces.IIMDBGalleryHelper;
 import se.qxx.jukebox.interfaces.IIMDBParser;
 import se.qxx.jukebox.interfaces.IIMDBUrlRewrite;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
@@ -51,16 +52,17 @@ public class IMDBFinder implements IIMDBFinder {
 	private IJukeboxLogger log;
 	private IRandomWaiter waiter;
 	private IUtils utils;
-	
+	private IIMDBGalleryHelper galleryHelper;
+
 	@Inject
 	public IMDBFinder(ISettings settings, 
 			IWebRetriever webRetriever, 
-			IIMDBUrlRewrite urlRewrite, 
-			IMDBParserFactory parserFactory,
-			LoggerFactory loggerFactory, 
+			IIMDBUrlRewrite urlRewrite,
+		    IMDBParserFactory parserFactory,
+		    IIMDBGalleryHelper galleryHelper,
+			LoggerFactory loggerFactory,
 			IRandomWaiter waiter,
 			IUtils utils) {
-		
 		this.setWaiter(waiter);
 		this.setSettings(settings);
 		this.setWebRetriever(webRetriever);
@@ -68,6 +70,7 @@ public class IMDBFinder implements IIMDBFinder {
 		this.setParserFactory(parserFactory);
 		this.setLog(loggerFactory.create(LogType.IMDB));
 		this.setUtils(utils);
+		this.setGalleryHelper(galleryHelper);
 		
 	}
 	
@@ -127,6 +130,14 @@ public class IMDBFinder implements IIMDBFinder {
 		this.settings = settings;
 	}
 
+	public IIMDBGalleryHelper getGalleryHelper() {
+		return galleryHelper;
+	}
+
+	public void setGalleryHelper(IIMDBGalleryHelper galleryHelper) {
+		this.galleryHelper = galleryHelper;
+	}
+
 	/* (non-Javadoc)
 	 * @see se.qxx.jukebox.imdb.IIMDBFinder#Get(se.qxx.jukebox.domain.JukeboxDomain.Movie)
 	 */
@@ -165,10 +176,12 @@ public class IMDBFinder implements IIMDBFinder {
 		Document doc = Jsoup.parse(webResult.getResult());
 		
 		IIMDBParser parser = this.getParserFactory().create(doc);
-		IMDBRecord rec = parser.parse(webResult.getUrl());
+		IMDBRecord rec = parser.parse(webResult.getUrl(), false);
 		
-		if (!StringUtils.isEmpty(rec.getImageUrl())) 
-			rec.setImage(this.getWebRetriever().getWebFileData(rec.getImageUrl()));
+		if (!StringUtils.isEmpty(rec.getImageUrl())) {
+			String newImageUrl = this.getGalleryHelper().getGalleryImageUrl(rec.getImageUrl());
+			rec.setImage(this.getWebRetriever().getWebFileData(newImageUrl));
+		}
 		
 		return rec;
 	}
@@ -194,7 +207,7 @@ public class IMDBFinder implements IIMDBFinder {
 			if (sn == null || s == null || ep == null)
 				throw new IllegalArgumentException("Object hierarchy for series need to be created before IMDB call");
 	
-			IMDBRecord seriesRec = null;
+			IMDBRecord seriesRec;
 			if (StringUtils.isEmpty(s.getImdbUrl()) || StringUtils.isEmpty(sn.getImdbUrl())) {
 				seriesRec = getSeriesRecord(s, season);
 	
@@ -284,7 +297,7 @@ public class IMDBFinder implements IIMDBFinder {
 	 */
 	private IMDBRecord searchSeriesAndCheckSeason(Series s, int season)
 			throws IOException, ParseException {
-		List<String> seriesBlacklist = new ArrayList<String>();
+		List<String> seriesBlacklist = new ArrayList<>();
 		
 		boolean found = false;
 		IMDBRecord seriesRec = null;
@@ -310,7 +323,7 @@ public class IMDBFinder implements IIMDBFinder {
 	/**
 	 * Checks if an IMDB url is among the blacklisted url:s
 	 * @param imdbUrl		 The Url to check
-	 * @param blacklistedIDs The list of blacklisted IMDB id's
+	 * @param blacklist      The list of blacklisted IMDB id's
 	 * @return
 	 */
 	private boolean urlIsBlacklisted(String imdbUrl, List<String> blacklist) {
@@ -335,7 +348,6 @@ public class IMDBFinder implements IIMDBFinder {
 			int yearToFind, 
 			List<String> blacklist, 
 			boolean isTvEpisode) throws IOException, NumberFormatException, ParseException {
-		
 		
 		String searchUrl = this.getSettings().getImdb().getSearchUrl();
 		
@@ -377,15 +389,14 @@ public class IMDBFinder implements IIMDBFinder {
 
 
 	protected WebResult getSearchResult(String title, String searchUrl)
-			throws UnsupportedEncodingException, IOException {
+			throws IOException {
 		String urlParameters = java.net.URLEncoder.encode(title, "ISO-8859-1");
 		String urlString = searchUrl.replace("%%TITLE%%", urlParameters);
 		//String urlString = "http://www.imdb.com/find?s=tt&q=" + urlParameters;
 
 		this.getLog().Debug(String.format("Making web request. Url :: %s", urlString));
 
-		WebResult webResult = this.getWebRetriever().getWebResult(urlString);
-		return webResult;
+		return this.getWebRetriever().getWebResult(urlString);
 	}
 
 

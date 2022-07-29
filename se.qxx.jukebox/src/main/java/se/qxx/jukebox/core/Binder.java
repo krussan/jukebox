@@ -19,6 +19,7 @@ import se.qxx.jukebox.converter.ConvertedFile;
 import se.qxx.jukebox.converter.MediaConverter;
 import se.qxx.jukebox.factories.*;
 import se.qxx.jukebox.imdb.IMDBFinder;
+import se.qxx.jukebox.imdb.IMDBGalleryHelper;
 import se.qxx.jukebox.imdb.IMDBParser;
 import se.qxx.jukebox.imdb.IMDBUrlRewrite;
 import se.qxx.jukebox.interfaces.IArguments;
@@ -32,6 +33,7 @@ import se.qxx.jukebox.interfaces.IFileReader;
 import se.qxx.jukebox.interfaces.IFileSystemWatcher;
 import se.qxx.jukebox.interfaces.IFilenameChecker;
 import se.qxx.jukebox.interfaces.IIMDBFinder;
+import se.qxx.jukebox.interfaces.IIMDBGalleryHelper;
 import se.qxx.jukebox.interfaces.IIMDBParser;
 import se.qxx.jukebox.interfaces.IIMDBUrlRewrite;
 import se.qxx.jukebox.interfaces.IJukeboxLogger;
@@ -126,7 +128,8 @@ public class Binder {
 				//IMDB
 				bind(IIMDBFinder.class).to(IMDBFinder.class);
 				bind(IIMDBUrlRewrite.class).to(IMDBUrlRewrite.class);
-				
+				bind(IIMDBGalleryHelper.class).to(IMDBGalleryHelper.class);
+
 				install(
 					new FactoryModuleBuilder()
 						.implement(IIMDBParser.class, IMDBParser.class)
