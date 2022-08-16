@@ -27,7 +27,7 @@ public class JukeboxFragmentAdapter extends FragmentStatePagerAdapter {
     }
 
     public JukeboxFragmentAdapter(FragmentManager fm, Context context) {
-		super(fm);
+		super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
 		this.setContext(context);
 	}
 

@@ -15,24 +15,10 @@ import java.util.List;
 
 public class SeriesLayoutAdapter extends GenericListLayoutAdapter<Series> {
 
-    private List<Series> series = new ArrayList<>();
-
-    public List<Series> getSeries() {
-        return series;
-    }
-
-    public void addSeries(List<Series> series) {
-        this.getSeries().addAll(series);
-    }
-
-    public void clearSeries() {
-        this.getSeries().clear();
-    }
-
 	public SeriesLayoutAdapter(Context context, List<Series> series) {
 		super(context, R.layout.movielistrow);
-		this.clearSeries();
-		this.addSeries(series);
+		this.clear();
+		this.addAll(series);
 	}
 
     @Override
@@ -61,18 +47,8 @@ public class SeriesLayoutAdapter extends GenericListLayoutAdapter<Series> {
     }
 
     @Override
-    public int getItemCount() {
-        return this.getSeries().size();
-    }
-
-    @Override
-    public Series getDataObject(int position) {
-        return this.getSeries().get(position);
-    }
-
-    @Override
     public long getObjectId(int position) {
-        return this.getSeries().get(position).getID();
+        return this.getDataObject(position).getID();
     }
 
 }

@@ -16,23 +16,10 @@ import se.qxx.jukebox.domain.JukeboxDomain.Movie;
  */
 public class MovieLayoutAdapter extends GenericListLayoutAdapter<Movie> {
 
-    private List<Movie> movies = new ArrayList<>();
-    public List<Movie> getMovies() {
-        return movies;
-    }
-
-    public void addMovies(List<Movie> movies) {
-        this.getMovies().addAll(movies);
-    }
-
-    public void clearMovies() {
-        this.getMovies().clear();
-    }
-
 	public MovieLayoutAdapter(Context context, List<Movie> movies) {
 		super(context, R.layout.movielistrow);
-		this.clearMovies();
-		this.addMovies(movies);
+		this.clear();
+		this.addAll(movies);
     }
 
 	@Override
@@ -58,17 +45,6 @@ public class MovieLayoutAdapter extends GenericListLayoutAdapter<Movie> {
             GUITools.setTextOnTextview(R.id.bottomtext, Integer.toString(year), v);
         else
             GUITools.hideView(R.id.bottomtext, v);
-    }
-
-
-    @Override
-    public int getItemCount() {
-        return this.getMovies().size();
-    }
-
-    @Override
-    public Movie getDataObject(int position) {
-        return this.getMovies().get(position);
     }
 
     @Override

@@ -18,23 +18,10 @@ import java.util.stream.Collectors;
  */
 public class MosLayoutAdapter extends GenericListLayoutAdapter<MovieOrSeries> {
 
-    private List<MovieOrSeries> movieOrSeries = new ArrayList<>();
-    public List<MovieOrSeries> getMovieOrSeries() {
-        return movieOrSeries;
-    }
-
-    public void addMovieOrSeries(List<MovieOrSeries> movieOrSeries) {
-        this.getMovieOrSeries().addAll(movieOrSeries);
-    }
-
-    public void clearMovieOrSeries() {
-        this.getMovieOrSeries().clear();
-    }
-
 	public MosLayoutAdapter(Context context, List<MovieOrSeries> movieOrSeries) {
 		super(context, R.layout.movielistrow);
-		this.clearMovieOrSeries();
-		this.addMovieOrSeries(movieOrSeries);
+		this.clear();
+		this.addAll(movieOrSeries);
     }
 
 	@Override
@@ -50,15 +37,6 @@ public class MosLayoutAdapter extends GenericListLayoutAdapter<MovieOrSeries> {
 		}
 	}
 
-    @Override
-    public int getItemCount() {
-        return this.getMovieOrSeries().size();
-    }
-
-    @Override
-    public MovieOrSeries getDataObject(int position) {
-        return this.getMovieOrSeries().get(position);
-    }
 
     @Override
     public long getObjectId(int position) {
@@ -66,11 +44,15 @@ public class MosLayoutAdapter extends GenericListLayoutAdapter<MovieOrSeries> {
     }
 
     public void addMovies(List<Movie> movies) {
-        this.getMovieOrSeries().addAll(movies.stream().map(MovieOrSeries::new).collect(Collectors.toList()));
+        List<MovieOrSeries> list = this.getList();
+        for (Movie movie : movies)
+            list.add(new MovieOrSeries(movie));
     }
 
     public void addSeries(List<JukeboxDomain.Series> series) {
-        this.getMovieOrSeries().addAll(series.stream().map(MovieOrSeries::new).collect(Collectors.toList()));
+        List<MovieOrSeries> list = this.getList();
+        for (JukeboxDomain.Series s : series)
+            list.add(new MovieOrSeries(s));
     }
 }
 	

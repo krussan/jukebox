@@ -1,6 +1,7 @@
 package se.qxx.android.jukebox.activities.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,11 +14,24 @@ import se.qxx.android.jukebox.model.Constants;
 import se.qxx.jukebox.domain.JukeboxDomain;
 
 import java.util.List;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SearchFragment extends JukeboxFragment {
 
+    private static final String TAG = "SearchFragment";
+
     private int totalMovies = 0;
     private int totalSeries = 0;
+    private CyclicBarrier barrier = new CyclicBarrier(2);
+    private AtomicBoolean adapterNotified = new AtomicBoolean(false);
+
+    public SearchFragment() {
+        super();
+        barrier.reset();
+    }
 
     @Override
     public int getTotalItems() {
@@ -45,16 +59,17 @@ public class SearchFragment extends JukeboxFragment {
         super.onCreate(savedInstanceState);
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.jukebox_main_wrapper, container, false);
-        initializeView(v);
-        return v;
-    }
-
-    private void initializeView(View v) {
-    }
+//    @Nullable
+//    @Override
+//    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+//        View v = inflater.inflate(R.layout.jukebox_main_wrapper, container, false);
+//        initializeView(v);
+//        return v;
+//    }
+//
+//    protected void initializeView(View v) {
+//        super.initializeView(v);
+//    }
 
     public static SearchFragment newInstance() {
         Bundle b = new Bundle();
@@ -66,7 +81,8 @@ public class SearchFragment extends JukeboxFragment {
     }
 
     public void search(String query) {
-
+        this.adapterNotified.set(false);
+        this.setSearchString(query);
     }
 
     @Override
@@ -102,13 +118,19 @@ public class SearchFragment extends JukeboxFragment {
         final MosLayoutAdapter adapter = this.getMosLayoutAdapter();
         if (adapter != null) {
             setLoading(false);
-            this.setTotalMovies(totalMovies);
+            this.setTotalMovies(movies.size());
 
-            this.getActivity().runOnUiThread(() -> {
+            try {
                 adapter.addMovies(movies);
                 adapter.setServerListSize(getTotalItems());
-                adapter.notifyDataSetChanged();
-            });
+
+                barrier.await();
+                if (!adapterNotified.getAndSet(true))
+                    this.getActivity().runOnUiThread(adapter::notifyDataSetChanged);
+
+            } catch (Exception loggedAndIgnored) {
+                Log.e(TAG, "Barrier error", loggedAndIgnored);
+            }
         }
     }
 
@@ -119,13 +141,19 @@ public class SearchFragment extends JukeboxFragment {
 
         if (adapter != null) {
             setLoading(false);
-            this.setTotalSeries(totalSeries);
-            this.getActivity().runOnUiThread(() -> {
+            this.setTotalSeries(series.size());
 
+            try {
                 adapter.addSeries(series);
                 adapter.setServerListSize(getTotalItems());
-                adapter.notifyDataSetChanged();
-            });
+
+                barrier.await();
+                if (!adapterNotified.getAndSet(true))
+                    this.getActivity().runOnUiThread(adapter::notifyDataSetChanged);
+
+            } catch (Exception loggedAndIgnored) {
+                Log.e(TAG, "Barrier error", loggedAndIgnored);
+            }
         }
     }
 }

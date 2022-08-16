@@ -212,7 +212,7 @@ public class JukeboxFragment extends ListFragment implements
 		return v;
 	}
 
-	private void initializeView(View v) {
+	protected void initializeView(View v) {
 		ListView lv = v.findViewById(R.id.listItems);
 		lv.setOnItemClickListener(this);
 		lv.setOnItemLongClickListener(this);
@@ -244,7 +244,6 @@ public class JukeboxFragment extends ListFragment implements
         };
 
 		lv.setOnScrollListener(scrollListener);
-
 		lv.setAdapter(getLayoutAdapter(v));
         loadMoreData(0);
 	}
@@ -296,6 +295,7 @@ public class JukeboxFragment extends ListFragment implements
         }
         else if (mode == ViewMode.Search) {
             _mosLayoutAdapter = new MosLayoutAdapter(v.getContext(), new ArrayList<>());
+            return _mosLayoutAdapter;
         }
 
         return null;
@@ -415,7 +415,7 @@ public class JukeboxFragment extends ListFragment implements
             this.setTotalItems(totalMovies);
 
             this.getActivity().runOnUiThread(() -> {
-                _jukeboxMovieLayoutAdapter.addMovies(movies);
+                _jukeboxMovieLayoutAdapter.addAll(movies);
                 _jukeboxMovieLayoutAdapter.setServerListSize(totalMovies);
                 _jukeboxMovieLayoutAdapter.notifyDataSetChanged();
             });
@@ -429,7 +429,7 @@ public class JukeboxFragment extends ListFragment implements
             setLoading(false);
             this.setTotalItems(totalSeries);
             this.getActivity().runOnUiThread(() -> {
-                _seriesLayoutAdapter.addSeries(series);
+                _seriesLayoutAdapter.addAll(series);
                 _seriesLayoutAdapter.setServerListSize(totalSeries);
                 _seriesLayoutAdapter.notifyDataSetChanged();
             });
@@ -444,7 +444,7 @@ public class JukeboxFragment extends ListFragment implements
             this.setTotalItems(totalSeasons);
             if (_seasonLayoutAdapter != null) {
                 this.getActivity().runOnUiThread(() -> {
-                    _seasonLayoutAdapter.addSeasons(seasons);
+                    _seasonLayoutAdapter.addAll(seasons);
                     _seasonLayoutAdapter.notifyDataSetChanged();
                 });
 
@@ -462,7 +462,7 @@ public class JukeboxFragment extends ListFragment implements
             this.setTotalItems(totalEpisodes);
             if (_episodeLayoutAdapter != null) {
                 this.getActivity().runOnUiThread(() -> {
-                    _episodeLayoutAdapter.addEpisodes(episodes);
+                    _episodeLayoutAdapter.addAll(episodes);
                     _episodeLayoutAdapter.notifyDataSetChanged();
                 });
 
@@ -478,26 +478,32 @@ public class JukeboxFragment extends ListFragment implements
         ViewMode mode = this.getMode();
 	    if (mode == ViewMode.Movie && _jukeboxMovieLayoutAdapter != null) {
             this.getActivity().runOnUiThread(() -> {
-                _jukeboxMovieLayoutAdapter.clearMovies();
+                _jukeboxMovieLayoutAdapter.clear();
                 _jukeboxMovieLayoutAdapter.notifyDataSetChanged();
             });
         }
         else if (mode == ViewMode.Series && _seriesLayoutAdapter != null) {
             this.getActivity().runOnUiThread(() -> {
-                _seriesLayoutAdapter.clearSeries();
+                _seriesLayoutAdapter.clear();
                 _seriesLayoutAdapter.notifyDataSetChanged();
             });
         }
         else if (mode == Season && _seasonLayoutAdapter != null) {
             this.getActivity().runOnUiThread(() -> {
-                _seasonLayoutAdapter.clearSeasons();
+                _seasonLayoutAdapter.clear();
                 _seasonLayoutAdapter.notifyDataSetChanged();
             });
         }
         else if (mode == ViewMode.Episode && _episodeLayoutAdapter != null) {
             this.getActivity().runOnUiThread(() -> {
-                _episodeLayoutAdapter.clearEpisodes();
+                _episodeLayoutAdapter.clear();
                 _episodeLayoutAdapter.notifyDataSetChanged();
+            });
+        }
+        else if (mode == ViewMode.Search && _mosLayoutAdapter != null) {
+            this.getActivity().runOnUiThread(() -> {
+                _mosLayoutAdapter.clear();
+                _mosLayoutAdapter.notifyDataSetChanged();
             });
         }
     }
@@ -509,6 +515,9 @@ public class JukeboxFragment extends ListFragment implements
 
         if (_seriesLayoutAdapter != null)
             _seriesLayoutAdapter.setLoading(isLoading);
+
+        if (_mosLayoutAdapter != null)
+            _mosLayoutAdapter.setLoading(isLoading);
     }
 
     @Override

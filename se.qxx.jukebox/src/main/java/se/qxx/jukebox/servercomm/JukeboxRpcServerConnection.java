@@ -155,30 +155,33 @@ public class JukeboxRpcServerConnection extends JukeboxServiceGrpc.JukeboxServic
 		boolean excludeImages = request.getFilterList().stream().anyMatch(r -> r == RequestFilter.Images);
 		boolean excludeTextData = request.getFilterList().stream().anyMatch(r -> r == RequestFilter.SubsTextdata);
 
+
 		switch (request.getRequestType()) {
 			case TypeMovie:
-				b.addAllMovies(
-						this.getDatabase().searchMoviesByTitle(
-								searchString,
-								request.getNrOfItems(),
-								request.getStartIndex(),
-								excludeImages,
-								excludeTextData));
+				List<Movie> movieSearchResult = this.getDatabase().searchMoviesByTitle(
+						searchString,
+						request.getNrOfItems(),
+						request.getStartIndex(),
+						excludeImages,
+						excludeTextData);
 
-				b.setTotalMovies(
-						this.getDatabase().getTotalNrOfMovies());
+				int totalMovies = StringUtils.isEmpty(searchString) ? this.getDatabase().getTotalNrOfMovies() : movieSearchResult.size();
+
+				b.addAllMovies(movieSearchResult);
+				b.setTotalMovies(totalMovies);
 
 				break;
 			case TypeSeries:
-				b.addAllSeries(
-						this.getDatabase().searchSeriesByTitle(
-								searchString,
-								request.getNrOfItems(),
-								request.getStartIndex(),
-								excludeImages));
+				List<Series> seriesSearchResult = this.getDatabase().searchSeriesByTitle(
+						searchString,
+						request.getNrOfItems(),
+						request.getStartIndex(),
+						excludeImages);
 
-				b.setTotalSeries(
-						this.getDatabase().getTotalNrOfSeries());
+				int totalSeries = StringUtils.isEmpty(searchString) ? this.getDatabase().getTotalNrOfSeries() : seriesSearchResult.size();
+
+				b.addAllSeries(seriesSearchResult);
+				b.setTotalSeries(totalSeries);
 
 				break;
 			default:

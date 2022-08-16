@@ -14,7 +14,6 @@ import android.widget.BaseAdapter;
 public class MovieMediaLayoutAdapter extends BaseAdapter {
 
 	private Context context;
-
 	private Movie movie;
 
 	public MovieMediaLayoutAdapter(Context context, Movie movie) {

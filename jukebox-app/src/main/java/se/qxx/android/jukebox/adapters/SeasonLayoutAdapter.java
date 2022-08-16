@@ -18,25 +18,10 @@ import se.qxx.jukebox.domain.JukeboxDomain.Season;
 
 public class SeasonLayoutAdapter extends GenericListLayoutAdapter<Season> {
 
-	private List<Season> seasons = new ArrayList<>();
-
-    public List<Season> getSeasons() {
-        return seasons;
-    }
-
-    public void addSeasons(List<Season> seasons) {
-        this.getSeasons().addAll(
-			sortSeasons(seasons));
-    }
-
-    public void clearSeasons() {
-        this.getSeasons().clear();
-    }
-
     public SeasonLayoutAdapter(Context context, List<Season> seasons) {
         super(context, R.layout.movielistrow);
-        this.clearSeasons();
-        this.addSeasons(sortSeasons(seasons));
+        this.clear();
+        this.addAll(sortSeasons(seasons));
     }
 
 	@Override
@@ -63,16 +48,6 @@ public class SeasonLayoutAdapter extends GenericListLayoutAdapter<Season> {
 		catch (Exception e) {
 			Logger.Log().e("Error occured while populating list", e);
 		}
-	}
-
-	@Override
-	public int getItemCount() {
-		return this.getSeasons().size();
-	}
-
-	@Override
-	public Season getDataObject(int position) {
-		return this.getSeasons().get(position);
 	}
 
 	@Override

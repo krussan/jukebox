@@ -20,20 +20,6 @@ public class EpisodeLayoutAdapter extends GenericListLayoutAdapter<Episode> {
     private List<Episode> episodes = new ArrayList<>();
     private int seasonNumber;
 
-
-    public List<Episode> getEpisodes() {
-		return episodes;
-	}
-
-	public void addEpisodes(List<Episode> episodes) {
-        this.getEpisodes().addAll(
-            sortEpisodes(episodes));
-	}
-
-	public void clearEpisodes() {
-        this.getEpisodes().clear();
-    }
-
     public int getSeasonNumber() {
         return seasonNumber;
     }
@@ -46,8 +32,8 @@ public class EpisodeLayoutAdapter extends GenericListLayoutAdapter<Episode> {
 		super(context, R.layout.episodelistrow);
 
 		this.setSeasonNumber(seasonNumber);
-		this.clearEpisodes();
-		this.addEpisodes(sortEpisodes(episodes));
+		this.clear();
+		this.addAll(sortEpisodes(episodes));
 	}
 
     @Override
@@ -79,22 +65,12 @@ public class EpisodeLayoutAdapter extends GenericListLayoutAdapter<Episode> {
     }
 
     @Override
-    public int getItemCount() {
-        return this.getEpisodes().size();
-    }
-
-    @Override
-    public JukeboxDomain.Episode getDataObject(int position) {
-        return this.getEpisodes().get(position);
-    }
-
-    @Override
     public long getObjectId(int position) {
         return this.getDataObject(position).getID();
     }
 
     private Episode getItemById(int id) {
-        for (Episode e : this.getEpisodes()) {
+        for (Episode e : this.getList()) {
             if (e.getID() == id)
                 return e;
         }

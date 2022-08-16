@@ -20,6 +20,8 @@ import se.qxx.jukebox.domain.JukeboxDomain.Media;
 import se.qxx.jukebox.domain.JukeboxDomain.Subtitle;
 import se.qxx.jukebox.domain.Sorter;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /***
@@ -42,9 +44,22 @@ public abstract class GenericListLayoutAdapter<T> extends BaseAdapter {
 
     private final int VIEWTYPE_ITEM = 0;
 	private final int VIEWTYPE_FOOTER = 1;
+    private final List<T> items = Collections.synchronizedList(new ArrayList<>());
 
 	public void setLoading(boolean isLoading) {
 	    this.isLoading = isLoading;
+    }
+
+    public List<T> getList() {
+        return items;
+    }
+
+    public void addAll(List<T> items) {
+        this.getList().addAll(items);
+    }
+
+    public void clear() {
+        this.getList().clear();
     }
 
     public void setServerListSize(int serverListSize){
@@ -96,8 +111,6 @@ public abstract class GenericListLayoutAdapter<T> extends BaseAdapter {
     }
 
     public abstract void initializeView(View v, T o);
-	public abstract int getItemCount();
-	public abstract T getDataObject(int position);
 	public abstract long getObjectId(int position);
 
 	@Override
@@ -112,7 +125,6 @@ public abstract class GenericListLayoutAdapter<T> extends BaseAdapter {
 
     @Override
     public int getItemViewType(int position) {
-        // TODO Auto-generated method stub
         return (position >= this.getItemCount()) ? VIEWTYPE_FOOTER
                 : VIEWTYPE_ITEM;
     }
@@ -227,4 +239,13 @@ public abstract class GenericListLayoutAdapter<T> extends BaseAdapter {
         }
 
     }
+
+    public int getItemCount() {
+        return this.getList().size();
+    }
+
+    public T getDataObject(int position) {
+        return this.getList().get(position);
+    }
+
 }
