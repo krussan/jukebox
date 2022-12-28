@@ -1,7 +1,7 @@
 package se.qxx.android.jukebox.comm;
 
 import com.google.common.util.concurrent.FutureCallback;
-import org.checkerframework.checker.nullness.compatqual.NullableDecl;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class RpcCallback<T> implements FutureCallback<T> {
     JukeboxResponseListener listener;
@@ -21,7 +21,7 @@ public class RpcCallback<T> implements FutureCallback<T> {
     }
 
     @Override
-    public void onSuccess(@NullableDecl T t) {
+    public void onSuccess(@Nullable T t) {
         if (this.getCallback() != null) {
             getCallback().run(t);
         }

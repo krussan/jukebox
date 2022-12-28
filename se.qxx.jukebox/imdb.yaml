@@ -7,7 +7,7 @@ title:
   preferredLanguage: default
   useOriginalIfExists: true
 
-searchUrl: "https://www.imdb.com/find?s=tt&q=%%TITLE%%"
+searchUrl: "https://www.imdb.com/find/?s=tt&q=%%TITLE%%"
 
 datePatterns:
   - "dd MMM yyyy"
