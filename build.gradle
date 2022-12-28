@@ -6,7 +6,7 @@ buildscript {
         maven { url 'https://plugins.gradle.org/m2/' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.4'
+        classpath 'com.android.tools.build:gradle:7.3.1'
         classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.14'
         classpath 'com.github.triplet.gradle:play-publisher:2.8.1'
         classpath 'com.github.ksoichiro.build.info:com.github.ksoichiro.build.info.gradle.plugin:0.2.0'
@@ -29,6 +29,6 @@ allprojects {
     }
 }
 
-task printVersion {
+tasks.register('printVersion') {
     println rootProject.jukeboxVersion
 }
