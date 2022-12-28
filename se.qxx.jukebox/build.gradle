@@ -65,7 +65,9 @@ jar {
 task fatJar(type: Jar) {
    manifest.from jar.manifest
    destinationDirectory = outputDir
-   classifier = 'all'
+   archiveClassifier = 'all'
+   duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
    from {
       configurations.runtimeClasspath
         .filter( {! (it.name =~ /sisu-guice.*\.jar/ || it.name =~ /git-commit-id.*\.jar/)})
