@@ -153,3 +153,8 @@ task archiveZip(type: Zip) {
    archiveFileName = "se.qxx.jukebox-${jukeboxVersion}.zip"
    destinationDirectory = outputDir
 }
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}

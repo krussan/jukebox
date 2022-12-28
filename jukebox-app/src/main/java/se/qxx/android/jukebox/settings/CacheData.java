@@ -10,18 +10,18 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 
 public class CacheData {
 
     private static final String CACHE_FILE_NAME = "tazmo_cache.json";
     private static final String TAG = "CacheData";
-    private Context context;
+    private final Context context;
 
     public CacheData(Context context) {
         this.context = context;
@@ -58,7 +58,7 @@ public class CacheData {
         File file = getCacheFile();
 
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(file), "utf-8"))) {
+                new FileOutputStream(file), StandardCharsets.UTF_8))) {
             writer.write(json.toString());
         }
     }

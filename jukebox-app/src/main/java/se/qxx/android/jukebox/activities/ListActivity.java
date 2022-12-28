@@ -39,17 +39,18 @@ public class ListActivity
         if (b != null) {
             Object o = b.getSerializable("series");
             if (o != null)
-                return (JukeboxDomain.Series)o;
+                return (JukeboxDomain.Series) o;
         }
 
         return null;
     }
+
     public JukeboxDomain.Season getSeason() {
         Bundle b = getIntent().getExtras();
         if (b != null) {
             Object o = b.getSerializable("season");
             if (o != null)
-                return (JukeboxDomain.Season)o;
+                return (JukeboxDomain.Season) o;
         }
 
         return null;
@@ -92,7 +93,8 @@ public class ListActivity
     @Override
     protected void onPause() {
         super.onPause();
-        this.connectionHandler.stop();
+        if (this.getConnectionHandler() != null)
+            this.getConnectionHandler().stop();
         this.connectionHandler = null;
     }
 

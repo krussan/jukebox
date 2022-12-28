@@ -7,7 +7,6 @@ plugins {
 def appVersionName = "${jukeboxVersion}"
 def appVersionCode = Integer.valueOf(System.env.TRAVIS_BUILD_NUMBER ?: project.findProperty('versionCode') as String ?: 1 as String)
 def appJsonFile = project.findProperty('apiJsonFile') ?: '../ci/api.json'
-def appCompatVersion = '1.1.0'
 
 android {
     compileSdkVersion 33
@@ -96,12 +95,12 @@ dependencies {
 
     implementation 'org.apache.commons:commons-collections4:4.4'
 
-    implementation "androidx.core:core:$appCompatVersion"
-    implementation "androidx.annotation:annotation:$appCompatVersion"
-    implementation "androidx.appcompat:appcompat:$appCompatVersion"
-    implementation "androidx.mediarouter:mediarouter:$appCompatVersion"
-    implementation "androidx.preference:preference:$appCompatVersion"
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:$appCompatVersion"
+    implementation "androidx.core:core:1.8.0"
+    implementation "androidx.annotation:annotation:1.4.0"
+    implementation "androidx.appcompat:appcompat:1.4.2"
+    implementation "androidx.mediarouter:mediarouter:1.3.0"
+    implementation "androidx.preference:preference:1.2.0"
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 
     implementation 'com.google.android.material:material:1.7.0'
 
