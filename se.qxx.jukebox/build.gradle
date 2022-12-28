@@ -1,7 +1,6 @@
 plugins {
    id 'java'
    id 'idea'
-   id 'com.github.ksoichiro.build.info'
 }
 
 group = 'se.qxx.jukebox'
@@ -136,7 +135,7 @@ else
    LD_LIBRARY_PATH=+\$PWD
 fi
 export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH
-java -Xmx1024m -Djava.util.logging.config.file=logging.properties -jar ${fatJar.archiveName} \${1+"\$@"} &
+java -Xmx1024m -Djava.util.logging.config.file=logging.properties -jar ${fatJar.archiveFileName} \${1+"\$@"} &
 echo \$! > juebox.pid
 """
    }
