@@ -85,7 +85,7 @@ dependencies {
    implementation 'org.apache.commons:commons-lang3:3.12.0'
    implementation 'se.qxx.protodb:protodb-java:2.5.4'
    implementation 'commons-io:commons-io:2.11.0'
-   implementation 'uk.co.caprica:vlcj:4.8.2'
+   implementation 'uk.co.caprica:vlcj:3.10.1'
    implementation 'org.imgscalr:imgscalr-lib:4.2'
    implementation 'org.xerial:sqlite-jdbc:3.40.0.0'
    implementation 'mysql:mysql-connector-java:5.1.45'
@@ -97,7 +97,7 @@ dependencies {
    implementation 'com.matthewn4444:embl-java:1.0.0'
    implementation 'net.bramp.ffmpeg:ffmpeg:0.7.0'
    implementation 'net.java.dev.jna:jna:5.12.1'
-   implementation 'com.google.inject:guice:5.1.0:no_aop'
+   implementation 'com.google.inject:guice:5.1.0'
    implementation 'com.google.inject.extensions:guice-assistedinject:5.1.0'
    implementation 'com.google.guava:guava:31.1-jre'
    implementation 'org.apache.commons:commons-text:1.10.0'
@@ -110,8 +110,7 @@ dependencies {
 
 
    // runtime
-
-   implementation 'com.sun.activation:jakarta.activation:1.2.1'
+   implementation 'com.sun.activation:jakarta.activation:2.0.1'
 
    // grpc
    implementation "io.grpc:grpc-netty-shaded:${grpcVersion}"
