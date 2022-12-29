@@ -52,6 +52,7 @@ deploy:
   on:
     tags: false
     branch: master
+    condition: $TRAVIS_EVENT_TYPE != cron
 
 cache:
   directories:

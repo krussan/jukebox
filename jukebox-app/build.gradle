@@ -10,6 +10,7 @@ def appJsonFile = project.findProperty('apiJsonFile') ?: '../ci/api.json'
 
 android {
     compileSdkVersion 33
+    namespace "se.qxx.android.jukebox"
 
     defaultConfig {
         applicationId "se.qxx.android.jukebox"
