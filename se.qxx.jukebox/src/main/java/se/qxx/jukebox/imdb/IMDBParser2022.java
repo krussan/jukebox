@@ -166,25 +166,24 @@ public class IMDBParser2022 implements IIMDBParser {
 
 	@Override
 	public String parseStory() {
-		Elements elm = this.getDocument().select("div.summary_text");
+		//Elements elm = this.getDocument().select("div.summary_text");
+		Elements elm = this.getDocument().select("section[data-testid~=storyline-plot-summary");
 
-		if (elm.size() > 0) {
-			String unescapedValue = StringEscapeUtils.unescapeHtml4(elm.get(0).text());
-			this.getLog().Debug(String.format("IMDBRECORD :: Setting story :: %s", unescapedValue));
-			return unescapedValue;
-		}
-
-		return StringUtils.EMPTY;
+		return extractValue(elm, "story");
 	}
 
 
 	@Override
 	public String parseRating() {
-		Elements elm = this.getDocument().select("span[itemprop=ratingValue]");
+		//Elements elm = this.getDocument().select("span[itemprop=ratingValue]");
+		Elements elm = this.getDocument().select(".jGRxWM");
+		return extractValue(elm, "rating");
+	}
 
+	private String extractValue(Elements elm, String valueType) {
 		if (elm.size() > 0) {
 			String unescapedValue = StringEscapeUtils.unescapeHtml4(elm.get(0).text());
-			this.getLog().Debug(String.format("IMDBRECORD :: Setting rating :: %s", unescapedValue));
+			this.getLog().Debug(String.format("IMDBRECORD :: Setting %s :: %s", valueType, unescapedValue));
 			return unescapedValue;
 		}
 
@@ -271,14 +270,7 @@ public class IMDBParser2022 implements IIMDBParser {
 	public String parseDirector() {
 		//Elements elm = this.getDocument().select(".credit_summary_item:contains(Director) > a");
 		Elements elm = this.getDocument().select("a[href~=tt_ov_dr]");
-
-		if (elm.size() > 0) {
-			String unescapedValue = StringEscapeUtils.unescapeHtml4(elm.get(0).text().trim());
-			this.getLog().Debug(String.format("IMDBRECORD :: Setting director :: %s", unescapedValue));
-			return unescapedValue;
-		}
-
-		return StringUtils.EMPTY;
+		return extractValue(elm, "director");
 	}
 
 	@Override
@@ -310,12 +302,9 @@ public class IMDBParser2022 implements IIMDBParser {
 			if (m.find()) {
 				String match = m.group(type == TitleType.Title ? 1 : 2);
 
-				String unescapedValue = StringEscapeUtils.unescapeHtml4(match).trim();
-				return unescapedValue;
+				return StringEscapeUtils.unescapeHtml4(match).trim();
 			} else if (type == TitleType.Title) {
-				String unescapedValue = StringEscapeUtils.unescapeHtml4(elm.text()).trim();
-				this.getLog().Debug(String.format("IMDBRECORD :: Setting title :: %s", unescapedValue));
-				return unescapedValue;
+				return extractValue(elm, "title");
 			}
 
 		}
@@ -403,8 +392,12 @@ public class IMDBParser2022 implements IIMDBParser {
 
 		rec.setTitle(root.name);
 		rec.setYear(LocalDate.parse(root.datePublished, DateTimeFormatter.ISO_DATE).getYear());
-		rec.setDirector(root.director.get(0).name);
-		rec.setDurationMinutes((int)Duration.parse(root.duration).toMinutes());
+		if (root.director != null)
+			rec.setDirector(root.director.get(0).name);
+
+		if (root.duration != null)
+			rec.setDurationMinutes((int)Duration.parse(root.duration).toMinutes());
+
 		rec.addGenres(root.genre);
 		rec.setFirstAirDate(java.sql.Date.valueOf(LocalDate.parse(root.datePublished)));
 

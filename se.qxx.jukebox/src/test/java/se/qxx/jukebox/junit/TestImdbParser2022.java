@@ -42,6 +42,7 @@ import se.qxx.jukebox.interfaces.IRandomWaiter;
 import se.qxx.jukebox.interfaces.IUtils;
 import se.qxx.jukebox.interfaces.IWebRetriever;
 import se.qxx.jukebox.settings.Settings;
+import se.qxx.jukebox.tools.Util;
 
 public class TestImdbParser2022 extends ImdbParserTestBase {
 	@Mock LoggerFactory loggerFactoryMock;
@@ -52,9 +53,20 @@ public class TestImdbParser2022 extends ImdbParserTestBase {
 	
 	@Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
+	private Settings settings;
+	private IFileReader fileReader;
+	private IIMDBUrlRewrite urlRewrite;
+	private IUtils utils;
+	private IIMDBGalleryHelper galleryHelper;
+
 	@Before
-	public void init() {
+	public void init() throws IOException {
 		when(loggerFactoryMock.create(any(LogType.class))).thenReturn(new Log(null, LogType.NONE));
+		settings = new Settings();
+		fileReader = new FileReader();
+		urlRewrite = new IMDBUrlRewrite();
+		utils = new Util();
+		galleryHelper = new IMDBGalleryHelper(settings, webRetrieverMock, loggerFactoryMock);
 	}
 	
 	@Test
@@ -118,16 +130,16 @@ public class TestImdbParser2022 extends ImdbParserTestBase {
 	
 	@Test
 	public void Test_Series1() throws IOException {
-		String movieHtml = readResource("TestSeries1.html");
+		String movieHtml = readResource("TestSeries1_2022.html");
 		IIMDBParser parser = createParser(movieHtml);
 		IMDBRecord rec = parser.parse(StringUtils.EMPTY, true);
 		
 		assertEquals("The Walking Dead", rec.getTitle());
-		assertArrayEquals(new String[] {"Drama", "Horror", "Sci-Fi"}, rec.getAllGenres().toArray(new String[] {}));
+		assertArrayEquals(new String[] {"Drama", "Horror", "Thriller"}, rec.getAllGenres().toArray(new String[] {}));
 		assertEquals("", rec.getDirector());
-		assertEquals(44, rec.getDurationMinutes());
+		assertEquals(0, rec.getDurationMinutes());
 		assertNotNull(rec.getImageUrl());
-		assertEquals("8.4", rec.getRating());
+		assertEquals("8.2", rec.getRating());
 		assertEquals("Sheriff Deputy Rick Grimes wakes up from a coma to learn the world is in ruins, and must lead a group of survivors to stay alive.", rec.getStory());
 		assertEquals(9, rec.getAllSeasonUrls().size());
 	}
@@ -143,7 +155,7 @@ public class TestImdbParser2022 extends ImdbParserTestBase {
 		assertEquals("", rec.getDirector());
 		assertEquals(44, rec.getDurationMinutes());
 		assertNotNull(rec.getImageUrl());
-		assertEquals("8.4", rec.getRating());
+		assertEquals("8.2", rec.getRating());
 		assertEquals("Sheriff Deputy Rick Grimes wakes up from a coma to learn the world is in ruins, and must lead a group of survivors to stay alive.", rec.getStory());
 		assertEquals(9, rec.getAllSeasonUrls().size());
 	}
@@ -190,30 +202,22 @@ public class TestImdbParser2022 extends ImdbParserTestBase {
 
 		assertEquals("Foundation", rec.getTitle());
 		assertEquals(2021, rec.getYear());
-		assertEquals("/title/tt0804484/mediaviewer/rm726399745/?ref_=tt_ov_i", rec.getImageUrl());
+		assertEquals("https://m.media-amazon.com/images/M/MV5BMTE5MDY1MGUtMmMxNi00YjA3LWIyZTYtN2FhOWJmNTY2NmM4XkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_.jpg", rec.getImageUrl());
 		assertArrayEquals(rec.getAllGenres().toArray(), List.of("Drama", "Sci-Fi").toArray());
 	}
 
 	private IIMDBParser createParser(String content) throws IOException {
 		Document doc = Jsoup.parse(content);
 
-		Settings settings = new Settings();
-		IFileReader fileReader = new FileReader();
-		IIMDBUrlRewrite urlRewrite = new IMDBUrlRewrite();
-
-		IMDBParser2022 parser = new IMDBParser2022(fileReader,
+		return new IMDBParser2022(fileReader,
 				settings,
 				urlRewrite,
+				utils,
 				loggerFactoryMock,
 				doc);
-		return parser;
 	}
 
 	private IMDBFinder createFinder() throws IOException {
-		Settings settings = new Settings();
-		IIMDBUrlRewrite urlRewrite = new IMDBUrlRewrite();
-		IIMDBGalleryHelper galleryHelper = new IMDBGalleryHelper(settings, webRetrieverMock, loggerFactoryMock);
-
 		return new IMDBFinder(settings, webRetrieverMock, urlRewrite, parserFactoryMock, galleryHelper, loggerFactoryMock, waiterMock, utilsMock);
 	}
 

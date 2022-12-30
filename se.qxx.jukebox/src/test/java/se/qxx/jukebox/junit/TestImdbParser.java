@@ -83,9 +83,6 @@ public class TestImdbParser extends ImdbParserTestBase {
 		
 	}
 
-		InputStream stream = Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(resourceName));
-		InputStreamReader reader = new InputStreamReader(stream);
-		BufferedReader in = new BufferedReader(reader);
 	@Test
 	public void Test_Movie2() throws IOException, NumberFormatException {
 		String movieHtml = readResource("TestImdb2.html");
@@ -133,7 +130,7 @@ public class TestImdbParser extends ImdbParserTestBase {
 	public void Test_Movie_SearchResults() throws IOException {
 		String searchResults = readResource("TestImdbSearchResult.html");
 		IMDBFinder finder = createFinder();
-		String url = finder.findUrl(new ArrayList<String>(), searchResults, 2014, false);
+		String url = finder.findUrl(new ArrayList<>(), searchResults, 2014, false);
 		
 		assertEquals("/title/tt1972571/?ref_=fn_tt_tt_1", url);
 	}
