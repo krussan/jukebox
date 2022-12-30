@@ -74,6 +74,8 @@ env:
   - secure: l5nfXSCC7qVgACbHU256siS3g3YsmaM0LYU64hj9h9lFQ94CGQNQvv6TEprNmYhaPw3ucluYB09RB8AtlUhyY7tOuQUYLSGvedp+4xiwfkiYd1rhNkSNF2p77uGK9KABtL7/fKvVjaEfiURfrHpAFsyRRFkJbp0hkrnUQY7S2N9h+p2leiFhfeA44Rh0P4IWH2r14x3SQdKPQzAjhxGWbln/kRIIr9bpUphsx53yiJoZWH5ig9JuAHSFdMuPIvEuFqgQyeRMzwhCzLUmtccThh1Cxx2yWAvAPtio7mqUknRdBZ12hStowjXBW338lxMMF/mgSqsmETlXkPUtTGmCBSAf1x5LuQTg2rKUwyqaQP72b52DGo8guJVR6YvtyjwpBPEnXWy8ZvPmbTnnWSo8VNMisIcn1BEJ7p6CguSohzKqjrBGvuqoNPVKcvRCEu845IglMTOaOD8JZXqKViRjz4/T3J3fJzM16XRHrP6wvoUAQWy8R8ZmS1JSaKUGJMOWphjRbnlxYrexRNwi7WjWp8373qnev9ujfLXFW1FQMo0BGTmiHXPkiTAaRWvbSK38h8MgkQJ/AHo6W8Dbu+GORn2aBYy5p3oChnYp4w7q6ReG83UiG/tG5mICPlAJgAdSQ+nsoag3u7pb0Q/PZf7SaGTDUPYra7uuz8vzCFIuauk=
 
 branches:
-  except:
-    - /^v[0-9]{0,3}\.[0-9]{0,3}.[0-9]{0,3}-(server|app)/
+  only:
+    - master
+#  except:
+#    - /^v[0-9]{0,3}\.[0-9]{0,3}.[0-9]{0,3}-(server|app)/
 
