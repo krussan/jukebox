@@ -18,7 +18,7 @@ if [[ "$TRAVIS_BRANCH" == "master" ]];then
    fi
 fi
 
-if [[ "$TRAVIS_PULL_REQUEST" == "false" ]] && [[ "$TRAVIS_BRANCH" == "master" ]];then
+if [[ "$TRAVIS_PULL_REQUEST" == "false" ]] && [[ "$TRAVIS_BRANCH" == "master" ]] && [[ "$TRAVIS_EVENT_TYPE" != "cron" ]];then
    echo Packaging new release ...
    ./gradlew build check connectedCheck assemble packageRelease archiveZip publishRelease
 else 

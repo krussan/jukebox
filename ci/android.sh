@@ -11,7 +11,7 @@ echo -----------------------------------------------------
 echo
 
 touch $HOME/.android/repositories.cfg
-wget "https://dl.google.com/android/repository/commandlinetools-linux-7302050_latest.zip" -O commandlinetools.zip
+wget "https://dl.google.com/android/repository/commandlinetools-linux-9123335_latest.zip" -O commandlinetools.zip
 unzip commandlinetools.zip -d $ANDROID_HOME/
 
 yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager "platforms;android-${TARGET_VERSION}" --sdk_root=$ANDROID_HOME

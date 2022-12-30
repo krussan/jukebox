@@ -17,7 +17,7 @@ android:
 before_install:
  - chmod +x gradlew
  - chmod +x ci/*.sh
- - ci/android.sh
+ - ./ci/android.sh
  - ./gradlew printversion -q > /dev/null 2> /dev/null
  - export JUKEBOX_VERSION=`./gradlew printversion -q` 
  - export JUKEBOX_TAG=v$JUKEBOX_VERSION-app
@@ -52,6 +52,7 @@ deploy:
   on:
     tags: false
     branch: master
+    condition: $TRAVIS_EVENT_TYPE != cron
 
 cache:
   directories:

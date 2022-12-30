@@ -12,6 +12,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -77,7 +78,7 @@ public class Util implements IUtils {
         bos.flush();
         bos.close();
         
-		return new String(bos.toByteArray(), "ISO-8859-1");
+		return bos.toString(StandardCharsets.ISO_8859_1);
 
 	}
 	
