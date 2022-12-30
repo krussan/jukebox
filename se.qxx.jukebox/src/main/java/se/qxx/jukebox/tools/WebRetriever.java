@@ -23,7 +23,8 @@ import se.qxx.jukebox.interfaces.IWebRetriever;
 
 @Singleton
 public class WebRetriever implements IWebRetriever {
-	
+
+	public static final String USER_AGENT = "Mozilla/5.0";
 	private IJukeboxLogger log;
 	private IUtils utils;
 	
@@ -56,7 +57,7 @@ public class WebRetriever implements IWebRetriever {
 	public WebResult getWebResult(String urlString) throws IOException {
 		URL url = new URL(urlString);
 		HttpURLConnection httpcon = (HttpURLConnection) url.openConnection(); 
-		httpcon.addRequestProperty("User-Agent", "Mozilla/4.76"); 
+		httpcon.addRequestProperty("User-Agent", USER_AGENT);
 		httpcon.addRequestProperty("Accept-Language", "en-US");
 		
 		String result = this.getUtils().readMessageFromStream(httpcon.getInputStream());
@@ -76,7 +77,7 @@ public class WebRetriever implements IWebRetriever {
 		httpcon.setRequestMethod("POST");
 		httpcon.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 		httpcon.setDoOutput(true);
-		httpcon.addRequestProperty("User-Agent", "Mozilla/4.76");
+		httpcon.addRequestProperty("User-Agent", USER_AGENT);
 		httpcon.addRequestProperty("Accept-Language", "en-US");
 
 		byte[] postData = query.getBytes(StandardCharsets.ISO_8859_1);
@@ -123,7 +124,7 @@ public class WebRetriever implements IWebRetriever {
 	private HttpURLConnection setupHttpConnection(URL url) throws IOException {
 		HttpURLConnection httpcon = (HttpURLConnection) url.openConnection();
 		httpcon.setInstanceFollowRedirects(false);
-		httpcon.addRequestProperty("User-Agent", "Mozilla/4.76"); 
+		httpcon.addRequestProperty("User-Agent", USER_AGENT);
 		httpcon.connect();
 		return httpcon;
 	}

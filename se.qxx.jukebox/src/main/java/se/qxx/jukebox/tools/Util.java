@@ -79,7 +79,7 @@ public class Util implements IUtils {
         bos.flush();
         bos.close();
         
-		return new String(bos.toByteArray(), StandardCharsets.ISO_8859_1);
+		return bos.toString(StandardCharsets.ISO_8859_1);
 
 	}
 	

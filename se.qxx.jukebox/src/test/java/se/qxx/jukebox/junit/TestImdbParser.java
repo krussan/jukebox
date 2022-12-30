@@ -8,11 +8,13 @@ import static org.mockito.Mockito.when;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -81,6 +83,9 @@ public class TestImdbParser extends ImdbParserTestBase {
 		
 	}
 
+		InputStream stream = Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(resourceName));
+		InputStreamReader reader = new InputStreamReader(stream);
+		BufferedReader in = new BufferedReader(reader);
 	@Test
 	public void Test_Movie2() throws IOException, NumberFormatException {
 		String movieHtml = readResource("TestImdb2.html");

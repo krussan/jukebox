@@ -8,7 +8,7 @@ echo "Version :: $JUKEBOX_VERSION"
 echo "TRAVIS_BRANCH :: $TRAVIS_BRANCH"
 echo "TRAVIS_PULL_REQUEST :: $TRAVIS_PULL_REQUEST"
 
-if [[ "$TRAVIS_PULL_REQUEST" == "false" ]] && [[ "$TRAVIS_BRANCH" == "master" ]];then
+if [[ "$TRAVIS_PULL_REQUEST" == "false" ]] && [[ "$TRAVIS_BRANCH" == "master" ]] && [[ "$TRAVIS_EVENT_TYPE" != "cron" ]];then
    git tag $JUKEBOX_TAG -a -m "Generated tag from TravisCI for build $TRAVIS_BUILD_NUMBER"
    git push -q ssh://git@github.com:/krussan/jukebox.git --tags
 fi

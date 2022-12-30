@@ -3,6 +3,7 @@ package se.qxx.jukebox.imdb;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.inject.assistedinject.Assisted;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -55,14 +57,14 @@ public class IMDBFinder implements IIMDBFinder {
 	private IIMDBGalleryHelper galleryHelper;
 
 	@Inject
-	public IMDBFinder(ISettings settings, 
-			IWebRetriever webRetriever, 
-			IIMDBUrlRewrite urlRewrite,
-		    IMDBParserFactory parserFactory,
+	public IMDBFinder(ISettings settings,
+					  IWebRetriever webRetriever,
+					  IIMDBUrlRewrite urlRewrite,
+					  IMDBParserFactory parserFactory,
 		    IIMDBGalleryHelper galleryHelper,
-			LoggerFactory loggerFactory,
-			IRandomWaiter waiter,
-			IUtils utils) {
+					  LoggerFactory loggerFactory,
+					  IRandomWaiter waiter,
+					  IUtils utils) {
 		this.setWaiter(waiter);
 		this.setSettings(settings);
 		this.setWebRetriever(webRetriever);
@@ -390,7 +392,7 @@ public class IMDBFinder implements IIMDBFinder {
 
 	protected WebResult getSearchResult(String title, String searchUrl)
 			throws IOException {
-		String urlParameters = java.net.URLEncoder.encode(title, "ISO-8859-1");
+		String urlParameters = java.net.URLEncoder.encode(title, StandardCharsets.ISO_8859_1);
 		String urlString = searchUrl.replace("%%TITLE%%", urlParameters);
 		//String urlString = "http://www.imdb.com/find?s=tt&q=" + urlParameters;
 
