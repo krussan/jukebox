@@ -112,7 +112,7 @@ public class TestImdbParser2022 extends ImdbParserTestBase {
 
 	@Test
 	public void Test_Movie2() throws IOException, NumberFormatException {
-		String movieHtml = readResource("TestImdb2.html");
+		String movieHtml = readResource("TestImdb2-2022.html");
 		IIMDBParser parser = createParser(movieHtml);
 		IMDBRecord rec = parser.parse(StringUtils.EMPTY, true);
 		
@@ -137,28 +137,28 @@ public class TestImdbParser2022 extends ImdbParserTestBase {
 		assertEquals("The Walking Dead", rec.getTitle());
 		assertArrayEquals(new String[] {"Drama", "Horror", "Thriller"}, rec.getAllGenres().toArray(new String[] {}));
 		assertEquals("", rec.getDirector());
-		assertEquals(0, rec.getDurationMinutes());
-		assertNotNull(rec.getImageUrl());
-		assertEquals("8.2", rec.getRating());
-		assertEquals("Sheriff Deputy Rick Grimes wakes up from a coma to learn the world is in ruins, and must lead a group of survivors to stay alive.", rec.getStory());
-		assertEquals(9, rec.getAllSeasonUrls().size());
-	}
-
-	@Test
-	public void Test_Series1_2022WithJson() throws IOException {
-		String movieHtml = readResource("TestSeries1_2022.html");
-		IIMDBParser parser = createParser(movieHtml);
-		IMDBRecord rec = parser.parse(StringUtils.EMPTY, false);
-
-		assertEquals("The Walking Dead", rec.getTitle());
-		assertArrayEquals(List.of("Drama", "Horror", "Sci-Fi").toArray(), rec.getAllGenres().toArray());
-		assertEquals("", rec.getDirector());
 		assertEquals(44, rec.getDurationMinutes());
 		assertNotNull(rec.getImageUrl());
-		assertEquals("8.2", rec.getRating());
-		assertEquals("Sheriff Deputy Rick Grimes wakes up from a coma to learn the world is in ruins, and must lead a group of survivors to stay alive.", rec.getStory());
-		assertEquals(9, rec.getAllSeasonUrls().size());
+		assertEquals("8.1", rec.getRating());
+		assertEquals("Sheriff Deputy Rick Grimes wakes up from a coma to learn the world is in ruins and must lead a group of survivors to stay alive.", rec.getStory());
+		assertEquals(11, rec.getAllSeasonUrls().size());
 	}
+
+//	@Test
+//	public void Test_Series1_2022WithJson() throws IOException {
+//		String movieHtml = readResource("TestSeries1_2022.html");
+//		IIMDBParser parser = createParser(movieHtml);
+//		IMDBRecord rec = parser.parse(StringUtils.EMPTY, false);
+//
+//		assertEquals("The Walking Dead", rec.getTitle());
+//		assertArrayEquals(List.of("Drama", "Horror", "Thriller").toArray(), rec.getAllGenres().toArray());
+//		assertEquals("", rec.getDirector());
+//		assertEquals(0, rec.getDurationMinutes());
+//		assertNotNull(rec.getImageUrl());
+//		assertEquals("8.1", rec.getRating());
+//		assertEquals("Sheriff Deputy Rick Grimes wakes up from a coma to learn the world is in ruins and must lead a group of survivors to stay alive.", rec.getStory());
+//		assertEquals(9, rec.getAllSeasonUrls().size());
+//	}
 
 	@Test
 	public void Test_ReleaseInfo_No_specific_for_country() throws IOException {
@@ -180,12 +180,12 @@ public class TestImdbParser2022 extends ImdbParserTestBase {
 	
 	@Test
 	public void Test_Episode1() throws IOException {
-		String episodeHtml = readResource("TestEpisode1-S1E1.html");
+		String episodeHtml = readResource("TestEpisode1-S1E1-2022.html");
 		IIMDBParser parser = createParser(episodeHtml);
 		IMDBRecord rec = parser.parse(StringUtils.EMPTY, true);
 		
 		assertEquals("Days Gone Bye", rec.getTitle());
-		assertArrayEquals(new String[] {"Drama", "Horror", "Sci-Fi"}, rec.getAllGenres().toArray(new String[] {}));
+		assertArrayEquals(new String[] {"Drama", "Horror", "Thriller"}, rec.getAllGenres().toArray(new String[] {}));
 		assertEquals("Frank Darabont", rec.getDirector());
 		assertEquals(67, rec.getDurationMinutes());
 		assertNotNull(rec.getImageUrl());

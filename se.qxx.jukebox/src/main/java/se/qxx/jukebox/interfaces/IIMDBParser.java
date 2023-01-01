@@ -8,8 +8,8 @@ import se.qxx.jukebox.imdb.IMDBRecord;
 
 public interface IIMDBParser {
 
-	Map<Integer, String> parseEpisodes();
-	Map<Integer, String> parseSeasons();
+	Map<Integer, String> parseEpisodes(String rootUrl);
+	Map<Integer, String> parseSeasons(String rootUrl);
 	String parseStory();
 	String parseRating();
 	List<String> parseGenres();

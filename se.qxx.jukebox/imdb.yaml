@@ -15,3 +15,4 @@ datePatterns:
   - "dd MMMM yyyy"
   - "MMM. dd, yyyy"
   - "yyyy-MM-dd"
+  - "MMMM dd, yyyy"

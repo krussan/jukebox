@@ -74,10 +74,10 @@ public class TestSubscene {
 	
 	private void readResources() {
 		try {
-			searchResult = readResource("TestSubscene_searchResult.txt");
-			listResult = readResource("TestSubscene_listResult.txt");
-			download1Result = readResource("TestSubscene_download1Result.txt");
-			download2Result = readResource("TestSubscene_download2Result.txt");
+			searchResult = readResource("TestSubscene_searchResult.html");
+			listResult = readResource("TestSubscene_listResult.html");
+			download1Result = readResource("TestSubscene_download1Result.html");
+			download2Result = readResource("TestSubscene_download2Result.html");
 		} catch (IOException e) {
 			System.out.println(e.toString());
 		}

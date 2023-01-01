@@ -98,7 +98,7 @@ public class IMDBParser implements IIMDBParser {
         this.fileReader = fileReader;
     }
     @Override
-    public Map<Integer, String> parseEpisodes() {
+    public Map<Integer, String> parseEpisodes(String rootUrl) {
         Elements elm = this.getDocument().select("strong > a[href~=ttep_ep]");
 
         Map<Integer, String> result = new HashMap<Integer, String>();
@@ -120,7 +120,7 @@ public class IMDBParser implements IIMDBParser {
     }
 
     @Override
-    public Map<Integer, String> parseSeasons() {
+    public Map<Integer, String> parseSeasons(String rootUrl) {
         Elements elm = this.getDocument().select(".seasons-and-year-nav a[href~=season]");
 
         Map<Integer, String> result = new HashMap<Integer, String>();
@@ -360,8 +360,8 @@ public class IMDBParser implements IIMDBParser {
         rec.setRating(this.parseRating());
         rec.setStory(this.parseStory());
 
-        rec.setAllSeasonUrls(this.parseSeasons());
-        rec.setAllEpisodeUrls(this.parseEpisodes());
+        rec.setAllSeasonUrls(this.parseSeasons(url));
+        rec.setAllEpisodeUrls(this.parseEpisodes(url));
 
         return rec;
     }

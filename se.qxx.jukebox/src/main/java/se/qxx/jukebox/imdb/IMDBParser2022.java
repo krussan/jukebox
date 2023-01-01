@@ -119,7 +119,7 @@ public class IMDBParser2022 implements IIMDBParser {
 	}
 
 	@Override
-	public Map<Integer, String> parseEpisodes() {
+	public Map<Integer, String> parseEpisodes(String rootUrl) {
 		Elements elm = this.getDocument().select("strong > a[href~=ttep_ep]");
 
 		Map<Integer, String> result = new HashMap<Integer, String>();
@@ -140,23 +140,29 @@ public class IMDBParser2022 implements IIMDBParser {
 		return result;
 	}
 
+	private int tryParseInt(String s) {
+		int x = 0;
+		try {
+			return Integer.parseInt(s);
+		}
+		catch (NumberFormatException e) {
+			return 0;
+		}
+	}
+
 	@Override
-	public Map<Integer, String> parseSeasons() {
-		Elements elm = this.getDocument().select(".seasons-and-year-nav a[href~=season]");
+	public Map<Integer, String> parseSeasons(String rootUrl) {
+		Elements elm = this.getDocument().select("select#browse-episodes-season > option");
 
-		Map<Integer, String> result = new HashMap<Integer, String>();
+		Map<Integer, String> result = new HashMap<>();
 		for (Element e : elm) {
-			String url = StringUtils.EMPTY;
-			try {
-				url = this.getUrlRewrite().fixUrl(e.attr("href"));
-			} catch (MalformedURLException e1) {
-				this.getLog().Error("Error parsing imdb url for season");
-			}
-			this.getLog().Debug(String.format("IMDBRECORD :: Setting season url :: %s", url));
+			int sn = tryParseInt(e.attr("value"));
+			if (sn > 0) {
+				String url = String.format("%s/episodes?season=%s", rootUrl, e.attr("value"));
+				this.getLog().Debug(String.format("IMDBRECORD :: Setting season url :: %s", url));
 
-			Pair<Integer, String> entry = parseSeasonUrl(url);
-			if (entry != null)
-				result.put(entry.getLeft(), entry.getRight());
+				result.put(sn, url);
+			}
 
 		}
 
@@ -167,7 +173,7 @@ public class IMDBParser2022 implements IIMDBParser {
 	@Override
 	public String parseStory() {
 		//Elements elm = this.getDocument().select("div.summary_text");
-		Elements elm = this.getDocument().select("section[data-testid~=storyline-plot-summary");
+		Elements elm = this.getDocument().select("span[data-testid=plot-xs_to_m]");
 
 		return extractValue(elm, "story");
 	}
@@ -182,7 +188,7 @@ public class IMDBParser2022 implements IIMDBParser {
 
 	private String extractValue(Elements elm, String valueType) {
 		if (elm.size() > 0) {
-			String unescapedValue = StringEscapeUtils.unescapeHtml4(elm.get(0).text());
+			String unescapedValue = StringEscapeUtils.unescapeHtml4(elm.get(0).text().trim());
 			this.getLog().Debug(String.format("IMDBRECORD :: Setting %s :: %s", valueType, unescapedValue));
 			return unescapedValue;
 		}
@@ -203,7 +209,8 @@ public class IMDBParser2022 implements IIMDBParser {
 
 	@Override
 	public Date parseFirstAirDate() {
-		Elements elm = this.getDocument().select(".title_wrapper a[href~=/.*releaseinfo.*]");
+		// this.getDocument().select(".title_wrapper a[href~=/.*releaseinfo.*]");
+		Elements elm = this.getDocument().select("li[data-testid=title-details-releasedate] > div a");
 		if (elm.size() > 0) {
 			String dateValue = fetchAirDateByParenthesis(elm);
 
@@ -244,23 +251,35 @@ public class IMDBParser2022 implements IIMDBParser {
 		//Elements elm = this.getDocument().select(".title_wrapper a[href~=genre]");
 		Elements elm = this.getDocument().select("span.ipc-chip__text");
 
-		List<String> result = elm.stream().map(x -> StringEscapeUtils.unescapeHtml4(x.text()).trim()).collect(Collectors.toList());
+		List<String> result = elm.stream().map(x -> StringEscapeUtils.unescapeHtml4(x.text()).trim()).filter(x -> !x.equalsIgnoreCase("Back to top")).collect(Collectors.toList());
 		this.getLog().Debug(String.format("IMDBRECORD :: Setting genres :: %s", String.join(",", result)));
 
 		return result;
 	}
 
+	private int parseDurationText(String s) {
+		Pattern p = Pattern.compile("((\\d+)\\s+hour(s?))?\\s*((\\d+)\\s+minute(s?))?");
+		Matcher m = p.matcher(s);
+		if (m.find()) {
+
+			int hours = tryParseInt(m.group(2));
+			int minutes = tryParseInt(m.group(5));
+			return hours * 60 + minutes;
+		}
+		else {
+			return 0;
+		}
+	}
+
 	@Override
 	public int parseDuration() {
-		Elements elm = this.getDocument().select(".title_wrapper time");
+		Elements elm = this.getDocument().select("li[data-testid~=title-techspec_runtime] > div");
 
 		if (elm.size() > 0) {
-			String duration = elm.get(0).attr("datetime");
-			Duration dur = Duration.parse(duration);
-			int minutes = (int) (dur.getSeconds() / 60);
+			int totalMinutes = parseDurationText(elm.get(0).text());
+			this.getLog().Debug(String.format("IMDBRECORD :: Setting duration :: %s", totalMinutes));
 
-			this.getLog().Debug(String.format("IMDBRECORD :: Setting duration :: %s", minutes));
-			return minutes;
+			return totalMinutes;
 		}
 
 		return 0;
@@ -292,30 +311,11 @@ public class IMDBParser2022 implements IIMDBParser {
 		Year
 	}
 
-	private String extractTitle(TitleType type) {
-		//Elements elm = this.getDocument().select(".title_wrapper > h1");
-		Elements elm = this.getDocument().select(".khmuXj > h1");
-		if (elm.size() > 0) {
-			Pattern p = Pattern.compile("(.*?)\\((\\d{4})\\)");
-			Matcher m = p.matcher(elm.text());
-
-			if (m.find()) {
-				String match = m.group(type == TitleType.Title ? 1 : 2);
-
-				return StringEscapeUtils.unescapeHtml4(match).trim();
-			} else if (type == TitleType.Title) {
-				return extractValue(elm, "title");
-			}
-
-		}
-		return StringUtils.EMPTY;
-
-	}
-
-
 	@Override
 	public String parseTitle() {
-		return extractTitle(TitleType.Title);
+		//Elements elm = this.getDocument().select(".title_wrapper > h1");
+		Elements elm = this.getDocument().select("h1[data-testid~=title]");
+		return extractValue(elm, "title");
 	}
 
 	private Date parseDate(String date) {
@@ -381,8 +381,8 @@ public class IMDBParser2022 implements IIMDBParser {
 		rec.setRating(this.parseRating());
 		rec.setStory(this.parseStory());
 
-		rec.setAllSeasonUrls(this.parseSeasons());
-		rec.setAllEpisodeUrls(this.parseEpisodes());
+		rec.setAllSeasonUrls(this.parseSeasons(url));
+		rec.setAllEpisodeUrls(this.parseEpisodes(url));
 
 		return rec;
 	}
@@ -405,6 +405,7 @@ public class IMDBParser2022 implements IIMDBParser {
 
 		rec.setRating(Double.toString(root.aggregateRating.ratingValue));
 		rec.setStory(root.description);
+
 
 		//rec.setAllSeasonUrls(this.parseSeasons());
 		//rec.setAllEpisodeUrls(this.parseEpisodes());

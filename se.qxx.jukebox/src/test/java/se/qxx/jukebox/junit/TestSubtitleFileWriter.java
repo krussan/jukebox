@@ -82,7 +82,7 @@ public class TestSubtitleFileWriter {
 	public void TestWriteSrtFile_does_not_create_double_newlines() throws IOException, SubtitleParsingException {
 		SubtitleFileWriter writer = new SubtitleFileWriter(loggerFactoryMock);
 
-		String subtitleData = readResource("TestSubtitle.txt");
+		String subtitleData = readResource("TestSubtitle.html");
 		
 		Subtitle sub1 = Subtitle.newBuilder()
 				.setID(100)
