@@ -294,7 +294,7 @@ public class IMDBParser2022 implements IIMDBParser {
 
 	@Override
 	public int parseYear() {
-		Elements elm = this.getDocument().select(".eSKKHi a[href~=rdat]");
+		Elements elm = this.getDocument().select("a[href~=tt_ov_rdat]");
 		if (elm.size() > 0) {
 			String parsed = StringEscapeUtils.unescapeHtml4(elm.get(0).text()).trim().substring(0, 4);
 			this.getLog().Debug(String.format("IMDBRECORD :: Setting year :: %s", parsed));
