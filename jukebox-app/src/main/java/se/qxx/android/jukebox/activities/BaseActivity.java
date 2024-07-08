@@ -69,7 +69,6 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
         if (item.getItemId() == R.id.prefs_menu_item) {
             Intent intentPreferences = new Intent(this, JukeboxPreferenceActivity.class);
             startActivity(intentPreferences);
-            break;
         }
         return true;
     }
