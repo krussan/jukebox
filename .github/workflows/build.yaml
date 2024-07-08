@@ -1,0 +1,77 @@
+# The name of our workflow
+name: Build
+
+on:
+  # Trigger on every pull request and on push
+  # to the `main` branch.
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set Up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'corretto' # See 'Supported distributions' for available options
+          java-version: '17'
+
+      - name: Checkout the code
+        uses: actions/checkout@v4
+
+      - name: Change wrapper permissions
+        run: chmod +x ./gradlew
+
+      - name: Change script permissions
+        run: chmod +x ./*.sh
+
+      - name: Set version and variables
+        run: |
+          ./gradlew outputVersion
+          VERSION=$(cat version.txt)
+          echo "JUKEBOX_VERSION=$VERSION" >> $GITHUB_ENV
+          echo "JUKEBOX_TAG=v$VERSION" >> $GITHUB_ENV
+          echo "LD_LIBRARY_PATH=$GITHUB_WORKSPACE/ci:$LD_LIBRARY_PATH" >> $GITHUB_ENV
+
+      - name: Unpack protoc
+        run: unzip ci/protoc.zip -d ci
+
+      - name: Change script permissions
+        run: chmod 775 ci/*.sh
+
+      - name: Decrypt files
+        env:
+          FILE_PASSWORD: ${{ secrets.FILE_PASSWORD }}
+        run: ci/decrypt_files.sh
+
+      - name: Build the app
+        env:
+          RELEASE_STORE_FILE: ../ci/keystore2
+          RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+          RELEASE_KEY_ALIAS: android-signing
+        run: ./ci/build.sh
+
+      - name: Create tag
+        if: ${{ github.ref == 'refs/heads/master' }}
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/${{ env.JUKEBOX_TAG }}',
+              sha: context.sha
+            })
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        if: ${{ github.ref == 'refs/heads/master' }}
+        with:
+          tag_name: ${{ env.JUKEBOX_TAG }}
+          files: |
+            se.qxx.jukebox/build/distributions/*.zip
+            jukebox-app/build/outputs/apk/release/*.apk

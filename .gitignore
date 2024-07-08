@@ -40,3 +40,7 @@ deploy.sh
 schema/
 output.txt
 /my*.sh
+/ci/keystore
+/ci/api
+/ci/travis
+/version.txt
