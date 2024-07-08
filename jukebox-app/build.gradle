@@ -4,18 +4,18 @@ plugins {
     id 'idea'
 }
 
-def appVersionName = "${jukeboxVersion}"
-def appVersionCode = Integer.valueOf(System.env.TRAVIS_BUILD_NUMBER ?: project.findProperty('versionCode') as String ?: 1 as String)
+def appVersionName = jukeboxVersion
+def appVersionCode = Integer.valueOf(System.getenv("GITHUB_BUILD_NUMBER") ?: project.findProperty('versionCode') as String ?: 1 as String)
 def appJsonFile = project.findProperty('apiJsonFile') ?: '../ci/api.json'
 
 android {
-    compileSdkVersion 33
     namespace "se.qxx.android.jukebox"
 
     defaultConfig {
         applicationId "se.qxx.android.jukebox"
+        compileSdk 34
         minSdkVersion 26
-        targetSdkVersion 33
+        targetSdkVersion 34
 
         // Enabling multidex support.
         multiDexEnabled true
@@ -27,17 +27,17 @@ android {
 
     signingConfigs {
         release {
-            if (System.env['RELEASE_STORE_FILE'] != null)
-                storeFile file(System.env['RELEASE_STORE_FILE'])
+            if (System.getenv('RELEASE_STORE_FILE') != null)
+                storeFile file(System.getenv('RELEASE_STORE_FILE'))
 
-            if (System.env["RELEASE_STORE_PASSWORD"] != null)
-                storePassword System.env["RELEASE_STORE_PASSWORD"]
+            if (System.getenv("RELEASE_STORE_PASSWORD") != null)
+                storePassword System.getenv("RELEASE_STORE_PASSWORD")
 
-            if (System.env["RELEASE_KEY_ALIAS"] != null)
-                keyAlias System.env["RELEASE_KEY_ALIAS"]
+            if (System.getenv("RELEASE_KEY_ALIAS") != null)
+                keyAlias System.getenv("RELEASE_KEY_ALIAS")
 
-            if (System.env["RELEASE_KEY_PASSWORD"] != null)
-                keyPassword System.env["RELEASE_KEY_PASSWORD"]
+            if (System.getenv("RELEASE_KEY_PASSWORD") != null)
+                keyPassword System.getenv("RELEASE_KEY_PASSWORD")
 
             if (project.hasProperty("RELEASE_STORE_FILE"))
                 storeFile file(RELEASE_STORE_FILE)
@@ -73,8 +73,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     configurations {

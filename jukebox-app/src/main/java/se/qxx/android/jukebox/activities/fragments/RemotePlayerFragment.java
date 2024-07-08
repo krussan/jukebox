@@ -207,41 +207,30 @@ public abstract class RemotePlayerFragment extends PlayerFragment
     public void onClick(View v) {
         int id = v.getId();
 
-        switch (id) {
-            case R.id.btnPlay:
-                Logger.Log().d("Request --- StartMovie");
-                //startMovie();
-                break;
-            case R.id.btnFullscreen:
-                Logger.Log().d("Request --- ToggleFullScreen");
-                setupFullscreen();
-                break;
-            case R.id.btnPause:
-                Logger.Log().d("Request --- Pause");
-                pauseMovie();
-                break;
-            case R.id.btnStop:
-                Logger.Log().d("Request --- StopMove");
-                setExitPosition(getCurrentPosition());
-                stop();
+        if (id == R.id.btnPlay) {
+            Logger.Log().d("Request --- StartMovie");
+            //startMovie();
+        } else if (id == R.id.btnFullscreen) {
+            Logger.Log().d("Request --- ToggleFullScreen");
+            setupFullscreen();
+        } else if (id == R.id.btnPause) {
+            Logger.Log().d("Request --- Pause");
+            pauseMovie();
+        } else if (id == R.id.btnStop) {
+            Logger.Log().d("Request --- StopMove");
+            setExitPosition(getCurrentPosition());
+            stop();
 
-                getActivity().finish();
-
-                break;
-            case R.id.btnViewInfo:
-                if (StringUtils.isNotEmpty(this.getImdbUrl())) {
-                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(this.getImdbUrl()));
-                    startActivity(browserIntent);
-                } else {
-                    Toast.makeText(getActivity(), "No IMDB link available", Toast.LENGTH_SHORT).show();
-                }
-
-                break;
-            case R.id.btnSubSelection:
-                showSubtitleDialog();
-                break;
-            default:
-                break;
+            getActivity().finish();
+        } else if (id == R.id.btnViewInfo) {
+            if (StringUtils.isNotEmpty(this.getImdbUrl())) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(this.getImdbUrl()));
+                startActivity(browserIntent);
+            } else {
+                Toast.makeText(getActivity(), "No IMDB link available", Toast.LENGTH_SHORT).show();
+            }
+        } else if (id == R.id.btnSubSelection) {
+            showSubtitleDialog();
         }
     }
 

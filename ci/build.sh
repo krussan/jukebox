@@ -4,12 +4,13 @@ echo Initiating build ...
 echo
 echo -----------------------------------------------------
 echo VERSION :: $JUKEBOX_VERSION
-echo TRAVIS_PULL_REQUEST :: $TRAVIS_PULL_REQUEST
-echo TRAVIS_BRANCH :: $TRAVIS_BRANCH
+echo BASE_REF :: $GITHUB_BASE_REF
+echo BRANCH :: $GITHUB_REF_NAME
+echo EVENT :: $GITHUB_EVENT_NAME
 echo -----------------------------------------------------
 echo
 
-if [[ "$TRAVIS_BRANCH" == "master" ]];then
+if [[ "$GITHUB_BASE_REF" == "master" ]];then
    echo Checking that the resulting tag does not exist
 
    if git rev-parse -q --verify "refs/tags/$JUKEBOX_TAG" >/dev/null; then
@@ -18,10 +19,10 @@ if [[ "$TRAVIS_BRANCH" == "master" ]];then
    fi
 fi
 
-if [[ "$TRAVIS_PULL_REQUEST" == "false" ]] && [[ "$TRAVIS_BRANCH" == "master" ]] && [[ "$TRAVIS_EVENT_TYPE" != "cron" ]];then
+if [[ "$GITHUB_EVENT_NAME" == "push" ]] && [[ "$GITHUB_REF_NAME" == "master" ]];then
    echo Packaging new release ...
    ./gradlew build check connectedCheck assemble packageRelease archiveZip publishRelease
-else 
+else
    echo Running test ...
    ./gradlew build check connectedCheck
 fi

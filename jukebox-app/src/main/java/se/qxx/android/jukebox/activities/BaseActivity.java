@@ -66,12 +66,9 @@ public abstract class BaseActivity extends AppCompatActivity implements SearchVi
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch(item.getItemId()) {
-            case R.id.prefs_menu_item:
-                Intent intentPreferences = new Intent(this, JukeboxPreferenceActivity.class);
-                startActivity(intentPreferences);
-                break;
-
+        if (item.getItemId() == R.id.prefs_menu_item) {
+            Intent intentPreferences = new Intent(this, JukeboxPreferenceActivity.class);
+            startActivity(intentPreferences);
         }
         return true;
     }

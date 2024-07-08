@@ -7,14 +7,15 @@ group = 'se.qxx.jukebox'
 version = "${jukeboxVersion}"
 
 ext {
-   outputDir = new File("${buildDir}/outputs")
+   def outputDirname = base.distsDirectory.get()
+   outputDir = new File("$outputDirname")
 }
 
-task myCopyTask(type: Copy) {
-   if(!outputDir.exists())
+tasks.register('myCopyTask', Copy) {
+   if (!outputDir.exists())
       outputDir.mkdirs()
 
-   from (projectDir) {
+   from(projectDir) {
       include 'settings.yaml'
       include 'imdb.yaml'
       include 'parser.yaml'
@@ -24,13 +25,13 @@ task myCopyTask(type: Copy) {
 }
 
 java {
-   sourceCompatibility = JavaVersion.VERSION_11
-   targetCompatibility = JavaVersion.VERSION_11
+   sourceCompatibility = JavaVersion.VERSION_17
+   targetCompatibility = JavaVersion.VERSION_17
 }
 
 compileJava {
-   sourceCompatibility = 11
-   targetCompatibility = 11
+   sourceCompatibility = 17
+   targetCompatibility = 17
 
    dependsOn myCopyTask
 }
@@ -62,16 +63,17 @@ jar {
    }
 }
 
-task fatJar(type: Jar) {
+tasks.register('fatJar', Jar) {
    manifest.from jar.manifest
    destinationDirectory = outputDir
    archiveClassifier = 'all'
    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+   archiveBaseName = 'jukebox'
 
    from {
       configurations.runtimeClasspath
-        .filter( {! (it.name =~ /sisu-guice.*\.jar/ || it.name =~ /git-commit-id.*\.jar/)})
-        .collect { it.isDirectory() ? it : zipTree(it) }
+              .filter({ !(it.name =~ /sisu-guice.*\.jar/ || it.name =~ /git-commit-id.*\.jar/) })
+              .collect { it.isDirectory() ? it : zipTree(it) }
    } {
       exclude "META-INF/*.SF"
       exclude "META-INF/*.DSA"
@@ -88,7 +90,8 @@ dependencies {
    implementation 'commons-io:commons-io:2.11.0'
    implementation 'uk.co.caprica:vlcj:3.10.1'
    implementation 'org.imgscalr:imgscalr-lib:4.2'
-   implementation 'org.xerial:sqlite-jdbc:3.40.0.0'
+   implementation "io.grpc:grpc-stub:${grpcVersion}"
+   implementation 'org.xerial:sqlite-jdbc:3.41.2.2'
    implementation 'mysql:mysql-connector-java:5.1.45'
    implementation 'org.nanohttpd:nanohttpd-webserver:2.3.1'
    implementation 'fr.noop:subtitle:0.9.6'
@@ -100,10 +103,10 @@ dependencies {
    implementation 'net.java.dev.jna:jna:5.12.1'
    implementation 'com.google.inject:guice:5.1.0'
    implementation 'com.google.inject.extensions:guice-assistedinject:5.1.0'
-   implementation 'com.google.guava:guava:31.1-jre'
+   implementation 'com.google.guava:guava:33.1.0-jre'
    implementation 'org.apache.commons:commons-text:1.10.0'
    implementation "javax.annotation:javax.annotation-api:1.3.2"
-   implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.14.0'
+   implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2'
    implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.0'
 
    // should be added by protodb dependency but is missing
@@ -119,7 +122,7 @@ dependencies {
    implementation "io.grpc:grpc-stub:${grpcVersion}"
 
    // test
-   testImplementation 'junit:junit:4.12'
+   testImplementation 'junit:junit:4.13.1'
    testImplementation 'org.mockito:mockito-core:2.20.0'
 }
 
@@ -127,8 +130,9 @@ artifacts {
    archives fatJar
 }
 
-task createScripts()  {
+tasks.register('createScripts') {
    doLast {
+      def jarFile = fatJar.archiveFileName.get()
       new File(outputDir, "run.sh").text = """#!/bin/sh
 if [ -n "\$LD_LIBRARY_PATH" ]
 then
@@ -137,13 +141,13 @@ else
    LD_LIBRARY_PATH=+\$PWD
 fi
 export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH
-java -Xmx1024m -Djava.util.logging.config.file=logging.properties -jar ${fatJar.archiveFileName} \${1+"\$@"} &
+java -Xmx1024m -Djava.util.logging.config.file=logging.properties -jar $jarFile \${1+"\$@"} &
 echo \$! > juebox.pid
 """
    }
 }
 
-task archiveZip(type: Zip) {
+tasks.register('archiveZip', Zip) {
    dependsOn fatJar, createScripts
 
    from outputDir
@@ -151,11 +155,12 @@ task archiveZip(type: Zip) {
    include '*.xml'
    include 'logging.properties'
    include '*.sh'
-   archiveFileName = "se.qxx.jukebox-${jukeboxVersion}.zip"
+
+   archiveBaseName = 'jukebox'
    destinationDirectory = outputDir
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
