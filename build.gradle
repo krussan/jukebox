@@ -29,5 +29,5 @@ allprojects {
 }
 
 tasks.register('outputVersion') {
-    new File(projectDir, "version.txt").text = "$rootProject.version"
+    new File(projectDir, "version.txt").text = jukeboxVersion
 }
