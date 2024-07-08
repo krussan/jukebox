@@ -5,7 +5,7 @@ plugins {
 }
 
 def appVersionName = jukeboxVersion
-def appVersionCode = Integer.valueOf(System.getenv("GITHUB_BUILD_NUMBER") ?: project.findProperty('versionCode') as String ?: 1 as String)
+def appVersionCode = Integer.valueOf(System.getenv("GITHUB_START_BUILD_NUMBER") ?: "0") + Integer.valueOf(System.getenv("GITHUB_BUILD_NUMBER") ?: project.findProperty('versionCode') as String ?: 1 as String)
 def appJsonFile = project.findProperty('apiJsonFile') ?: '../ci/api.json'
 
 android {
