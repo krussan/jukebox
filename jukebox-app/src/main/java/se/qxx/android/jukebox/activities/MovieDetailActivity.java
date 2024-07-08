@@ -165,25 +165,19 @@ public class MovieDetailActivity extends BaseActivity {
     public void onButtonClicked(View v) {
         int id = v.getId();
 
-        switch (id) {
-            case R.id.btnPlay:
-                Intent iPlay = new Intent(this, NowPlayingActivity.class);
-                iPlay.putExtra("mode", ViewMode.Movie);
-                iPlay.putExtra("ID", this.getMovie().getID());
-                startActivity(iPlay);
-                break;
-            case R.id.btnViewInfo:
-                String url = this.getMovie().getImdbUrl();
-                if (url != null && url.length() > 0) {
-                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                    startActivity(browserIntent);
-                }
-                else {
-                    Toast.makeText(this, "No IMDB link available", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            default:
-                break;
+        if (id == R.id.btnPlay) {
+            Intent iPlay = new Intent(this, NowPlayingActivity.class);
+            iPlay.putExtra("mode", ViewMode.Movie);
+            iPlay.putExtra("ID", this.getMovie().getID());
+            startActivity(iPlay);
+        } else if (id == R.id.btnViewInfo) {
+            String url = this.getMovie().getImdbUrl();
+            if (url != null && url.length() > 0) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                startActivity(browserIntent);
+            } else {
+                Toast.makeText(this, "No IMDB link available", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
