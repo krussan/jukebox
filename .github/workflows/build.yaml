@@ -36,9 +36,6 @@ jobs:
           echo "JUKEBOX_TAG=v$VERSION" >> $GITHUB_ENV
           echo "LD_LIBRARY_PATH=$GITHUB_WORKSPACE/ci:$LD_LIBRARY_PATH" >> $GITHUB_ENV
 
-      - name: Unpack protoc
-        run: unzip ci/protoc.zip -d ci
-
       - name: Change script permissions
         run: chmod 775 ci/*.sh
 
