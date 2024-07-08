@@ -14,7 +14,7 @@ buildscript {
 }
 
 ext {
-    jukeboxVersion = '0.46.0'
+    jukeboxVersion = '0.46.1'
     grpcVersion = '1.65.0'
 }
 
