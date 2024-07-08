@@ -50,6 +50,7 @@ jobs:
           RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           RELEASE_KEY_ALIAS: android-signing
+          GITHUB_BUILD_NUMBER: ${{ github.run_number }}
         run: ./ci/build.sh
 
       - name: Create tag
